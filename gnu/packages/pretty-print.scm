@@ -25,6 +25,7 @@
 (define-module (gnu packages pretty-print)
   #:use-module (guix packages)
   #:use-module (guix licenses)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -166,21 +167,20 @@ different programming languages.")
 (define-public fmt
   (package
     (name "fmt")
-    (version "6.0.0")
+    (version "6.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/fmtlib/fmt/releases/download/"
-                    version "/fmt-" version ".zip"))
+              (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
+                                  version "/fmt-" version ".zip"))
               (sha256
                (base32
-                "0h148anbaqgch6n69pxsvs1c9wmykgd052wmzgdia7qpz8w6p8dl"))))
+                "1s1hxaby5byb07rgmrk4a0q11fxhz7b42khch7sp2qx974y0yrb3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://fmtlib.net/")
+    (home-page "https://fmt.dev")
     (synopsis "Small and fast C++ formatting library")
     (description
      "@code{fmt} (formerly @code{cppformat}) is a formatting library for C++.

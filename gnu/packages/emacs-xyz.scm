@@ -60,6 +60,8 @@
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
+;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -970,13 +972,13 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.16")
+    (version "1.18")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
-        (base32 "1s6pkbr7gkan0r9gfmix75m587d8cg6l11722v70zzgf2z9w2xg9"))))
+        (base32 "1nq9pj47sxgpkw97c2xrkhgcwh3zsfd2a22qiqbl4i9zf2l9yy91"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -1074,14 +1076,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://elpa.gnu.org/packages/relint-" version ".tar"))
        (sha256
-        (base32 "0hjzhxcygb2r2s3g2pk3z9x3appy1y8gkw8gpg9cpkl6lpwcsh2f"))))
+        (base32 "0sxmdsacj8my942k8j76m2y68nzab7190acv7cwgflc5n4f07yxa"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -4684,7 +4686,7 @@ local directories.")
   (package
     (name "emacs-ffap-rfc-space")
     (version "12")
-    (home-page "http://user42.tuxfamily.org/ffap-rfc-space/index.html")
+    (home-page "https://user42.tuxfamily.org/ffap-rfc-space/index.html")
     (source (origin
               (method url-fetch)
               (uri "http://download.tuxfamily.org/user42/ffap-rfc-space.el")
@@ -7389,8 +7391,8 @@ CIDER).")
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
 (define-public emacs-sly
-  (let ((commit "0a3b81770e46b93b9ffd8b9ac5254e0b88d1b13d")
-        (revision "3"))
+  (let ((commit "86a63df73360be51529806c7ed9b775b3f02284d")
+        (revision "4"))
     (package
       (name "emacs-sly")
       (version (git-version "1.0.0" revision commit))
@@ -7403,7 +7405,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1q5ga4mxa0ffa4zb2y0zfwmgzjggx4fn1y4bl2x7ac6ynvb32zkj"))))
+           "0sx6fdckcfcld41db0695svvlvllnfaazwx513686gnykwfd209n"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
@@ -17255,10 +17257,10 @@ leader key in vim), and much more.")
       (license license:gpl3+))))
 
 (define-public emacs-tldr
-  (let ((commit "398b197c8d2238628b07e1b32d0f373876279f4c"))
+  (let ((commit "7203d1be3dcbf12131846ffe06601933fa874d74"))
     (package
       (name "emacs-tldr")
-      (version (git-version "0" "0" commit))
+      (version (git-version "0" "1" commit))
       (home-page "https://github.com/kuanyui/tldr.el")
       (source (origin
                 (method git-fetch)
@@ -17267,9 +17269,11 @@ leader key in vim), and much more.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0iq7qlis6c6r2qkdpncrhh5vsihkhvy5x4y1y8cjb7zxkh62w33f"))
+                  "1bw6la463l2yfm7rp76ga4makfy4kpxgwi7ni5gxk31w11g26ryk"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-request" ,emacs-request)))
       (synopsis "Simplified and community-driven man pages for Emacs")
       (description "@code{emacs-tldr} allows the user to access tldr pages
 from within emacs.  The @code{tldr} pages are a community effort to simplify
@@ -21727,3 +21731,75 @@ supports generation of phonetic and numeric passwords.")
 Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
 Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
     (license license:gpl3+)))
+
+(define-public emacs-org-journal
+  (package
+    (name "emacs-org-journal")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bastibe/org-journal.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18dqd0jy2x530lk0h4fcn9cld9qh4w7b3vxa60fpiia628vsv1dg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bastibe/org-journal")
+    (synopsis "Simple Org mode journaling mode")
+    (description
+     "Org Journal is a set of functions to maintain a simple personal diary /
+journal using in Emacs, adapted from
+@url{https://www.emacswiki.org/emacs/PersonalDiary}.  Convenient bindings
+allow the creation of journal records in the current daily, weekly, monthly or
+yearly file and search within all records or specified time intervals.  All
+records can be browsed and searched from the Emacs Calendar for convenience.
+All entries in a specified TODO state will be carried over to the next day.")
+    (license license:bsd-3)))
+
+(define-public emacs-ddskk
+  ;; XXX: Upstream adds code names to their release tags, so version and code
+  ;; name below need to be updated together.
+  (let ((version "16.3")
+        (code-name "Kutomatsunai"))
+    (package
+      (name "emacs-ddskk")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/skk-dev/ddskk")
+               (commit (string-append "ddskk-" version "_" code-name))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ln4x8f35z5y3kf9m718g223bn3lzcmw40jfjg2j5yi24ydf1wm9"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-utils))
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (make-file-writable "SKK-MK")
+               (emacs-substitute-variables "SKK-MK"
+                 ("PREFIX" (assoc-ref outputs "out"))
+                 ("LISPDIR" '(expand-file-name "/share/emacs/site-lisp" PREFIX))
+                 ("SKK_PREFIX" "")
+                 ("SKK_INFODIR" '(expand-file-name "info" PREFIX)))
+               (for-each make-file-writable (find-files "./doc"))
+               #t)))))
+      (native-inputs
+       `(("emacs-minimal" ,emacs-minimal)))
+      (home-page "https://github.com/skk-dev/ddskk")
+      (synopsis "Simple Kana to Kanji conversion program")
+      (description
+       "Daredevil SKK is a version of @acronym{SKK, Simple Kana to Kanji
+conversion program}, a Japanese input method on Emacs.")
+      (license license:gpl2+))))

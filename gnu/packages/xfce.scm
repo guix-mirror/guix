@@ -385,15 +385,15 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-clipman-plugin
   (package
     (name "xfce4-clipman-plugin")
-    (version "1.4.3")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-clipman-plugin/" (version-major+minor version) "/"
+                                  "xfce4-clipman-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1liacff4wl5mpyf9dzdrfbwxzmhl95y5nsfc0jf5rgalzdgbik99"))))
+                "1819kjn7gs30zhhj2ppfw4zjpcgj9amw1vvppjsavsff1xflrq88"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -880,15 +880,15 @@ system resources, while still being visually appealing and user friendly.")
 (define-public xfce4-power-manager
   (package
     (name "xfce4-power-manager")
-    (version "1.6.5")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-power-manager/" (version-major+minor version) "/"
+                                  "xfce4-power-manager-" version ".tar.bz2"))
               (sha256
                (base32
-                "0x3s2bdwfhp65dz5yn3k43j99ywqlsvrpz3pqmgwm0dik5wbdb8h"))))
+                "0jqjwy341dxyijjm9k77a12iih6b5r3f4cmpr2lppa7mf37qqdj5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1047,7 +1047,7 @@ sending standard messages over D-Bus using the
 (define-public xfburn
   (package
     (name "xfburn")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/xfburn/"
@@ -1055,7 +1055,7 @@ sending standard messages over D-Bus using the
                                   "xfburn-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ydka5lf9n614gb5xc9bn9297nilgmkfqlb7q1y2yrc97882nxxk"))))
+                "09q3s2rkpf0ljzq6bv4hl9byvaggjq7lchfw5zaircwv5q9nwhc3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1971,7 +1971,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
 (define-public xfce4-weather-plugin
   (package
    (name "xfce4-weather-plugin")
-   (version "0.10.0")
+   (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
@@ -1980,7 +1980,7 @@ lan interface (signal state, signal quality, network name (SSID)).")
                                   "/xfce4-weather-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0wlm80panxyn86l9qm3mbliqj7gkf2zyzak3w041zz9hg31a08s4"))))
+                "12bs2rfmmy021087i10vxibdbbvd5vld0vk3h5hymhpz7rgszcmg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

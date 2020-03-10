@@ -476,14 +476,14 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
 (define-public python-h5py
   (package
     (name "python-h5py")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "h5py" version))
       (sha256
        (base32
-        "0mdr6wrq02ac93m1aqx9kad0ppfzmm4imlxqgyy1x4l7hmdcc9p6"))))
+        "0baipzv8n93m0dq0riyi8rfhzrjrfrfh8zqhszzp1j2xjac2fhc4"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no test target
@@ -505,10 +505,11 @@ NetCDF files can also be read and modified.  Python-HDF4 is a fork of
      `(("python-six" ,python-six)
        ("python-numpy" ,python-numpy)))
     (inputs
-     `(("hdf5" ,hdf5)))
+     `(("hdf5" ,hdf5-1.10)))
     (native-inputs
      `(("python-cython" ,python-cython)
-       ("python-pkgconfig" ,python-pkgconfig)))
+       ("python-pkgconfig" ,python-pkgconfig)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.h5py.org/")
     (synopsis "Read and write HDF5 files from Python")
     (description
@@ -670,6 +671,26 @@ API for locking files.")
 
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
+
+(define-public python-filelock
+  (package
+    (name "python-filelock")
+    (version "3.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "filelock" version))
+       (sha256
+        (base32
+         "0ngzlvb5j8gqs2nxlp2b0jhzii792h66wsn694qm8kqixr225n0q"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/benediktschmitt/py-filelock")
+    (synopsis "Platform independent file lock")
+    (description "@code{filelock} contains a single module implementing
+a platform independent file lock in Python, which provides a simple way of
+inter-process communication.")
+    (license license:unlicense)))
 
 (define-public python-semantic-version
   (package
@@ -2377,28 +2398,30 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "16.1.0")
+    (version "20.0.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "0242cg3hdq3qdvx5flyrki8lpwlgwf5k45c21ks5049fv7ygm6gq"))))
+         "096r7g5cv85vxymg9iqbn5z749613snlvd6p3rf1nxnrd386j0qz"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'disable-failing-test
-           (lambda _
-             ;; Disable failing test.  See upstream bug report
-             ;; https://github.com/pypa/virtualenv/issues/957
-             (substitute* "tests/test_virtualenv.py"
-               (("skipif.*") "skipif(True, reason=\"Guix\")\n"))
-             #t)))))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)))
+       ("python-pytest" ,python-pytest)
+       ;; NOTE: guix lint remarks that "python-setuptools should probably not
+       ;; be an input at all". However, removing the input makes the build error:
+       ;; File "setup.py", line 4, in <module>
+       ;;   raise RuntimeError("setuptools >= 41 required to build")
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-distlib" ,python-distlib)
+       ("python-filelock" ,python-filelock)
+       ("python-six" ,python-six)
+       ("python-importlib-metadata" ,python-importlib-metadata)))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
     (description
@@ -3154,17 +3177,36 @@ used in text editing environments to provide a complete and integrated
 feature-set for programming Python effectively.")
     (license license:expat)))
 
+(define-public python-pathspec
+  (package
+    (name "python-pathspec")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathspec" version))
+       (sha256
+        (base32
+         "15lvs4awlg8xzl0l4gk9y53xx4yqmqvsv44pglv39m70y85afajn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/cpburnz/python-path-specification")
+    (synopsis "Utility library for gitignore style pattern matching of file paths")
+    (description
+     "This package provides a utility library for gitignore style pattern
+matching of file paths.")
+    (license license:mpl2.0)))
+
 (define-public python-black
   (package
     (name "python-black")
-    (version "18.6b4")
+    (version "19.10b0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "black" version))
        (sha256
         (base32
-         "0i4sfqgz6w15vd50kbhi7g7rifgqlf8yfr8y78rypd56q64qn592"))))
+         "0f8mr0yzj78q1dx7v6ggbgfir2wv0n5z2shfbbvfdq7910xbgvf2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3174,16 +3216,39 @@ feature-set for programming Python effectively.")
              (let ((python3 (which "python3")))
                (substitute* '("tests/data/fmtonoff.py"
                               "tests/data/string_prefixes.py"
-                              "tests/data/function.py")
+                              "tests/data/function.py"
+                              "tests/data/python37.py")
                  (("#!/usr/bin/env python3(\\.[0-9]+)?" _ minor-version)
                   (string-append "#!" python3 (if (string? minor-version)
                                                   minor-version
-                                                  ""))))))))))
+                                                  "")))))
+             #t))
+         (add-after 'unpack 'disable-broken-tests
+           (lambda _
+             ;; These tests are supposed to be skipped when the blackd
+             ;; dependencies are missing, but this doesn't quite work.
+             (substitute* "tests/test_black.py"
+               (("( *)class BlackDTestCase.*" match indent)
+                (string-append indent "@unittest.skip(\"no blackd deps\")\n"
+                               indent "class BlackDTestCase(unittest.TestCase):\n"))
+               (("web.Application") "False")
+               (("@unittest_run_loop") ""))
+
+             ;; Patching the above file breaks the self test
+             (substitute* "tests/test_black.py"
+               (("( *)def test_self" match indent)
+                (string-append indent "@unittest.skip(\"guix\")\n" match)))
+             #t)))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-attrs" ,python-attrs)
        ("python-appdirs" ,python-appdirs)
-       ("python-toml" ,python-toml)))
+       ("python-pathspec" ,python-pathspec)
+       ("python-regex" ,python-regex)
+       ("python-toml" ,python-toml)
+       ("python-typed-ast" ,python-typed-ast)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/ambv/black")
     (synopsis "The uncompromising code formatter")
     (description "Black is the uncompromising Python code formatter.")
@@ -3740,21 +3805,20 @@ color scales, and color space conversion easy.  It has support for:
 (define-public python-pygit2
   (package
     (name "python-pygit2")
-    (version "0.28.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pygit2" version))
        (sha256
-        (base32 "11kzj5mjkspvplnpdb6bj8dcj6rgmkk986k8hjcklyg5yaxkz32d"))))
+        (base32 "1hs0pqqzn1yjxqk86nq7p0lvsklwnlyi5xwyzr7d5nrs19dmsjbg"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))            ; tests don't run correctly in our environment
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-cached-property" ,python-cached-property)
        ("python-cffi" ,python-cffi)
-       ("libgit2" ,libgit2)
-       ("python-tox" ,python-tox)))
+       ("libgit2" ,libgit2)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/libgit2/pygit2")
@@ -3763,9 +3827,6 @@ color scales, and color space conversion easy.  It has support for:
 library, libgit2 implements Git plumbing.")
     ;; GPL2.0 only, with linking exception.
     (license license:gpl2)))
-
-(define-public python2-pygit2
-  (package-with-python2 python-pygit2))
 
 (define-public python-pyparsing
   (package
@@ -4409,6 +4470,40 @@ by pycodestyle.")
 
 (define-public python2-autopep8
   (package-with-python2 python-autopep8))
+
+(define-public python-distlib
+  (package
+    (name "python-distlib")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "distlib" version ".zip"))
+       (sha256
+        (base32
+         "08fyi2r246733vharl2yckw20rilci28r91mzrnnvcr638inw5if"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'no-/bin/sh
+           (lambda _
+             (substitute* '("distlib/scripts.py" "tests/test_scripts.py")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'check 'prepare-test-env
+           (lambda _
+             (setenv "HOME" "/tmp")
+             ;; NOTE: Any value works, the variable just has to be present.
+             (setenv "SKIP_ONLINE" "1")
+             #t)))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://bitbucket.org/pypa/distlib")
+    (synopsis "Distribution utilities")
+    (description "Distlib is a library which implements low-level functions that
+relate to packaging and distribution of Python software.  It is intended to be
+used as the basis for third-party packaging tools.")
+    (license license:psfl)))
 
 (define-public python-distutils-extra
   (package
@@ -7271,6 +7366,12 @@ printing of sub-tables by specifying a row range.")
                                "linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
              #t))
+         (add-after 'unpack 'disable-tuning
+           (lambda _
+             (substitute* "setup.py"
+               (("cpu_flags = .*")
+                "cpu_flags = ['sse2']\n"))
+             #t))
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)
              (invoke "python" "setup.py" "build"
@@ -7288,7 +7389,7 @@ printing of sub-tables by specifying a row range.")
      `(("python-cython" ,python-cython)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("hdf5" ,hdf5)
+     `(("hdf5" ,hdf5-1.10)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)))
     (home-page "http://www.pytables.org/")
@@ -7299,6 +7400,84 @@ designed to efficiently cope with extremely large amounts of data.")
 
 (define-public python2-tables
   (package-with-python2 python-tables))
+
+(define-public python-pytest-black
+  (package
+    (name "python-pytest-black")
+    (version "0.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-black" version))
+       (sha256
+        (base32
+         "04lppqydxm0f3f3x0l8hj7v0j6d8syj34jc37yzqwqcyqsnaga81"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-black" ,python-black)
+       ("python-toml" ,python-toml)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/shopkeep/pytest-black")
+    (synopsis "Pytest plugin to enable format checking with black")
+    (description
+     "This package provides a pytest plugin to enable format checking with the
+Python code formatter \"black\".")
+    (license license:expat)))
+
+(define-public python-get-version
+  (package
+    (name "python-get-version")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "get_version" version))
+       (sha256
+        (base32
+         "1g15jyx33vkxavv9hwv275cs4g9bp2i1y942raw3fxamq8kbaml1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pygments" ,python-pygments)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-black" ,python-pytest-black)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools" ,python-setuptools)
+       ("python-testpath" ,python-testpath)))
+    (home-page "https://github.com/flying-sheep/get_version")
+    (synopsis "Version helper in the spirit of versioneer")
+    (description
+     "This package provides a version helper that lets you automatically use
+the latest @code{vX.X.X} Git tag as the version in your Python package.  It
+also supports getting the version from Python source distributions or, once
+your package is installed, via @code{pkg_resources} (part of
+@code{setuptools}).")
+    (license license:gpl3+)))
+
+(define-public python-legacy-api-wrap
+  (package
+    (name "python-legacy-api-wrap")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "legacy-api-wrap" version))
+       (sha256
+        (base32
+         "06qhp0g543dy98vpa41hwdalvdbsjfc3ldk474yr9sd75mhl8jh3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-get-version" ,python-get-version)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-black" ,python-pytest-black)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/flying-sheep/legacy-api-wrap")
+    (synopsis "Legacy API wrapper")
+    (description "This module defines a decorator to wrap legacy APIs.  The
+primary use case is APIs defined before keyword-only parameters existed.")
+    (license license:gpl3+)))
 
 (define-public python-pyasn1
   (package
@@ -8526,7 +8705,7 @@ minimal and fast API targeting the following uses:
 @item write and deploy hybrid multi-process applications
 @item write scripts to administer multiple environments
 @end enumerate")
-    (home-page "http://codespeak.net/execnet/")
+    (home-page "https://codespeak.net/execnet/")
     (license license:expat)))
 
 (define-public python2-execnet
@@ -14520,7 +14699,12 @@ such as figshare or Zenodo.")
          "183kg1rhzz3hqizvphkd8hlbf1zxfx8737zhfkmqzxi71jmdw7pd"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-tox" ,python-tox)
+     `(("python-appdirs" ,python-appdirs)
+       ("python-distlib" ,python-distlib)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-filelock" ,python-filelock)
+       ("python-six" ,python-six)
+       ("python-tox" ,python-tox)
        ("python-virtualenv" ,python-virtualenv)))
     (home-page "https://github.com/k-bx/python-semver")
     (synopsis "Python helper for Semantic Versioning")
@@ -15835,23 +16019,126 @@ infrastructure at import time, runtime, or statically (using the included pycc
 tool).")
     (license license:bsd-3)))
 
+(define-public python-numcodecs
+  (package
+    (name "python-numcodecs")
+    (version "0.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "numcodecs" version))
+       (sha256
+        (base32
+         "0kbfr8pl3x9glsypbq8hzim003f16ml1b1cvgrh4w1sdvgal6j7g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-msgpack" ,python-msgpack)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/zarr-developers/numcodecs")
+    (synopsis "Buffer compression and transformation codecs")
+    (description
+     "This Python package provides buffer compression and transformation
+codecs for use in data storage and communication applications.")
+    (license license:expat)))
+
+(define-public python-asciitree
+  (package
+    (name "python-asciitree")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asciitree" version))
+       (sha256
+        (base32
+         "0vhgri2m2xlnibhz4xwn4hpbc7xacisxjqrk6k5kyppq96vbk92a"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mbr/asciitree")
+    (synopsis "Draws ASCII trees")
+    (description "This package draws tree structures using characters.")
+    (license license:expat)))
+
+(define-public python-zarr
+  (package
+    (name "python-zarr")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zarr" version))
+       (sha256
+        (base32
+         "026n3sjzjv2gmwx6y72b8ij0hk42bc8zdbvfj5gdqzd4i6wj3ajk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-service-tests
+           (lambda _
+             (setenv "ZARR_TEST_ABS" "0")
+             (setenv "ZARR_TEST_MONGO" "0")
+             (setenv "ZARR_TEST_REDIS" "0")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "-vv" "-k" "not lmdb")
+             #t)))))
+    (propagated-inputs
+     `(("python-asciitree" ,python-asciitree)
+       ("python-fasteners" ,python-fasteners)
+       ("python-numcodecs" ,python-numcodecs)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/zarr-developers/zarr-python")
+    (synopsis "Chunked, compressed, N-dimensional arrays for Python")
+    (description
+     "This package provides an implementation of chunked, compressed,
+N-dimensional arrays for Python.")
+    (license license:expat)))
+
 (define-public python-anndata
   (package
     (name "python-anndata")
-    (version "0.6.18")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "anndata" version))
        (sha256
         (base32
-         "03x83yjaccbqszj7x4fwwmpil0ai59yx64d1zmf2691za3j03w73"))))
+         "0rnfbpr55j1a1bi2kd4mz444741hrn74kz90h5rnjr59jmpfnh09"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-inconvenient-tests
+           (lambda _
+             ;; This test depends on python-scikit-learn.
+             (delete-file "anndata/tests/test_inplace_subset.py")
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-h5py" ,python-h5py)
+       ("python-importlib-metadata" ,python-importlib-metadata)
        ("python-natsort" ,python-natsort)
+       ("python-numcodecs" ,python-numcodecs)
+       ("python-packaging" ,python-packaging)
        ("python-pandas" ,python-pandas)
-       ("python-scipy" ,python-scipy)))
+       ("python-scipy" ,python-scipy)
+       ("python-zarr" ,python-zarr)))
+    (native-inputs
+     `(("python-joblib" ,python-joblib)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/anndata")
     (synopsis "Annotated data for data analysis pipelines")
     (description "Anndata is a package for simple (functional) high-level APIs

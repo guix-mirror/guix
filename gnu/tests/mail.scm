@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
@@ -26,8 +26,11 @@
   #:use-module (gnu tests)
   #:use-module (gnu packages mail)
   #:use-module (gnu system)
+  #:use-module (gnu system accounts)
+  #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
   #:use-module (gnu services getmail)
   #:use-module (gnu services mail)
   #:use-module (gnu services networking)
@@ -404,43 +407,55 @@ Subject: Hello Nice to meet you!")
    (value (run-dovecot-test))))
 
 (define %getmail-os
-  (simple-operating-system
-   (service dhcp-client-service-type)
-   (service dovecot-service-type
-            (dovecot-configuration
-             (disable-plaintext-auth? #f)
-             (ssl? "no")
-             (auth-mechanisms '("anonymous" "plain"))
-             (auth-anonymous-username "alice")
-             (mail-location
-              (string-append "maildir:~/Maildir"
-                             ":INBOX=~/Maildir/INBOX"
-                             ":LAYOUT=fs"))))
-   (service getmail-service-type
-            (list
-             (getmail-configuration
-              (name 'test)
-              (user "alice")
-              (directory "/var/lib/getmail/alice")
-              (idle '("TESTBOX"))
-              (rcfile
-               (getmail-configuration-file
-                (retriever
-                 (getmail-retriever-configuration
-                  (type "SimpleIMAPRetriever")
-                  (server "localhost")
-                  (username "alice")
-                  (port 143)
-                  (extra-parameters
-                   '((password . "testpass")
-                     (mailboxes . ("TESTBOX"))))))
-                (destination
-                 (getmail-destination-configuration
-                  (type "Maildir")
-                  (path "/home/alice/TestMaildir/")))
-                (options
-                 (getmail-options-configuration
-                  (read-all #f))))))))))
+  (operating-system
+    (inherit (simple-operating-system))
+
+    ;; Set a password for the user account; the test needs it.
+    (users (cons (user-account
+                  (name "alice")
+                  (password (crypt "testpass" "$6$abc"))
+                  (comment "Bob's sister")
+                  (group "users")
+                  (supplementary-groups '("wheel" "audio" "video")))
+                 %base-user-accounts))
+
+    (services (cons* (service dhcp-client-service-type)
+                     (service dovecot-service-type
+                              (dovecot-configuration
+                               (disable-plaintext-auth? #f)
+                               (ssl? "no")
+                               (auth-mechanisms '("anonymous" "plain"))
+                               (auth-anonymous-username "alice")
+                               (mail-location
+                                (string-append "maildir:~/Maildir"
+                                               ":INBOX=~/Maildir/INBOX"
+                                               ":LAYOUT=fs"))))
+                     (service getmail-service-type
+                              (list
+                               (getmail-configuration
+                                (name 'test)
+                                (user "alice")
+                                (directory "/var/lib/getmail/alice")
+                                (idle '("TESTBOX"))
+                                (rcfile
+                                 (getmail-configuration-file
+                                  (retriever
+                                   (getmail-retriever-configuration
+                                    (type "SimpleIMAPRetriever")
+                                    (server "localhost")
+                                    (username "alice")
+                                    (port 143)
+                                    (extra-parameters
+                                     '((password . "testpass")
+                                       (mailboxes . ("TESTBOX"))))))
+                                  (destination
+                                   (getmail-destination-configuration
+                                    (type "Maildir")
+                                    (path "/home/alice/TestMaildir/")))
+                                  (options
+                                   (getmail-options-configuration
+                                    (read-all #f))))))))
+                     %base-services))))
 
 (define (run-getmail-test)
   "Return a test of an OS running Getmail service."
@@ -481,11 +496,6 @@ Subject: Hello Nice to meet you!")
              '(begin
                 (use-modules (gnu services herd))
                 (start-service 'dovecot))
-             marionette))
-
-          (test-assert "set password for alice"
-            (marionette-eval
-             '(system "echo -e \"testpass\ntestpass\" | passwd alice")
              marionette))
 
           ;; Wait for getmail to be up and running.

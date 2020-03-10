@@ -328,7 +328,7 @@ fully fledged Spatial SQL capabilities.")
 (define-public proj
   (package
     (name "proj")
-    (version "6.2.0")
+    (version "6.3.1")
     (source
      (origin
        (method url-fetch)
@@ -336,7 +336,7 @@ fully fledged Spatial SQL capabilities.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0l1as8f4zfg74fms6h5p5psziw0lpznja1xnirzsscpnfbwc005k"))))
+         "1y46ij32j9b4x1kjnnlykcwk3kkjwkg44sfc1ziwm3a3g0ki3q3d"))))
     (build-system gnu-build-system)
     (inputs
      `(("sqlite" ,sqlite)))
@@ -554,6 +554,7 @@ development.")
      `(("freexl" ,freexl)
        ("geos" ,geos)
        ("libgaiagraphics" ,libgaiagraphics)
+       ("libjpeg-turbo" ,libjpeg-turbo)
        ("libspatialite" ,libspatialite)
        ("libxml2" ,libxml2)
        ("proj.4" ,proj.4)
@@ -571,7 +572,7 @@ development.")
 (define-public gdal
   (package
     (name "gdal")
-    (version "3.0.2")
+    (version "3.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -579,7 +580,7 @@ development.")
                      version ".tar.gz"))
               (sha256
                (base32
-                "0f80izh9wshrsw55kg9abpip74hk6frk3hgqrkqbyn3f6i8g2z3q"))
+                "10symyajj1b7j98f889lqxxbmhcyvlhq9gg0l42h69bv22wx45gw"))
               (modules '((guix build utils)))
               (snippet
                 `(begin
@@ -1450,4 +1451,59 @@ using the dataset of topographical information collected by
 archive all the GPS recordings of your past trips.  It is the successor of the
 QLandkarte GT application.")
     (home-page "https://github.com/Maproom/qmapshack/wiki")
+    (license license:gpl3+)))
+
+(define-public readosm
+  (package
+    (name "readosm")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                           "readosm-" version ".tar.gz"))
+       (sha256
+        (base32 "1v20pnda67imjd70fn0zw30aar525xicy3d3v49md5cvqklws265"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (synopsis "Data extractor for OpenStreetMap files")
+    (description
+     "ReadOSM is a library to extract valid data from within an OpenStreetMap
+input file (in @code{.osm} or @code{.osm.pbf} format).")
+    (home-page "https://www.gaia-gis.it/fossil/readosm/index")
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:mpl1.1))))
+
+(define-public spatialite-tools
+  (package
+    (name "spatialite-tools")
+    (version "4.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                           "spatialite-tools-" version ".tar.gz"))
+       (sha256
+        (base32 "12fggjhi8cgwvw8f6nk76f83b8lqkc07abxyj5ap6f2gq2dqafgp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("expat" ,expat)
+       ("freexl" ,freexl)
+       ("geos" ,geos)
+       ("libspatialite" ,libspatialite)
+       ("libxml2" ,libxml2)
+       ("proj.4" ,proj.4)
+       ("readosm" ,readosm)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (synopsis "Collection of command line tools for SpatiaLite")
+    (description
+     "@code{spatialite-tools} is a collection of Command Line Interface (CLI)
+tools supporting SpatiaLite.")
+    (home-page "https://www.gaia-gis.it/fossil/spatialite-tools/index")
     (license license:gpl3+)))

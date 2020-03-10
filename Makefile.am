@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015, 2017 Alex Kost <alezost@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -511,9 +511,7 @@ endif !CAN_RUN_TESTS
 
 check-system: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env			\
-	   $(GUILE) --no-auto-compile				\
-	   -e '(@@ (run-system-tests) run-system-tests)'	\
-	   $(top_srcdir)/build-aux/run-system-tests.scm
+	  guix build -m $(top_srcdir)/etc/system-tests.scm -K
 
 # Public keys used to sign substitutes.
 dist_pkgdata_DATA =				\
@@ -544,6 +542,7 @@ EXTRA_DIST +=						\
   scripts/guix.in					\
   etc/guix-install.sh					\
   etc/news.scm						\
+  etc/system-tests.scm					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
@@ -561,7 +560,6 @@ EXTRA_DIST +=						\
   build-aux/test-driver.scm				\
   build-aux/update-guix-package.scm			\
   build-aux/update-NEWS.scm				\
-  build-aux/run-system-tests.scm			\
   d3.v3.js						\
   graph.js						\
   tests/test.drv					\

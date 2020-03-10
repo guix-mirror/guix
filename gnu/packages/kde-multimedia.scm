@@ -688,6 +688,8 @@ Its features include:
        ("solid" ,solid)))
     (home-page "https://cgit.kde.org/libkcompactdisc.git/")
     (synopsis "KDE library for playing & ripping CDs")
-    (description "KDE library for playing & ripping CDs.")
+    (description "The KDE Compact Disc library provides an API for
+applications using the KDE Platform to interface with the CD drives for audio
+CDs.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))

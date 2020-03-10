@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,6 +119,10 @@ network devices were found. Do you want to continue anyway?"))
 (define (wait-service-online)
   "Display a newt scale until connman detects an Internet access. Do
 FULL-VALUE tentatives, spaced by 1 second."
+  (define (online?)
+    (or (connman-online?)
+        (file-exists? "/tmp/installer-assume-online")))
+
   (let* ((full-value 5))
     (run-scale-page
      #:title (G_ "Checking connectivity")
@@ -127,10 +131,10 @@ FULL-VALUE tentatives, spaced by 1 second."
      #:scale-update-proc
      (lambda (value)
        (sleep 1)
-       (if (connman-online?)
+       (if (online?)
            full-value
            (+ value 1))))
-    (unless (connman-online?)
+    (unless (online?)
       (run-error-page
        (G_ "The selected network does not provide access to the \
 Internet, please try again.")

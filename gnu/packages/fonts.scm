@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1234,22 +1234,22 @@ have been optimized for beautiful display on all common platforms and display
 resolutions.")
     (license license:asl2.0)))
 
-(define-public font-open-dyslexic
+(define-public font-opendyslexic
   (package
-    (name "font-open-dyslexic")
-    (version "20160623")
+    (name "font-opendyslexic")
+    (version "0.91.12")
     (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/antijingoist/open-dyslexic.git")
-              (commit (string-append version "-Stable"))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0nr7s92nk1kbr459154idnib977ixc70z6g9mbra3lp73nyrmyvz"))))
+      (origin
+        (method url-fetch/zipbomb)
+        (uri (string-append "https://github.com/antijingoist/opendyslexic/"
+                            "releases/download/v" version
+                            "/opendyslexic-0.910.12-rc2-2019.10.17.zip"))
+        (sha256
+         (base32
+          "11ml7v4iyf3hr0fbnkwz8afb8vi58wbcfnmn4gyvrwh9jk5pybdr"))))
     (build-system font-build-system)
-    (home-page "https://opendyslexic.org")
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://opendyslexic.org/")
     (synopsis "Font for dyslexics and high readability")
     (description "OpenDyslexic is a font designed to help readability for some
 of the symptoms of dyslexia.  Letters have heavy weighted bottoms to provide
@@ -1258,12 +1258,10 @@ similar letters.  Consistently weighted bottoms can also help reinforce the
 line of text.  The unique shapes of each letter can help prevent flipping and
 swapping.  The italic style for OpenDyslexic has been crafted to be used for
 emphasis while still being readable.")
-    (license
-     (license:fsdg-compatible
-      "https://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"
-      "The Font Software may be sold as part of a larger software package but
-no copy of one or more of the Font Software typefaces may be sold by
-itself."))))
+    (license license:silofl1.1)))
+
+(define-public font-open-dyslexic
+  (deprecated-package "font-open-dyslexic" font-opendyslexic))
 
 (define-public font-dosis
   (package
@@ -1272,13 +1270,14 @@ itself."))))
     (source
      (origin
        (method url-fetch/zipbomb)
-       (uri (string-append "http://www.impallari.com/media/releases/dosis-"
+       (uri (string-append "https://web.archive.org/web/20180228233737/"
+                           "https://www.impallari.com/media/releases/dosis-"
                            "v" version ".zip"))
        (sha256
-        (base32
-         "1qhci68f68mf87jd69vjf9qjq3wydgw1q7ivn3amjb65ls1s0c4s"))))
+        (base32 "1qhci68f68mf87jd69vjf9qjq3wydgw1q7ivn3amjb65ls1s0c4s"))))
     (build-system font-build-system)
-    (home-page "http://www.impallari.com/dosis")
+    (home-page (string-append "https://web.archive.org/web/20180228233737/"
+                              "https://www.impallari.com/dosis"))
     (synopsis "Very simple, rounded, sans serif family")
     (description
      "Dosis is a very simple, rounded, sans serif family.

@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -460,6 +461,12 @@ address of one of the participants.")
            (lambda _
              (substitute* "src/mumble/TextToSpeech_unix.cpp"
                (("libspeechd.h") "speech-dispatcher/libspeechd.h"))
+             #t))
+         ;; disable statistic gathering by default. see <https://bugs.gnu.org/25201>
+         (add-before 'configure 'fix-statistic-gathering-default
+           (lambda _
+             (substitute* "src/mumble/Settings.cpp"
+               (("bUsage = true;") "bUsage = false;"))
              #t))
          (add-before 'install 'disable-murmur-ice
            (lambda _

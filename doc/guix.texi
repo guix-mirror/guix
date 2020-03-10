@@ -74,6 +74,7 @@ Copyright @copyright{} 2019, 2020 Simon Tournier@*
 Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
+Copyright @copyright{} 2020 Jack Hill@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -6777,7 +6778,7 @@ linux-module-build-system, use the key #:linux to specify it).
 
 @defvr {Scheme Variable} node-build-system
 This variable is exported by @code{(guix build-system node)}.  It
-implements the build procedure used by @uref{http://nodejs.org,
+implements the build procedure used by @uref{https://nodejs.org,
 Node.js}, which implements an approximation of the @code{npm install}
 command, followed by an @code{npm test} command.
 
@@ -13350,7 +13351,7 @@ The ModemManager package to use.
 
 @defvr {Scheme Variable} usb-modeswitch-service-type
 This is the service type for the
-@uref{http://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch} service. The
+@uref{https://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch} service. The
 value for this service type is a @code{usb-modeswitch-configuration} record.
 
 When plugged in, some USB modems (and other USB devices) initially present
@@ -13595,7 +13596,7 @@ The nftables ruleset to use.  This may be any ``file-like'' object
 @cindex ntpd, service for the Network Time Protocol daemon
 @cindex real time clock
 @defvr {Scheme Variable} ntp-service-type
-This is the type of the service running the @uref{http://www.ntp.org,
+This is the type of the service running the @uref{https://www.ntp.org,
 Network Time Protocol (NTP)} daemon, @command{ntpd}.  The daemon will keep the
 system clock synchronized with that of the specified NTP servers.
 
@@ -14233,7 +14234,7 @@ Its value must be a @code{zero-configuration} record---see below.
 
 This service extends the name service cache daemon (nscd) so that it can
 resolve @code{.local} host names using
-@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  @xref{Name
+@uref{https://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  @xref{Name
 Service Switch}, for information on host name resolution.
 
 Additionally, add the @var{avahi} package to the system profile so that
@@ -16052,7 +16053,7 @@ Data type representing the configuration for @code{alsa-service}.
 
 @item @code{pulseaudio?} (default: @var{#t})
 Whether ALSA applications should transparently be made to use the
-@uref{http://www.pulseaudio.org/, PulseAudio} sound server.
+@uref{https://www.pulseaudio.org/, PulseAudio} sound server.
 
 Using PulseAudio allows you to run several sound-producing applications
 at the same time and to individual control them @i{via}
@@ -16100,7 +16101,7 @@ See @uref{https://www.alsa-project.org/main/index.php/Asoundrc} for the
 details.
 
 @deffn {Scheme Variable} pulseaudio-service-type
-This is the type for the  @uref{http://www.pulseaudio.org/, PulseAudio}
+This is the type for the  @uref{https://www.pulseaudio.org/, PulseAudio}
 sound server.  It exists to allow system overrides of the default settings
 via @code{pulseaudio-configuration}, see below.
 
@@ -20398,7 +20399,7 @@ configuration.  Otherwise this must be a file-like object with valid
 VCL syntax.
 
 @c Varnish does not support HTTPS, so keep this URL to avoid confusion.
-For example, to mirror @url{http://www.gnu.org,www.gnu.org} with VCL you
+For example, to mirror @url{https://www.gnu.org,www.gnu.org} with VCL you
 can do something along these lines:
 
 @lisp
@@ -21007,6 +21008,10 @@ and several @code{domains}.
 @item @code{email}
 Mandatory email used for registration, recovery contact, and important
 account notifications.
+
+@item @code{server} (default: @code{#f})
+Optional URL of ACME server.  Setting this overrides certbot's default,
+which is the Let's Encrypt server.
 
 @item @code{rsa-key-size} (default: @code{2048})
 Size of the RSA key.
@@ -22444,6 +22449,9 @@ Only evaluate specifications and build derivations once.
 @item @code{fallback?} (default: @code{#f})
 When substituting a pre-built binary fails, fall back to building
 packages locally.
+
+@item @code{extra-options} (default: @code{'()})
+Extra options to pass when running the Cuirass processes.
 
 @item @code{cuirass} (default: @code{cuirass})
 The Cuirass package to use.
@@ -25245,6 +25253,12 @@ If set, this is the @code{getmail-retriever-configuration} object with
 which to configure getmail to fetch mail from the guix-commits mailing
 list.
 
+@item @code{extra-options} (default: @var{'()})
+Extra command line options for @code{guix-data-service}.
+
+@item @code{extra-process-jobs-options} (default: @var{'()})
+Extra command line options for @code{guix-data-service-process-jobs}.
+
 @end table
 @end deftp
 
@@ -25814,7 +25828,7 @@ next method in the list.  The NSS configuration is given in the
 @cindex nss-mdns
 @cindex .local, host name lookup
 As an example, the declaration below configures the NSS to use the
-@uref{http://0pointer.de/lennart/projects/nss-mdns/, @code{nss-mdns}
+@uref{https://0pointer.de/lennart/projects/nss-mdns/, @code{nss-mdns}
 back-end}, which supports host name lookups over multicast DNS (mDNS)
 for host names ending in @code{.local}:
 
@@ -28286,7 +28300,7 @@ transparency that we get in the rest of the package dependency graph,
 where Guix always gives us a source-to-binary mapping.  Thus, our goal
 is to reduce the set of bootstrap binaries to the bare minimum.
 
-The @uref{http://bootstrappable.org, Bootstrappable.org web site} lists
+The @uref{https://bootstrappable.org, Bootstrappable.org web site} lists
 on-going projects to do that.  One of these is about replacing the
 bootstrap GCC with a sequence of assemblers, interpreters, and compilers
 of increasing complexity, which could be built from source starting from

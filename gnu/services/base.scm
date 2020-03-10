@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -1918,7 +1918,7 @@ archive}).  If that is not the case, the service will fail to start."
   udev-configuration make-udev-configuration
   udev-configuration?
   (udev   udev-configuration-udev                 ;<package>
-          (default eudev))
+          (default eudev/btrfs-fix))
   (rules  udev-configuration-rules                ;list of <package>
           (default '())))
 
@@ -2116,7 +2116,7 @@ the udev rules in use.")
 directory dynamically.  Get extra rules from the packages listed in the
 @code{rules} field of its value, @code{udev-configuration} object.")))
 
-(define* (udev-service #:key (udev eudev) (rules '()))
+(define* (udev-service #:key (udev eudev/btrfs-fix) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type

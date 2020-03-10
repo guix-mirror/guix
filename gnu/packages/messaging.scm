@@ -1238,7 +1238,7 @@ for sending encrypted messages to one person or many subscribers.")
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
-    (home-page "http://ytalk.ourproject.org")
+    (home-page "https://ytalk.ourproject.org")
     (synopsis "Multi-user chat program")
     (description "Ytalk is a replacement for the BSD talk program.  Its main
 advantage is the ability to communicate with any arbitrary number of users at

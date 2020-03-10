@@ -495,7 +495,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.15.0.1")
+    (version "0.15.0.5")
     (source
      (origin
        (method git-fetch)
@@ -516,7 +516,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "0sypa235lf2bbib4b71xpaw39h9304slgsvnsz8wmy9fq1zx009m"))))
+         "06zzwa0y8ic6x3y2fy501788r51p4klanyvmm76ywrwf087njlkv"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -614,7 +614,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.15.0.3")
+    (version "0.15.0.4")
     (source
      (origin
        (method git-fetch)
@@ -624,7 +624,7 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1v2mk6qp7dfdj4j4cilxp0s0phfwwnmjvpvjrz6jzzlpvbnavkr0"))))
+         "12m5fgnxkr11q2arx1m5ccpxqm5ljcvm6l547dwqn297zs5jim4z"))))
     (build-system qt-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

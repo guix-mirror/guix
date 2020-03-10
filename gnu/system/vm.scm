@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -629,7 +629,8 @@ TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
          'iso9660))
       (bytevector->uuid
        (uint-list->bytevector
-        (list (hash file-system-type
+        (list (hash (map file-system-digest
+                         (operating-system-file-systems os))
                     (- (expt 2 32) 1))
               (hash (operating-system-host-name os)
                     (- (expt 2 32) 1))

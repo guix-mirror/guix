@@ -1510,7 +1510,7 @@ that block port 22.")
 supports tuning of various parameters related to timing, buffers and
 protocols (TCP, UDP, SCTP with IPv4 and IPv6).  For each test it reports
 the bandwidth, loss, and other parameters.")
-    (home-page "http://software.es.net/iperf/")
+    (home-page "https://software.es.net/iperf/")
     (license (list license:bsd-3             ; Main distribution.
                    license:ncsa              ; src/{units,iperf_locale,tcp_window_size}.c
                    license:expat             ; src/{cjson,net}.[ch]

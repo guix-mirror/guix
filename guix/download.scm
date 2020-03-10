@@ -183,7 +183,6 @@
        "http://mirrors.nic.cz/CPAN/"
        "http://mirror.ibcp.fr/pub/CPAN/"
        "http://ftp.ntua.gr/pub/lang/perl/"
-       "http://kvin.lv/pub/CPAN/"
        "http://mirror.as43289.net/pub/CPAN/"
        "http://cpan.cs.uu.nl/"
        "http://cpan.uib.no/"

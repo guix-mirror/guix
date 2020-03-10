@@ -462,7 +462,7 @@ point and then, after each tween step, plugging back the result.")
                                ;;
                                ;; ld: CMakeFiles/absl_periodic_sampler_test.dir/internal/periodic_sampler_test.cc.o:
                                ;;   undefined reference to symbol '_ZN7testing4Mock16UnregisterLockedEPNS_8internal25UntypedFunctionMockerBaseE'
-                               ;; ld: /gnu/store/bxapb1f1l8frjpbjckk3zdxhmcig3xzk-googletest-1.10.0/lib/libgmock.so:
+                               ;; ld: /gnu/store/...-googletest-1.10.0/lib/libgmock.so:
                                ;;   error adding symbols: DSO missing from command line
                                ;; collect2: error: ld returned 1 exit status
                                "-DCMAKE_EXE_LINKER_FLAGS=-lgtest -lpthread -lgmock")

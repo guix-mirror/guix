@@ -421,47 +421,51 @@ key-value pair databases and a real LDAP database.")
     (license lgpl3+)))
 
 (define-public ppp
-  (package
-    (name "ppp")
-    (version "2.4.8")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/paulusmack/ppp")
-                    (commit (string-append "ppp-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1i88m79h6g3fzsb4yw3k8bq1grsx3hsyawm7id2vcaab0gfqzjjv"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:tests? #f ; no check target
-       #:make-flags '("CC=gcc")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-Makefile
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((libc    (assoc-ref inputs "libc"))
-                   (openssl (assoc-ref inputs "openssl"))
-                   (libpcap (assoc-ref inputs "libpcap")))
-               (substitute* "pppd/Makefile.linux"
-                 (("/usr/include/crypt\\.h")
-                  (string-append libc "/include/crypt.h"))
-                 (("/usr/include/openssl")
-                  (string-append openssl "/include/openssl"))
-                 (("/usr/include/pcap-bpf.h")
-                  (string-append libpcap "/include/pcap-bpf.h")))
-               #t))))))
-    (inputs
-     `(("libpcap" ,libpcap)
-       ("openssl" ,(@ (gnu packages tls) openssl))))
-    (synopsis "Implementation of the Point-to-Point Protocol")
-    (home-page "https://ppp.samba.org/")
-    (description
-     "The Point-to-Point Protocol (PPP) provides a standard way to establish
+  ;; This git commit contains unreleased fixes for CVE-2020-8597.
+  (let ((revision "1")
+        (commit "8d45443bb5c9372b4c6a362ba2f443d41c5636af"))
+    (package
+      (name "ppp")
+      (version (git-version "2.4.8" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/paulusmack/ppp")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06cf8fb84l3h2zy5da4j7k2j1qjv2gfqn986sf43xgj75605aks2"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f                    ; no check target
+         #:make-flags '("CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'patch-Makefile
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((libc    (assoc-ref inputs "libc"))
+                     (openssl (assoc-ref inputs "openssl"))
+                     (libpcap (assoc-ref inputs "libpcap")))
+                 (substitute* "pppd/Makefile.linux"
+                   (("/usr/include/crypt\\.h")
+                    (string-append libc "/include/crypt.h"))
+                   (("/usr/include/openssl")
+                    (string-append openssl "/include/openssl"))
+                   (("/usr/include/pcap-bpf.h")
+                    (string-append libpcap "/include/pcap-bpf.h")))
+                 #t))))))
+      (inputs
+       `(("libpcap" ,libpcap)
+         ("openssl" ,(@ (gnu packages tls) openssl))))
+      (synopsis "Implementation of the Point-to-Point Protocol")
+      (home-page "https://ppp.samba.org/")
+      (description
+       "The Point-to-Point Protocol (PPP) provides a standard way to establish
 a network connection over a serial link.  At present, this package supports IP
 and IPV6 and the protocols layered above them, such as TCP and UDP.")
-    ;; pppd, pppstats and pppdump are under BSD-style notices.
-    ;; some of the pppd plugins are GPL'd.
-    ;; chat is public domain.
-    (license (list bsd-3 bsd-4 gpl2+ public-domain))))
+      ;; pppd, pppstats and pppdump are under BSD-style notices.
+      ;; some of the pppd plugins are GPL'd.
+      ;; chat is public domain.
+      (license (list bsd-3 bsd-4 gpl2+ public-domain)))))
+

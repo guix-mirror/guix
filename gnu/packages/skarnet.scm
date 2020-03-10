@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
 ;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;; Copyright © 2017 Z. Ren <zren@dlut.edu.cn>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -104,14 +104,14 @@ complexity.")))
 (define-public s6
   (package
    (name "s6")
-   (version "2.8.0.1")
+   (version "2.9.0.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://skarnet.org/software/s6/s6-"
                          version ".tar.gz"))
      (sha256
-      (base32 "1n1i3jm3kp9ii54cxj1sgh89m6nyna7vhy8714ma6py1frdqzq6v"))))
+      (base32 "0mvcjrz8nlj9p2zclmcv22b4y6bqzd2iz38arhgc989vdvrbmkg0"))))
    (build-system gnu-build-system)
    (inputs `(("skalibs" ,skalibs)
              ("execline" ,execline)))
@@ -179,14 +179,14 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 (define-public s6-networking
   (package
    (name "s6-networking")
-   (version "2.3.1.1")
+   (version "2.3.1.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://skarnet.org/software/s6-networking/s6-networking-"
                          version ".tar.gz"))
      (sha256
-      (base32 "127i7ig5wdgjbkjf0py0g96llc6cbxij22ns2j7bwa95figinhcx"))))
+      (base32 "1029bgwfmv903y5ji93j75m7p2jgchdxya1khxzb42q2z7yxnlyr"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
@@ -222,14 +222,14 @@ clock synchronization.")))
 (define-public s6-rc
   (package
    (name "s6-rc")
-   (version "0.5.1.1")
+   (version "0.5.1.2")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "http://skarnet.org/software/s6-rc/s6-rc-"
                          version ".tar.gz"))
      (sha256
-      (base32 "0lmg517l8inn7bi57q35rjd7b4jmqlmkhrbvs5ybbhinhd12qzi5"))))
+      (base32 "18m8jsx3bkj566p6xwwnsvdckk10n8wqnhp0na2k88i295h4rnjp"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)
               ("execline" ,execline)
@@ -263,7 +263,7 @@ environment.")))
 (define-public s6-portable-utils
   (package
    (name "s6-portable-utils")
-   (version "2.2.2.1")
+   (version "2.2.2.2")
    (source
     (origin
      (method url-fetch)
@@ -271,7 +271,7 @@ environment.")))
            "http://skarnet.org/software/s6-portable-utils/s6-portable-utils-"
            version ".tar.gz"))
      (sha256
-      (base32 "074kizkxjwvmxspxg69fr8r0lbiy61l2n5nzgbfvwvhc6lj34iqy"))))
+      (base32 "1k3la37q46n93vjwk9wm9ym4w87z6lqzv43f03qd0vqj9k94mpv3"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
@@ -295,7 +295,7 @@ systems and other constrained environments, but they work everywhere.")))
 (define-public s6-linux-init
   (package
    (name "s6-linux-init")
-   (version "1.0.3.1")
+   (version "1.0.4.0")
    (source
     (origin
      (method url-fetch)
@@ -303,7 +303,7 @@ systems and other constrained environments, but they work everywhere.")))
            "http://skarnet.org/software/s6-linux-init/s6-linux-init-"
            version ".tar.gz"))
      (sha256
-      (base32 "1yq2xnp41a1lqpjzvq5jawgy64jwaxalvjdnlvgdpi9bkicgasi1"))))
+      (base32 "176mgkqxlp6gb6my66dv73xsp7adfxbjp5hjyh35sykqkr4kfyfy"))))
     (build-system gnu-build-system)
     (inputs
      `(("execline" ,execline)
@@ -340,7 +340,7 @@ all the details.")))
 (define-public s6-linux-utils
   (package
    (name "s6-linux-utils")
-   (version "2.5.1.1")
+   (version "2.5.1.2")
    (source
     (origin
      (method url-fetch)
@@ -348,7 +348,7 @@ all the details.")))
            "http://skarnet.org/software/s6-linux-utils/s6-linux-utils-"
            version ".tar.gz"))
      (sha256
-      (base32 "00nw2phd9prgv29hzqzwjnh4y0ivkzhx3srn6n1rlyr4ydhikxi5"))))
+      (base32 "0w4jms9qyb5kx9zcyd3gzri60rrii2rbmh08s59ckg4awy27py86"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments

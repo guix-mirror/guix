@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -397,7 +397,7 @@ to all types of devices that provide serial consoles.")
 (define-public beep
   (package
     (name "beep")
-    (version "1.4.7")
+    (version "1.4.9")
     (source
      (origin
        (method git-fetch)
@@ -410,7 +410,7 @@ to all types of devices that provide serial consoles.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0dnbvzzxvajc7pl1165wb3l74pfcqcdg12rcjcw86qqy954dx8my"))))
+        (base32 "0jmvqk6g5n0wzj9znw42njxq3mzw1769f4db99b83927hf4aidi4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -420,8 +420,6 @@ to all types of devices that provide serial consoles.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
-    (native-inputs
-     `(("gcc" ,gcc-8)))                 ; for ‘-fstack-clash-protection’
     (synopsis "Linux command-line utility to control the PC speaker")
     (description "beep allows the user to control the PC speaker with precision,
 allowing different sounds to indicate different events.  While it can be run

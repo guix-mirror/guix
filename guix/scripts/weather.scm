@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
 ;;;
@@ -28,6 +28,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix grafts)
+  #:use-module (guix gexp)
   #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (guix scripts substitute)
   #:use-module (guix http-client)
@@ -75,7 +76,16 @@ scope."
 (define* (package-outputs packages
                           #:optional (system (%current-system)))
   "Return the list of outputs of all of PACKAGES for the given SYSTEM."
-  (let ((packages (filter (cut supported-package? <> system) packages)))
+  (define (lower-object/no-grafts obj system)
+    (mlet* %store-monad ((previous (set-grafting #f))
+                         (drv      (lower-object obj system))
+                         (_        (set-grafting previous)))
+      (return drv)))
+
+  (let ((packages (filter (lambda (package)
+                            (or (not (package? package))
+                                (supported-package? package system)))
+                          packages)))
     (format (current-error-port)
             (G_ "computing ~h package derivations for ~a...~%")
             (length packages) system)
@@ -84,8 +94,11 @@ scope."
       (lambda (report)
         (foldm %store-monad
                (lambda (package result)
-                 (mlet %store-monad ((drv (package->derivation package system
-                                                               #:graft? #f)))
+                 ;; PACKAGE could in fact be a non-package object, for example
+                 ;; coming from a user-specified manifest.  Thus, use
+                 ;; 'lower-object' rather than 'package->derivation' here.
+                 (mlet %store-monad ((drv (lower-object/no-grafts package
+                                                                  system)))
                    (report)
                    (match (derivation->output-paths drv)
                      (((names . items) ...)
@@ -487,7 +500,12 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                   (if file (load-manifest file) '())))))
 
   (with-error-handling
-    (parameterize ((current-terminal-columns (terminal-columns)))
+    (parameterize ((current-terminal-columns (terminal-columns))
+
+                   ;; Set grafting upfront in case the user's input depends on
+                   ;; it (e.g., a manifest or code snippet that calls
+                   ;; 'gexp->derivation').
+                   (%graft?                  #f))
       (let* ((opts     (parse-command-line args %options
                                            (list %default-options)
                                            #:build-options? #f))
@@ -500,13 +518,12 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                          (systems systems)))
              (packages (package-list opts))
              (items    (with-store store
-                         (parameterize ((%graft? #f))
-                           (concatenate
-                            (run-with-store store
-                              (mapm %store-monad
-                                    (lambda (system)
-                                      (package-outputs packages system))
-                                    systems)))))))
+                         (concatenate
+                          (run-with-store store
+                            (mapm %store-monad
+                                  (lambda (system)
+                                    (package-outputs packages system))
+                                  systems))))))
         (for-each (lambda (server)
                     (report-server-coverage server items)
                     (match (assoc-ref opts 'coverage)

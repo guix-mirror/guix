@@ -112,7 +112,7 @@ authentication for client/server applications by using secret-key
 cryptography.")
     (license (license:non-copyleft "file://NOTICE"
                                    "See NOTICE in the distribution."))
-    (home-page "http://web.mit.edu/kerberos/")
+    (home-page "https://web.mit.edu/kerberos/")
     (properties '((cpe-name . "kerberos")))))
 
 (define-public shishi

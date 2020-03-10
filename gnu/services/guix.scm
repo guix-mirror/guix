@@ -68,7 +68,12 @@
    (default #f))
   (commits-getmail-retriever-configuration
    guix-data-service-commits-getmail-retriever-configuration
-   (default #f)))
+   (default #f))
+  (extra-options    guix-data-service-extra-options
+                    (default '()))
+  (extra-process-jobs-options
+   guix-data-service-extra-process-jobs-options
+   (default '())))
 
 (define (guix-data-service-profile-packages config)
   "Return the guix-data-service package, this will populate the
@@ -78,7 +83,7 @@ ca-certificates.crt file in the system profile."
 
 (define (guix-data-service-shepherd-services config)
   (match-record config <guix-data-service-configuration>
-    (package user group port host)
+    (package user group port host extra-options extra-process-jobs-options)
     (list
      (shepherd-service
       (documentation "Guix Data Service web server")
@@ -92,7 +97,8 @@ ca-certificates.crt file in the system profile."
                       #$(string-append "--host=" host)
                       ;; Perform any database migrations when the
                       ;; service is started
-                      "--update-database")
+                      "--update-database"
+                      #$@extra-options)
 
                 #:user #$user
                 #:group #$group
@@ -117,7 +123,8 @@ ca-certificates.crt file in the system profile."
       (start #~(make-forkexec-constructor
                 (list
                  #$(file-append package
-                                "/bin/guix-data-service-process-jobs"))
+                                "/bin/guix-data-service-process-jobs")
+                 #$@extra-process-jobs-options)
                 #:user #$user
                 #:group #$group
                 #:environment-variables

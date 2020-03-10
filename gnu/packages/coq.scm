@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -353,7 +354,7 @@ assistant.")
                      (string-append "COQLIB=" (assoc-ref outputs "out")
                                     "/lib/coq/")
                      "install"))))))
-    (home-page "https://math-comp.github.io/math-comp/")
+    (home-page "https://math-comp.github.io/")
     (synopsis "Mathematical Components for Coq")
     (description "Mathematical Components for Coq has its origins in the formal
 proof of the Four Colour Theorem.  Since then it has grown to cover many areas

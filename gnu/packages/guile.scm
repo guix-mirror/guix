@@ -251,6 +251,22 @@ without requiring the source code to be rewritten.")
             (variable "GUILE_LOAD_COMPILED_PATH")
             (files '("lib/guile/2.2/site-ccache")))))))
 
+(define-public guile-2.2.7
+  ;; This version contains a bug fix for a relatively rare crash that could
+  ;; affect shepherd as PID 1: <https://bugs.gnu.org/37757>.
+  (package
+    (inherit guile-2.2)
+    (version "2.2.7")
+    (source (origin
+              (inherit (package-source guile-2.2))
+              (uri (string-append "mirror://gnu/guile/guile-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "013mydzhfswqci6xmyc1ajzd59pfbdak15i0b090nhr9bzm7dxyd"))))))
+
+(define-deprecated guile-2.2/bug-fix guile-2.2.7)
+
 (define-public guile-2.2/fixed
   ;; A package of Guile 2.2 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
@@ -277,15 +293,18 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile-next")                           ;to be renamed to "guile"
-    (version "3.0.0")
+    (version "3.0.1")
     (source (origin
               (inherit (package-source guile-2.2))
-              (uri (string-append "ftp://ftp.gnu.org/gnu/guile/guile-"
+              (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0x8ca6q1qdmk29lh12gj6ngvgn7kp79w42rxfgwrpxm9jmjqs4y9"))
-              (patches (search-patches "guile-2.2-skip-oom-test.patch"))))
+                "1jakps3127h8g69ixgb4zwc8v2g29dmwql1vi3pwg30kzp8fm5nn"))
+              (patches
+               (append (search-patches "guile-3.0-crash.patch")
+                       (origin-patches (package-source guile-2.2))))))
+
     (arguments
      (substitute-keyword-arguments (package-arguments guile-2.2)
        ;; XXX: On ARMv7, work around <https://bugs.gnu.org/39208> by disabling

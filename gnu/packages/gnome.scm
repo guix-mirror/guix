@@ -46,6 +46,7 @@
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4997,15 +4998,15 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.4.3")
+   (version "3.4.4")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
+            (uri (string-append "mirror://gnome/sources/rhythmbox/"
                                 (version-major+minor version) "/"
-                                name "-" version ".tar.xz"))
+                                "rhythmbox-" version ".tar.xz"))
             (sha256
              (base32
-              "1yx3n7p9vmv23jsv98fxwq95n78awdxqm8idhyhxx2d6vk4w1hgx"))))
+              "142xcvw4l19jyr5i72nbnrihs953pvrrzcbijjn9dxmxszbv03pf"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags
@@ -7385,7 +7386,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "2.2.2")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -7393,7 +7394,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "1rp2c6k7ajcm553p9kpni87zgi9aplm3s01rl7pk575az5i399y6"))))
+                "1nzbnvwwsk6kv6kqbxwlz8vk70l9ai6b4r9qypw51vp4qy72ny54"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -7404,64 +7405,58 @@ easy, safe, and automatic.")
                             (assoc-ref %outputs "out") "/lib/tracker-2.0"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             ;; These fail because the SPARQL backend could not be loaded.
-             ;; That's because /etc/machine-id is missing, but
-             ;; DBUS_FATAL_WARNINGS does not help here.
-             (substitute* "tests/libtracker-sparql/meson.build"
-               (("'sparql',") ""))
-             (substitute* "tests/tracker-steroids/meson.build"
-               (("test\\(.*") ""))
-             #t))
-         ;; Two tests fail if LANG is not set.
          (add-before 'check 'pre-check
            (lambda _
-             (setenv "LANG" "en_US.UTF-8")
-             ;; For the missing /etc/machine-id.
-             (setenv "DBUS_FATAL_WARNINGS" "0")
+             ;; Some tests expect to write to $HOME.
+             (setenv "HOME" "/tmp")
              #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gnome-common" ,gnome-common)
        ("gobject-introspection" ,gobject-introspection)
        ("python-pygobject" ,python-pygobject)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
-     `(("gtk+" ,gtk+)
-       ("dbus" ,dbus)
+     `(("dbus" ,dbus)
        ("sqlite" ,sqlite)
-       ("python" ,python)
-       ("poppler" ,poppler)
-       ("libpng" ,libpng)
-       ("libtiff" ,libtiff)
-       ("zlib" ,zlib)
        ("libxml2" ,libxml2)
-       ("libunistring" ,libunistring)
+       ("icu4c" ,icu4c)                 ; libunistring gets miner-miner-fs test to fail.
        ("json-glib" ,json-glib)
-       ("openjpeg" ,openjpeg-1)
-       ("libseccomp" ,libseccomp)
-       ("libsoup" ,libsoup)
-       ("libuuid" ,util-linux "lib")
-       ("network-manager" ,network-manager)))
+       ("libsoup" ,libsoup)))
     (synopsis "Metadata database, indexer and search tool")
     (home-page "https://wiki.gnome.org/Projects/Tracker")
     (description
-     "Tracker is an advanced framework for first class objects with associated
-metadata and tags.  It provides a one stop solution for all metadata, tags,
-shared object databases, search tools and indexing.")
+     "Tracker is a search engine and triplestore for desktop, embedded and mobile.
+
+It is a middleware component aimed at desktop application developers who want
+their apps to browse and search user content.  It's not designed to be used
+directly by desktop users, but it provides a commandline tool named
+@command{tracker} for the adventurous.
+
+Tracker allows your application to instantly perform full-text searches across
+all documents.  This feature is used by the @{emph{search} bar in GNOME Files, for
+example.  This is achieved by indexing the user's home directory in the
+background.
+
+Tracker also allows your application to query and list content that the user
+has stored.  For example, GNOME Music displays all the music files that are
+found by Tracker.  This means that GNOME Music doesn't need to maintain a
+database of its own.
+
+If you need to go beyond simple searches, Tracker is also a linked data
+endpoint and it understands SPARQL. ")
+    ;; https://gitlab.gnome.org/GNOME/tracker/-/blob/master/COPYING:
     ;; src/libtracker-*/* and src/tracker-extract/* are covered by lgpl2.1+,
-    ;; src/gvdb/* are covered by lgpl2.0+, and the rest is gpl2+.
+    ;; libstemmer is bsd-3 and the rest is gpl2+.
     (license (list license:gpl2+
-                   license:lgpl2.1+
-                   license:lgpl2.0+))))
+                   license:bsd-3
+                   license:lgpl2.1+))))
 
 (define-public tracker-miners
   (package
     (name "tracker-miners")
-    (version "2.2.2")
+    (version "2.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker-miners/"
@@ -7469,7 +7464,7 @@ shared object databases, search tools and indexing.")
                                   "/tracker-miners-" version ".tar.xz"))
               (sha256
                (base32
-                "0kk5xaajamb8jlm6cfdbc2m3axzr6bnph84m7697xmb0pkg8hdiw"))))
+                "1kizavw9gbdjkw4wykgv0fcl2y6fj788nycx9p4byn6ylb1277h6"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8696,15 +8691,14 @@ only know by its Unicode name or code point.")
 (define-public bluefish
   (package
     (name "bluefish")
-    (version "2.2.10")
+    (version "2.2.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.bennewitz.com/bluefish/stable/source/"
-                           name "-" version ".tar.gz"))
+                           "bluefish-" version ".tar.gz"))
        (sha256
-        (base32
-         "1jw4has7lbp77lqmzvnnjmqcf0lacjfnka873lkkwdyrpzc4c1q4"))))
+        (base32 "0a7kf78q4cj2ap4igjks9kbmmr74brsrl4y2f9wbxpl0b0v2ck2x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -8713,7 +8707,7 @@ only know by its Unicode name or code point.")
     (inputs
      `(("enchant" ,enchant)
        ("gtk+" ,gtk+)
-       ("python" ,python-2)
+       ("python" ,python-wrapper)
        ("xmllint" ,libxml2)
        ("gucharmap" ,gucharmap)))
     (home-page "http://bluefish.openoffice.nl")
@@ -9573,7 +9567,7 @@ for usage on small and big screens.")
 (define-public libgit2-glib
   (package
     (name "libgit2-glib")
-    (version "0.28.0.1")
+    (version "0.99.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -9581,19 +9575,20 @@ for usage on small and big screens.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0a0g7aw66rfgnqr4z7fgbk5zzcjq66m4rp8v4val3a212941h0g7"))))
+                "1pmrcnsa7qdda73c3dxf47733mwprmj5ljpw3acxbj6r8k27anp0"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ;; For glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
-       ("libssh2" ,libssh2)
        ("pkg-config" ,pkg-config)
        ("python-pygobject" ,python-pygobject)
        ("python-wrapper" ,python-wrapper)
        ("vala" ,vala)))
     (inputs
      `(("glib" ,glib)
+       ("libssh2" ,libssh2)))
+    (propagated-inputs
+     `(;; In Requires of libgit2-glib.pc.
        ("libgit2" ,libgit2)))
     (synopsis "GLib wrapper around the libgit2 Git access library")
     (description "libgit2-glib is a GLib wrapper library around the libgit2 Git
@@ -9647,7 +9642,6 @@ higher level porcelain stuff.")
        ("json-glib" ,json-glib)
        ("libdazzle" ,libdazzle)
        ("libgee" ,libgee)
-       ("libgit2" ,libgit2) ; propagated by libgit2-glib
        ("libgit2-glib" ,libgit2-glib)
        ("libpeas" ,libpeas)
        ("libsecret" ,libsecret)
@@ -9835,3 +9829,58 @@ index files needed for Adwaita to be used outside of GNOME.")
 integrate seamlessly with the GNOME desktop.")
     (home-page "https://wiki.gnome.org/Apps/Polari")
     (license license:gpl2+)))
+
+(define-public gnome-boxes
+  (package
+    (name "gnome-boxes")
+    (version "3.35.91")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/gnome-boxes/"
+                           (version-major+minor version) "/"
+                           "gnome-boxes-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0l96spz6pc8q4l5p9a58cc0kgvdr7pbc89hy6ixn72k5pl3s7fxj"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:configure-flags (list "-Drdp=false"
+                               (string-append "-Dc_link_args=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/gnome-boxes"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")             ; for glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")             ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("itstool" ,itstool)
+       ("intltool" ,intltool)
+       ("vala" ,vala)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libarchive" ,libarchive)
+       ("gtk" ,gtk+)
+       ("gtk-vnc" ,gtk-vnc)
+       ("libosinfo" ,libosinfo)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libusb" ,libusb)
+       ("libvirt" ,libvirt)
+       ("libvirt-glib" ,libvirt-glib)
+       ("libxml" ,libxml2)
+       ("spice-gtk" ,spice-gtk)
+       ("sparql-query" ,sparql-query)
+       ("vte" ,vte)
+       ("webkitgtk" ,webkitgtk)
+       ("tracker" ,tracker)
+       ("libgudev" ,libgudev)))
+    (home-page "https://wiki.gnome.org/Apps/Boxes")
+    (synopsis "View, access, and manage remote and virtual systems")
+    (description "GNOME Boxes is a simple application to view, access, and
+manage remote and virtual systems.")
+    (license (list
+              ;; For data/icons/empty-boxes.png.
+              license:cc-by2.0
+              ;; For all others.
+              license:lgpl2.0+))))

@@ -6536,31 +6536,56 @@ Cuffdiff or Ballgown programs.")
 (define-public taxtastic
   (package
     (name "taxtastic")
-    (version "0.8.5")
+    (version "0.8.11")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "taxtastic" version))
+              ;; The Pypi version does not include tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fhcrc/taxtastic.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03pysw79lsrvz4lwzis88j15067ffqbi4cid5pqhrlxmd6bh8rrk"))))
+                "1sv8mkg64jn7zdwf1jj71c16686yrwxk0apb1l8sjszy9p166g0p"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-directory
+           (lambda _
+             ;; The git checkout must be writable for tests.
+             (for-each make-file-writable (find-files "."))
+             ;; This test fails, but the error is not caught by the test
+             ;; framework, so the tests fail...
+             (substitute* "tests/test_taxit.py"
+               (("self.cmd_fails\\(''\\)")
+                "self.cmd_fails('nothing')"))
+             ;; This version file is expected to be created with git describe.
+             (mkdir-p "taxtastic/data")
+             (with-output-to-file "taxtastic/data/ver"
+               (lambda () (display ,version)))
+             #t))
+         (add-after 'unpack 'python37-compatibility
+           (lambda _
+             (substitute* "taxtastic/utils.py"
+               (("import csv") "import csv, errno")
+               (("os.errno") "errno"))
+             #t))
          (replace 'check
-           (lambda _ (invoke "python" "-m" "unittest" "discover" "-v") #t)))))
+           ;; Note, this fails to run with "-v" as it tries to write to a
+           ;; closed output stream.
+           (lambda _ (invoke "python" "-m" "unittest") #t)))))
     (propagated-inputs
-     `(("python-sqlalchemy" ,python2-sqlalchemy)
-       ("python-decorator" ,python2-decorator)
-       ("python-biopython" ,python2-biopython)
-       ("python-pandas" ,python2-pandas)
-       ("python-psycopg2" ,python2-psycopg2)
-       ("python-fastalite" ,python2-fastalite)
-       ("python-pyyaml" ,python2-pyyaml)
-       ("python-six" ,python2-six)
-       ("python-jinja2" ,python2-jinja2)
-       ("python-dendropy" ,python2-dendropy)))
+     `(("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-decorator" ,python-decorator)
+       ("python-biopython" ,python-biopython)
+       ("python-pandas" ,python-pandas)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-fastalite" ,python-fastalite)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)
+       ("python-jinja2" ,python-jinja2)
+       ("python-dendropy" ,python-dendropy)))
     (home-page "https://github.com/fhcrc/taxtastic")
     (synopsis "Tools for taxonomic naming and annotation")
     (description
@@ -9091,6 +9116,8 @@ number detection tools.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/al2na/methylKit")
@@ -9360,6 +9387,8 @@ analysis.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-lattice" ,r-lattice)
        ("r-limma" ,r-limma)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
     (home-page "https://bioconductor.org/packages/release/bioc/html/vsn.html")
     (synopsis "Variance stabilization and calibration for microarray data")
     (description
@@ -13238,18 +13267,14 @@ in RNA-seq data.")
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.4")
-    ;; Fetch from git because the pypi tarball does not include tests.
+    (version "1.4.5.1")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/theislab/scanpy.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (pypi-uri "scanpy" version))
        (sha256
         (base32
-         "0zn6x6c0cnm1a20i6isigwb51g3pr9zpjk8r1minjqnxi5yc9pm4"))))
+         "14kh1ji70xxhmri5q8sgcibsidhr6f221wxrcw8a5xvibj5da17j"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13276,18 +13301,23 @@ in RNA-seq data.")
        ("python-igraph" ,python-igraph)
        ("python-joblib" ,python-joblib)
        ("python-louvain" ,python-louvain)
+       ("python-legacy-api-wrap" ,python-legacy-api-wrap)
        ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
        ("python-numba" ,python-numba)
+       ("python-packaging" ,python-packaging)
        ("python-pandas" ,python-pandas)
+       ("python-patsy" ,python-patsy)
        ("python-scikit-learn" ,python-scikit-learn)
        ("python-scipy" ,python-scipy)
        ("python-seaborn" ,python-seaborn)
        ("python-statsmodels" ,python-statsmodels)
-       ("python-tables" ,python-tables)))
+       ("python-tables" ,python-tables)
+       ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/theislab/scanpy")
     (synopsis "Single-Cell Analysis in Python.")
     (description "Scanpy is a scalable toolkit for analyzing single-cell gene
@@ -13953,7 +13983,7 @@ datasets.")
 (define-public ngless
   (package
     (name "ngless")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -13963,7 +13993,7 @@ datasets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "06ygv8q2zjqsnrid1302yrlhhvb8ik48nq6n0higk3i1mdc8r0dg"))))
+         "1wim8wpqyff080dfcazynrmjwqas38m24m0v350w245mmhrapdma"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
@@ -14423,6 +14453,8 @@ repeated areas between contigs.")
         (base32
          "0fgygyzqgrq32dv6a00biq1p1cwi6kbl5iqblxq1kklj6b2mzmhs"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-joblib" ,python-joblib)))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-cython" ,python-cython)

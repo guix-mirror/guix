@@ -100,6 +100,14 @@
             operating-system-user-accounts
             operating-system-shepherd-service-names
             operating-system-user-kernel-arguments
+            operating-system-firmware
+            operating-system-keyboard-layout
+            operating-system-name-service-switch
+            operating-system-pam-services
+            operating-system-setuid-programs
+            operating-system-skeletons
+            operating-system-sudoers-file
+            operating-system-swap-devices
 
             operating-system-derivation
             operating-system-profile

@@ -211,10 +211,10 @@ and provides a \"top-like\" mode (monitoring).")
      `(("pkg-config" ,pkg-config)
 
        ;; This is the Guile we use as a cross-compiler...
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-2.2.7)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.2)             ;for <https://bugs.gnu.org/37757>
+     `(("guile" ,guile-2.2.7)                ;for <https://bugs.gnu.org/37757>
 
        ;; The 'shepherd' command uses Readline when used interactively.  It's
        ;; an unusual use case though, so we don't propagate it.

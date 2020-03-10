@@ -3197,7 +3197,7 @@ are semantically equal in Go (for writing tests).")
       (arguments
        '(#:import-path "golang.org/x/sync/errgroup"
          #:unpack-path "golang.org/x/sync"))
-      (synopsis "Synchronization, error propagation, and Context cancelation
+      (synopsis "Synchronization, error propagation, and Context cancellation
 for groups of goroutines working on subtasks of a common task.")
       (description "This package provides synchronization, error propagation,
 and Context cancelation for groups of goroutines working on subtasks of a

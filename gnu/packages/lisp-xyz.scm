@@ -3008,7 +3008,7 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "cd2a9008e0c152e54755e8a7f07b050fe36bab31"))
+  (let ((commit "79ad41996a1bd7fc8e53fe8d168e8f2030603b14"))
     (package
       (name "sbcl-cl-webkit")
       (version (git-version "2.4" "1" commit))
@@ -3016,12 +3016,12 @@ is a library for creating graphical user interfaces.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/jmercouris/cl-webkit")
+               (url "https://github.com/joachifm/cl-webkit")
                (commit commit)))
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "0f5lyn9i7xrn3g1bddga377mcbawkbxydijpg389q4n04gqj0vwf"))))
+           "1gxvmxmss5k79v2ccigx92q46zbydxh9r7plnnqh8na348pffgcs"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -3038,7 +3038,7 @@ is a library for creating graphical user interfaces.")
                  (("libwebkit2gtk" all)
                   (string-append
                    (assoc-ref inputs "webkitgtk") "/lib/" all))))))))
-      (home-page "https://github.com/jmercouris/cl-webkit")
+      (home-page "https://github.com/joachifm/cl-webkit")
       (synopsis "Binding to WebKitGTK+ for Common Lisp")
       (description
        "@command{cl-webkit} is a binding to WebKitGTK+ for Common Lisp,
@@ -5357,10 +5357,10 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
              #t)))))
     (synopsis "CFFI Groveller for IOLib, a Common Lisp I/O library")))
 
-(define-public sbcl-iolib
+(define sbcl-iolib+syscalls
   (package
     (inherit sbcl-iolib.asdf)
-    (name "sbcl-iolib")
+    (name "sbcl-iolib+syscalls")
     (inputs
      `(("iolib.asdf" ,sbcl-iolib.asdf)
        ("iolib.conf" ,sbcl-iolib.conf)
@@ -5375,7 +5375,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
      `(("fiveam" ,sbcl-fiveam)))
     (arguments
      '(#:asd-file "iolib.asd"
-       #:asd-system-name "iolib"
+       #:asd-system-name "iolib/syscalls"
        #:test-asd-file "iolib.tests.asd"
        #:phases
        (modify-phases %standard-phases
@@ -5392,40 +5392,57 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
                 "")))))))
     (synopsis "Common Lisp I/O library")))
 
-(define-public cl-iolib
-  (sbcl-package->cl-source-package sbcl-iolib))
-
 (define sbcl-iolib+multiplex
   (package
-    (inherit sbcl-iolib)
+    (inherit sbcl-iolib+syscalls)
     (name "sbcl-iolib+multiplex")
+    (inputs
+     `(("iolib+syscalls" ,sbcl-iolib+syscalls)
+       ,@(package-inputs sbcl-iolib+syscalls)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/multiplex")))))
 
-(define sbcl-iolib+syscalls
-  (package
-    (inherit sbcl-iolib)
-    (name "sbcl-iolib+syscalls")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
-       ((#:asd-system-name _) "iolib/syscalls")))))
+
 
 (define sbcl-iolib+streams
   (package
-    (inherit sbcl-iolib)
+    (inherit sbcl-iolib+syscalls)
     (name "sbcl-iolib+streams")
+    (inputs
+     `(("iolib+multiplex" ,sbcl-iolib+multiplex)
+       ,@(package-inputs sbcl-iolib+syscalls)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/streams")))))
 
 (define sbcl-iolib+sockets
   (package
-    (inherit sbcl-iolib)
+    (inherit sbcl-iolib+syscalls)
     (name "sbcl-iolib+sockets")
+    (inputs
+     `(("iolib+syscalls" ,sbcl-iolib+syscalls)
+       ("iolib+streams" ,sbcl-iolib+streams)
+       ,@(package-inputs sbcl-iolib+syscalls)))
     (arguments
-     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/sockets")))))
+
+(define-public sbcl-iolib
+  (package
+    (inherit sbcl-iolib+syscalls)
+    (name "sbcl-iolib")
+    (inputs
+     `(("iolib+multiplex" ,sbcl-iolib+multiplex)
+       ("iolib+streams" ,sbcl-iolib+streams)
+       ("iolib+sockets" ,sbcl-iolib+sockets)
+       ,@(package-inputs sbcl-iolib+syscalls)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
+       ((#:asd-system-name _) "iolib")))))
+
+(define-public cl-iolib
+  (sbcl-package->cl-source-package sbcl-iolib))
 
 (define-public sbcl-ieee-floats
   (let ((commit "566b51a005e81ff618554b9b2f0b795d3b29398d")
@@ -6350,16 +6367,13 @@ power of CXML is available when necessary.")
          (sha256
           (base32
            "0fw2q866yddbf23nk9pxphm9gsasx35vjyss82xzvndnjmzlqfl5"))))
-      ;; Inputs must be propagated or else packages depending on this won't have the necessary packages.
+      ;; Inputs must be propagated or else packages depending on this won't
+      ;; have the necessary packages.
       (propagated-inputs
        `(("alexandria" ,sbcl-alexandria)
          ("trivial-garbage" ,sbcl-trivial-garbage)
          ("babel" ,sbcl-babel)
          ("iolib" ,sbcl-iolib)
-         ("iolib+multiplex" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+multiplex))
-         ("iolib+syscalls" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+syscalls))
-         ("iolib+streams" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+streams))
-         ("iolib+sockets" ,(@@ (gnu packages lisp-xyz) sbcl-iolib+sockets))
          ("ieee-floats" ,sbcl-ieee-floats)
          ("flexi-streams" ,sbcl-flexi-streams)
          ("cl-xmlspam" ,sbcl-cl-xmlspam)
@@ -11197,3 +11211,42 @@ interfaces as well as a functional and an object oriented interface.")
                          "-o" shared-lib)
                  #t)))))))
     (synopsis "MySQL driver for Common Lisp SQL interface library")))
+
+(define-public sbcl-sycamore
+  (let ((commit "fd2820fec165ad514493426dea209728f64e6d18"))
+    (package
+      (name "sbcl-sycamore")
+      (version "0.0.20120604")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ndantam/sycamore/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00bv1aj89q5vldmq92zp2364jq312zjq2mbd3iyz1s2b4widzhl7"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-file "src/sycamore.asd"))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Purely functional data structure library in Common Lisp")
+      (description
+       "Sycamore is a fast, purely functional data structure library in Common Lisp.
+If features:
+
+@itemize
+@item Fast, purely functional weight-balanced binary trees.
+@item Leaf nodes are simple-vectors, greatly reducing tree height.
+@item Interfaces for tree Sets and Maps (dictionaries).
+@item Ropes.
+@item Purely functional pairing heaps.
+@item Purely functional amortized queue.
+@end itemize\n")
+      (home-page "http://ndantam.github.io/sycamore/")
+      (license license:bsd-3))))
+
+(define-public cl-sycamore
+  (sbcl-package->cl-source-package sbcl-sycamore))

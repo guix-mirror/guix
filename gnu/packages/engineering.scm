@@ -178,7 +178,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
-    (home-page "http://librecad.org/")
+    (home-page "https://librecad.org/")
     (synopsis "Computer-aided design (CAD) application")
     (description
      "LibreCAD is a 2D Computer-aided design (CAD) application for creating

@@ -25,7 +25,7 @@ index 8be2362..48716f2 100755
 -wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
 -gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
 -gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
--echo -n 52e784f98a37624e8b207f1b23289c2c88f66dd923798cae891a586a6d94a6d1 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
+-echo -n 2428213ceb75cb6772b3044d9c14870d1ae5b0161379aeb29248650e13761c9f firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 -
 -echo Extracting Firefox tarball
 -tar -xf firefox-${FFVERSION}esr.source.tar.xz
@@ -37,7 +37,7 @@ index 8be2362..48716f2 100755
 +# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
 +# gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
 +# gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
-+# echo -n 52e784f98a37624e8b207f1b23289c2c88f66dd923798cae891a586a6d94a6d1 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
++# echo -n 2428213ceb75cb6772b3044d9c14870d1ae5b0161379aeb29248650e13761c9f firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 +# 
 +# echo Extracting Firefox tarball
 +# tar -xf firefox-${FFVERSION}esr.source.tar.xz

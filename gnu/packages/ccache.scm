@@ -30,30 +30,29 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.6")
+    (version "3.7.7")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.samba.org/ftp/ccache/ccache-"
-                           version ".tar.xz"))
+       (uri (string-append "https://github.com/ccache/ccache/releases/download/v"
+                           version "/ccache-" version ".tar.xz"))
        (sha256
-        (base32 "07wv75xdcxpdkfsz9h5ffrm8pjbvr1dh6wnb02nyzz18cdbjkcd6"))))
+        (base32 "1kcqii3hr1008gj6jgfsjibwh2ryhsplc9z99m18xwa2zvbddhdp"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ; for test/run
                      ("which" ,(@ (gnu packages base) which))))
     (inputs `(("zlib" ,zlib)))
     (arguments
      '(#:phases (modify-phases %standard-phases
-                 (add-before 'check 'setup-tests
-                   (lambda _
-                     (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
-                       (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                     #t)))))
-    (home-page "https://ccache.samba.org/")
+                  (add-before 'check 'setup-tests
+                    (lambda _
+                      (substitute* '("unittest/test_hashutil.c" "test/suites/base.bash")
+                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                      #t)))))
+    (home-page "https://ccache.dev/")
     (synopsis "Compiler cache")
     (description
      "Ccache is a compiler cache.  It speeds up recompilation by caching
 previous compilations and detecting when the same compilation is being done
-again.  Supported languages are C, C++, Objective-C, Objective-C++, and
-Fortran 77.")
+again.  Supported languages are C, C++, Objective-C and Objective-C++.")
     (license gpl3+)))

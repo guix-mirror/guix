@@ -2078,7 +2078,7 @@ a.k.a. XenoCollide) as described in Game Programming Gems 7.")
      `(("glu" ,glu)
        ("libccd" ,libccd)
        ("mesa" ,mesa)))
-    (home-page "http://www.ode.org/")
+    (home-page "https://www.ode.org/")
     (synopsis "High performance library for simulating rigid body dynamics")
     (description "ODE is a high performance library for simulating
 rigid body dynamics.  It is fully featured, stable, mature and

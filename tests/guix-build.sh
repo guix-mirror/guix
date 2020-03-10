@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 #
 # This file is part of GNU Guix.
@@ -317,6 +317,17 @@ EOF
 test `guix build -d --manifest="$module_dir/manifest.scm" \
       | grep -e '-hello-' -e '-guix-' \
       | wc -l` -eq 2
+
+# Building from a manifest that contains a non-package object.
+cat > "$module_dir/manifest.scm"<<EOF
+(manifest
+  (list (manifest-entry (name "foo") (version "0")
+			(item (computed-file "computed-thingie"
+					     #~(mkdir (ungexp output)))))))
+EOF
+guix build -d -m "$module_dir/manifest.scm" \
+    | grep 'computed-thingie\.drv$'
+
 rm "$module_dir"/*.scm
 
 # Using 'GUIX_BUILD_OPTIONS'.

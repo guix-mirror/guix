@@ -269,14 +269,14 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200226")
+    (version "8.20200309")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "09v80ni1w9z1im79lzrnpz7xlivwna44zqpwq4axwyd17cffqi9m"))))
+        (base32 "1yjb01jh5rccqg44nqh4iyxmbpkcpm6m82lnw7s0s2vizj8891p5"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -615,7 +615,7 @@ Wayland, and Linux console environments alike.")
        ("ghc-sdl2" ,ghc-sdl2)
        ("ghc-sdl2-image" ,ghc-sdl2-image)
        ("ghc-sdl2-mixer" ,ghc-sdl2-mixer)))
-    (home-page "http://www.bysusanlin.com/raincat/")
+    (home-page "https://www.gamecreation.org/games/raincat")
     (synopsis "Puzzle game with a cat in lead role")
     (description "Project Raincat is a game developed by Carnegie Mellon
 students through GCS during the Fall 2008 semester.  Raincat features game

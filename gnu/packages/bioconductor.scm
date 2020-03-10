@@ -4026,14 +4026,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.10.2")
+    (version "1.10.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "0dzrizacy3br8fiy1vnsl5zf242lg1hqv9dyv5ayqh2n480is57f"))))
+         "18zf90iksglbs13cwr4jjwsv332a19lf4bpdmy69jz8bpwrklv22"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4055,6 +4055,8 @@ position-specific scores within R and Bioconductor.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ATACseqQC/")
     (synopsis "ATAC-seq quality control")
     (description
@@ -4315,14 +4317,14 @@ visualization with image data.")
 (define-public r-yamss
   (package
     (name "r-yamss")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "yamss" version))
        (sha256
         (base32
-         "1n49a2vg1667wycrjww29xfafngllvpb5nq5wy6pgn0akva91nky"))))
+         "12jr7hbrwhb1gfjadj1024hv80ra22miy46dn40nmsrbklkfn3rw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -4693,14 +4695,14 @@ based on @dfn{Continuous Wavelet Transform} (CWT).")
 (define-public r-xcms
   (package
     (name "r-xcms")
-    (version "3.8.1")
+    (version "3.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "xcms" version))
        (sha256
         (base32
-         "18iglvlvlxrdwn2apdvihj9jxmx0kwm5z37rml67xcj9sfdi3bjb"))))
+         "0bfl56v3l6k31i11l09nx1yqfjy6z5yragm6k83z4w0mpgk18y7g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -5943,14 +5945,14 @@ delete entire rows with missing data.")
 (define-public r-depecher
   (package
     (name "r-depecher")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DepecheR" version))
        (sha256
         (base32
-         "08ja6ayvbax9m3x9w3xzi72z97miiha2nbsild1gp77n6sgn5i35"))))
+         "199j2kw0xnw7y4v1gakm2jgyc7zzlj8xh0570f2yjq55gp1kggbm"))))
     (properties `((upstream-name . "DepecheR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5970,6 +5972,8 @@ delete entire rows with missing data.")
        ("r-reshape2" ,r-reshape2)
        ("r-robustbase" ,r-robustbase)
        ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/DepecheR/")
     (synopsis "Identify traits of clusters in high-dimensional entities")
     (description
@@ -7290,14 +7294,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.12.3")
+    (version "1.12.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "1vf6l88j3n6109j6sd08wfqxqpj2k20dvr8ll9zl1szsn18b4gny"))))
+         "01cnp00y5bk551c8gqgqp5468dvccg72i0rvh5cxgbx1c42zy6xn"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)

@@ -25,6 +25,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -424,7 +425,8 @@ compatible with bzip2 – both at file format and command line level.")
        #:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script
        #:make-flags (list (string-append "PREFIX=" %output))))
-    (home-page "http://compression.ca/pbzip2/")
+    (home-page (string-append "https://web.archive.org/web/20180412020219/"
+                              "http://compression.ca/pbzip2/"))
     (synopsis "Parallel bzip2 implementation")
     (description
      "Pbzip2 is a parallel implementation of the bzip2 block-sorting file
@@ -822,7 +824,7 @@ time for compression ratio.")
        ("lzo" ,lzo)
        ("xz" ,xz)
        ("zlib" ,zlib)))
-    (home-page "http://squashfs.sourceforge.net/")
+    (home-page "https://github.com/plougher/squashfs-tools")
     (synopsis "Tools to create and extract squashfs file systems")
     (description
      "Squashfs is a highly compressed read-only file system for Linux.  It uses
@@ -896,49 +898,6 @@ a collection of smaller blocks which makes random access to the original data
 possible and can compress in parallel.  This is especially useful for large
 tarballs.")
     (license license:bsd-2)))
-
-(define-public brotli
-  (let ((commit "e992cce7a174d6e2b3486616499d26bb0bad6448")
-        (revision "1"))
-    (package
-      (name "brotli")
-      (version (string-append "0.1-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/bagder/libbrotli.git")
-                      (commit commit)
-                      (recursive? #t)))
-                (file-name (string-append name "-" version ".tar.xz"))
-                (sha256
-                 (base32
-                  "1qxxsasvwbbbh6dl3138y9h3fg0q2v7xdk5jjc690bdg7g1wrj6n"))
-                (modules '((guix build utils)))
-                (snippet '(begin
-                            ;; This is a recursive submodule that is
-                            ;; unnecessary for this package, so delete it.
-                            (delete-file-recursively "brotli/terryfy")
-                            #t))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autogen
-                      (lambda _
-                        (mkdir "m4")
-                        (invoke "autoreconf" "-vfi"))))))
-      (home-page "https://github.com/bagder/libbrotli/")
-      (synopsis "Implementation of the Brotli compression algorithm")
-      (description
-       "Brotli is a general-purpose lossless compression algorithm.  It is
-similar in speed to deflate but offers denser compression.  This package
-provides encoder and a decoder libraries: libbrotlienc and libbrotlidec,
-respectively, based on the reference implementation from Google.")
-      (license license:expat))))
 
 (define-public bsdiff
   (package
@@ -1887,6 +1846,10 @@ with @code{deflate} but offers more dense compression.
 
 The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (license license:expat)))
+
+(define-public brotli
+  ;; We used to provide an older version under the name "brotli".
+  (deprecated-package "brotli" google-brotli))
 
 (define-public ucl
   (package

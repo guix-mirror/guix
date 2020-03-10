@@ -1144,7 +1144,7 @@ MailCore 2.")
               (method url-fetch)
               (uri (string-append "https://ftp.heanet.ie/mirrors/"
                                   "ftp.xemacs.org/aux/"
-                                  name "-" version ".tar.gz"))
+                                  "compface-" version ".tar.gz"))
               (sha256
                (base32
                 "09b89wg63hg502hsz592cd2h87wdprb1dq1k1y07n89hym2q56d6"))))
@@ -1154,13 +1154,13 @@ MailCore 2.")
     (synopsis "Portrait image compressor")
     (description "This package takes your 48x48x1 portrait image and
 compresses it.")
-    (home-page "http://www.cs.indiana.edu/pub/faces/")
+    (home-page "https://legacy.cs.indiana.edu/ftp/faces/")
     (license (x11-style "file://README"))))
 
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.4")
+    (version "3.17.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1168,7 +1168,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "00mfhaac16sv67rwiq98hr4nl5zmd1h2afswwwksdcsi3q9x23jr"))))
+                "1gjrmdmhc7zzilrlss9yl86ybv9sra8v0qi7mkwv7d9azidx5kns"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1374,7 +1374,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.9.3")
+    (version "2.3.10")
     (source
      (origin
        (method url-fetch)
@@ -1382,7 +1382,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "0lcnqib63nv32xr3nr4s3x8k77mbgrhc13swjl2xqnzw4fabd7zq"))))
+        (base32 "1ibiz3k2flablkcqbkvfzsjnq5b5kxximhcrplflsjl57mr88ca7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

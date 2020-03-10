@@ -111,8 +111,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "c2f9ea2b502a617bb69227d5f858eee9d4288a6a")
-        (revision 14))
+        (commit "09844816c77caaa60f4149f99a34733966724627")
+        (revision 15))
     (package
       (name "guix")
 
@@ -128,7 +128,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0hg6yrqlzqiv4gmk9liqar6m9qhhn66q75jsmh86awjwq4qmvyab"))
+                  "1fciffls6cw9zz13vig5x37r73qxc0irzyh0caimciddlksvabf7"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -1005,7 +1005,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2020.1")
+    (version "2020.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1013,7 +1013,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "0sgx81w6skiivbr2gfhljf9nvnqfwwnwfgpqqa10fjdkjrqwvpk8"))))
+                "0bbk0sg4m38g7j00hy358p2azxas87minpgz3avwma6jsylj1qjg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

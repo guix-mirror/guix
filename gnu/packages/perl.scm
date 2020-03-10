@@ -9,13 +9,13 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
-;;; Copyright © 2016, 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
@@ -323,6 +323,33 @@ not asynchronous - it won't interrupt a running perl interpreter.
 This module implements asynchronous notifications that enable you to
 signal running perl code from another thread, asynchronously, and
 sometimes even without using a single syscall.")
+    (license (package-license perl))))
+
+(define-public perl-attribute-util
+  (package
+    (name "perl-attribute-util")
+    (version "1.07")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://cpan.metacpan.org/authors/id/D/DA/DANKOGAI/"
+                    "Attribute-Util-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z79d845dy96lg0pxw0kr2za0gniwnpn963r7ccajfpj6k7jfw07"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/pod/Attribute::Util")
+    (synopsis "Assorted general utility attributes")
+    (description "This packages provides various utility functions.  When used
+without argument, this module provides four universally accessible attributes
+of general interest as follows:
+@itemize
+@item Abstract
+@item Alias
+@item Memoize
+@item Method
+@item SigHandler
+@end itemize")
     (license (package-license perl))))
 
 (define-public perl-autovivification
@@ -1414,6 +1441,28 @@ libraries to load configuration data from multiple different file formats.  It
 supports XML, YAML, JSON, Apache-style configuration, and Perl code.")
     (license (package-license perl))))
 
+(define-public perl-config-inifiles
+  (package
+    (name "perl-config-inifiles")
+    (version "3.000002")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/"
+                           "Config-IniFiles-" version ".tar.gz"))
+       (sha256
+        (base32 "02dsz3inh5jwgaxmbcz8qxwgin8mkhm6vj9jyzfmm3dr5pnxcbnr"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-io-stringy",perl-io-stringy)))
+    (home-page "https://metacpan.org/pod/Config::IniFiles")
+    (synopsis "Package for configuration files outside your Perl script")
+    (description "This package provides a way to have readable configuration
+files outside your Perl script.  Configurations can be imported, sections
+can be grouped, and settings can be accessed from a tied hash.")
+    (license (package-license perl))))
+
 (define-public perl-config-autoconf
   (package
     (name "perl-config-autoconf")
@@ -2251,14 +2300,14 @@ hours, minutes, seconds, and time zones.")
 (define-public perl-datetime
   (package
     (name "perl-datetime")
-    (version "1.51")
+    (version "1.52")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-" version ".tar.gz"))
        (sha256
-        (base32 "1ibfq6acz1ih28vl613yygbb3r2d8ykx6di669vajhvswl6xl8ny"))))
+        (base32 "1z1xpifh2kpyw7rlc8ivg9rl0qmabjq979gjp0s9agdjf9hqp0k7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
@@ -2491,15 +2540,14 @@ parsing logic.")
 (define-public perl-datetime-format-strptime
   (package
     (name "perl-datetime-format-strptime")
-    (version "1.76")
+    (version "1.77")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DR/DROLSKY/"
                            "DateTime-Format-Strptime-" version ".tar.gz"))
        (sha256
-        (base32
-         "03dmzi9n6jmnfjmf0ld5sdmi3ib6jrhz25cjzv7d58ypdr32cg2r"))))
+        (base32 "0jiy2yc9h9932ykb8x2l1j3ff8ms3p4426m947r5clygis1kr91g"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
@@ -5167,6 +5215,26 @@ Bezier Curve Drawing\".")
     (description "@code{Math::Round} provides functions to round numbers,
 both positive and negative, in various ways.")
     (license perl-license)))
+
+(define-public perl-math-vecstat
+  (package
+    (name "perl-math-vecstat")
+    (version "0.08")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/A/AS/ASPINELLI/Math-VecStat-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "03bdcl9pn2bc9b50c50nhnr7m9wafylnb3v21zlch98h9c78x6j0"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Math-VecStat")
+    (synopsis "Basic numeric stats on vectors")
+    (description "This package provides some basic statistics on numerical
+vectors.  All the subroutines can take a reference to the vector to be
+operated on.")
+    (license (package-license perl))))
 
 (define-public perl-memoize
   (package
@@ -9173,15 +9241,14 @@ still work as expected.")
 (define-public perl-timedate
   (package
     (name "perl-timedate")
-    (version "2.31")
+    (version "2.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "TimeDate-" version ".tar.gz"))
        (sha256
-        (base32
-         "10ad6l4ii2iahdpw8h0xqwasc1jblan31h597q3js4j5nbnhywjw"))))
+        (base32 "1mmk9dy4a26a4d4c5rswqqhxr0295j93bjbcx91d3qkmwfcs1v1l"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/TimeDate")
     (synopsis "Date parsing/formatting subroutines")
@@ -9625,14 +9692,14 @@ attribute names.")
 (define-public perl-xs-object-magic
   (package
     (name "perl-xs-object-magic")
-    (version "0.04")
+    (version "0.05")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                                   "XS-Object-Magic-" version ".tar.gz"))
               (sha256
                (base32
-                "03fghj7hq0fiicmfdxhmzfm4mzv7s097pgkd32ji7jnljvhm9six"))))
+                "0njyy4y0zax4zz55y82dlm9cly1pld1lcxb281s12bp9rrhf9j9x"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)

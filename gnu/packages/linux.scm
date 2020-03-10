@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
@@ -361,18 +361,18 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.23")
+(define-public linux-libre-5.4-version "5.4.24")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1jhyg2yc03fka92l7hwdajim6q5rk538hjdr1gwgvpfyyp6sla1z")))
+        (hash (base32 "1cvy3mxwzll4f9j8i3hfmi0i0zq75aiafq1jskp9n4kq9iwar83z")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.107")
+(define-public linux-libre-4.19-version "4.19.108")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0h02pxzzwc5w2kfqw686bpxc13a93yq449lyzxxkxq1qilcsqjv5")))
+        (hash (base32 "18shyy1z2s8r26qb4rcz7gwl43dnmycjjywp9gss5zlfn2jyrbh9")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -2909,6 +2909,26 @@ device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
 
+;; TODO: Merge with eudev on the next rebuild cycle.
+(define-public eudev/btrfs-fix
+  (package/inherit
+   eudev
+   (version (string-append (package-version eudev) "-1"))
+   (arguments
+    (substitute-keyword-arguments (package-arguments eudev)
+      ((#:phases phases '%standard-phases)
+       `(modify-phases ,phases
+          (add-before 'configure 'patch-bindir-in-btrfs-rules
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; The "@bindir@" substitution incorrectly expands to a literal
+              ;; "${exec_prefix}" (see <https://bugs.gnu.org/39926>).  Work
+              ;; around it.
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* "rules/64-btrfs.rules.in"
+                  (("@bindir@")
+                   (string-append out "/bin")))
+                #t)))))))))
+
 (define-public eudev-with-hwdb
   (deprecated-package "eudev-with-hwdb" eudev))
 
@@ -5076,7 +5096,7 @@ of flash storage.")
 (define-public libseccomp
   (package
     (name "libseccomp")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/seccomp/libseccomp/"
@@ -5084,8 +5104,7 @@ of flash storage.")
                                   "/libseccomp-" version ".tar.gz"))
               (sha256
                (base32
-                "0nsq81acrbkdr8zairxbwa33bj2a6126npp76b4srjl472sjfkxm"))
-              (patches (search-patches "libseccomp-open-aarch64.patch"))))
+                "07crwxqzvl5k2b90a47ii9wgvi09s9hsy5b5jddw9ylp351d25fg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)))

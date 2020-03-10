@@ -36,7 +36,7 @@
               (base32
                "05xq0571mkgr20v827jm63nhsirr8arghg4fszzswrmrnl3dfk0s"))))
     (build-system gnu-build-system)
-    (home-page "http://re2c.org/")
+    (home-page "https://re2c.org/")
     (synopsis "Lexer generator for C/C++")
     (description
      "@code{re2c} generates minimalistic hard-coded state machine (as opposed
