@@ -4593,36 +4593,8 @@ linear algebra primitives specifically targeting graph analytics.")
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags)))
-         ;; These tests fail because they require a fully functional MPI
-         ;; environment.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (setenv "ARGS"
-                     (string-append "--exclude-regex '("
-                                    (string-join
-                                     (list
-                                      "remoteindicestest"
-                                      "remoteindicestest-mpi-2"
-                                      "syncertest"
-                                      "syncertest-mpi-2"
-                                      "variablesizecommunicatortest"
-                                      "variablesizecommunicatortest-mpi-2"
-                                      "arithmetictestsuitetest"
-                                      "assertandreturntest"
-                                      "assertandreturntest_ndebug"
-                                      "concept"
-                                      "debugaligntest"
-                                      "mpicollectivecommunication"
-                                      "mpicollectivecommunication-mpi-2"
-                                      "mpiguardtest"
-                                      "mpiguardtest-mpi-2"
-                                      "mpihelpertest"
-                                      "mpihelpertest-mpi-2"
-                                      "mpihelpertest2"
-                                      "mpihelpertest2-mpi-2")
-                                     "|")
-                                    ")'"))
-             #t)))))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("gmp" ,gmp)
        ("metis" ,metis)
@@ -4703,54 +4675,8 @@ This package contains the basic DUNE geometry classes.")
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags)))
-         ;; These tests fail because they require a fully functional MPI
-         ;; environment.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (setenv "ARGS"
-                     (string-append "--exclude-regex '("
-                                    (string-join
-                                     (list
-                                      "scsgmappertest"
-                                      "conformvolumevtktest"
-                                      "gnuplottest"
-                                      "nonconformboundaryvtktest"
-                                      "subsamplingvtktest"
-                                      "vtktest"
-                                      "vtktest-mpi-2"
-                                      "vtksequencetest"
-                                      "gmshtest-onedgrid"
-                                      "test-dgf-yasp"
-                                      "test-dgf-yasp-offset"
-                                      "test-dgf-oned"
-                                      "test-geogrid-yaspgrid"
-                                      "test-gridinfo"
-                                      "test-identitygrid"
-                                      "testiteratorranges"
-                                      "test-hierarchicsearch"
-                                      "test-parallel-ug-mpi-2"
-                                      "test-yaspgrid-backuprestore-equidistant"
-                                      "test-yaspgrid-backuprestore-equidistant-mpi-2"
-                                      "test-yaspgrid-backuprestore-equidistantoffset"
-                                      "test-yaspgrid-backuprestore-equidistantoffset-mpi-2"
-                                      "test-yaspgrid-backuprestore-tensor"
-                                      "test-yaspgrid-backuprestore-tensor-mpi-2"
-                                      "test-yaspgrid-tensorgridfactory"
-                                      "test-yaspgrid-tensorgridfactory-mpi-2"
-                                      "test-yaspgrid-yaspfactory-1d"
-                                      "test-yaspgrid-yaspfactory-1d-mpi-2"
-                                      "test-yaspgrid-yaspfactory-2d"
-                                      "test-yaspgrid-yaspfactory-2d-mpi-2"
-                                      "test-yaspgrid-yaspfactory-3d"
-                                      "test-yaspgrid-yaspfactory-3d-mpi-2"
-                                      "globalindexsettest"
-                                      "persistentcontainertest"
-                                      "structuredgridfactorytest"
-                                      "tensorgridfactorytest"
-                                      "vertexordertest")
-                                     "|")
-                                    ")'"))
-             #t)))))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
@@ -4793,24 +4719,8 @@ This package contains the basic DUNE grid classes.")
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags)))
-         ;; These tests fail because they require a fully functional MPI
-         ;; environment.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (setenv "ARGS"
-                     (string-append "--exclude-regex '("
-                                    (string-join
-                                     (list
-                                      "galerkintest"
-	                              "hierarchytest"
-	                              "pamgtest"
-	                              "pamg_comm_repart_test"
-	                              "matrixredisttest"
-	                              "vectorcommtest"
-	                              "matrixmarkettest")
-                                     "|")
-                                    ")'"))
-             #t)))))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("openmpi" ,openmpi)
@@ -4896,9 +4806,7 @@ assemble global function spaces on finite-element grids.")
          "1l9adgyjpra8mvwm445s0lpjshnb63jag85fb2hisbjn6bm320yj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; 7 of 8 tests fail because they need a full MPI
-                   ; environment
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-include
            (lambda _
@@ -4910,7 +4818,9 @@ assemble global function spaces on finite-element grids.")
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "dune-grid") "/share"))
-             (apply invoke "make" "build_tests" make-flags))))))
+             (apply invoke "make" "build_tests" make-flags)))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
