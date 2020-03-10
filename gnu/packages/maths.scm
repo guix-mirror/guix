@@ -4881,6 +4881,49 @@ implementation of the DUNE grid interface supporting either simplices or
 cubes.")
     (license license:gpl2+)))
 
+(define-public dune-subgrid
+  (package
+    (name "dune-subgrid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://git.imp.fu-berlin.de/agnumpde/dune-subgrid")
+         (commit "releases/2.6-1")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+          "1gcv35rx3knqd54r4pp9rzd639db4j8w2r2ibq43w1mgwdcqhs64"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-grid" ,dune-grid)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("openblas" ,openblas)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://numerik.mi.fu-berlin.de/dune-subgrid/index.php")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "The dune-subgrid module allows to mark elements of
+another hierarchical dune grid.  The set of marked elements can then be
+accessed as a hierarchical dune grid in its own right.  Dune-Subgrid
+provides the full grid interface including adaptive mesh refinement.")
+    (license license:gpl2+)))
+
 (define-public dune-typetree
   (package
     (name "dune-typetree")
