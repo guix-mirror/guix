@@ -34,7 +34,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://skarnet.org/software/skalibs/skalibs-"
+      (uri (string-append "https://skarnet.org/software/skalibs/skalibs-"
                           version ".tar.gz"))
       (sha256
        (base32 "1i9d7w031kh338aq6xdsf8vl5amxbwxbny8lnrxlzydqvn8nxhz4"))))
@@ -66,7 +66,7 @@ and file system operations.  It is used by all skarnet.org software.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://skarnet.org/software/execline/execline-"
+      (uri (string-append "https://skarnet.org/software/execline/execline-"
                           version ".tar.gz"))
       (sha256
        (base32 "0xr6yb50wm6amj1wc7jmxyv7hvlx2ypbnww1vc288j275625d9xi"))))
@@ -108,7 +108,7 @@ complexity.")))
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "http://skarnet.org/software/s6/s6-"
+     (uri (string-append "https://skarnet.org/software/s6/s6-"
                          version ".tar.gz"))
      (sha256
       (base32 "0mvcjrz8nlj9p2zclmcv22b4y6bqzd2iz38arhgc989vdvrbmkg0"))))
@@ -154,7 +154,7 @@ functionality with a very small amount of code.")))
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "http://skarnet.org/software/s6-dns/s6-dns-"
+     (uri (string-append "https://skarnet.org/software/s6-dns/s6-dns-"
                          version ".tar.gz"))
      (sha256
       (base32 "09hyb1xv9glqq0yy7wy8hiwvlr78kwv552pags8ancgamag15di7"))))
@@ -183,7 +183,7 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "http://skarnet.org/software/s6-networking/s6-networking-"
+     (uri (string-append "https://skarnet.org/software/s6-networking/s6-networking-"
                          version ".tar.gz"))
      (sha256
       (base32 "1029bgwfmv903y5ji93j75m7p2jgchdxya1khxzb42q2z7yxnlyr"))))
@@ -226,7 +226,7 @@ clock synchronization.")))
    (source
     (origin
      (method url-fetch)
-     (uri (string-append "http://skarnet.org/software/s6-rc/s6-rc-"
+     (uri (string-append "https://skarnet.org/software/s6-rc/s6-rc-"
                          version ".tar.gz"))
      (sha256
       (base32 "18m8jsx3bkj566p6xwwnsvdckk10n8wqnhp0na2k88i295h4rnjp"))))
@@ -268,7 +268,7 @@ environment.")))
     (origin
      (method url-fetch)
      (uri (string-append
-           "http://skarnet.org/software/s6-portable-utils/s6-portable-utils-"
+           "https://skarnet.org/software/s6-portable-utils/s6-portable-utils-"
            version ".tar.gz"))
      (sha256
       (base32 "1k3la37q46n93vjwk9wm9ym4w87z6lqzv43f03qd0vqj9k94mpv3"))))
@@ -300,7 +300,7 @@ systems and other constrained environments, but they work everywhere.")))
     (origin
      (method url-fetch)
      (uri (string-append
-           "http://skarnet.org/software/s6-linux-init/s6-linux-init-"
+           "https://skarnet.org/software/s6-linux-init/s6-linux-init-"
            version ".tar.gz"))
      (sha256
       (base32 "176mgkqxlp6gb6my66dv73xsp7adfxbjp5hjyh35sykqkr4kfyfy"))))
@@ -345,7 +345,7 @@ all the details.")))
     (origin
      (method url-fetch)
      (uri (string-append
-           "http://skarnet.org/software/s6-linux-utils/s6-linux-utils-"
+           "https://skarnet.org/software/s6-linux-utils/s6-linux-utils-"
            version ".tar.gz"))
      (sha256
       (base32 "0w4jms9qyb5kx9zcyd3gzri60rrii2rbmh08s59ckg4awy27py86"))))
