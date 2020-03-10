@@ -1763,7 +1763,7 @@ favorite search engine or bug tracker right from the Xfce panel.")
 (define-public xfce4-statusnotifier-plugin
   (package
    (name "xfce4-statusnotifier-plugin")
-   (version "0.2.1")
+   (version "0.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
@@ -1772,7 +1772,7 @@ favorite search engine or bug tracker right from the Xfce panel.")
                                   "/xfce4-statusnotifier-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "154b0q9pmlbjh30vvx4c48msdfxp4pq8x4mbn71mk7pibk018hsj"))))
+                "1yic99jx7013pywpd0k31pxab8s8lv3wcq364iha99qhsm25k42c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
