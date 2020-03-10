@@ -63,6 +63,9 @@
             inferior-eval
             inferior-eval-with-store
             inferior-object?
+            inferior-exception?
+            inferior-exception-arguments
+            inferior-exception-inferior
             read-repl-response
 
             inferior-packages
@@ -195,8 +198,15 @@ equivalent.  Return #f if the inferior could not be launched."
 
 (set-record-type-printer! <inferior-object> write-inferior-object)
 
-(define (read-repl-response port)
-  "Read a (guix repl) response from PORT and return it as a Scheme object."
+;; Reified exception thrown by an inferior.
+(define-condition-type &inferior-exception &error
+  inferior-exception?
+  (arguments  inferior-exception-arguments)       ;key + arguments
+  (inferior   inferior-exception-inferior))       ;<inferior> | #f
+
+(define* (read-repl-response port #:optional inferior)
+  "Read a (guix repl) response from PORT and return it as a Scheme object.
+Raise '&inferior-exception' when an exception is read from PORT."
   (define sexp->object
     (match-lambda
       (('value value)
@@ -208,10 +218,13 @@ equivalent.  Return #f if the inferior could not be launched."
     (('values objects ...)
      (apply values (map sexp->object objects)))
     (('exception key objects ...)
-     (apply throw key (map sexp->object objects)))))
+     (raise (condition (&inferior-exception
+                        (arguments (cons key (map sexp->object objects)))
+                        (inferior inferior)))))))
 
 (define (read-inferior-response inferior)
-  (read-repl-response (inferior-socket inferior)))
+  (read-repl-response (inferior-socket inferior)
+                      inferior))
 
 (define (send-inferior-request exp inferior)
   (write exp (inferior-socket inferior))
