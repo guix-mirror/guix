@@ -427,7 +427,7 @@ should only be used as part of the Guix cups-pk-helper service.")
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "1hkiyj29vzmz14cy68g94i617ymxinzvjvcsfdd78kcbd1s9vi4h"))
+                "00vcbpnp478l2v61mlxb4kr6q3gzkxspm4lwfky39f6ck72pqxb7"))
               (modules '((guix build utils)))
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
