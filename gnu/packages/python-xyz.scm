@@ -10713,15 +10713,14 @@ docstring and colored output.")
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page
-     "https://github.com/sdispater/tomlkit")
-    (synopsis "Style preserving TOML library")
+    (home-page "https://github.com/sdispater/tomlkit")
+    (synopsis "Style-preserving TOML library")
     (description
      "TOML Kit is a 0.5.0-compliant TOML library.  It includes a parser that
 preserves all comments, indentations, whitespace and internal element ordering,
 and makes them accessible and editable via an intuitive API.  It can also
 create new TOML documents from scratch using the provided helpers.  Part of the
-implementation as been adapted, improved and fixed from Molten.")
+implementation has been adapted, improved, and fixed from Molten.")
     (license license:expat)))
 
 (define-public python-shellingham
