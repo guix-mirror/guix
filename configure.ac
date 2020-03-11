@@ -96,7 +96,11 @@ dnl 'GUILE_EFFECTIVE_VERSION'.
 GUILE_PKG([3.0 2.2])
 GUILE_PROGS
 if test "x$GUILD" = "x"; then
-   AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
+   AC_MSG_ERROR(['guild' binary not found; please check your Guile installation.])
+fi
+
+if test "x$GUILE_EFFECTIVE_VERSION" = "x2.2"; then
+  PKG_CHECK_MODULES([GUILE], [guile-2.2 >= 2.2.3])
 fi
 
 dnl Installation directories for .scm and .go files.
