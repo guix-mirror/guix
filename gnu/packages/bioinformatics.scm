@@ -13511,14 +13511,14 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
 (define-public python-pyfaidx
   (package
     (name "python-pyfaidx")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyfaidx" version))
        (sha256
         (base32
-         "02jvdx3ksy6w5gd29i1d0g0zsabbz7c14qg482ff7pza6sdl0b2i"))))
+         "038xi3a6zvrxbyyfpp64ka8pcjgsdq4fgw9cl5lpxbvmm1bzzw2q"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
