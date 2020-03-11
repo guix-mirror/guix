@@ -2426,10 +2426,39 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (synopsis "Virtual Python environment builder")
     (description
      "Virtualenv is a tool to create isolated Python environments.")
+    (properties `((python2-variant . ,(delay python2-virtualenv))))
     (license license:expat)))
 
 (define-public python2-virtualenv
-  (package-with-python2 python-virtualenv))
+  (let ((base (package-with-python2 (strip-python2-variant python-virtualenv))))
+    (package
+      (inherit base)
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'set-paths 'adjust-PYTHONPATH
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((python (assoc-ref inputs "python"))
+                      (python-sitedir (string-append python "/lib/python2.7"
+                                                     "/site-packages")))
+                 ;; XXX: 'python2' always comes first on PYTHONPATH
+                 ;; and shadows the 'setuptools' input.  Move python2
+                 ;; last: this should be fixed in python-build-system
+                 ;; in a future rebuild cycle.
+                 (setenv "PYTHONPATH"
+                         (string-append (string-join (delete python-sitedir
+                                                             (string-split
+                                                              (getenv "PYTHONPATH")
+                                                              #\:))
+                                                     ":")
+                                        ":" python-sitedir))
+                 (format #t "environment variable `PYTHONPATH' changed to `~a'~%"
+                         (getenv "PYTHONPATH"))
+                 #t))))))
+      (propagated-inputs
+       `(("python-contextlib2" ,python2-contextlib2)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-markupsafe
   (package
