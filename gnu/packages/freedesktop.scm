@@ -1386,7 +1386,7 @@ to applications simultaneously competing for fingerprint readers.")
 (define-public desktop-file-utils
   (package
     (name "desktop-file-utils")
-    (version "0.23")
+    (version "0.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.freedesktop.org/software/"
@@ -1394,7 +1394,7 @@ to applications simultaneously competing for fingerprint readers.")
                                   "desktop-file-utils-" version ".tar.xz"))
               (sha256
                (base32
-                "119kj2w0rrxkhg4f9cf5waa55jz1hj8933vh47vcjipcplql02bc"))))
+                "1nc3bwjdrpcrkbdmzvhckq0yngbcxspwj2n1r7jr3gmx1jk5vpm1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
