@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Andy Tai <atai@atai.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -341,4 +342,32 @@ Supported architectures are:
 @item huc6280
 @item spc700
 @end itemize")
+    (license license:gpl2)))
+
+(define-public xa
+  (package
+    (name "xa")
+    (version "2.3.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.floodgap.com/retrotech/xa"
+                                  "/dists/xa-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0y5sd247g11jfk5msxy91hz2nhpy7smj125dzfyfhjsjnqk5nyw6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f   ; TODO: custom test harness, not sure how it works
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))            ; no "configure" script
+       #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
+    (native-inputs `(("perl" ,perl)))
+    (home-page "https://www.floodgap.com/retrotech/xa/")
+    (synopsis "Two-pass portable cross-assembler")
+    (description
+     "xa is a high-speed, two-pass portable cross-assembler.
+It understands mnemonics and generates code for NMOS 6502s (such
+as 6502A, 6504, 6507, 6510, 7501, 8500, 8501, 8502 ...),
+ CMOS 6502s (65C02 and Rockwell R65C02) and the 65816.")
     (license license:gpl2)))
