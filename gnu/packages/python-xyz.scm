@@ -4388,18 +4388,37 @@ Python code against some of the style conventions in
 (define-public python-multidict
   (package
     (name "python-multidict")
-    (version "4.2.0")
+    (version "4.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multidict" version))
        (sha256
         (base32
-         "1vf5bq8hn5a9rvhr5v4fwbmarfsp35hhr8gs74kqfijy34j2f194"))))
+         "07ikq2c72kd263hpldw55y0px2l3g34hjk66ml9lryh1jv287qmf"))))
     (build-system python-build-system)
+    (arguments
+     '(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (let ((libdir (find (cut string-prefix? "lib." <>)
+                                                (scandir "build"))))
+                              (setenv "PYTHONPATH"
+                                      (string-append "./build/" libdir ":"
+                                                     (getenv "PYTHONPATH")))
+                              (invoke "pytest" "-vv")))
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-cov" ,python-pytest-cov)))
     (home-page "https://github.com/aio-libs/multidict/")
     (synopsis "Multidict implementation")
     (description "Multidict is dict-like collection of key-value pairs
