@@ -5562,69 +5562,6 @@ you're careful.  The @code{backcall} package provides a way of specifying the
 callback signature using a prototype function.")
     (license license:bsd-3)))
 
-;; This is the latest release of the LTS version of ipython with support for
-;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
-;; dropped support for Python 2.7.
-(define-public python2-ipython
-  (package
-    (name "python2-ipython")
-    (version "5.8.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ipython" version ".tar.gz"))
-       (sha256
-        (base32 "01l93i4hspf0lvhmycvc8j378bslm9rw30mwfspsl6v1ayc69b2b"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python2-backports-shutil-get-terminal-size"
-        ,python2-backports-shutil-get-terminal-size)
-       ("python2-pathlib2" ,python2-pathlib2)
-       ("python2-pyzmq" ,python2-pyzmq)
-       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
-       ("python2-terminado" ,python2-terminado)
-       ("python2-matplotlib" ,python2-matplotlib)
-       ("python2-numpy" ,python2-numpy)
-       ("python2-numpydoc" ,python2-numpydoc)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-mistune" ,python2-mistune)
-       ("python2-pexpect" ,python2-pexpect)
-       ("python2-pickleshare" ,python2-pickleshare)
-       ("python2-simplegeneric" ,python2-simplegeneric)
-       ("python2-jsonschema" ,python2-jsonschema)
-       ("python2-traitlets" ,python2-traitlets)
-       ("python2-nbformat" ,python2-nbformat)
-       ("python2-pygments" ,python2-pygments)))
-    (inputs
-     `(("readline" ,readline)
-       ("which" ,which)))
-    (native-inputs
-     `(("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
-       ("python2-requests" ,python2-requests) ;; for tests
-       ("python2-testpath" ,python2-testpath)
-       ("python2-mock" ,python2-mock)
-       ("python2-nose" ,python2-nose)))
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'delete-broken-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; These tests throw errors for unknown reasons.
-             (delete-file "IPython/core/tests/test_profile.py")
-             (delete-file "IPython/core/tests/test_interactiveshell.py")
-             (delete-file "IPython/core/tests/test_magic.py")
-             #t)))))
-    (home-page "https://ipython.org")
-    (synopsis "IPython is a tool for interactive computing in Python")
-    (description
-     "IPython provides a rich architecture for interactive computing with:
-Powerful interactive shells, a browser-based notebook, support for interactive
-data visualization, embeddable interpreters and tools for parallel
-computing.")
-    (license license:bsd-3)))
-
 (define-public python-ipython
   (package
     (name "python-ipython")
@@ -5700,6 +5637,70 @@ computing.")
              (delete-file "IPython/core/tests/test_display.py")
              ;; AttributeError: module 'IPython.core' has no attribute 'formatters'
              (delete-file "IPython/core/tests/test_interactiveshell.py")
+             #t)))))
+    (home-page "https://ipython.org")
+    (synopsis "IPython is a tool for interactive computing in Python")
+    (description
+     "IPython provides a rich architecture for interactive computing with:
+Powerful interactive shells, a browser-based notebook, support for interactive
+data visualization, embeddable interpreters and tools for parallel
+computing.")
+    (properties `((python2-variant . ,(delay python2-ipython))))
+    (license license:bsd-3)))
+
+;; This is the latest release of the LTS version of ipython with support for
+;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
+;; dropped support for Python 2.7.
+(define-public python2-ipython
+  (package
+    (name "python2-ipython")
+    (version "5.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipython" version ".tar.gz"))
+       (sha256
+        (base32 "01l93i4hspf0lvhmycvc8j378bslm9rw30mwfspsl6v1ayc69b2b"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python2-backports-shutil-get-terminal-size"
+        ,python2-backports-shutil-get-terminal-size)
+       ("python2-pathlib2" ,python2-pathlib2)
+       ("python2-pyzmq" ,python2-pyzmq)
+       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
+       ("python2-terminado" ,python2-terminado)
+       ("python2-matplotlib" ,python2-matplotlib)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-numpydoc" ,python2-numpydoc)
+       ("python2-jinja2" ,python2-jinja2)
+       ("python2-mistune" ,python2-mistune)
+       ("python2-pexpect" ,python2-pexpect)
+       ("python2-pickleshare" ,python2-pickleshare)
+       ("python2-simplegeneric" ,python2-simplegeneric)
+       ("python2-jsonschema" ,python2-jsonschema)
+       ("python2-traitlets" ,python2-traitlets)
+       ("python2-nbformat" ,python2-nbformat)
+       ("python2-pygments" ,python2-pygments)))
+    (inputs
+     `(("readline" ,readline)
+       ("which" ,which)))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)
+       ("python2-requests" ,python2-requests) ;; for tests
+       ("python2-testpath" ,python2-testpath)
+       ("python2-mock" ,python2-mock)
+       ("python2-nose" ,python2-nose)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'delete-broken-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; These tests throw errors for unknown reasons.
+             (delete-file "IPython/core/tests/test_profile.py")
+             (delete-file "IPython/core/tests/test_interactiveshell.py")
+             (delete-file "IPython/core/tests/test_magic.py")
              #t)))))
     (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
