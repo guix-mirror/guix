@@ -178,7 +178,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
 (define-public gpxsee
   (package
     (name "gpxsee")
-    (version "7.16")
+    (version "7.25")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -187,7 +187,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mkfhb2c9qafjpva600nyn6yik49l4q1k6id1xvrci37wsn6ijav"))))
+                "0lml3hz2zxljl9j5wnh7bn9bj8k9v3wf6bk3g77x9nnarsmw0fcx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -208,8 +208,10 @@ coordinates as well as partial support for adjustments in global coordinate syst
     (home-page "https://www.gpxsee.org")
     (synopsis "GPS log file viewer and analyzer")
     (description
-     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports
-all common GPS log file formats.")
+     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports all
+common GPS log file formats.  It can display multiple tracks on various on-
+and off-line maps.  You can easily add more maps and graph other captured data
+such as elevation, speed, heart rate, power, temperature, and gear shifts.")
     (license license:gpl3)))
 
 (define-public gpsd

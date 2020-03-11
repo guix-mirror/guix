@@ -561,6 +561,14 @@ development.")
        ("sqlite" ,sqlite)
        ("wxwidgets" ,wxwidgets-2)
        ("zlib" ,zlib)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-gui
+                    (lambda _
+                      ;; Fix for the GUI not showing up.
+                      (substitute* "Main.cpp"
+                        (("Hide\\(\\);") ""))
+                      #t)))))
     (synopsis "Graphical user interface for SpatiaLite")
     (description "Spatialite-gui provides a visual interface for viewing and
  maintaining a spatialite database.  You can easily see the structure of the

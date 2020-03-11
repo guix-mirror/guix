@@ -308,7 +308,7 @@ older games.")
 number of video game console emulators.  It features an interface that is
 usable with any game controller that has at least 4 buttons, theming support,
 and a game metadata scraper.")
-      (home-page "http://www.emulationstation.org")
+      (home-page "https://emulationstation.org")
       (license license:expat))))
 
 ;; Note: higan v107 has been released, but as explained by the dialog that

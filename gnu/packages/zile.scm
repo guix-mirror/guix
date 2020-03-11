@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
                "0x3byaddms8l3g7igx6njycqsq98wgapysdb5c7lhcnajlkp8y3s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
            (lambda* (#:key inputs #:allow-other-keys)
@@ -60,7 +61,18 @@
                (substitute* '("lib/spawni.c" "src/funcs.c")
                  (("/bin/sh")
                   (string-append bash "/bin/sh")))
-               #t))))))
+               #t)))
+         ;; Zile generates its manual pages by calling the built Zile
+         ;; with the --help argument.  That does not work when cross-
+         ;; compiling; use the native Zile added below in that case.
+         ,@(if (%current-target-system)
+               '((add-before 'build 'use-native-zile-for-documentation
+                   (lambda _
+                     (substitute* "build-aux/zile-help2man-wrapper"
+                       (("src/zile")
+                        (which "zile")))
+                     #t)))
+               '()))))
     (inputs
      `(("boehm-gc" ,libgc)
        ("ncurses" ,ncurses)
@@ -68,6 +80,11 @@
     (native-inputs
      `(("perl" ,perl)
        ("help2man" ,help2man)
+       ;; When cross-compiling, Zile needs a native version of itself to
+       ;; generate the manual pages (see the related phase above).
+       ,@(if (%current-target-system)
+             `(("self" ,this-package))
+             '())
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.gnu.org/software/zile/")
     (synopsis "Lightweight Emacs clone")

@@ -383,7 +383,7 @@ describe character bitmaps.  It contains the bitmap data as well as some
 metric information.  But t1lib is in itself entirely independent of the
 X11-system or any other graphical user interface.")
    (license license:gpl2)
-   (home-page "http://www.t1lib.org/")))
+   (home-page "https://www.t1lib.org/")))
 
 (define-public teckit
   (package

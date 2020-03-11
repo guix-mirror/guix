@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -784,13 +785,13 @@ intended to behave exactly the same as the original BWK awk.")
 (define-public python-pybedtools
   (package
     (name "python-pybedtools")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pybedtools" version))
               (sha256
                (base32
-                "1xl454ijvd4dzfvqgfahad49b49j7qy710fq9xh1rvk42z6x5ssf"))))
+                "14w5i40gi25clrr7h4wa2pcpnyipya8hrqi7nq77553zc5wf0df0"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -817,6 +818,10 @@ intended to behave exactly the same as the original BWK awk.")
                ;; (see: https://github.com/daler/pybedtools/issues/192).
                (("def test_getting_example_beds")
                 "def _do_not_test_getting_example_beds"))
+             ;; This issue still occurs on python2
+             (substitute* "pybedtools/test/test_issues.py"
+               (("def test_issue_303")
+                "def _test_issue_303"))
              #t))
          ;; TODO: Remove phase after it's part of PYTHON-BUILD-SYSTEM.
          ;; build system.
@@ -885,7 +890,12 @@ Python.")
     (license license:gpl2+)))
 
 (define-public python2-pybedtools
-  (package-with-python2 python-pybedtools))
+  (let ((pybedtools (package-with-python2 python-pybedtools)))
+    (package
+      (inherit pybedtools)
+      (native-inputs
+       `(("python2-pathlib" ,python2-pathlib)
+         ,@(package-native-inputs pybedtools))))))
 
 (define-public python-biom-format
   (package
@@ -12140,8 +12150,8 @@ reading, writing, and exporting phylogenetic trees.")
     (version "1.005")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://search.maven.org/remotecontent?"
-                                  "filepath=org/biojava/thirdparty/forester/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "org/biojava/thirdparty/forester/"
                                   version "/forester-" version "-sources.jar"))
               (file-name (string-append name "-" version ".jar"))
               (sha256
@@ -12217,7 +12227,8 @@ reading, writing, and exporting phylogenetic trees.")
            (method url-fetch)
            (uri (string-append "https://raw.githubusercontent.com/cmzmasek/forester/"
                                "29e04321615da6b35c1e15c60e52caf3f21d8e6a/"
-                               "forester/java/classes/resources/synth_look_and_feel_1.xml"))
+                               "forester/java/classes/resources/"
+                               "synth_look_and_feel_1.xml"))
            (file-name (string-append name "-synth-look-and-feel-" version ".xml"))
            (sha256
             (base32
@@ -13509,14 +13520,14 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
 (define-public python-pyfaidx
   (package
     (name "python-pyfaidx")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyfaidx" version))
        (sha256
         (base32
-         "02jvdx3ksy6w5gd29i1d0g0zsabbz7c14qg482ff7pza6sdl0b2i"))))
+         "038xi3a6zvrxbyyfpp64ka8pcjgsdq4fgw9cl5lpxbvmm1bzzw2q"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -13526,6 +13537,9 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
      "This package provides procedures for efficient pythonic random access to
 fasta subsequences.")
     (license license:bsd-3)))
+
+(define-public python2-pyfaidx
+  (package-with-python2 python-pyfaidx))
 
 (define-public python-cooler
   (package

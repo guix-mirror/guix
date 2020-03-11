@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -857,8 +858,8 @@ the la4j library are:
     (version "1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://search.maven.org/remotecontent?"
-                                  "filepath=pl/edu/icm/JLargeArrays/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "pl/edu/icm/JLargeArrays/"
                                   version "/JLargeArrays-" version
                                   "-sources.jar"))
               (file-name (string-append name "-" version ".jar"))
@@ -884,8 +885,8 @@ that can store up to 263 elements.")
     (version "3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://search.maven.org/remotecontent?"
-                                  "filepath=com/github/wendykierp/JTransforms/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "com/github/wendykierp/JTransforms/"
                                   version "/JTransforms-" version "-sources.jar"))
               (sha256
                (base32

@@ -164,6 +164,16 @@ etc/guix-%.service: etc/guix-%.service.in	\
 	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
+sysvinitservicedir = $(sysconfdir)/init.d
+nodist_sysvinitservice_DATA = etc/init.d/guix-daemon
+
+etc/init.d/guix-daemon: etc/init.d/guix-daemon.in	\
+			 $(top_builddir)/config.status
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
+	$(SED) -e 's|@''localstatedir''@|$(localstatedir)|' <	\
+	       "$<" > "$@.tmp";		\
+	mv "$@.tmp" "$@"
+
 # The '.conf' jobs for Upstart.
 upstartjobdir = $(libdir)/upstart/system
 nodist_upstartjob_DATA = etc/guix-daemon.conf etc/guix-publish.conf
@@ -177,7 +187,8 @@ etc/guix-%.conf: etc/guix-%.conf.in	\
 
 CLEANFILES +=					\
   $(nodist_systemdservice_DATA)			\
-  $(nodist_upstartjob_DATA)
+  $(nodist_upstartjob_DATA)			\
+  $(nodist_sysvinitservice_DATA)
 
 EXTRA_DIST +=					\
   %D%/AUTHORS					\
@@ -185,7 +196,8 @@ EXTRA_DIST +=					\
   etc/guix-daemon.service.in			\
   etc/guix-daemon.conf.in			\
   etc/guix-publish.service.in			\
-  etc/guix-publish.conf.in
+  etc/guix-publish.conf.in			\
+  etc/init.d/guix-daemon.in
 
 if CAN_RUN_TESTS
 

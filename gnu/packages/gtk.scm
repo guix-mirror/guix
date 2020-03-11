@@ -1732,7 +1732,7 @@ Parcellite and adds bugfixes and features.")
        ("python-2" ,python-2)
        ("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)))
-    (home-page "http://ebassi.github.io/graphene")
+    (home-page "https://ebassi.github.io/graphene/")
     (synopsis "Thin layer of graphic data types")
     (description "This library provides graphic types and their relative API;
 it does not deal with windowing system surfaces, drawing, scene graphs, or

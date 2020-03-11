@@ -361,6 +361,17 @@ sys_enable_guix_daemon()
                   systemctl enable guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via systemd"
             ;;
+        sysv-init)
+            { mkdir -p /etc/init.d;
+              cp "${ROOT_HOME}/.config/guix/current/etc/init.d/guix-daemon" \
+                 /etc/init.d/guix-daemon;
+              chmod 775 /etc/init.d/guix-daemon;
+
+              update-rc.d guix-daemon defaults &&
+                  update-rc.d guix-daemon enable &&
+                  service guix-daemon start; } &&
+                _msg "${PAS}enabled Guix daemon via sysv"
+            ;;
         NA|*)
             _msg "${ERR}unsupported init system; run the daemon manually:"
             echo "  ${ROOT_HOME}/.config/guix/current/bin/guix-daemon --build-users-group=guixbuild"

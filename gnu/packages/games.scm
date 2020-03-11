@@ -301,14 +301,14 @@ The game includes a built-in editor so you can design and share your own maps.")
 (define-public armagetronad
   (package
     (name "armagetronad")
-    (version "0.2.8.3.4")
+    (version "0.2.8.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/armagetronad/stable/"
                                   version "/armagetronad-" version ".src.tar.gz"))
               (sha256
                (base32
-                "1pgy0r80z702qdv94aw3ywdn4ynnr4cdi86ml558pljfc5ygasj4"))))
+                "1z266haq22n5b0733h7qsg1rpzhz8lvm82f7wd06r008iiar7jdl"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxml2" ,libxml2)
@@ -1118,7 +1118,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public nethack
   (package
     (name "nethack")
-    (version "3.6.5")
+    (version "3.6.6")
     (source
       (origin
         (method url-fetch)
@@ -1126,7 +1126,7 @@ watch your CPU playing while enjoying a cup of tea!")
          (string-append "https://www.nethack.org/download/" version "/nethack-"
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
-          (base32 "0xifs8pqfffnmkbpmrcd1xf14yakcj06nl2bbhy4dyacg8myysmv"))))
+          (base32 "1liyckjp34j354qnxc1zn9730lh1p2dabrg1hap24z6xnqx0rpng"))))
     (inputs
       `(("ncurses" ,ncurses)
         ("bison" ,bison)
@@ -3486,7 +3486,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
               ("tar" ,tar)
               ("gzip" ,gzip)
               ("tarball" ,source)))
-    (home-page "http://jxself.org/grue-hunter.shtml")
+    (home-page "https://jxself.org/grue-hunter.shtml")
     (synopsis "Text adventure game")
     (description
      "Grue Hunter is a text adventure game written in Perl.  You must make
@@ -6094,7 +6094,7 @@ original.")
        ("perl-test-runvalgrind" ,perl-test-runvalgrind)
        ("cmake-rules" ,shlomif-cmake-modules)
        ("rinutils" ,rinutils)))
-    (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
+    (home-page "https://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
 quotation from a collection of quotes.")

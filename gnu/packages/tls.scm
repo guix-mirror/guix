@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -276,7 +276,14 @@ required structures.")
                                   "/gnutls-" version ".tar.xz"))
               (sha256
                (base32
-                "14r2h73yfj66cm14k9mnb3kgzq5a7qjg5b31m53bf19vcxkwmwxi"))))))
+                "14r2h73yfj66cm14k9mnb3kgzq5a7qjg5b31m53bf19vcxkwmwxi"))))
+    (native-inputs
+     `(,@(package-native-inputs gnutls)
+
+       ;; Datefudge is used to fuzz time for tests, and its presence
+       ;; enables a test that uses 'setsid' from util-linux.
+       ("datefudge" ,datefudge)
+       ("util-linux" ,util-linux)))))
 
 (define-public guile3.0-gnutls
   (package
@@ -553,13 +560,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "1ar6mjax7cyvq3zgh64yrg485l02dy6zqddxjxg99nlvsi0cfc06"))))
+                "03fjmg0fgfy7xfn3i8rzn9i0i4amajmijkash84qb8mlphgrxpn0"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -610,7 +617,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "0g1p4nkaid6davjm5qz8lsln92dhjhlv3rrg8hcfpr7qhphbmp4m"))))
+                "1n5i0k6kwmd6wvivshfl3k4djwcpwx390c39xmr2hhrgpk5r285w"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)

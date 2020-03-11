@@ -10,7 +10,7 @@
 ;;; Copyright © 2018 Sandeep Subramanian <sandeepsubramanian94@gmail.com>
 ;;; Copyright © 2018 Charlie Ritter <chewzeirta@posteo.net>
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
+;;; Copyright © 2018, 2020 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -5843,6 +5843,8 @@ movies, and TV shows.")
         (base32
          "17j9hg967k1wp9xw3x84mqss58jkb8pvlrnlchz4i1hklgykxqbg"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)))
     (home-page "https://github.com/const-ae/ggsignif")
@@ -20750,3 +20752,34 @@ containing elevation data.")
 calculate the higher-order partial and semi-partial correlations but also with
 statistics and p-values of the correlation coefficients.")
     (license license:gpl2)))
+
+(define-public r-hrbrthemes
+  (package
+    (name "r-hrbrthemes")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hrbrthemes" version))
+       (sha256
+        (base32 "057h60b5p53dcyjyfwlgjc1ry968s9s64dw78p443w8717zk7zpc"))))
+    (properties `((upstream-name . "hrbrthemes")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-extrafont" ,r-extrafont)
+       ("r-gdtools" ,r-gdtools)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-scales" ,r-scales)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/hrbrmstr/hrbrthemes/")
+    (synopsis "Additional themes, theme components and utilities for @code{ggplot2}")
+    (description
+     "This package provides a compilation of extra @code{ggplot2} themes,
+scales and utilities, including a spell check function for plot label fields
+and an overall emphasis on typography.")
+    (license license:expat)))
