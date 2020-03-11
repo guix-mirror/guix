@@ -5843,6 +5843,8 @@ movies, and TV shows.")
         (base32
          "17j9hg967k1wp9xw3x84mqss58jkb8pvlrnlchz4i1hklgykxqbg"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)))
     (home-page "https://github.com/const-ae/ggsignif")
