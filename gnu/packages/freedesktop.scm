@@ -1389,8 +1389,9 @@ to applications simultaneously competing for fingerprint readers.")
     (version "0.23")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.freedesktop.org/software/" name
-                                  "/releases/" name "-" version ".tar.xz"))
+              (uri (string-append "https://www.freedesktop.org/software/"
+                                  "desktop-file-utils/releases/"
+                                  "desktop-file-utils-" version ".tar.xz"))
               (sha256
                (base32
                 "119kj2w0rrxkhg4f9cf5waa55jz1hj8933vh47vcjipcplql02bc"))))
