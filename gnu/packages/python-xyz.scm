@@ -2703,6 +2703,18 @@ reStructuredText.")
 (define-public python2-docutils
   (package-with-python2 python-docutils))
 
+;; python2-sphinx fails its test suite with newer versions.
+(define-public python2-docutils-0.14
+  (package
+    (inherit python2-docutils)
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "docutils" version))
+              (sha256
+               (base32
+                "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))))
+
 (define-public python-pygments
   (package
     (name "python-pygments")
