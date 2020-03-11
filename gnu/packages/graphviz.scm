@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -235,6 +235,9 @@ layout and visualization package.  With PyGraphviz you can create, edit, read,
 write, and draw graphs using Python to access the Graphviz graph data
 structure and layout algorithms.")
     (license license:bsd-3)))
+
+(define-public python2-pygraphviz
+  (package-with-python2 python-pygraphviz))
 
 (define-public gts
   (package
