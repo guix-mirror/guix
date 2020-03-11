@@ -8500,14 +8500,14 @@ be set via config files and/or environment variables.")
 (define-public python-contextlib2
   (package
     (name "python-contextlib2")
-    (version "0.5.5")
+    (version "0.6.0.post1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "contextlib2" version))
        (sha256
         (base32
-         "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
+         "0bhnr2ac7wy5l85ji909gyljyk85n92w8pdvslmrvc8qih4r1x01"))))
     (build-system python-build-system)
     (home-page "https://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
