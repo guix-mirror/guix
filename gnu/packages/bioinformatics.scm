@@ -13529,6 +13529,9 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
 fasta subsequences.")
     (license license:bsd-3)))
 
+(define-public python2-pyfaidx
+  (package-with-python2 python-pyfaidx))
+
 (define-public python-cooler
   (package
     (name "python-cooler")
