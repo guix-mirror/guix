@@ -303,15 +303,6 @@ without requiring the source code to be rewritten.")
               (patches
                (append (search-patches "guile-3.0-crash.patch")
                        (origin-patches (package-source guile-2.2))))))
-
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-2.2)
-       ;; XXX: On ARMv7, work around <https://bugs.gnu.org/39208> by disabling
-       ;; JIT.
-       ((#:configure-flags flags '())
-        (if (target-arm32?)
-            `(cons "--disable-jit" ,flags)
-            flags))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
