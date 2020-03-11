@@ -208,8 +208,10 @@ coordinates as well as partial support for adjustments in global coordinate syst
     (home-page "https://www.gpxsee.org")
     (synopsis "GPS log file viewer and analyzer")
     (description
-     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports
-all common GPS log file formats.")
+     "GPXSee is a Qt-based GPS log file viewer and analyzer that supports all
+common GPS log file formats.  It can display multiple tracks on various on-
+and off-line maps.  You can easily add more maps and graph other captured data
+such as elevation, speed, heart rate, power, temperature, and gear shifts.")
     (license license:gpl3)))
 
 (define-public gpsd
