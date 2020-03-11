@@ -785,13 +785,13 @@ intended to behave exactly the same as the original BWK awk.")
 (define-public python-pybedtools
   (package
     (name "python-pybedtools")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pybedtools" version))
               (sha256
                (base32
-                "1xl454ijvd4dzfvqgfahad49b49j7qy710fq9xh1rvk42z6x5ssf"))))
+                "14w5i40gi25clrr7h4wa2pcpnyipya8hrqi7nq77553zc5wf0df0"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -818,6 +818,10 @@ intended to behave exactly the same as the original BWK awk.")
                ;; (see: https://github.com/daler/pybedtools/issues/192).
                (("def test_getting_example_beds")
                 "def _do_not_test_getting_example_beds"))
+             ;; This issue still occurs on python2
+             (substitute* "pybedtools/test/test_issues.py"
+               (("def test_issue_303")
+                "def _test_issue_303"))
              #t))
          ;; TODO: Remove phase after it's part of PYTHON-BUILD-SYSTEM.
          ;; build system.
@@ -886,7 +890,12 @@ Python.")
     (license license:gpl2+)))
 
 (define-public python2-pybedtools
-  (package-with-python2 python-pybedtools))
+  (let ((pybedtools (package-with-python2 python-pybedtools)))
+    (package
+      (inherit pybedtools)
+      (native-inputs
+       `(("python2-pathlib" ,python2-pathlib)
+         ,@(package-native-inputs pybedtools))))))
 
 (define-public python-biom-format
   (package
