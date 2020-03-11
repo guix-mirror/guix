@@ -2398,14 +2398,14 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "20.0.8")
+    (version "20.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "096r7g5cv85vxymg9iqbn5z749613snlvd6p3rf1nxnrd386j0qz"))))
+         "0y6x41l3ja891993i4adylbbyly0r4m52n2d0a0y9y4h3lzyh4l5"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
