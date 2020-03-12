@@ -5170,14 +5170,14 @@ specific S3-method.")
 (define-public r-vim
   (package
     (name "r-vim")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VIM" version))
        (sha256
         (base32
-         "09600piny3qrxrmh8844iwrvgrhwan1c3nlh6irqy1vjha2w4gb3"))))
+         "0w22ir0gvym7gqd6nw2j7w5ivlb3az1dkfxv33imimkb7c83056a"))))
     (properties `((upstream-name . "VIM")))
     (build-system r-build-system)
     (propagated-inputs
