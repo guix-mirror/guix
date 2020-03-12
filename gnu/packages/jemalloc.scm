@@ -59,6 +59,9 @@
            '()
            '(#:configure-flags (list "--disable-thp")))))
     (inputs `(("perl" ,perl)))
+    ;; Install the scripts to a separate output to avoid referencing Perl and
+    ;; Bash in the default output, saving ~75 MiB on the closure.
+    (outputs '("out" "bin"))
     (home-page "http://jemalloc.net/")
     (synopsis "General-purpose scalable concurrent malloc implementation")
     (description
