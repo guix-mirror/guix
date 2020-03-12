@@ -114,11 +114,11 @@
                "-DWITH_MOD_OCEANSIM=ON"
                "-DWITH_OPENSUBDIV=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
-               (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
+               (string-append "-DPYTHON_LIBRARY=python" ,python-version)
                (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
                               "/lib")
                (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
-                              "/include/python" ,python-version "m")
+                              "/include/python" ,python-version)
                (string-append "-DPYTHON_VERSION=" ,python-version)
                (string-append "-DPYTHON_NUMPY_PATH="
                               (assoc-ref %build-inputs "python-numpy")
