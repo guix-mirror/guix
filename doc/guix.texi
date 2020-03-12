@@ -3122,7 +3122,7 @@ the store.
 @itemx -A [@var{regexp}]
 List packages currently available in the distribution for this system
 (@pxref{GNU Distribution}).  When @var{regexp} is specified, list only
-installed packages whose name matches @var{regexp}.
+available packages whose name matches @var{regexp}.
 
 For each package, print the following items separated by tabs: its name,
 its version string, the parts of the package (@pxref{Packages with
