@@ -4747,7 +4747,7 @@ the following command creates a Guix development environment that
 additionally includes Git and strace:
 
 @example
-guix environment guix --ad-hoc git strace
+guix environment --pure guix --ad-hoc git strace
 @end example
 
 Sometimes it is desirable to isolate the environment as much as
