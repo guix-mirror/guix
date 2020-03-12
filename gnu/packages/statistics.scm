@@ -1983,20 +1983,21 @@ and environmental data in the framework of Euclidean exploratory methods.")
 (define-public r-xml2
   (package
     (name "r-xml2")
-    (version "1.2.2")
+    (version "1.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xml2" version))
        (sha256
         (base32
-         "1x3q3a0xv8j0nx3hs4d3pfjm5g9nvaxmfrapba9f4nrkqi3z2l1h"))))
+         "0mp61gg8s3zfq10g10vjk0mrcx6d5gm81n4ji8an2my11g61yq94"))))
     (build-system r-build-system)
     (inputs
      `(("libxml2" ,libxml2)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hadley/xml2")
