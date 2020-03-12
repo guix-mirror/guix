@@ -3482,6 +3482,12 @@ thanks to the use of namespaces.")
                       _ program)
                      (string-append "/run/setuid-programs/singularity-"
                                     program "-helper")))
+
+                  ;; These squashfs mount options are apparently no longer
+                  ;; supported since Linux-libre 5.4.5.
+                  (substitute* "src/lib/image/squashfs/mount.c"
+                    (("\"errors=remount-ro\"")
+                     "NULL"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
