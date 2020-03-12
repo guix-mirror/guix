@@ -10830,6 +10830,9 @@ specified in @var{file}.  @var{file} must contain a @dfn{manifest}, as
 with the @code{-m} option of @command{guix package} (@pxref{Invoking
 guix package}).
 
+This option can be repeated several times, in which case the manifests
+are concatenated.
+
 @item --coverage[=@var{count}]
 @itemx -c [@var{count}]
 Report on substitute coverage for packages: list packages with at least

@@ -499,17 +499,19 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
 (define (guix-weather . args)
   (define (package-list opts)
     ;; Return the package list specified by OPTS.
-    (let ((file (assoc-ref opts 'manifest))
-          (base (filter-map (match-lambda
-                              (('argument . spec)
-                               (specification->package spec))
-                              (_
-                               #f))
-                            opts)))
-      (if (and (not file) (null? base))
+    (let ((files (filter-map (match-lambda
+                               (('manifest . file) file)
+                               (_ #f))
+                             opts))
+          (base  (filter-map (match-lambda
+                               (('argument . spec)
+                                (specification->package spec))
+                               (_
+                                #f))
+                             opts)))
+      (if (and (null? files) (null? base))
           (all-packages)
-          (append base
-                  (if file (load-manifest file) '())))))
+          (append base (append-map load-manifest files)))))
 
   (with-error-handling
     (parameterize ((current-terminal-columns (terminal-columns))
