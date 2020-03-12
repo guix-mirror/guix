@@ -864,7 +864,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
 (define-public libgme
   (package
     (name "libgme")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
@@ -872,10 +872,10 @@ interface.  It is implemented as a frontend to @code{klick}.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0hkkmxbaas2sirlb5i4r10mgbbiaapjx8pazifabwba23m3wnijh"))))
+                "07857vdkak306d9s5g6fhmjyxk7vijzjhkmqb15s7ihfxx9lx8xb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f))                    ; no check target
     (home-page "https://bitbucket.org/mpyne/game-music-emu")
     (synopsis "Video game music file playback library")
     (description
