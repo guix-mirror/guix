@@ -5946,6 +5946,54 @@ CLI scripts:
        `(("python2-futures" ,python2-futures)
          ,@(package-propagated-inputs ipyparallel))))))
 
+(define-public python-ipython-cluster-helper
+  (package
+    (name "python-ipython-cluster-helper")
+    (version "0.6.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ipython-cluster-helper" version))
+        (sha256
+         (base32
+          "1l6mlwxlkxpbvawfwk6qffich7ahg9hq2bxfissgz6144p3k4arj"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (substitute* "requirements.txt"
+                   (("ipython.*") "ipython\n"))
+                 #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f      ; Test suite can't find IPython.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (if tests?
+               (begin
+                 (setenv "HOME" (getcwd))
+                 (add-installed-pythonpath inputs outputs)
+                 (invoke "python" "example/example.py" "--local"))
+               #t))))))
+    (propagated-inputs
+     `(("python-ipyparallel" ,python-ipyparallel)
+       ("python-ipython" ,python-ipython)
+       ("python-netifaces" ,python-netifaces)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/roryk/ipython-cluster-helper")
+    (synopsis
+     "Simplify IPython cluster start up and use for multiple schedulers")
+    (description
+     "@code{ipython-cluster-helper} creates a throwaway parallel IPython
+profile, launches a cluster and returns a view.  On program exit it shuts the
+cluster down and deletes the throwaway profile.")
+    (license license:expat)))
+
+(define-public python2-ipython-cluster-helper
+  (package-with-python2 python-ipython-cluster-helper))
+
 (define-public python-traitlets
   (package
     (name "python-traitlets")
