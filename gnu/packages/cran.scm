@@ -14082,19 +14082,21 @@ package.")
 (define-public r-ggplotify
   (package
     (name "r-ggplotify")
-    (version "0.0.4")
+    (version "0.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplotify" version))
        (sha256
         (base32
-         "0nv3wdmxnc5ww9m3xlgnb0jp30j45dg33nqc6gg3y36svg8anjcg"))))
+         "0pfnp4lrissf21z7867kdm6slr979kchyva8iaf83i1302kscph3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-gridgraphics" ,r-gridgraphics)
        ("r-rvcheck" ,r-rvcheck)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/GuangchuangYu/ggplotify")
     (synopsis "Convert plots to @code{grob} or @code{ggplot} object")
     (description
