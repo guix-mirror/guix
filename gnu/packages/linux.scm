@@ -3994,6 +3994,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
+    (replacement bluez/fixed)
     (version "5.52")
     (source (origin
               (method url-fetch)
@@ -4058,6 +4059,14 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
     (license license:gpl2+)))
+
+(define bluez/fixed
+  (package
+    (inherit bluez)
+    (source (origin
+              (inherit (package-source bluez))
+              (patches (append (origin-patches (package-source bluez))
+                               (search-patches "bluez-CVE-2020-0556.patch")))))))
 
 (define-public fuse-exfat
   (package
