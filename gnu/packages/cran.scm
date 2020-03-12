@@ -20131,14 +20131,14 @@ well as Ravand and Robitzsch (2015).")
 (define-public r-tam
   (package
     (name "r-tam")
-    (version "3.3-10")
+    (version "3.4-26")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TAM" version))
        (sha256
         (base32
-         "1rkjp5x6wrk1dfspp1imvfals0wvy4w1wb8a5mhfbnilc7vgnlbq"))))
+         "111d7qkxhwh1lfvldyh9d61pdb5vb6x8lr8n9h95ssvw07vjqvk9"))))
     (properties `((upstream-name . "TAM")))
     (build-system r-build-system)
     (propagated-inputs
