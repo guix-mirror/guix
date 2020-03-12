@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -689,6 +690,34 @@ as the 'native-search-paths' field."
   ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
   ;; report two gfortran@5 that are in fact identical.
   gfortran-7)
+
+(define-public libgccjit
+  (package
+    (inherit gcc-9)
+    (name "libgccjit")
+    (outputs (delete "lib" (package-outputs gcc)))
+    (properties (alist-delete 'hidden? (package-properties gcc)))
+    (arguments
+     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
+                                                (guix build utils)
+                                                (ice-9 regex)
+                                                (srfi srfi-1)
+                                                (srfi srfi-26))
+                                     ,@(package-arguments gcc))
+       ((#:configure-flags flags)
+        `(append `("--enable-host-shared"
+                   ,(string-append "--enable-languages=jit"))
+                 (remove (cut string-match "--enable-languages.*" <>)
+                         ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'remove-broken-or-conflicting-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each delete-file
+                         (find-files (string-append (assoc-ref outputs "out") "/bin")
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))
+               #t))))))))
+
 
 (define-public gccgo-4.9
   (custom-gcc gcc-4.9 "gccgo" '("go")
