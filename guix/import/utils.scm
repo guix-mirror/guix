@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
@@ -47,7 +47,6 @@
   #:export (factorize-uri
 
             flatten
-            assoc-ref*
 
             url-fetch
             guix-hash-url
@@ -109,13 +108,6 @@ of the string VERSION is replaced by the symbol 'version."
     ((elem memo)
      (cons elem memo)))
    '() lst))
-
-(define (assoc-ref* alist key . rest)
-  "Return the value for KEY from ALIST.  For each additional key specified,
-recursively apply the procedure to the sub-list."
-  (if (null? rest)
-      (assoc-ref alist key)
-      (apply assoc-ref* (assoc-ref alist key) rest)))
 
 (define (url-fetch url file-name)
   "Save the contents of URL to FILE-NAME.  Return #f on failure."
