@@ -1971,7 +1971,7 @@ The cutbuffer and clipboard selection are always synchronized.")
 (define-public jgmenu
   (package
     (name "jgmenu")
-    (version "4.0.1")
+    (version "4.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1981,7 +1981,7 @@ The cutbuffer and clipboard selection are always synchronized.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q0rpg2d96sn3rrdi8m7bngnxxqyxilpjxi7skiw4gvpiv1akxjp"))))
+         "1wsh37rapb1bszlq36hvwxqvfds39hbvbl152m8as4zlh93wfvvk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppcheck" ,cppcheck)
