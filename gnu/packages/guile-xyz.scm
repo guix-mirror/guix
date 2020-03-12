@@ -21,7 +21,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
-;;; Copyright © 2019 Amar Singh <nly@disroot.org>
+;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -3144,3 +3144,33 @@ models and also supports a rich set of boolean query operators.")
     (inputs
      `(("guile" ,guile-next)
        ,@(alist-delete "guile" (package-inputs guile-xapian))))))
+
+(define-public guile-torrent
+  (package
+    (name "guile-torrent")
+    (version "0.1.3")
+    (source (origin (method git-fetch)
+                    (uri (git-reference
+                          (url
+                           "https://github.com/o-nly/torrent.git")
+                          (commit version)))
+                    (file-name (git-file-name name version))
+                    (sha256
+                     (base32
+                      "1yiagi55ncq1x7s9n7salzywjm4l96y3n7y3s47a9anvz87mrmim"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("guile" ,guile-2.2)
+       ("texinfo" ,texinfo)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile-gcrypt" ,guile-gcrypt)))
+    (home-page "https://github.com/o-nly/torrent")
+    (synopsis "Torrent library for GNU Guile")
+    (description "This package provides facilities for working with
+@code{.torrent} or metainfo files.  Implements a bencode reader and writer
+according to Bitorrent BEP003.")
+    (license license:gpl3+)))
