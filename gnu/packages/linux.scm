@@ -3577,6 +3577,36 @@ IDE driver subsystem.  Many external USB drive enclosures with SCSI-ATA Command
 Translation (@dfn{SAT}) are also supported.")
     (license (license:non-copyleft "file://LICENSE.TXT"))))
 
+(define-public nvme-cli
+  (package
+    (name "nvme-cli")
+    (version "1.10.1")
+    (home-page "https://github.com/linux-nvme/nvme-cli")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "12wp2wxmsw2v8m9bhvwvdbhdgx1md8iilhbl19sfzz2araiwi2x8"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure) ; No ./configure script
+                  (replace 'install
+                    (lambda _
+                      (invoke "make" "install-spec" "PREFIX="
+                              (string-append "DESTDIR=" %output)))))
+       #:tests? #f)) ; The tests require sysfs, which is not accessible from
+                     ; the build environment
+    (synopsis "NVM-Express user space tooling for Linux")
+    (description "Nvme-cli is a utility to provide standards compliant tooling
+for NVM-Express drives.  It was made specifically for Linux as it relies on the
+IOCTLs defined by the mainline kernel driver.")
+    (license license:gpl2+)))
+
 (define-public rfkill
   (package
     (name "rfkill")
