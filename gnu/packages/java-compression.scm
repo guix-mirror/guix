@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system ant)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -36,20 +37,25 @@
   (package
     (name "java-snappy")
     (version "1.1.7.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0v7mrc62v2wyr5l3c5xx11rn0k5bcl1l05cwr79xyw7zqr8k71qh"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xerial/snappy-java")
+             (commit version)))
+       (sha256
+        (base32 "07c145w1kv8g7dbwpy5xss142il7zr0qq78p2ih76azgl97n5cba"))
+       (file-name (git-file-name name version))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "snappy.jar"
        #:source-dir "src/main/java"
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'build 'remove-binaries
            (lambda _
              (delete-file "lib/org/xerial/snappy/OSInfo.class")
