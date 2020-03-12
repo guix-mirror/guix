@@ -3,7 +3,7 @@
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +35,7 @@
 (define-public java-snappy
   (package
     (name "java-snappy")
-    (version "1.1.7.2")
+    (version "1.1.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/xerial/snappy-java/archive/"
@@ -43,7 +43,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1p557vdv006ysgxbpp83krmq0066k46108vyiyka69w8i4i8rbbm"))))
+                "0v7mrc62v2wyr5l3c5xx11rn0k5bcl1l05cwr79xyw7zqr8k71qh"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "snappy.jar"
