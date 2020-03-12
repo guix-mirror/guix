@@ -5888,6 +5888,64 @@ away.")
 (define-public python2-ipython-genutils
   (package-with-python2 python-ipython-genutils))
 
+(define-public python-ipyparallel
+  (package
+    (name "python-ipyparallel")
+    (version "6.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ipyparallel" version))
+        (sha256
+         (base32
+          "0rf0dbpxf5z82bw8lsjj45r3wdd4wc74anz4wiiaf2rbjqlb1ivn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; RuntimeError: IO Loop failed to start
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'prepare-for-tests
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-decorator" ,python-decorator)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-tornado" ,python-tornado)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-testpath" ,python-testpath)))
+    (home-page "https://ipython.org/")
+    (synopsis "Interactive Parallel Computing with IPython")
+    (description
+     "@code{ipyparallel} is a Python package and collection of CLI scripts for
+controlling clusters for Jupyter.  @code{ipyparallel} contains the following
+CLI scripts:
+@enumerate
+@item ipcluster - start/stop a cluster
+@item ipcontroller - start a scheduler
+@item ipengine - start an engine
+@end enumerate")
+    (license license:bsd-3)))
+
+(define-public python2-ipyparallel
+  (let ((ipyparallel (package-with-python2 python-ipyparallel)))
+    (package
+      (inherit ipyparallel)
+      (propagated-inputs
+       `(("python2-futures" ,python2-futures)
+         ,@(package-propagated-inputs ipyparallel))))))
+
 (define-public python-traitlets
   (package
     (name "python-traitlets")
