@@ -679,18 +679,18 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
   (let* ((patches (cons* (search-patch "guile-relocatable.patch")
-                         (search-patch "guile-2.2-default-utf8.patch")
+                         (search-patch "guile-default-utf8.patch")
                          (search-patch "guile-linux-syscalls.patch")
-                         (origin-patches (package-source guile-2.2))))
-         (source  (origin (inherit (package-source guile-2.2))
+                         (origin-patches (package-source guile-2.0))))
+         (source  (origin (inherit (package-source guile-2.0))
                     (patches patches)))
-         (guile (package (inherit guile-2.2)
-                  (name (string-append (package-name guile-2.2) "-static"))
+         (guile (package (inherit guile-2.0)
+                  (name (string-append (package-name guile-2.0) "-static"))
                   (source source)
                   (synopsis "Statically-linked and relocatable Guile")
 
                   ;; Remove the 'debug' output (see above for the reason.)
-                  (outputs (delete "debug" (package-outputs guile-2.2)))
+                  (outputs (delete "debug" (package-outputs guile-2.0)))
 
                   (inputs
                    `(("libunistring:static" ,libunistring "static")
@@ -699,9 +699,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
                      ,@(alist-delete "bdw-gc"
-                                     (package-propagated-inputs guile-2.2))))
+                                     (package-propagated-inputs guile-2.0))))
                   (arguments
-                   (substitute-keyword-arguments (package-arguments guile-2.2)
+                   (substitute-keyword-arguments (package-arguments guile-2.0)
                      ((#:configure-flags flags '())
                       ;; When `configure' checks for ltdl availability, it
                       ;; doesn't try to link using libtool, and thus fails
@@ -724,7 +724,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                (("^guile_LDFLAGS =")
                                 "guile_LDFLAGS = -all-static")
 
-                               ;; Add `-ldl' *after* libguile-2.2.la.
+                               ;; Add `-ldl' *after* libguile-2.0.la.
                                (("^guile_LDADD =(.*)$" _ ldadd)
                                 (string-append "guile_LDADD = "
                                                (string-trim-right ldadd)
@@ -756,13 +756,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                 (out    (assoc-ref %outputs "out"))
                 (guile1 (string-append in "/bin/guile"))
                 (guile2 (string-append out "/bin/guile")))
-           (mkdir-p (string-append out "/share/guile/2.2"))
-           (copy-recursively (string-append in "/share/guile/2.2")
-                             (string-append out "/share/guile/2.2"))
+           (mkdir-p (string-append out "/share/guile/2.0"))
+           (copy-recursively (string-append in "/share/guile/2.0")
+                             (string-append out "/share/guile/2.0"))
 
-           (mkdir-p (string-append out "/lib/guile/2.2/ccache"))
-           (copy-recursively (string-append in "/lib/guile/2.2/ccache")
-                             (string-append out "/lib/guile/2.2/ccache"))
+           (mkdir-p (string-append out "/lib/guile/2.0/ccache"))
+           (copy-recursively (string-append in "/lib/guile/2.0/ccache")
+                             (string-append out "/lib/guile/2.0/ccache"))
 
            (mkdir (string-append out "/bin"))
            (copy-file guile1 guile2)

@@ -1,6 +1,17 @@
-This patch changes Guile to use a default search path relative to the
-location of the `guile' binary, allowing it to be relocated.
+From 501ad55982a8f92a7a95c76c75944d644870181d Mon Sep 17 00:00:00 2001
+From: Ludovic Courtès <ludo@gnu.org>
+Date: Thu, 12 Mar 2020 15:16:04 +0100
+Subject: [PATCH] load: Make Guile run-time relocatable using /proc/self/exe.
 
+Import from
+
+    http://git.savannah.gnu.org/cgit/guix.git/commit/?id=920f2c42ce3345dc1355a41377ebf01a33fdae51
+---
+ libguile/load.c | 35 +++++++++++++++++++++++++++++------
+ 1 file changed, 29 insertions(+), 6 deletions(-)
+
+diff --git a/libguile/load.c b/libguile/load.c
+index c2ee5093a..128cdf95a 100644
 --- a/libguile/load.c
 +++ b/libguile/load.c
 @@ -26,6 +26,7 @@
@@ -11,7 +22,7 @@ location of the `guile' binary, allowing it to be relocated.
  
  #include "libguile/_scm.h"
  #include "libguile/alist.h"
-@@ -326,6 +327,32 @@ scm_init_load_path ()
+@@ -325,6 +326,32 @@ scm_init_load_path ()
    SCM cpath = SCM_EOL;
  
  #ifdef SCM_LIBRARY_DIR
@@ -44,25 +55,28 @@ location of the `guile' binary, allowing it to be relocated.
    env = scm_i_mirror_backslashes (getenv ("GUILE_SYSTEM_PATH"));
    if (env && strcmp (env, "") == 0)
      /* special-case interpret system-path=="" as meaning no system path instead
-@@ -334,10 +361,7 @@ scm_init_load_path ()
+@@ -333,10 +360,7 @@ scm_init_load_path ()
    else if (env)
      path = scm_parse_path (scm_from_locale_string (env), path);
    else
--    path = scm_list_4 (scm_from_utf8_string (SCM_LIBRARY_DIR),
--                       scm_from_utf8_string (SCM_SITE_DIR),
--                       scm_from_utf8_string (SCM_GLOBAL_SITE_DIR),
--                       scm_from_utf8_string (SCM_PKGDATA_DIR));
+-    path = scm_list_4 (scm_from_locale_string (SCM_LIBRARY_DIR),
+-                       scm_from_locale_string (SCM_SITE_DIR),
+-                       scm_from_locale_string (SCM_GLOBAL_SITE_DIR),
+-                       scm_from_locale_string (SCM_PKGDATA_DIR));
 +    path = scm_list_1 (scm_from_locale_string (module_dir));
  
    env = scm_i_mirror_backslashes (getenv ("GUILE_SYSTEM_COMPILED_PATH"));
    if (env && strcmp (env, "") == 0)
-@@ -347,8 +371,7 @@ scm_init_load_path ()
+@@ -346,8 +370,7 @@ scm_init_load_path ()
      cpath = scm_parse_path (scm_from_locale_string (env), cpath);
    else
      {
--      cpath = scm_list_2 (scm_from_utf8_string (SCM_CCACHE_DIR),
--                          scm_from_utf8_string (SCM_SITE_CCACHE_DIR));
+-      cpath = scm_list_2 (scm_from_locale_string (SCM_CCACHE_DIR),
+-                          scm_from_locale_string (SCM_SITE_CCACHE_DIR));
 +      cpath = scm_list_1 (scm_from_locale_string (ccache_dir));
      }
  
  #endif /* SCM_LIBRARY_DIR */
+-- 
+2.24.0
+
