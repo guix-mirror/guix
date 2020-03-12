@@ -27,6 +27,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -530,6 +531,75 @@ everything from small to very large projects with speed and efficiency.")
        ("perl" ,perl)
        ("zlib" ,zlib)
        ("bash-for-tests" ,bash)))))
+
+(define-public gitless
+  (package
+    (name "gitless")
+    (version "0.8.8")
+    (source
+     (origin
+       ;; The PyPI package lacks a test suite.  Build directly from git.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gitless-vcs/gitless")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "048kl27zjr68hgs70g3l98ci9765wxva6azzrhcdys7nsdd493n6"))
+       (file-name (git-file-name name version))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'loosen-requirements
+           (lambda _
+             (substitute* "setup.py"
+               ;; Using Guix's python-pygit2 1.1.0 appears to work fine…
+               (("pygit2==") "pygit2>="))
+             #t))
+         (add-before 'check 'prepare-for-tests
+           (lambda _
+             ;; Find the 'gl' command.
+             (rename-file "gl.py" "gl")
+             (setenv "PATH" (string-append (getcwd) ":" (getenv "PATH")))
+
+             ;; The tests try to run git as if it were already set up.
+             (setenv "HOME" (getcwd))
+             (invoke "git" "config" "--global" "user.email" "git@example.com")
+             (invoke "git" "config" "--global" "user.name" "Guix")))
+         (replace 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (git (assoc-ref inputs "git")))
+               (wrap-program (string-append out "/bin/gl")
+                 `("PATH" ":" prefix (,(string-append git "/bin")))
+                 `("PYTHONPATH" ":" =
+                   (,(string-append out "/lib/python"
+                                    ,(version-major+minor
+                                      (package-version python))
+                                    "/site-packages:")
+                    ,(getenv "PYTHONPATH"))))
+               #t))))))
+    (native-inputs
+     `(("git-for-tests" ,git-minimal)))
+    (inputs
+     `(("git" ,git-minimal)
+       ("python-clint" ,python-clint)
+       ("python-pygit2" ,python-pygit2)
+       ("python-sh" ,python-sh)))
+    (home-page "https://gitless.com")
+    (synopsis "Simple version control system built on top of Git")
+    (description
+     "Gitless is a Git-compatible version control system that aims to be easy to
+learn and use.  It simplifies the common workflow by committing changes to
+tracked files by default and saving any uncommitted changes as part of a branch.
+
+The friendly @command{gl} command-line interface gives feedback and helps you
+figure out what to do next.
+
+Gitless is implemented on top of Git and its commits and repositories are
+indistinguishable from Git's.  You (or other contributors) can always fall back
+on @command{git}, and use any regular Git hosting service.")
+    (license license:expat)))
 
 (define-public libgit2
   (package
