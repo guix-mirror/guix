@@ -8187,8 +8187,9 @@ Jupyter kernels such as IJulia and IRKernel.")
         (base32
          "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
     (build-system python-build-system)
-    ;; Tests only run in an TTY.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f))    ; Tests only run in a TTY.
     (propagated-inputs
      `(("python2-ipykernel" ,python2-ipykernel)
        ("python2-jupyter-client" ,python2-jupyter-client)
