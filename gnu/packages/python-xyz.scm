@@ -8172,6 +8172,7 @@ in the data.")
     (description "This package provides a terminal-based console frontend for
 Jupyter kernels.  It also allows for console-based interaction with non-Python
 Jupyter kernels such as IJulia and IRKernel.")
+    (properties `((python2-variant . ,(delay python2-jupyter-console))))
     (license license:bsd-3)))
 
 (define-public python2-jupyter-console
