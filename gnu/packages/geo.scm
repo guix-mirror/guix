@@ -1523,3 +1523,29 @@ input file (in @code{.osm} or @code{.osm.pbf} format).")
 tools supporting SpatiaLite.")
     (home-page "https://www.gaia-gis.it/fossil/spatialite-tools/index")
     (license license:gpl3+)))
+
+(define-public virtualpg
+  (package
+    (name "virtualpg")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gaia-gis.it/gaia-sins/"
+                           "virtualpg-" version ".tar.gz"))
+       (sha256
+        (base32 "0kjipcd08vvn188xmwbs7sw41xcs06x47n2hbqshpjcr51mxbarp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("postgresql" ,postgresql)
+       ("sqlite" ,sqlite)))
+    (synopsis "Allow SQLite/SpatiaLite to access PostgreSQL/PostGIS tables")
+    (description
+     "VirtualPG is a dynamic extension for the SQLite DBMS.  It implements
+the VirtualPostgres driver, allowing to directly exchange data between SQLite
+and PostgreSQL; if SpatiaLite is available even PostGIS geometries can be
+exchanged form one Spatial DBMS and the other.")
+    (home-page "https://www.gaia-gis.it/fossil/virtualpg/index")
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:mpl1.1))))
