@@ -5305,14 +5305,14 @@ contain lags, diffs and missing values.")
 (define-public r-catdap
   (package
     (name "r-catdap")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "catdap" version))
        (sha256
         (base32
-         "0i877l61f6c75pczi235rzci67w29zv1d7z5zn5p5ymndclvlpl2"))))
+         "0fyhl69z2lznymvpzxra9qvcg85ggzkfjy68c6mzdmf1ja44d2k5"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
