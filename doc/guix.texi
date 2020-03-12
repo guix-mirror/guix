@@ -10860,6 +10860,9 @@ likewise for @code{qgpgme} and the 46 packages that depend on it.
 If you are a Guix developer, or if you are taking care of this build farm,
 you'll probably want to have a closer look at these packages: they may simply
 fail to build.
+
+@item --display-missing
+Display the list of store items for which substitutes are missing.
 @end table
 
 @node Invoking guix processes

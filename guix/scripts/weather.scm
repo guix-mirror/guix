@@ -175,8 +175,10 @@ about the derivations queued, as is the case with Hydra."
       #f                                          ;no derivation information
       (lset-intersection string=? queued items)))
 
-(define (report-server-coverage server items)
-  "Report the subset of ITEMS available as substitutes on SERVER."
+(define* (report-server-coverage server items
+                                 #:key display-missing?)
+  "Report the subset of ITEMS available as substitutes on SERVER.
+When DISPLAY-MISSING? is true, display the list of missing substitutes."
   (define MiB (* (expt 2 20) 1.))
 
   (format #t (G_ "looking for ~h store items on ~a...~%")
@@ -260,7 +262,12 @@ are queued~%")
                                system
                                (* (throughput builds build-timestamp)
                                   3600.))))
-                    (histogram build-system cons '() latest)))))))
+                    (histogram build-system cons '() latest))))
+
+      (when (and display-missing? (not (null? missing)))
+        (newline)
+        (format #t (G_ "Substitutes are missing for the following items:~%"))
+        (format #t "~{  ~a~%~}" missing)))))
 
 
 ;;;
@@ -280,6 +287,8 @@ Report the availability of substitutes.\n"))
   -c, --coverage[=COUNT]
                          show substitute coverage for packages with at least
                          COUNT dependents"))
+  (display (G_ "
+      --display-missing  display the list of missing substitutes"))
   (display (G_ "
   -s, --system=SYSTEM    consider substitutes for SYSTEM--e.g., \"i686-linux\""))
   (newline)
@@ -318,6 +327,9 @@ Report the availability of substitutes.\n"))
                    (alist-cons 'coverage
                                (if arg (string->number* arg) 0)
                                result)))
+         (option '("display-missing") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'display-missing? #t result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg result)))))
@@ -525,7 +537,9 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                                     (package-outputs packages system))
                                   systems))))))
         (for-each (lambda (server)
-                    (report-server-coverage server items)
+                    (report-server-coverage server items
+                                            #:display-missing?
+                                            (assoc-ref opts 'display-missing?))
                     (match (assoc-ref opts 'coverage)
                       (#f #f)
                       (threshold
