@@ -82,7 +82,6 @@
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
              ("gnutls" ,gnutls)
-             ("icu4c" ,icu4c)
              ("libgcrypt" ,libgcrypt)
              ("zlib" ,zlib)))
    (native-inputs `(("libtool" ,libtool)
