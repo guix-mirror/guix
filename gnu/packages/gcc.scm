@@ -471,7 +471,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"
                                        "gcc-6-libsanitizer-mode-size.patch"
-                                       "gcc-fix-texi2pod.patch"))
+                                       "gcc-fix-texi2pod.patch"
+                                       "gcc-5-hurd.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix 'libcc1/configure' error when cross-compiling GCC.

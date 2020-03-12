@@ -93,13 +93,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (mlambdaq (glibc)
     "Return a variant of GCC that uses the bootstrap variant of GLIBC."
     (package
-      (inherit gcc)
+      (inherit gcc-5)
       (outputs '("out")) ;all in one so libgcc_s is easily found
       (inputs
        `( ;; Distinguish the name so we can refer to it below.
          ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
          ("libc:static" ,(glibc-for-bootstrap glibc) "static")
-         ,@(package-inputs gcc))))))
+         ,@(package-inputs gcc-5))))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -138,7 +138,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                              (cons (search-path-specification
                                     (variable "CROSS_CPLUS_INCLUDE_PATH")
                                     (files '("include")))
-                                   (package-search-paths gcc)))))
+                                   (package-search-paths gcc-5)))))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap glibc))
@@ -459,7 +459,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc)
+   (package (inherit gcc-5)
      (name "gcc-static")
      (outputs '("out"))                           ; all in one
      (arguments
@@ -468,7 +468,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    (srfi srfi-1)
                    (srfi srfi-26)
                    (ice-9 regex))
-        ,@(substitute-keyword-arguments (package-arguments gcc)
+        ,@(substitute-keyword-arguments (package-arguments gcc-5)
             ((#:guile _) #f)
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
@@ -513,8 +513,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                     #t)))))))
      (inputs
       `(("zlib:static" ,zlib "static")
-        ("isl:static" ,isl "static")
-        ,@(package-inputs gcc)))
+        ("isl:static" ,isl-0.18 "static")
+        ,@(package-inputs gcc-5)))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
@@ -527,12 +527,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("gmp-native" ,gmp)
             ("mpfr-native" ,mpfr)
             ("mpc-native" ,mpc)
-            ,@(package-native-inputs gcc))
-          (package-native-inputs gcc))))))
+            ,@(package-native-inputs gcc-5))
+          (package-native-inputs gcc-5))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
-  (package (inherit gcc)
+  (package (inherit gcc-5)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
