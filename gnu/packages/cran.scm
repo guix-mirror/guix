@@ -8587,20 +8587,19 @@ conversion of indices such as Cohen's d, r, odds, etc.")
 (define-public r-sjplot
   (package
     (name "r-sjplot")
-    (version "2.8.2")
+    (version "2.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjPlot" version))
        (sha256
-        (base32 "16721a5006q0gv45zjcwnkykxhjkzpq5n35vhik0g0ixgm3a2vci"))))
+        (base32 "0ip1rkjlhyf3axlc8qqss1qq1f0xrda890c1jmcbhm98wwjw264f"))))
     (properties `((upstream-name . "sjPlot")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
        ("r-dplyr" ,r-dplyr)
        ("r-effectsize" ,r-effectsize)
-       ("r-forcats" ,r-forcats)
        ("r-ggeffects" ,r-ggeffects)
        ("r-ggplot2" ,r-ggplot2)
        ("r-insight" ,r-insight)
@@ -8615,6 +8614,8 @@ conversion of indices such as Cohen's d, r, odds, etc.")
        ("r-sjmisc" ,r-sjmisc)
        ("r-sjstats" ,r-sjstats)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://strengejacke.github.io/sjPlot/")
     (synopsis "Data visualization for statistics in social science")
     (description
