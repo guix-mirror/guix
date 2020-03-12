@@ -8288,7 +8288,7 @@ throughput genetic sequencing data sets using regression methods.")
 (define-public r-qtl
  (package
   (name "r-qtl")
-  (version "1.45-11")
+  (version "1.46-2")
   (source
    (origin
     (method url-fetch)
@@ -8296,7 +8296,7 @@ throughput genetic sequencing data sets using regression methods.")
                         version ".tar.gz"))
     (sha256
      (base32
-      "1d6qgj602fm6zia3djl4hmca0ri4v57ffp3g93p2yc3cabx2hq90"))))
+      "0rbwcnvyy96gq1dsgpxx03pv423qya26h6ws5y0blj3blfdmj83a"))))
   (build-system r-build-system)
   (home-page "https://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")
