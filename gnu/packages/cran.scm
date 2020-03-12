@@ -15219,14 +15219,14 @@ includes data sets from oceanography.")
 (define-public r-ggfortify
   (package
     (name "r-ggfortify")
-    (version "0.4.8")
+    (version "0.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggfortify" version))
        (sha256
         (base32
-         "191q2z7w0l4v7swjlxs2hjgbjngw2838688s7ygnj0kigsm310f3"))))
+         "1p6knrbyaynaqwd939w09hpf1zz1gn95cb46sfgppl8l98krb2h5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -15236,6 +15236,8 @@ includes data sets from oceanography.")
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/sinhrks/ggfortify")
     (synopsis "Data visualization tools for statistical analysis results")
     (description
