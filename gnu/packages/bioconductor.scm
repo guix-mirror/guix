@@ -5570,14 +5570,14 @@ manipulation of flow cytometry data.")
 (define-public r-ggcyto
   (package
     (name "r-ggcyto")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggcyto" version))
        (sha256
         (base32
-         "165qszvy5z176h1l3dnjb5dcm279b6bjl5n5gzz8wfn4xpn8anc8"))))
+         "16jwdslhmj1nsa28wmaircy15cq7qn8nsyiawinjv711qiqhgw50"))))
     (properties `((upstream-name . "ggcyto")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5591,6 +5591,8 @@ manipulation of flow cytometry data.")
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/RGLab/ggcyto/issues")
     (synopsis "Visualize Cytometry data with ggplot")
     (description
