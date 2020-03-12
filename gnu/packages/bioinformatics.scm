@@ -2755,7 +2755,7 @@ quantitative phenotypes.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "12.1.20190829")
+    (version "13.3.20200128")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
@@ -2763,7 +2763,10 @@ quantitative phenotypes.")
                                   "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "1xb330z28dgp7slrvp8r7rgncsasv9lpcpqim571yg728dq7xdik"))))
+                "093zp7klv81ph0y8mm8d78a9hnpfxbv2kdym70gzdf3vz176rw33"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin (delete-file "Mozilla-CA.tar.gz") #t))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
