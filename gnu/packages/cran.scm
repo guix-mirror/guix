@@ -15880,19 +15880,21 @@ in pipelines.")
 (define-public r-parameters
   (package
     (name "r-parameters")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "parameters" version))
        (sha256
         (base32
-         "19cblrq079svp5j3wgikw5fsdbsp1w0f2llm7kcf1rg5w1aagjr7"))))
+         "0zin3ikc013hc713n5zs0dbhc3m4nfw1vhc3924z0mrww8r241xn"))))
     (properties `((upstream-name . "parameters")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
        ("r-insight" ,r-insight)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/parameters")
     (synopsis "Processing of model parameters")
     (description
