@@ -38,7 +38,10 @@
     \"license\": \"GNU LGPL\",
     \"summary\": \"summary\",
     \"home_page\": \"http://example.com\",
+    \"classifiers\": [],
+    \"download_url\": \"\"
   },
+  \"urls\": [],
   \"releases\": {
     \"1.0.0\": [
       {
