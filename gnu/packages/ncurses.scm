@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -183,6 +183,12 @@
               ;; because it invokes 'strip' instead of 'TRIPLET-strip'.  Work
               ;; around this.
               ,@(if (%current-target-system) '("--disable-stripping") '())
+
+              ;; Do not assume a default search path in ld, even if it is only to
+              ;; filter it out in ncurses-config.  Mainly because otherwise it ends
+              ;; up using the libdir from binutils, which makes little sense and
+              ;; causes an unnecessary runtime dependency.
+              "cf_cv_ld_searchpath=/no-ld-searchpath"
 
               ;; MinGW: Use term-driver created for the MinGW port.
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
