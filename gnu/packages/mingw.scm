@@ -45,14 +45,14 @@ specified, recurse and return a mingw-w64 with support for winpthreads."
     (package
       (name (string-append "mingw-w64" "-" machine
                            (if with-winpthreads? "-winpthreads" "")))
-      (version "6.0.0")
+      (version "7.0.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
                       "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
                       "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
                 (sha256
-                 (base32 "1w28mynv500y03h92nh87rgw3fnp82qwnjbxrrzqkmr63q812pl0"))
+                 (base32 "0a5njsa2zw2ssdz10jkb10mhrf3cb8qp9avs89zqmw4n6pzxy85a"))
                 (patches (search-patches "mingw-w64-6.0.0-gcc.patch"))))
       (native-inputs `(("xgcc-core" ,(if xgcc xgcc (cross-gcc triplet)))
                        ("xbinutils" ,(if xbinutils xbinutils (cross-binutils triplet)))
