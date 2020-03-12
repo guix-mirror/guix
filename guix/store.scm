@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,6 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 threads)
@@ -173,6 +173,7 @@
             store-path?
             direct-store-path?
             derivation-path?
+            store-path-base
             store-path-package-name
             store-path-hash-part
             direct-store-path
@@ -1949,29 +1950,26 @@ valid inputs."
   "Return #t if PATH is a derivation path."
   (and (store-path? path) (string-suffix? ".drv" path)))
 
-(define store-regexp*
-  ;; The substituter makes repeated calls to 'store-path-hash-part', hence
-  ;; this optimization.
-  (mlambda (store)
-    "Return a regexp matching a file in STORE."
-    (make-regexp (string-append "^" (regexp-quote store)
-                                "/([0-9a-df-np-sv-z]{32})-([^/]+)$"))))
+(define (store-path-base path)
+  "Return the base path of a path in the store."
+  (and (string-prefix? (%store-prefix) path)
+       (let ((base (string-drop path (+ 1 (string-length (%store-prefix))))))
+         (and (> (string-length base) 33)
+              (not (string-index base #\/))
+              base))))
 
 (define (store-path-package-name path)
   "Return the package name part of PATH, a file name in the store."
-  (let ((path-rx (store-regexp* (%store-prefix))))
-    (and=> (regexp-exec path-rx path)
-           (cut match:substring <> 2))))
+  (let ((base (store-path-base path)))
+    (string-drop base (+ 32 1)))) ;32 hash part + 1 hyphen
 
 (define (store-path-hash-part path)
   "Return the hash part of PATH as a base32 string, or #f if PATH is not a
 syntactically valid store path."
-  (and (string-prefix? (%store-prefix) path)
-       (let ((base (string-drop path (+ 1 (string-length (%store-prefix))))))
-         (and (> (string-length base) 33)
-              (let ((hash (string-take base 32)))
-                (and (string-every %nix-base32-charset hash)
-                     hash))))))
+  (let* ((base (store-path-base path))
+         (hash (string-take base 32)))
+    (and (string-every %nix-base32-charset hash)
+         hash)))
 
 (define (derivation-log-file drv)
   "Return the build log file for DRV, a derivation file name, or #f if it
