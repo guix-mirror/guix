@@ -3494,7 +3494,19 @@ thanks to the use of namespaces.")
                (("if ! singularity_which mksquashfs") "if 0")
                (("if ! mksquashfs")
                 (string-append "if ! " (which "mksquashfs"))))
-             #t)))))
+             #t))
+         (add-after 'install 'set-PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Have the 'singularity' and 'run-singularity' self-sufficient.
+             (let ((out (assoc-ref outputs "out"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (wrap-program (string-append out "/bin/singularity")
+                 `("PATH" ":" = (,(string-append coreutils "/bin"))))
+               (substitute* (string-append out "/bin/run-singularity")
+                 (("/usr/bin/env singularity")
+                  (string-append (which "env") " "
+                                 out "/bin/singularity")))
+               #t))))))
     (inputs
      `(("libarchive" ,libarchive)
        ("python" ,python-wrapper)
