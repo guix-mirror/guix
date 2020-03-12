@@ -180,6 +180,20 @@ without requiring the source code to be rewritten.")
     `(#:configure-flags '("--disable-static") ; saves 3 MiB
       #:phases
       (modify-phases %standard-phases
+        ,@(if (hurd-system?)
+              '((add-after 'unpack 'disable-tests
+                  (lambda _
+                    ;; Hangs at: "Running 00-repl-server.test"
+                    (rename-file "test-suite/tests/00-repl-server.test" "00-repl-server.test")
+                    ;; Sometimes Hangs at: "Running 00-socket.test"
+                    (rename-file "test-suite/tests/00-socket.test" "00-socket.test")
+                    ;; FAIL: srfi-18.test: thread-sleep!: thread sleeps fractions of a second
+                    (rename-file "test-suite/tests/srfi-18.test" "srfi-18.test")
+                    ;; failed to remove 't-guild-compile-7215.go.tdL7yC
+                    (substitute* "test-suite/standalone/Makefile.in"
+                      (("test-guild-compile ") ""))
+                    #t)))
+              '())
         (add-before 'configure 'pre-configure
           (lambda* (#:key inputs #:allow-other-keys)
             ;; Tell (ice-9 popen) the file name of Bash.
