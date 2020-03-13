@@ -66,9 +66,9 @@ implementation as used in cperl.  It does not store the mocked overrides
 lexically, just dynamically.")
     (license artistic2.0)))
 
-(define-public perl-test2-bundle-extended
+(define-public perl-test2-suite
   (package
-    (name "perl-test2-bundle-extended")
+    (name "perl-test2-suite")
     (version "0.000072")
     (source
       (origin
@@ -88,7 +88,7 @@ lexically, just dynamically.")
      `(("perl-importer" ,perl-importer)
        ("perl-term-table" ,perl-term-table)
        ("perl-sub-info" ,perl-sub-info)))
-    (home-page "https://metacpan.org/pod/Test2::Bundle::Extended")
+    (home-page "https://metacpan.org/pod/Test2-Suite")
     (synopsis "Full set of tools for Test2::Suite")
     (description "This package provides a rich set of tools, plugins, bundles,
 etc built upon the Test2 testing library.")
@@ -108,7 +108,7 @@ etc built upon the Test2 testing library.")
           "002qk6qsm0l6r2kaxywvc38w0yf0mlavgywq8li076pn6kcw3242"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-test2-bundle-extended" ,perl-test2-bundle-extended)))
+     `(("perl-test2-suite" ,perl-test2-suite)))
     (home-page "https://metacpan.org/release/Test2-Plugin-NoWarnings")
     (synopsis "Fail if tests warn")
     (description "Loading this plugin causes your tests to fail if there any
