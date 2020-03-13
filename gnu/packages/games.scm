@@ -2665,20 +2665,7 @@ falling, themeable graphics and sounds, and replays.")
                 "1i8mz6gw3qar09bscczhki0g4scj8pl58v85rp0g55r4bcq41l5v"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ;no check target
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'treat-boost-as-system-header
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((boost (assoc-ref inputs "boost")))
-                        ;; Ensure Boost is treated as "system headers" to
-                        ;; pacify compiler warnings induced by Boost headers.
-                        (for-each (lambda (variable)
-                                    (setenv variable
-                                            (string-append boost "/include:"
-                                                           (or (getenv variable)
-                                                               ""))))
-                                  '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-                        #t))))))
+     `(#:tests? #f))                    ;no check target
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
