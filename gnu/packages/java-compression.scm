@@ -131,14 +131,17 @@ compressor/decompressor.")
 (define-public java-snappy-1
   (package
     (inherit java-snappy)
+    (name "java-snappy")
     (version "1.0.3-rc3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/xerial/snappy-java/archive/"
-                                  "snappy-java-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08hsxlqidiqck0q57fshwyv3ynyxy18vmhrai9fyc8mz17m7gsa3"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url (string-append "https://github.com/xerial/snappy-java"))
+             (commit (string-append "snappy-java-" version))))
+       (sha256
+        (base32 "0gbg3xmhniyh5p6w5zqj16fr15fa8j4raswd8pj00l4ixf5qa6m4"))
+       (file-name (git-file-name name version))))
     (arguments
      `(#:jar-name "snappy.jar"
        #:source-dir "src/main/java"
