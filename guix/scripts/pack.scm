@@ -369,6 +369,10 @@ added to the pack."
             (apply invoke "mksquashfs"
                    `(,@args
 
+                     ;; Do not create a "recovery file" when appending to the
+                     ;; file system since it's useless in this case.
+                     "-no-recovery"
+
                      ;; Set file times and the file system creation time to
                      ;; one second after the Epoch.
                      "-all-time" "1" "-mkfs-time" "1"
