@@ -3170,7 +3170,16 @@ late.")
                     version "/launchmon-v" version ".tar.gz"))
               (sha256
                (base32
-                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))
+                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix build failure with GCC 7 due to a conversion error.
+                  ;; Remove for versions > 1.0.2.
+                  (substitute* "launchmon/src/linux/lmon_api/lmon_coloc_spawner.cxx"
+                    ((" lmonpl = '\\\\0'")
+                     " *lmonpl = '\\0'"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,openmpi)
