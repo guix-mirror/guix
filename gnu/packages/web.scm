@@ -6087,10 +6087,10 @@ file links.")
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
-    (home-page "http://www.webdav.org/cadaver")
+    (home-page "http://www.webdav.org/cadaver/")
     (synopsis "Command-line WebDAV client")
     (description
-     "Cadaver is a command-line WebDAV client for Unix. It supports
+     "Cadaver is a command-line WebDAV client for Unix.  It supports
 file upload, download, on-screen display, namespace operations (move/copy),
 collection creation and deletion, and locking operations.")
     (license license:gpl2)))
