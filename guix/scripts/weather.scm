@@ -178,7 +178,8 @@ about the derivations queued, as is the case with Hydra."
 (define* (report-server-coverage server items
                                  #:key display-missing?)
   "Report the subset of ITEMS available as substitutes on SERVER.
-When DISPLAY-MISSING? is true, display the list of missing substitutes."
+When DISPLAY-MISSING? is true, display the list of missing substitutes.
+Return the coverage ratio, an exact number between 0 and 1."
   (define MiB (* (expt 2 20) 1.))
 
   (format #t (G_ "looking for ~h store items on ~a...~%")
@@ -267,7 +268,11 @@ are queued~%")
       (when (and display-missing? (not (null? missing)))
         (newline)
         (format #t (G_ "Substitutes are missing for the following items:~%"))
-        (format #t "~{  ~a~%~}" missing)))))
+        (format #t "~{  ~a~%~}" missing))
+
+      ;; Return the coverage ratio.
+      (let ((total (length items)))
+        (/ (- total (length missing)) total)))))
 
 
 ;;;
@@ -538,16 +543,20 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                                   (lambda (system)
                                     (package-outputs packages system))
                                   systems))))))
-        (for-each (lambda (server)
+        (exit
+         (every (lambda (server)
+                  (define coverage
                     (report-server-coverage server items
                                             #:display-missing?
-                                            (assoc-ref opts 'display-missing?))
-                    (match (assoc-ref opts 'coverage)
-                      (#f #f)
-                      (threshold
-                       (report-package-coverage server packages systems
-                                                #:threshold threshold))))
-                  urls)))))
+                                            (assoc-ref opts 'display-missing?)))
+                  (match (assoc-ref opts 'coverage)
+                    (#f #f)
+                    (threshold
+                     (report-package-coverage server packages systems
+                                              #:threshold threshold)))
+
+                  (= 1 coverage))
+                urls))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'let/time 'scheme-indent-function 1)

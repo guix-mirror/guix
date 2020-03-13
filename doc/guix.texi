@@ -10809,8 +10809,11 @@ guix weather @var{options}@dots{} [@var{packages}@dots{}]
 When @var{packages} is omitted, @command{guix weather} checks the availability
 of substitutes for @emph{all} the packages, or for those specified with
 @option{--manifest}; otherwise it only considers the specified packages.  It
-is also possible to query specific system types with @option{--system}.  The
-available options are listed below.
+is also possible to query specific system types with @option{--system}.
+@command{guix weather} exits with a non-zero code when the fraction of
+available substitutes is below 100%.
+
+The available options are listed below.
 
 @table @code
 @item --substitute-urls=@var{urls}
