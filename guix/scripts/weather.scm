@@ -552,7 +552,11 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                   (match (assoc-ref opts 'coverage)
                     (#f #f)
                     (threshold
-                     (report-package-coverage server packages systems
+                     ;; PACKAGES may include non-package objects coming from a
+                     ;; manifest.  Filter them out.
+                     (report-package-coverage server
+                                              (filter package? packages)
+                                              systems
                                               #:threshold threshold)))
 
                   (= 1 coverage))
