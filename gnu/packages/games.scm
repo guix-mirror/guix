@@ -46,6 +46,7 @@
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10157,3 +10158,35 @@ best human chess grandmasters.  It can be used with UCI-compatible GUIs like
 ChessX.")
     (home-page "https://stockfishchess.org/")
     (license license:gpl3+)))
+
+(define-public barrage
+  (package
+    (name "barrage")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/lgames/barrage/"
+                           "barrage-" version ".tar.gz"))
+       (sha256
+        (base32 "0139wxyrir10cbkvkjn548xgmp84wax8mfwk80yxbxlcdamrg257"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("sdl" ,sdl)
+       ("sdl-mixer" ,sdl-mixer)))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "CFLAGS="
+                       "-I" (assoc-ref %build-inputs "sdl-mixer")
+                       "/include/SDL"))))
+    (home-page "http://lgames.sourceforge.net/Barrage/")
+    (synopsis "Violent point-and-click shooting game with nice effects")
+    (description
+     "Barrage is a rather destructive action game that puts you on a shooting
+range with the objective to hit as many dummy targets as possible within
+3 minutes.  You control a gun that may either fire small or large grenades at
+soldiers, jeeps and tanks.  The gameplay is simple but it is not that easy to
+get high scores.")
+    (license license:gpl2+)))
