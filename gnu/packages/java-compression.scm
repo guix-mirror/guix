@@ -193,13 +193,15 @@ compressor/decompressor.")
   (package
     (name "java-iq80-snappy")
     (version "0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dain/snappy/archive/snappy-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0rb3zhci7w9wzd65lfnk7p3ip0n6gb58a9qpx8n7r0231gahyamf"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dain/snappy")
+             (commit (string-append "snappy-" version))))
+       (sha256
+        (base32 "1mswh207065rdzbxk6rxaqlxhbg1ngxa0vjc20knsn31kqbq1bcz"))
+       (file-name (git-file-name name version))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "iq80-snappy.jar"
