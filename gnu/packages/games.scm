@@ -2280,6 +2280,7 @@ Widgets, and allows users to create more.")
               (uri (string-append "https://codeload.github.com/fifengine/"
                                   "fifengine/tar.gz/" version))
               (file-name (string-append name "-" version ".tar.gz"))
+              (patches (search-patches "fifengine-swig-compat.patch"))
               (sha256
                (base32
                 "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
@@ -2296,7 +2297,9 @@ Widgets, and allows users to create more.")
                        "/include/AL")
         (string-append "-DPYTHON_SITE_PACKAGES="
                        (assoc-ref %outputs "out")
-                       "/lib/python3.7/site-packages"))
+                       "/lib/python"
+                       ,(version-major+minor (package-version python))
+                       "/site-packages"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-run_tests.py
