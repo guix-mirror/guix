@@ -366,7 +366,15 @@ added to the pack."
           (define entry-point #$entry-point)
 
           (define (mksquashfs args)
-            (apply invoke "mksquashfs" args))
+            (apply invoke "mksquashfs"
+                   `(,@args
+
+                     ;; Set file times and the file system creation time to
+                     ;; one second after the Epoch.
+                     "-all-time" "1" "-mkfs-time" "1"
+
+                     ;; Reset all UIDs and GIDs.
+                     "-force-uid" "0" "-force-gid" "0")))
 
           (setenv "PATH" (string-append #$archiver "/bin"))
 
