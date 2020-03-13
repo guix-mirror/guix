@@ -541,6 +541,7 @@ EXTRA_DIST +=						\
   scripts/guix.in					\
   etc/guix-install.sh					\
   etc/news.scm						\
+  etc/release-manifest.scm				\
   etc/system-tests.scm					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
@@ -551,7 +552,6 @@ EXTRA_DIST +=						\
   build-aux/cuirass/gnu-system.scm			\
   build-aux/cuirass/guix-modular.scm			\
   build-aux/cuirass/hydra-to-cuirass.scm		\
-  build-aux/check-available-binaries.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
   build-aux/compile-as-derivation.scm			\
   build-aux/generate-authors.scm			\
@@ -851,8 +851,9 @@ assert-no-store-file-names:
 
 # Make sure important substitutes are available.
 assert-binaries-available: $(GOBJECTS)
-	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
-	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
+	$(AM_V_at)$(top_builddir)/pre-inst-env				\
+	  guix weather -m "$(top_srcdir)/etc/release-manifest.scm"	\
+	                --display-missing
 
 # Make sure the final inputs don't refer to bootstrap tools.
 assert-final-inputs-self-contained: $(GOBJECTS)
