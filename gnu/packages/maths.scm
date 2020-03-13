@@ -5037,6 +5037,59 @@ built on top of DUNE, the Distributed and Unified Numerics Environment.")
     ;; Either GPL version 2 with "runtime exception" or LGPLv3+.
     (license (list license:lgpl3+ license:gpl2))))
 
+(define add-openmpi-to-dune-package
+  (let ((dune-package?
+          (lambda (p) (string-prefix? "dune-" (package-name p)))))
+    (package-mapping
+      (lambda (p)
+        (if (dune-package? p)
+            (package (inherit p)
+              (name (string-append (package-name p) "-openmpi"))
+              (inputs `(,@(package-inputs p)
+                        ("openmpi" ,openmpi)))
+              (arguments
+               (substitute-keyword-arguments (package-arguments p)
+                 ((#:phases phases '%standard-phases)
+                  `(modify-phases ,phases
+                     (add-before 'check 'mpi-setup
+                       ,%openmpi-setup)))))
+              (synopsis (string-append (package-synopsis p) " (with MPI support)")))
+            p))
+      (negate dune-package?))))
+
+(define-public dune-common-openmpi
+  (add-openmpi-to-dune-package dune-common))
+
+(define-public dune-geometry-openmpi
+  (add-openmpi-to-dune-package dune-geometry))
+
+(define-public dune-istl-openmpi
+  (add-openmpi-to-dune-package dune-istl))
+
+(define-public dune-typetree-openmpi
+  (add-openmpi-to-dune-package dune-typetree))
+
+(define-public dune-uggrid-openmpi
+  (add-openmpi-to-dune-package dune-uggrid))
+
+(define-public dune-grid-openmpi
+  (add-openmpi-to-dune-package dune-grid))
+
+(define-public dune-alugrid-openmpi
+  (add-openmpi-to-dune-package dune-alugrid))
+
+(define-public dune-subgrid-openmpi
+  (add-openmpi-to-dune-package dune-subgrid))
+
+(define-public dune-localfunctions-openmpi
+  (add-openmpi-to-dune-package dune-localfunctions))
+
+(define-public dune-functions-openmpi
+  (add-openmpi-to-dune-package dune-functions))
+
+(define-public dune-pdelab-openmpi
+  (add-openmpi-to-dune-package dune-pdelab))
+
 (define-public mlucas
   (package
     (name "mlucas")
