@@ -4592,13 +4592,10 @@ linear algebra primitives specifically targeting graph analytics.")
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags)))
-         (add-before 'check 'mpi-setup
-           ,%openmpi-setup))))
+             (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("gmp" ,gmp)
        ("metis" ,metis)
-       ("openmpi" ,openmpi)
        ("openblas" ,openblas)
        ("python" ,python)
        ("superlu" ,superlu)))
@@ -4636,7 +4633,6 @@ Differences} (FD).")
              (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("openblas" ,openblas)
        ("gmp" ,gmp)
@@ -4676,8 +4672,7 @@ This package contains the basic DUNE geometry classes.")
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags))))))
     (inputs
-     `(("dune-common" ,dune-common)
-       ("openmpi" ,openmpi)))
+     `(("dune-common" ,dune-common)))
     (native-inputs
      `(("gfortran" ,gfortran)
        ("pkg-config" ,pkg-config)))
@@ -4710,16 +4705,13 @@ This package contains the DUNE UG grid classes.")
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags)))
-         (add-before 'check 'mpi-setup
-           ,%openmpi-setup))))
+             (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
        ("gmp" ,gmp)
        ("metis" ,metis)
        ("openblas" ,openblas)
-       ("openmpi" ,openmpi)
        ("python" ,python)))
     (propagated-inputs
      `(("dune-uggrid" ,dune-uggrid)))
@@ -4756,12 +4748,9 @@ This package contains the basic DUNE grid classes.")
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags)))
-         (add-before 'check 'mpi-setup
-           ,%openmpi-setup))))
+             (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("metis" ,metis)
        ("suitesparse" ,suitesparse)
@@ -4809,7 +4798,6 @@ aggregation-based algebraic multigrid.")
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("metis" ,metis)
        ("superlu" ,superlu)
@@ -4857,14 +4845,11 @@ assemble global function spaces on finite-element grids.")
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "dune-grid") "/share"))
-             (apply invoke "make" "build_tests" make-flags)))
-         (add-before 'check 'mpi-setup
-           ,%openmpi-setup))))
+             (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
        ("dune-grid" ,dune-grid)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("metis" ,metis)
        ("openblas" ,openblas)
@@ -4902,14 +4887,11 @@ cubes.")
        (modify-phases %standard-phases
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags)))
-         (add-before 'check 'mpi-setup
-           ,%openmpi-setup))))
+             (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
        ("dune-grid" ,dune-grid)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("metis" ,metis)
        ("openblas" ,openblas)
@@ -4948,7 +4930,6 @@ provides the full grid interface including adaptive mesh refinement.")
              (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("openblas" ,openblas)
        ("python" ,python)
@@ -4991,9 +4972,7 @@ operating on statically typed trees of objects.")
             #t))
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
-             (apply invoke "make" "build_tests" make-flags)))
-         (add-before 'check 'mpi-setup
-           ,%openmpi-setup))))
+             (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-istl" ,dune-istl)
@@ -5001,7 +4980,6 @@ operating on statically typed trees of objects.")
        ("dune-grid" ,dune-grid)
        ("dune-geometry" ,dune-geometry)
        ("dune-typetree" ,dune-typetree)
-       ("openmpi" ,openmpi)
        ("openblas" ,openblas)
        ("metis" ,metis)
        ("python" ,python)
@@ -5042,7 +5020,6 @@ implemented as callable objects, and bases of finite element spaces.")
        ("dune-grid" ,dune-grid)
        ("dune-typetree" ,dune-typetree)
        ("dune-functions" ,dune-functions)
-       ("openmpi" ,openmpi)
        ;; Optional
        ("openblas" ,openblas)
        ("eigen" ,eigen)
