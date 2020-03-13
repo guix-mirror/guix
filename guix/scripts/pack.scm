@@ -365,6 +365,9 @@ added to the pack."
           (define database #+database)
           (define entry-point #$entry-point)
 
+          (define (mksquashfs args)
+            (apply invoke "mksquashfs" args))
+
           (setenv "PATH" (string-append #$archiver "/bin"))
 
           ;; We need an empty file in order to have a valid file argument when
@@ -376,92 +379,90 @@ added to the pack."
           ;; Add all store items.  Unfortunately mksquashfs throws away all
           ;; ancestor directories and only keeps the basename.  We fix this
           ;; in the following invocations of mksquashfs.
-          (apply invoke "mksquashfs"
-                 `(,@(map store-info-item
-                          (call-with-input-file "profile"
-                            read-reference-graph))
-                   #$environment
-                   ,#$output
+          (mksquashfs `(,@(map store-info-item
+                               (call-with-input-file "profile"
+                                 read-reference-graph))
+                        #$environment
+                        ,#$output
 
-                   ;; Do not perform duplicate checking because we
-                   ;; don't have any dupes.
-                   "-no-duplicates"
-                   "-comp"
-                   ,#+(compressor-name compressor)))
+                        ;; Do not perform duplicate checking because we
+                        ;; don't have any dupes.
+                        "-no-duplicates"
+                        "-comp"
+                        ,#+(compressor-name compressor)))
 
           ;; Here we reparent the store items.  For each sub-directory of
           ;; the store prefix we need one invocation of "mksquashfs".
           (for-each (lambda (dir)
-                      (apply invoke "mksquashfs"
-                             `(".empty"
-                               ,#$output
-                               "-root-becomes" ,dir)))
+                      (mksquashfs `(".empty"
+                                    ,#$output
+                                    "-root-becomes" ,dir)))
                     (reverse (string-tokenize (%store-directory)
                                               (char-set-complement (char-set #\/)))))
 
           ;; Add symlinks and mount points.
-          (apply invoke "mksquashfs"
-                 `(".empty"
-                   ,#$output
-                   ;; Create SYMLINKS via pseudo file definitions.
-                   ,@(append-map
-                      (match-lambda
-                        ((source '-> target)
-                         ;; Create relative symlinks to work around a bug in
-                         ;; Singularity 2.x:
-                         ;;   https://bugs.gnu.org/34913
-                         ;;   https://github.com/sylabs/singularity/issues/1487
-                         (let ((target (string-append #$profile "/" target)))
-                           (list "-p"
-                                 (string-join
-                                  ;; name s mode uid gid symlink
-                                  (list source
-                                        "s" "777" "0" "0"
-                                        (relative-file-name (dirname source)
-                                                            target)))))))
-                      '#$symlinks*)
+          (mksquashfs
+           `(".empty"
+             ,#$output
+             ;; Create SYMLINKS via pseudo file definitions.
+             ,@(append-map
+                (match-lambda
+                  ((source '-> target)
+                   ;; Create relative symlinks to work around a bug in
+                   ;; Singularity 2.x:
+                   ;;   https://bugs.gnu.org/34913
+                   ;;   https://github.com/sylabs/singularity/issues/1487
+                   (let ((target (string-append #$profile "/" target)))
+                     (list "-p"
+                           (string-join
+                            ;; name s mode uid gid symlink
+                            (list source
+                                  "s" "777" "0" "0"
+                                  (relative-file-name (dirname source)
+                                                      target)))))))
+                '#$symlinks*)
 
-                   "-p" "/.singularity.d d 555 0 0"
+             "-p" "/.singularity.d d 555 0 0"
 
-                   ;; Create the environment file.
-                   "-p" "/.singularity.d/env d 555 0 0"
-                   "-p" ,(string-append
-                          "/.singularity.d/env/90-environment.sh s 777 0 0 "
-                          (relative-file-name "/.singularity.d/env"
-                                              #$environment))
+             ;; Create the environment file.
+             "-p" "/.singularity.d/env d 555 0 0"
+             "-p" ,(string-append
+                    "/.singularity.d/env/90-environment.sh s 777 0 0 "
+                    (relative-file-name "/.singularity.d/env"
+                                        #$environment))
 
-                   ;; Create /.singularity.d/actions, and optionally the 'run'
-                   ;; script, used by 'singularity run'.
-                   "-p" "/.singularity.d/actions d 555 0 0"
+             ;; Create /.singularity.d/actions, and optionally the 'run'
+             ;; script, used by 'singularity run'.
+             "-p" "/.singularity.d/actions d 555 0 0"
 
-                   ,@(if entry-point
-                         `(;; This one if for Singularity 2.x.
-                           "-p"
-                           ,(string-append
-                             "/.singularity.d/actions/run s 777 0 0 "
-                             (relative-file-name "/.singularity.d/actions"
-                                                 (string-append #$profile "/"
-                                                                entry-point)))
+             ,@(if entry-point
+                   `(;; This one if for Singularity 2.x.
+                     "-p"
+                     ,(string-append
+                       "/.singularity.d/actions/run s 777 0 0 "
+                       (relative-file-name "/.singularity.d/actions"
+                                           (string-append #$profile "/"
+                                                          entry-point)))
 
-                           ;; This one is for Singularity 3.x.
-                           "-p"
-                           ,(string-append
-                             "/.singularity.d/runscript s 777 0 0 "
-                             (relative-file-name "/.singularity.d"
-                                                 (string-append #$profile "/"
-                                                                entry-point))))
-                         '())
+                     ;; This one is for Singularity 3.x.
+                     "-p"
+                     ,(string-append
+                       "/.singularity.d/runscript s 777 0 0 "
+                       (relative-file-name "/.singularity.d"
+                                           (string-append #$profile "/"
+                                                          entry-point))))
+                   '())
 
-                   ;; Create empty mount points.
-                   "-p" "/proc d 555 0 0"
-                   "-p" "/sys d 555 0 0"
-                   "-p" "/dev d 555 0 0"
-                   "-p" "/home d 555 0 0"))
+             ;; Create empty mount points.
+             "-p" "/proc d 555 0 0"
+             "-p" "/sys d 555 0 0"
+             "-p" "/dev d 555 0 0"
+             "-p" "/home d 555 0 0"))
 
           (when database
             ;; Initialize /var/guix.
             (install-database-and-gc-roots "var-etc" database #$profile)
-            (invoke "mksquashfs" "var-etc" #$output)))))
+            (mksquashfs `("var-etc" ,#$output))))))
 
   (gexp->derivation (string-append name
                                    (compressor-extension compressor)
