@@ -302,6 +302,47 @@ wrapper for accessing libusb-1.0.")
 (define-public python2-pyusb
   (package-with-python2 python-pyusb))
 
+(define-public python-capablerobot-usbhub
+  (package
+    (name "python-capablerobot-usbhub")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "capablerobot_usbhub" version))
+       (sha256
+        (base32
+         "1priic4iq2vn1rc711kzxwhxrwa508rkxrr193qdz2lw26kdhvix"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib/udev/rules.d"))
+               (copy-file "50-capablerobot-usbhub.rules"
+                          (string-append out
+                                         "/lib/udev/rules.d/"
+                                         "50-capablerobot-usbhub.rules"))
+               #t))))))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-construct" ,python-construct)
+       ("python-pyusb" ,python-pyusb)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page
+     "https://github.com/CapableRobot/CapableRobot_USBHub_Driver")
+    (synopsis
+     "Host side driver for the Capable Robot Programmable USB Hub")
+    (description
+     "This package provides access to the internal state of the Capable Robot
+USB Hub, allowing you to monitor and control the Hub from an upstream
+computer.  It also creates a transparent CircuitPython Bridge, allowing
+unmodified CircuitPython code to run on the host computer and interact with
+I2C and SPI devices attached to the USB Hub.")
+    (license license:expat)))
+
 (define-public libplist
   (package
     (name "libplist")
