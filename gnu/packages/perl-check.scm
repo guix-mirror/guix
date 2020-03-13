@@ -107,6 +107,8 @@ etc built upon the Test2 testing library.")
          (base32
           "002qk6qsm0l6r2kaxywvc38w0yf0mlavgywq8li076pn6kcw3242"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-ipc-run3" ,perl-ipc-run3)))
     (propagated-inputs
      `(("perl-test2-suite" ,perl-test2-suite)))
     (home-page "https://metacpan.org/release/Test2-Plugin-NoWarnings")
