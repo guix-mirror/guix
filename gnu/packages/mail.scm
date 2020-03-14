@@ -27,7 +27,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2954,8 +2954,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "a933a62a4b8528b416319759b9985db80f3fce14")
-        (revision "6"))
+  (let ((commit "6653e2d525b945fcd671dbfbf7b42cc588a1cf4b")
+        (revision "7"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2967,7 +2967,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0vlda7vjzpd942iz5vb471hj7ypml5gwl9s1am92klv6nk2vnvcx"))))
+                  "0h1q61yl01hm7wygv1bv47ncg7l7gcw7aq8ny61g3hr1acsqysjf"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -2999,6 +2999,7 @@ replacement for the @code{urlview} program.")
        `(("guile-debbugs" ,guile-debbugs)
          ("guile-email" ,guile-email)
          ("guile-json" ,guile-json-3)
+         ("guile-sqlite3" ,guile-sqlite3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)

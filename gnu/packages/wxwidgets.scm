@@ -225,7 +225,7 @@ and many other languages.")
      `(("python-numpy" ,python-numpy)
        ("python-pillow" ,python-pillow)
        ("python-six" ,python-six)))
-    (home-page "http://wxPython.org/")
+    (home-page "https://wxpython.org/")
     (synopsis "Cross platform GUI toolkit for Python")
     (description "wxPython is a cross-platform GUI toolkit for the Python
 programming language.  It is implemented as a set of Python extension modules

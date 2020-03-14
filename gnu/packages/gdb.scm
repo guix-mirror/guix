@@ -37,24 +37,23 @@
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
 
-(define-public gdb-8.3
+(define-public gdb-9.1
   (package
     (name "gdb")
-    (version "8.3.1")
+    (version "9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1i2pjwaafrlz7wqm40b4znr77ai32rjsxkpl2az38yyarpbv8m8y"))))
-
-    ;; Hide this package so that end users get 'gdb/next' below.
-    (properties '((hidden? . #t)))
+               "0dqp1p7w836iwijg1zb4a784n0j4pyjiw5v6h8fg5lpx6b40x7k9"))))
 
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
+
+       #:out-of-source? #t
 
        #:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
@@ -96,6 +95,7 @@
        ("python" ,python)
        ("python-wrapper" ,python-wrapper)
        ("dejagnu" ,dejagnu)
+       ("source-highlight" ,source-highlight)
 
        ;; Allow use of XML-formatted syscall information.  This enables 'catch
        ;; syscall' and similar commands.
@@ -117,7 +117,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
 ;; <https://bugs.gnu.org/37810>.
 (define-public gdb-8.2
   (package/inherit
-   gdb-8.3
+   gdb-9.1
    (version "8.2.1")
    (source (origin
              (method url-fetch)
@@ -127,26 +127,7 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
               (base32
                "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))))
 
-;; The "next" version of GDB, to be merged with 'gdb' in the next rebuild cycle.
-(define-public gdb/next
-  (package/inherit
-   gdb-8.3
-   (version "9.1")
-   (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gdb/gdb-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0dqp1p7w836iwijg1zb4a784n0j4pyjiw5v6h8fg5lpx6b40x7k9"))))
-   (arguments
-    `(#:out-of-source? #t
-      ,@(package-arguments gdb-8.3)))
-   (inputs
-    `(("source-highlight" ,source-highlight)
-      ,@(package-inputs gdb-8.3)))
-   (properties (alist-delete 'hidden? (package-properties gdb-8.3)))))
-
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely
   ;; enough to avoid massive rebuilds.
-  gdb-8.3)
+  gdb-9.1)

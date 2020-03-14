@@ -182,14 +182,14 @@ freedesktop.org project.")
   ;; Updating this will rebuild over 700 packages through libinput-minimal.
   (package
     (name "libinput")
-    (version "1.15.0")
+    (version "1.15.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "1qa3b2fd4pv8ysf0mgwnyhqv9v48zgy3sy0q3a3vxcmwcvpizgxz"))))
+                "0ivpb4sghl80cs7jg3xrs53kckif6wy81cny3a8mry94nszky74p"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")
@@ -1386,14 +1386,15 @@ to applications simultaneously competing for fingerprint readers.")
 (define-public desktop-file-utils
   (package
     (name "desktop-file-utils")
-    (version "0.23")
+    (version "0.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://www.freedesktop.org/software/" name
-                                  "/releases/" name "-" version ".tar.xz"))
+              (uri (string-append "https://www.freedesktop.org/software/"
+                                  "desktop-file-utils/releases/"
+                                  "desktop-file-utils-" version ".tar.xz"))
               (sha256
                (base32
-                "119kj2w0rrxkhg4f9cf5waa55jz1hj8933vh47vcjipcplql02bc"))))
+                "1nc3bwjdrpcrkbdmzvhckq0yngbcxspwj2n1r7jr3gmx1jk5vpm1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1592,14 +1593,14 @@ encoding names are iconv-compatible.")
 (define-public udiskie
   (package
     (name "udiskie")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "udiskie" version))
        (sha256
         (base32
-         "0gjjzz0k8dlsk03fl2882lbl88hbv031ww72qj02gr65yph0jqgc"))
+         "0smib8vbs9q37n7ynhzyw97q16fgdkcdw7fw69lci0xvyq00v1dz"))
        ;; Remove support for the libappindicator library of the
        ;; Unity desktop environment which is not in Guix.
        (patches (search-patches "udiskie-no-appindicator.patch"))))

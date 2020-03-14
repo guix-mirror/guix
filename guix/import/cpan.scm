@@ -181,9 +181,9 @@ return \"Test-Simple\""
 or #f on failure.  MODULE should be the distribution name, such as
 \"Test-Script\" for the \"Test::Script\" module."
   ;; This API always returns the latest release of the module.
-  (json->cpan-release
-   (json-fetch (string-append (%metacpan-base-url) "/release/"
-                              name))))
+  (and=> (json-fetch (string-append (%metacpan-base-url) "/release/"
+                                    name))
+         json->cpan-release))
 
 (define (cpan-home name)
   (string-append "https://metacpan.org/release/" name))

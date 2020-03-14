@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +60,17 @@
                                  inferior)))
            (close-inferior inferior)
            (list a (inferior-object? b))))))
+
+(test-equal "&inferior-exception"
+  '(a b c d)
+  (let ((inferior (open-inferior %top-builddir
+                                 #:command "scripts/guix")))
+    (guard (c ((inferior-exception? c)
+               (close-inferior inferior)
+               (and (eq? inferior (inferior-exception-inferior c))
+                    (inferior-exception-arguments c))))
+      (inferior-eval '(throw 'a 'b 'c 'd) inferior)
+      'badness)))
 
 (test-equal "inferior-packages"
   (take (sort (fold-packages (lambda (package lst)

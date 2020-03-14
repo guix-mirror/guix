@@ -71,6 +71,7 @@
 /etc/guix-daemon.service
 /etc/guix-publish.conf
 /etc/guix-publish.service
+/etc/init.d/guix-daemon
 /guix-daemon
 /guix/config.scm
 /libformat.a

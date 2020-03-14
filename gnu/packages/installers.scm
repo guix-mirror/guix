@@ -34,14 +34,14 @@
          (xgcc (cross-gcc triplet #:libc xlibc)))
     (package
       (name (string-append "nsis-" machine))
-      (version "3.04")
+      (version "3.05")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://prdownloads.sourceforge.net/nsis/nsis-"
                                     version "-src.tar.bz2"))
                 (sha256
                  (base32
-                  "1xgllk2mk36ll2509hd31mfq6blgncmdzmwxj3ymrwshdh23d5b0"))
+                  "1sbwx5vzpddharkb7nj4q5z3i5fbg4lan63ng738cw4hmc4v7qdn"))
                 (patches (search-patches "nsis-env-passthru.patch"))))
       (build-system scons-build-system)
       (native-inputs `(("xgcc" ,xgcc)

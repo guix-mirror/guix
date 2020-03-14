@@ -780,7 +780,12 @@ decompression of some loosely related file formats used by Microsoft.")
                       (substitute* "tests/Makefile"
                         (("^test: (.*) test-install" _ targets)
                          (string-append "test: " targets)))
-                      #t)))))
+                      #t))
+                  (add-after 'install 'delete-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file (string-append out "/lib/liblz4.a"))
+                        #t))))))
     (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing

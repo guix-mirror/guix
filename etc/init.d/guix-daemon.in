@@ -1,0 +1,78 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          guix-daemon
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Guix build daemon
+# Description:       Provides a daemon that does builds for Guix
+### END INIT INFO
+
+set -e
+mkdir -p "/var/run"
+if [ ! -f "@localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix-daemon" ]
+then
+  exit 5
+fi
+
+case "$1" in
+start)
+  if [ -f "/var/run/guix-daemon.pid" ]
+  then
+    if pgrep -F "/var/run/guix-daemon.pid" guix-daemon
+    then
+      exit 0
+    else
+      echo "guix-daemon has a stale pid file" >&2
+      exit 1
+    fi
+  else
+    daemonize \
+      -a \
+      -e "/var/log/guix-daemon-stderr.log" \
+      -o "/var/log/guix-daemon-stdout.log" \
+      -E GUIX_LOCPATH=@localstatedir@/guix/profiles/per-user/root/guix-profile/lib/locale \
+      -E LC_ALL=en_US.utf8 \
+      -p "/var/run/guix-daemon.pid" \
+      @localstatedir@/guix/profiles/per-user/root/current-guix/bin/guix-daemon \
+      --build-users-group=guixbuild
+  fi
+  ;;
+stop)
+  if [ -f "/var/run/guix-daemon.pid" ]
+  then
+    pkill -F "/var/run/guix-daemon.pid" guix-daemon || {
+      exit 1
+    }
+    rm -f "/var/run/guix-daemon.pid"
+    exit 0
+  else
+    exit 0
+  fi
+  ;;
+status)
+  if [ -f "/var/run/guix-daemon.pid" ]
+  then
+    if pgrep -F "/var/run/guix-daemon.pid" guix-daemon
+    then
+      echo "guix-daemon is running"
+      exit 0
+    else
+      echo "guix-daemon has a stale pid file"
+      exit 1
+    fi
+  else
+    echo "guix-daemon is not running"
+    exit 3
+  fi
+  ;;
+restart|force-reload)
+  "$0" stop
+  "$0" start
+  ;;
+*)
+  echo "Usage: $0 (start|stop|status|restart|force-reload)"
+  exit 3
+  ;;
+esac

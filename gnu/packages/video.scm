@@ -25,7 +25,7 @@
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -1687,7 +1687,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1403")
+    (version "0.4.1410")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1696,7 +1696,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "04viy19x4g9dngml82nf9j94ys3p47bs62c2q2cn1barkybaa3as"))))
+                "1v4lfldcijgngg0s4q5w4ixa0k8k75dwmkhf57pgb31bqlrr8h0s"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2580,7 +2580,7 @@ Other features include a live preview and live streaming.")
        ("automake" ,automake)))
     (inputs
      `(("sdl" ,sdl2)))
-    (home-page "http://icculus.org/smpeg/")
+    (home-page "https://icculus.org/smpeg/")
     (synopsis "SDL MPEG decoding library")
     (description
      "SMPEG (SDL MPEG Player Library) is a free MPEG1 video player library
@@ -3493,7 +3493,7 @@ create smoother and stable videos.")
 (define-public libopenshot
   (package
     (name "libopenshot")
-    (version "0.2.3")
+    (version "0.2.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3502,7 +3502,7 @@ create smoother and stable videos.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r1qmr8ar5n72603xkj9h065vbpznrqsq88kxxmn9n8djyyvk03k"))
+                "1mxjkgjmjzgf628y3rscc6rqf55hxgjpmvwxlncfk1216i5xskwp"))
               (modules '((guix build utils)))
               (snippet '(begin
                           ;; Allow overriding of the python installation dir
@@ -3793,3 +3793,40 @@ Theora videos.  Theorafile was written to be used for FNA's VideoPlayer.")
 DVD using @command{libdvdcss}, but does @strong{not} demux, remux,
 transcode or reformat the videos in any way, producing perfect backups.")
     (license license:gpl3+)))
+
+(define-public svt-av1
+  (package
+    (name "svt-av1")
+    (version "0.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/OpenVisualCloud/SVT-AV1.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "08sx9zhhks8wzq05f67jqmc1zqmmi7hqkgg2gyjpcsan5qc5476w"))))
+    (build-system cmake-build-system)
+    ;; SVT-AV1 only supports Intel-compatible CPUs.
+    (supported-systems '("x86_64-linux" "i686-linux"))
+    (arguments
+      ;; The test suite tries to download test data and git clone a 3rd-party
+      ;; fork of libaom.  Skip it.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (doc (string-append out "/share/doc/svt-av1-" ,version)))
+               (copy-recursively "../source/Docs" doc)
+               #t))))))
+    (native-inputs
+     `(("yasm" ,yasm)))
+    (synopsis "AV1 video codec")
+    (description "SVT-AV1 is an AV1 codec implementation.  The encoder is a
+work-in-progress, aiming to support video-on-demand and live streaming
+applications.  It only supports Intel-compatible CPUs (x86).")
+    (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
+    (license license:bsd-2)))

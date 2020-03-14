@@ -19,7 +19,7 @@
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2018-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
@@ -28,7 +28,6 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -327,14 +326,14 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.7.0")
+    (version "2.8.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "0a7wawx8vsg7igvz6p3x909fskhg4b2y1910xk4f4c8y22p3aqg8"))))
+        "0f0f2vvs1mpdpz2c0mg1mnc3sih8bizmc1h9m67kdsnqs3i2mb0s"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -2398,14 +2397,14 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "20.0.8")
+    (version "20.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "096r7g5cv85vxymg9iqbn5z749613snlvd6p3rf1nxnrd386j0qz"))))
+         "0y6x41l3ja891993i4adylbbyly0r4m52n2d0a0y9y4h3lzyh4l5"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -2426,10 +2425,39 @@ e.g. filters, callbacks and errbacks can all be promises.")
     (synopsis "Virtual Python environment builder")
     (description
      "Virtualenv is a tool to create isolated Python environments.")
+    (properties `((python2-variant . ,(delay python2-virtualenv))))
     (license license:expat)))
 
 (define-public python2-virtualenv
-  (package-with-python2 python-virtualenv))
+  (let ((base (package-with-python2 (strip-python2-variant python-virtualenv))))
+    (package
+      (inherit base)
+      (arguments
+       `(#:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'set-paths 'adjust-PYTHONPATH
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let* ((python (assoc-ref inputs "python"))
+                      (python-sitedir (string-append python "/lib/python2.7"
+                                                     "/site-packages")))
+                 ;; XXX: 'python2' always comes first on PYTHONPATH
+                 ;; and shadows the 'setuptools' input.  Move python2
+                 ;; last: this should be fixed in python-build-system
+                 ;; in a future rebuild cycle.
+                 (setenv "PYTHONPATH"
+                         (string-append (string-join (delete python-sitedir
+                                                             (string-split
+                                                              (getenv "PYTHONPATH")
+                                                              #\:))
+                                                     ":")
+                                        ":" python-sitedir))
+                 (format #t "environment variable `PYTHONPATH' changed to `~a'~%"
+                         (getenv "PYTHONPATH"))
+                 #t))))))
+      (propagated-inputs
+       `(("python-contextlib2" ,python2-contextlib2)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-markupsafe
   (package
@@ -2474,15 +2502,29 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.10.1")
+    (version "2.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "04shqrs56aj04ipyqykj512rw2l0zfammvj9krawzxz7xc14yp06"))))
+         "0l72c11n959yzb8d3ankckb6yhjhm6x729zm7rkpk040qzxpy64k"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (setenv "PYTHONPATH"
+                                    (string-append "./build/lib:"
+                                                   (getenv "PYTHONPATH")))
+                            (invoke "pytest" "-vv"))
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
@@ -2659,17 +2701,23 @@ structure for Python.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.14")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docutils" version))
        (sha256
         (base32
-         "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))
+         "1z3qliszqca9m719q3qhdkh0ghh90g500avzdgi7pl77x5h3mpn2"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no setup.py test command
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "python" "test/alltests.py")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (home-page "http://docutils.sourceforge.net/")
     (synopsis "Python Documentation Utilities")
     (description
@@ -2682,6 +2730,18 @@ reStructuredText.")
 
 (define-public python2-docutils
   (package-with-python2 python-docutils))
+
+;; python2-sphinx fails its test suite with newer versions.
+(define-public python2-docutils-0.14
+  (package
+    (inherit python2-docutils)
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "docutils" version))
+              (sha256
+               (base32
+                "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))))
 
 (define-public python-pygments
   (package
@@ -3346,14 +3406,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.13")
+    (version "0.29.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "13k37lrcgagwwnzr5bzririsscb793vndj234d475x1h9ad0d7f2"))))
+         "0c5cjyxfvba6c0vih1fvhywp8bpz30vwvbjqdm1q1k55xzhmkn30"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3365,24 +3425,6 @@ provides additional functionality on the produced Mallard documents.")
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
            (lambda _ (setenv "HOME" "/tmp") #t))
-
-         ;; FIXME: These tests started failing on armhf after the 0.28 update
-         ;; (commit c69d11c5930), both with an error such as this:
-         ;;  compiling (cpp) and running dictcomp ...
-         ;;  === C/C++ compiler error output: ===
-         ;;  â€˜
-         ;;  dictcomp.cpp:5221: confused by earlier errors, bailing out
-         ;; See <https://hydra.gnu.org/build/2948724> for logs.
-         ,@(if (target-arm32?)
-               `((add-before 'check 'disable-failing-tests
-                  (lambda _
-                    (let ((disabled-tests (open-file "tests/bugs.txt" "a")))
-                      (for-each (lambda (test)
-                                  (format disabled-tests "~a\n" test))
-                                '("memslice" "dictcomp"))
-                      (close-port disabled-tests)))))
-               '())
-
          (replace 'check
            (lambda _
              ;; Disable compiler optimizations to greatly reduce the running
@@ -4388,18 +4430,37 @@ Python code against some of the style conventions in
 (define-public python-multidict
   (package
     (name "python-multidict")
-    (version "4.2.0")
+    (version "4.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "multidict" version))
        (sha256
         (base32
-         "1vf5bq8hn5a9rvhr5v4fwbmarfsp35hhr8gs74kqfijy34j2f194"))))
+         "07ikq2c72kd263hpldw55y0px2l3g34hjk66ml9lryh1jv287qmf"))))
     (build-system python-build-system)
+    (arguments
+     '(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (let ((libdir (find (cut string-prefix? "lib." <>)
+                                                (scandir "build"))))
+                              (setenv "PYTHONPATH"
+                                      (string-append "./build/" libdir ":"
+                                                     (getenv "PYTHONPATH")))
+                              (invoke "pytest" "-vv")))
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-cov" ,python-pytest-cov)))
     (home-page "https://github.com/aio-libs/multidict/")
     (synopsis "Multidict implementation")
     (description "Multidict is dict-like collection of key-value pairs
@@ -5507,36 +5568,34 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
     (synopsis "IPython Kernel for Jupyter")
     (description
      "This package provides the IPython kernel for Jupyter.")
+    (properties `((python2-variant . ,(delay python2-ipykernel))))
     (license license:bsd-3)))
 
-;; Version 5.1.1 and above no longer support Python 2.
+;; Version 5.x and above no longer support Python 2.
 (define-public python2-ipykernel
   (package
     (name "python2-ipykernel")
-    (version "5.1.0")
+    (version "4.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipykernel" version))
        (sha256
-        (base32 "0br95qhrd5k65g10djngiy27hs0642301hlf2q142i8djabvzh0g"))))
+        (base32 "1yzmdiy1djsszqp54jzd8ym8h4hpl67zjq83j2kxbkp0rwmlpdzf"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "HOME" "/tmp")
-             (invoke "pytest" "-v")
-             #t)))))
+     `(#:python ,python-2))
     (propagated-inputs
      `(("python2-ipython" ,python2-ipython)
        ;; imported at runtime during connect
-       ("python2-jupyter-client" ,python2-jupyter-client)))
+       ("python2-jupyter-client" ,python2-jupyter-client)
+       ("python2-tornado" ,python2-tornado)
+       ("python2-traitlets" ,python2-traitlets)))
     (native-inputs
-     `(("python2-pytest" ,python2-pytest)
-       ("python2-nose" ,python2-nose)))
+     `(("python2-mock" ,python2-mock)
+       ("python2-nose" ,python2-nose)
+       ("python2-pytest" ,python2-pytest)
+       ("python2-pytest-cov" ,python2-pytest-cov)))
     (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description
@@ -5588,69 +5647,6 @@ to specify the function signature you expect, and check that functions support
 that.  Adding extra parameters later would break other peoples code unless
 you're careful.  The @code{backcall} package provides a way of specifying the
 callback signature using a prototype function.")
-    (license license:bsd-3)))
-
-;; This is the latest release of the LTS version of ipython with support for
-;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
-;; dropped support for Python 2.7.
-(define-public python2-ipython
-  (package
-    (name "python2-ipython")
-    (version "5.8.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ipython" version ".tar.gz"))
-       (sha256
-        (base32 "01l93i4hspf0lvhmycvc8j378bslm9rw30mwfspsl6v1ayc69b2b"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python2-backports-shutil-get-terminal-size"
-        ,python2-backports-shutil-get-terminal-size)
-       ("python2-pathlib2" ,python2-pathlib2)
-       ("python2-pyzmq" ,python2-pyzmq)
-       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
-       ("python2-terminado" ,python2-terminado)
-       ("python2-matplotlib" ,python2-matplotlib)
-       ("python2-numpy" ,python2-numpy)
-       ("python2-numpydoc" ,python2-numpydoc)
-       ("python2-jinja2" ,python2-jinja2)
-       ("python2-mistune" ,python2-mistune)
-       ("python2-pexpect" ,python2-pexpect)
-       ("python2-pickleshare" ,python2-pickleshare)
-       ("python2-simplegeneric" ,python2-simplegeneric)
-       ("python2-jsonschema" ,python2-jsonschema)
-       ("python2-traitlets" ,python2-traitlets)
-       ("python2-nbformat" ,python2-nbformat)
-       ("python2-pygments" ,python2-pygments)))
-    (inputs
-     `(("readline" ,readline)
-       ("which" ,which)))
-    (native-inputs
-     `(("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
-       ("python2-requests" ,python2-requests) ;; for tests
-       ("python2-testpath" ,python2-testpath)
-       ("python2-mock" ,python2-mock)
-       ("python2-nose" ,python2-nose)))
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'delete-broken-tests
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; These tests throw errors for unknown reasons.
-             (delete-file "IPython/core/tests/test_profile.py")
-             (delete-file "IPython/core/tests/test_interactiveshell.py")
-             (delete-file "IPython/core/tests/test_magic.py")
-             #t)))))
-    (home-page "https://ipython.org")
-    (synopsis "IPython is a tool for interactive computing in Python")
-    (description
-     "IPython provides a rich architecture for interactive computing with:
-Powerful interactive shells, a browser-based notebook, support for interactive
-data visualization, embeddable interpreters and tools for parallel
-computing.")
     (license license:bsd-3)))
 
 (define-public python-ipython
@@ -5728,6 +5724,70 @@ computing.")
              (delete-file "IPython/core/tests/test_display.py")
              ;; AttributeError: module 'IPython.core' has no attribute 'formatters'
              (delete-file "IPython/core/tests/test_interactiveshell.py")
+             #t)))))
+    (home-page "https://ipython.org")
+    (synopsis "IPython is a tool for interactive computing in Python")
+    (description
+     "IPython provides a rich architecture for interactive computing with:
+Powerful interactive shells, a browser-based notebook, support for interactive
+data visualization, embeddable interpreters and tools for parallel
+computing.")
+    (properties `((python2-variant . ,(delay python2-ipython))))
+    (license license:bsd-3)))
+
+;; This is the latest release of the LTS version of ipython with support for
+;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
+;; dropped support for Python 2.7.
+(define-public python2-ipython
+  (package
+    (name "python2-ipython")
+    (version "5.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipython" version ".tar.gz"))
+       (sha256
+        (base32 "01l93i4hspf0lvhmycvc8j378bslm9rw30mwfspsl6v1ayc69b2b"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python2-backports-shutil-get-terminal-size"
+        ,python2-backports-shutil-get-terminal-size)
+       ("python2-pathlib2" ,python2-pathlib2)
+       ("python2-pyzmq" ,python2-pyzmq)
+       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
+       ("python2-terminado" ,python2-terminado)
+       ("python2-matplotlib" ,python2-matplotlib)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-numpydoc" ,python2-numpydoc)
+       ("python2-jinja2" ,python2-jinja2)
+       ("python2-mistune" ,python2-mistune)
+       ("python2-pexpect" ,python2-pexpect)
+       ("python2-pickleshare" ,python2-pickleshare)
+       ("python2-simplegeneric" ,python2-simplegeneric)
+       ("python2-jsonschema" ,python2-jsonschema)
+       ("python2-traitlets" ,python2-traitlets)
+       ("python2-nbformat" ,python2-nbformat)
+       ("python2-pygments" ,python2-pygments)))
+    (inputs
+     `(("readline" ,readline)
+       ("which" ,which)))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)
+       ("python2-requests" ,python2-requests) ;; for tests
+       ("python2-testpath" ,python2-testpath)
+       ("python2-mock" ,python2-mock)
+       ("python2-nose" ,python2-nose)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'delete-broken-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; These tests throw errors for unknown reasons.
+             (delete-file "IPython/core/tests/test_displayhook.py")
+             (delete-file "IPython/core/tests/test_magic_terminal.py")
+             (delete-file "IPython/core/tests/test_profile.py")
              #t)))))
     (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
@@ -8164,6 +8224,7 @@ in the data.")
     (description "This package provides a terminal-based console frontend for
 Jupyter kernels.  It also allows for console-based interaction with non-Python
 Jupyter kernels such as IJulia and IRKernel.")
+    (properties `((python2-variant . ,(delay python2-jupyter-console))))
     (license license:bsd-3)))
 
 (define-public python2-jupyter-console
@@ -8178,8 +8239,9 @@ Jupyter kernels such as IJulia and IRKernel.")
         (base32
          "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
     (build-system python-build-system)
-    ;; Tests only run in an TTY.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f))    ; Tests only run in a TTY.
     (propagated-inputs
      `(("python2-ipykernel" ,python2-ipykernel)
        ("python2-jupyter-client" ,python2-jupyter-client)
@@ -8520,14 +8582,14 @@ be set via config files and/or environment variables.")
 (define-public python-contextlib2
   (package
     (name "python-contextlib2")
-    (version "0.5.5")
+    (version "0.6.0.post1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "contextlib2" version))
        (sha256
         (base32
-         "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
+         "0bhnr2ac7wy5l85ji909gyljyk85n92w8pdvslmrvc8qih4r1x01"))))
     (build-system python-build-system)
     (home-page "https://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
@@ -9223,14 +9285,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0jqa3qfpykyn4fmkn0kh6043sfls7br8i2bsdbccazcvk9cijsd3"))))
+         "193mds7lv91pphnvn6c1n55rhjkgq94asdzgrsb2fiqx7rrsd119"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -10776,26 +10838,24 @@ docstring and colored output.")
 (define-public python-tomlkit
   (package
     (name "python-tomlkit")
-    (version "0.5.8")
+    (version "0.5.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tomlkit" version))
        (sha256
-        (base32
-         "0sf2a4q61kf344hjbw8kb6za1hlccl89j9lzqw0l2zpddp0hrh9j"))))
+        (base32 "1kq1663iqxgwrmb883n55ypi5axnixla2hrby9g2x227asifsi7h"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page
-     "https://github.com/sdispater/tomlkit")
-    (synopsis "Style preserving TOML library")
+    (home-page "https://github.com/sdispater/tomlkit")
+    (synopsis "Style-preserving TOML library")
     (description
      "TOML Kit is a 0.5.0-compliant TOML library.  It includes a parser that
 preserves all comments, indentations, whitespace and internal element ordering,
 and makes them accessible and editable via an intuitive API.  It can also
 create new TOML documents from scratch using the provided helpers.  Part of the
-implementation as been adapted, improved and fixed from Molten.")
+implementation has been adapted, improved, and fixed from Molten.")
     (license license:expat)))
 
 (define-public python-shellingham
@@ -11856,13 +11916,13 @@ focus on building massively scalable web applications.")
 (define-public python-snowballstemmer
   (package
     (name "python-snowballstemmer")
-    (version "1.2.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "snowballstemmer" version))
               (sha256
                (base32
-                "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
+                "0ligk61idlz8kkgd5hpip5whm172riwglb6xydii7h62yhysqfyz"))))
     (build-system python-build-system)
     (arguments
      `(;; No tests exist
@@ -12047,14 +12107,14 @@ Record Format (DWARF).")
 (define-public python-imagesize
   (package
     (name "python-imagesize")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
       (origin
       (method url-fetch)
       (uri (pypi-uri "imagesize" version))
       (sha256
        (base32
-        "1dg3wn7qpwmhgqc0r9na2ding1wif9q5spz3j9zn2riwphc2k0zk"))))
+        "1cd24x0vqbd6c8ym1n21qc0aj54mfb7rzdqglmwk9xxixajbbxmi"))))
     (build-system python-build-system)
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in various formats in Python")
@@ -13516,10 +13576,17 @@ Supported metrics are:
 @item Halstead metrics (all of them)
 @item the Maintainability Index (a Visual Studio metric)
 @end itemize")
+    (properties `((python2-variant . ,(delay python2-radon))))
     (license license:expat)))
 
 (define-public python2-radon
-  (package-with-python2 python-radon))
+  (let ((base (package-with-python2 (strip-python2-variant python-radon))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python-configparser" ,python2-configparser)
+         ("python-future" ,python2-future)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-sure
   (package

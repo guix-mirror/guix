@@ -246,6 +246,35 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public phodav
+  (package
+   (name "phodav")
+   (version "2.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version) "/"
+                                name "-" version ".tar.xz"))
+            (sha256
+             (base32
+              "1hxq8c5qfah3w7mxcyy3yhzdgswplll31a69p5mqdl04bsvw5pbx"))))
+   (build-system meson-build-system)
+   (native-inputs
+    `(("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")
+      ("gtk-doc" ,gtk-doc)
+      ("pkg-config" ,pkg-config)))
+   (inputs
+    `(("avahi" ,avahi)
+      ("libgudev" ,libgudev)
+      ("libsoup" ,libsoup)))
+   (synopsis "WebDav server implementation using libsoup")
+   (description "PhoDav was initially developed as a file-sharing mechanism for Spice,
+but it is generic enough to be reused in other projects,
+in particular in the GNOME desktop.")
+   (home-page "https://wiki.gnome.org/phodav")
+   (license license:lgpl2.1+)))
+
 (define-public gnome-color-manager
   (package
    (name "gnome-color-manager")
@@ -5322,7 +5351,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.34.4")
+    (version "3.36.0")
     (source
      (origin
        (method url-fetch)
@@ -5330,7 +5359,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0xvy672zyl6jsdlnxma8nc2aqsx9k92jhp6wfxs0msj9ppp1nd3z"))))
+        (base32 "198l3yhqhb2wzfdcgi8fzbwycr0njn44583dazz6wy1gqbiqnzgm"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments
@@ -9211,7 +9240,7 @@ mp3, Ogg Vorbis and FLAC")
        ("python-pygobject" ,python-pygobject)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)))
-    (home-page "http://soundconverter.org/")
+    (home-page "https://soundconverter.org/")
     (synopsis "Convert between audio formats with a graphical interface")
     (description
      "SoundConverter supports converting between many audio formats including

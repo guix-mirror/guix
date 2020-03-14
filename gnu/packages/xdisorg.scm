@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -526,7 +527,7 @@ and Matrox.")
 (define-public mtdev
   (package
     (name "mtdev")
-    (version "1.1.5")
+    (version "1.1.6")
     (source
       (origin
         (method url-fetch)
@@ -535,8 +536,9 @@ and Matrox.")
                version ".tar.bz2"))
         (sha256
          (base32
-          "0zxs7shzgbalkvlaiibi25bd902rbmkv9n1lww6q8j3ri9qdaxv6"))))
+          "1q700h9dqcm3zl6c3gj0qxxjcx6ibw2c51wjijydhwdcm26v5mqm"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (home-page "http://bitmath.org/code/mtdev/")
     (synopsis "Multitouch protocol translation library")
     (description "Mtdev is a stand-alone library which transforms all
@@ -818,7 +820,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.59")
+    (version "5.62")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
@@ -829,7 +831,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
                                        "xlockmore-" version ".tar.xz")))
              (sha256
               (base32
-               "0lajc5a4lki33b9mzfsi74q4hbivbmhwysp7mib4ivnyxianhaid"))))
+               "0b05wgj4mpssy4hd7km5c48i454dfg45p11mfmsr7xjd2gnz5gqi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -841,7 +843,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
        ("libXext" ,libxext)
        ("libXt" ,libxt)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://sillycycle.com/xlockmore.html")
+    (home-page "https://sillycycle.com/xlockmore.html")
     (synopsis "Screen locker for the X Window System")
     (description
      "XLockMore is a classic screen locker and screen saver for the
@@ -1972,7 +1974,7 @@ The cutbuffer and clipboard selection are always synchronized.")
 (define-public jgmenu
   (package
     (name "jgmenu")
-    (version "4.0.1")
+    (version "4.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1982,7 +1984,7 @@ The cutbuffer and clipboard selection are always synchronized.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q0rpg2d96sn3rrdi8m7bngnxxqyxilpjxi7skiw4gvpiv1akxjp"))))
+         "1wsh37rapb1bszlq36hvwxqvfds39hbvbl152m8as4zlh93wfvvk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppcheck" ,cppcheck)
@@ -2118,3 +2120,115 @@ font and theme settings when a complete desktop environment (GNOME, KDE) is
 not running.  With a simple @file{.xsettingsd} configuration file one can avoid
 configuring visual settings in different UI toolkits separately.")
     (license license:bsd-3)))
+
+(define-public clipnotify
+  (package
+    (name "clipnotify")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cdown/clipnotify.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1v3ydm5ljy8z1savmdxrjyx7a5bm5013rzw80frp3qbbjaci0wbg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (doc  (string-append %output "/share/doc/" ,name "-" ,version)))
+               (install-file "clipnotify" bin)
+               (install-file "README.md" doc)
+               #t))))
+       #:make-flags (list "CC=gcc")
+       #:tests? #f))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libXfixes" ,libxfixes)))
+    (home-page "https://github.com/cdown/clipnotify")
+    (synopsis "Notify on new X clipboard events")
+    (description "@command{clipnotify} is a simple program that, using the
+XFIXES extension to X11, waits until a new selection is available and then
+exits.
+
+It was primarily designed for clipmenu, to avoid polling for new selections.
+
+@command{clipnotify} doesn't try to print anything about the contents of the
+selection, it just exits when it changes.  This is intentional -- X11's
+selection API is verging on the insane, and there are plenty of others who
+have already lost their sanity to bring us xclip/xsel/etc.  Use one of those
+tools to complement clipnotify.")
+    (license license:public-domain)))
+
+(define-public clipmenu
+  (let ((commit "a495bcc7a4ab125182a661c5808364f66938a87c")
+        (revision "1"))
+    (package
+     (name "clipmenu")
+     (version (string-append "5.6.0-"
+                             revision "." (string-take commit 7)))
+     (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/cdown/clipnotify.git")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "12vvircdhl4psqi51cnfd6bqy85v2vwfcmdq1mimjgng727nwzys"))))
+     (build-system gnu-build-system)
+     (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hardcoded-paths
+           (lambda _
+             (substitute* "clipmenud"
+               (("has_clipnotify=0")
+                "has_clipnotify=1")
+               (("command -v clipnotify >/dev/null 2>&1 && has_clipnotify=1")
+                "")
+               (("clipnotify \\|\\| .*")
+                (string-append (which "clipnotify") "\n"))
+               (("xsel --logfile")
+                (string-append (which "xsel") " --logfile")))
+             (substitute* "clipmenu"
+               (("xsel --logfile")
+                (string-append (which "xsel") " --logfile")))
+             #t))
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bin  (string-append out "/bin"))
+                    (doc  (string-append %output "/share/doc/"
+                                         ,name "-" ,version)))
+               (install-file "clipdel" bin)
+               (install-file "clipmenu" bin)
+               (install-file "clipmenud" bin)
+               (install-file "README.md" doc)
+               #t))))
+       #:tests? #f))
+     (inputs
+      `(("clipnotify" ,clipnotify)
+        ("xsel" ,xsel)))
+     (home-page "https://github.com/cdown/clipmenu")
+     (synopsis "Simple clipboard manager using dmenu or rofi and xsel")
+     (description "Start @command{clipmenud}, then run @command{clipmenu} to
+select something to put on the clipboard.
+
+When @command{clipmenud} detects changes to the clipboard contents, it writes
+them out to the cache directory.  @command{clipmenu} reads the cache directory
+to find all available clips and launches @command{dmenu} (or @command{rofi},
+depending on the value of @code{CM_LAUNCHER}) to let the user select a clip.
+After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
+     (license license:public-domain))))

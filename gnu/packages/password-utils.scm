@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -46,6 +46,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages kerberos)
@@ -696,6 +698,82 @@ using password-store through rofi interface:
 @item bookmarks mode (open stored URLs in browser, default: Alt+x).
 @end enumerate")
     (license license:gpl3)))
+
+(define-public browserpass-native
+  (package
+    (name "browserpass-native")
+    (version "3.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/browserpass/browserpass-native.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0q3bsla07zjl6i69nj1axbkg2ia89pvh0jg6nlqgbm2kpzzbn0pz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/browserpass/browserpass-native"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; This doesn't go in #:make-flags because the Makefile itself
+               ;; gets installed.
+               (substitute*
+                   "src/github.com/browserpass/browserpass-native/Makefile"
+                 (("PREFIX \\?= /usr")
+                  (string-append "PREFIX ?= " out)))
+               #t)))
+         (add-before 'build 'configure
+           (lambda _
+               (with-directory-excursion
+                   "src/github.com/browserpass/browserpass-native"
+                 (invoke "make" "configure"))
+             #t))
+         (replace 'build
+           (lambda _
+               (with-directory-excursion
+                   "src/github.com/browserpass/browserpass-native"
+                 (invoke "make"))
+             #t))
+         (replace 'install
+           (lambda _
+             (with-directory-excursion
+                 "src/github.com/browserpass/browserpass-native"
+               (invoke "make" "install"))
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gnupg (assoc-ref inputs "gnupg")))
+               (wrap-program (string-append out "/bin/browserpass")
+                 `("PATH" ":" prefix
+                   (,(string-append gnupg "/bin"))))
+               #t))))))
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("gnupg" ,gnupg)
+       ("go-github-com-mattn-go-zglob" ,go-github-com-mattn-go-zglob)
+       ("go-github-com-rifflock-lfshook" ,go-github-com-rifflock-lfshook)
+       ("go-github-com-sirupsen-logrus" ,go-github-com-sirupsen-logrus)
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (home-page "https://github.com/browserpass/browserpass-native")
+    (synopsis "Browserpass native messaging host")
+    (description "Browserpass is a browser extension for pass, a
+UNIX-based password store manager.  It allows you to auto-fill or copy to
+clipboard credentials for the current domain, protecting you from phishing
+attacks.
+
+This package only contains the Browserpass native messaging host.  You must
+also install the browser extension for GNU IceCat or ungoogled-chromium
+separately.")
+    (license license:isc)))
 
 (define-public argon2
   (package

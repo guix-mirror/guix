@@ -201,7 +201,7 @@ tables, and it understands a variety of different formats.")
                (install-file "fixparts.8" man)
                (install-file "gdisk.8" man)
                (install-file "sgdisk.8" man)))))))
-    (home-page "http://www.rodsbooks.com/gdisk/")
+    (home-page "https://www.rodsbooks.com/gdisk/")
     (synopsis "Low-level GPT disk partitioning and formatting")
     (description "GPT fdisk (aka gdisk) is a text-mode partitioning tool that
 works on Globally Unique Identifier (@dfn{GUID}) Partition Table (@dfn{GPT})
@@ -295,15 +295,14 @@ and a @command{fsck.vfat} compatibility symlink for use in an initrd.")
 (define-public sdparm
   (package
     (name "sdparm")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://sg.danny.cz/sg/p/"
-                           name "-" version ".tar.xz"))
+                           "sdparm-" version ".tar.xz"))
        (sha256
-        (base32
-         "1jjq3lzgfy4r76rc26q02lv4wm5cb4dx5nh913h489zjrr4f3jbx"))))
+        (base32 "1nqjc4w2w47zavcbf5xmm53x1zbwgljaw1lpajcdi537cgy32fa8"))))
     (build-system gnu-build-system)
     (home-page "http://sg.danny.cz/sg/sdparm.html")
     (synopsis "Provide access to SCSI device parameters")

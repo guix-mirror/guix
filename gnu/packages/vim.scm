@@ -398,7 +398,7 @@ trouble using them, because you do not have to remember each snippet name.")
       (synopsis "Scheme syntax for Vim")
       (description
        "@code{vim-scheme} provides Scheme support for Vim (R7RS and CHICKEN).")
-      (home-page "http://foldling.org/git/vim-scheme.git/")
+      (home-page "https://foldling.org/git/vim-scheme.git/")
       (license license:public-domain))))
 
 (define-public vim-luna

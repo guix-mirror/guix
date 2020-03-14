@@ -757,7 +757,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.13")
+   (version "3.24.14")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -765,7 +765,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1a9hi7k59q0kqx0n3xhsk1ly23w9g9ncllnay1756g0yrww5qxsc"))
+              "120yz5gxqbv7sgdbcy4i0b6ixm8jpjzialdrqs0gv15q7bwnjk8w"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (propagated-inputs
@@ -1777,7 +1777,7 @@ Parcellite and adds bugfixes and features.")
        ("python-2" ,python-2)
        ("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)))
-    (home-page "http://ebassi.github.io/graphene")
+    (home-page "https://ebassi.github.io/graphene/")
     (synopsis "Thin layer of graphic data types")
     (description "This library provides graphic types and their relative API;
 it does not deal with windowing system surfaces, drawing, scene graphs, or

@@ -223,14 +223,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.8")
+    (version "1.17.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nwn4md8sxhks2j77qq1nvk5pfz3yykfhh2b507b6l2idp7kxllp"))))
+                "12dnrdxwnlid0wr797vdxj9z1fmxnk7ib55bznvl2g3mbi05vmkx"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -1131,7 +1131,7 @@ parser written in ANSI C and a small validating JSON generator.")
      "Libwebsockets is a library that allows C programs to establish client
 and server WebSockets connections---a protocol layered above HTTP that allows
 for efficient socket-like bidirectional reliable communication channels.")
-    (home-page "http://libwebsockets.org/")
+    (home-page "https://libwebsockets.org")
 
     ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
     (license license:lgpl2.1)))
@@ -2625,7 +2625,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.44")
+    (version "4.46")
     (source
      (origin
        (method url-fetch)
@@ -2633,7 +2633,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "020jrygslqixrxd2nzc2l8ac39ynqzsy83nnnr3mqn6kxfvmyhqj"))))
+         "16225vmdsfa2y7i1ydv7634nd0qxxb0ccwnfszjq58rwqgfri2bq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -3248,15 +3248,15 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
 (define-public perl-http-date
   (package
     (name "perl-http-date")
-    (version "6.02")
+    (version "6.05")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Date-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Date-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
+               "0awjdbz7x0jd5pna55dwxhs3k6xp3sw6b2zg3p2yndxxvya64p9n"))))
     (build-system perl-build-system)
     (license license:perl-license)
     (synopsis "Perl date conversion routines")
@@ -3615,16 +3615,18 @@ not have DNS.  We might not have a network card at all!")
 (define-public perl-lwp-mediatypes
   (package
     (name "perl-lwp-mediatypes")
-    (version "6.02")
+    (version "6.04")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/LWP-MediaTypes-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/LWP-MediaTypes-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
+               "1n8rg6csv3dsvymg06cmxipimr6cb1g9r903ghm1qsmiv89cl6wg"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
     (license license:perl-license)
     (synopsis "Perl module to guess the media type for a file or a URL")
     (description
@@ -6101,10 +6103,10 @@ file links.")
     (inputs
      `(("expat" ,expat)
        ("openssl" ,openssl)))
-    (home-page "http://www.webdav.org/cadaver")
+    (home-page "http://www.webdav.org/cadaver/")
     (synopsis "Command-line WebDAV client")
     (description
-     "Cadaver is a command-line WebDAV client for Unix. It supports
+     "Cadaver is a command-line WebDAV client for Unix.  It supports
 file upload, download, on-screen display, namespace operations (move/copy),
 collection creation and deletion, and locking operations.")
     (license license:gpl2)))
@@ -7192,7 +7194,7 @@ the Internet to a local directory, building recursively all directories,
 getting HTML, images, and other files from the server to your computer.
 
 HTTrack arranges the original site's relative link-structure.  Simply open
-a page of the ``mirrored'' website in your browser, and you can browse the
+a page of the @code{mirrored} website in your browser, and you can browse the
 site from link to link, as if you were viewing it online.  HTTrack can also
 update an existing mirrored site, and resume interrupted downloads.
 

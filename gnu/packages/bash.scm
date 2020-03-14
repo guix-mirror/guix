@@ -351,7 +351,7 @@ completion for many common commands.")
                (install-file "bash-tap" bin)
                (install-file "bash-tap-bootstrap" bin)
                (install-file "bash-tap-mock" bin)))))))
-    (home-page "http://www.illusori.co.uk/projects/bash-tap/")
+    (home-page "https://www.illusori.co.uk/projects/bash-tap/")
     (synopsis "Bash port of a Test::More/Test::Builder-style TAP-compliant
 test library")
     (description "Bash TAP is a TAP-compliant Test::More-style testing library

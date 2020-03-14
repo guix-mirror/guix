@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -2402,7 +2402,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.5.9")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -2410,10 +2410,11 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0xca343ff12wh6nsq76r0nbsfrm8dypjrzm4fqz9vv9v8i8kfrp1"))))
+         "04a2klvii0in9ln8r85mk2cm73jq8ry2m3yzmf2z8xyjxzjcmlr0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pedantry
                     (lambda _
                       ;; XXX: libevdev includes kernel headers, which causes this
@@ -3858,7 +3859,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.28")
+    (version "2.29")
     (source
       (origin
         (method url-fetch)
@@ -3868,15 +3869,16 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1kmxc8hdw4qpvdlzp4ag8ygl34lqhs6sn3pcz1sl0kn61xdv5bb9"))))
+            "00hqc8nykvy8c09b8vab64dcd0ij3n5klxjn6rl00q7hickpah8x"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gettext" ,gettext-minimal)
-        ("libx11" ,libx11)
+      `(("libx11" ,libx11)
         ("xkbcomp-intermediate" ,xkbcomp-intermediate)))
     (native-inputs
-      `(("intltool" ,intltool)
-        ("pkg-config" ,pkg-config)))
+      `(("gettext" ,gettext-minimal)
+        ("perl" ,perl)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB configuration files")
     (description
@@ -6224,8 +6226,7 @@ X11 servers, Windows, or macOS.")
                            (guix build emacs-utils))
        #:configure-flags
        (list "--with-anthy-utf8"
-             (string-append "--with-lispdir=" %output
-                            "/share/emacs/site-lisp/guix.d")
+             (string-append "--with-lispdir=" %output "/share/emacs")
              ;; Set proper runpath
              (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
@@ -6233,13 +6234,22 @@ X11 servers, Windows, or macOS.")
          ;; Set path of uim-el-agent and uim-el-helper-agent executables
          (add-after 'configure 'configure-uim-el
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "emacs/uim-var.el"
-               (("\"(uim-el-agent|uim-el-helper-agent)\"" _ executable)
-                (string-append "\"" (assoc-ref outputs "out")
-                               "/bin/" executable "\"")))
+             (let ((out (assoc-ref outputs "out")))
+               (emacs-substitute-variables "emacs/uim-var.el"
+                 ("uim-el-agent" (string-append out "/bin/uim-el-agent"))
+                 ("uim-el-helper-agent" (string-append out "/bin/uim-el-helper-agent"))))
+             #t))
+         ;; Fix installation path by renaming share/emacs/uim-el to
+         ;; share/emacs/site-lisp
+         (add-after 'install 'fix-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share-emacs (string-append (assoc-ref outputs "out")
+                                               "/share/emacs")))
+               (rename-file (string-append share-emacs "/uim-el")
+                            (string-append share-emacs "/site-lisp")))
              #t))
          ;; Generate emacs autoloads for uim.el
-         (add-after 'install 'make-autoloads
+         (add-after 'fix-install-path 'make-autoloads
            (lambda* (#:key outputs #:allow-other-keys)
              (emacs-generate-autoloads
               ,name (string-append (assoc-ref outputs "out")

@@ -284,6 +284,44 @@
            (((thing "out"))
             (eq? thing file))))))
 
+(test-assertm "with-parameters for %current-system"
+  (mlet* %store-monad ((system -> (match (%current-system)
+                                    ("aarch64-linux" "x86_64-linux")
+                                    (_               "aarch64-linux")))
+                       (drv    (package->derivation coreutils system))
+                       (obj -> (with-parameters ((%current-system system))
+                                 coreutils))
+                       (result (lower-object obj)))
+    (return (string=? (derivation-file-name drv)
+                      (derivation-file-name result)))))
+
+(test-assertm "with-parameters for %current-target-system"
+  (mlet* %store-monad ((target -> "riscv64-linux-gnu")
+                       (drv    (package->cross-derivation coreutils target))
+                       (obj -> (with-parameters
+                                   ((%current-target-system target))
+                                 coreutils))
+                       (result (lower-object obj)))
+    (return (string=? (derivation-file-name drv)
+                      (derivation-file-name result)))))
+
+(test-assert "with-parameters + file-append"
+  (let* ((system (match (%current-system)
+                   ("aarch64-linux" "x86_64-linux")
+                   (_               "aarch64-linux")))
+         (drv    (package-derivation %store coreutils system))
+         (param  (make-parameter 7))
+         (exp    #~(here we go #$(with-parameters ((%current-system system)
+                                                   (param 42))
+                                   (if (= (param) 42)
+                                       (file-append coreutils "/bin/touch")
+                                       %bootstrap-guile)))))
+    (match (gexp->sexp* exp)
+      (('here 'we 'go (? string? result))
+       (string=? result
+                 (string-append (derivation->output-path drv)
+                                "/bin/touch"))))))
+
 (test-assert "ungexp + ungexp-native"
   (let* ((exp    (gexp (list (ungexp-native %bootstrap-guile)
                              (ungexp coreutils)

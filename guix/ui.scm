@@ -1218,16 +1218,23 @@ converted to a space; sequences of more than one line break are preserved."
 ;;;
 
 (define %text-width
-  (make-parameter (terminal-columns)))
+  ;; '*line-width*' was introduced in Guile 2.2.7/3.0.1.  On older versions of
+  ;; Guile, monkey-patch 'wrap*' below.
+  (if (defined? '*line-width*)
+      (let ((parameter (fluid->parameter *line-width*)))
+        (parameter (terminal-columns))
+        parameter)
+      (make-parameter (terminal-columns))))
 
-(set! (@@ (texinfo plain-text) wrap*)
-      ;; XXX: Monkey patch this private procedure to let 'package->recutils'
-      ;; parameterize the fill of description field correctly.
-      (lambda strings
-        (let ((indent (fluid-ref (@@ (texinfo plain-text) *indent*))))
-          (fill-string (string-concatenate strings)
-                       #:line-width (%text-width) #:initial-indent indent
-                       #:subsequent-indent indent))))
+(unless (defined? '*line-width*)                  ;Guile < 2.2.7
+  (set! (@@ (texinfo plain-text) wrap*)
+    ;; XXX: Monkey patch this private procedure to let 'package->recutils'
+    ;; parameterize the fill of description field correctly.
+    (lambda strings
+      (let ((indent (fluid-ref (@@ (texinfo plain-text) *indent*))))
+        (fill-string (string-concatenate strings)
+                     #:line-width (%text-width) #:initial-indent indent
+                     #:subsequent-indent indent)))))
 
 (define (texi->plain-text str)
   "Return a plain-text representation of texinfo fragment STR."

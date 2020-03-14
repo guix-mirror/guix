@@ -36,7 +36,7 @@
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019, 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -362,42 +362,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.24")
+(define-public linux-libre-5.4-version "5.4.25")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1cvy3mxwzll4f9j8i3hfmi0i0zq75aiafq1jskp9n4kq9iwar83z")))
+        (hash (base32 "09ay0adc3s3m7qk0nj5lkmrp5i0q76a9kax0xix8914d115rgvf0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.108")
+(define-public linux-libre-4.19-version "4.19.109")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "18shyy1z2s8r26qb4rcz7gwl43dnmycjjywp9gss5zlfn2jyrbh9")))
+        (hash (base32 "0kwnlv5336vqdf38dzn077ic17zkb4rl5khxmc47syzd9zm4fhnh")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.172")
+(define-public linux-libre-4.14-version "4.14.173")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0yi13cky6jdswca7nrjgcrdxk8rnqdbhblhy6mws103mjfms2613")))
+        (hash (base32 "0kxp3mgiags8hdax15masab9zr89xraqvl9ri7zwgksx8ixav0m2")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.215")
+(define-public linux-libre-4.9-version "4.9.216")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0j4z2al318654z40w4f8zhh73zwpgn8igjr5k4mz401phm3jyvr3")))
+        (hash (base32 "0lgv5k8v5xz9z2z4k42566bh0akyk1gr0dx6s1m1rjrzsf9k86l6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.215")
+(define-public linux-libre-4.4-version "4.4.216")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "00zy6cxwb16pqziiqs25pz5llryx2v2nbk9vvzpzxa8x43ad7g18")))
+        (hash (base32 "1hjgh9brvxzi6ypgfnk07l3j28xsxgz88sdshnz19vj96bn1w70q")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1679,7 +1679,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.1.2")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1687,7 +1687,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0hvrx0ipzqbcx4y1cmr9bgm9niifzkrhsb1ddgzzdwbk6q72d3lm"))))
+               "1v5kb8jyvrpkvvq7dq8hfbmcj68lml97i4s0prxpfx2mh3c57s6q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -1703,14 +1703,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "039c19b7091is0czl9jlrfczp7pp1jpdri0vvc4k07gl3skhn48b"))))
+               "1wz460by17rmxrcydn583rd4lhj6wlvqs6x1j5pdzxn5g3app024"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1758,14 +1758,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1nj8cpbi05rb62yzs01c1k7lymdn1ch229b599hbhd0psixdx52d"))))
+               "0z9k3ssbfk2ky2w13avgyf202j1drsz9sv3834bp33cj1i2hc3qw"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -2871,6 +2871,21 @@ to the in-kernel OOM killer.")
                                (or native-inputs inputs) "xsltproc")
                                "/bin/xsltproc")))
             #t))
+         (add-after 'install 'move-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (static (assoc-ref outputs "static"))
+                    (source (string-append out "/lib/libudev.a"))
+                    (target (string-append static "/lib/libudev.a")))
+               (mkdir-p (dirname target))
+               (link source target)
+               (delete-file source)
+               ;; Remove reference to the static library from the .la file
+               ;; such that Libtool looks for it in the usual places.
+               (substitute* (string-append out "/lib/libudev.la")
+                 (("old_library=.*")
+                  "old_library=''\n"))
+               #t)))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
@@ -2904,6 +2919,7 @@ to the in-kernel OOM killer.")
      ;; which contains the rules to do that.
      `(("util-linux" ,util-linux "lib")           ;for blkid
        ("kmod" ,kmod)))
+    (outputs '("out" "static"))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
@@ -3021,8 +3037,7 @@ mapper.  Kernel components are part of Linux-libre.")
     (name "lvm2-static")
 
     ;; Propagate udev because libdevmapper.a depends on libudev.
-    (inputs (alist-delete "udev" (package-inputs lvm2)))
-    (propagated-inputs `(("udev" ,eudev)))
+    (propagated-inputs `(("udev:static" ,eudev "static")))
 
     (arguments
      (substitute-keyword-arguments (package-arguments lvm2)
@@ -3545,6 +3560,12 @@ thanks to the use of namespaces.")
                       _ program)
                      (string-append "/run/setuid-programs/singularity-"
                                     program "-helper")))
+
+                  ;; These squashfs mount options are apparently no longer
+                  ;; supported since Linux-libre 5.4.5.
+                  (substitute* "src/lib/image/squashfs/mount.c"
+                    (("\"errors=remount-ro\"")
+                     "NULL"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
@@ -3557,7 +3578,19 @@ thanks to the use of namespaces.")
                (("if ! singularity_which mksquashfs") "if 0")
                (("if ! mksquashfs")
                 (string-append "if ! " (which "mksquashfs"))))
-             #t)))))
+             #t))
+         (add-after 'install 'set-PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Have the 'singularity' and 'run-singularity' self-sufficient.
+             (let ((out (assoc-ref outputs "out"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (wrap-program (string-append out "/bin/singularity")
+                 `("PATH" ":" = (,(string-append coreutils "/bin"))))
+               (substitute* (string-append out "/bin/run-singularity")
+                 (("/usr/bin/env singularity")
+                  (string-append (which "env") " "
+                                 out "/bin/singularity")))
+               #t))))))
     (inputs
      `(("libarchive" ,libarchive)
        ("python" ,python-wrapper)
@@ -3990,7 +4023,7 @@ Linux Device Mapper multipathing driver:
 (define-public libaio
   (package
     (name "libaio")
-    (version "0.3.111")
+    (version "0.3.112")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -3998,7 +4031,7 @@ Linux Device Mapper multipathing driver:
                                    name "-" version ".tar.gz")))
               (sha256
                (base32
-                "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
+                "14mlqdapjqq1dhpkdgy5z83mvsaz36fcxca7a4z6hinmr7r6415b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -4046,7 +4079,8 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.52")
+    (replacement bluez/fixed)
+    (version "5.53")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4054,7 +4088,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "02jng21lp6fb3c2bh6vf9y7cj4gaxwk29dfc32ncy0lj0gi4q57p"))))
+                "1g1qg6dz6hl3csrmz75ixr12lwv836hq3ckb259svvrg62l2vaiq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -4110,6 +4144,14 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
     (license license:gpl2+)))
+
+(define bluez/fixed
+  (package
+    (inherit bluez)
+    (source (origin
+              (inherit (package-source bluez))
+              (patches (append (origin-patches (package-source bluez))
+                               (search-patches "bluez-CVE-2020-0556.patch")))))))
 
 (define-public fuse-exfat
   (package
@@ -5476,7 +5518,7 @@ interface in sysfs, which can be accomplished with the included udev rules.")
                                                "wireless-tools"))))))
                          bin-files)
                #t))))))
-    (home-page "http://linrunner.de/en/tlp/tlp.html")
+    (home-page "https://linrunner.de/en/tlp/tlp.html")
     (synopsis "Power management tool for Linux")
     (description "TLP is a power management tool for Linux.  It comes with
 a default configuration already optimized for battery life.  Nevertheless,

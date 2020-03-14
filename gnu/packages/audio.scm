@@ -1306,7 +1306,7 @@ PS, and DAB+.")
              #t)))))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://faust.grame.fr/")
+    (home-page "https://faust.grame.fr/")
     (synopsis "Signal processing language")
     (description
      "Faust is a programming language for realtime audio signal processing.")
@@ -2112,7 +2112,7 @@ buffers, and audio capture.")
      `(("openal" ,openal)))
     (synopsis "Free implementation of OpenAL's ALUT standard")
     (description "freealut is the OpenAL Utility Toolkit.")
-    (home-page "http://kcat.strangesoft.net/openal.html")
+    (home-page "https://kcat.strangesoft.net/openal.html")
     (license license:lgpl2.0)))
 
 (define-public patchage
@@ -2985,7 +2985,7 @@ synthesizer written in C++.")
                      (string-append "--prefix=" (assoc-ref outputs "out"))))))
        ;; No 'check' target.
        #:tests? #f))
-    (home-page "http://themaister.net/rsound.html")
+    (home-page "https://themaister.net/rsound.html")
     (synopsis "Networked audio system")
     (description
      "RSound allows you to send audio from an application and transfer it
@@ -3727,7 +3727,7 @@ surround).")
 (define-public libopenshot-audio
   (package
     (name "libopenshot-audio")
-    (version "0.1.8")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3736,7 +3736,7 @@ surround).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fvp6nmf30xzkmcznakh8dv5vn9d7nq051pqcqv638hsfppkmcrl"))))
+                "13if0m5mvlqly8gmbhschzb9papkgp3yqivklhb949dhy16m8zgf"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

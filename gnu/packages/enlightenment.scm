@@ -515,15 +515,12 @@ and in creating applications based on the Enlightenment Foundation Library suite
     (name "ephoto")
     (version "1.5")
     (source
-      (origin
-        (method url-fetch)
-        (uri (list (string-append "http://www.smhouston.us/stuff/ephoto-"
-                                  version ".tar.xz")
-                   (string-append "https://download.enlightenment.org/rel/"
-                                  "apps/ephoto/ephoto-" version ".tar.xz")))
-        (sha256
-         (base32
-          "1q7v9abjp9jrs08xc7pqaac64yzax24dk1snjb9rciarzzh3mlzy"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.enlightenment.org/rel/"
+                           "apps/ephoto/ephoto-" version ".tar.xz"))
+       (sha256
+        (base32 "1q7v9abjp9jrs08xc7pqaac64yzax24dk1snjb9rciarzzh3mlzy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -536,7 +533,7 @@ and in creating applications based on the Enlightenment Foundation Library suite
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("efl" ,efl)))
-    (home-page "http://smhouston.us/ephoto/")
+    (home-page "https://smhouston.us/projects/ephoto/")
     (synopsis "EFL image viewer/editor/manipulator/slideshow creator")
     (description "Ephoto is an image viewer and editor written using the
 @dfn{Enlightenment Foundation Libraries} (EFL).  It focuses on simplicity and

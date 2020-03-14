@@ -3462,7 +3462,7 @@ Fresnel integrals, and similar related functions as well.")
        ("lapack" ,lapack)
        ("metis" ,metis)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("m4" ,m4)))
     (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
     (synopsis "Suite of sparse matrix software")
@@ -4592,36 +4592,8 @@ linear algebra primitives specifically targeting graph analytics.")
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags)))
-         ;; These tests fail because they require a fully functional MPI
-         ;; environment.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (setenv "ARGS"
-                     (string-append "--exclude-regex '("
-                                    (string-join
-                                     (list
-                                      "remoteindicestest"
-                                      "remoteindicestest-mpi-2"
-                                      "syncertest"
-                                      "syncertest-mpi-2"
-                                      "variablesizecommunicatortest"
-                                      "variablesizecommunicatortest-mpi-2"
-                                      "arithmetictestsuitetest"
-                                      "assertandreturntest"
-                                      "assertandreturntest_ndebug"
-                                      "concept"
-                                      "debugaligntest"
-                                      "mpicollectivecommunication"
-                                      "mpicollectivecommunication-mpi-2"
-                                      "mpiguardtest"
-                                      "mpiguardtest-mpi-2"
-                                      "mpihelpertest"
-                                      "mpihelpertest-mpi-2"
-                                      "mpihelpertest2"
-                                      "mpihelpertest2-mpi-2")
-                                     "|")
-                                    ")'"))
-             #t)))))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("gmp" ,gmp)
        ("metis" ,metis)
@@ -4683,6 +4655,42 @@ This package contains the basic DUNE geometry classes.")
     ;; GPL version 2 with "runtime exception"
     (license license:gpl2)))
 
+(define-public dune-uggrid
+  (package
+    (name "dune-uggrid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dune-project.org/download/"
+                           version "/dune-uggrid-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05l7a1gb78mny49anyxk6rjvn66rhgm30y72v5cjg0m5kfgr1a1f"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags))))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("openmpi" ,openmpi)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://dune-project.org/")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "DUNE, the Distributed and Unified Numerics Environment is a
+modular toolbox for solving @dfn{partial differential equations} (PDEs) with
+grid-based methods.  It supports the easy implementation of methods like
+@dfn{Finite Elements} (FE), @dfn{Finite Volumes} (FV), and also @dfn{Finite
+Differences} (FD).
+
+This package contains the DUNE UG grid classes.")
+    (license license:lgpl2.1)))
+
 (define-public dune-grid
   (package
     (name "dune-grid")
@@ -4702,54 +4710,8 @@ This package contains the basic DUNE geometry classes.")
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags)))
-         ;; These tests fail because they require a fully functional MPI
-         ;; environment.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (setenv "ARGS"
-                     (string-append "--exclude-regex '("
-                                    (string-join
-                                     (list
-                                      "scsgmappertest"
-                                      "conformvolumevtktest"
-                                      "gnuplottest"
-                                      "nonconformboundaryvtktest"
-                                      "subsamplingvtktest"
-                                      "vtktest"
-                                      "vtktest-mpi-2"
-                                      "vtksequencetest"
-                                      "gmshtest-onedgrid"
-                                      "test-dgf-yasp"
-                                      "test-dgf-yasp-offset"
-                                      "test-dgf-oned"
-                                      "test-geogrid-yaspgrid"
-                                      "test-gridinfo"
-                                      "test-identitygrid"
-                                      "testiteratorranges"
-                                      "test-hierarchicsearch"
-                                      "test-parallel-ug-mpi-2"
-                                      "test-yaspgrid-backuprestore-equidistant"
-                                      "test-yaspgrid-backuprestore-equidistant-mpi-2"
-                                      "test-yaspgrid-backuprestore-equidistantoffset"
-                                      "test-yaspgrid-backuprestore-equidistantoffset-mpi-2"
-                                      "test-yaspgrid-backuprestore-tensor"
-                                      "test-yaspgrid-backuprestore-tensor-mpi-2"
-                                      "test-yaspgrid-tensorgridfactory"
-                                      "test-yaspgrid-tensorgridfactory-mpi-2"
-                                      "test-yaspgrid-yaspfactory-1d"
-                                      "test-yaspgrid-yaspfactory-1d-mpi-2"
-                                      "test-yaspgrid-yaspfactory-2d"
-                                      "test-yaspgrid-yaspfactory-2d-mpi-2"
-                                      "test-yaspgrid-yaspfactory-3d"
-                                      "test-yaspgrid-yaspfactory-3d-mpi-2"
-                                      "globalindexsettest"
-                                      "persistentcontainertest"
-                                      "structuredgridfactorytest"
-                                      "tensorgridfactorytest"
-                                      "vertexordertest")
-                                     "|")
-                                    ")'"))
-             #t)))))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
@@ -4758,6 +4720,8 @@ This package contains the basic DUNE geometry classes.")
        ("openblas" ,openblas)
        ("openmpi" ,openmpi)
        ("python" ,python)))
+    (propagated-inputs
+     `(("dune-uggrid" ,dune-uggrid)))
     (native-inputs
      `(("gfortran" ,gfortran)
        ("pkg-config" ,pkg-config)))
@@ -4792,29 +4756,14 @@ This package contains the basic DUNE grid classes.")
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags)))
-         ;; These tests fail because they require a fully functional MPI
-         ;; environment.
-         (add-after 'unpack 'disable-failing-tests
-           (lambda _
-             (setenv "ARGS"
-                     (string-append "--exclude-regex '("
-                                    (string-join
-                                     (list
-                                      "galerkintest"
-	                              "hierarchytest"
-	                              "pamgtest"
-	                              "pamg_comm_repart_test"
-	                              "matrixredisttest"
-	                              "vectorcommtest"
-	                              "matrixmarkettest")
-                                     "|")
-                                    ")'"))
-             #t)))))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("openmpi" ,openmpi)
        ;; Optional
        ("metis" ,metis)
+       ("suitesparse" ,suitesparse)
        ("superlu" ,superlu)
        ("openblas" ,openblas)
        ("gmp" ,gmp)
@@ -4895,9 +4844,7 @@ assemble global function spaces on finite-element grids.")
          "1l9adgyjpra8mvwm445s0lpjshnb63jag85fb2hisbjn6bm320yj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; 7 of 8 tests fail because they need a full MPI
-                   ; environment
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-include
            (lambda _
@@ -4909,7 +4856,9 @@ assemble global function spaces on finite-element grids.")
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "dune-grid") "/share"))
-             (apply invoke "make" "build_tests" make-flags))))))
+             (apply invoke "make" "build_tests" make-flags)))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-geometry" ,dune-geometry)
@@ -4930,6 +4879,49 @@ assemble global function spaces on finite-element grids.")
     (description "ALUGrid is an adaptive, loadbalancing, unstructured
 implementation of the DUNE grid interface supporting either simplices or
 cubes.")
+    (license license:gpl2+)))
+
+(define-public dune-subgrid
+  (package
+    (name "dune-subgrid")
+    (version "2.6.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://git.imp.fu-berlin.de/agnumpde/dune-subgrid")
+         (commit "releases/2.6-1")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+          "1gcv35rx3knqd54r4pp9rzd639db4j8w2r2ibq43w1mgwdcqhs64"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
+    (inputs
+     `(("dune-common" ,dune-common)
+       ("dune-geometry" ,dune-geometry)
+       ("dune-grid" ,dune-grid)
+       ("openmpi" ,openmpi)
+       ;; Optional
+       ("metis" ,metis)
+       ("openblas" ,openblas)
+       ("gmp" ,gmp)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://numerik.mi.fu-berlin.de/dune-subgrid/index.php")
+    (synopsis "Distributed and Unified Numerics Environment")
+    (description "The dune-subgrid module allows to mark elements of
+another hierarchical dune grid.  The set of marked elements can then be
+accessed as a hierarchical dune grid in its own right.  Dune-Subgrid
+provides the full grid interface including adaptive mesh refinement.")
     (license license:gpl2+)))
 
 (define-public dune-typetree
@@ -4987,7 +4979,20 @@ operating on statically typed trees of objects.")
         (base32
          "1an8gb477n8j0kzpbrv7nr1snh8pxip0gsxq6w63jc83gg3dj200"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: tests require dune-uugrid
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (setenv "ARGS"
+                     ;; unable to load GMSH file in this test
+                     "--exclude-regex gridviewfunctionspacebasistest")
+            #t))
+         (add-after 'build 'build-tests
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "build_tests" make-flags)))
+         (add-before 'check 'mpi-setup
+           ,%openmpi-setup))))
     (inputs
      `(("dune-common" ,dune-common)
        ("dune-istl" ,dune-istl)

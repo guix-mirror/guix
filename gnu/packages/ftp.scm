@@ -130,7 +130,7 @@ reliability in mind.")
                               (string-append "--prefix=" out))))))
        #:tests? #f)) ;there are no tests
     (inputs `(("ncurses" ,ncurses)))
-    (home-page "http://www.ncftp.com/ncftp/")
+    (home-page "https://www.ncftp.com/ncftp/")
     (synopsis "Command-line File Transfer Protocol (FTP) client")
     (description
      "NcFTP Client (or just NcFTP) is a set of command-line programs to access

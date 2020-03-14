@@ -561,7 +561,7 @@ runs Word\".")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (mkdir-p (string-append out "/share/man/man1"))))))))
-    (home-page "http://www.wagner.pp.ru/~vitus/software/catdoc/")
+    (home-page "https://www.wagner.pp.ru/~vitus/software/catdoc/")
     (synopsis "MS-Word to TeX or plain text converter")
     (description "@command{catdoc} extracts text from MS-Word files, trying to
 preserve as many special printable characters as possible.  It supports

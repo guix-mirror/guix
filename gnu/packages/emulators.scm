@@ -266,7 +266,7 @@ turbo speed, networked multiplayer, and graphical enhancements.")
        ("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
        ("mesa" ,mesa)))
-    (home-page "http://www.dosbox.com")
+    (home-page "https://www.dosbox.com")
     (synopsis "X86 emulator with CGA/EGA/VGA/etc. graphics and sound")
     (description "DOSBox is a DOS-emulator that uses the SDL library.  DOSBox
 also emulates CPU:286/386 realmode/protected mode, Directory
@@ -308,7 +308,7 @@ older games.")
 number of video game console emulators.  It features an interface that is
 usable with any game controller that has at least 4 buttons, theming support,
 and a game metadata scraper.")
-      (home-page "http://www.emulationstation.org")
+      (home-page "https://emulationstation.org")
       (license license:expat))))
 
 ;; Note: higan v107 has been released, but as explained by the dialog that
@@ -1453,7 +1453,7 @@ play them on systems for which they were never designed!")
        ("sqlite" ,sqlite)
        ("utf8proc" ,utf8proc)
        ("zlib" ,zlib)))
-    (home-page "http://mamedev.org/")
+    (home-page "https://www.mamedev.org")
     (synopsis "Multi-purpose emulation framework")
     (description "MAME's purpose is to preserve decades of software
 history.  As electronic technology continues to rush forward, MAME

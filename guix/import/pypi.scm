@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -43,6 +43,7 @@
   #:use-module (guix import utils)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import json)
+  #:use-module (guix json)
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module ((guix licenses) #:prefix license:)
@@ -55,10 +56,67 @@
             pypi->guix-package
             %pypi-updater))
 
+;; The PyPI API (notice the rhyme) is "documented" at:
+;; <https://warehouse.readthedocs.io/api-reference/json/>.
+
+(define non-empty-string-or-false
+  (match-lambda
+    ("" #f)
+    ((? string? str) str)
+    ((or #nil #f) #f)))
+
+;; PyPI project.
+(define-json-mapping <pypi-project> make-pypi-project pypi-project?
+  json->pypi-project
+  (info          pypi-project-info "info" json->project-info) ;<project-info>
+  (last-serial   pypi-project-last-serial "last_serial")      ;integer
+  (releases      pypi-project-releases "releases" ;string/<distribution>* pairs
+                 (match-lambda
+                   (((versions . dictionaries) ...)
+                    (map (lambda (version vector)
+                           (cons version
+                                 (map json->distribution
+                                      (vector->list vector))))
+                         versions dictionaries))))
+  (distributions pypi-project-distributions "urls" ;<distribution>*
+                 (lambda (vector)
+                   (map json->distribution (vector->list vector)))))
+
+;; Project metadata.
+(define-json-mapping <project-info> make-project-info project-info?
+  json->project-info
+  (name         project-info-name)                ;string
+  (author       project-info-author)              ;string
+  (maintainer   project-info-maintainer)          ;string
+  (classifiers  project-info-classifiers          ;list of strings
+                "classifiers" vector->list)
+  (description  project-info-description)         ;string
+  (summary      project-info-summary)             ;string
+  (keywords     project-info-keywords)            ;string
+  (license      project-info-license)             ;string
+  (download-url project-info-download-url         ;string | #f
+                "download_url" non-empty-string-or-false)
+  (home-page    project-info-home-page            ;string
+                "home_page")
+  (url          project-info-url "project_url")   ;string
+  (release-url  project-info-release-url "release_url") ;string
+  (version      project-info-version))            ;string
+
+;; Distribution: a URL along with cryptographic hashes and metadata.
+(define-json-mapping <distribution> make-distribution distribution?
+  json->distribution
+  (url          distribution-url)                  ;string
+  (digests      distribution-digests)              ;list of string pairs
+  (file-name    distribution-file-name "filename") ;string
+  (has-signature? distribution-has-signature? "hash_sig") ;Boolean
+  (package-type distribution-package-type "packagetype") ;"bdist_wheel" | ...
+  (python-version distribution-package-python-version
+                  "python_version"))
+
 (define (pypi-fetch name)
-  "Return an alist representation of the PyPI metadata for the package NAME,
-or #f on failure."
-  (json-fetch (string-append "https://pypi.org/pypi/" name "/json")))
+  "Return a <pypi-project> record for package NAME, or #f on failure."
+  (and=> (json-fetch (string-append "https://pypi.org/pypi/" name "/json"))
+         json->pypi-project))
 
 ;; For packages found on PyPI that lack a source distribution.
 (define-condition-type &missing-source-error &error
@@ -67,22 +125,24 @@ or #f on failure."
 
 (define (latest-source-release pypi-package)
   "Return the latest source release for PYPI-PACKAGE."
-  (let ((releases (assoc-ref* pypi-package "releases"
-                              (assoc-ref* pypi-package "info" "version"))))
+  (let ((releases (assoc-ref (pypi-project-releases pypi-package)
+                             (project-info-version
+                              (pypi-project-info pypi-package)))))
     (or (find (lambda (release)
-                (string=? "sdist" (assoc-ref release "packagetype")))
-              (vector->list releases))
+                (string=? "sdist" (distribution-package-type release)))
+              releases)
         (raise (condition (&missing-source-error
                            (package pypi-package)))))))
 
 (define (latest-wheel-release pypi-package)
   "Return the url of the wheel for the latest release of pypi-package,
 or #f if there isn't any."
-  (let ((releases (assoc-ref* pypi-package "releases"
-                              (assoc-ref* pypi-package "info" "version"))))
+  (let ((releases (assoc-ref (pypi-project-releases pypi-package)
+                             (project-info-version
+                              (pypi-project-info pypi-package)))))
     (or (find (lambda (release)
-                (string=? "bdist_wheel" (assoc-ref release "packagetype")))
-              (vector->list releases))
+                (string=? "bdist_wheel" (distribution-package-type release)))
+              releases)
         #f)))
 
 (define (python->package-name name)
@@ -411,23 +471,25 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
    (lambda* (package-name)
      "Fetch the metadata for PACKAGE-NAME from pypi.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
-     (let ((package (pypi-fetch package-name)))
-       (and package
+     (let* ((project (pypi-fetch package-name))
+            (info    (and project (pypi-project-info project))))
+       (and project
             (guard (c ((missing-source-error? c)
                        (let ((package (missing-source-error-package c)))
                          (leave (G_ "no source release for pypi package ~a ~a~%")
-                                (assoc-ref* package "info" "name")
-                                (assoc-ref* package "info" "version")))))
-              (let ((name (assoc-ref* package "info" "name"))
-                    (version (assoc-ref* package "info" "version"))
-                    (release (assoc-ref (latest-source-release package) "url"))
-                    (wheel (assoc-ref (latest-wheel-release package) "url"))
-                    (synopsis (assoc-ref* package "info" "summary"))
-                    (description (assoc-ref* package "info" "summary"))
-                    (home-page (assoc-ref* package "info" "home_page"))
-                    (license (string->license (assoc-ref* package "info" "license"))))
-                (make-pypi-sexp name version release wheel home-page synopsis
-                                description license))))))))
+                                (project-info-name info)
+                                (project-info-version info)))))
+              (make-pypi-sexp (project-info-name info)
+                              (project-info-version info)
+                              (and=> (latest-source-release project)
+                                     distribution-url)
+                              (and=> (latest-wheel-release project)
+                                     distribution-url)
+                              (project-info-home-page info)
+                              (project-info-summary info)
+                              (project-info-summary info)
+                              (string->license
+                               (project-info-license info)))))))))
 
 (define (pypi-recursive-import package-name)
   (recursive-import package-name #f
@@ -472,9 +534,10 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
          (pypi-package (pypi-fetch pypi-name)))
     (and pypi-package
          (guard (c ((missing-source-error? c) #f))
-           (let* ((metadata pypi-package)
-                  (version (assoc-ref* metadata "info" "version"))
-                  (url (assoc-ref (latest-source-release metadata) "url")))
+           (let* ((info    (pypi-project-info pypi-package))
+                  (version (project-info-version info))
+                  (url     (distribution-url
+                            (latest-source-release pypi-package))))
              (upstream-source
               (package (package-name package))
               (version version)

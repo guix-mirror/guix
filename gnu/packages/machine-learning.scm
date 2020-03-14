@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1285,6 +1285,7 @@ Python.")
   (package
     (name "grpc")
     (version "1.16.1")
+    (outputs '("out" "static"))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1301,7 +1302,42 @@ Python.")
        (list "-DgRPC_ZLIB_PROVIDER=package"
              "-DgRPC_CARES_PROVIDER=package"
              "-DgRPC_SSL_PROVIDER=package"
-             "-DgRPC_PROTOBUF_PROVIDER=package")))
+             "-DgRPC_PROTOBUF_PROVIDER=package"
+             (string-append "-DCMAKE_INSTALL_PREFIX="
+                            (assoc-ref %outputs "out"))
+             "-DCMAKE_INSTALL_LIBDIR=lib"
+             (string-append "-DCMAKE_INSTALL_RPATH="
+                            (assoc-ref %outputs "out") "/lib")
+             "-DCMAKE_VERBOSE_MAKEFILE=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'configure-shared
+           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
+             (mkdir "../build-shared")
+             (with-directory-excursion "../build-shared"
+               (apply invoke
+                      "cmake" "../source"
+                      "-DBUILD_SHARED_LIBS=ON"
+                      configure-flags)
+               (apply invoke "make"
+                      `("-j" ,(number->string (parallel-job-count)))))))
+         (add-after 'install 'install-shared-libraries
+           (lambda _
+             (with-directory-excursion "../build-shared"
+               (invoke "make" "install"))))
+         (add-before 'strip 'move-static-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (static (assoc-ref outputs "static")))
+               (mkdir-p (string-append static "/lib"))
+               (with-directory-excursion
+                 (string-append out "/lib")
+                 (for-each
+                   (lambda (file)
+                     (rename-file file
+                                  (string-append static "/lib/" file)))
+                   (find-files "." "\\.a$"))))
+             #t)))))
     (inputs
      `(("c-ares" ,c-ares/cmake)
        ("openssl" ,openssl)
@@ -1731,6 +1767,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
              (sha256
               (base32
                "161g9841rjfsy5pn52fcis0s9hdr7rxvb06pad38j5rppfihvign")))))
+       ("grpc" ,grpc "static")
        ("googletest" ,googletest)
        ("swig" ,swig)
        ("unzip" ,unzip)))
@@ -1752,7 +1789,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("giflib" ,giflib)
-       ("grpc" ,grpc)
+       ("grpc:bin" ,grpc)
        ("jsoncpp" ,jsoncpp-for-tensorflow)
        ("snappy" ,snappy)
        ("sqlite" ,sqlite)

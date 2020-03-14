@@ -18,7 +18,7 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
@@ -813,12 +813,17 @@ connection alive.")
                  (("^RELEASEVER=.*")
                   (format #f "RELEASEVER=~a\n" ,bind-release-version)))
                #t))
-           (add-before 'configure 'fix-bind-cross-compilation
-             (lambda _
-               (substitute* "configure"
-                 (("--host=\\$host")
-                  "--host=$host_alias"))
-               #t))
+           ,@(if (%current-target-system)
+                 '((add-before 'configure 'fix-bind-cross-compilation
+                     (lambda _
+                       (substitute* "configure"
+                         (("--host=\\$host")
+                          "--host=$host_alias"))
+                       ;; BIND needs a native compiler because the DHCP
+                       ;; build system uses the built 'gen' executable.
+                       (setenv "BUILD_CC" "gcc")
+                       #t)))
+                 '())
            (add-after 'configure 'post-configure
              (lambda* (#:key outputs #:allow-other-keys)
                ;; Point to the right client script, which will be
@@ -3162,7 +3167,16 @@ late.")
                     version "/launchmon-v" version ".tar.gz"))
               (sha256
                (base32
-                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))))
+                "0fm3nd9mydm9v2bf7bh01dbgrfnpwkapxa3dsvy3x1z0rz61qc0x"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Fix build failure with GCC 7 due to a conversion error.
+                  ;; Remove for versions > 1.0.2.
+                  (substitute* "launchmon/src/linux/lmon_api/lmon_coloc_spawner.cxx"
+                    ((" lmonpl = '\\\\0'")
+                     " *lmonpl = '\\0'"))
+                  #t))))
     (build-system gnu-build-system)
     (inputs
      `(("mpi" ,openmpi)

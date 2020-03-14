@@ -1834,7 +1834,7 @@ for overriding static files.")
      `(;; test are broken: https://gitlab.com/sashahart/cookies/issues/3
        #:tests? #f))
     (native-inputs
-     `(("python-pytest" ,python2-pytest)))
+     `(("python-pytest" ,python-pytest)))
     (synopsis "HTTP cookie parser and renderer")
     (description "A RFC 6265-compliant HTTP cookie parser and renderer in
 Python.")

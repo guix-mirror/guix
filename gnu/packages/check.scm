@@ -79,7 +79,7 @@
 (define-public check
   (package
     (name "check")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
      (origin
       (method url-fetch)
@@ -87,7 +87,7 @@
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
-        "02crar51gniijrrl9p8f9maibnwc33n76kw5cqr7xk3s8hqnncy4"))))
+        "02zkfiyklckmivrfvdsrlzvzphkdsgjrz3igncw05dv5pshhq3xx"))))
     (build-system gnu-build-system)
     (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")

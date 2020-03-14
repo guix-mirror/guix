@@ -175,8 +175,11 @@ about the derivations queued, as is the case with Hydra."
       #f                                          ;no derivation information
       (lset-intersection string=? queued items)))
 
-(define (report-server-coverage server items)
-  "Report the subset of ITEMS available as substitutes on SERVER."
+(define* (report-server-coverage server items
+                                 #:key display-missing?)
+  "Report the subset of ITEMS available as substitutes on SERVER.
+When DISPLAY-MISSING? is true, display the list of missing substitutes.
+Return the coverage ratio, an exact number between 0 and 1."
   (define MiB (* (expt 2 20) 1.))
 
   (format #t (G_ "looking for ~h store items on ~a...~%")
@@ -260,7 +263,16 @@ are queued~%")
                                system
                                (* (throughput builds build-timestamp)
                                   3600.))))
-                    (histogram build-system cons '() latest)))))))
+                    (histogram build-system cons '() latest))))
+
+      (when (and display-missing? (not (null? missing)))
+        (newline)
+        (format #t (G_ "Substitutes are missing for the following items:~%"))
+        (format #t "~{  ~a~%~}" missing))
+
+      ;; Return the coverage ratio.
+      (let ((total (length items)))
+        (/ (- total (length missing)) total)))))
 
 
 ;;;
@@ -280,6 +292,8 @@ Report the availability of substitutes.\n"))
   -c, --coverage[=COUNT]
                          show substitute coverage for packages with at least
                          COUNT dependents"))
+  (display (G_ "
+      --display-missing  display the list of missing substitutes"))
   (display (G_ "
   -s, --system=SYSTEM    consider substitutes for SYSTEM--e.g., \"i686-linux\""))
   (newline)
@@ -318,6 +332,9 @@ Report the availability of substitutes.\n"))
                    (alist-cons 'coverage
                                (if arg (string->number* arg) 0)
                                result)))
+         (option '("display-missing") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'display-missing? #t result)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg result)))))
@@ -487,17 +504,19 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
 (define (guix-weather . args)
   (define (package-list opts)
     ;; Return the package list specified by OPTS.
-    (let ((file (assoc-ref opts 'manifest))
-          (base (filter-map (match-lambda
-                              (('argument . spec)
-                               (specification->package spec))
-                              (_
-                               #f))
-                            opts)))
-      (if (and (not file) (null? base))
+    (let ((files (filter-map (match-lambda
+                               (('manifest . file) file)
+                               (_ #f))
+                             opts))
+          (base  (filter-map (match-lambda
+                               (('argument . spec)
+                                (specification->package spec))
+                               (_
+                                #f))
+                             opts)))
+      (if (and (null? files) (null? base))
           (all-packages)
-          (append base
-                  (if file (load-manifest file) '())))))
+          (append base (append-map load-manifest files)))))
 
   (with-error-handling
     (parameterize ((current-terminal-columns (terminal-columns))
@@ -524,14 +543,24 @@ SERVER.  Display information for packages with at least THRESHOLD dependents."
                                   (lambda (system)
                                     (package-outputs packages system))
                                   systems))))))
-        (for-each (lambda (server)
-                    (report-server-coverage server items)
-                    (match (assoc-ref opts 'coverage)
-                      (#f #f)
-                      (threshold
-                       (report-package-coverage server packages systems
-                                                #:threshold threshold))))
-                  urls)))))
+        (exit
+         (every (lambda (server)
+                  (define coverage
+                    (report-server-coverage server items
+                                            #:display-missing?
+                                            (assoc-ref opts 'display-missing?)))
+                  (match (assoc-ref opts 'coverage)
+                    (#f #f)
+                    (threshold
+                     ;; PACKAGES may include non-package objects coming from a
+                     ;; manifest.  Filter them out.
+                     (report-package-coverage server
+                                              (filter package? packages)
+                                              systems
+                                              #:threshold threshold)))
+
+                  (= 1 coverage))
+                urls))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'let/time 'scheme-indent-function 1)

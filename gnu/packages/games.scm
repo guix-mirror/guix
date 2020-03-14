@@ -46,6 +46,7 @@
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -301,14 +302,14 @@ The game includes a built-in editor so you can design and share your own maps.")
 (define-public armagetronad
   (package
     (name "armagetronad")
-    (version "0.2.8.3.4")
+    (version "0.2.8.3.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/armagetronad/stable/"
                                   version "/armagetronad-" version ".src.tar.gz"))
               (sha256
                (base32
-                "1pgy0r80z702qdv94aw3ywdn4ynnr4cdi86ml558pljfc5ygasj4"))))
+                "1z266haq22n5b0733h7qsg1rpzhz8lvm82f7wd06r008iiar7jdl"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxml2" ,libxml2)
@@ -383,7 +384,7 @@ physics settings to tweak as well.")
     (inputs
      `(("boost" ,boost)
        ("ncurses" ,ncurses)))
-    (home-page "http://fph.altervista.org/prog/bastet.html")
+    (home-page "https://fph.altervista.org/prog/bastet.html")
     (synopsis "Antagonistic Tetris-style falling brick game for text terminals")
     (description
      "Bastet (short for Bastard Tetris) is a simple ncurses-based falling brick
@@ -1118,7 +1119,7 @@ watch your CPU playing while enjoying a cup of tea!")
 (define-public nethack
   (package
     (name "nethack")
-    (version "3.6.5")
+    (version "3.6.6")
     (source
       (origin
         (method url-fetch)
@@ -1126,7 +1127,7 @@ watch your CPU playing while enjoying a cup of tea!")
          (string-append "https://www.nethack.org/download/" version "/nethack-"
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
-          (base32 "0xifs8pqfffnmkbpmrcd1xf14yakcj06nl2bbhy4dyacg8myysmv"))))
+          (base32 "1liyckjp34j354qnxc1zn9730lh1p2dabrg1hap24z6xnqx0rpng"))))
     (inputs
       `(("ncurses" ,ncurses)
         ("bison" ,bison)
@@ -3476,7 +3477,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
               ("tar" ,tar)
               ("gzip" ,gzip)
               ("tarball" ,source)))
-    (home-page "http://jxself.org/grue-hunter.shtml")
+    (home-page "https://jxself.org/grue-hunter.shtml")
     (synopsis "Text adventure game")
     (description
      "Grue Hunter is a text adventure game written in Perl.  You must make
@@ -6079,7 +6080,7 @@ original.")
        ("perl-test-runvalgrind" ,perl-test-runvalgrind)
        ("cmake-rules" ,shlomif-cmake-modules)
        ("rinutils" ,rinutils)))
-    (home-page "http://www.shlomifish.org/open-source/projects/fortune-mod/")
+    (home-page "https://www.shlomifish.org/open-source/projects/fortune-mod/")
     (synopsis "The Fortune Cookie program from BSD games")
     (description "Fortune is a command-line utility which displays a random
 quotation from a collection of quotes.")
@@ -10138,3 +10139,35 @@ best human chess grandmasters.  It can be used with UCI-compatible GUIs like
 ChessX.")
     (home-page "https://stockfishchess.org/")
     (license license:gpl3+)))
+
+(define-public barrage
+  (package
+    (name "barrage")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/lgames/barrage/"
+                           "barrage-" version ".tar.gz"))
+       (sha256
+        (base32 "0139wxyrir10cbkvkjn548xgmp84wax8mfwk80yxbxlcdamrg257"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("sdl" ,sdl)
+       ("sdl-mixer" ,sdl-mixer)))
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "CFLAGS="
+                       "-I" (assoc-ref %build-inputs "sdl-mixer")
+                       "/include/SDL"))))
+    (home-page "http://lgames.sourceforge.net/Barrage/")
+    (synopsis "Violent point-and-click shooting game with nice effects")
+    (description
+     "Barrage is a rather destructive action game that puts you on a shooting
+range with the objective to hit as many dummy targets as possible within
+3 minutes.  You control a gun that may either fire small or large grenades at
+soldiers, jeeps and tanks.  The gameplay is simple but it is not that easy to
+get high scores.")
+    (license license:gpl2+)))

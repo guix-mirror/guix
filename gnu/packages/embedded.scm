@@ -1125,7 +1125,7 @@ SPI, I2C, JTAG.")
          (delete 'configure))))
     (synopsis "Programs Microchip's PIC microcontrollers")
     (description "This program programs Microchip's PIC microcontrollers.")
-    (home-page "http://hyvatti.iki.fi/~jaakko/pic/picprog.html")
+    (home-page "https://hyvatti.iki.fi/~jaakko/pic/picprog.html")
     (license license:gpl3+)))
 
 (define-public fc-host-tools

@@ -864,7 +864,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
 (define-public libgme
   (package
     (name "libgme")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/mpyne/game-music-emu/"
@@ -872,10 +872,10 @@ interface.  It is implemented as a frontend to @code{klick}.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "0hkkmxbaas2sirlb5i4r10mgbbiaapjx8pazifabwba23m3wnijh"))))
+                "07857vdkak306d9s5g6fhmjyxk7vijzjhkmqb15s7ihfxx9lx8xb"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target
+     '(#:tests? #f))                    ; no check target
     (home-page "https://bitbucket.org/mpyne/game-music-emu")
     (synopsis "Video game music file playback library")
     (description
@@ -4614,42 +4614,6 @@ discard.
 discard bad quality ones.
 @end itemize\n")
       (license license:expat))))
-
-(define-public lpd8editor
-  (package
-    (name "lpd8editor")
-    (version "0.0.13")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/charlesfleche/lpd8editor.git")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0lsz3v493ilq2zr016m7kvymrplxd0n3pqv1pjglpq1h7sjw9764"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'setenv
-           (lambda _
-             (setenv "INSTALL_PREFIX"
-                     (assoc-ref %outputs "out"))))
-         (delete 'configure) ; no configure script
-         (add-before 'build 'qmake
-           (lambda _ (invoke "qmake"))))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("alsa" ,alsa-lib)
-       ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)))
-    (synopsis "Graphical editor for the Akai LPD8 MIDI controller")
-    (description "lpd8editor is a graphical patch editor for the Akai LPD8 MIDI
-controller.")
-    (home-page "https://github.com/charlesfleche/lpd8editor")
-    (license license:expat)))
 
 (define-public fmit
   (package

@@ -801,7 +801,7 @@ utility functions for all standard Scheme implementations.")
     (inputs `(("slib" ,slib)))
     (native-inputs `(("unzip" ,unzip)
                      ("texinfo" ,texinfo)))
-    (home-page "http://people.csail.mit.edu/jaffer/SCM")
+    (home-page "https://people.csail.mit.edu/jaffer/SCM")
     (synopsis "Scheme implementation conforming to R5RS and IEEE P1178")
     (description "GNU SCM is an implementation of Scheme.  This
 implementation includes Hobbit, a Scheme-to-C compiler, which can

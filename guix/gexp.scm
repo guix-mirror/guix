@@ -82,6 +82,9 @@
             raw-derivation-file
             raw-derivation-file?
 
+            with-parameters
+            parameterized?
+
             load-path-expression
             gexp-modules
 
@@ -522,6 +525,62 @@ SUFFIX."
                    (let* ((expand (lookup-expander base))
                           (base   (expand base lowered output)))
                      (string-append base (string-concatenate suffix)))))))
+
+;; Representation of SRFI-39 parameter settings in the dynamic scope of an
+;; object lowering.
+(define-record-type <parameterized>
+  (parameterized bindings thunk)
+  parameterized?
+  (bindings parameterized-bindings)             ;list of parameter/value pairs
+  (thunk    parameterized-thunk))               ;thunk
+
+(define-syntax-rule (with-parameters ((param value) ...) body ...)
+  "Bind each PARAM to the corresponding VALUE for the extent during which BODY
+is lowered.  Consider this example:
+
+  (with-parameters ((%current-system \"x86_64-linux\"))
+    coreutils)
+
+It returns a <parameterized> object that ensures %CURRENT-SYSTEM is set to
+x86_64-linux when COREUTILS is lowered."
+  (parameterized (list (list param (lambda () value)) ...)
+                 (lambda ()
+                   body ...)))
+
+(define-gexp-compiler compile-parameterized <parameterized>
+  compiler =>
+  (lambda (parameterized system target)
+    (match (parameterized-bindings parameterized)
+      (((parameters values) ...)
+       (let ((fluids (map parameter-fluid parameters))
+             (thunk  (parameterized-thunk parameterized)))
+         ;; Install the PARAMETERS for the dynamic extent of THUNK.
+         (with-fluids* fluids
+           (map (lambda (thunk) (thunk)) values)
+           (lambda ()
+             ;; Special-case '%current-system' and '%current-target-system' to
+             ;; make sure we get the desired effect.
+             (let ((system (if (memq %current-system parameters)
+                               (%current-system)
+                               system))
+                   (target (if (memq %current-target-system parameters)
+                               (%current-target-system)
+                               target)))
+               (lower-object (thunk) system #:target target))))))))
+
+  expander => (lambda (parameterized lowered output)
+                (match (parameterized-bindings parameterized)
+                  (((parameters values) ...)
+                   (let ((fluids (map parameter-fluid parameters))
+                         (thunk  (parameterized-thunk parameterized)))
+                     ;; Install the PARAMETERS for the dynamic extent of THUNK.
+                     (with-fluids* fluids
+                       (map (lambda (thunk) (thunk)) values)
+                       (lambda ()
+                         ;; Delegate to the expander of the wrapped object.
+                         (let* ((base   (thunk))
+                                (expand (lookup-expander base)))
+                           (expand base lowered output)))))))))
 
 
 ;;;
