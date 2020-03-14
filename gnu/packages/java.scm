@@ -7419,7 +7419,7 @@ the support annotations for osgi-service-component.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.dto/" version "/org.osgi.dto-"
                                   version "-sources.jar"))
               (sha256
