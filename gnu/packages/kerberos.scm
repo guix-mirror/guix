@@ -60,6 +60,7 @@
                     (string-append "https://kerberos.org/dist/krb5/"
                                    (version-major+minor version)
                                    "/krb5-" version ".tar.gz")))
+              (patches (search-patches "mit-krb5-qualify-short-hostnames.patch"))
               (sha256
                (base32
                 "121c5xsy3x0i4wdkrpw62yhvji6virbh6n30ypazkp0isws3k4bk"))))
