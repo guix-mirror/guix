@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -162,6 +163,13 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-libsanitizer"
                                 ))
 
+                       ;; Install cross-built libraries such as libgcc_s.so in
+                       ;; the "lib" output.
+                       ,@(if libc
+                             `((string-append "--with-toolexeclibdir="
+                                              (assoc-ref %outputs "lib")
+                                              "/" ,target "/lib"))
+                             '())
                        ;; For a newlib (non-glibc) target
                        ,@(if (cross-newlib? target)
                              '("--with-newlib")
@@ -196,12 +204,19 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
 
 (define (cross-gcc-snippet target)
   "Return GCC snippet needed for TARGET."
-  (cond ((target-mingw? target)
-         '(begin
-            (copy-recursively "libstdc++-v3/config/os/mingw32-w64"
-                              "libstdc++-v3/config/os/newlib")
-            #t))
-        (else #f)))
+  `(begin
+     ,@(if (target-mingw? target)
+           '((copy-recursively "libstdc++-v3/config/os/mingw32-w64"
+                               "libstdc++-v3/config/os/newlib"))
+           '())
+     ;; TOOLDIR_BASE_PREFIX is erroneous when using a separate "lib"
+     ;; output. Specify it correctly, otherwise GCC won't find its shared
+     ;; libraries installed in the "lib" output.  See:
+     ;; https://lists.gnu.org/archive/html/bug-guix/2020-03/msg00196.html.
+     (substitute* "gcc/Makefile.in"
+       (("-DTOOLDIR_BASE_PREFIX=[^ ]*")
+        "-DTOOLDIR_BASE_PREFIX=\\\"../../../../\\\""))
+     #t))
 
 (define* (cross-gcc target
                     #:key
@@ -216,22 +231,26 @@ target that libc."
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
                          target))
-    (source (origin (inherit (package-source xgcc))
-              (patches
-               (append
-                (origin-patches (package-source xgcc))
-                (cons (cond
-                       ((version>=? (package-version xgcc) "8.0") (search-patch "gcc-8-cross-environment-variables.patch"))
-                       ((version>=? (package-version xgcc) "6.0") (search-patch "gcc-6-cross-environment-variables.patch"))
-                       (else  (search-patch "gcc-cross-environment-variables.patch")))
-                      (cross-gcc-patches xgcc target))))
-              (modules '((guix build utils)))
-              (snippet
-               (cross-gcc-snippet target))))
+    (source
+     (origin
+       (inherit (package-source xgcc))
+       (patches
+        (append
+         (origin-patches (package-source xgcc))
+         (append (cond
+                  ((version>=? (package-version xgcc) "8.0")
+                   (search-patches "gcc-8-cross-environment-variables.patch"))
+                  ((version>=? (package-version xgcc) "6.0")
+                   (search-patches "gcc-7-cross-toolexeclibdir.patch"
+                                   "gcc-6-cross-environment-variables.patch"))
+                  (else
+                   (search-patches "gcc-cross-environment-variables.patch")))
+                 (cross-gcc-patches xgcc target))))
+       (modules '((guix build utils)))
+       (snippet
+        (cross-gcc-snippet target))))
 
-    ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
-    ;; found by default, etc.
-    (outputs '("out"))
+    (outputs '("out" "lib"))
 
     (arguments
      `(#:implicit-inputs? #f

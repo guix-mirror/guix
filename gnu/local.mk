@@ -14,7 +14,7 @@
 # Copyright © 2016, 2017, 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
-# Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+# Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 # Copyright © 2018, 2019, 2020 Oleg Pykhalov <go.wigust@gmail.com>
@@ -918,6 +918,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
   %D%/packages/patches/gcc-7-cross-mingw.patch			\
   %D%/packages/patches/gcc-7-cross-environment-variables.patch	\
+  %D%/packages/patches/gcc-7-cross-toolexeclibdir.patch		\
   %D%/packages/patches/gcc-8-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-9-asan-fix-limits-include.patch	\
