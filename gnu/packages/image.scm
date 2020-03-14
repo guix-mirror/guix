@@ -1020,9 +1020,6 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       (sha256 (base32
                 "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
-   ;; Otherwise it fails on <ci.guix.gnu.org> in the check phase after 3600
-   ;; seconds of silence.
-   (properties '((max-silent-time . 7200)))
    (inputs
     `(("boost" ,boost)
       ("fftw" ,fftw)
