@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public libffcall
    (package
     (name "libffcall")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
@@ -35,9 +36,11 @@
              "mirror://gnu/libffcall/libffcall-" version ".tar.gz"))
        (sha256
         (base32
-         "0iwcad6w78jp84vd6xaz5fwqm84n3cb42bdf5m5cj5xzpa5zp4d0"))))
+         "0ixp7kbr7y8s34nsrsdfh77ig5c2zkwr6cfg9v1gm53cggwkgypb"))))
     (build-system gnu-build-system)
-    (arguments `(#:parallel-build? #f))
+    (arguments
+     '(#:parallel-build? #f
+       #:configure-flags '("--disable-static")))
     (synopsis "Foreign function calls from interpreters")
     (description
      "GNU Libffcall is a collection of libraries that can be used to build

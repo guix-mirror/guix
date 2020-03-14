@@ -245,7 +245,6 @@ using @code{Test::Class}.")
        ("perl-test-requires" ,perl-test-requires)
        ("perl-test-deep" ,perl-test-deep)
        ("perl-test-warnings" ,perl-test-warnings)
-       ("perl-test-tester" ,perl-test-tester)
        ("perl-test-needs" ,perl-test-needs)))
     (propagated-inputs
      `(("perl-namespace-clean" ,perl-namespace-clean)
@@ -351,8 +350,7 @@ specification.")
                (base32
                 "1kdy06r0yg7zwarqglc9163vbfb0sfc4s6ld4pw5q7i9f7mghzi0"))))
     (build-system perl-build-system)
-    (inputs `(("perl-test-tester" ,perl-test-tester)
-              ("perl-test-nowarnings" ,perl-test-nowarnings)))
+    (inputs `(("perl-test-nowarnings" ,perl-test-nowarnings)))
     (synopsis "Flexible deep comparison for the Test::Builder framework")
     (description
      "Test::Deep compares two structures by going through each level, ensuring
@@ -999,7 +997,6 @@ code.")
                (base32
                 "0v385ch0hzz9naqwdw2az3zdqi15gka76pmiwlgsy6diiijmg2k3"))))
     (build-system perl-build-system)
-    (inputs `(("perl-test-tester" ,perl-test-tester)))
     (synopsis "Ensure no warnings are produced while testing")
     (description
      "This modules causes any warnings during testing to be captured and
@@ -1047,7 +1044,6 @@ usually called epsilon.  This module provides such a function for use with
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-capture-tiny" ,perl-capture-tiny)
-       ("perl-test-tester" ,perl-test-tester)
        ("perl-sub-exporter" ,perl-sub-exporter)))
     (synopsis "Utilities to test STDOUT and STDERR messages")
     (description
@@ -1241,14 +1237,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302169")
+    (version "1.302171")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "08y7b817045w9bc1k9y01l5shl162q9fdc2g5qf7ny0gdxvh85s1"))))
+                "12in730hr51h42dwd3c5k7ysyp0xyk17583mfvx6zg56nb990zz2"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description
@@ -1343,8 +1339,7 @@ cause a test fail unless it is exactly as @code{perltidy} would like it to be.")
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-simple" ,perl-test-simple)))
     (propagated-inputs
-     `(("perl-test-tester" ,perl-test-tester)
-       ("perl-data-dump" ,perl-data-dump)))
+     `(("perl-data-dump" ,perl-data-dump)))
     (home-page "https://metacpan.org/release/Test-Trap")
     (synopsis "Trap exit codes, exceptions, output, and so on")
     (description "This module is primarily (but not exclusively) for use in

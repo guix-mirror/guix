@@ -2623,7 +2623,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.44")
+    (version "4.46")
     (source
      (origin
        (method url-fetch)
@@ -2631,7 +2631,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "020jrygslqixrxd2nzc2l8ac39ynqzsy83nnnr3mqn6kxfvmyhqj"))))
+         "16225vmdsfa2y7i1ydv7634nd0qxxb0ccwnfszjq58rwqgfri2bq"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -3246,15 +3246,15 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
 (define-public perl-http-date
   (package
     (name "perl-http-date")
-    (version "6.02")
+    (version "6.05")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Date-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Date-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
+               "0awjdbz7x0jd5pna55dwxhs3k6xp3sw6b2zg3p2yndxxvya64p9n"))))
     (build-system perl-build-system)
     (license license:perl-license)
     (synopsis "Perl date conversion routines")
@@ -3613,16 +3613,18 @@ not have DNS.  We might not have a network card at all!")
 (define-public perl-lwp-mediatypes
   (package
     (name "perl-lwp-mediatypes")
-    (version "6.02")
+    (version "6.04")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/G/GA/GAAS/LWP-MediaTypes-"
+                   "mirror://cpan/authors/id/O/OA/OALDERS/LWP-MediaTypes-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
+               "1n8rg6csv3dsvymg06cmxipimr6cb1g9r903ghm1qsmiv89cl6wg"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
     (license license:perl-license)
     (synopsis "Perl module to guess the media type for a file or a URL")
     (description

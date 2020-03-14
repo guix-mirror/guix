@@ -232,7 +232,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.3.2")
+    (version "19.3.4")
     (source
       (origin
         (method url-fetch)
@@ -244,7 +244,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1hg1gvcwvayksrdh9z8rfz66h3z1ffspmm2qgyy2nd8n8qrfwfjf"))
+          "1r4giqq7q7zqbn23lbw7v5vswagxx8qj6ij2w8bsb697mvk6g90x"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -268,7 +268,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
-             `(("llvm" ,llvm-8)))
+             `(("llvm" ,llvm-9)))
             (_
              `()))
         ("makedepend" ,makedepend)
@@ -422,24 +422,6 @@ specifications - systems for rendering interactive 3D graphics.  A variety of
 device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
-
-;; Mesa 19.3.2 causes a test failure in some packages, so add this newer
-;; version separately until the next rebuild cycle.
-(define-public mesa-19.3.3
-  (package/inherit
-   mesa
-   (version "19.3.3")
-   (source (origin
-             (inherit (package-source mesa))
-             (uri (list (string-append "https://mesa.freedesktop.org/archive/"
-                                       "mesa-" version ".tar.xz")
-                        (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
-                                       "mesa-" version ".tar.xz")
-                        (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
-                                       version "/mesa-" version ".tar.xz")))
-             (sha256
-              (base32
-               "02czqdqf64i3az5p1allnxycyjad3x35cj0hz0017mi5pc84ikl1"))))))
 
 (define-public mesa-opencl
   (package

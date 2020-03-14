@@ -2375,7 +2375,7 @@ XC-APPGROUP, XTEST.")
 (define-public libevdev
   (package
     (name "libevdev")
-    (version "1.5.9")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -2383,10 +2383,11 @@ XC-APPGROUP, XTEST.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0xca343ff12wh6nsq76r0nbsfrm8dypjrzm4fqz9vv9v8i8kfrp1"))))
+         "04a2klvii0in9ln8r85mk2cm73jq8ry2m3yzmf2z8xyjxzjcmlr0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
                   (add-before 'configure 'pedantry
                     (lambda _
                       ;; XXX: libevdev includes kernel headers, which causes this
@@ -3837,7 +3838,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.28")
+    (version "2.29")
     (source
       (origin
         (method url-fetch)
@@ -3847,15 +3848,16 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1kmxc8hdw4qpvdlzp4ag8ygl34lqhs6sn3pcz1sl0kn61xdv5bb9"))))
+            "00hqc8nykvy8c09b8vab64dcd0ij3n5klxjn6rl00q7hickpah8x"))))
     (build-system gnu-build-system)
     (inputs
-      `(("gettext" ,gettext-minimal)
-        ("libx11" ,libx11)
+      `(("libx11" ,libx11)
         ("xkbcomp-intermediate" ,xkbcomp-intermediate)))
     (native-inputs
-      `(("intltool" ,intltool)
-        ("pkg-config" ,pkg-config)))
+      `(("gettext" ,gettext-minimal)
+        ("perl" ,perl)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB configuration files")
     (description

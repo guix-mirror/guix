@@ -325,14 +325,14 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.7.0")
+    (version "2.8.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "0a7wawx8vsg7igvz6p3x909fskhg4b2y1910xk4f4c8y22p3aqg8"))))
+        "0f0f2vvs1mpdpz2c0mg1mnc3sih8bizmc1h9m67kdsnqs3i2mb0s"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -2502,15 +2502,29 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.10.1")
+    (version "2.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "04shqrs56aj04ipyqykj512rw2l0zfammvj9krawzxz7xc14yp06"))))
+         "0l72c11n959yzb8d3ankckb6yhjhm6x729zm7rkpk040qzxpy64k"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (begin
+                            (setenv "PYTHONPATH"
+                                    (string-append "./build/lib:"
+                                                   (getenv "PYTHONPATH")))
+                            (invoke "pytest" "-vv"))
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (home-page "http://jinja.pocoo.org/")
@@ -2687,17 +2701,23 @@ structure for Python.")
 (define-public python-docutils
   (package
     (name "python-docutils")
-    (version "0.14")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docutils" version))
        (sha256
         (base32
-         "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))
+         "1z3qliszqca9m719q3qhdkh0ghh90g500avzdgi7pl77x5h3mpn2"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; no setup.py test command
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "python" "test/alltests.py")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (home-page "http://docutils.sourceforge.net/")
     (synopsis "Python Documentation Utilities")
     (description
@@ -2710,6 +2730,18 @@ reStructuredText.")
 
 (define-public python2-docutils
   (package-with-python2 python-docutils))
+
+;; python2-sphinx fails its test suite with newer versions.
+(define-public python2-docutils-0.14
+  (package
+    (inherit python2-docutils)
+    (version "0.14")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "docutils" version))
+              (sha256
+               (base32
+                "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))))
 
 (define-public python-pygments
   (package
@@ -3374,14 +3406,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.13")
+    (version "0.29.15")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "13k37lrcgagwwnzr5bzririsscb793vndj234d475x1h9ad0d7f2"))))
+         "0c5cjyxfvba6c0vih1fvhywp8bpz30vwvbjqdm1q1k55xzhmkn30"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3393,24 +3425,6 @@ provides additional functionality on the produced Mallard documents.")
          (add-before 'check 'set-HOME
            ;; some tests require access to "$HOME/.cython"
            (lambda _ (setenv "HOME" "/tmp") #t))
-
-         ;; FIXME: These tests started failing on armhf after the 0.28 update
-         ;; (commit c69d11c5930), both with an error such as this:
-         ;;  compiling (cpp) and running dictcomp ...
-         ;;  === C/C++ compiler error output: ===
-         ;;  â€˜
-         ;;  dictcomp.cpp:5221: confused by earlier errors, bailing out
-         ;; See <https://hydra.gnu.org/build/2948724> for logs.
-         ,@(if (target-arm32?)
-               `((add-before 'check 'disable-failing-tests
-                  (lambda _
-                    (let ((disabled-tests (open-file "tests/bugs.txt" "a")))
-                      (for-each (lambda (test)
-                                  (format disabled-tests "~a\n" test))
-                                '("memslice" "dictcomp"))
-                      (close-port disabled-tests)))))
-               '())
-
          (replace 'check
            (lambda _
              ;; Disable compiler optimizations to greatly reduce the running
@@ -9201,14 +9215,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0jqa3qfpykyn4fmkn0kh6043sfls7br8i2bsdbccazcvk9cijsd3"))))
+         "193mds7lv91pphnvn6c1n55rhjkgq94asdzgrsb2fiqx7rrsd119"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -11829,13 +11843,13 @@ focus on building massively scalable web applications.")
 (define-public python-snowballstemmer
   (package
     (name "python-snowballstemmer")
-    (version "1.2.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "snowballstemmer" version))
               (sha256
                (base32
-                "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
+                "0ligk61idlz8kkgd5hpip5whm172riwglb6xydii7h62yhysqfyz"))))
     (build-system python-build-system)
     (arguments
      `(;; No tests exist
@@ -12020,14 +12034,14 @@ Record Format (DWARF).")
 (define-public python-imagesize
   (package
     (name "python-imagesize")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
       (origin
       (method url-fetch)
       (uri (pypi-uri "imagesize" version))
       (sha256
        (base32
-        "1dg3wn7qpwmhgqc0r9na2ding1wif9q5spz3j9zn2riwphc2k0zk"))))
+        "1cd24x0vqbd6c8ym1n21qc0aj54mfb7rzdqglmwk9xxixajbbxmi"))))
     (build-system python-build-system)
     (home-page "https://github.com/shibukawa/imagesize_py")
     (synopsis "Gets image size of files in various formats in Python")

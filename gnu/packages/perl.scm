@@ -4683,15 +4683,15 @@ allowing data to be efficiently communicated between processes.")
 (define-public perl-ipc-system-simple
   (package
     (name "perl-ipc-system-simple")
-    (version "1.25")
+    (version "1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://cpan/authors/id/P/PJ/PJF/IPC-System-Simple-"
+                    "mirror://cpan/authors/id/J/JK/JKEENAN/IPC-System-Simple-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fsdb81shjj4hifyyzvj7vpkhq5jrfhlcpw2xbjfi1mqz8fsmdpi"))))
+                "1zb5ni8ikaq6s60amwdsq69nz8gxl484yiga6ax5nqp8v0hpy5sp"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IPC-System-Simple")
     (synopsis "Run commands simply, with detailed diagnostics")
@@ -8587,7 +8587,7 @@ done, how much is left to do, and estimate how long it will take.")
 (define-public perl-term-readkey
   (package
     (name "perl-term-readkey")
-    (version "2.37")
+    (version "2.38")
     (source
      (origin
        (method url-fetch)
@@ -8595,7 +8595,7 @@ done, how much is left to do, and estimate how long it will take.")
                            "TermReadKey-" version ".tar.gz"))
        (sha256
         (base32
-         "0hdj5mldpj3pyprd4hbbalfx9yjgi5p59gg2ixk9808f5v7q74sa"))))
+         "143jlibah1g14bym7sj3gphvqkpj1w4vn7sqc4vc62jpviw5hr2s"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/TermReadKey")
     (synopsis "Simple terminal control")

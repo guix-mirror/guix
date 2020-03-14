@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
@@ -488,7 +488,10 @@ message digests and key derivation functions.")
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
-             (invoke "py.test" "-v" "-k"
+             ;; PyOpenSSL runs tests against a certificate with a fixed
+             ;; expiry time.  To ensure successful builds in the future,
+             ;; set the time to roughly the release date.
+             (invoke "faketime" "2019-01-01" "py.test" "-v" "-k"
                      (string-append
                       ;; This test tries to look up certificates from
                       ;; the compiled-in default path in OpenSSL, which
@@ -503,7 +506,8 @@ message digests and key derivation functions.")
     (inputs
      `(("openssl" ,openssl)))
     (native-inputs
-     `(("python-flaky" ,python-flaky)
+     `(("libfaketime" ,libfaketime)
+       ("python-flaky" ,python-flaky)
        ("python-pretend" ,python-pretend)
        ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pyca/pyopenssl")

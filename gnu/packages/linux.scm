@@ -36,7 +36,7 @@
 ;;; Copyright © 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
-;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019, 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1665,7 +1665,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.2.1.2")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1673,7 +1673,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0hvrx0ipzqbcx4y1cmr9bgm9niifzkrhsb1ddgzzdwbk6q72d3lm"))))
+               "1v5kb8jyvrpkvvq7dq8hfbmcj68lml97i4s0prxpfx2mh3c57s6q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -1689,14 +1689,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "039c19b7091is0czl9jlrfczp7pp1jpdri0vvc4k07gl3skhn48b"))))
+               "1wz460by17rmxrcydn583rd4lhj6wlvqs6x1j5pdzxn5g3app024"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1743,14 +1743,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1nj8cpbi05rb62yzs01c1k7lymdn1ch229b599hbhd0psixdx52d"))))
+               "0z9k3ssbfk2ky2w13avgyf202j1drsz9sv3834bp33cj1i2hc3qw"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -2835,6 +2835,21 @@ to the in-kernel OOM killer.")
                 (string-append (assoc-ref inputs "xsltproc")
                                "/bin/xsltproc")))
             #t))
+         (add-after 'install 'move-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (static (assoc-ref outputs "static"))
+                    (source (string-append out "/lib/libudev.a"))
+                    (target (string-append static "/lib/libudev.a")))
+               (mkdir-p (dirname target))
+               (link source target)
+               (delete-file source)
+               ;; Remove reference to the static library from the .la file
+               ;; such that Libtool looks for it in the usual places.
+               (substitute* (string-append out "/lib/libudev.la")
+                 (("old_library=.*")
+                  "old_library=''\n"))
+               #t)))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
@@ -2863,6 +2878,7 @@ to the in-kernel OOM killer.")
      ;; which contains the rules to do that.
      `(("util-linux" ,util-linux)                 ;for blkid
        ("kmod" ,kmod)))
+    (outputs '("out" "static"))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
@@ -2975,8 +2991,7 @@ mapper.  Kernel components are part of Linux-libre.")
     (name "lvm2-static")
 
     ;; Propagate udev because libdevmapper.a depends on libudev.
-    (inputs (alist-delete "udev" (package-inputs lvm2)))
-    (propagated-inputs `(("udev" ,eudev)))
+    (propagated-inputs `(("udev:static" ,eudev "static")))
 
     (arguments
      (substitute-keyword-arguments (package-arguments lvm2)
@@ -3944,7 +3959,7 @@ Linux Device Mapper multipathing driver:
 (define-public libaio
   (package
     (name "libaio")
-    (version "0.3.111")
+    (version "0.3.112")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -3952,7 +3967,7 @@ Linux Device Mapper multipathing driver:
                                    name "-" version ".tar.gz")))
               (sha256
                (base32
-                "0ajhzbqjwsmz51gwccfyw6w9k4j4gmxcl2ph30sfn2gxv0d8gkv2"))))
+                "14mlqdapjqq1dhpkdgy5z83mvsaz36fcxca7a4z6hinmr7r6415b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -3995,7 +4010,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
   (package
     (name "bluez")
     (replacement bluez/fixed)
-    (version "5.52")
+    (version "5.53")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4003,7 +4018,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "02jng21lp6fb3c2bh6vf9y7cj4gaxwk29dfc32ncy0lj0gi4q57p"))))
+                "1g1qg6dz6hl3csrmz75ixr12lwv836hq3ckb259svvrg62l2vaiq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

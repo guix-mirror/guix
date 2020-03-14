@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -766,7 +766,12 @@ decompression of some loosely related file formats used by Microsoft.")
                       (substitute* "tests/Makefile"
                         (("^test: (.*) test-install" _ targets)
                          (string-append "test: " targets)))
-                      #t)))))
+                      #t))
+                  (add-after 'install 'delete-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file (string-append out "/lib/liblz4.a"))
+                        #t))))))
     (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
