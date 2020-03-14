@@ -7560,7 +7560,7 @@ the names for the attributes and directives for a service namespace.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.util.function/"
                                   version "/org.osgi.util.function-"
                                   version "-sources.jar"))
