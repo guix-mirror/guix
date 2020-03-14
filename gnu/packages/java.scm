@@ -7504,7 +7504,7 @@ the names for the attributes and directives for a namespace with contracts.")
     (version "1.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.namespace.extender/"
                                   version "/org.osgi.namespace.extender-"
                                   version "-sources.jar"))
