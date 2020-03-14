@@ -2871,6 +2871,16 @@ to the in-kernel OOM killer.")
                                (or native-inputs inputs) "xsltproc")
                                "/bin/xsltproc")))
             #t))
+         (add-before 'configure 'patch-bindir-in-btrfs-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The "@bindir@" substitution incorrectly expands to a literal
+             ;; "${exec_prefix}" (see <https://bugs.gnu.org/39926>).  Work
+             ;; around it.
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "rules/64-btrfs.rules.in"
+                 (("@bindir@")
+                  (string-append out "/bin")))
+               #t)))
          (add-after 'install 'move-static-library
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2926,26 +2936,6 @@ to the in-kernel OOM killer.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
-
-;; TODO: Merge with eudev on the next rebuild cycle.
-(define-public eudev/btrfs-fix
-  (package/inherit
-   eudev
-   (version (string-append (package-version eudev) "-1"))
-   (arguments
-    (substitute-keyword-arguments (package-arguments eudev)
-      ((#:phases phases '%standard-phases)
-       `(modify-phases ,phases
-          (add-before 'configure 'patch-bindir-in-btrfs-rules
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; The "@bindir@" substitution incorrectly expands to a literal
-              ;; "${exec_prefix}" (see <https://bugs.gnu.org/39926>).  Work
-              ;; around it.
-              (let ((out (assoc-ref outputs "out")))
-                (substitute* "rules/64-btrfs.rules.in"
-                  (("@bindir@")
-                   (string-append out "/bin")))
-                #t)))))))))
 
 (define-public eudev-with-hwdb
   (deprecated-package "eudev-with-hwdb" eudev))

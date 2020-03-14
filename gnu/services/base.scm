@@ -1918,7 +1918,7 @@ archive}).  If that is not the case, the service will fail to start."
   udev-configuration make-udev-configuration
   udev-configuration?
   (udev   udev-configuration-udev                 ;<package>
-          (default eudev/btrfs-fix))
+          (default eudev))
   (rules  udev-configuration-rules                ;list of <package>
           (default '())))
 
@@ -2116,7 +2116,7 @@ the udev rules in use.")
 directory dynamically.  Get extra rules from the packages listed in the
 @code{rules} field of its value, @code{udev-configuration} object.")))
 
-(define* (udev-service #:key (udev eudev/btrfs-fix) (rules '()))
+(define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type
