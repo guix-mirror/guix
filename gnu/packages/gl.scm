@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -602,6 +602,26 @@ extension functionality is exposed in a single header file.")
      "Guile-OpenGL is a library for Guile that provides bindings to the
 OpenGL graphics API.")
     (license license:lgpl3+)))
+
+(define-public guile3.0-opengl
+  (package
+    (inherit guile-opengl)
+    (name "guile3.0-opengl")
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-opengl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'build-with-guile-3.0
+             (lambda _
+               (substitute* "configure"
+                 (("_guile_versions_to_search=\"")
+                  "_guile_versions_to_search=\"3.0 "))
+               #t))))))
+    (inputs
+     `(("guile" ,guile-3.0)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("freeglut" ,freeglut)))))
 
 (define-public libepoxy
   (package
