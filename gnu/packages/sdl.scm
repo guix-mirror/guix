@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
@@ -658,6 +658,14 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 The bindings are written in pure Scheme using Guile's foreign function
 interface.")
     (license lgpl3+)))
+
+(define-public guile3.0-sdl2
+  (package
+    (inherit guile-sdl2)
+    (name "guile3.0-sdl2")
+    (native-inputs
+     `(("guile" ,guile-3.0)
+       ("pkg-config" ,pkg-config)))))
 
 (define-public sdl2-cs
   (let ((commit "1a3556441e1394eb0b5d46aeb514b8d1090b93f8"))
