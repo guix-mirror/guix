@@ -2580,7 +2580,7 @@ Other features include a live preview and live streaming.")
        ("automake" ,automake)))
     (inputs
      `(("sdl" ,sdl2)))
-    (home-page "http://icculus.org/smpeg/")
+    (home-page "https://icculus.org/smpeg/")
     (synopsis "SDL MPEG decoding library")
     (description
      "SMPEG (SDL MPEG Player Library) is a free MPEG1 video player library

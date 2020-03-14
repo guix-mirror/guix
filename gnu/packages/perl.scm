@@ -7201,8 +7201,8 @@ function call parameters to an arbitrary level of specificity.")
     (native-inputs
      ;; For tests.
      `(("perl-test-without-module" ,perl-test-without-module)
-       ("perl-test2-bundle-extended" ,perl-test2-bundle-extended)
        ("perl-test2-plugin-nowarnings" ,perl-test2-plugin-nowarnings)
+       ("perl-test2-suite" ,perl-test2-suite)
        ("perl-type-tiny" ,perl-type-tiny)))
     (propagated-inputs
      `(("perl-eval-closure" ,perl-eval-closure)

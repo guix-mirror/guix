@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -6139,8 +6139,7 @@ X11 servers, Windows, or macOS.")
                            (guix build emacs-utils))
        #:configure-flags
        (list "--with-anthy-utf8"
-             (string-append "--with-lispdir=" %output
-                            "/share/emacs/site-lisp/guix.d")
+             (string-append "--with-lispdir=" %output "/share/emacs")
              ;; Set proper runpath
              (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
@@ -6148,13 +6147,22 @@ X11 servers, Windows, or macOS.")
          ;; Set path of uim-el-agent and uim-el-helper-agent executables
          (add-after 'configure 'configure-uim-el
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "emacs/uim-var.el"
-               (("\"(uim-el-agent|uim-el-helper-agent)\"" _ executable)
-                (string-append "\"" (assoc-ref outputs "out")
-                               "/bin/" executable "\"")))
+             (let ((out (assoc-ref outputs "out")))
+               (emacs-substitute-variables "emacs/uim-var.el"
+                 ("uim-el-agent" (string-append out "/bin/uim-el-agent"))
+                 ("uim-el-helper-agent" (string-append out "/bin/uim-el-helper-agent"))))
+             #t))
+         ;; Fix installation path by renaming share/emacs/uim-el to
+         ;; share/emacs/site-lisp
+         (add-after 'install 'fix-install-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share-emacs (string-append (assoc-ref outputs "out")
+                                               "/share/emacs")))
+               (rename-file (string-append share-emacs "/uim-el")
+                            (string-append share-emacs "/site-lisp")))
              #t))
          ;; Generate emacs autoloads for uim.el
-         (add-after 'install 'make-autoloads
+         (add-after 'fix-install-path 'make-autoloads
            (lambda* (#:key outputs #:allow-other-keys)
              (emacs-generate-autoloads
               ,name (string-append (assoc-ref outputs "out")

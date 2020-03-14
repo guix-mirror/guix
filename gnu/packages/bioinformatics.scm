@@ -2755,7 +2755,7 @@ quantitative phenotypes.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "12.1.20190829")
+    (version "13.3.20200128")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
@@ -2763,7 +2763,10 @@ quantitative phenotypes.")
                                   "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "1xb330z28dgp7slrvp8r7rgncsasv9lpcpqim571yg728dq7xdik"))))
+                "093zp7klv81ph0y8mm8d78a9hnpfxbv2kdym70gzdf3vz176rw33"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin (delete-file "Mozilla-CA.tar.gz") #t))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -8288,7 +8291,7 @@ throughput genetic sequencing data sets using regression methods.")
 (define-public r-qtl
  (package
   (name "r-qtl")
-  (version "1.45-11")
+  (version "1.46-2")
   (source
    (origin
     (method url-fetch)
@@ -8296,7 +8299,7 @@ throughput genetic sequencing data sets using regression methods.")
                         version ".tar.gz"))
     (sha256
      (base32
-      "1d6qgj602fm6zia3djl4hmca0ri4v57ffp3g93p2yc3cabx2hq90"))))
+      "0rbwcnvyy96gq1dsgpxx03pv423qya26h6ws5y0blj3blfdmj83a"))))
   (build-system r-build-system)
   (home-page "https://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")

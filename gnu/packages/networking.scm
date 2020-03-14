@@ -167,7 +167,7 @@ or, more generally, MAC addresses of the same category of hardware.")
             (substitute* "src/Makefile"
               (("^TESTS = .*") "TESTS = \n"))
             #t)))))
-    (home-page "http://www.remlab.net/miredo/")
+    (home-page "https://www.remlab.net/miredo/")
     (synopsis "Teredo IPv6 tunneling software")
     (description
      "Miredo is an implementation (client, relay, server) of the Teredo

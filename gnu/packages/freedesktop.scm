@@ -1593,14 +1593,14 @@ encoding names are iconv-compatible.")
 (define-public udiskie
   (package
     (name "udiskie")
-    (version "2.0.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "udiskie" version))
        (sha256
         (base32
-         "0gjjzz0k8dlsk03fl2882lbl88hbv031ww72qj02gr65yph0jqgc"))
+         "0smib8vbs9q37n7ynhzyw97q16fgdkcdw7fw69lci0xvyq00v1dz"))
        ;; Remove support for the libappindicator library of the
        ;; Unity desktop environment which is not in Guix.
        (patches (search-patches "udiskie-no-appindicator.patch"))))

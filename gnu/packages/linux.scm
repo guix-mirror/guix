@@ -362,42 +362,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.24")
+(define-public linux-libre-5.4-version "5.4.25")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1cvy3mxwzll4f9j8i3hfmi0i0zq75aiafq1jskp9n4kq9iwar83z")))
+        (hash (base32 "09ay0adc3s3m7qk0nj5lkmrp5i0q76a9kax0xix8914d115rgvf0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.108")
+(define-public linux-libre-4.19-version "4.19.109")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "18shyy1z2s8r26qb4rcz7gwl43dnmycjjywp9gss5zlfn2jyrbh9")))
+        (hash (base32 "0kwnlv5336vqdf38dzn077ic17zkb4rl5khxmc47syzd9zm4fhnh")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.172")
+(define-public linux-libre-4.14-version "4.14.173")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0yi13cky6jdswca7nrjgcrdxk8rnqdbhblhy6mws103mjfms2613")))
+        (hash (base32 "0kxp3mgiags8hdax15masab9zr89xraqvl9ri7zwgksx8ixav0m2")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.215")
+(define-public linux-libre-4.9-version "4.9.216")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0j4z2al318654z40w4f8zhh73zwpgn8igjr5k4mz401phm3jyvr3")))
+        (hash (base32 "0lgv5k8v5xz9z2z4k42566bh0akyk1gr0dx6s1m1rjrzsf9k86l6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.215")
+(define-public linux-libre-4.4-version "4.4.216")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "00zy6cxwb16pqziiqs25pz5llryx2v2nbk9vvzpzxa8x43ad7g18")))
+        (hash (base32 "1hjgh9brvxzi6ypgfnk07l3j28xsxgz88sdshnz19vj96bn1w70q")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -3497,6 +3497,12 @@ thanks to the use of namespaces.")
                       _ program)
                      (string-append "/run/setuid-programs/singularity-"
                                     program "-helper")))
+
+                  ;; These squashfs mount options are apparently no longer
+                  ;; supported since Linux-libre 5.4.5.
+                  (substitute* "src/lib/image/squashfs/mount.c"
+                    (("\"errors=remount-ro\"")
+                     "NULL"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
@@ -3509,7 +3515,19 @@ thanks to the use of namespaces.")
                (("if ! singularity_which mksquashfs") "if 0")
                (("if ! mksquashfs")
                 (string-append "if ! " (which "mksquashfs"))))
-             #t)))))
+             #t))
+         (add-after 'install 'set-PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Have the 'singularity' and 'run-singularity' self-sufficient.
+             (let ((out (assoc-ref outputs "out"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (wrap-program (string-append out "/bin/singularity")
+                 `("PATH" ":" = (,(string-append coreutils "/bin"))))
+               (substitute* (string-append out "/bin/run-singularity")
+                 (("/usr/bin/env singularity")
+                  (string-append (which "env") " "
+                                 out "/bin/singularity")))
+               #t))))))
     (inputs
      `(("libarchive" ,libarchive)
        ("python" ,python-wrapper)
@@ -3991,6 +4009,7 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
+    (replacement bluez/fixed)
     (version "5.53")
     (source (origin
               (method url-fetch)
@@ -4055,6 +4074,14 @@ Bluetooth audio output devices like headphones or loudspeakers.")
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
     (license license:gpl2+)))
+
+(define bluez/fixed
+  (package
+    (inherit bluez)
+    (source (origin
+              (inherit (package-source bluez))
+              (patches (append (origin-patches (package-source bluez))
+                               (search-patches "bluez-CVE-2020-0556.patch")))))))
 
 (define-public fuse-exfat
   (package

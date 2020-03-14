@@ -14,7 +14,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
-;;; Copyright @ 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
@@ -1166,7 +1166,7 @@ GNU extensions} to the POSIX recommendations for command-line options.")
         (base32
          "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
     (build-system go-build-system)
-    (native-inputs
+    (propagated-inputs
      `(("go-golang-org-x-crypto"
         ,go-golang-org-x-crypto)
        ("go-github-com-stretchr-testify"
@@ -1179,6 +1179,31 @@ GNU extensions} to the POSIX recommendations for command-line options.")
     (synopsis "Structured, pluggable logging for Go")
     (description "Logrus is a structured logger for Go, completely API
 compatible with the standard library logger.")
+    (license license:expat)))
+
+(define-public go-github-com-rifflock-lfshook
+  (package
+    (name "go-github-com-rifflock-lfshook")
+    (version "2.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rifflock/lfshook.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wxqjcjfg8c0klmdgmbw3ckagby3wg9rkga9ihd4fsf05x5scxrc"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/rifflock/lfshook"))
+    (propagated-inputs
+     `(("go-github-com-sirupsen-logrus" ,go-github-com-sirupsen-logrus)))
+    (home-page "https://github.com/rifflock/lfshook")
+    (synopsis "Local File System hook for Logrus logger")
+    (description "This package provides a hook for Logrus to write directly to
+a file on the filesystem.  The log levels are dynamic at instantiation of the
+hook, so it is capable of logging at some or all levels.")
     (license license:expat)))
 
 (define-public go-github-com-kardianos-osext
@@ -3349,3 +3374,25 @@ test results.")
 data serialization format.")
     (home-page "https://github.com/golang/protobuf")
     (license license:bsd-3)))
+
+(define-public go-github-com-mattn-go-zglob
+  (package
+    (name "go-github-com-mattn-go-zglob")
+    (version "0.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mattn/go-zglob.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1sncdyq5fbd42al4amyy91h7vlzm3wm6c9vl8za2pjgfgsd581fz"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mattn/go-zglob"))
+    (home-page "https://github.com/mattn/go-zglob")
+    (synopsis "Glob library that descends into other directories")
+    (description " A glob library that implements descending into other
+directories.  It is optimized for filewalking. ")
+    (license license:expat)))

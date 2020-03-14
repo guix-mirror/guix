@@ -55,7 +55,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:export (channel-source->package
+  #:export (%cross-targets
+            channel-source->package
             hydra-jobs))
 
 ;;; Commentary:

@@ -172,7 +172,7 @@ a highly stable and efficient implementation.")
       '(#:tests? #f ; Tests are not ran with BUILD_SHARED_LIBS on.
         #:configure-flags (list "-DBUILD_SHARED_LIBS=ON")))
     (inputs `(("zlib" ,zlib)))
-    (home-page "http://taglib.org")
+    (home-page "https://taglib.org")
     (synopsis "Library to access audio file meta-data")
     (description
      "TagLib is a C++ library for reading and editing the meta-data of several

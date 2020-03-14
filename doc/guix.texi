@@ -28,7 +28,7 @@ Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
-Copyright @copyright{} 2015, 2016, 2017, 2019 Leo Famulari@*
+Copyright @copyright{} 2015, 2016, 2017, 2019, 2020 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
@@ -3122,7 +3122,7 @@ the store.
 @itemx -A [@var{regexp}]
 List packages currently available in the distribution for this system
 (@pxref{GNU Distribution}).  When @var{regexp} is specified, list only
-installed packages whose name matches @var{regexp}.
+available packages whose name matches @var{regexp}.
 
 For each package, print the following items separated by tabs: its name,
 its version string, the parts of the package (@pxref{Packages with
@@ -8022,6 +8022,25 @@ the second case, the resulting script contains a @code{(string-append
 @dots{})} expression to construct the file name @emph{at run time}.
 @end deffn
 
+@deffn {Scheme Syntax} with-parameters ((@var{parameter} @var{value}) @dots{}) @var{exp}
+This macro is similar to the @code{parameterize} form for
+dynamically-bound @dfn{parameters} (@pxref{Parameters,,, guile, GNU
+Guile Reference Manual}).  The key difference is that it takes effect
+when the file-like object returned by @var{exp} is lowered to a
+derivation or store item.
+
+A typical use of @code{with-parameters} is to force the system in effect
+for a given object:
+
+@lisp
+(with-parameters ((%current-system "i686-linux"))
+  coreutils)
+@end lisp
+
+The example above returns an object that corresponds to the i686 build
+of Coreutils, regardless of the current value of @code{%current-system}.
+@end deffn
+
 
 Of course, in addition to gexps embedded in ``host'' code, there are
 also modules containing build tools.  To make it clear that they are
@@ -10790,8 +10809,11 @@ guix weather @var{options}@dots{} [@var{packages}@dots{}]
 When @var{packages} is omitted, @command{guix weather} checks the availability
 of substitutes for @emph{all} the packages, or for those specified with
 @option{--manifest}; otherwise it only considers the specified packages.  It
-is also possible to query specific system types with @option{--system}.  The
-available options are listed below.
+is also possible to query specific system types with @option{--system}.
+@command{guix weather} exits with a non-zero code when the fraction of
+available substitutes is below 100%.
+
+The available options are listed below.
 
 @table @code
 @item --substitute-urls=@var{urls}
@@ -10810,6 +10832,9 @@ Instead of querying substitutes for all the packages, only ask for those
 specified in @var{file}.  @var{file} must contain a @dfn{manifest}, as
 with the @code{-m} option of @command{guix package} (@pxref{Invoking
 guix package}).
+
+This option can be repeated several times, in which case the manifests
+are concatenated.
 
 @item --coverage[=@var{count}]
 @itemx -c [@var{count}]
@@ -10841,6 +10866,9 @@ likewise for @code{qgpgme} and the 46 packages that depend on it.
 If you are a Guix developer, or if you are taking care of this build farm,
 you'll probably want to have a closer look at these packages: they may simply
 fail to build.
+
+@item --display-missing
+Display the list of store items for which substitutes are missing.
 @end table
 
 @node Invoking guix processes

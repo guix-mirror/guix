@@ -612,11 +612,12 @@ To avoid confusion and naming clashes with other programming languages, it
 seems desirable that the name of a package for a Python module contains
 the word @code{python}.
 
-Some modules are compatible with only one version of Python, others with both.
-If the package Foo compiles only with Python 3, we name it
-@code{python-foo}; if it compiles only with Python 2, we name it
-@code{python2-foo}. If it is compatible with both versions, we create two
-packages with the corresponding names.
+Some modules are compatible with only one version of Python, others with
+both.  If the package Foo is compiled with Python 3, we name it
+@code{python-foo}.  If it is compiled with Python 2, we name it
+@code{python2-foo}.  Packages should be added when they are necessary;
+we don't add Python 2 variants of the package unless we are going to use
+them.
 
 If a project already contains the word @code{python}, we drop this;
 for instance, the module python-dateutil is packaged under the names

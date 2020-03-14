@@ -818,7 +818,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.59")
+    (version "5.62")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
@@ -829,7 +829,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
                                        "xlockmore-" version ".tar.xz")))
              (sha256
               (base32
-               "0lajc5a4lki33b9mzfsi74q4hbivbmhwysp7mib4ivnyxianhaid"))))
+               "0b05wgj4mpssy4hd7km5c48i454dfg45p11mfmsr7xjd2gnz5gqi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -841,7 +841,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
        ("libXext" ,libxext)
        ("libXt" ,libxt)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://sillycycle.com/xlockmore.html")
+    (home-page "https://sillycycle.com/xlockmore.html")
     (synopsis "Screen locker for the X Window System")
     (description
      "XLockMore is a classic screen locker and screen saver for the
@@ -1972,7 +1972,7 @@ The cutbuffer and clipboard selection are always synchronized.")
 (define-public jgmenu
   (package
     (name "jgmenu")
-    (version "4.0.1")
+    (version "4.1.0")
     (source
      (origin
        (method git-fetch)
@@ -1982,7 +1982,7 @@ The cutbuffer and clipboard selection are always synchronized.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1q0rpg2d96sn3rrdi8m7bngnxxqyxilpjxi7skiw4gvpiv1akxjp"))))
+         "1wsh37rapb1bszlq36hvwxqvfds39hbvbl152m8as4zlh93wfvvk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppcheck" ,cppcheck)

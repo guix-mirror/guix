@@ -266,7 +266,7 @@ turbo speed, networked multiplayer, and graphical enhancements.")
        ("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
        ("mesa" ,mesa)))
-    (home-page "http://www.dosbox.com")
+    (home-page "https://www.dosbox.com")
     (synopsis "X86 emulator with CGA/EGA/VGA/etc. graphics and sound")
     (description "DOSBox is a DOS-emulator that uses the SDL library.  DOSBox
 also emulates CPU:286/386 realmode/protected mode, Directory
@@ -1453,7 +1453,7 @@ play them on systems for which they were never designed!")
        ("sqlite" ,sqlite)
        ("utf8proc" ,utf8proc)
        ("zlib" ,zlib)))
-    (home-page "http://mamedev.org/")
+    (home-page "https://www.mamedev.org")
     (synopsis "Multi-purpose emulation framework")
     (description "MAME's purpose is to preserve decades of software
 history.  As electronic technology continues to rush forward, MAME

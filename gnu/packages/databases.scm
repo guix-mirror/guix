@@ -1857,7 +1857,7 @@ Driver.")
                 "1sbpvhg15gadq0mpcy16q7k3rkg4b4dicpnn5xifpkpn02sqik3s"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f))          ;No check target
-    (home-page "http://www.unqlite.org")
+    (home-page "https://www.unqlite.org")
     (synopsis "In-memory key/value and document store")
     (description
      "UnQLite is an in-process software library which implements a

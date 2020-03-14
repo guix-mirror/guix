@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1670,12 +1671,14 @@ WSGIPassAuthorization On
     #~(begin
         (use-modules (guix build utils))
 
+        (mkdir-p "/var/mumi/db")
         (mkdir-p "/var/mumi/mails")
         (let* ((pw  (getpwnam "mumi"))
                (uid (passwd:uid pw))
                (gid (passwd:gid pw)))
           (chown "/var/mumi" uid gid)
-          (chown "/var/mumi/mails" uid gid)))))
+          (chown "/var/mumi/mails" uid gid)
+          (chown "/var/mumi/db" uid gid)))))
 
 (define %mumi-accounts
   (list (user-group (name "mumi") (system? #t))
@@ -1696,6 +1699,15 @@ WSGIPassAuthorization On
                    '(#$(file-append mumi "/bin/mumi"))
                    #:user "mumi" #:group "mumi"
                    #:log-file "/var/log/mumi.log"))
+         (stop #~(make-kill-destructor)))
+        (shepherd-service
+         (provision '(mumi-worker))
+         (documentation "Mumi bug-tracking web interface.")
+         (requirement '(networking))
+         (start #~(make-forkexec-constructor
+                   '(#$(file-append mumi "/bin/mumi") "--worker")
+                   #:user "mumi" #:group "mumi"
+                   #:log-file "/var/log/mumi.worker.log"))
          (stop #~(make-kill-destructor)))))
 
 (define mumi-service-type
