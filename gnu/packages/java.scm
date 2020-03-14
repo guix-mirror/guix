@@ -3301,7 +3301,7 @@ decompression and random access decompression have been fully implemented.")
     (version "1.12.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
                                   "com/thoughtworks/qdox/qdox/" version
                                   "/qdox-" version "-sources.jar"))
               (sha256
@@ -3325,7 +3325,7 @@ decompression and random access decompression have been fully implemented.")
            (lambda _
              (delete-file-recursively "src/com/thoughtworks/qdox/junit")
              #t)))))
-    (home-page "http://qdox.codehaus.org/")
+    (home-page "https://github.com/codehaus/qdox")
     (synopsis "Parse definitions from Java source files")
     (description
      "QDox is a high speed, small footprint parser for extracting
