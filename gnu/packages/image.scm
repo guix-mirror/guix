@@ -904,6 +904,10 @@ more modular, simple, and flexible.")
                        "http://linuxbrit.co.uk/downloads/giblib-"
                        version ".tar.gz")
                      (string-append
+                       "https://src.fedoraproject.org/repo/pkgs/giblib/giblib-"
+                       version ".tar.gz/c810ef5389baf24882a1caca2954385e/giblib-"
+                       version ".tar.gz")
+                     (string-append
                        "https://sourceforge.net/projects/slackbuildsdirectlinks/"
                        "files/giblib/giblib-" version ".tar.gz")))
               (sha256
