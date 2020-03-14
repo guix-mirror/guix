@@ -7361,7 +7361,7 @@ used to generate this API.")
     (version "6.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
                                   "org/osgi/osgi.cmpn/" version "/osgi.cmpn-"
                                   version "-sources.jar"))
               (sha256
