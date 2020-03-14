@@ -1781,17 +1781,7 @@ single-member files which can't be decompressed in parallel.")
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f
-      #:phases (modify-phases %standard-phases
-                 (add-before 'configure 'glibc-is-already-a-system-library
-                   (lambda _
-                     ;; Prevent the build system from passing the glibc
-                     ;; header files to GCC as "system headers", because
-                     ;; it conflicts with the system headers already known
-                     ;; to GCC, causing #include_next failures.
-                     (substitute* "CMakeLists.txt"
-                       (("include_directories\\(SYSTEM \\$\\{iconv")
-                        "include_directories(${iconv"))
-                     #t)))))
+      #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")))
    (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))
