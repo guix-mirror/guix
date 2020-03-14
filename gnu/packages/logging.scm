@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,17 @@
                (base32
                 "07gmr3jyaf2239n9sp6h7hwdz1pv7b7aka8n06gmr2fnlmaymfrc"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-call-stime
+           (lambda _
+             ;; Patch out use of 'stime' which was removed from glibc 2.31.
+             ;; The test would not work in the build container anyway.
+             (substitute* "tests/testDailyRollingFileAppender.cpp"
+               (("if \\(stime\\(&now\\) == -1\\)")
+                "if (1)"))
+             #t)))))
     (synopsis "Log library for C++")
     (description
      "Log4cpp is library of C++ classes for flexible logging to files, syslog,
