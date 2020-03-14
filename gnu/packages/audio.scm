@@ -3734,7 +3734,7 @@ surround).")
 (define-public libopenshot-audio
   (package
     (name "libopenshot-audio")
-    (version "0.1.8")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3743,7 +3743,7 @@ surround).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fvp6nmf30xzkmcznakh8dv5vn9d7nq051pqcqv638hsfppkmcrl"))))
+                "13if0m5mvlqly8gmbhschzb9papkgp3yqivklhb949dhy16m8zgf"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
