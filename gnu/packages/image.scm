@@ -635,18 +635,33 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.17")
+    (version "0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ArtifexSoftware"
                                   "/ghostpdl-downloads/releases/download"
-                                  "/gs950/" name "-" version ".tar.gz"))
+                                  "/gs951/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0wpvslmwazia3z8gyk343kbq6yj47pxr4x5yjvx332v309qssazp"))
-              (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
+                "0pigfw2v0ppvr0lbysm69gx0zsa5q2q92yrb8af2j3im6x97f6cy"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--disable-static")))
+    (arguments '(#:configure-flags '("--disable-static")
+                 #:phases (modify-phases %standard-phases
+                            (add-before 'bootstrap 'force-bootstrap
+                              (lambda _
+                                ;; XXX: jbig2dec 0.18 was released with
+                                ;; a broken configure script, so we
+                                ;; recreate the build system here.
+                                ;; Remove the autoconf inputs below
+                                ;; when deleting this code.
+                                (delete-file "configure")
+                                (delete-file "autogen.sh")
+                                #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("python" ,python-wrapper)))     ;for tests
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
       "JBIG2 is designed for lossy or lossless encoding of @code{bilevel} (1-bit
