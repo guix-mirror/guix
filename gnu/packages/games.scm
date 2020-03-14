@@ -1688,8 +1688,8 @@ level's exit.  The game is presented in a 2D side view.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.hyperrealm.com/" name "/"
-                           name  "-" version  ".tar.gz"))
+       (uri (string-append "http://www.hyperrealm.com/talkfilters/"
+                           "talkfilters-" version  ".tar.gz"))
        (sha256
         (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
     (build-system gnu-build-system)
