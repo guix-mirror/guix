@@ -43,8 +43,8 @@
     (version "0.92.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.tuxfamily.org/" name "/"
-                                  name "_" version ".tar.xz"))
+              (uri (string-append "http://download.tuxfamily.org/librep/"
+                                  "librep_" version ".tar.xz"))
               (sha256
                (base32
                 "1bmcjl1x1rdh514q9z3hzyjmjmwwwkziipjpjsl301bwmiwrd8a8"))))
