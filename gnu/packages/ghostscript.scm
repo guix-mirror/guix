@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -159,7 +159,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.50")
+    (version "9.51")
     (source
       (origin
         (method url-fetch)
@@ -169,9 +169,8 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1m770dwc82afdgzgq2kar3120r1lbybm3mssdm79f8kggf0v16yv"))
-        (patches (search-patches "ghostscript-CVE-2019-14869.patch"
-                                 "ghostscript-no-header-creationdate.patch"
+          "0wdpcq9lq19v8an8xs28cgg7vfzb23f1j12m9p2wdnwa1vwk64by"))
+        (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
         (modules '((guix build utils)))
@@ -234,10 +233,6 @@ printing, and psresize, for adjusting page sizes.")
             (substitute* "base/gscdef.c"
               (("GS_DOCDIR")
                "\"~/.guix-profile/share/doc/ghostscript\""))
-            ;; The docdir default changed in 9.23 and a compatibility
-            ;; symlink was added from datadir->docdir.  Remove it.
-            (substitute* "base/unixinst.mak"
-              (("ln -s \\$\\(DESTDIR\\)\\$\\(docdir\\).*") ""))
             #t))
          (add-after 'configure 'patch-config-files
            (lambda _
@@ -245,7 +240,31 @@ printing, and psresize, for adjusting page sizes.")
                (("/bin/sh") (which "sh")))
              #t))
          ,@(if (%current-target-system)
-               `((add-after 'configure 'add-native-lz
+               `((add-after 'unpack 'define-ARCH_MAX_SIZE_T
+                   (lambda _
+                     ;; XXX: arch_autoconf.h is missing the recent addition of
+                     ;; ARCH_MAX_SIZE_T.  Just add it here based on the definition
+                     ;; in "base/genarch.c".  This can likely be removed for
+                     ;; Ghostscript > 9.51.
+                     (substitute* "arch/arch_autoconf.h.in"
+                       (("#define ARCH_MAX_ULONG.*" all)
+                        (string-append all "\n"
+                                       "#define ARCH_MAX_SIZE_T "
+                                       "((size_t)~0L + (size_t)0)\n")))
+                     #t))
+                 (add-before 'configure 'do-not-fail-without-native-freetype
+                   (lambda _
+                     ;; The configure script recurses to build the native tools.
+                     ;; They are built with --disable-freetype, which was made a
+                     ;; hard error in 9.51, causing a build failure because a
+                     ;; native freetype is not detected.  Just ignore the check
+                     ;; because it's not needed for these auxiliary tools.
+                     (substitute* "configure"
+                       (("as_fn_error \\$\\? \"(No usable Freetype.*found)\".*" all msg)
+                        (string-append "$as_echo \"$as_me:${as_lineno-$LINENO}: "
+                                       "WARNING: " msg "\"\n")))
+                     #t))
+                 (add-after 'configure 'add-native-lz
                    (lambda _
                      ;; Add missing '-lz' for native tools such as 'mkromfs'.
                      (substitute* "Makefile"
