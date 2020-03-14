@@ -4525,7 +4525,8 @@ over 100 user-created campaigns.")
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL:"
                                     (assoc-ref inputs "python")
-                                    "/include/python2.7"))
+                                    "/include/python2.7:"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
