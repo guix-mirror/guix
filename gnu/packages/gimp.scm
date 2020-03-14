@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,6 +152,10 @@ buffers.")
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
+             ;; Prevent the build system from running 'gtk-update-icon-cache'
+             ;; which is not needed during the build because Guix runs it at
+             ;; profile creation time.
+             "ac_cv_path_GTK_UPDATE_ICON_CACHE=true"
              ;; ./configure requests not to annoy upstream with packaging bugs.
              "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases
