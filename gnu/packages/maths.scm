@@ -3463,7 +3463,7 @@ Fresnel integrals, and similar related functions as well.")
        ("lapack" ,lapack)
        ("metis" ,metis)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("m4" ,m4)))
     (home-page "http://faculty.cse.tamu.edu/davis/suitesparse.html")
     (synopsis "Suite of sparse matrix software")
