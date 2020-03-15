@@ -529,6 +529,7 @@
   (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
                                      (default #f))
   (modules nginx-configuration-modules (default '()))
+  (global-directives nginx-configuration-global-directives (default '()))
   (extra-content nginx-configuration-extra-content
                  (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like
@@ -551,6 +552,13 @@ of index files."
 
 (define (emit-load-module module)
   (list "load_module " module ";\n"))
+
+(define emit-global-directive
+  (match-lambda
+    ((key . (? list? alist))
+     (format #f "~a { ~{~a~}}~%" key (map emit-global-directive alist)))
+    ((key . value)
+     (format #f "~a ~a;~%" key value))))
 
 (define emit-nginx-location-config
   (match-lambda
@@ -626,12 +634,14 @@ of index files."
                  server-names-hash-bucket-size
                  server-names-hash-bucket-max-size
                  modules
+                 global-directives
                  extra-content)
    (apply mixed-text-file "nginx.conf"
           (flatten
            "user nginx nginx;\n"
            "pid " run-directory "/pid;\n"
            "error_log " log-directory "/error.log info;\n"
+           (map emit-global-directive global-directives)
            (map emit-load-module modules)
            "http {\n"
            "    client_body_temp_path " run-directory "/client_body_temp;\n"
