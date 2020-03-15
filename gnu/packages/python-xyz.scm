@@ -6118,29 +6118,52 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "2.2")
+    (version "2.4")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "networkx" version ".zip"))
+       (uri (pypi-uri "networkx" version))
        (sha256
-        (base32 "12swxb15299v9vqjsq4z8rgh5sdhvpx497xwnhpnb0gynrx6zra5"))))
+        (base32 "0r2wr7aqay9fwjrgk35fkjzk8lvvb4i4df7ndaqzkr4ndw5zzx7q"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "pytest" "-vv" "--pyargs" "networkx")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     ;; python-decorator is needed at runtime.
     (propagated-inputs
      `(("python-decorator" ,python-decorator)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("unzip" ,unzip)))
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://networkx.github.io/")
     (synopsis "Python module for creating and manipulating graphs and networks")
     (description
       "NetworkX is a Python package for the creation, manipulation, and study
 of the structure, dynamics, and functions of complex networks.")
+    (properties `((python2-variant . ,(delay python2-networkx))))
     (license license:bsd-3)))
 
+;; NetworkX 2.2 is the last version with support for Python 2.
 (define-public python2-networkx
-  (package-with-python2 python-networkx))
+  (let ((base (package-with-python2 (strip-python2-variant python-networkx))))
+    (package
+      (inherit base)
+      (version "2.2")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "networkx" version ".zip"))
+                (sha256
+                 (base32
+                  "12swxb15299v9vqjsq4z8rgh5sdhvpx497xwnhpnb0gynrx6zra5"))))
+      (arguments
+       `(#:python ,python-2))
+      (native-inputs
+       `(("python-nose" ,python2-nose)
+         ("unzip" ,unzip))))))
 
 (define-public python-datrie
   (package
