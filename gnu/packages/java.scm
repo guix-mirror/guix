@@ -11395,7 +11395,7 @@ such as log4j or @code{java.util.logging} (JUL).")))
               ;; Older releases at https://github.com/codehaus/qdox/
               ;; Note: The release at maven is pre-generated. The release at
               ;; github requires jflex.
-              (uri (string-append "http://central.maven.org/maven2/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
                                   "com/thoughtworks/qdox/qdox/" version
                                   "/qdox-" version "-sources.jar"))
               (sha256
@@ -11405,7 +11405,7 @@ such as log4j or @code{java.util.logging} (JUL).")))
     (arguments
      `(#:jar-name "qdox.jar"
        #:tests? #f)); no tests
-    (home-page "http://qdox.codehaus.org/")
+    (home-page "https://github.com/codehaus/qdox")
     (synopsis "Parse definitions from Java source files")
     (description "QDox is a high speed, small footprint parser for extracting
 class/interface/method definitions from source files complete with JavaDoc
