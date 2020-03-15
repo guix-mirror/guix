@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix repl)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (send-repl-response
             machine-repl))
@@ -39,6 +41,17 @@
     (one-of symbol? string? keyword? pair? null? array?
             number? boolean? char?)))
 
+(define repl-prompt
+  ;; Current REPL prompt or #f.
+  (make-parameter #f))
+
+(define (stack->frames stack)
+  "Return STACK's frames as a list."
+  (unfold (cute >= <> (stack-length stack))
+          (cut stack-ref stack <>)
+          1+
+          0))
+
 (define* (send-repl-response exp output
                              #:key (version '(0 0)))
   "Write the response corresponding to the evaluation of EXP to PORT, an
@@ -48,6 +61,32 @@ output port.  VERSION is the client's protocol version we are targeting."
         `(value ,value)
         `(non-self-quoting ,(object-address value)
                            ,(object->string value))))
+
+  (define (frame->sexp frame)
+    `(,(frame-procedure-name frame)
+      ,(match (frame-source frame)
+         ((_ (? string? file) (? integer? line) . (? integer? column))
+          (list file line column))
+         (_
+          '(#f #f #f)))))
+
+  (define (handle-exception key . args)
+    (define reply
+      (match version
+        ((0 1 (? positive?) _ ...)
+         ;; Protocol (0 1 1) and later.
+         (let ((stack (if (repl-prompt)
+                          (make-stack #t handle-exception (repl-prompt))
+                          (make-stack #t))))
+           `(exception (arguments ,key ,@(map value->sexp args))
+                       (stack ,@(map frame->sexp (stack->frames stack))))))
+        (_
+         ;; Protocol (0 0).
+         `(exception ,key ,@(map value->sexp args)))))
+
+    (write reply output)
+    (newline output)
+    (force-output output))
 
   (catch #t
     (lambda ()
@@ -59,10 +98,8 @@ output port.  VERSION is the client's protocol version we are targeting."
                output)
         (newline output)
         (force-output output)))
-    (lambda (key . args)
-      (write `(exception ,key ,@(map value->sexp args)))
-      (newline output)
-      (force-output output))))
+    (const #t)
+    handle-exception))
 
 (define* (machine-repl #:optional
                        (input (current-input-port))
@@ -73,6 +110,9 @@ The protocol of this REPL is meant to be machine-readable and provides proper
 support to represent multiple-value returns, exceptions, objects that lack a
 read syntax, and so on.  As such it is more convenient and robust than parsing
 Guile's REPL prompt."
+  (define tag
+    (make-prompt-tag "repl-prompt"))
+
   (define (loop exp version)
     (match exp
       ((? eof-object?) #t)
@@ -81,7 +121,7 @@ Guile's REPL prompt."
                            #:version version)
        (loop (read input) version))))
 
-  (write `(repl-version 0 1) output)
+  (write `(repl-version 0 1 1) output)
   (newline output)
   (force-output output)
 
@@ -91,8 +131,12 @@ Guile's REPL prompt."
   ;; recent client that sends (() repl-version ...).  This form is chosen to
   ;; be unambiguously distinguishable from a regular Scheme expression.
 
-  (match (read input)
-    ((() 'repl-version version ...)
-     (loop (read input) version))
-    (exp
-     (loop exp '(0 0)))))
+  (call-with-prompt tag
+    (lambda ()
+      (parameterize ((repl-prompt tag))
+        (match (read input)
+          ((() 'repl-version version ...)
+           (loop (read input) version))
+          (exp
+           (loop exp '(0 0))))))
+    (const #f)))
