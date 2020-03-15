@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -5424,15 +5424,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.63")
+    (version "0.9.98.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/d42b466752729a0d3fa828a721e25043/"
-                                  "eolie-" version ".tar.xz"))
+              (uri (string-append "https://adishatz.org/eolie/eolie-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "11pp8g0w22h1q0bbj9517l5838gcymvvp8fp9kh6h2dmgir2ssih"))))
+                "1d844zva5w4p9pnp9c2g7zyb4vayr2g2drf78spxsdlc5lbd7lqr"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
