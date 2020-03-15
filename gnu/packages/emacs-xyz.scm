@@ -62,6 +62,7 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3606,14 +3607,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.21")
+    (version "0.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "1xx1wjfpsnwx2fpydqhwy9k1b5kjk8dqbkzf8lqaj9c4rvjbn50a"))))
+                "05ik9qv539b5c1nzxkk3lk23bqj4vqgmfmd8x367abhb7c9gix2z"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
