@@ -7843,7 +7843,7 @@ utility classes for the configuration of services.")
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.packageadmin/"
                                   version "/org.osgi.service.packageadmin-"
                                   version "-sources.jar"))
