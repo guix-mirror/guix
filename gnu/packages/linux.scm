@@ -4012,6 +4012,49 @@ system calls, important for the performance of databases and other advanced
 applications.")
     (license license:lgpl2.1+)))
 
+(define-public blktrace
+  ;; Take a newer commit to get the fix for CVE-2018-10689.
+  (let ((commit "f4f8ef7cdea138cfaa2f3ca0ee31fa23d3bcf1cc")
+        (revision "0"))
+    (package
+      (name "blktrace")
+      (version (git-version "1.2.0" revision commit))
+      (home-page
+        "https://git.kernel.org/pub/scm/linux/kernel/git/axboe/blktrace.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32 "1ihdfimg7mfcgdm6l09xfqx5kdyv42x743dxp3z3w65q5vd7xy89"))
+                (file-name (git-file-name name version))
+                (patches (search-patches "blktrace-use-rmtree.patch"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         (list "CC=gcc" (string-append "prefix=" %output))
+         #:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; no configure script
+           (add-after 'unpack 'fix-gnuplot-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((gnuplot (assoc-ref inputs "gnuplot")))
+                 (substitute* "btt/bno_plot.py"
+                   (("gnuplot %s")
+                    (string-append gnuplot "/bin/gnuplot %s")))
+                 #t))))))
+      (inputs
+       `(("libaio" ,libaio)
+         ("gnuplot" ,gnuplot)
+         ("python" ,python-wrapper)))             ;for 'bno_plot.py'
+      (synopsis "Block layer IO tracing mechanism")
+      (description "Blktrace is a block layer IO tracing mechanism which provides
+detailed information about request queue operations to user space.  It extracts
+event traces from the kernel (via the relaying through the debug file system).")
+      (license license:gpl2))))
+
 (define-public sbc
   (package
     (name "sbc")

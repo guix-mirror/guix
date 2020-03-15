@@ -27,6 +27,7 @@
 # Copyright © 2019 Brett Gilio <brettg@gnu.org>
 # Copyright © 2019 Amin Bandali <mab@gnu.org>
 # Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+# Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -766,6 +767,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
+  %D%/packages/patches/blktrace-use-rmtree.patch		\
   %D%/packages/patches/bluez-CVE-2020-0556.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\

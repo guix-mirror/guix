@@ -1,0 +1,32 @@
+From 6d1ce4a3a1a561644695a50c00cbd28494728061 Mon Sep 17 00:00:00 2001
+From: Vincent Legoll <vincent.legoll@gmail.com>
+Date: Mon, 16 Mar 2020 11:43:19 +0100
+Subject: [PATCH 02/10] bno_plot.py: Use shutil.rmtree() instead of
+ os.system('/bin/rm')
+
+---
+ btt/bno_plot.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/btt/bno_plot.py b/btt/bno_plot.py
+index f05cfdc..36fc524 100644
+--- a/btt/bno_plot.py
++++ b/btt/bno_plot.py
+@@ -40,7 +40,7 @@ To exit the plotter, enter 'quit' or ^D at the 'gnuplot> ' prompt.
+ 
+ from __future__ import absolute_import
+ from __future__ import print_function
+-import getopt, glob, os, sys, tempfile
++import getopt, glob, os, sys, tempfile, shutil
+ 
+ verbose	= 0
+ cmds	= """
+@@ -125,4 +125,4 @@ if __name__ == '__main__':
+ 		sys.exit(1)
+ 
+ 	os.waitpid(pid, 0)
+-	os.system('/bin/rm -rf ' + tmpdir)
++	shutil.rmtree(tmpdir)
+-- 
+2.20.1
+
