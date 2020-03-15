@@ -8532,7 +8532,7 @@ of deserialization.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rf5ha6w0waz50jz2479jsrbgmd0dnx0gs337m126j5z7zlmg7mg"))))
+                "0474cqcv46zgv9bhms2vgawakq1vyj0hp3h3f1bfys46msia90bh"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-snakeyaml.jar"
