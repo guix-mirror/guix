@@ -918,9 +918,9 @@ descriptions maintained upstream."
    (define exception-with-kind-and-args?
      (const #f))))
 
-(define (check-derivation package)
+(define* (check-derivation package #:key store)
   "Emit a warning if we fail to compile PACKAGE to a derivation."
-  (define (try system)
+  (define (try store system)
     (catch #t     ;TODO: Remove 'catch' when Guile 2.x is no longer supported.
       (lambda ()
         (guard (c ((store-protocol-error? c)
@@ -939,25 +939,29 @@ descriptions maintained upstream."
                                  (G_ "failed to create ~a derivation: ~a")
                                  (list system
                                        (condition-message c)))))
-          (with-store store
-            ;; Disable grafts since it can entail rebuilds.
-            (parameterize ((%graft? #f))
-              (package-derivation store package system #:graft? #f)
+          (parameterize ((%graft? #f))
+            (package-derivation store package system #:graft? #f)
 
-              ;; If there's a replacement, make sure we can compute its
-              ;; derivation.
-              (match (package-replacement package)
-                (#f #t)
-                (replacement
-                 (package-derivation store replacement system
-                                     #:graft? #f)))))))
+            ;; If there's a replacement, make sure we can compute its
+            ;; derivation.
+            (match (package-replacement package)
+              (#f #t)
+              (replacement
+               (package-derivation store replacement system
+                                   #:graft? #f))))))
       (lambda args
         (make-warning package
                       (G_ "failed to create ~a derivation: ~s")
                       (list system args)))))
 
-  (filter lint-warning?
-          (map try (package-supported-systems package))))
+  (define (check-with-store store)
+    (filter lint-warning?
+            (map (cut try store <>) (package-supported-systems package))))
+
+  ;; For backwards compatability, don't rely on store being set
+  (or (and=> store check-with-store)
+      (with-store store
+        (check-with-store store))))
 
 (define (check-license package)
   "Warn about type errors of the 'license' field of PACKAGE."
