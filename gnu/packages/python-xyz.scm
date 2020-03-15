@@ -9631,19 +9631,19 @@ ISO 8859, etc.).")
 (define-public python-editor
   (package
   (name "python-editor")
-  (version "0.5")
+  (version "1.0.4")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "python-editor" version))
       (sha256
         (base32
-          "1ypnpgvzpkbwsg4rdvy4sy51j28b5xq9v8pnkwxncn07vqz06p7n"))))
+          "0yrjh8w72ivqxi4i7xsg5b1vz15x8fg51xra7c3bgfyxqnyadzai"))))
   (build-system python-build-system)
-  (home-page
-    "https://github.com/fmoo/python-editor")
-  (synopsis
-    "Programmatically open an editor, capture the result")
+  (arguments
+   '(#:tests? #f))   ;XXX: needs a TTY and an editor
+  (home-page "https://github.com/fmoo/python-editor")
+  (synopsis "Programmatically open an editor, capture the result")
   (description
     "python-editor is a library that provides the editor module for
 programmatically interfacing with your system's $EDITOR.")
