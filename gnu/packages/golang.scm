@@ -3572,3 +3572,28 @@ characters with their ASCII approximations.")
       (synopsis "Go library that pluralizes and singularizes English nouns")
       (description "Go library that pluralizes and singularizes English nouns.")
       (license license:bsd-2))))
+
+(define-public go-github-com-klauspost-cpuid
+  (package
+    (name "go-github-com-klauspost-cpuid")
+    (version "1.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/klauspost/cpuid")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1s510210wdj5dkamii1qrk7v87k4qpdcrrjzflp5ha9iscw6b06l"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/klauspost/cpuid"))
+    (home-page "https://github.com/klauspost/cpuid")
+    (synopsis "CPU feature identification for Go")
+    (description "@code{cpuid} provides information about the CPU running the
+current program.  CPU features are detected on startup, and kept for fast access
+through the life of the application.  Currently x86 / x64 (AMD64) is supported,
+and no external C (cgo) code is used, which should make the library very eas
+to use.")
+    (license license:expat)))
