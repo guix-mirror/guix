@@ -7587,7 +7587,7 @@ an interface for a function that accepts a single argument and produces a result
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.util.promise/"
                                   version "/org.osgi.util.promise-"
                                   version "-sources.jar"))
