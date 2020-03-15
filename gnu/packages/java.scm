@@ -7672,7 +7672,7 @@ a repository service that contains resources.")
     (version "1.8.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.framework/" version "/org.osgi.framework-"
                                   version "-sources.jar"))
               (sha256
