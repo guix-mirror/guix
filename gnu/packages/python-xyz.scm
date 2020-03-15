@@ -2596,13 +2596,13 @@ logic-free templating system Mustache.")
 (define-public python-joblib
   (package
     (name "python-joblib")
-    (version "0.13.0")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "joblib" version))
               (sha256
                (base32
-                "0612nazad8dxmn3xghfrmjax6456l4xy6hn9cngs7vydi14ds7v5"))))
+                "1j464w137w6s367gl697j1l63g52akydrxgv4czlck36ynjfwc06"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
