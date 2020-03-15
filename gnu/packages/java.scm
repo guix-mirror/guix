@@ -7616,7 +7616,7 @@ value.  It handles the interactions for asynchronous processing.")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.metatype.annotations/"
                                   version "/org.osgi.service.metatype.annotations-"
                                   version "-sources.jar"))
