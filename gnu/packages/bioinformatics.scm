@@ -42,6 +42,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system ocaml)
@@ -68,15 +69,17 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages dlang)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
-  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages haskell-check)
@@ -87,7 +90,6 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
   #:use-module (gnu packages jemalloc)
-  #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
@@ -2766,7 +2768,12 @@ quantitative phenotypes.")
                 "093zp7klv81ph0y8mm8d78a9hnpfxbv2kdym70gzdf3vz176rw33"))
               (modules '((guix build utils)))
               (snippet
-               '(begin (delete-file "Mozilla-CA.tar.gz") #t))))
+               '(begin (delete-file "Mozilla-CA.tar.gz")
+                       (substitute* "rchive.go"
+                         ;; This go library does not have any license.
+                         (("github.com/fiam/gounidecode/unidecode")
+                          "golang.org/rainycape/unidecode"))
+                       #t))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -2825,6 +2832,50 @@ extraction of data from document summaries or other results that are returned
 in structured XML format.  This can eliminate the need for writing custom
 software to answer ad hoc questions.")
     (license license:public-domain)))
+
+(define-public edirect-go-programs
+  (package
+    (inherit edirect)
+    (name "edirect-go-programs")
+    (build-system go-build-system)
+    (arguments
+     `(#:install-source? #f
+       #:tests? #f      ; No tests.
+       #:import-path "ncbi.nlm.nih.gov/entrez/edirect"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (invoke "go" "build" "-v" "-x" "j2x.go")
+               (invoke "go" "build" "-v" "-x" "t2x.go")
+               (invoke "go" "build" "-v" "-x" "-o"
+                       "xtract.Linux" "xtract.go" "common.go")
+               (invoke "go" "build" "-v" "-x" "-o"
+                       "rchive.Linux" "rchive.go" "common.go")
+               (invoke "go" "build" "-v" "-x" "-o" "symbols.Linux" "s2p.go"))))
+         (replace 'install
+           (lambda* (#:key outputs import-path #:allow-other-keys)
+             (let ((dest    (string-append (assoc-ref outputs "out") "/bin"))
+                   (source  (string-append "src/" import-path "/")))
+               (for-each (lambda (file)
+                           (format #t "installing ~a~%" file)
+                           (install-file (string-append source file) dest))
+                         '("j2x" "t2x" "symbols.Linux" "xtract.Linux" "rchive.Linux"))
+               #t))))))
+    (native-inputs '())
+    (propagated-inputs '())
+    (inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-fogleman-gg" ,go-github-com-fogleman-gg)
+       ("go-github-com-gedex-inflector" ,go-github-com-gedex-inflector)
+       ("go-github-com-golang-freetype" ,go-github-com-golang-freetype)
+       ("go-github-com-klauspost-cpuid" ,go-github-com-klauspost-cpuid)
+       ("go-github-com-pbnjay-memory" ,go-github-com-pbnjay-memory)
+       ("go-github-com-surgebase-porter2" ,go-github-com-surgebase-porter2)
+       ("go-golang-org-rainycape-unidecode" ,go-golang-org-rainycape-unidecode)
+       ("go-golang-org-x-image" ,go-golang-org-x-image)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)))))
 
 (define-public exonerate
   (package
