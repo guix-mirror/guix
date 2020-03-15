@@ -2613,15 +2613,21 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.0.11")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
+       (patches (search-patches "python-alembic-exceptions-cause.patch"))
        (sha256
         (base32
-         "1k5hag0vahd5vrf9abx8fdj2whrwaw2iq2yp736mmxnbsn5xkdyd"))))
+         "0a4hzn76csgbf1px4f5vfm256byvjrqkgi9869nkcjrwjn35c6kr"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest-cov" ,python-pytest-cov)))
