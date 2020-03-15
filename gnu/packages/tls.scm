@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020, 2021 Marius Bakke <marius@gnu.org>
-;;; Copyright © 2017–2019, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017–2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1085,6 +1085,15 @@ coding footprint.")
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
+    (native-search-paths
+     ;; The following definition is copied from the cURL package to prevent a
+     ;; cycle between the curl and tls modules.
+     (native-search-paths
+      (list (search-path-specification
+             (variable "CURL_CA_BUNDLE")
+             (file-type 'regular)
+             (separator #f)
+             (files '("etc/ssl/certs/ca-certificates.crt"))))))
     (home-page "https://dehydrated.io/")
     (synopsis "Let's Encrypt/ACME client implemented as a shell script")
     (description "Dehydrated is a client for signing certificates with an
