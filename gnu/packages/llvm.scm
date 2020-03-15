@@ -671,6 +671,23 @@ output), and Binutils.")
         (base32
          "0d2bj5i6mk4caq7skd5nsdmz8c2m5w5anximl5wz3x32p08zz089"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs  "gcc")))
+               ;; Hide GCC's C++ headers so that they do not interfere with
+               ;; the ones we are attempting to build.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join (delete (string-append gcc "/include/c++")
+                                            (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                          #\:))
+                                    ":"))
+               (format #t
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))
+               #t))))))
     (native-inputs
      `(("clang" ,clang)
        ("llvm" ,llvm)))
