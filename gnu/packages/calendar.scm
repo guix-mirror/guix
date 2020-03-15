@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com
+;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
 (define-module (gnu packages calendar)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -47,6 +49,62 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages xml)
   #:use-module (srfi srfi-26))
+
+(define-public date
+  ;; We make the same choice as the Arch package maintainer by choosing a
+  ;; recent commit to fix some bugs.
+  ;; https://github.com/Alexays/Waybar/issues/565
+  (let ((commit "9a0ee2542848ab8625984fc8cdbfb9b5414c0082"))
+    (package
+      (name "date")
+      (version (string-append "2.4.1-" (string-take commit 8)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/HowardHinnant/date.git")
+               (commit "9a0ee2542848ab8625984fc8cdbfb9b5414c0082")))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0yxsn0hj22n61bjywysxqgfv7hj5xvsl6isma95fl8xrimpny083"))
+         (patches
+          ;; Install pkg-config files
+          ;; https://github.com/HowardHinnant/date/pull/538
+          (search-patches "date-output-pkg-config-files.patch"))))
+      (inputs `(("tzdata" ,tzdata)))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:configure-flags (list "-DUSE_SYSTEM_TZ_DB=ON"
+                                 "-DBUILD_SHARED_LIBS=ON"
+                                 "-DBUILD_TZ_LIB=ON"
+                                 "-DENABLE_DATE_TESTING=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-bin-bash
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "compile_fail.sh"
+                 (("/bin/bash") (which "bash")))
+               #t))
+           (add-after 'unpack 'patch-zoneinfo-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/tz.cpp"
+                 (("/usr/share/zoneinfo")
+                  (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+               #t))
+           (replace 'check
+             (lambda _
+               ;; Disable test that requires checking timezone that
+               ;; isn't set in the build environment.
+               (substitute* "CTestTestfile.cmake"
+                 (("add_test.tz_test_pass_zoned_time_deduction_test.*") "")
+                 (("set_tests_properties.tz_test_pass_zoned_time_deduction_test.*") ""))
+               (invoke "make" "testit"))))))
+      (synopsis "Date and time library for C++11 and C++14")
+      (description "Date is a header only C++ library that extends the chrono
+date algorithms library for calendar dates and durations.  It also provides
+the <tz.h> library for handling time zones and leap seconds.")
+      (home-page "https://howardhinnant.github.io/date/date.html")
+      (license license:expat))))
 
 (define-public libical
   (package

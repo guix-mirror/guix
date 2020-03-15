@@ -26,6 +26,7 @@
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 # Copyright © 2019 Brett Gilio <brettg@gnu.org>
 # Copyright © 2019 Amin Bandali <mab@gnu.org>
+# Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 #
 # This file is part of GNU Guix.
 #
@@ -805,6 +806,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
+  %D%/packages/patches/date-output-pkg-config-files.patch	\
   %D%/packages/patches/darkice-workaround-fpermissive-error.patch	\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
