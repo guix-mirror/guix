@@ -422,7 +422,33 @@ Go.  It also includes runtime support libraries for these languages.")
                   #t))))
     ;; Override inherited texinfo-5 with latest version.
     (native-inputs `(("perl" ,perl)   ;for manpages
-                     ("texinfo" ,texinfo)))))
+                     ("texinfo" ,texinfo)))
+    (arguments
+     (if (%current-target-system)
+         (package-arguments gcc-4.8)
+         ;; For native builds of GCC 4.9 and GCC 5, the C++ include path needs
+         ;; to be adjusted so it does not interfere with GCC's own build processes.
+         (substitute-keyword-arguments (package-arguments gcc-4.8)
+           ((#:modules modules %gnu-build-system-modules)
+            `((srfi srfi-1)
+              ,@modules))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((libc (assoc-ref inputs "libc"))
+                         (gcc (assoc-ref inputs  "gcc")))
+                     (setenv "CPLUS_INCLUDE_PATH"
+                             (string-join (fold delete
+                                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                              #\:)
+                                                (list (string-append libc "/include")
+                                                      (string-append gcc "/include/c++")))
+                                          ":"))
+                     (format #t
+                             "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                             (getenv "CPLUS_INCLUDE_PATH"))
+                     #t))))))))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
@@ -479,6 +505,10 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
+
+    ;; GCC 4.9 and 5 has a workaround that is not needed for GCC 6 and later.
+    (arguments (package-arguments gcc-4.8))
+
     (inputs
      `(("isl" ,isl)
        ,@(package-inputs gcc-4.7)))))
