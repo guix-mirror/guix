@@ -7758,7 +7758,7 @@ factories for getting JDBC connections:
     (version "1.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.resolver/"
                                   version "/org.osgi.service.resolver-"
                                   version "-sources.jar"))
