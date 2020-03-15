@@ -6260,25 +6260,13 @@ SVG, EPS, PNG and terminal output.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.9.0")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "0bqysi3fxfjl1866m5jq8z7mynhqbqnikim74dmzn8539iwkzj3n"))
-       (patches
-        (list (origin
-                (method url-fetch)
-                ;; This has already been merged, but there is no new
-                ;; release including this patch.  It fixes problems
-                ;; with axis rotation that would lead to test
-                ;; failures.
-                (uri "https://patch-diff.githubusercontent.com/raw/mwaskom/seaborn/pull/1716.diff")
-                (sha256
-                 (base32
-                  "1lm870z316n9ivsyr86hpk1gxaraw0mrjvq42lqsm0znhjdp9q9w"))
-                (file-name "seaborn-0.9.0-axis-rotation.patch"))))))
+        (base32 "1ffbms4kllihfycf6j57dziq4imgdjw03sqgifh5wzcd2d743zjr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6291,12 +6279,6 @@ SVG, EPS, PNG and terminal output.")
                (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
                (setenv "DISPLAY" ":1")
                #t)))
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             ;; test_cbar_ticks fails probably because of matplotlib's
-             ;; expectation of using an older version of FreeType.
-             (delete-file "seaborn/tests/test_matrix.py")
-             #t))
          (replace 'check (lambda _ (invoke "pytest" "seaborn") #t)))))
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
@@ -6313,10 +6295,21 @@ SVG, EPS, PNG and terminal output.")
 graphics in Python.  It is built on top of matplotlib and tightly integrated
 with the PyData stack, including support for numpy and pandas data structures
 and statistical routines from scipy and statsmodels.")
+    (properties `((python2-variant . ,(delay python2-seaborn))))
     (license license:bsd-3)))
 
+;; 0.9.1 is the last release with support for Python 2.
 (define-public python2-seaborn
-  (package-with-python2 python-seaborn))
+  (let ((base (package-with-python2 (strip-python2-variant python-seaborn))))
+    (package
+      (inherit base)
+      (version "0.9.1")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "seaborn" version))
+                (sha256
+                 (base32
+                  "1bjnshjz4d6z3vrwfwall1a3yh8h3a1h47c3fg7458x9426alcys")))))))
 
 (define-public python-mpmath
   (package
