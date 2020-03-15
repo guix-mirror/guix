@@ -2504,8 +2504,35 @@ list of components.  This module takes care of that for you.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-references-to-extension
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((effective (read-line
+                               (open-pipe* OPEN_READ
+                                           "guile" "-c"
+                                           "(display (effective-version))"))))
+               (substitute* '("module/gi.scm"
+                              "module/gi/oop.scm"
+                              "module/gi/documentation.scm"
+                              "module/gi/types.scm"
+                              "module/gi/repository.scm")
+                 (("\\(load-extension \"libguile-gi\" \"(.*)\"\\)" m arg)
+                  (format #f "~s"
+                          `(load-extension
+                            (format #f "~alibguile-gi"
+                                    (if (getenv "GUILE_GI_UNINSTALLED")
+                                        ""
+                                        ,(format #f "~a/lib/guile/~a/"
+                                                 (assoc-ref outputs "out")
+                                                 effective)))
+                            ,arg)))))
+             (setenv "GUILE_GI_UNINSTALLED" "1")
+             #t))
          (add-before 'check 'start-xorg-server
            (lambda* (#:key inputs #:allow-other-keys)
              ;; The init_check test requires a running X server.
