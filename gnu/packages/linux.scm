@@ -880,6 +880,13 @@ It has been modified to remove all non-free binary blobs.")
                      #:defconfig "omap2plus_defconfig"
                      #:extra-version "arm-omap2plus"))
 
+(define-public linux-libre-arm64-generic
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"))
+
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
