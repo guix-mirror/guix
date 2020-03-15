@@ -339,8 +339,11 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     ;; Clang supports the same environment variables as GCC.
     (native-search-paths
      (list (search-path-specification
-            (variable "CPATH")
+            (variable "C_INCLUDE_PATH")
             (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include/c++" "include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
