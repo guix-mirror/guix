@@ -2432,7 +2432,7 @@ interpolation toolkit.")
       (inputs `(("boost" ,boost)
                 ("python-wrapper" ,python-wrapper)))
       (native-inputs
-       `(("cmake" ,cmake)))
+       `(("cmake" ,cmake-minimal)))
       (arguments
        `(#:tests? #f
          #:phases
