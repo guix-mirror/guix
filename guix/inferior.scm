@@ -159,6 +159,15 @@ inferior."
      (letrec ((result (inferior 'pipe pipe close (cons 0 rest)
                                 (delay (%inferior-packages result))
                                 (delay (%inferior-package-table result)))))
+
+       ;; For protocol (0 1) and later, send the protocol version we support.
+       (match rest
+         ((n _ ...)
+          (when (>= n 1)
+            (send-inferior-request '(() repl-version 0 1) result)))
+         (_
+          #t))
+
        (inferior-eval '(use-modules (guix)) result)
        (inferior-eval '(use-modules (gnu)) result)
        (inferior-eval '(use-modules (ice-9 match)) result)
