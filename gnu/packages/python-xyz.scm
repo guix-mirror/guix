@@ -10254,24 +10254,17 @@ own code, responding to click events and updating clock every second.")
 (define-public python-tblib
   (package
     (name "python-tblib")
-    (version "1.3.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "tblib" version))
-              (sha256 (base32
-                       "1rsg8h069kqgncyv8fgzyj6qflk6j10cb78pa5jk34ixwq044vj3"))))
+              (sha256
+               (base32
+                "0i136n5pydmd202254wzrdbspkw0br0c9mbxhfs9hpfbahvyx6r2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'adjust-tests
-           (lambda _
-             (when (which "python3")
-               ;; Adjust the example output to match that of Python 3.7:
-               ;; <https://github.com/ionelmc/python-tblib/issues/36>.
-               (substitute* "README.rst"
-                 (("Exception\\('fail',") "Exception('fail'"))
-               #t)))
          (replace 'check
            (lambda _
              ;; Upstream runs tests after installation and the package itself
