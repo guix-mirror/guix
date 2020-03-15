@@ -7643,7 +7643,7 @@ the support annotations for metatype.")
     (version "1.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.repository/"
                                   version "/org.osgi.service.repository-"
                                   version "-sources.jar"))
