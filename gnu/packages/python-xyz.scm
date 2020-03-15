@@ -11621,13 +11621,13 @@ Python to manipulate OpenDocument 1.2 files.")
 (define-public python-natsort
   (package
     (name "python-natsort")
-    (version "5.4.1")
+    (version "7.0.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "natsort" version))
               (sha256
                (base32
-                "0i732amg6yzkx4g4c9j09jmqq39q377x9cl2nbkm5hax2c2v0wxf"))))
+                "1ksqfai72dbcfbwx43pxl658j59mx2rvqypjy1fk0ax2qd6lccx6"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -11672,9 +11672,17 @@ command @command{natsort} that exposes this functionality in the command line.")
     (license license:expat)
     (properties `((python2-variant . ,(delay python2-natsort))))))
 
+;; Natsort 6.x are the last versions with support for Python 2.
 (define-public python2-natsort
   (let ((base (package-with-python2 (strip-python2-variant python-natsort))))
     (package (inherit base)
+             (version "6.2.1")
+             (source (origin
+                       (method url-fetch)
+                       (uri (pypi-uri "natsort" version))
+                       (sha256
+                        (base32
+                         "1mc9hbh6fv76xyz13frm7dgi05cf74f9j5wvcyjiy5234gylz565"))))
              (native-inputs
               `(("python2-pathlib" ,python2-pathlib)
                 ,@(package-native-inputs base))))))
