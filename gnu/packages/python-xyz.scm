@@ -11217,25 +11217,19 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.15.1")
+    (version "0.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
+       (patches (search-patches "python-jedi-deleted-variables.patch"))
        (sha256
         (base32
-         "0bp4pxhsynaarbvzblsn5x32lzp29svy3sxfy8i6m5iwz9s9r1ds"))))
+         "1mb5kmrk9bkc3kwzx02j62cdan1jqd92q1z7h7wi9d30jg5p3j6m"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-file-completion-test
-           ;; A single parameterized test currently fail (see:
-           ;; https://github.com/davidhalter/jedi/issues/1395).  Remove it.
-           (lambda _
-             (substitute* "test/test_api/test_completion.py"
-               ((".*'example.py', 'rb\"' \\+ join\\('\\.\\.'.*") ""))
-             #t))
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
