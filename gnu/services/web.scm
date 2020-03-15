@@ -657,8 +657,7 @@ of index files."
            (map emit-nginx-upstream-config upstream-blocks)
            (map emit-nginx-server-config server-blocks)
            extra-content
-           "\n}\n"
-           "events {}\n"))))
+           "\n}\n"))))
 
 (define %nginx-accounts
   (list (user-group (name "nginx") (system? #t))
