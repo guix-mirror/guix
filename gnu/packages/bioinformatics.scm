@@ -2781,19 +2781,48 @@ quantitative phenotypes.")
          (delete 'configure)
          (delete 'build)
          (delete 'check)                ; simple check after install
+         (add-after 'unpack 'patch-programs
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Ignore errors about missing xtract.Linux and rchive.Linux.
+              (substitute* "pm-refresh"
+                (("cat \\\"\\$target")
+                 "grep ^[[:digit:]] \"$target"))
+              #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "edirect.pl"
-                           (string-append (assoc-ref outputs "out") "/bin"))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (edirect-go (assoc-ref inputs "edirect-go-programs")))
+               (for-each
+                 (lambda (file)
+                   (install-file file bin))
+                 '("archive-pubmed" "asp-cp" "asp-ls" "download-ncbi-data"
+                   "download-pubmed" "edirect.pl" "efetch" "epost" "esearch"
+                   "fetch-pubmed" "ftp-cp" "ftp-ls" "has-asp" "index-pubmed"
+                   "pm-prepare" "pm-refresh" "pm-stash" "pm-collect"
+                   "pm-index" "pm-invert" "pm-merge" "pm-promote"))
+               (symlink (string-append edirect-go "/bin/xtract.Linux")
+                        (string-append bin "/xtract"))
+               (symlink (string-append edirect-go "/bin/rchive.Linux")
+                        (string-append bin "/rchive")))
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
-             (let* ((out (assoc-ref outputs "out"))
+              ;; Make sure everything can run in a pure environment.
+              (let ((out (assoc-ref outputs "out"))
                     (path (getenv "PERL5LIB")))
-               (wrap-program (string-append out "/bin/edirect.pl")
-                 `("PERL5LIB" ":" prefix (,path))))
-             #t))
+                (for-each
+                  (lambda (file)
+                    (wrap-program file
+                      `("PERL5LIB" ":" prefix (,path)))
+                    (wrap-program file
+                      `("PATH" ":" prefix (,(string-append out "/bin")
+                                           ,(dirname (which "sed"))
+                                           ,(dirname (which "gzip"))
+                                           ,(dirname (which "grep"))
+                                           ,(dirname (which "perl"))
+                                           ,(dirname (which "uname"))))))
+                  (find-files out ".")))
+              #t))
          (add-after 'wrap-program 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke (string-append (assoc-ref outputs "out")
@@ -2801,7 +2830,8 @@ quantitative phenotypes.")
                      "-filter" "-help")
              #t)))))
     (inputs
-     `(("perl-html-parser" ,perl-html-parser)
+     `(("edirect-go-programs" ,edirect-go-programs)
+       ("perl-html-parser" ,perl-html-parser)
        ("perl-encode-locale" ,perl-encode-locale)
        ("perl-file-listing" ,perl-file-listing)
        ("perl-html-tagset" ,perl-html-tagset)
@@ -2831,6 +2861,13 @@ EDirect also provides an argument-driven function that simplifies the
 extraction of data from document summaries or other results that are returned
 in structured XML format.  This can eliminate the need for writing custom
 software to answer ad hoc questions.")
+    (native-search-paths
+     ;; Ideally this should be set for LWP somewhere.
+     (list (search-path-specification
+            (variable "PERL_LWP_SSL_CA_FILE")
+            (file-type 'regular)
+            (separator #f)
+            (files '("/etc/ssl/certs/ca-certificates.crt")))))
     (license license:public-domain)))
 
 (define-public edirect-go-programs
