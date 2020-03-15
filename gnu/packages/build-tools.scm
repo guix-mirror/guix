@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -244,6 +245,31 @@ scripted definition of a software project and outputs @file{Makefile}s or
 other lower-level build files.")
     (home-page "https://premake.github.io")
     (license license:bsd-3)))
+
+(define-public premake5
+  (package
+    (inherit premake4)
+    (version "5.0.0-alpha14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/premake/premake-core/"
+                                  "releases/download/v" version
+                                  "/premake-" version "-src.zip"))
+              (sha256
+               (base32
+                "0236s7bjvxf7x1l5faywmfzjywflpx42ngyhkn0mqqjnh54a97vw"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments premake4)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "../../bin/release/premake5"
+                             (string-append (assoc-ref outputs "out") "/bin"))
+               #t))))))
+    (description "@code{premake5} is a command line utility that reads a
+scripted definition of a software project and outputs @file{Makefile}s or
+other lower-level build files.")))
 
 (define-public osc
   (package
