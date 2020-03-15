@@ -100,7 +100,8 @@
             lint-checker?
             lint-checker-name
             lint-checker-description
-            lint-checker-check))
+            lint-checker-check
+            lint-checker-requires-store?))
 
 
 ;;;
@@ -155,7 +156,9 @@
   ;; 'certainty' level.
   (name        lint-checker-name)
   (description lint-checker-description)
-  (check       lint-checker-check))
+  (check       lint-checker-check)
+  (requires-store? lint-checker-requires-store?
+                   (default #f)))
 
 (define (properly-starts-sentence? s)
   (string-match "^[(\"'`[:upper:][:digit:]]" s))
