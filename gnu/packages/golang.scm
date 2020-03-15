@@ -3623,3 +3623,27 @@ to use.")
 physical system memory accessible to the kernel.  It does not account for memory
 used by other processes.")
       (license license:bsd-3))))
+
+(define-public go-github-com-surge-glog
+  (let ((commit "2578deb2b95c665e6b1ebabf304ce2085c9e1985")
+        (revision "1"))
+    (package
+      (name "go-github-com-surge-glog")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/surge/glog")
+                       (commit commit)))
+                (file-name (string-append "go-github-com-surge-glog-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1bxcwxvsvr2hfpjz9hrrn0wrgykwmrbyk567102k3vafw9xdcwk4"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/surge/glog"))
+      (home-page "https://github.com/surge/glog")
+      (synopsis "Leveled execution logs for Go")
+      (description "Leveled execution logs for Go.")
+      (license license:asl2.0))))
