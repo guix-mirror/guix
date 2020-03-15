@@ -3647,3 +3647,33 @@ used by other processes.")
       (synopsis "Leveled execution logs for Go")
       (description "Leveled execution logs for Go.")
       (license license:asl2.0))))
+
+(define-public go-github-com-surgebase-porter2
+  (let ((commit "56e4718818e8dc4ea5ba6348402fc7661863732a")
+        (revision "1"))
+    (package
+      (name "go-github-com-surgebase-porter2")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/surgebase/porter2")
+                       (commit commit)))
+                (file-name (string-append "go-github-com-surgebase-porter2-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1ivcf83jlj9s7q5y9dfbpyl0br35cz8fcp0dm8sxxvqh54py06v2"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/surgebase/porter2"))
+      (native-inputs
+       `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)
+         ("go-github-com-surge-glog" ,go-github-com-surge-glog)))
+      (home-page "https://github.com/surgebase/porter2")
+      (synopsis "Go library implementing english Porter2 stemmer")
+      (description "Porter2 implements the
+@url{http://snowball.tartarus.org/algorithms/english/stemmer.html, english
+Porter2 stemmer}.  It is written completely using finite state machines to do
+suffix comparison, rather than the string-based or tree-based approaches.")
+      (license license:asl2.0))))
