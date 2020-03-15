@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -847,10 +847,25 @@ computing environments.")
     (description
      "Scikit-learn provides simple and efficient tools for data mining and
 data analysis.")
+    (properties `((python2-variant . ,(delay python2-scikit-learn))))
     (license license:bsd-3)))
 
+;; scikit-learn 0.22 and later only supports Python 3, so we stick with
+;; an older version here.
 (define-public python2-scikit-learn
-  (package-with-python2 python-scikit-learn))
+  (let ((base (package-with-python2 (strip-python2-variant python-scikit-learn))))
+    (package
+      (inherit base)
+      (version "0.20.4")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/scikit-learn/scikit-learn.git")
+                      (commit version)))
+                (file-name (git-file-name "python-scikit-learn" version))
+                (sha256
+                 (base32
+                  "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj")))))))
 
 (define-public python-autograd
   (let* ((commit "442205dfefe407beffb33550846434baa90c4de7")
