@@ -7726,7 +7726,7 @@ the log service.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.jdbc/"
                                   version "/org.osgi.service.jdbc-"
                                   version "-sources.jar"))
