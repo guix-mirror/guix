@@ -2515,168 +2515,157 @@ color-related widgets.")
       (license license:lgpl3+))))
 
 (define-public python-shiboken-2
-  (let ((revision "1")
-        ;; Pinned to branches with support for qt 5.11.3
-        (commit "4018787a3cc01d632fdca7891ac8aa9487110c26"))
-    (package
-      (name "python-shiboken-2")
-      (version (git-version "v5.11.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               ;; The latest versions of Shiboken live in the pyside repo.
-               ;; There is another standalone repo only for Shiboken
-               ;; but it is outdated
-               (url "https://code.qt.io/pyside/pyside-setup")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0g8jacm2iqd7lw2m7f1dp1nnrsk38bl3m8pihm8zz9gxs8d31sf5"))))
-      (build-system cmake-build-system)
-      (inputs
-       `(("clang-toolchain" ,clang-toolchain-6)
-         ("libxml2" ,libxml2)
-         ("libxslt" ,libxslt)
-         ("python-wrapper" ,python-wrapper)
-         ("qtbase" ,qtbase)
-         ("qtxmlpatterns" ,qtxmlpatterns)))
-      (arguments
-       `(#:tests? #f
-         ;; FIXME: Building tests fails
-         #:configure-flags '("-DBUILD_TESTS=off")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'use-shiboken-dir-only
-             (lambda _ (chdir "sources/shiboken2") #t))
-           (add-before 'configure 'set-build-env
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((llvm (assoc-ref inputs "clang-toolchain")))
-                 (setenv "CLANG_INSTALL_DIR" llvm)
-                 #t))))))
-      (home-page "https://wiki.qt.io/Qt_for_Python")
-      (synopsis
-       "Shiboken generates bindings for C++ libraries using CPython source code")
-      (description
-       "Shiboken generates bindings for C++ libraries using CPython source code")
-      (license
-       (list
-        ;; The main code is GPL3 or LGPL3.
-        ;; Examples are BSD-3.
-        license:gpl3
-        license:lgpl3
-        license:bsd-3)))))
+  (package
+    (name "python-shiboken-2")
+    (version "5.12.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.qt.io/official_releases"
+                                  "/QtForPython/pyside2/PySide2-" version
+                                  "-src/pyside-setup-everywhere-src-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1n45l6xxyxs6cfp2l4rp8qs1c2fyfwyrdxa4qcpwfsqsi51rydsk"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("clang-toolchain" ,clang-toolchain-6)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("python-wrapper" ,python-wrapper)
+       ("qtbase" ,qtbase)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (arguments
+     `(#:tests? #f
+       ;; FIXME: Building tests fails
+       #:configure-flags '("-DBUILD_TESTS=off")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-shiboken-dir-only
+           (lambda _ (chdir "sources/shiboken2") #t))
+         (add-before 'configure 'make-files-writable-and-update-timestamps
+           (lambda _
+             ;; The build scripts need to modify some files in
+             ;; the read-only source directory, and also attempts
+             ;; to create Zip files which fails because the Zip
+             ;; format does not support timestamps before 1980.
+             (let ((circa-1980 (* 10 366 24 60 60)))
+               (for-each (lambda (file)
+                           (make-file-writable file)
+                           (utime file circa-1980 circa-1980))
+                         (find-files ".")))
+             #t))
+         (add-before 'configure 'set-build-env
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((llvm (assoc-ref inputs "clang-toolchain")))
+               (setenv "CLANG_INSTALL_DIR" llvm)
+               #t))))))
+    (home-page "https://wiki.qt.io/Qt_for_Python")
+    (synopsis
+     "Shiboken generates bindings for C++ libraries using CPython source code")
+    (description
+     "Shiboken generates bindings for C++ libraries using CPython source code")
+    (license
+     (list
+      ;; The main code is GPL3 or LGPL3.
+      ;; Examples are BSD-3.
+      license:gpl3
+      license:lgpl3
+      license:bsd-3))))
 
 (define-public python-pyside-2
-  (let ((revision "1")
-        ;; Pinned to branches with support for qt 5.11.3
-        (commit "4018787a3cc01d632fdca7891ac8aa9487110c26"))
-    (package
-      (name "python-pyside-2")
-      (version (git-version "v5.11.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://code.qt.io/pyside/pyside-setup")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0g8jacm2iqd7lw2m7f1dp1nnrsk38bl3m8pihm8zz9gxs8d31sf5"))))
-      (build-system cmake-build-system)
-      (inputs
-       `(("libcxx" ,libcxx-6)
-         ("libxml2" ,libxml2)
-         ("libxslt" ,libxslt)
-         ("clang-toolchain" ,clang-toolchain-6)
-         ("qtbase" ,qtbase)
-         ("qtdatavis3d" ,qtdatavis3d)
-         ("qtlocation" ,qtlocation)
-         ("qtmultimedia" ,qtmultimedia)
-         ("qtquickcontrols" ,qtquickcontrols)
-         ("qtscript" ,qtscript)
-         ("qtscxml" ,qtscxml)
-         ("qtsensors" ,qtsensors)
-         ("qtspeech" ,qtspeech)
-         ("qtsvg" ,qtsvg)
-         ("qtwebchannel" ,qtwebchannel)
-         ("qtwebsockets" ,qtwebsockets)
-         ("qtx11extras" ,qtx11extras)
-         ("qtxmlpatterns" ,qtxmlpatterns)))
-      (native-inputs
-       `(("cmake" ,cmake)
-         ("python-shiboken-2" ,python-shiboken-2)
-         ("python-wrapper" ,python-wrapper)
-         ("qttools" ,qttools)
-         ("which" ,which)))
-      (arguments
-       `(#:tests? #f
-         ;; FIXME: Building tests fail.
-         #:configure-flags '("-DBUILD_TESTS=FALSE")
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'go-to-source-dir
-             (lambda _ (chdir "sources/pyside2") #t))
-           (add-before 'configure 'set-clang-dir
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((clang (assoc-ref inputs "clang-toolchain"))
-                     (libcxx (assoc-ref inputs "libcxx")))
-                 (setenv "CLANG_INSTALL_DIR" clang)
-                 (substitute* "cmake/Macros/PySideModules.cmake"
-                   (("--include-paths=")
-                    (string-append "--include-paths=" libcxx "/include/c++/v1:")))
-                 #t))))))
-      (home-page "https://wiki.qt.io/Qt_for_Python")
-      (synopsis
-       "The Qt for Python product enables the use of Qt5 APIs in Python applications")
-      (description
-       "The Qt for Python product enables the use of Qt5 APIs in Python
+  (package
+    (name "python-pyside-2")
+    (version (package-version python-shiboken-2))
+    (source (package-source python-shiboken-2))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("clang-toolchain" ,clang-toolchain-6)
+       ("qtbase" ,qtbase)
+       ("qtdatavis3d" ,qtdatavis3d)
+       ("qtlocation" ,qtlocation)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("qtscript" ,qtscript)
+       ("qtscxml" ,qtscxml)
+       ("qtsensors" ,qtsensors)
+       ("qtspeech" ,qtspeech)
+       ("qtsvg" ,qtsvg)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebsockets" ,qtwebsockets)
+       ("qtx11extras" ,qtx11extras)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (native-inputs
+     `(("cmake" ,cmake-minimal)
+       ("python-shiboken-2" ,python-shiboken-2)
+       ("python" ,python-wrapper)
+       ("qttools" ,qttools)
+       ("which" ,which)))
+    (arguments
+     `(#:tests? #f
+       ;; FIXME: Building tests fail.
+       #:configure-flags
+       (list "-DBUILD_TESTS=FALSE"
+             (string-append "-DPYTHON_EXECUTABLE="
+                            (assoc-ref %build-inputs "python")
+                            "/bin/python"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'go-to-source-dir
+           (lambda _ (chdir "sources/pyside2") #t))
+         (add-before 'configure 'set-clang-dir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "clang-toolchain")))
+               (setenv "CLANG_INSTALL_DIR" clang)
+               #t))))))
+    (home-page "https://wiki.qt.io/Qt_for_Python")
+    (synopsis
+     "The Qt for Python product enables the use of Qt5 APIs in Python applications")
+    (description
+     "The Qt for Python product enables the use of Qt5 APIs in Python
 applications.  It lets Python developers utilize the full potential of Qt,
 using the PySide2 module.  The PySide2 module provides access to the
 individual Qt modules such as QtCore, QtGui,and so on.  Qt for Python also
 comes with the Shiboken2 CPython binding code generator, which can be used to
 generate Python bindings for your C or C++ code.")
-      (license (list
-                license:lgpl3
-                ;;They state that:
-                ;; this file may be used under the terms of the GNU General
-                ;; Public License version 2.0 or (at your option) the GNU
-                ;; General Public license version 3 or any later version
-                ;; approved by the KDE Free Qt Foundation.
-                ;; Thus, it is currently v2 or v3, but no "+".
-                license:gpl3
-                license:gpl2)))))
+    (license (list
+              license:lgpl3
+              ;;They state that:
+              ;; this file may be used under the terms of the GNU General
+              ;; Public License version 2.0 or (at your option) the GNU
+              ;; General Public license version 3 or any later version
+              ;; approved by the KDE Free Qt Foundation.
+              ;; Thus, it is currently v2 or v3, but no "+".
+              license:gpl3
+              license:gpl2))))
 
 (define-public python-pyside-2-tools
-  (let ((revision "1")
-        ;; Pinned to branches with support for qt 5.11.3
-        (commit "f1b775537e7fbd718516749583b2abf1cb6adbce"))
-    (package
-      (name "python-pyside-2-tools")
-      (version (git-version "v5.11.2" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://code.qt.io/pyside/pyside-tools")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1w2g5afvww9r89wmdm9jx8sz67x4bzy9difkh72n4c73ya1n91ry"))))
-      (build-system cmake-build-system)
-      (inputs
-       `(("python-pyside-2" ,python-pyside-2)
-         ("python-shiboken-2" ,python-shiboken-2)
-         ("qtbase" ,qtbase)))
-      (arguments
-       `(#:tests? #f
-         #:configure-flags '("-DBUILD_TESTS=off")))
-      (home-page "https://wiki.qt.io/Qt_for_Python")
-      (synopsis
-       "Contains command line tools for PySide2")
-      (description
-       "Contains lupdate, rcc and uic tools for PySide2")
-      (license license:gpl2))))
+  (package
+    (name "python-pyside-2-tools")
+    (version (package-version python-shiboken-2))
+    (source (package-source python-shiboken-2))
+    (build-system cmake-build-system)
+    (inputs
+     `(("python-pyside-2" ,python-pyside-2)
+       ("python-shiboken-2" ,python-shiboken-2)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list "-DBUILD_TESTS=off"
+             (string-append "-DPYTHON_EXECUTABLE="
+                            (assoc-ref %build-inputs "python")
+                            "/bin/python"))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'go-to-source-dir
+                    (lambda _ (chdir "sources/pyside2-tools") #t)))))
+    (home-page "https://wiki.qt.io/Qt_for_Python")
+    (synopsis
+     "Contains command line tools for PySide2")
+    (description
+     "Contains lupdate, rcc and uic tools for PySide2")
+    (license license:gpl2)))
