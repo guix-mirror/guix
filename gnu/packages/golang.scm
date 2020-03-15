@@ -3597,3 +3597,29 @@ through the life of the application.  Currently x86 / x64 (AMD64) is supported,
 and no external C (cgo) code is used, which should make the library very eas
 to use.")
     (license license:expat)))
+
+(define-public go-github-com-pbnjay-memory
+  (let ((commit "974d429e7ae40c89e7dcd41cfcc22a0bfbe42510")
+        (revision "1"))
+    (package
+      (name "go-github-com-pbnjay-memory")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/pbnjay/memory")
+                       (commit commit)))
+                (file-name (string-append "go-github-com-pbnjay-memory-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "0kazg5psdn90pqadrzma5chdwh0l2by9z31sspr47gx93fhjmkkq"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/pbnjay/memory"))
+      (home-page "https://github.com/gedex/inflector")
+      (synopsis "Go library to report total system memory")
+      (description "@code{memory} provides a single method reporting total
+physical system memory accessible to the kernel.  It does not account for memory
+used by other processes.")
+      (license license:bsd-3))))
