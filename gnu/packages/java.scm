@@ -7699,7 +7699,7 @@ and service platform for the Java programming language.")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.log/"
                                   version "/org.osgi.service.log-"
                                   version "-sources.jar"))
