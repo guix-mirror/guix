@@ -360,31 +360,35 @@
                 #t))
            (respawn? #f)))))
 
+(define %nfs-activation
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (system* "mount" "-t" "nfsd"
+                 "nfsd" "/proc/fs/nfsd")
+
+        (mkdir-p "/var/lib/nfs")
+        ;; directory containing monitor list
+        (mkdir-p "/var/lib/nfs/sm")
+        ;; Needed for client recovery tracking
+        (mkdir-p "/var/lib/nfs/v4recovery")
+        (let ((user (getpw "nobody")))
+          (chown "/var/lib/nfs"
+                 (passwd:uid user)
+                 (passwd:gid user))
+          (chown "/var/lib/nfs/v4recovery"
+                 (passwd:uid user)
+                 (passwd:gid user)))
+        #t)))
+
 (define nfs-service-type
   (service-type
    (name 'nfs)
    (extensions
     (list
      (service-extension shepherd-root-service-type nfs-shepherd-services)
-     (service-extension activation-service-type
-                        (const #~(begin
-                                   (use-modules (guix build utils))
-                                   (system* "mount" "-t" "nfsd"
-                                            "nfsd" "/proc/fs/nfsd")
-
-                                   (mkdir-p "/var/lib/nfs")
-                                   ;; directory containing monitor list
-                                   (mkdir-p "/var/lib/nfs/sm")
-                                   ;; Needed for client recovery tracking
-                                   (mkdir-p "/var/lib/nfs/v4recovery")
-                                   (let ((user (getpw "nobody")))
-                                     (chown "/var/lib/nfs"
-                                            (passwd:uid user)
-                                            (passwd:gid user))
-                                     (chown "/var/lib/nfs/v4recovery"
-                                            (passwd:uid user)
-                                            (passwd:gid user)))
-                                   #t)))
+     (service-extension activation-service-type (const %nfs-activation))
      (service-extension etc-service-type
                         (lambda (config)
                           `(("exports"
