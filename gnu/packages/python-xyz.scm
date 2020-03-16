@@ -10581,13 +10581,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "1.3.7")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "0b0fr04qdk1p4sniv87fh8z5psac60x01pv054kpgi94520g81iz"))
+                "1lchr4akw2jkm5v4kz7bdm4wv3knkfhbfn9vkkz4s5yrkcxzmdqy"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -10614,10 +10614,7 @@ graphviz.")
                       #t))
                   (add-before 'build 'do-not-use-bundled-sources
                     (lambda* (#:key inputs #:allow-other-keys)
-                      (setenv "CONFIG_SHELL" (which "bash"))
-                      (setenv "LIBEV_EMBED" "false")
-                      (setenv "CARES_EMBED" "false")
-                      (setenv "EMBED" "false")
+                      (setenv "GEVENTSETUP_EMBED" "0")
 
                       ;; Prevent building bundled libev.
                       (substitute* "setup.py"
@@ -10632,15 +10629,65 @@ graphviz.")
                                           (string-prefix? "python" item)))
                           ((python)
                            (setenv "C_INCLUDE_PATH"
-                                   (string-append greenlet "/" python)))))
+                                   (string-append greenlet "/" python ":"
+                                                  (or (getenv "C_INCLUDE_PATH")
+                                                      ""))))))
                       #t))
-                  (add-before 'check 'skip-timer-test
+                  (add-before 'check 'pretend-to-be-CI
                     (lambda _
-                      ;; XXX: Skip 'TestTimerResolution', which appears to be
-                      ;; unreliable.
-                      (substitute* "src/greentest/test__core_timer.py"
-                                   (("not greentest.RUNNING_ON_CI") "False"))
+                      ;; A few tests are skipped due to network constraints or
+                      ;; get longer timeouts when running in a CI environment.
+                      ;; Piggy-back on that, as we need the same adjustments.
+                      (setenv "TRAVIS" "1")
+                      (setenv "APPVEYOR" "1")
                       #t))
+                  (add-before 'check 'adjust-tests
+                    (lambda _
+                      (let ((disabled-tests
+                             '(;; These tests rely on networking which is not
+                               ;; available in the build container.
+                               "test_urllib2net.py"
+                               "test__server.py"
+                               "test__server_pywsgi.py"
+                               "test_socket.py"
+                               "test__socket.py"
+                               "test__socket_ssl.py"
+                               "test__socket_dns.py"
+                               "test__socket_dns6.py"
+                               "test___example_servers.py"
+                               "test__getaddrinfo_import.py"
+                               "test__examples.py"
+                               "test_httplib.py"
+                               "test_https.py"
+                               "test_urllib2_localnet.py"
+                               "test_ssl.py"
+                               "test__ssl.py"
+                               ;; XXX: These tests borrow functionality from the
+                               ;; Python builtin 'test' module, but it is not
+                               ;; installed with the Guix Python distribution.
+                               "test_smtpd.py"
+                               "test_wsgiref.py"
+                               "test_urllib2.py"
+                               "test_thread.py"
+                               "test_threading.py"
+                               "test__threading_2.py"
+                               ;; FIXME: test_patch_twice_warning_events fails for
+                               ;; no apparent reason.  Needs more investigation!
+                               "test__monkey.py"
+                               ;; These tests rely on KeyboardInterrupts which do not
+                               ;; work inside the build container for some reason
+                               ;; (lack of controlling terminal?).
+                               "test_subprocess.py"
+                               "test__issues461_471.py"
+                               ;; TODO: Patch out the tests that use getprotobyname, etc
+                               ;; instead of disabling all the tests from these files.
+                               "test__all__.py"
+                               "test___config.py"
+                               "test__execmodules.py")))
+                        (call-with-output-file "skipped_tests.txt"
+                          (lambda (port)
+                            (display (string-join disabled-tests "\n") port)))
+                        #t)))
                   (replace 'check
                     (lambda _
                       ;; Make sure the build directory is on PYTHONPATH.
@@ -10649,21 +10696,23 @@ graphviz.")
                                (getenv "PYTHONPATH") ":"
                                (getcwd) "/build/"
                                (car (scandir "build" (cut string-prefix? "lib." <>)))))
-                      (with-directory-excursion "src/greentest"
-                        ;; XXX: Many tests require network access.  Instead we only
-                        ;; run known-good tests.  Unfortunately we cannot use
-                        ;; recursion here since this directory also contains
-                        ;; Python-version-specific subfolders.
-                        (apply invoke "python" "testrunner.py" "--config"
-                               "known_failures.py"
-                               (scandir "." (cut regexp-exec
-                                                 (make-regexp "test_+(subprocess|core)")
-                                                 <>)))))))))
+
+                      ;; Use the build daemons configured number of workers.
+                      (setenv "NWORKERS" (number->string (parallel-job-count)))
+
+                      (invoke "python" "-m" "gevent.tests" "--config"
+                              "known_failures.py" "--ignore" "skipped_tests.txt"))))))
     (propagated-inputs
      `(("python-greenlet" ,python-greenlet)
        ("python-objgraph" ,python-objgraph)))
     (native-inputs
-     `(("python-six" ,python-six)))
+     `(("python-six" ,python-six)
+
+       ;; For tests.
+       ("python-dnspython" ,python-dnspython)
+       ("python-psutil" ,python-psutil)
+       ("python-zope.event" ,python-zope-event)
+       ("python-zope.interface" ,python-zope-interface)))
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
@@ -10680,7 +10729,7 @@ to provide a high-level synchronous API on top of the libev event loop.")
                (strip-python2-variant python-gevent))))
     (package
       (inherit base)
-      (native-inputs `(,@(package-native-inputs python-gevent)
+      (native-inputs `(,@(package-native-inputs base)
                        ("python-mock" ,python2-mock))))))
 
 (define-public python-fastimport
