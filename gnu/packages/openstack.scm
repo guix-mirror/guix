@@ -786,21 +786,6 @@ SQLite for its identity store database, with the option to connect to external
 LDAP.")
     (license asl2.0)))
 
-(define-public python2-keystoneclient
-  (let ((keystoneclient (package-with-python2 python-keystoneclient)))
-    (package (inherit keystoneclient)
-      (propagated-inputs
-       `(("python2-requests" ,python2-requests)
-         ,@(alist-delete "python-requests"
-                         (package-propagated-inputs keystoneclient))))
-      (native-inputs
-       `(("python2-oauthlib" ,python2-oauthlib)
-         ("python2-oslosphinx" ,python2-oslosphinx)
-         ("python2-requests-mock" ,python2-requests-mock)
-         ("python2-tempest-lib" ,python2-tempest-lib)
-         ,@(fold alist-delete (package-native-inputs keystoneclient)
-            '("python-oauthlib" "python-oslosphinx" "python-requests-mock" "python-tempest-lib")))))))
-
 (define-public python-swiftclient
   (package
     (name "python-swiftclient")
