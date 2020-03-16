@@ -123,7 +123,7 @@ the Obsidian icon theme.")
 (define-public gnome-shell-extension-appindicator
   (package
     (name "gnome-shell-extension-appindicator")
-    (version "30")
+    (version "33")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -132,7 +132,7 @@ the Obsidian icon theme.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1fjhx23jqwv3d0smwhnjvc35gqhwk9p5f96ic22pfax653cn5vh8"))
+                "0qm77s080nbf4gqnfzpwp8a7jf7lliz6fxbsd3lasvrr11pgsk87"))
               (file-name (git-file-name name version))))
     (build-system copy-build-system)
     (arguments
