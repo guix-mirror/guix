@@ -546,7 +546,9 @@ wrapper for the cross-linker for that target, called 'TARGET-ld'."
                                       '(string-append bin "/ld")))
                             (go  (string-append ld ".go")))
 
-                       (setvbuf (current-output-port) _IOLBF)
+                       (setvbuf (current-output-port)
+                                (cond-expand (guile-2.0 _IOLBF)
+                                             (else 'line)))
                        (format #t "building ~s/bin/ld wrapper in ~s~%"
                                (assoc-ref %build-inputs "binutils")
                                out)
