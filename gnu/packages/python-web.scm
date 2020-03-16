@@ -2783,14 +2783,14 @@ List.  Forked from and using the same API as the publicsuffix package.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "0.14.1")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "werkzeug" version))
+       (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "0z2m4snn1vc9518r2vzgdj1nc90kcgi60wijvd29yvcp85ypmzf3"))))
+         "15kh0z61klp62mrc1prka13xsshxn0rsp1j1s2964iw86yisi6qn"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2803,7 +2803,8 @@ List.  Forked from and using the same API as the publicsuffix package.")
     (propagated-inputs
      `(("python-requests" ,python-requests)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-timeout" ,python-pytest-timeout)))
     (home-page "https://www.palletsprojects.org/p/werkzeug/")
     (synopsis "Utilities for WSGI applications")
     (description "One of the most advanced WSGI utility modules.  It includes a
