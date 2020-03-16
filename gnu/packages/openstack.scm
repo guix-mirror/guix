@@ -520,9 +520,6 @@ configuration for all OpenStack projects.  It also provides custom formatters,
 handlers and support for context specific logging (like resource id’s etc).")
   (license asl2.0)))
 
-(define-public python2-oslo.log
-  (package-with-python2 python-oslo.log))
-
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
