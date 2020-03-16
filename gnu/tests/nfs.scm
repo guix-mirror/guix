@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -101,6 +101,10 @@
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
+
+                ;; Ensure 'rpcinfo' can be found below.
+                (setenv "PATH" "/run/current-system/profile/bin")
+
                 (start-service 'rpcbind-daemon))
              marionette))
 
