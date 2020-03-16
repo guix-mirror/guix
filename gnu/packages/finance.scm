@@ -982,15 +982,22 @@ agent.")
 (define-public python-stdnum
   (package
     (name "python-stdnum")
-    (version "1.8.1")
+    (version "1.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-stdnum" version))
        (sha256
         (base32
-         "0hvr47q32xbyiznpmbg4r8rcvxhnf0lwf33hcpnynyik57djy5np"))))
+         "0q4128rjdgavywhzlm2gz2n5ybc9b9sxs81g50dvxf5q7z9q63qj"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "nosetests"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
     (home-page
      "https://arthurdejong.org/python-stdnum/")
     (synopsis
