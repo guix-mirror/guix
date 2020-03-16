@@ -114,12 +114,17 @@
      ("xz"
       ,(base32 "09j1d69qr0hhhx4k4ih8wp00dfc9y4rp01hfg3vc15yxd0jxabh5")))))
 
-(define (bootstrap-executable-url program system)
-  "Return the URL where PROGRAM can be found for SYSTEM."
-  (string-append
-   "https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/"
-   system "/" program
-   "?id=44f07d1dc6806e97c4e9ee3e6be883cc59dc666e"))
+(define %bootstrap-executable-base-urls
+  ;; This is where the bootstrap executables come from.
+  '("https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/"
+    "http://lilypond.org/janneke/guix/"))
+
+(define (bootstrap-executable-file-name system program)
+  "Return the FILE-NAME part of url where PROGRAM can be found for SYSTEM."
+  (match system
+    ("i586-gnu" (string-append system "/20200315/" program))
+    (_ (string-append system "/" program
+                      "?id=44f07d1dc6806e97c4e9ee3e6be883cc59dc666e"))))
 
 (define bootstrap-executable
   (mlambda (program system)
@@ -140,7 +145,9 @@ for system '~a'")
         ((sha256)
          (origin
            (method url-fetch/executable)
-           (uri (bootstrap-executable-url program system))
+           (uri (map (cute string-append <>
+                           (bootstrap-executable-file-name system program))
+                     %bootstrap-executable-base-urls))
            (file-name program)
            (sha256 sha256)))))))
 
