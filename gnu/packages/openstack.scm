@@ -825,16 +825,7 @@ data that best fit this type of storage model are virtual machine images, photo
 storage, email storage and backup archiving.  Having no central \"brain\" or
 master point of control provides greater scalability, redundancy and
 permanence.")
-    (properties `((python2-variant . ,(delay python2-swiftclient))))
     (license asl2.0)))
-
-(define-public python2-swiftclient
-  (let ((swiftclient (package-with-python2
-                      (strip-python2-variant python-swiftclient))))
-    (package (inherit swiftclient)
-      (propagated-inputs
-       `(("python2-futures" ,python2-futures)
-         ,@(package-propagated-inputs swiftclient))))))
 
 (define-public python-git-review
   (package
