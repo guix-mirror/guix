@@ -1118,25 +1118,24 @@ internationalized messages within program source text.")
 (define-public python-zope-schema
   (package
     (name "python-zope-schema")
-    (version "4.4.2")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.schema" version))
        (sha256
         (base32
-         "1p943jdxb587dh7php4vx04qvn7b2877hr4qs5zyckvp5afhhank"))))
+         "0q93j0x52a42khw12al90jw2bk0wly3jwghql3a25zpwwxvn24ya"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.event.
     (propagated-inputs
      `(("python-zope-event" ,python-zope-event)
-       ("python-zope-exceptions" ,python-zope-exceptions)
        ("python-zope-interface" ,python-zope-interface)))
     (native-inputs
-     `(("python-zope-testing" ,python-zope-testing)
-       ("python-coverage" ,python-coverage)
-       ("python-nose" ,python-nose)))
+     `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-testing" ,python-zope-testing)
+       ("python-zope-testrunner" ,python-zope-testrunner)))
     (home-page "https://pypi.org/project/zope.schema/")
     (synopsis "Zope data schemas")
     (description "Zope.scheme provides extensions to zope.interface for
