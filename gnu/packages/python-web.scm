@@ -1236,26 +1236,26 @@ Zope3, which are are special objects that have a structural location.")
 (define-public python-zope-security
   (package
     (name "python-zope-security")
-    (version "4.0.3")
+    (version "5.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.security" version))
        (sha256
         (base32
-         "14zmf684amc0x32kq05yxnhfqd1cmyhafkw05gn81rn90zjv6ssy"))))
+         "1npfrgnm202v48wavpwn3450dsn7az12lfww95vbhxyjl11f14yb"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.testrunner.
     (propagated-inputs
-     `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+     `(("python-zope-component" ,python-zope-component)
+       ("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-zope-location" ,python-zope-location)
        ("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
     (native-inputs
-     `(("python-six" ,python-six)
-       ("python-zope-component" ,python-zope-component)
-       ("python-zope-configuration" ,python-zope-configuration)
-       ("python-zope-location" ,python-zope-location)
+     `(("python-zope-configuration" ,python-zope-configuration)
        ("python-zope-testrunner" ,python-zope-testrunner)
        ("python-zope-testing" ,python-zope-testing)))
     (home-page "https://pypi.org/project/zope.security/")
@@ -1265,13 +1265,7 @@ security policies on Python objects.")
     (license license:zpl2.1)))
 
 (define-public python2-zope-security
-  (let ((zope-security (package-with-python2 python-zope-security)))
-    (package (inherit zope-security)
-      (propagated-inputs
-       `(("python2-zope-testrunner" ,python2-zope-testrunner)
-         ,@(alist-delete
-            "python-zope-testrunner"
-            (package-propagated-inputs zope-security)))))))
+  (package-with-python2 python-zope-security))
 
 (define-public python-zope-component
   (package
