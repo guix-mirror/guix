@@ -365,10 +365,6 @@
     #~(begin
         (use-modules (guix build utils))
 
-        (system* "mount" "-t" "nfsd"
-                 "nfsd" "/proc/fs/nfsd")
-
-        (mkdir-p "/var/lib/nfs")
         ;; directory containing monitor list
         (mkdir-p "/var/lib/nfs/sm")
         ;; Needed for client recovery tracking
