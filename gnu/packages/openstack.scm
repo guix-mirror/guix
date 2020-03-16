@@ -706,9 +706,6 @@ functions, such as encoding, exception handling, string manipulation, and time
 handling.")
     (license asl2.0)))
 
-(define-public python2-oslo.utils
-  (package-with-python2 python-oslo.utils))
-
 (define-public python-keystoneclient
   (package
     (name "python-keystoneclient")
