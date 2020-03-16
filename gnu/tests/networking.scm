@@ -270,11 +270,11 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
   (dhcpd-configuration
    (config-file minimal-dhcpd-v4-config-file)
    (version "4")
-   (interfaces '("eth0"))))
+   (interfaces '("ens3"))))
 
 (define %dhcpd-os
   (simple-operating-system
-   (static-networking-service "eth0" "192.168.1.4"
+   (static-networking-service "ens3" "192.168.1.4"
                               #:netmask "255.255.255.0"
                               #:gateway "192.168.1.1"
                               #:name-servers '("192.168.1.2" "192.168.1.3"))
