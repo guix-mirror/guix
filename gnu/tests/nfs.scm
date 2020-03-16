@@ -196,18 +196,6 @@
 
           (define marionette
             (make-marionette (list #$(virtual-machine os))))
-          (define (wait-for-file file)
-            ;; Wait until FILE  exists in the guest
-            (marionette-eval
-             `(let loop ((i 10))
-                (cond ((file-exists? ,file)
-                       #t)
-                      ((> i 0)
-                       (sleep 1)
-                       (loop (- i 1)))
-                      (else
-                       (error "File didn't show up: " ,file))))
-             marionette))
 
           (mkdir #$output)
           (chdir #$output)
@@ -231,22 +219,8 @@
              marionette))
 
           (test-assert "nscd is listening on its socket"
-            (marionette-eval
-             ;; XXX: Work around a race condition in nscd: nscd creates its
-             ;; PID file before it is listening on its socket.
-             '(let ((sock (socket PF_UNIX SOCK_STREAM 0)))
-                (let try ()
-                  (catch 'system-error
-                    (lambda ()
-                      (connect sock AF_UNIX "/var/run/nscd/socket")
-                      (close-port sock)
-                      (format #t "nscd is ready~%")
-                      #t)
-                    (lambda args
-                      (format #t "waiting for nscd...~%")
-                      (usleep 500000)
-                      (try)))))
-             marionette))
+            (wait-for-unix-socket "/var/run/nscd/socket"
+                                  marionette))
 
           (test-assert "network is up"
             (marionette-eval
