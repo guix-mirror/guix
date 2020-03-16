@@ -476,12 +476,18 @@ text or blue underlined text, on ANSI terminals.")
          "14mkgkrjd4b4zy92pflz6yb4j1wn2chbd8jczxknxbkdm2vb0rrz"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-blake2-rfc" ,rust-blake2-rfc-0.2)
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1))
        #:cargo-development-inputs
-       (("rust-cargon" ,rust-cargon-0.0))))
+       (("rust-cargon" ,rust-cargon-0.0))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("\\{ path =.*,") "{"))
+             #t)))))
     (home-page "https://github.com/bryant/argon2rs")
     (synopsis "Rust password hashing library that runs on Argon2")
     (description "This package provides a pure Rust password hashing library
