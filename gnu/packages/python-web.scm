@@ -1207,19 +1207,22 @@ brokering, etc.) for which the proxy is responsible.")
 (define-public python-zope-location
   (package
     (name "python-zope-location")
-    (version "4.0.3")
+    (version "4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.location" version))
        (sha256
         (base32
-         "1nj9da4ksiyv3h8n2vpzwd0pb03mdsh7zy87hfpx72b6p2zcwg74"))))
+         "1b40pzl8v00d583d3gsxv1qjdw2dhghlgkbgxl3m07d5r3izj857"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
+    (native-inputs
+     `(("python-zope-testrunner" ,python-zope-testrunner)))
     (propagated-inputs
-     `(("python-zope-proxy" ,python-zope-proxy)
+     `(("python-zope-interface" ,python-zope-interface)
+       ("python-zope-proxy" ,python-zope-proxy)
        ("python-zope-schema" ,python-zope-schema)))
     (home-page "https://pypi.org/project/zope.location/")
     (synopsis "Zope location library")
