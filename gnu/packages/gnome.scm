@@ -3872,16 +3872,15 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public five-or-more
   (package
     (name "five-or-more")
-    (version "3.32.0")
+    (version "3.32.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/five-or-more/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "five-or-more-" version ".tar.xz"))
        (sha256
-        (base32
-         "0v52i22ygv6y4zqs8nyb1qmacmj9whhqrw7qss6vn7by4nsikhrn"))))
+        (base32 "0xw05dd2dwi9vsph9h158b4n89s5k07xrh6bjz1icm0pdmjwhpgk"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
