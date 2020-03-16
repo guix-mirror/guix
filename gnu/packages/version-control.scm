@@ -1061,9 +1061,6 @@ either a pure Python implementation, or the faster, but more resource intensive
 @command{git} command implementation.")
     (license license:bsd-3)))
 
-(define-public python2-gitpython
-  (package-with-python2 python-gitpython))
-
 (define-public shflags
   (package
     (name "shflags")
