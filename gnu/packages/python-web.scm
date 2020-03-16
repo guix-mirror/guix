@@ -2173,14 +2173,15 @@ pretty printer and a tree visitor.")
 (define-public python-flask-restful
   (package
     (name "python-flask-restful")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-RESTful" version))
+        (patches (search-patches "python-flask-restful-werkzeug-compat.patch"))
         (sha256
          (base32
-          "1a9cbwkr6krryyzq4sd3f415nkkc6dyfls5i3pgyibs94g0hw97q"))))
+          "05b9lzx5yc3wgml2bcq50lq35h66m8zpj6dc9advcb5z3acsbaay"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-aniso8601" ,python-aniso8601)
@@ -2191,8 +2192,7 @@ pretty printer and a tree visitor.")
       `(;; Optional dependency of Flask. Tests need it.
         ("python-blinker" ,python-blinker)
         ("python-mock" ,python-mock) ; For tests
-        ("python-nose" ,python-nose) ; For tests
-        ("python-sphinx" ,python-sphinx)))
+        ("python-nose" ,python-nose)))  ;for tests
     (home-page
       "https://www.github.com/flask-restful/flask-restful/")
     (synopsis
