@@ -440,15 +440,21 @@ between a web browser and web server.")
 (define-public python-flask-babel
   (package
     (name "python-flask-babel")
-    (version "0.11.2")
+    (version "1.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Flask-Babel" version))
         (sha256
           (base32
-            "0ff9n165vhf1nhv6807ckhpp224jw7k7sd7jz5kfh3sbpl85gmy0"))))
+            "0gmb165vkwv5v7dxsxa2i3zhafns0fh938m2zdcrv4d8z5l099yn"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (with-directory-excursion "tests"
+                        (invoke "python" "tests.py")))))))
     (propagated-inputs
      `(("python-flask" ,python-flask)
        ("python-babel" ,python-babel)
