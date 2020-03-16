@@ -99,8 +99,8 @@ match from any for local action inbound
 
           (test-assert "mbox is empty"
             (marionette-eval
-             '(and (file-exists? "/var/mail")
-                   (not (file-exists? "/var/mail/root")))
+             '(and (file-exists? "/var/spool/mail")
+                   (not (file-exists? "/var/spool/mail/root")))
              marionette))
 
           (test-eq "accept an email"
@@ -150,7 +150,7 @@ match from any for local action inbound
 
                 (let wait ((n 20))
                   (cond ((queue-empty?)
-                         (file-exists? "/var/mail/root"))
+                         (file-exists? "/var/spool/mail/root"))
                         ((zero? n)
                          (error "root mailbox didn't show up"))
                         (else
