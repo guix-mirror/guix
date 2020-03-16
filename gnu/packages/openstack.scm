@@ -549,17 +549,7 @@ handlers and support for context specific logging (like resource id’s etc).")
     (description
       "The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as JSON and MessagePack.")
-    (properties `((python2-variant . ,(delay python2-oslo.serialization))))
     (license asl2.0)))
-
-(define-public python2-oslo.serialization
-  (let ((base (package-with-python2 (strip-python2-variant
-                                     python-oslo.serialization))))
-    (package
-      (inherit base)
-      (native-inputs
-       `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-native-inputs base))))))
 
 (define-public python-reno
   (package
