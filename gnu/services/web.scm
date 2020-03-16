@@ -100,6 +100,7 @@
             nginx-configuration-server-names-hash-bucket-size
             nginx-configuration-server-names-hash-bucket-max-size
             nginx-configuration-modules
+            nginx-configuration-global-directives
             nginx-configuration-extra-content
             nginx-configuration-file
 
