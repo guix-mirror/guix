@@ -1017,9 +1017,6 @@ with performance and scalability in mind.  It operates exclusively on streams,
 allowing to handle large objects with a small memory footprint.")
     (license license:bsd-3)))
 
-(define-public python2-gitdb
-  (package-with-python2 python-gitdb))
-
 (define-public python-gitpython
   (package
     (name "python-gitpython")
