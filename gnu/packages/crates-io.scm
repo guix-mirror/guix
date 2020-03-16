@@ -13618,7 +13618,6 @@ random number generators.")
          (base32
           "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/rawpointer/")
     (synopsis "Extra methods for raw pointers")
     (description "Extra methods for raw pointers.  For example
