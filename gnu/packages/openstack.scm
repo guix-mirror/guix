@@ -87,9 +87,6 @@ appropriate plugins against the AST nodes.  Once Bandit has finished scanning
 all the files it generates a report.")
     (license asl2.0)))
 
-(define-public python2-bandit
-  (package-with-python2 python-bandit))
-
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
