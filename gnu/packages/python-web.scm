@@ -1177,17 +1177,19 @@ Markup Language.")
 (define-public python-zope-proxy
   (package
     (name "python-zope-proxy")
-    (version "4.1.6")
+    (version "4.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.proxy" version))
        (sha256
         (base32
-         "0pqwwmvm1prhwv1ziv9lp8iirz7xkwb6n2kyj36p2h0ppyyhjnm4"))))
+         "1g0rcfnbchpvqhm76aixqlz544dawrgmy8gw9zwmijhk6wfl9f26"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
+    (native-inputs
+     `(("python-zope-testrunner" ,python-zope-testrunner)))
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)))
     (home-page "https://pypi.org/project/zope.proxy/")
