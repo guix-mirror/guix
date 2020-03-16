@@ -2069,36 +2069,6 @@ supports a large number of version control systems: Git, Subversion,
 Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (license license:gpl2+)))
 
-(define-public git-annex-remote-hubic
-  (package
-    (name "git-annex-remote-hubic")
-    (version "0.3.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Schnouki/git-annex-remote-hubic.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "16y9sk67hfi17h9n2kkffyabfccksh5rab40hhk69v6cxmbpn2sx"))))
-    (build-system python-build-system)
-    (arguments `(#:python ,python-2))
-    (native-inputs
-     `(;; for the tests
-       ("python2-six" ,python2-six)))
-    (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil)
-       ("python2-futures" ,python2-futures)
-       ("python2-rauth" ,python2-rauth)
-       ("python2-swiftclient" ,python2-swiftclient)))
-    (home-page "https://github.com/Schnouki/git-annex-remote-hubic/")
-    (synopsis "Use hubic as a git-annex remote")
-    (description
-     "This package allows you to use your hubic account as a \"special
-repository\" with git-annex.")
-    (license license:gpl3+)))
-
 (define-public git-annex-remote-rclone
   (package
     (name "git-annex-remote-rclone")
