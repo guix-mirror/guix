@@ -14496,34 +14496,35 @@ ignoring formatting changes.")
 (define-public python-tqdm
   (package
     (name "python-tqdm")
-    (version "4.19.6")
+    (version "4.43.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tqdm" version))
          (sha256
            (base32
-             "1pw0ngm0zn9papdmkwipi3yih5c3di6d0w849bdmrraq4d2d9h2y"))))
+             "093v4c2x5hpigv47zvyxl8wh10y2yd2gvz3l9vchn0zsp8hv2pzk"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (add-installed-pythonpath inputs outputs)
+                      ;; This invokation is taken from tox.ini.
+                      (invoke "nosetests" "--ignore-files=\"test_perf.py\""
+                              "-d" "-v" "tqdm/"))))))
     (native-inputs
-     `(("python-flake8" ,python-flake8)
-       ("python-nose" ,python-nose)
-       ("python-coverage" ,python-coverage)))
+     `(("python-nose" ,python-nose)))
     (home-page "https://github.com/tqdm/tqdm")
     (synopsis "Fast, extensible progress meter")
     (description
       "Make loops show a progress bar on the console by just wrapping any
 iterable with @code{|tqdm(iterable)|}.  Offers many options to define
 design and layout.")
-    (license (list license:mpl2.0 license:expat))
-    (properties `((python2-variant . ,(delay python2-tqdm))))))
+    (license (list license:mpl2.0 license:expat))))
 
 (define-public python2-tqdm
-  (let ((tqdm (package-with-python2
-                (strip-python2-variant python-tqdm))))
-    (package (inherit tqdm)
-      (native-inputs `(("python2-functools32" ,python2-functools32)
-                        ,@(package-native-inputs tqdm))))))
+  (package-with-python2 python-tqdm))
 
 (define-public python-pkginfo
   (package
