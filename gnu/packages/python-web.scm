@@ -1063,25 +1063,23 @@ forms, HTTP servers, regular expressions, and more.")
 (define-public python-zope-testrunner
   (package
     (name "python-zope-testrunner")
-    (version "4.4.9")
+    (version "5.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "zope.testrunner" version ".zip"))
+       (uri (pypi-uri "zope.testrunner" version))
        (sha256
         (base32
-         "1r7iqknhh55y45f64mz5hghgvzx34h1i11k350s0avx6q8gznja1"))))
+         "0w3q66cy4crpj7c0hw0vvvvwf3g931rnvw7wwa20av7yqvv6ajim"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; FIXME: Tests can't find zope.interface.
     (native-inputs
-     `(("python-six" ,python-six)
-       ;("python-zope-interface" ,python-zope-interface)
-       ("python-zope-exceptions" ,python-zope-exceptions)
-       ("python-zope-testing" ,python-zope-testing)
-       ("unzip" ,unzip)))
+     `(("python-zope-testing" ,python-zope-testing)))
     (propagated-inputs
-     `(("python-zope-interface" ,python-zope-interface)))
+     `(("python-six" ,python-six)
+       ("python-zope-exceptions" ,python-zope-exceptions)
+       ("python-zope-interface" ,python-zope-interface)))
     (home-page "https://pypi.org/project/zope.testrunner/")
     (synopsis "Zope testrunner script")
     (description "Zope.testrunner provides a script for running Python
@@ -1089,13 +1087,7 @@ tests.")
     (license license:zpl2.1)))
 
 (define-public python2-zope-testrunner
-  (let ((base (package-with-python2 python-zope-testrunner)))
-    (package
-      (inherit base)
-      (native-inputs
-       (append (package-native-inputs base)
-               `(("python2-subunit" ,python2-subunit)
-                 ("python2-mimeparse" ,python2-mimeparse)))))))
+  (package-with-python2 python-zope-testrunner))
 
 (define-public python-zope-i18nmessageid
   (package
