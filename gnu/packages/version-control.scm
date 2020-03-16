@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -2407,3 +2407,60 @@ interrupted, published, and collaborated on while in progress.")
 videos, datasets, and graphics with text pointers inside Git, while storing the
 file contents on a remote server.")
     (license license:expat)))
+
+(define-public tla
+  (package
+    (name "gnu-arch")
+    (version "1.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.gnu.org/old-gnu/gnu-arch/"
+                                  "tla-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01mfzj1i6p4s8191cgd5850hds1zls88hkf9rb6qx1vqjv585aj0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; In tar 1.32, '--preserve' is ambiguous and leads to an
+                  ;; error, so address that.
+                  (substitute* "src/tla/libarch/archive.c"
+                    (("\"--preserve\"")
+                     "\"--preserve-permissions\""))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (chdir "src")
+
+                        (mkdir "=build")
+                        (chdir "=build")
+
+                        ;; For libneon's 'configure' script.
+                        ;; XXX: There's a bundled copy of neon.
+                        (setenv "CONFIG_SHELL" (which "sh"))
+
+                        (invoke "../configure" "--prefix" out
+                                "--config-shell" (which "sh")
+                                "--with-posix-shell" (which "sh")
+                                "--with-cc" "gcc")))))
+
+
+       ;; There are build failures when building in parallel.
+       #:parallel-build? #f
+       #:parallel-tests? #f
+
+       #:test-target "test"))
+    (native-inputs
+     `(("which" ,which)))
+    (synopsis "Historical distributed version-control system")
+    (description
+     "GNU Arch, aka. @code{tla}, was one of the first free distributed
+version-control systems (DVCS).  It saw its last release in 2006.  This
+package is provided for users who need to recover @code{tla} repositories and
+for historians.")
+    (home-page "https://www.gnu.org/software/gnu-arch/")
+    (license license:gpl2)))                      ;version 2 only
