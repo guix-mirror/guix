@@ -416,9 +416,6 @@ common features used in Tempest.")
 .ini style configuration files.")
     (license asl2.0)))
 
-(define-public python2-oslo.config
-  (package-with-python2 python-oslo.config))
-
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
