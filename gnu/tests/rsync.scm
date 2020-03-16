@@ -64,6 +64,10 @@ PORT."
             (marionette-eval
              '(begin
                 (use-modules (gnu services herd))
+
+                ;; Make sure the 'rsync' command is found.
+                (setenv "PATH" "/run/current-system/profile/bin")
+
                 (start-service 'rsync))
              marionette))
 
