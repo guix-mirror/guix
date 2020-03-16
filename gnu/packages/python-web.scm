@@ -1042,20 +1042,14 @@ that have uses outside of the Zope framework.")
 (define-public python-zope-testing
   (package
     (name "python-zope-testing")
-    (version "4.6.2")
+    (version "4.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.testing" version))
        (sha256
         (base32
-         "0iiq54hjhkk2gpvzfjac70vyn4r0kw0ngvicshxbdwrkgf2gjq3g"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Remove pre-compiled .pyc files backup files from source.
-           (for-each delete-file (find-files "." "(\\.pyc|~)$"))
-           #t))))
+         "1sh3c3i0m8n8fnhqiry0bk3rr356i56ry7calmn57s1pvv8yhsyn"))))
     (build-system python-build-system)
     (home-page "https://pypi.org/project/zope.testing/")
     (synopsis "Zope testing helpers")
