@@ -2394,7 +2394,7 @@ on the command line.")
 (define-public python-flask-login
   (package
     (name "python-flask-login")
-    (version "0.4.1")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -2403,25 +2403,18 @@ on the command line.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rj0qwyxapxnp84fi4lhmvh3d91fdiwz7hibw77x3d5i72knqaa9"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'avoid-yanc
-           ;; Work around '.nosetests-real: error: no such option: --with-yanc'.
-           (lambda _
-             (setenv "NOCOLOR" "set")
-             #t)))))
+        (base32 "11ac924w0y4m0kf3mxnxdlidy88jfa7njw5yyrq16dvnx4iwd8gg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)))
     (native-inputs
      ;; For tests.
      `(("python-blinker" ,python-blinker)
+       ("python-coverage" ,python-coverage)
        ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-pep8" ,python-pep8)
+       ("python-pycodestyle" ,python-pycodestyle)
        ("python-pyflakes" ,python-pyflakes)
+       ("python-pytest" ,python-pytest)
        ("python-semantic-version" ,python-semantic-version)
        ("python-werkzeug" ,python-werkzeug)))
     (home-page "https://github.com/maxcountryman/flask-login")
