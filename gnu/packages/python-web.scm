@@ -2309,15 +2309,16 @@ documentation builder.")
 (define-public python-flask-restful-swagger
   (package
     (name "python-flask-restful-swagger")
-    (version "0.19")
+    (version "0.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "flask-restful-swagger" version))
        (sha256
         (base32
-         "16msl8hd5xjmj833bpy264v98cpl5hkw5bgl5gf5vgndxbv3rm6v"))))
+         "1p66f98b5zpypnnz56pxpbirchqj6aniw6qyrp8h572l0dn9xlvq"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
     (propagated-inputs
      `(("python-flask-restful" ,python-flask-restful)))
     (home-page "https://github.com/rantav/flask-restful-swagger")
