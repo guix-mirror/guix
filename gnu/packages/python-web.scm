@@ -1728,20 +1728,22 @@ minimum of WSGI.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "1.0.3")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask" version))
               (sha256
                (base32
-                "1wxnhjlxwwjhjxmghykjhllpahv5pkdc5hln4ab6nab43s26sz5d"))))
+                "0ljdjgyjn7vh8ic1n1dc2l1cl421i6pr3kx5sz2w5irhyfbg3y8k"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             (invoke "python" "-m" "pytest"))))))
+             (setenv "PYTHONPATH" (string-append "./build/lib:"
+                                                 (getenv "PYTHONPATH")))
+             (invoke "pytest" "-vv" "tests"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (propagated-inputs
