@@ -13099,8 +13099,7 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "14qjfv3gggzhnma20k0sc1jf8y6pplsaq7n1j9ls5c8kf2wl0a2m"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-fuchsia-cprng" ,rust-fuchsia-cprng-0.1)
         ("rust-rand-core" ,rust-rand-core-0.3)
         ("rust-rdrand" ,rust-rdrand-0.4)
