@@ -376,9 +376,6 @@ extensions.")
 common features used in Tempest.")
     (license asl2.0)))
 
-(define-public python2-tempest-lib
-  (package-with-python2 python-tempest-lib))
-
 ;; Packages from the Oslo library
 (define-public python-oslo.config
   (package
