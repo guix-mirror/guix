@@ -2628,9 +2628,6 @@ Alembic")
 for Flask programs that are using @code{python-alembic}.")
   (license license:expat)))
 
-(define-public python2-flask-migrate
-  (package-with-python2 python-flask-migrate))
-
 (define-public python-genshi
   (package
     (name "python-genshi")
