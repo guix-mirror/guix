@@ -20272,7 +20272,7 @@ names of loadable modules, as in this example:
 /etc/nginx/modules/ngx_http_accept_language_module.so")))
 @end lisp
 
-@item @code{global-directives} (default: @code{'()})
+@item @code{global-directives} (default: @code{'((events . ()))})
 Association list of global directives for the top level of the nginx
 configuration.  Values may themselves be association lists.
 
