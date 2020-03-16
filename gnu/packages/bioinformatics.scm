@@ -6322,16 +6322,16 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.7.1a")
+    (version "2.7.3a")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/alexdobin/STAR.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n6g4s4hgw7qygs1z97j7a2dgz8gfaa4cv5pjvvvmarvk0x07hyg"))
+                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
