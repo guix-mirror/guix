@@ -2606,14 +2606,14 @@ itself.")
 (define-public python-flask-migrate
   (package
   (name "python-flask-migrate")
-  (version "2.0.3")
+  (version "2.5.3")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Flask-Migrate" version))
       (sha256
         (base32
-          "107x78lkqsnbg92dld3dkagg07jvchp3ib3y0sivc4ipz6n1y7rk"))))
+          "1vip9ww6l18dxffjsggm83k71zkvihxpnhaswpv8klh95s6517d6"))))
   (build-system python-build-system)
   (propagated-inputs
    `(("python-flask" ,python-flask)
