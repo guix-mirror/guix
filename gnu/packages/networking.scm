@@ -990,15 +990,15 @@ non-existing entropy of some access points.")
 (define-public reaver
   (package
     (name "reaver")
-    (version "1.6.5")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/t6x/reaver-wps-fork-t6x/releases/"
-                    "download/v" version "/" name "-" version ".tar.xz"))
+                    "download/v" version "/reaver-" version ".tar.xz"))
               (sha256
                (base32
-                "0sva3g0kwgv143n9l3lg4qp5iiqz7nk76nr0hwivsnglbhk9sbil"))))
+                "00k7mc81ifv0wma7k4v18mj498badbw5yls6c28qin3d1gda0ag3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1021,7 +1021,7 @@ non-existing entropy of some access points.")
                          (find-files "." "README.*"))
                (install-file "reaver.1" man1)
                #t))))
-       #:tests? #f)) ; there are no tests
+       #:tests? #f))                    ; there are no tests
     (inputs
      `(("libpcap" ,libpcap)))
     (propagated-inputs
