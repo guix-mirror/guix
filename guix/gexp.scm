@@ -785,7 +785,7 @@ second element is the derivation to compile them."
                      (target 'current)
                      (graft? (%graft?))
                      (guile-for-build (%guile-for-build))
-                     (effective-version "2.2")
+                     (effective-version "3.0")
 
                      deprecation-warnings)
   "*Note: This API is subject to change; use at your own risk!*
@@ -886,7 +886,7 @@ derivations--e.g., code evaluated for its side effects."
                            (modules '())
                            (module-path %load-path)
                            (guile-for-build (%guile-for-build))
-                           (effective-version "2.2")
+                           (effective-version "3.0")
                            (graft? (%graft?))
                            references-graphs
                            allowed-references disallowed-references
