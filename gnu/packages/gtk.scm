@@ -636,10 +636,10 @@ in the GNOME project.")
       ("libxi" ,libxi)
       ("libxtst" ,libxtst)))
    (native-inputs
-    `(("gobject-introspection" ,gobject-introspection)
+    `(("gettext" ,gettext-minimal)
+      ("gobject-introspection" ,gobject-introspection)
       ("gtk-doc" ,gtk-doc)
       ("glib" ,glib "bin")
-      ("intltool" ,intltool)
       ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
    (description
