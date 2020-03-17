@@ -181,7 +181,7 @@
     result))
 
 (test-equal "inferior-package-search-paths"
-  (package-native-search-paths guile-2.2)
+  (package-native-search-paths guile-3.0)
   (let* ((inferior (open-inferior %top-builddir
                                   #:command "scripts/guix"))
          (guile    (first (lookup-inferior-packages inferior "guile")))
