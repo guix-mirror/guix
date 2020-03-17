@@ -171,15 +171,16 @@ tools that process C/C++ code.")
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "2.52b")             ;It seems all releases have the 'b' suffix
+      (version "2.56b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append "http://lcamtuf.coredump.cx/afl/releases/"
-                             "afl-" version ".tgz"))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/google/AFL")
+               (commit (string-append "v" version))))
          (sha256
-          (base32
-           "0ig0ij4n1pwry5dw1hk4q88801jzzy2cric6y2gd6560j55lnqa3"))))
+          (base32 "1q1g59gkm48aa4cg9h70jx4i2gapmypgp5rzs156b2avd95vwkn1"))
+         (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs
        `(("custom-qemu"
@@ -204,24 +205,33 @@ tools that process C/C++ code.")
                         (add-after
                          'unpack 'apply-afl-patches
                          (lambda* (#:key inputs #:allow-other-keys)
-                           (let* ((afl-dir (string-append "afl-" ,version))
-                                  (patch-dir
-                                   (string-append afl-dir
-                                                  "/qemu_mode/patches")))
-                             (invoke "tar" "xf"
-                                     (assoc-ref inputs "afl-src"))
-                             (install-file (string-append patch-dir
-                                                          "/afl-qemu-cpu-inl.h")
-                                           ".")
-                             (copy-file (string-append afl-dir "/config.h")
+                           (let* ((afl-src (assoc-ref inputs "afl-src"))
+                                  (patch-dir "qemu_mode/patches"))
+                             (copy-recursively (string-append afl-src "/"
+                                                              patch-dir)
+                                               patch-dir)
+                             (install-file
+                              (string-append patch-dir
+                                             "/afl-qemu-cpu-inl.h")
+                              ".")
+                             (copy-file (string-append afl-src "/config.h")
                                         "./afl-config.h")
-                             (install-file (string-append afl-dir "/types.h")
+                             (install-file (string-append afl-src "/types.h")
                                            ".")
                              (substitute* "afl-qemu-cpu-inl.h"
                                (("\\.\\./\\.\\./config.h") "afl-config.h"))
                              (substitute* (string-append patch-dir
                                                          "/cpu-exec.diff")
                                (("\\.\\./patches/") ""))
+
+                             ;; These were already applied to qemu-minimal-2.10.
+                             (for-each (lambda (obsolete-patch)
+                                         (delete-file (string-append
+                                                       patch-dir "/"
+                                                       obsolete-patch)))
+                                       (list "configure.diff"
+                                             "memfd.diff"))
+
                              (for-each (lambda (patch-file)
                                          (invoke "patch" "--force" "-p1"
                                                  "--input" patch-file))
@@ -234,6 +244,10 @@ tools that process C/C++ code.")
                                            ,name "-" ,version)
                             "CC=gcc")
          #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'make-git-checkout-writable
+                      (lambda _
+                        (for-each make-file-writable (find-files "."))
+                        #t))
                     (delete 'configure)
                     ,@(if (string=? (%current-system) (or "x86_64-linux"
                                                           "i686-linux"))
@@ -258,7 +272,7 @@ tools that process C/C++ code.")
                          (symlink (string-append qemu "/bin/qemu-" ,machine)
                                   (string-append out "/bin/afl-qemu-trace"))
                          #t)))
-                    (delete 'check)))) ; Tests are run during 'install phase.
+                    (delete 'check)))) ; tests are run during 'install phase
       (home-page "http://lcamtuf.coredump.cx/afl")
       (synopsis "Security-oriented fuzzer")
       (description
