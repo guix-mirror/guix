@@ -377,6 +377,45 @@ password storage.")
       (propagated-inputs
        `(("python2-pycrypto" ,python2-pycrypto))))))
 
+(define-public python-keyrings.alt
+  (package
+    (name "python-keyrings.alt")
+    (version "3.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "keyrings.alt" version))
+        (sha256
+         (base32
+          "0gdjdqpq2hf770p6iwi891mil0vbsdhvy88x0v8b2w4y4b28lcli"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file "keyrings/alt/_win_crypto.py")
+            ;; Rely on python-keyring>20:
+            ;; https://github.com/jaraco/keyrings.alt/issues/33
+            (substitute* '("keyrings/alt/tests/test_Gnome.py"
+                           "keyrings/alt/tests/test_Google.py"
+                           "keyrings/alt/tests/test_Windows.py"
+                           "keyrings/alt/tests/test_file.py"
+                           "keyrings/alt/tests/test_pyfs.py")
+              (("keyring.tests.test_backend") "keyring.testing.backend")
+              (("keyring.tests.util") "keyring.testing.util"))
+            #t))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-keyring" ,python-keyring)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/jaraco/keyrings.alt")
+    (synopsis "Alternate keyring implementations")
+    (description "Keyrings in this package may have security risks or other
+implications.  These backends were extracted from the main keyring project to
+make them available for those who wish to employ them, but are discouraged for
+general production use.  Include this module and use its backends at your own
+risk.")
+    (license license:expat)))
+
 (define-public python-certifi
   (package
     (name "python-certifi")
