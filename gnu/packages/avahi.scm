@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,16 +26,18 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages libdaemon)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages glib)
   #:use-module (gnu packages xml))
 
 (define-public avahi
   (package
     (name "avahi")
-    (version "0.7")
+    (version "0.8")
     (home-page "https://avahi.org")
     (source (origin
              (method url-fetch)
@@ -42,11 +45,17 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0128n7jlshw4bpx0vg8lwj8qwdisjxi7mvniwfafgnkzzrfrpaap"))
-             (patches (search-patches "avahi-localstatedir.patch"
-                                      "avahi-CVE-2018-1000845.patch"))))
-    ;; Hide a duplicate of the CVE fixed above.
-    (properties `((lint-hidden-cve . ("CVE-2017-6519"))))
+               "1npdixwxxn3s9q1f365x9n9rc5xgfz39hxf23faqvlrklgbhj0q6"))
+             (patches (search-patches "avahi-localstatedir.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Fix version constraint in the avahi-libevent pkg-config file.
+                 ;; This can be removed for Avahi versions > 0.8.
+                 (substitute* "avahi-libevent.pc.in"
+                   (("libevent-2\\.1\\.5")
+                    "libevent >= 2.1.5"))
+                 #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"
@@ -57,18 +66,19 @@
                            "--disable-doxygen-doc"
                            "--disable-xmltoman"
                            "--enable-tests"
-                           "--disable-qt3" "--disable-qt4"
+                           "--disable-qt4" "--disable-qt5"
                            "--disable-gtk" "--disable-gtk3"
                            "--enable-compat-libdns_sd")))
     (inputs
-     `(("expat" ,expat)
-       ("glib" ,glib)
-       ("dbus" ,dbus)
+     `(("dbus" ,dbus)
+       ("expat" ,expat)
        ("gdbm" ,gdbm)
+       ("glib" ,glib)
        ("libcap" ,libcap)            ;to enable chroot support in avahi-daemon
-       ("libdaemon" ,libdaemon)))
+       ("libdaemon" ,libdaemon)
+       ("libevent" ,libevent)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (synopsis "Implementation of mDNS/DNS-SD protocols")
