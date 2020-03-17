@@ -78,7 +78,8 @@
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (out-lib-build (string-append out "/lib/modules/build")))
-                ; TODO: Only preserve the minimum, i.e. [Kbuild], Kconfig, scripts, include, ".config".
+                ;; TODO: Only preserve the minimum, i.e. [Kbuild], Kconfig,
+                ;; scripts, include, ".config".
                 (copy-recursively "." out-lib-build)
                 (let* ((linux (assoc-ref inputs "linux")))
                   (install-file (string-append linux "/System.map")
@@ -111,7 +112,11 @@
                          ("linux-module-builder"
                          ,(make-linux-module-builder linux))
                          ,@native-inputs
-                         ;; TODO: Remove "gmp", "mpfr", "mpc" since they are only needed to compile the gcc plugins.  Maybe remove "flex", "bison", "elfutils", "perl", "openssl".  That leaves very little ("bc", "gcc", "kmod").
+                         ;; TODO: Remove "gmp", "mpfr", "mpc" since they are
+                         ;; only needed to compile the gcc plugins.  Maybe
+                         ;; remove "flex", "bison", "elfutils", "perl",
+                         ;; "openssl".  That leaves very little ("bc", "gcc",
+                         ;; "kmod").
                          ,@(package-native-inputs linux)))
          (outputs outputs)
          (build linux-module-build)
