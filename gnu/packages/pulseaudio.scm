@@ -44,12 +44,14 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages web)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -217,9 +219,11 @@ rates.")
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
      `(("check" ,check)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
-       ("intltool" ,intltool)
        ("m4" ,m4)
+       ("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
