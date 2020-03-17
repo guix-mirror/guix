@@ -2075,8 +2075,7 @@ XML/CSS rendering engine.")
        ("perl" ,perl)
        ("perl-xml-parser" ,perl-xml-parser)))
     (inputs
-     `(("python" ,python)
-       ("zlib" ,zlib)
+     `(("zlib" ,zlib)
        ("bzip2" ,bzip2)))
     (propagated-inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
