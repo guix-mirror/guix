@@ -2908,6 +2908,24 @@ Such interfaces are useful for VPN software, virtualization, emulation,
 simulation, and a number of other applications.")
     (license license:gpl2)))
 
+(define-public wol
+  (package
+    (name "wol")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/wake-on-lan/wol/"
+                           version "/wol-" version ".tar.gz"))
+       (sha256
+        (base32 "08i6l5lr14mh4n3qbmx6kyx7vjqvzdnh3j9yfvgjppqik2dnq270"))))
+    (build-system gnu-build-system)
+    (home-page "https://sourceforge.net/projects/wake-on-lan/")
+    (synopsis "Implements Wake On LAN functionality in a small program")
+    (description "Tool to send a magic packet to wake another host on the
+network.  This must be enabled on the target host, usually in the BIOS.")
+    (license license:gpl2)))
+
 (define-public vde2
   (package
     (name "vde2")
