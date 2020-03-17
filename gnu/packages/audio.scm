@@ -3699,38 +3699,35 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
       (license license:expat))))
 
 (define-public libfdk
-  (let ((commit "2326faaf8f2cdf2c3a9108ccdaf1d7551aec543e")
-        (revision "0"))
-    (package
-      (name "libfdk")
-      ;; The latest upstream revision, with many bug fixes.
-      (version (git-version "0.1.6" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/mstorsjo/fdk-aac")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0yy6ndd9d61bwl283vl1r5kva2a4acc0f4r9g0sza156f2abr9ws"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (home-page "https://github.com/mstorsjo/fdk-aac")
-      (synopsis "Fraunhofer FDK AAC library")
-      (description "FDK is a library for encoding and decoding Advanced Audio
+  (package
+    (name "libfdk")
+    (version "2.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mstorsjo/fdk-aac")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1fkrnzs78fmj11n9z3l0w53i2fl16jcfiyavwidck9bzmkmsf486"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/mstorsjo/fdk-aac")
+    (synopsis "Fraunhofer FDK AAC library")
+    (description "FDK is a library for encoding and decoding Advanced Audio
 Coding (AAC) format audio, developed by Fraunhofer IIS, and included as part of
 Android.  It supports several Audio Object Types including MPEG-2 and MPEG-4 AAC
 LC, HE-AAC (AAC LC + SBR), HE-AACv2 (LC + SBR + PS) as well AAC-LD (low delay)
 and AAC-ELD (enhanced low delay) for real-time communication.  The encoding
 library supports sample rates up to 96 kHz and up to eight channels (7.1
-surround).")
-      (license (license:fsf-free "https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE"
-                                 "https://www.gnu.org/licenses/license-list.html#fdk")))))
+                                                                     surround).")
+    (license (license:fsf-free "https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE"
+                               "https://www.gnu.org/licenses/license-list.html#fdk"))))
 
 (define-public libopenshot-audio
   (package
