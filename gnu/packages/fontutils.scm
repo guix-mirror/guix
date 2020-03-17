@@ -569,23 +569,17 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20190801")
+   (version "20200314")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
-                  version "/fontforge-" version ".tar.gz"))
+                  version "/fontforge-" version ".tar.xz"))
             (sha256
-             (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
-   (build-system gnu-build-system)
+             (base32 "0qf88wd6riycq56d24brybyc93ns74s0nyyavm43zp2kfcihn6fd"))))
+   (build-system cmake-build-system)
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-
-      ;; TODO: Remove these inputs and the 'fix-linking-with-python-3.8' phase
-      ;; below when updating fontforge.
-      ("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("libtool" ,libtool)))
+    `(("pkg-config" ,pkg-config)))
    (inputs `(("cairo"           ,cairo)
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
@@ -608,18 +602,19 @@ definitions.")
              ("python"          ,python)
              ("zlib"            ,zlib)))
    (arguments
-    '(#:phases
+    '(#:configure-flags '(;; TODO: Provide GTK+ for the Wayland-friendly GDK
+                          ;; backend, instead of the legacy X11 backend.
+                          ;; Currently it introduces a circular dependency.
+                          "-DENABLE_X11=ON")
+      #:phases
       (modify-phases %standard-phases
-        (add-before 'bootstrap 'fix-linking-with-python-3.8
+        (add-after 'unpack 'do-not-override-RPATH
           (lambda _
-            ;; Applications that embed the Python interpreter are supposed to
-            ;; use the new "python-3.8-embed.pc" pkg-config file starting with
-            ;; Python 3.8.  Adjust the build system accordingly.
-            (substitute* "m4/fontforge_arg_enable.m4"
-              (("python-\"\\$\\{PYTHON_VERSION\\}\"" all)
-               (string-append all "-embed")))
-            ;; Delete the configure script in order to force autoreconf.
-            (delete-file "configure")
+            ;; Do not attempt to set a default RPATH, as our ld-wrapper
+            ;; already does the right thing.
+            (substitute* "CMakeLists.txt"
+              (("^set_default_rpath\\(\\)")
+               ""))
             #t))
         (add-after 'install 'set-library-path
           (lambda* (#:key inputs outputs #:allow-other-keys)
