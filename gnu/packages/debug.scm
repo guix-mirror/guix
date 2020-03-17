@@ -230,6 +230,8 @@ tools that process C/C++ code.")
                              #t))))))))))))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                            (string-append "DOC_PATH=$(PREFIX)/share/doc/"
+                                           ,name "-" ,version)
                             "CC=gcc")
          #:phases (modify-phases %standard-phases
                     (delete 'configure)
