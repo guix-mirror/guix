@@ -42,7 +42,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
-;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
+;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
@@ -18175,7 +18175,7 @@ processes for Emacs")
 (define-public emacs-lsp-ui
   (package
     (name "emacs-lsp-ui")
-    (version "6.0")
+    (version "6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -18184,7 +18184,7 @@ processes for Emacs")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r4327fd8cvjxfwkddp5c4bdskyncbs4sx9m3z2w4d773y2jrakc"))))
+                "024753bi0p1jyjhw7wk8k6s16kbwab5ar4cfasvbn8g08acf293b"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
