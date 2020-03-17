@@ -274,7 +274,8 @@ required structures.")
               ,@(alist-delete "guile"
                               (package-inputs gnutls))))))
 
-(define-public guile3.0-gnutls gnutls)
+(define-public guile3.0-gnutls
+  (deprecated-package "guile3.0-gnutls" gnutls))
 
 (define-public openssl
   (package
