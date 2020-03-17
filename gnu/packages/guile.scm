@@ -594,7 +594,7 @@ Guile's foreign function interface.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("guile" ,guile-2.2)
+       ("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-3.0)
