@@ -47,6 +47,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
@@ -1302,4 +1303,47 @@ items and collections, editing items, locking and unlocking collections
     (description
      "This is a low-level, pure Python DBus protocol client.  It has an
 I/O-free core, and integration modules for different event loops.")
+    (license license:expat)))
+
+(define-public python-argon2-cffi
+  (package
+    (name "python-argon2-cffi")
+    (version "19.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "argon2-cffi" version))
+        (sha256
+         (base32
+          "18xxfw30gi3lwaz4vwb05iavzlrk3fa1x9fippzrgd3px8z65apz"))
+        (modules '((guix build utils)))
+        (snippet '(begin (delete-file-recursively "extras") #t))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (setenv "ARGON2_CFFI_USE_SYSTEM" "1")
+             (invoke "python" "setup.py" "build")))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest")
+             (invoke "python" "-m" "argon2" "--help")
+             ;; see tox.ini
+             (invoke "python" "-m" "argon2" "-n" "1" "-t" "1" "-m" "8" "-p" "1"))))))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-six" ,python-six)))
+    (inputs `(("argon2" ,argon2)))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://argon2-cffi.readthedocs.io/")
+    (synopsis "Secure Password Hashes for Python")
+    (description
+     "Argon2 is a secure password hashing algorithm.  It is designed to have
+both a configurable runtime as well as memory consumption.  This means that you
+can decide how long it takes to hash a password and how much memory is required.")
     (license license:expat)))
