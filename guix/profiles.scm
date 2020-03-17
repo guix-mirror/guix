@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -1511,8 +1511,10 @@ are cross-built for TARGET."
                          (guix search-paths)
                          (srfi srfi-1))
 
-            (setvbuf (current-output-port) _IOLBF)
-            (setvbuf (current-error-port) _IOLBF)
+            (let ((line (cond-expand (guile-2.2 'line)
+                                     (else _IOLBF)))) ;Guile 2.0
+              (setvbuf (current-output-port) line)
+              (setvbuf (current-error-port) line))
 
             #+(if locales? set-utf8-locale #t)
 
