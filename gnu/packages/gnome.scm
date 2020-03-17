@@ -2066,8 +2066,12 @@ XML/CSS rendering engine.")
                 "0bddmlzg719sjhlbzqlhb7chwk93qc7g68m2r9r8xz112jdradpa"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
+
+       ;; For tests.
+       ("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
     (inputs
      `(("python" ,python)
        ("zlib" ,zlib)
