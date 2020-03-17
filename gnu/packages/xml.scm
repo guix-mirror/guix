@@ -343,7 +343,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
 (define-public perl-xml-parser
   (package
     (name "perl-xml-parser")
-    (version "2.44")
+    (version "2.46")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -351,7 +351,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "05ij0g6bfn27iaggxf8nl5rhlwx6f6p6xmdav6rjcly3x5zd1s8s"))))
+               "0pai3ik47q7rgnix9644c673fwydz52gqkxr9kxwq765j4j36cfk"))))
     (build-system perl-build-system)
     (arguments `(#:make-maker-flags
                  (let ((expat (assoc-ref %build-inputs "expat")))
