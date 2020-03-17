@@ -12,6 +12,7 @@
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -280,7 +281,7 @@
 
                        ;; Guile libraries are needed here for
                        ;; cross-compilation.
-                       ("guile" ,guile-2.2)
+                       ("guile" ,guile-3.0)
                        ("gnutls" ,gnutls)
                        ("guile-gcrypt" ,guile-gcrypt)
                        ("guile-json" ,guile-json-3)
