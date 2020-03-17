@@ -273,7 +273,7 @@ tools that process C/C++ code.")
                                   (string-append out "/bin/afl-qemu-trace"))
                          #t)))
                     (delete 'check)))) ; tests are run during 'install phase
-      (home-page "http://lcamtuf.coredump.cx/afl")
+      (home-page "https://lcamtuf.coredump.cx/afl/")
       (synopsis "Security-oriented fuzzer")
       (description
        "American fuzzy lop is a security-oriented fuzzer that employs a novel
