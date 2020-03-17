@@ -16123,6 +16123,27 @@ implemented using @code{ctypes}.")
 under Python 2.7.")
     (license license:gpl2)))
 
+(define-public python-userspacefs
+  (package
+    (name "python-userspacefs")
+    (version "1.0.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "userspacefs" version))
+        (sha256
+         (base32
+          "0kyz52jyxw3m7hqvn5g6z0sx9cq6k0nq1wj44lvdrghdljjgyk2z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-fusepyng" ,python-fusepyng)))
+    (home-page "https://github.com/rianhunter/userspacefs")
+    (synopsis "User-space file systems for Python")
+    (description
+     "@code{userspacefs} is a library that allows you to easily write
+user-space file systems in Python.")
+    (license license:gpl3+)))
+
 (define-public pybind11
   (package
     (name "pybind11")
