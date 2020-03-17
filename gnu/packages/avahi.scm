@@ -50,6 +50,7 @@
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"
+                           "--disable-static"
                            "--localstatedir=/var" ; for the DBus socket
                            "--disable-python"
                            "--disable-mono"
