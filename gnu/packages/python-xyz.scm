@@ -18412,3 +18412,24 @@ sequences.")
 
 (define-public python2-fuzzywuzzy
   (package-with-python2 python-fuzzywuzzy))
+
+(define-public python-block-tracing
+  (package
+    (name "python-block-tracing")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "block_tracing" version))
+        (sha256
+         (base32
+          "0s2y729qr5rs7n506qfh8cssk8m2bi6k2y5vbrh2z3raf2d01alz"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; no tests
+    (home-page "https://github.com/rianhunter/block_tracing")
+    (synopsis "Protect process memory")
+    (description
+     "@code{block_tracing} is a tiny Python library that can be used to
+prevent debuggers and other applications from inspecting the memory within
+your process.")
+    (license license:expat)))
