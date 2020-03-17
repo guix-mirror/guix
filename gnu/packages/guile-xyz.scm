@@ -3201,3 +3201,35 @@ models and also supports a rich set of boolean query operators.")
 @code{.torrent} or metainfo files.  Implements a bencode reader and writer
 according to Bitorrent BEP003.")
     (license license:gpl3+)))
+
+(define-public guile-irc
+  (let ((commit "375d3bde9c6ae7ccc9d7cc65817966b6fda8f26a")
+        (revision "0"))
+    (package
+      (name "guile-irc")
+      (version (git-version "0.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rekado/guile-irc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "113lcckcywrz9060w1c3fnvr8d7crdsjgsv4h47hgmr1slgadl4y"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags '("--enable-gnutls=yes")))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("gnutls" ,gnutls)
+         ("guile" ,guile-2.2)))
+      (home-page "https://github.com/rekado/guile-irc")
+      (synopsis "IRC library for Guile")
+      (description "This package provides a Guile library for @dfn{Internet
+Relay Chat} (IRC).")
+      ;; Some file headers incorrectly say LGPLv2+.
+      (license license:lgpl2.1+))))
