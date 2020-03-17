@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2018 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mike Gerwitz <mtg@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -38,8 +38,6 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages commencement)
-  #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (bootstrap-executable %bootstrap-guile))
   #:use-module (ice-9 format)
@@ -733,7 +731,7 @@ message if any test fails."
                            store
                            (if bootstrap?
                                %bootstrap-guile
-                               (canonical-package guile-2.2)))))
+                               (default-guile)))))
             (run-with-store store
               ;; Containers need a Bourne shell at /bin/sh.
               (mlet* %store-monad ((bash       (environment-bash container?

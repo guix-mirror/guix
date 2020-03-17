@@ -55,8 +55,6 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
-  #:autoload   (gnu packages base) (canonical-package)
-  #:autoload   (gnu packages guile) (guile-2.2)
   #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
   #:export (build-and-use-profile
             delete-generations
@@ -958,5 +956,5 @@ option processing with 'parse-command-line'."
                              (%store)
                              (if (assoc-ref opts 'bootstrap?)
                                  %bootstrap-guile
-                                 (canonical-package guile-2.2)))))
+                                 (default-guile)))))
               (process-actions (%store) opts)))))))
