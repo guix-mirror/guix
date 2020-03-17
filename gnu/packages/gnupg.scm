@@ -491,7 +491,7 @@ gpgpme starting with version 1.7.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("texinfo" ,texinfo)
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-3.0)))
     (inputs
      `(("guile" ,guile-3.0)
        ("libgcrypt" ,libgcrypt)))
@@ -518,6 +518,9 @@ interface (FFI) of Guile.")
   (package
     (inherit guile-gcrypt)
     (name "guile2.2-gcrypt")
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
     (inputs
      `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
