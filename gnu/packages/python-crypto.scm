@@ -1347,3 +1347,38 @@ I/O-free core, and integration modules for different event loops.")
 both a configurable runtime as well as memory consumption.  This means that you
 can decide how long it takes to hash a password and how much memory is required.")
     (license license:expat)))
+
+(define-public python-privy
+  (package
+    (name "python-privy")
+    (version "6.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               ;; Releases are untagged
+               (url "https://github.com/ofek/privy")
+               (commit "2838db3df239797c71bddacc48a4c49a83f35747")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1m32dh5fqc8cy7jyf1z5fs6zvmdkbq5fi98hr609gbl7s0l0y0i9"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-cryptography" ,python-cryptography)))
+    (home-page "https://www.dropbox.com/developers")
+    (synopsis "Library to password-protect your data")
+    (description
+     "Privy is a small and fast utility for password-protecting secret
+data such as API keys, cryptocurrency wallets, or seeds for digital
+signatures.")
+    (license (list license:expat license:asl2.0)))) ; dual licensed
