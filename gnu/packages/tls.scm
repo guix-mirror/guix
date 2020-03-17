@@ -229,7 +229,7 @@ living in the same process.")
        ("datefudge" ,datefudge)                   ;tests rely on 'datefudge'
        ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
@@ -266,13 +266,15 @@ required structures.")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
 
-(define-public guile3.0-gnutls
+(define-public guile2.2-gnutls
   (package
     (inherit gnutls)
-    (name "guile3.0-gnutls")
-    (inputs `(("guile" ,guile-next)
+    (name "guile2.2-gnutls")
+    (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile"
                               (package-inputs gnutls))))))
+
+(define-public guile3.0-gnutls gnutls)
 
 (define-public openssl
   (package
