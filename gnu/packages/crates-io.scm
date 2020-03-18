@@ -6595,6 +6595,43 @@ reading and writing git repositories.")
      "Generated OpenGL bindings and wrapper for Servo.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-glib-0.9
+  (package
+    (name "rust-glib")
+    (version "0.9.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "glib" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h3100mf7kdfxibjz5na0sqzbd2mcsyd8pzivn3666w414x5gys0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-futures-channel" ,rust-futures-channel-0.3)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-futures-executor" ,rust-futures-executor-0.3)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-futures-task" ,rust-futures-task-0.3)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the GLib library")
+    (description
+     "Rust bindings for the GLib library.")
+    (license license:expat)))
+
 (define-public rust-glib-sys-0.9
   (package
     (name "rust-glib-sys")
