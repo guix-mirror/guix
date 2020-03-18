@@ -1401,7 +1401,8 @@ facilities for checking incoming mail.")
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
-                           "--localstatedir=/var")
+                           "--localstatedir=/var"
+                           "--with-sqlite") ; not auto-detected
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
