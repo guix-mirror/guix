@@ -10981,6 +10981,28 @@ including bigint, complex, rational, range iterators, generic integers, and more
      "Rational numbers implementation for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-num-rational-0.1
+  (package
+    (inherit rust-num-rational-0.2)
+    (name "rust-num-rational")
+    (version "0.1.42")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-rational" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0kkqb8j3b3nis9hs4ww4hkrmb4a6v9sr9al08xmwhgvmpms4qcgf"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.1)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-0.8))))))
+
 (define-public rust-num-traits-0.2
   (package
     (name "rust-num-traits")
