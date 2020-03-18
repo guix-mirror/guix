@@ -47,15 +47,21 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages astronomy)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -66,8 +72,10 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -1549,3 +1557,71 @@ exchanged form one Spatial DBMS and the other.")
     (license (list license:gpl2+
                    license:lgpl2.1+
                    license:mpl1.1))))
+
+(define-public opencpn
+  (package
+    (name "opencpn")
+    (version "5.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/OpenCPN/OpenCPN.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xv3h6svw9aay5ixpql231md3pf00qxvhg62z88daraf18hlkfja"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("cairo" ,cairo)
+       ("curl" ,curl)
+       ("glu" ,glu)
+       ("gtk+" ,gtk+)
+       ("libarchive" ,libarchive)
+       ("libelf" ,libelf)
+       ("libexif" ,libexif)
+       ("libsndfile" ,libsndfile)
+       ("lz4" ,lz4)
+       ("mesa" ,mesa)
+       ("pango" ,pango)
+       ("portaudio" ,portaudio)
+       ("sqlite" ,sqlite)
+       ("tinyxml" ,tinyxml)
+       ("wxsvg" ,wxsvg)
+       ("wxwidgets" ,wxwidgets)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags '("-DENABLE_PORTAUDIO=ON"
+                           "-DENABLE_SNDFILE=ON"
+                           "-DBUNDLE_TCDATA=ON"
+                           "-DBUNDLE_GSHHS=CRUDE")
+       #:tests? #f ; No tests defined
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("set\\(wxWidgets_CONFIG_OPTIONS.*--toolkit=gtk3" all)
+                (string-append all " --libs all")))
+             #t)))))
+    (synopsis "Chart plotter and marine GPS navigation software")
+    (description
+     "OpenCPN is a chart plotter and marine navigation software designed to be
+used at the helm station of your boat while underway.  Chart a course and
+track your position right from your laptop.")
+    (home-page "https://opencpn.org/")
+    (license (list license:asl2.0
+                   license:cc0
+                   license:bsd-2
+                   license:bsd-3
+                   license:expat
+                   license:gpl3+
+                   license:lgpl2.1+
+                   license:lgpl3+
+                   license:sgifreeb2.0
+                   license:zlib))))
