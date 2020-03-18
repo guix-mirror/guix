@@ -26996,8 +26996,28 @@ login over SSH may be forbidden in some cases.  To work around this,
 @command{guix deploy} can log in as an unprivileged user and employ
 @code{sudo} to escalate privileges.  This will only work if @code{sudo} is
 currently installed on the remote and can be invoked non-interactively as
-@code{user}.  That is: the line in @code{sudoers} granting @code{user} the
-ability to use @code{sudo} must contain the @code{NOPASSWD} tag.
+@code{user}.  That is, the line in @code{sudoers} granting @code{user} the
+ability to use @code{sudo} must contain the @code{NOPASSWD} tag.  This can
+be accomplished with the following operating system configuration snippet:
+
+@lisp
+(use-modules ...
+             (gnu system)               ;for %sudoers-specification))
+
+(define %user "username")
+
+(operating-system
+  ...
+  (sudoers-file
+     (plain-file "sudoers"
+                 (string-append (plain-file-content %sudoers-specification)
+                                (format #f "~a ALL = NOPASSWD: ALL~%"
+                                        %username)))))
+
+@end lisp
+
+For more information regarding the format of the @file{sudoers} file,
+consult @command{man sudoers}.
 
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix

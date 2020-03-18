@@ -138,6 +138,7 @@
             local-host-aliases
             %root-account
             %setuid-programs
+            %sudoers-specification
             %base-packages
             %base-firmware))
 
