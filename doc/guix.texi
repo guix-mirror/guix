@@ -1597,7 +1597,7 @@ $ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
 
 Note that the @code{glibc-locales} package contains data for all the
 locales supported by the GNU@tie{}libc and weighs in at around
-110@tie{}MiB.  Alternatively, the @code{glibc-utf8-locales} is smaller but
+917@tie{}MiB.  Alternatively, the @code{glibc-utf8-locales} is smaller but
 limited to a few UTF-8 locales.
 
 The @code{GUIX_LOCPATH} variable plays a role similar to @code{LOCPATH}
