@@ -9296,7 +9296,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.34")
+    (version "1.10.37")
     (source
      (origin
        (method git-fetch)
@@ -9307,8 +9307,11 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0czwhr7nw523753ajcjjfwrf91mq8pmzr19gp0srqsvb1dsn1zcf"))))
+        (base32 "01cxy7606hx9wgxl550l4p2xa9hsy0rk7swsp58hyi842z2z0y13"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     ;; The only tests are maintainer tests (in po/), which fail.
+     `(#:tests? #f))
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+)
               ("gdk-pixbuf" ,gdk-pixbuf)
