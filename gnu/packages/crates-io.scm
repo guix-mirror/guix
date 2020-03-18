@@ -14750,6 +14750,29 @@ require unstable language features.")
 rustc compiler.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustdoc-stripper-0.1
+  (package
+    (name "rust-rustdoc-stripper")
+    (version "0.1.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustdoc-stripper" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "13rf65a0xk1zyb92jd8p12x529rsbfchwk9zvjr0snr9savpxw19"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))
+    (home-page "https://github.com/GuillaumeGomez/rustdoc-stripper")
+    (synopsis "Nanipulate rustdoc comments")
+    (description
+     "This package provides a tool to manipulate rustdoc comments.")
+    (license license:asl2.0)))
+
 (define-public rust-rustfix-0.4
   (package
     (name "rust-rustfix")
