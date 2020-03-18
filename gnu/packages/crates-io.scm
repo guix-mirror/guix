@@ -5889,6 +5889,36 @@ for the futures-rs library.")
      "This package provides the @code{futures-rs} procedural macro implementations.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-preview-0.3
+  (package
+    (name "rust-futures-preview")
+    (version "0.3.0-alpha.17")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "futures-preview" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rsq8d1ciyg37i5ysd9dynwmklwy4sx466z9a72687wsi8fgj9dz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-futures-channel-preview" ,rust-futures-channel-preview-0.3)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-executor-preview" ,rust-futures-executor-preview-0.3)
+        ("rust-futures-io-preview" ,rust-futures-io-preview-0.3)
+        ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3))))
+    (home-page "https://rust-lang-nursery.github.io/futures-rs")
+    (synopsis "An implementation of futures and streams")
+    (description
+     "An implementation of futures and streams featuring zero allocations,
+composability, and iterator-like interfaces.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-select-macro-preview-0.3
   (package
     (name "rust-futures-select-macro-preview")
