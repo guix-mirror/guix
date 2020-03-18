@@ -10758,6 +10758,30 @@ including bigint, complex, rational, range iterators, generic integers, and more
      "Big integer implementation for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-num-bigint-0.1
+  (package
+    (inherit rust-num-bigint-0.2)
+    (name "rust-num-bigint")
+    (version "0.1.44")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-bigint" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hg80xd7vd5yqzks1h0zk2fcgqnf84m2cdj9q4cffk581nnrjf76"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand" ,rust-rand-0.4)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-0.8))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))))
+
 (define-public rust-num-complex-0.2
   (package
     (name "rust-num-complex")
