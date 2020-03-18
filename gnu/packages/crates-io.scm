@@ -4175,6 +4175,29 @@ floating-point primitives to an @code{io::Write}.")
      "This package provides lightweight binding to DirectWrite.")
     (license license:mpl2.0)))
 
+(define-public rust-edit-distance-2.1
+  (package
+    (name "rust-edit-distance")
+    (version "2.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "edit-distance" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0yq3wlmd7ly22qxhfysi77qp31yvpx2ll9waa75bkpiih7rsmfmv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
+    (home-page "https://github.com/febeling/edit-distance")
+    (synopsis "Levenshtein edit distance between strings")
+    (description
+     "Levenshtein edit distance between strings, a measure for similarity.")
+    (license license:asl2.0)))
+
 (define-public rust-either-1.5
   (package
     (name "rust-either")
