@@ -2174,7 +2174,7 @@ is no support for parsing block and inline level HTML.")
                       #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("tzdata" ,tzdata-for-tests)))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-2.2.7)))       ;fix <https://bugs.gnu.org/37237>
     (home-page "https://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
