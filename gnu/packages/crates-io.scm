@@ -219,6 +219,40 @@ the Rust programming language.")
         ("rust-rand" ,rust-rand-0.3)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
+(define-public rust-alga-0.9
+  (package
+    (name "rust-alga")
+    (version "0.9.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "alga" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1wl4z8ini9269x04g8wwdz1nn3hmmvaaysq4jwhymikyg81kv0jg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-approx" ,rust-approx-0.3)
+        ("rust-decimal" ,rust-decimal-2.0)
+        ("rust-num-complex" ,rust-num-complex-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2))
+       #:cargo-development-inputs
+       (("rust-alga-derive" ,rust-alga-derive-0.9)
+        ("rust-quickcheck" ,rust-quickcheck-0.8))))
+    (home-page "https://github.com/rustsim/alga")
+    (synopsis "Abstract algebra for Rust")
+    (description "Alga aims to provide solid mathematical abstractions to
+algebra-focused applications.  It defines and organizes through trait
+inheritance the basic building blocks of general algebraic structures.
+Specific implementations of algebraic structure traits are left to other
+crates.  Higher-level traits for specialized domains of algebra (like linear
+algebra) are also provided and will prove useful for applications that include
+code that is generic with regard to the algebraic entity types.")
+    (license license:asl2.0)))
+
 (define-public rust-alga-derive-0.9
   (package
     (name "rust-alga-derive")
