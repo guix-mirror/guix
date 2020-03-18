@@ -10810,6 +10810,27 @@ including bigint, complex, rational, range iterators, generic integers, and more
      "Complex numbers implementation for Rust.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-num-complex-0.1
+  (package
+    (inherit rust-num-complex-0.2)
+    (name "rust-num-complex")
+    (version "0.1.43")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-complex" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0mln3h018lar511hadjwfkbyq1561s8kdzfg8aagbakqg0fn725j"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-0.8))))))
+
 (define-public rust-num-cpus-1.11
   (package
     (name "rust-num-cpus")
