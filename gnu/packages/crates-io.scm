@@ -5202,6 +5202,28 @@ Reader/Writer streams.  Contains bindings for zlib, deflate, and gzip-based
 streams.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-float-cmp-0.3
+  (package
+    (name "rust-float-cmp")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "float-cmp" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1c0hmj46xma5aysz0qb49padhc26aw875whx6q6rglsj5dqpds1b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-num" ,rust-num-0.1))))
+    (home-page "https://github.com/mikedilger/float-cmp")
+    (synopsis "Floating point approximate comparison traits")
+    (description
+     "Floating point approximate comparison traits in Rust.")
+    (license license:expat)))
+
 (define-public rust-float-ord-0.2
   (package
     (name "rust-float-ord")
