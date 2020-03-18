@@ -64,6 +64,7 @@
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21711,3 +21712,25 @@ a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
        "Daredevil SKK is a version of @acronym{SKK, Simple Kana to Kanji
 conversion program}, a Japanese input method on Emacs.")
       (license license:gpl2+))))
+
+(define-public emacs-objed
+  (package
+    (name "emacs-objed")
+    (version "0.8.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://elpa.gnu.org/packages/objed-" version ".tar"))
+        (sha256
+          (base32
+            "1s38d6bvggdk5p45ww1jb4gxifzgjwgw1m6ar920nlg0j4fgbcvr"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/clemera/objed")
+    (synopsis "Navigate and edit text objects")
+    (description
+      "@code{emacs-objed} allows to navigate and edit text objects.  It
+enables modal editing and composition of commands, too.  It combines ideas of
+other Editors like Vim or Kakoune and tries to align them with regular Emacs
+conventions.")
+    (license license:gpl3+)))
