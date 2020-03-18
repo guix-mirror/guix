@@ -1394,6 +1394,7 @@ facilities for checking incoming mail.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("bzip2" ,bzip2)
+       ("libsodium" ,libsodium)         ; extra password algorithms
        ("linux-pam" ,linux-pam)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
@@ -1516,8 +1517,8 @@ using libsodium sealed boxes.
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
-       "@code{dovecot-libsodium-plugin} provides libsodium password
-hashing schemes plugin for @code{Dovecot}.")
+       "@code{dovecot-libsodium-plugin} provides a libsodium password
+hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
       (license gpl3+))))
 
 (define-public isync
