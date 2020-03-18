@@ -1393,11 +1393,12 @@ facilities for checking incoming mail.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ("bzip2" ,bzip2)
+     `(("bzip2" ,bzip2)
+       ("linux-pam" ,linux-pam)
+       ("lz4" ,lz4)
+       ("openssl" ,openssl)
        ("sqlite" ,sqlite)
-       ("linux-pam" ,linux-pam)))
+       ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var")
