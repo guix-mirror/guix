@@ -219,6 +219,33 @@ the Rust programming language.")
         ("rust-rand" ,rust-rand-0.3)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
+(define-public rust-alga-derive-0.9
+  (package
+    (name "rust-alga-derive")
+    (version "0.9.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "alga-derive" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0a2594j6blczz18vfg85agr7vsjrbq6900d3xwxw0zzbqj9j2adz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-edit-distance" ,rust-edit-distance-2.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quickcheck" ,rust-quickcheck-0.9)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
+    (home-page "https://github.com/rustsim/alga")
+    (synopsis "Dutomatic deriving of abstract algebra traits")
+    (description "Derive attribute for implementing algebraic traits from the
+@code{alga} crate.")
+    (license license:asl2.0)))
+
 (define-public rust-andrew-0.2
   (package
     (name "rust-andrew")
