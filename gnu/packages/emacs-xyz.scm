@@ -21764,24 +21764,20 @@ All entries in a specified TODO state will be carried over to the next day.")
     (license license:bsd-3)))
 
 (define-public emacs-org-static-blog
-  ;; Use the latest commit as the last release only contains half of the
-  ;; current total commits.  New release requested at
-  ;; <https://github.com/bastibe/org-static-blog/issues/50>.
   (package
     (name "emacs-org-static-blog")
-    (version "20200117")
-    (home-page "https://github.com/bastibe/org-static-blog")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url home-page)
-             (commit "5c19300d7634e94ae813b1b66abc716fbb1e5fc9")))
+             (url "https://github.com/bastibe/org-static-blog")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1m7vmibjc6yk2npfrnnqd3g2099300r0q8mr8cvyivmk5ailbfrh"))))
+        (base32 "15iy3z8rglaqbx1fz14inh18ksgjsmq30b8hyv3lgjvcc9ssaiw0"))))
     (build-system emacs-build-system)
+    (home-page "https://github.com/bastibe/org-static-blog")
     (synopsis
      "Simple Org mode based static blog generator")
     (description
