@@ -11453,6 +11453,37 @@ normally prevent moving a type that has been borrowed from.")
     (description "This package provides FFI bindings to @code{libpango-1.0}.")
     (license license:expat)))
 
+(define-public rust-pangocairo-sys-0.10
+  (package
+    (name "rust-pangocairo-sys")
+    (version "0.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pangocairo-sys" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zlyf5vajarnxg5034b8qa5w5zajv96lfvlgiki26svpmcqip4m3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango-sys" ,rust-pango-sys-0.9)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:cargo-development-inputs
+       (("rust-shell-words" ,rust-shell-words-0.1)
+        ("rust-tempfile" ,rust-tempfile-3.1))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "FFI bindings to libgtk-3")
+    (description "This package provides FFI bindings to libgtk-3.")
+    (license license:expat)))
+
 (define-public rust-parity-wasm-0.40
   (package
     (name "rust-parity-wasm")
