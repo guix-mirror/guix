@@ -358,10 +358,10 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
     (license license:gpl3+)))
 
 (define-public guile-readline
-  (make-guile-readline guile-2.2))
+  (make-guile-readline guile-3.0))
 
-(define-public guile3.0-readline
-  (make-guile-readline guile-next "guile3.0-readline"))
+(define-public guile2.2-readline
+  (make-guile-readline guile-2.2 "guile2.2-readline"))
 
 (define (guile-variant-package-name prefix)
   (lambda (name)
@@ -404,6 +404,8 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
                (define-deprecated name package
                  (deprecated-package package-name package))
                (export name))))))))
+
+(define-deprecated-guile3.0-package guile3.0-readline)
 
 (define-public guile-for-guile-emacs
   (package (inherit guile-2.2)
