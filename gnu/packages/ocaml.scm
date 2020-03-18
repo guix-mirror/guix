@@ -764,16 +764,16 @@ Knuth’s LR(1) parser construction technique.")
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.8")
+    (version "2.18.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/garrigue/lablgtk")
-                     (commit "lablgtk2188")))
+                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gpww8bkwi5cl68kc006970zvzwvq73h1mwrnd239apmwlxc1l8a"))))
+                "0w8cdfcv2wc19sd3qzj3qq77qc6rbnbynsz02gzbl15kgrvgrfxi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
