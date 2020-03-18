@@ -3651,6 +3651,36 @@ hexadecimal, base32, and base64.")
 and arithmetic.")
     (license license:expat)))
 
+(define-public rust-decimal-2.0
+  (package
+    (name "rust-decimal")
+    (version "2.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "decimal" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1vb3i8vg1dxrw3kzbfiag3gg7rdjd73z80mwbwkq60vnphiqfig6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-ord-subset" ,rust-ord-subset-3)
+        ("rust-rustc-serialize" ,rust-rustc-serialize-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-cc" ,rust-cc-1.0))
+       #:cargo-development-inputs
+       (("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/alkis/decimal")
+    (synopsis "Decimal floating point arithmetic for Rust")
+    (description
+     "Decimal floating point arithmetic for Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-deflate-0.7
   (package
     (name "rust-deflate")
