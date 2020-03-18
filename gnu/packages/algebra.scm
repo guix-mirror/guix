@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -919,15 +919,16 @@ Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.3.5")
+    (version "3.3.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1qh3yrwn78ms5yhwbpl5wvblk4gbz02cacdygxylr7i9xbrvylkk"))
+                "1km3fyfzyqfdvmnl79drps3fjwnz3zbh0c7l34mfbqyvvs8cy4wz"))
               (file-name (string-append name "-" version ".tar.bz2"))
+              (patches (search-patches "eigen-stabilise-sparseqr-test.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,

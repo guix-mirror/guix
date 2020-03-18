@@ -1673,7 +1673,7 @@ that strives for correctness and simplicity.")
     (version "2013.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/com/sun/msv/"
+              (uri (string-append "https://repo1.maven.org/maven2/com/sun/msv/"
                                   "datatype/xsd/xsdlib/" version "/xsdlib-"
                                   version "-sources.jar"))
               (sha256
@@ -1686,7 +1686,8 @@ that strives for correctness and simplicity.")
        #:jdk ,icedtea-8))
     (inputs
      `(("java-xerces" ,java-xerces)))
-    (home-page "http://central.maven.org/maven2/com/sun/msv/datatype/xsd/xsdlib/")
+    (home-page (string-append "https://web.archive.org/web/20161127144537/"
+                              "https://msv.java.net//"))
     (synopsis "Sun Multi-Schema Validator")
     (description "Xsdlib contains an implementation of sun.com.msv, an XML
 validator.")

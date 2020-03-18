@@ -393,7 +393,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.3.6")
+    (version "2.3.7")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -401,7 +401,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "070gkwffi73i2p0azga9yxj8km32bp8bw4jvkvz1vzlpavyii5kn"))))
+                "134lx7pjnglrl4wdmyr9dz3rjb6d4ir6rvapg00gp52n44dbhnrq"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
@@ -701,14 +701,14 @@ have been used.")
 (define-public python-nose2
   (package
     (name "python-nose2")
-    (version "0.6.5")
+    (version "0.9.2")
       (source
         (origin
           (method url-fetch)
           (uri (pypi-uri "nose2" version))
           (sha256
            (base32
-            "1x4zjq1zlyrh8b9ba0cmafd3w94pxhid408kibyjd3s6h1lap6s7"))))
+            "0pmbb6nk31yhgh4zkcblzxsznml7f7pf5q1ihgrwvbxv4mwzfql7"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; 'module' object has no attribute 'collector'
     (propagated-inputs

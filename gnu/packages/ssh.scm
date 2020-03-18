@@ -489,7 +489,7 @@ particularly useful for embedded systems, such as wireless routers.")
        (base32
         "1q0p1l72pq9k3bi7a366j2rishv7dzzkg3i6r2npsfg7cnnidbsn"))))
     (build-system gnu-build-system)
-    (home-page "http://www.lysator.liu.se/liboop/")
+    (home-page "https://www.lysator.liu.se/liboop/")
     (synopsis "Event loop library")
     (description "Liboop is a low-level event loop management library for
 POSIX-based operating systems.  It supports the development of modular,

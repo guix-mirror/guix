@@ -1688,8 +1688,8 @@ level's exit.  The game is presented in a 2D side view.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.hyperrealm.com/" name "/"
-                           name  "-" version  ".tar.gz"))
+       (uri (string-append "http://www.hyperrealm.com/talkfilters/"
+                           "talkfilters-" version  ".tar.gz"))
        (sha256
         (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
     (build-system gnu-build-system)
@@ -3906,7 +3906,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.00")
+    (version "2.02.02")
     (source
      (origin
        (method url-fetch)
@@ -3914,8 +3914,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32
-         "02qmbhzhh2sdy5b37v54gihs9k4bxmlz3j96gyx7icvx2grkbg5i"))))
+        (base32 "11ylbp8ip7dwmh4gzb53z147pcfxkl3lwhyy8ngyn2zc634vdn65"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -4095,7 +4094,7 @@ throwing people around in pseudo-randomly generated buildings.")
 (define-public hyperrogue
   (package
     (name "hyperrogue")
-    (version "11.2q")
+    (version "11.3a")
     ;; When updating this package, be sure to update the "hyperrogue-data"
     ;; origin in native-inputs.
     (source (origin
@@ -4106,7 +4105,7 @@ throwing people around in pseudo-randomly generated buildings.")
                     "-src.tgz"))
               (sha256
                (base32
-                "1w4khi2limxhgiq7xnz0rc9nzbk86bhbyzrcd5hdghnhsviaiggq"))))
+                "1yxabbswq02fc5frigvs43f83m5vlxybc7n5mynkwzj2c70lfp2k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -4184,7 +4183,7 @@ throwing people around in pseudo-randomly generated buildings.")
              "-win.zip"))
            (sha256
             (base32
-             "1k81zrbq5gmrccjac1i5c6v8j2iilfg2vwrnm8snjmmcnh5z1fgj"))))
+             "11yhbia45f1w9z0j67h9nynwjqmvakr9l6rnrmdrdkzin6lvzzj4"))))
        ("unzip" ,unzip)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
@@ -5648,7 +5647,7 @@ elements to achieve a simple goal in the most complex way possible.")
        #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
                                (string-append "-DPIONEER_DATA_DIR="
                                               %output "/share/games/pioneer"))))
-    (home-page "http://pioneerspacesim.net")
+    (home-page "https://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description
      "Pioneer is a space adventure game set in our galaxy at the turn of the

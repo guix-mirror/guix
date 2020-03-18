@@ -18,6 +18,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -419,7 +420,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 related classes, utilities, and applications.  There is a particular emphasis
 on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
-    (home-page "http://www.openimageio.org")
+    (home-page "https://www.openimageio.org")
     (license license:bsd-3)))
 
 ;; This older version of OpenImageIO is required for Blender 2.79.
@@ -978,7 +979,7 @@ requirements.")
        ("libxi" ,libxi)
        ("zlib" ,zlib)
        ("glfw" ,glfw)))
-    (home-page "http://graphics.pixar.com/opensubdiv/")
+    (home-page "https://graphics.pixar.com/opensubdiv/")
     (synopsis "High performance subdivision surface evaluation")
     (description "OpenSubdiv is a set of libraries that implement high
 performance subdivision surface (subdiv) evaluation on massively parallel CPU
@@ -1075,3 +1076,37 @@ interaction library, written in C++, which has become the de facto
 standard graphics library for 3D visualization and visual simulation
 software in the scientific and engineering community.")
       (license license:bsd-3))))
+
+(define-public superfamiconv
+  (package
+    (name "superfamiconv")
+    (version "0.8.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Optiroc/SuperFamiconv")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0848szv6a2b8wdganh6mw5i8vn8cqvn1kbwzx7mb9wlrf5wzqn37"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (bindir (string-append outdir "/bin")))
+               (install-file "bin/superfamiconv" bindir)
+               #t))))))
+    (home-page "https://github.com/Optiroc/SuperFamiconv")
+    (synopsis "Tile graphics converter supporting SNES, Game Boy Color
+and PC Engine formats")
+    (description "SuperFamiconv is a converter for tiled graphics, supporting
+the graphics formats of the SNES, Game Boy Color and PC Engine game consoles.
+Automated palette selection is supported.")
+    (license license:expat)))

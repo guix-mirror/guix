@@ -58,6 +58,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -1442,7 +1443,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
      (list (search-path-specification
             (variable "LV2_PATH")
             (files '("lib/lv2")))))
-    (home-page "http://guitarix.org/")
+    (home-page "https://guitarix.org/")
     (synopsis "Virtual guitar amplifier")
     (description "Guitarix is a virtual guitar amplifier running JACK.
 Guitarix takes the signal from your guitar as a mono-signal from your sound
@@ -3691,38 +3692,35 @@ using ALSA, MPD, PulseAudio, or a FIFO buffer as its input.")
       (license license:expat))))
 
 (define-public libfdk
-  (let ((commit "2326faaf8f2cdf2c3a9108ccdaf1d7551aec543e")
-        (revision "0"))
-    (package
-      (name "libfdk")
-      ;; The latest upstream revision, with many bug fixes.
-      (version (git-version "0.1.6" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/mstorsjo/fdk-aac")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0yy6ndd9d61bwl283vl1r5kva2a4acc0f4r9g0sza156f2abr9ws"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)))
-      (home-page "https://github.com/mstorsjo/fdk-aac")
-      (synopsis "Fraunhofer FDK AAC library")
-      (description "FDK is a library for encoding and decoding Advanced Audio
+  (package
+    (name "libfdk")
+    (version "2.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mstorsjo/fdk-aac")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1fkrnzs78fmj11n9z3l0w53i2fl16jcfiyavwidck9bzmkmsf486"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/mstorsjo/fdk-aac")
+    (synopsis "Fraunhofer FDK AAC library")
+    (description "FDK is a library for encoding and decoding Advanced Audio
 Coding (AAC) format audio, developed by Fraunhofer IIS, and included as part of
 Android.  It supports several Audio Object Types including MPEG-2 and MPEG-4 AAC
 LC, HE-AAC (AAC LC + SBR), HE-AACv2 (LC + SBR + PS) as well AAC-LD (low delay)
 and AAC-ELD (enhanced low delay) for real-time communication.  The encoding
 library supports sample rates up to 96 kHz and up to eight channels (7.1
-surround).")
-      (license (license:fsf-free "https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE"
-                                 "https://www.gnu.org/licenses/license-list.html#fdk")))))
+                                                                     surround).")
+    (license (license:fsf-free "https://github.com/mstorsjo/fdk-aac/blob/master/NOTICE"
+                               "https://www.gnu.org/licenses/license-list.html#fdk"))))
 
 (define-public libopenshot-audio
   (package
@@ -4044,3 +4042,35 @@ libsamplerate for reading and resampling audio files, based on Robin Gareus'
 @code{audio_decoder} code.")
    (home-page "https://git.zrythm.org/cgit/libaudec")
    (license license:agpl3+)))
+
+(define-public lv2lint
+  (package
+    (name "lv2lint")
+    (version "0.4.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://git.open-music-kontrollers.ch/lv2/lv2lint")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1pspwqpzl2dw1hd9ra9yr53arqbbqjn7d7j0f7p9g3iqa76vblpi"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       `("-Delf-tests=true" ; for checking symbol visibility
+         "-Donline-tests=true"))) ; for checking URI existence
+    (inputs
+      `(("curl", curl)
+        ("libelf", libelf)
+        ("lilv", lilv)))
+    (native-inputs
+      `(("pkg-config", pkg-config)))
+    (synopsis "LV2 plugin lint tool")
+    (description "lv2lint is an LV2 lint-like tool that checks whether a
+given plugin and its UI(s) match up with the provided metadata and adhere
+to well-known best practices.")
+    (home-page "https://open-music-kontrollers.ch/lv2/lv2lint/")
+    (license license:artistic2.0)))

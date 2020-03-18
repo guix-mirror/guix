@@ -43,8 +43,8 @@
     (version "0.92.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.tuxfamily.org/" name "/"
-                                  name "_" version ".tar.xz"))
+              (uri (string-append "http://download.tuxfamily.org/librep/"
+                                  "librep_" version ".tar.xz"))
               (sha256
                (base32
                 "1bmcjl1x1rdh514q9z3hzyjmjmwwwkziipjpjsl301bwmiwrd8a8"))))
@@ -65,7 +65,7 @@
      (list (search-path-specification
             (variable "REP_DL_LOAD_PATH")
             (files '("lib/rep")))))
-    (home-page "http://sawfish.wikia.com/wiki/Librep")
+    (home-page "https://sawfish.fandom.com/wiki/Librep")
     (synopsis "Lisp system for sawfish")
     (description
      "Librep is a dialect of Lisp, designed to be used both as an extension

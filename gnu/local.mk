@@ -756,9 +756,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
+  %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
+  %D%/packages/patches/bidiv-update-fribidi.patch		\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
@@ -833,6 +835,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dstat-fix-crash-when-specifying-delay.patch	\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/eigen-stabilise-sparseqr-test.patch	\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-path-length.patch			\
@@ -1327,16 +1330,19 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-fix-tests.patch			\
   %D%/packages/patches/python-3.8-fix-tests.patch		\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
+  %D%/packages/patches/python-alembic-exceptions-cause.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
   %D%/packages/patches/python-cross-compile.patch		\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-flask-restful-werkzeug-compat.patch	\
   %D%/packages/patches/python-keras-integration-test.patch	\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
+  %D%/packages/patches/python-jedi-deleted-variables.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\

@@ -6322,16 +6322,16 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.7.1a")
+    (version "2.7.3a")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/alexdobin/STAR.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n6g4s4hgw7qygs1z97j7a2dgz8gfaa4cv5pjvvvmarvk0x07hyg"))
+                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -12815,7 +12815,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12823,7 +12823,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0ga2jr4968qzwml6aycky4603q64lny3y7lzw6dmafch5pydl1qi"))))
+                "1d5l3gywypi67yz9advxq5xkgfhr4733gj0bwnngm723i3hdf5w9"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)

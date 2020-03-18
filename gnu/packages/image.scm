@@ -923,6 +923,10 @@ more modular, simple, and flexible.")
                        "http://linuxbrit.co.uk/downloads/giblib-"
                        version ".tar.gz")
                      (string-append
+                       "https://src.fedoraproject.org/repo/pkgs/giblib/giblib-"
+                       version ".tar.gz/c810ef5389baf24882a1caca2954385e/giblib-"
+                       version ".tar.gz")
+                     (string-append
                        "https://sourceforge.net/projects/slackbuildsdirectlinks/"
                        "files/giblib/giblib-" version ".tar.gz")))
               (sha256
@@ -932,7 +936,11 @@ more modular, simple, and flexible.")
     (inputs
      `(("libx11" ,libx11)
        ("imlib2" ,imlib2)))
-    (home-page "http://linuxbrit.co.uk/software/") ; no real home-page
+    (home-page
+     ;; This vanished page is universally accepted as giblib's home despite not
+     ;; mentioning the package once.
+     (string-append "https://web.archive.org/web/20140907071208"
+                    "https://linuxbrit.co.uk/software/"))
     (synopsis "Wrapper library for imlib2")
     (description
      "Giblib is a simple library which wraps imlib2's context API, avoiding
@@ -1032,9 +1040,6 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       (sha256 (base32
                 "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
-   ;; Otherwise it fails on <ci.guix.gnu.org> in the check phase after 3600
-   ;; seconds of silence.
-   (properties '((max-silent-time . 7200)))
    (inputs
     `(("boost" ,boost)
       ("fftw" ,fftw)
@@ -1188,7 +1193,7 @@ channels.")
      `(("lcms" ,lcms)
        ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
-    (home-page "http://www.libmng.com/")
+    (home-page "https://www.libmng.com/")
     (synopsis "Library for handling MNG files")
     (description
      "Libmng is the MNG (Multiple-image Network Graphics) reference library.")

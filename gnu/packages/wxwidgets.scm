@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -35,6 +35,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -73,7 +74,8 @@
        ("libtiff" ,libtiff)
        ("mesa" ,mesa)
        ("webkitgtk" ,webkitgtk)
-       ("sdl" ,sdl)))
+       ("sdl" ,sdl)
+       ("xdg-utils" ,xdg-utils)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
@@ -91,7 +93,15 @@
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
        ;; No 'check' target.
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda _
+             (substitute* "src/unix/utilsx11.cpp"
+               (("wxExecute\\(xdg_open \\+")
+                (string-append "wxExecute(\"" (which "xdg-open") "\"")))
+             #t)))))
     (home-page "https://www.wxwidgets.org/")
     (synopsis "Widget toolkit for creating graphical user interfaces")
     (description

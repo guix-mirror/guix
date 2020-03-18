@@ -2131,32 +2131,30 @@ increase approaching hashing speeds of 1GB/sec on a single core.")
       (license license:asl2.0))))
 
 (define-public go-github-com-spaolacci-murmur3
-  (let ((commit "f09979ecbc725b9e6d41a297405f65e7e8804acc")
-        (revision "0"))
-    (package
-      (name "go-github-com-spaolacci-murmur3")
-      (version (git-version "1.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/spaolacci/murmur3.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1lv3zyz3jy2d76bhvvs8svygx66606iygdvwy5cwc0p5z8yghq25"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/spaolacci/murmur3"))
-      (home-page "https://github.com/spaolacci/murmur3")
-      (synopsis "Native MurmurHash3 Go implementation")
-      (description "Native Go implementation of Austin Appleby's third
-MurmurHash revision (aka MurmurHash3).
+  (package
+    (name "go-github-com-spaolacci-murmur3")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spaolacci/murmur3.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1lv3zyz3jy2d76bhvvs8svygx66606iygdvwy5cwc0p5z8yghq25"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/spaolacci/murmur3"))
+    (home-page "https://github.com/spaolacci/murmur3")
+    (synopsis "Native MurmurHash3 Go implementation")
+    (description "Native Go implementation of Austin Appleby's third MurmurHash
+revision (aka MurmurHash3).
 
 Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-multiformats-go-multihash
   (let ((commit "97cdb562a04c6ef66d8ed40cd62f8fbcddd396d6")
@@ -3067,7 +3065,7 @@ network protocol.")
 (define-public go-github-com-pkg-errors
   (package
     (name "go-github-com-pkg-errors")
-    (version "0.9.0")
+    (version "0.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3076,7 +3074,7 @@ network protocol.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hlivqlcnm9wrj0v7h43gamw7mvg6svz9sm31fx28zn4ll25ablh"))))
+                "1761pybhc2kqr6v5fm8faj08x9bql8427yqg6vnfv6nhrasx1mwq"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/pkg/errors"))
@@ -3396,3 +3394,51 @@ data serialization format.")
     (description " A glob library that implements descending into other
 directories.  It is optimized for filewalking. ")
     (license license:expat)))
+
+(define-public go-github-com-willf-bitset
+  (package
+    (name "go-github-com-willf-bitset")
+    (version "1.1.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/willf/bitset")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0wpaxg6va3qwd0hq0b8rpb1hswvzzbfm2h8sjmcsdpbkydjjx9zg"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/willf/bitset"))
+    (synopsis "Bitsets in Go")
+    (description "This package provides a Go implementation of bitsets, which
+are a mapping between non-negative integers and boolean values focused on
+efficient space usage.")
+    (home-page "https://github.com/willf/bitset")
+    (license license:bsd-3)))
+
+(define-public go-github-com-willf-bloom
+  (package
+    (name "go-github-com-willf-bloom")
+    (version "2.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/willf/bloom")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ygan8pgcay7wx3cs3ja8rdqj7nly7v3and97ddcc66020jxchzg"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/willf/bloom"))
+    (propagated-inputs
+     `(("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+       ("go-github-com-willf-bitset" ,go-github-com-willf-bitset)))
+    (synopsis "Bloom filters in Go")
+    (description "This package provides a Go implementation of bloom filters,
+based on murmurhash.")
+    (home-page "https://github.com/willf/bloom")
+    (license license:bsd-2)))

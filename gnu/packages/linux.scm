@@ -370,10 +370,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.109")
+(define-public linux-libre-4.19-version "4.19.110")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0kwnlv5336vqdf38dzn077ic17zkb4rl5khxmc47syzd9zm4fhnh")))
+        (hash (base32 "15kbgj13vsr74c61vzs96a72k86x205jjq5bz9pbn70698n3s4fa")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -2114,8 +2114,7 @@ Linux-based operating systems.")
              #t)))
        #:tests? #f))                              ; no 'check' target
 
-    (home-page
-     "http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge")
+    (home-page "https://wiki.linuxfoundation.org/networking/bridge")
     (synopsis "Manipulate Ethernet bridges")
     (description
      "Utilities for Linux's Ethernet bridging facilities.  A bridge is a way
@@ -3101,7 +3100,7 @@ Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
 Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
-    (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
+    (home-page "https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     ;; wireless.21.h and wireless.22.h are distributed under lgpl2.1+, the
     ;; other files are distributed under gpl2.
     (license (list license:gpl2 license:lgpl2.1+))))
@@ -3629,6 +3628,36 @@ interfaces provided by the SATA/ATA/SAS @code{libata} subsystem, and the older
 IDE driver subsystem.  Many external USB drive enclosures with SCSI-ATA Command
 Translation (@dfn{SAT}) are also supported.")
     (license (license:non-copyleft "file://LICENSE.TXT"))))
+
+(define-public nvme-cli
+  (package
+    (name "nvme-cli")
+    (version "1.10.1")
+    (home-page "https://github.com/linux-nvme/nvme-cli")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "12wp2wxmsw2v8m9bhvwvdbhdgx1md8iilhbl19sfzz2araiwi2x8"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "CC=gcc")
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure) ; No ./configure script
+                  (replace 'install
+                    (lambda _
+                      (invoke "make" "install-spec" "PREFIX="
+                              (string-append "DESTDIR=" %output)))))
+       #:tests? #f)) ; The tests require sysfs, which is not accessible from
+                     ; the build environment
+    (synopsis "NVM-Express user space tooling for Linux")
+    (description "Nvme-cli is a utility to provide standards compliant tooling
+for NVM-Express drives.  It was made specifically for Linux as it relies on the
+IOCTLs defined by the mainline kernel driver.")
+    (license license:gpl2+)))
 
 (define-public rfkill
   (package

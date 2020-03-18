@@ -99,8 +99,8 @@ match from any for local action inbound
 
           (test-assert "mbox is empty"
             (marionette-eval
-             '(and (file-exists? "/var/mail")
-                   (not (file-exists? "/var/mail/root")))
+             '(and (file-exists? "/var/spool/mail")
+                   (not (file-exists? "/var/spool/mail/root")))
              marionette))
 
           (test-eq "accept an email"
@@ -140,16 +140,21 @@ match from any for local action inbound
                              (ice-9 rdelim))
 
                 (define (queue-empty?)
-                  (eof-object?
-                   (read-line
-                    (open-input-pipe
-                     (string-append #$(file-append opensmtpd "/sbin/smtpctl")
-                                    " show queue")))))
+                  (let* ((pipe (open-pipe* OPEN_READ
+                                           #$(file-append opensmtpd
+                                                          "/sbin/smtpctl")
+                                           "show" "queue"))
+                         (line (read-line pipe)))
+                    (close-pipe pipe)
+                    (eof-object? line)))
 
-                (let wait ()
-                  (if (queue-empty?)
-                      (file-exists? "/var/mail/root")
-                      (begin (sleep 1) (wait)))))
+                (let wait ((n 20))
+                  (cond ((queue-empty?)
+                         (file-exists? "/var/spool/mail/root"))
+                        ((zero? n)
+                         (error "root mailbox didn't show up"))
+                        (else
+                         (sleep 1) (wait (- n 1))))))
              marionette))
 
           (test-end)

@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,7 @@
             nginx-configuration-server-names-hash-bucket-size
             nginx-configuration-server-names-hash-bucket-max-size
             nginx-configuration-modules
+            nginx-configuration-global-directives
             nginx-configuration-extra-content
             nginx-configuration-file
 
@@ -529,6 +531,8 @@
   (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
                                      (default #f))
   (modules nginx-configuration-modules (default '()))
+  (global-directives nginx-configuration-global-directives
+                     (default '((events . ()))))
   (extra-content nginx-configuration-extra-content
                  (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like
@@ -551,6 +555,13 @@ of index files."
 
 (define (emit-load-module module)
   (list "load_module " module ";\n"))
+
+(define emit-global-directive
+  (match-lambda
+    ((key . (? list? alist))
+     (format #f "~a { ~{~a~}}~%" key (map emit-global-directive alist)))
+    ((key . value)
+     (format #f "~a ~a;~%" key value))))
 
 (define emit-nginx-location-config
   (match-lambda
@@ -626,12 +637,14 @@ of index files."
                  server-names-hash-bucket-size
                  server-names-hash-bucket-max-size
                  modules
+                 global-directives
                  extra-content)
    (apply mixed-text-file "nginx.conf"
           (flatten
            "user nginx nginx;\n"
            "pid " run-directory "/pid;\n"
            "error_log " log-directory "/error.log info;\n"
+           (map emit-global-directive global-directives)
            (map emit-load-module modules)
            "http {\n"
            "    client_body_temp_path " run-directory "/client_body_temp;\n"
@@ -657,8 +670,7 @@ of index files."
            (map emit-nginx-upstream-config upstream-blocks)
            (map emit-nginx-server-config server-blocks)
            extra-content
-           "\n}\n"
-           "events {}\n"))))
+           "\n}\n"))))
 
 (define %nginx-accounts
   (list (user-group (name "nginx") (system? #t))

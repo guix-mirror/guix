@@ -123,6 +123,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
@@ -510,6 +511,90 @@ H.264 (MPEG-4 AVC) video streams.")
 (@command{mkvextract}), and creating Matroska files from other media files
 (@command{mkvmerge}).")
     (license license:gpl2)))
+
+(define-public straw-viewer
+  (package
+    (name "straw-viewer")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trizen/straw-viewer")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "067j8wdfy29bi5ahky10xzzs8cr3mn95wl4kyqqjvjzri77a25j3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)))
+    (inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-json" ,perl-json)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-term-readline-gnu" ,perl-term-readline-gnu)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("xdg-utils" ,xdg-utils)
+
+       ;; Some videos play without youtube-dl, but others silently fail to.
+       ("youtube-dl" ,youtube-dl)))
+
+       ;; Required only when building the graphical interface (--gtk).
+       ;;("perl-file-sharedir" ,perl-file-sharedir)
+    (arguments
+     `(#:modules ((guix build perl-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/WWW/StrawViewer.pm"
+               (("'youtube-dl'")
+                (format #f "'~a/bin/youtube-dl'"
+                        (assoc-ref inputs "youtube-dl"))))
+             (substitute* "bin/gtk-straw-viewer"
+               (("'xdg-open'")
+                (format #f "'~a/bin/xdg-open'"
+                        (assoc-ref inputs "xdg-utils"))))
+             #t))
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share")))
+               (install-file "share/gtk-straw-viewer.desktop"
+                             (string-append sharedir "/applications"))
+               (install-file "share/icons/gtk-straw-viewer.png"
+                             (string-append sharedir "/pixmaps"))
+               #t)))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin-dir (string-append out "/bin/"))
+                    (site-dir (string-append out "/lib/perl5/site_perl/"))
+                    (lib-path (getenv "PERL5LIB")))
+               (for-each (cut wrap-program <>
+                              `("PERL5LIB" ":" prefix (,lib-path ,site-dir)))
+                         (find-files bin-dir))
+               #t))))))
+    (synopsis
+     "Light-weight application for searching and streaming videos from YouTube")
+    (description
+     "Straw-viewer searches for YouTube videos using @uref{https://invidio.us/,
+invidio.us} and plays them locally in a native media player like @command{vlc}
+or @command{mpv}.
+
+You can search for videos, playlists, and/or channels.  The videos are streamed
+directly to the player at the best chosen resolution and with closed captions if
+available.")
+    ;; XXX Add #:module-build-flags '("--gtk") dependencies and this sentence.
+    ;; Both a command-line and a graphical interface are available.
+    (home-page "https://github.com/trizen/youtube-viewer")
+    (license license:perl-license)))
 
 (define-public x265
   (package
@@ -2546,7 +2631,7 @@ making @dfn{screencasts}.")
        (list "-DWITH_QT5=TRUE")
        #:tests? #f))                    ; no test suite
     ;; Using HTTPS causes part of the page to be displayed improperly.
-    (home-page "http://www.maartenbaert.be/simplescreenrecorder/")
+    (home-page "https://www.maartenbaert.be/simplescreenrecorder/")
     (synopsis "Screen recorder")
     (description "SimpleScreenRecorder is an easy to use screen recorder with
 a graphical user interface.  It supports recording the entire screen, or a

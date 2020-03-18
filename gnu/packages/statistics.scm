@@ -3179,7 +3179,7 @@ Shiny).  The @code{DataTables} library has been included in this R package.")
                (base32
                 "13b89fhg1nx7zds82a0biz847ixphg9byf5zl2cw9kab6s56v1bd"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/base64enc")
+    (home-page "https://www.rforge.net/base64enc")
     (synopsis "Tools for Base64 encoding")
     (description
      "This package provides tools for handling Base64 encoding.  It is more
@@ -4328,7 +4328,7 @@ within a category based on their density using quasirandom noise.")
                (base32
                 "0hy89bwv7jixlg91li1fywa77916am2whqp1m1fx1khd45g44581"))))
     (build-system r-build-system)
-    (home-page "http://www.cbs.dtu.dk/~eklund/beeswarm/")
+    (home-page "https://www.cbs.dtu.dk/~eklund/beeswarm/")
     (synopsis "Implementation of bee swarm plots")
     (description
      "This package provides an implementation of bee swarm plots.  The bee
@@ -4563,7 +4563,7 @@ mixture models.")
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www-stat.stanford.edu/~hastie/Papers/#LARS")
+    (home-page "https://web.stanford.edu/~hastie/Papers/LARS/")
     (synopsis "Least angle regression software")
     (description
      "Least Angle Regression (\"LAR\") is a model selection algorithm; a
@@ -4698,7 +4698,7 @@ models, generalized linear models and model-based clustering.")
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www.stat.washington.edu/mclust/")
+    (home-page "https://www.stat.washington.edu/mclust/")
     (synopsis "Gaussian mixture modelling for model-based clustering etc.")
     (description
      "This package provides Gaussian finite mixture models fitted via EM
@@ -5499,7 +5499,7 @@ and the corresponding decision threshold.")
        ("r-magrittr" ,r-magrittr)
        ("r-tibble" ,r-tibble)
        ("r-rlang" ,r-rlang)))
-    (home-page "http://forcats.tidyverse.org")
+    (home-page "https://forcats.tidyverse.org")
     (synopsis "Tools for working with factors")
     (description "This package provides helpers for reordering factor
 levels (including moving specified levels to front, ordering by first

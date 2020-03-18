@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -550,14 +551,14 @@ It also includes runtime support libraries for these languages.")))
 (define-public gcc-9
   (package
    (inherit gcc-8)
-   (version "9.2.0")
+   (version "9.3.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gcc/gcc-"
                                 version "/gcc-" version ".tar.xz"))
             (sha256
              (base32
-              "01mj3yk7z49i49168hg2cg7qs4bsccrrnv7pjmbdlf8j2a7z0vpa"))
+              "1la2yy27ziasyf0jvzk58y1i5b5bq2h176qil550bxhifs39gqbi"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-libsanitizer-mode-size.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
@@ -717,6 +718,34 @@ as the 'native-search-paths' field."
   ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
   ;; report two gfortran@5 that are in fact identical.
   gfortran-7)
+
+(define-public libgccjit
+  (package
+    (inherit gcc-9)
+    (name "libgccjit")
+    (outputs (delete "lib" (package-outputs gcc)))
+    (properties (alist-delete 'hidden? (package-properties gcc)))
+    (arguments
+     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
+                                                (guix build utils)
+                                                (ice-9 regex)
+                                                (srfi srfi-1)
+                                                (srfi srfi-26))
+                                     ,@(package-arguments gcc))
+       ((#:configure-flags flags)
+        `(append `("--enable-host-shared"
+                   ,(string-append "--enable-languages=jit"))
+                 (remove (cut string-match "--enable-languages.*" <>)
+                         ,flags)))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'remove-broken-or-conflicting-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (for-each delete-file
+                         (find-files (string-append (assoc-ref outputs "out") "/bin")
+                                     ".*(c\\+\\+|cpp|g\\+\\+|gcov|gcc|gcc-.*)"))
+               #t))))))))
+
 
 (define-public gccgo-4.9
   (custom-gcc gcc-4.9 "gccgo" '("go")

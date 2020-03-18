@@ -87,9 +87,6 @@ appropriate plugins against the AST nodes.  Once Bandit has finished scanning
 all the files it generates a report.")
     (license asl2.0)))
 
-(define-public python2-bandit
-  (package-with-python2 python-bandit))
-
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
@@ -376,9 +373,6 @@ extensions.")
 common features used in Tempest.")
     (license asl2.0)))
 
-(define-public python2-tempest-lib
-  (package-with-python2 python-tempest-lib))
-
 ;; Packages from the Oslo library
 (define-public python-oslo.config
   (package
@@ -418,9 +412,6 @@ common features used in Tempest.")
       "The Oslo configuration API supports parsing command line arguments and
 .ini style configuration files.")
     (license asl2.0)))
-
-(define-public python2-oslo.config
-  (package-with-python2 python-oslo.config))
 
 (define-public python-oslo.context
   (package
@@ -523,9 +514,6 @@ configuration for all OpenStack projects.  It also provides custom formatters,
 handlers and support for context specific logging (like resource id’s etc).")
   (license asl2.0)))
 
-(define-public python2-oslo.log
-  (package-with-python2 python-oslo.log))
-
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
@@ -555,17 +543,7 @@ handlers and support for context specific logging (like resource id’s etc).")
     (description
       "The oslo.serialization library provides support for representing objects
 in transmittable and storable formats, such as JSON and MessagePack.")
-    (properties `((python2-variant . ,(delay python2-oslo.serialization))))
     (license asl2.0)))
-
-(define-public python2-oslo.serialization
-  (let ((base (package-with-python2 (strip-python2-variant
-                                     python-oslo.serialization))))
-    (package
-      (inherit base)
-      (native-inputs
-       `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-native-inputs base))))))
 
 (define-public python-reno
   (package
@@ -722,9 +700,6 @@ functions, such as encoding, exception handling, string manipulation, and time
 handling.")
     (license asl2.0)))
 
-(define-public python2-oslo.utils
-  (package-with-python2 python-oslo.utils))
-
 (define-public python-keystoneclient
   (package
     (name "python-keystoneclient")
@@ -786,21 +761,6 @@ SQLite for its identity store database, with the option to connect to external
 LDAP.")
     (license asl2.0)))
 
-(define-public python2-keystoneclient
-  (let ((keystoneclient (package-with-python2 python-keystoneclient)))
-    (package (inherit keystoneclient)
-      (propagated-inputs
-       `(("python2-requests" ,python2-requests)
-         ,@(alist-delete "python-requests"
-                         (package-propagated-inputs keystoneclient))))
-      (native-inputs
-       `(("python2-oauthlib" ,python2-oauthlib)
-         ("python2-oslosphinx" ,python2-oslosphinx)
-         ("python2-requests-mock" ,python2-requests-mock)
-         ("python2-tempest-lib" ,python2-tempest-lib)
-         ,@(fold alist-delete (package-native-inputs keystoneclient)
-            '("python-oauthlib" "python-oslosphinx" "python-requests-mock" "python-tempest-lib")))))))
-
 (define-public python-swiftclient
   (package
     (name "python-swiftclient")
@@ -840,16 +800,7 @@ data that best fit this type of storage model are virtual machine images, photo
 storage, email storage and backup archiving.  Having no central \"brain\" or
 master point of control provides greater scalability, redundancy and
 permanence.")
-    (properties `((python2-variant . ,(delay python2-swiftclient))))
     (license asl2.0)))
-
-(define-public python2-swiftclient
-  (let ((swiftclient (package-with-python2
-                      (strip-python2-variant python-swiftclient))))
-    (package (inherit swiftclient)
-      (propagated-inputs
-       `(("python2-futures" ,python2-futures)
-         ,@(package-propagated-inputs swiftclient))))))
 
 (define-public python-git-review
   (package

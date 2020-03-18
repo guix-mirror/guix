@@ -27,7 +27,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system scons)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
@@ -39,6 +41,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages xml))
@@ -227,64 +230,57 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
         (base32 "0faz2mvk82hi7ispxxih07lhpyz5dazs4gcknym9piiabga29p97"))))
     (build-system scons-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("python" ,python)))
+     `(("bc" ,bc)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("bluez" ,bluez)
        ("dbus" ,dbus)
        ("libcap" ,libcap)
        ("libusb" ,libusb)
-       ("ncurses" ,ncurses)))
+       ("ncurses" ,ncurses)
+       ("python" ,python)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyserial" ,python-pyserial)
+       ("python-wrapper" ,python-wrapper)
+       ("qtbase" ,qtbase)))
     (arguments
-     `(#:scons-flags (list (string-append "prefix=" %output)
-                            ;; TODO: Install python bindings.
-                           "python=no")
+     `(#:scons-flags
+       (list (string-append "prefix=" %output)
+             (let ((version ,(version-major+minor (package-version python))))
+               (string-append "python_libdir=" %output
+                              "/lib/python" version
+                              "/site-packages"))
+             "qt_versioned=5")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((python3 (string-append (assoc-ref inputs "python")
-                                           "/bin/python3")))
-               (substitute* '("contrib/gpsData.py"
-                              "contrib/ntpshmviz"
-                              "contrib/skyview2svg"
-                              "contrib/webgps.py"
-                              "devtools/ais.py"
-                              "devtools/aivdmtable"
-                              "devtools/cycle_analyzer"
-                              "devtools/flocktest"
-                              "devtools/identify_failing_build_options.py"
-                              "devtools/regress-builder"
-                              "devtools/regressdiff"
-                              "devtools/sizes"
-                              "devtools/striplog"
-                              "devtools/tablegen.py"
-                              "devtools/test_json_validity.py"
-                              "devtools/uninstall_cleanup.py"
-                              "gegps"
-                              "gps/gps.py"
-                              "gpscat"
-                              "gpsfake"
-                              "gpsprof"
-                              "jsongen.py"
-                              "leapsecond.py"
-                              "maskaudit.py"
-                              "test_maidenhead.py"
-                              "test_misc.py"
-                              "test_xgps_deps.py"
-                              "ubxtool"
-                              "valgrind-audit.py"
-                              "xgps"
-                              "xgpsspeed"
-                              "zerk")
-                 (("/usr/bin/python") python3)
-                 (("/usr/bin/env python") python3)))
-             #t))
-         (add-after 'fix-paths 'fix-build
-           (lambda _
+         (add-after 'unpack 'fix-build
+           (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "SConstruct"
-               (("'PATH'")
-                "'PATH','CPATH','LIBRARY_PATH'"))
+               (("envs = \\{\\}")
+                "envs = os.environ"))
+             #t))
+         (add-after 'install 'wrap-python-scripts
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (pycairo (assoc-ref inputs "python-pycairo"))
+                    (pygobject (assoc-ref inputs "python-pygobject"))
+                    (pyserial (assoc-ref inputs "python-pyserial"))
+                    (sitedir (lambda (package)
+                               (string-append package
+                                              "/lib/python"
+                                              ,(version-major+minor
+                                                (package-version python))
+                                              "/site-packages")))
+                    (pythonpath (string-join (map sitedir
+                                                  (list out pycairo pygobject
+                                                        pyserial))
+                                             ":")))
+               (for-each (lambda (script)
+                           (wrap-program (string-append out "/bin/" script)
+                             `("PYTHONPATH" ":" prefix (,pythonpath))))
+                         '("gegps" "gpscat" "gpsfake" "gpsprof"
+                           "ubxtool" "xgps" "xgpsspeed" "zerk")))
              #t)))))
     (synopsis "GPS service daemon")
     (description

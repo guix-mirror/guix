@@ -42,7 +42,7 @@
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
-;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
+;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
@@ -62,6 +62,8 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3606,14 +3608,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.21")
+    (version "0.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "1xx1wjfpsnwx2fpydqhwy9k1b5kjk8dqbkzf8lqaj9c4rvjbn50a"))))
+                "05ik9qv539b5c1nzxkk3lk23bqj4vqgmfmd8x367abhb7c9gix2z"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -10399,7 +10401,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
 (define-public emacs-which-key
   (package
     (name "emacs-which-key")
-    (version "3.3.1")
+    (version "3.4.0")
     (source
      (origin
        (method git-fetch)
@@ -10408,7 +10410,7 @@ or @code{treemacs}, but leveraging @code{Dired} to do the job of display.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dh6kr00wmql46whjkvnl953zngiv5j99ypvr1b3cb2174623afb"))))
+        (base32 "1ahgb7dqdc75farkl0fg0a6hvx2067gdvjq99cd3z2dz56km0p05"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -18170,7 +18172,7 @@ processes for Emacs")
 (define-public emacs-lsp-ui
   (package
     (name "emacs-lsp-ui")
-    (version "6.0")
+    (version "6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -18179,7 +18181,7 @@ processes for Emacs")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r4327fd8cvjxfwkddp5c4bdskyncbs4sx9m3z2w4d773y2jrakc"))))
+                "024753bi0p1jyjhw7wk8k6s16kbwab5ar4cfasvbn8g08acf293b"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -21756,6 +21758,30 @@ allow the creation of journal records in the current daily, weekly, monthly or
 yearly file and search within all records or specified time intervals.  All
 records can be browsed and searched from the Emacs Calendar for convenience.
 All entries in a specified TODO state will be carried over to the next day.")
+    (license license:bsd-3)))
+
+(define-public emacs-org-static-blog
+  (package
+    (name "emacs-org-static-blog")
+    (version "1.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bastibe/org-static-blog")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15iy3z8rglaqbx1fz14inh18ksgjsmq30b8hyv3lgjvcc9ssaiw0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bastibe/org-static-blog")
+    (synopsis
+     "Simple Org mode based static blog generator")
+    (description
+     "@code{emacs-org-static-blog} is one more static blog generator, it
+focuses on being simple.  All file are simple Org files in a directory.  The
+only requirement is that every Org file must have a @samp{title} and
+a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
     (license license:bsd-3)))
 
 (define-public emacs-ddskk

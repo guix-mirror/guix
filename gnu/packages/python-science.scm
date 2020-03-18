@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -277,12 +277,21 @@ doing practical, real world data analysis in Python.")
 (define-public python2-pandas
   (let ((pandas (package-with-python2
                  (strip-python2-variant python-pandas))))
-    (package/inherit
-     pandas
-     (version "0.24.2")
-     (source (origin
-               (method url-fetch)
-               (uri (pypi-uri "pandas" version))
-               (sha256
-                (base32
-                 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag")))))))
+    (package
+      (inherit pandas)
+      (version "0.24.2")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "pandas" version))
+                (sha256
+                 (base32
+                  "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Adjust for renamed error message in Python 2.7.17.  Taken
+                    ;; from <https://github.com/pandas-dev/pandas/pull/29294>.
+                    (substitute* "pandas/io/parsers.py"
+                      (("if 'NULL byte' in msg:")
+                       "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
+                    #t)))))))

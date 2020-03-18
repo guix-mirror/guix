@@ -1536,7 +1536,7 @@ games.")
 (define-public godot
   (package
     (name "godot")
-    (version "3.2")
+    (version "3.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1545,7 +1545,7 @@ games.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f15izjl4i2xlz1xj5pcslzl9gm3rmr3c21gh256ynpi2zhhkcdd"))
+                "1kndls0rklha7kz9l4i2ivjxab4jpk3b2j7dcgcg2qc3s81yd0r6"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (srfi srfi-1)))
@@ -1756,6 +1756,42 @@ a 2D editor view.")
        ("guile-sdl2" ,guile-sdl2)))
     (inputs
      `(("guile" ,guile-2.2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://dthompson.us/projects/chickadee.html")
+    (synopsis "Game development toolkit for Guile Scheme with SDL2 and OpenGL")
+    (description "Chickadee is a game development toolkit for Guile Scheme
+built on top of SDL2 and OpenGL.  Chickadee aims to provide all the features
+that parenthetically inclined game developers need to make 2D (and eventually
+3D) games in Scheme, such as:
+
+@enumerate
+@item extensible, fixed-timestep game loop
+@item OpenGL-based rendering engine
+@item keyboard, mouse, controller input
+@item REPL-driven development model
+@end enumerate\n")
+    (license license:gpl3+)))
+
+(define-public guile3.0-chickadee
+  (package
+    (inherit guile-chickadee)
+    (name "guile-chickadee")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dthompson.us/chickadee/"
+                                  "chickadee-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fdicsgls5cp0yffcm5vjmav67gv9bxhz1s3jvdvinspxb485x7l"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("guile-opengl" ,guile3.0-opengl)
+       ("guile-sdl2" ,guile3.0-sdl2)))
+    (inputs
+     `(("guile" ,guile-3.0)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))

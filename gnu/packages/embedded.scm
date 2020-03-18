@@ -450,7 +450,7 @@ languages are C and C++.")
          ("pkg-config" ,pkg-config)))
       (inputs
        `(("libusb" ,libusb)))
-      (home-page "http://repo.or.cz/w/libjaylink.git")
+      (home-page "https://repo.or.cz/w/libjaylink.git")
       (synopsis "Library to interface Segger J-Link devices")
       (description "libjaylink is a shared library written in C to access
 SEGGER J-Link and compatible devices.")

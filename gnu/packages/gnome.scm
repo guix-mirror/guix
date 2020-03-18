@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015, 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +119,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lirc)
@@ -3844,16 +3846,15 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public five-or-more
   (package
     (name "five-or-more")
-    (version "3.32.0")
+    (version "3.32.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/five-or-more/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "five-or-more-" version ".tar.xz"))
        (sha256
-        (base32
-         "0v52i22ygv6y4zqs8nyb1qmacmj9whhqrw7qss6vn7by4nsikhrn"))))
+        (base32 "0xw05dd2dwi9vsph9h158b4n89s5k07xrh6bjz1icm0pdmjwhpgk"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -4558,7 +4559,7 @@ throughout GNOME for API documentation).")
                                        (assoc-ref inputs "xorg-server")))
                        (setenv "DISPLAY" ":1")
                        #t)))))
-    (home-page "http://www.cogl3d.org")
+    (home-page "https://www.cogl3d.org")
     (synopsis "Object oriented GL/GLES Abstraction/Utility Layer")
     (description
      "Cogl is a small library for using 3D graphics hardware to draw pretty
@@ -5396,15 +5397,14 @@ almost all of them.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.63")
+    (version "0.9.98.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/d42b466752729a0d3fa828a721e25043/"
-                                  "eolie-" version ".tar.xz"))
+              (uri (string-append "https://adishatz.org/eolie/eolie-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "11pp8g0w22h1q0bbj9517l5838gcymvvp8fp9kh6h2dmgir2ssih"))))
+                "1d844zva5w4p9pnp9c2g7zyb4vayr2g2drf78spxsdlc5lbd7lqr"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -7420,7 +7420,7 @@ easy, safe, and automatic.")
 (define-public tracker
   (package
     (name "tracker")
-    (version "2.3.2")
+    (version "2.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker/"
@@ -7428,7 +7428,7 @@ easy, safe, and automatic.")
                                   "tracker-" version ".tar.xz"))
               (sha256
                (base32
-                "1nzbnvwwsk6kv6kqbxwlz8vk70l9ai6b4r9qypw51vp4qy72ny54"))))
+                "0vai0qz9jn3z5dlzysynwhbbmslp84ygdql81f5wfxxr98j54yap"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -7490,7 +7490,7 @@ endpoint and it understands SPARQL. ")
 (define-public tracker-miners
   (package
     (name "tracker-miners")
-    (version "2.3.2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/tracker-miners/"
@@ -7498,7 +7498,7 @@ endpoint and it understands SPARQL. ")
                                   "/tracker-miners-" version ".tar.xz"))
               (sha256
                (base32
-                "1kizavw9gbdjkw4wykgv0fcl2y6fj788nycx9p4byn6ylb1277h6"))))
+                "06abxrnrz7xayykrabn135rpsm6z0fqw7gibrb9j09l6swlalwkl"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8910,7 +8910,8 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
+     '(#:configure-flags (list "--enable-vala")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
@@ -8935,6 +8936,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
      `(("glib" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)                             ;for VAPI, needed by Geary
        ("xmllint" ,libxml2)
 
        ;; For tests.
@@ -9918,3 +9920,93 @@ manage remote and virtual systems.")
               license:cc-by2.0
               ;; For all others.
               license:lgpl2.0+))))
+
+(define-public geary
+  (package
+    (name "geary")
+    (version "3.34.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/geary")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01cc921kyh3zxz07biqbdzkjgmdcc36kwjyajm4y382a75cl5zg7"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-failing-tests
+                    (lambda _
+                      (substitute* "test/meson.build"
+                        (("test\\('client-tests', geary_test_client_bin\\)")
+                         ""))
+                      #t))
+                  (add-after 'unpack 'disable-postinstall-script
+                    (lambda _
+                      (substitute* "meson.build"
+                        (("meson.add_install_script\\(\
+join_paths\\('build-aux', 'post_install.py'\\)\\)")
+                         ""))
+                      #t))
+                  (add-before 'check 'setup-xvfb
+                    (lambda _
+                      (system "Xvfb :1 &")
+                      (setenv "DISPLAY" ":1")
+                      #t)))))
+    (inputs
+     `(("enchant" ,enchant)
+       ("folks" ,folks)
+       ("gcr" ,gcr)
+       ("glib" ,glib)
+       ("gmime" ,gmime-2.6)
+       ("gnome-online-accounts:lib"
+        ,gnome-online-accounts "lib")
+       ("gspell" ,gspell)
+       ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
+       ("json-glib" ,json-glib)
+       ("libcanberra" ,libcanberra)
+       ("libgee" ,libgee)
+       ("libhandy" ,libhandy)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("libunwind" ,libunwind)
+       ("sqlite" ,sqlite)
+       ("webkitgtk" ,webkitgtk)
+       ("ytnef" ,ytnef)))
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("cmake-minimal" ,cmake-minimal)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gnu-gettext)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("itstool" ,itstool)
+       ("libarchive" ,libarchive)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ("xvfb" ,xorg-server-for-tests)))
+    (synopsis "GNOME email application built around conversations")
+    (description
+     "Geary collects related messages together into conversations,
+making it easy to find and follow your discussions.  Full-text and keyword
+search makes it easy to find the email you are looking for.  Geary's
+full-featured composer lets you send rich, styled text with images, links, and
+lists, but also send lightweight, easy to read text messages.  Geary
+automatically picks up your existing GNOME Online Accounts, and adding more is
+easy.  Geary has a clean, fast, modern interface that works like you want it
+to.")
+    (home-page "https://wiki.gnome.org/Apps/Geary")
+    (license (list
+              ;; geary
+              license:lgpl2.1+
+              ;; icons
+              license:cc-by3.0
+              license:cc-by-sa3.0
+              license:public-domain
+              ;; snowball
+              license:bsd-2))))

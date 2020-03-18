@@ -1,0 +1,18 @@
+Be compatible with python-werkzeug 1.0.0.
+
+Taken from upstream:
+https://github.com/beetbox/beets/commit/d43d54e21cde97f57f19486925ab56b419254cc8
+
+diff --git a/beetsplug/web/__init__.py b/beetsplug/web/__init__.py
+index f53fb3a954..21ff5d94ed 100644
+--- a/beetsplug/web/__init__.py
++++ b/beetsplug/web/__init__.py
+@@ -169,7 +169,7 @@ def to_python(self, value):
+         return ids
+ 
+     def to_url(self, value):
+-        return ','.join(value)
++        return ','.join(str(v) for v in value)
+ 
+ 
+ class QueryConverter(PathConverter):

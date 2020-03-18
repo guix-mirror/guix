@@ -1,0 +1,69 @@
+Fix a test failure with newer versions of SQLalchemy due to missing
+"causes" for some exceptions.
+
+diff --git a/alembic/operations/ops.py b/alembic/operations/ops.py
+index 5ec2762..7129472 100644
+--- a/alembic/operations/ops.py
++++ b/alembic/operations/ops.py
+@@ -108,6 +108,7 @@ def from_constraint(cls, constraint):
+             "primary_key_constraint": "primary",
+             "check_constraint": "check",
+             "column_check_constraint": "check",
++            "table_or_column_check_constraint": "check",
+         }
+ 
+         constraint_table = sqla_compat._table_for_constraint(constraint)
+@@ -707,6 +708,7 @@ def batch_create_foreign_key(
+     "create_check_constraint", "batch_create_check_constraint"
+ )
+ @AddConstraintOp.register_add_constraint("check_constraint")
++@AddConstraintOp.register_add_constraint("table_or_column_check_constraint")
+ @AddConstraintOp.register_add_constraint("column_check_constraint")
+ class CreateCheckConstraintOp(AddConstraintOp):
+     """Represent a create check constraint operation."""
+diff --git a/alembic/testing/assertions.py b/alembic/testing/assertions.py
+index 3dc08f0..a78e5e8 100644
+--- a/alembic/testing/assertions.py
++++ b/alembic/testing/assertions.py
+@@ -2,10 +2,9 @@
+ 
+ import re
+ 
++from sqlalchemy import util
+ from sqlalchemy.engine import default
+ from sqlalchemy.testing.assertions import _expect_warnings
+-from sqlalchemy.testing.assertions import assert_raises  # noqa
+-from sqlalchemy.testing.assertions import assert_raises_message  # noqa
+ from sqlalchemy.testing.assertions import eq_  # noqa
+ from sqlalchemy.testing.assertions import is_  # noqa
+ from sqlalchemy.testing.assertions import is_false  # noqa
+@@ -17,6 +16,29 @@
+ from ..util.compat import py3k
+ 
+ 
++def assert_raises(except_cls, callable_, *args, **kw):
++    try:
++        callable_(*args, **kw)
++        success = False
++    except except_cls:
++        success = True
++
++    # assert outside the block so it works for AssertionError too !
++    assert success, "Callable did not raise an exception"
++
++
++def assert_raises_message(except_cls, msg, callable_, *args, **kwargs):
++    try:
++        callable_(*args, **kwargs)
++        assert False, "Callable did not raise an exception"
++    except except_cls as e:
++        assert re.search(msg, util.text_type(e), re.UNICODE), "%r !~ %s" % (
++            msg,
++            e,
++        )
++        print(util.text_type(e).encode("utf-8"))
++
++
+ def eq_ignore_whitespace(a, b, msg=None):
+     # sqlalchemy.testing.assertion has this function
+     # but not with the special "!U" detection part

@@ -716,7 +716,7 @@ IPv6, proxies, and Unix sockets.")
         (base32
          "0mv3wndj4z2bsshh2k8d5sy3j8wxzgf8mzmmkvj1k8gpcz37dm6g"))))
     (build-system gnu-build-system)
-    (home-page "http://www.routemeister.net/projects/sipcalc/")
+    (home-page "https://www.routemeister.net/projects/sipcalc/")
     (synopsis "Command-line IP subnet calculator")
     (description
      "Sipcalc is an advanced command-line IP subnet calculator.  It can take
@@ -1206,7 +1206,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.31")
+    (version "1.8.31p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1216,7 +1216,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0ks5mm9hda5idivncyfpiz4lrd8fv0dpmsl711788k7f7ixdka3y"))
+                "1n0mdmgcs92af34xxsnsh1arrngymhdmwd9srjgjbk65q7xzsg67"))
               (modules '((guix build utils)))
               (snippet
                '(begin

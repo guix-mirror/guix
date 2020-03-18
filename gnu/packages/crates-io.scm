@@ -476,12 +476,18 @@ text or blue underlined text, on ANSI terminals.")
          "14mkgkrjd4b4zy92pflz6yb4j1wn2chbd8jczxknxbkdm2vb0rrz"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-blake2-rfc" ,rust-blake2-rfc-0.2)
         ("rust-scoped-threadpool" ,rust-scoped-threadpool-0.1))
        #:cargo-development-inputs
-       (("rust-cargon" ,rust-cargon-0.0))))
+       (("rust-cargon" ,rust-cargon-0.0))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               (("\\{ path =.*,") "{"))
+             #t)))))
     (home-page "https://github.com/bryant/argon2rs")
     (synopsis "Rust password hashing library that runs on Argon2")
     (description "This package provides a pure Rust password hashing library
@@ -1745,8 +1751,7 @@ capabilities")
           "1cszlab7jk736p0lb50ag4l9nv72m7j41bwrmygl0lr4iz0350w2"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-gcc" ,rust-gcc-0.3))))
     (home-page "https://github.com/bryant/argon2rs")
     (synopsis "Thin wrapper around the Argon2 C library")
@@ -13094,8 +13099,7 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "14qjfv3gggzhnma20k0sc1jf8y6pplsaq7n1j9ls5c8kf2wl0a2m"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-fuchsia-cprng" ,rust-fuchsia-cprng-0.1)
         ("rust-rand-core" ,rust-rand-core-0.3)
         ("rust-rdrand" ,rust-rdrand-0.4)
@@ -13116,8 +13120,7 @@ useful types and distributions, and some randomness-related algorithms.")
          (base32
           "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-libc" ,rust-libc-0.2)
         ("rust-rand" ,rust-rand-0.4))))))
 
@@ -13469,8 +13472,7 @@ generator based on timing jitter.")
          "1a6wy76lc5fimm1n9n8fzhp4cfjwfwxh4hx63bg3vlh1d2w1dm3p"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-rand-core" ,rust-rand-core-0.5)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
@@ -13613,7 +13615,6 @@ random number generators.")
          (base32
           "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))
     (build-system cargo-build-system)
-    (arguments '(#:skip-build? #t))
     (home-page "https://github.com/bluss/rawpointer/")
     (synopsis "Extra methods for raw pointers")
     (description "Extra methods for raw pointers.  For example

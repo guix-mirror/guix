@@ -648,7 +648,7 @@ multipole-accelerated algorithm.")
            (sha256
             (base32
              "1d2v8k7p176j0lczx4vx9n9gbg3vw09n2c4b6w0wj5wqmifywhc1"))))))
-    (home-page "http://fritzing.org")
+    (home-page "https://fritzing.org")
     (synopsis "Electronic circuit design")
     (description
      "The Fritzing application is @dfn{Electronic Design Automation} (EDA)
@@ -2432,7 +2432,7 @@ interpolation toolkit.")
       (inputs `(("boost" ,boost)
                 ("python-wrapper" ,python-wrapper)))
       (native-inputs
-       `(("cmake" ,cmake)))
+       `(("cmake" ,cmake-minimal)))
       (arguments
        `(#:tests? #f
          #:phases

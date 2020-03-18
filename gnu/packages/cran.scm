@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
@@ -1351,7 +1351,7 @@ applications.  That is, compute distances and related measures for angular
          "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
     (build-system r-build-system)
     (inputs `(("libjpeg" ,libjpeg-turbo)))
-    (home-page "http://www.rforge.net/jpeg/")
+    (home-page "https://www.rforge.net/jpeg/")
     (synopsis "Read and write JPEG images with R")
     (description "This package provides a way to read, write and display
 bitmap images stored in the JPEG format with R.  It can read and write both
@@ -1592,7 +1592,7 @@ error stream.")
        (sha256
         (base32 "121byimd6bg7jbrq5wz5fpi0vxq0vh8g724vkhnjzszbvcv1xsb7"))))
     (build-system r-build-system)
-    (home-page "http://mevik.net/work/software/pls.html")
+    (home-page "https://mevik.net/work/software/pls.html")
     (synopsis "Partial Least Squares and Principal Component Regression")
     (description
      "The pls package implements multivariate regression methods: Partial Least
@@ -1979,7 +1979,7 @@ use in R.  It also provides a simple way for variable interpolation in R.")
         (base32
          "0z80jxkygmzn11sq0c2iz357s9bpki548lg926g85gldhfj1md90"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/fastmatch")
+    (home-page "https://www.rforge.net/fastmatch")
     (synopsis "Fast match function")
     (description
      "This package provides a fast @code{match} replacement for cases that
@@ -4141,7 +4141,7 @@ terminals.")
         (base32
          "0gm9ii7ncvllxbvyk6srsiinjmqyj7lmh84w43x4nhqpvafj9q4q"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/uuid")
+    (home-page "https://www.rforge.net/uuid")
     (synopsis "Tools for generating and handling of UUIDs")
     (description
      "This package provides tools for generating and handling of
@@ -4513,7 +4513,7 @@ University Press, 2000.")
      `(("r-leaps" ,r-leaps)
        ("r-locfit" ,r-locfit)
        ("r-mgcv" ,r-mgcv)))
-    (home-page "http://www.stat.uiowa.edu/~kchan/TSA.htm")
+    (home-page "https://homepage.divms.uiowa.edu/~kchan/TSA.htm")
     (synopsis "Time series analysis")
     (description
      "This package contains R functions and datasets detailed in the book
@@ -4926,7 +4926,7 @@ files.")
     (propagated-inputs
      `(("r-shiny" ,r-shiny)
        ("r-jsonlite" ,r-jsonlite)))
-    (home-page "http://cran.r-project.org/web/packages/shinyAce")
+    (home-page "https://cran.r-project.org/web/packages/shinyAce/")
     (synopsis "Ace editor bindings for Shiny")
     (description
      "This package provides Ace editor bindings to enable a rich text editing
@@ -5077,7 +5077,7 @@ It also includes interpolation functions.")
          "00j6b8b6xsx6v370h220x233rpk6asca78165y3d48jpwvwisdc9"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-proto" ,r-proto)))
-    (home-page "http://gsubfn.googlecode.com")
+    (home-page "https://code.google.com/archive/p/gsubfn/")
     (synopsis "Utilities for strings and function arguments.")
     (description
      "This package provides @code{gsubfn} which is like @code{gsub} but can
@@ -6878,7 +6878,7 @@ containing one or more SNPs that evolved under directional selection.")
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
        ("r-rcpp" ,r-rcpp)))
-    (home-page "http://expasy.org/tools/pROC/")
+    (home-page "https://web.expasy.org/pROC/")
     (synopsis "Display and analyze ROC curves")
     (description
      "This package provides tools for visualizing, smoothing and comparing
@@ -9253,7 +9253,7 @@ package provides a minimal R interface by relying on the Rcpp package.")
          "1mhd6vp47xmfw533h0pkvydv96m57fspvd85g8m7iqb5rcxvhhdb"))))
     (properties `((upstream-name . "RcppParallel")))
     (build-system r-build-system)
-    (home-page "http://rcppcore.github.io/RcppParallel")
+    (home-page "https://rcppcore.github.io/RcppParallel/")
     (synopsis "Parallel programming tools for Rcpp")
     (description
      "This package provides high level functions for parallel programming with
@@ -9579,7 +9579,7 @@ related functions.")
         (base32
          "0scar396wiq6wkbkvwp4qrxqc1m075y56p37i6iry5rw796p1i86"))))
     (build-system r-build-system)
-    (home-page "http://www.rmetrics.org")
+    (home-page "https://www.rmetrics.org")
     (synopsis "Stable distribution functions")
     (description
      "This package provides density, probability and quantile functions, and
@@ -9698,7 +9698,7 @@ redundant complex conjugate when the input is real data.")
      `(("libtiff" ,libtiff)
        ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/tiff/")
+    (home-page "https://www.rforge.net/tiff/")
     (synopsis "Read and write TIFF images")
     (description
      "This package provides an easy and simple way to read, write and display
@@ -10317,7 +10317,7 @@ conditional reporting based on the current \"output level\".")
        ("r-reportr" ,r-reportr)
        ("r-rnifti" ,r-rnifti)
        ("r-shades" ,r-shades)))
-    (home-page "http://www.tractor-mri.org.uk")
+    (home-page "https://www.tractor-mri.org.uk")
     (synopsis "Read, manipulate and visualize magnetic resonance images")
     (description
      "This package provides functions for working with magnetic resonance
@@ -10440,7 +10440,7 @@ the combination of non-negative and non-positive constraints.")
     (properties `((upstream-name . "Iso")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
-    (home-page "http://www.stat.auckland.ac.nz/~rolf/")
+    (home-page "https://www.stat.auckland.ac.nz/~rolf/")
     (synopsis "Functions to perform isotonic regression")
     (description
      "This package provides support for linear order and unimodal
@@ -11492,7 +11492,7 @@ model with finite state space using the Aalen-Johansen estimator.")
        ("r-plyr" ,r-plyr)
        ("r-survival" ,r-survival)
        ("r-zoo" ,r-zoo)))
-    (home-page "http://BendixCarstensen.com/Epi/")
+    (home-page "https://BendixCarstensen.com/Epi/")
     (synopsis "Statistical analysis in epidemiology")
     (description
      "This package provides functions for demographic and epidemiological
@@ -12929,7 +12929,7 @@ Hubbell's @dfn{Unified Neutral Theory of Biodiversity} (UNTB).")
         (base32
          "1lbx1bxwkf9dw6q46w40pp7h5nkxgghmx8rkpaymm6iybc7gyir2"))))
     (build-system r-build-system)
-    (home-page "http://stat.sfu.ca/statgen/research/stepwise.html")
+    (home-page "https://stat.sfu.ca/statgen/research/stepwise.html")
     (synopsis "Stepwise detection of recombination breakpoints")
     (description
      "This package provides a stepwise approach to identifying recombination
@@ -13535,7 +13535,7 @@ inbred lines, F2 intercrosses, and association mapping populations.")
      `(("r-genetics" ,r-genetics)
        ("r-rcpp" ,r-rcpp)
        ("r-snpstats" ,r-snpstats)))
-    (home-page "http://stat.sfu.ca/statgen/research/ldheatmap.html")
+    (home-page "https://stat.sfu.ca/statgen/research/ldheatmap.html")
     (synopsis "Graphical display of pairwise linkage disequilibria between SNPs")
     (description
      "This package provides tools to produce a graphical display, as a heat
@@ -13752,7 +13752,7 @@ variance components, using the likelihood-ratio statistics G.")
         (base32
          "0qs5jl0snzfchgpp6pabncwywxcmi743g91jvjiyyzw0lw85yv4s"))))
     (build-system r-build-system)
-    (home-page "http://stat.sfu.ca/statgen/research/hapassoc.html")
+    (home-page "https://stat.sfu.ca/statgen/research/hapassoc.html")
     (synopsis "Inference of trait associations with SNP haplotypes")
     (description
      "Hapassoc performs likelihood inference of trait associations with
@@ -13848,7 +13848,7 @@ the corresponding outputs (tables and graphs).")
        ("jdk" ,icedtea-8 "jdk")
        ("pcre" ,pcre)
        ("zlib" ,zlib)))
-    (home-page "http://www.rforge.net/rJava/")
+    (home-page "https://www.rforge.net/rJava/")
     (synopsis "Low-Level R to Java interface")
     (description
      "This package provides a low-level interface to the Java VM very much
@@ -16880,7 +16880,7 @@ data.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lars" ,r-lars)))
-    (home-page "http://www.stat.umn.edu/~hzou")
+    (home-page "http://users.stat.umn.edu/~zouxx019/")
     (synopsis "Elastic-Net for sparse estimation and sparse PCA")
     (description
      "This package provides functions for fitting the entire solution path of
@@ -17768,7 +17768,7 @@ errors.")
        ("r-rcpp" ,r-rcpp)
        ("r-stringr" ,r-stringr)
        ("r-xml" ,r-xml)))
-    (home-page "http://dusp.mit.edu/faculty/ezra-glenn")
+    (home-page "https://dusp.mit.edu/faculty/ezra-haber-glenn")
     (synopsis "Work with data from the US Census")
     (description
      "This package provides a general toolkit for downloading, managing,
@@ -18345,7 +18345,7 @@ number embedded in the file rather than the file extension.")
        ("r-readbitmap" ,r-readbitmap)
        ("r-stringr" ,r-stringr)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://dahtah.github.io/imager")
+    (home-page "https://dahtah.github.io/imager/")
     (synopsis "Image processing library")
     (description
      "This is a package for fast image processing for images in up to 4
@@ -19044,7 +19044,7 @@ OpenMP.")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-quantreg" ,r-quantreg)))
-    (home-page "http://www.ms.uky.edu/~mai/EmpLik.html")
+    (home-page "https://www.ms.uky.edu/~mai/EmpLik.html")
     (synopsis "Empirical likelihood ratio for censored/truncated data")
     (description
      "This package provides empirical likelihood ratio tests for

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
@@ -46,14 +46,14 @@
 (define-public fio
   (package
     (name "fio")
-    (version "3.18")
+    (version "3.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://brick.kernel.dk/snaps/"
                                   "fio-" version ".tar.bz2"))
               (sha256
                (base32
-                "12wzi40hn0ylkdiqwjjljdjmiq78nhwsv3qqa0fad7h3x08w6w6b"))))
+                "01nc7igmcc6hda32d1y8vidd9x9pdlxvf3i1pwrzvmi6xvmbfvab"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"

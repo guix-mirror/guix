@@ -1008,7 +1008,7 @@ The core is 12 builtin special forms and 33 builtin functions.")
   (package
     (name "gauche")
     (version "0.9.9")
-    (home-page "http://practical-scheme.net/gauche/index.html")
+    (home-page "https://practical-scheme.net/gauche/index.html")
     (source
      (origin
        (method url-fetch)

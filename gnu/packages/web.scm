@@ -7194,7 +7194,7 @@ the Internet to a local directory, building recursively all directories,
 getting HTML, images, and other files from the server to your computer.
 
 HTTrack arranges the original site's relative link-structure.  Simply open
-a page of the @code{mirrored} website in your browser, and you can browse the
+a page of the @emph{mirrored} website in your browser, and you can browse the
 site from link to link, as if you were viewing it online.  HTTrack can also
 update an existing mirrored site, and resume interrupted downloads.
 

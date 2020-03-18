@@ -788,6 +788,40 @@ key), SSH public key, ASC-encoded OpenPGP key, APK Android application, LDIFF
 file, and more.")
     (license license:gpl3)))
 
+(define-public python-blurhash
+  (package
+    (name "python-blurhash")
+    (version "1.1.4")
+    (source
+      (origin
+        ;; Tests not included in pypi release and releases not tagged in git repo.
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/halcy/blurhash-python")
+               (commit "22e081ef1c24da1bb5c5eaa2c1d6649724deaef8")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1qq6mhydlp7q3na4kmaq3871h43wh3pyfyxr4b79bia73wjdylxf"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (delete-file "setup.cfg")
+             (invoke "pytest"))))))
+    (native-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pillow" ,python-pillow)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/halcy/blurhash-python")
+    (synopsis
+     "Pure-Python implementation of the blurhash algorithm")
+    (description
+     "Pure-Python implementation of the blurhash algorithm.")
+    (license license:expat)))
+
 (define-public python-ecpy
   (package
     (name "python-ecpy")

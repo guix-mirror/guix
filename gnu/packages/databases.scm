@@ -1070,7 +1070,7 @@ Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
                                               (assoc-ref %outputs "out")
                                               "/lib"))
        #:make-flags (list "CFLAGS=-fPIC")))
-    (home-page "http://fallabs.com/qdbm")
+    (home-page "https://fallabs.com/qdbm/")
     (synopsis "Key-value database")
     (description "QDBM is a library of routines for managing a
 database.  The database is a simple data file containing key-value
@@ -1892,7 +1892,7 @@ similar to BerkeleyDB, LevelDB, etc.")
     (description "Redis is an advanced key-value cache and store.  Redis
 supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
-    (home-page "http://redis.io/")
+    (home-page "https://redis.io/")
     (license license:bsd-3)))
 
 (define-public kyotocabinet
@@ -2530,13 +2530,13 @@ Database API 2.0T.")
 (define-public python-sqlalchemy
   (package
     (name "python-sqlalchemy")
-    (version "1.3.3")
+    (version "1.3.15")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "SQLAlchemy" version))
       (sha256
-       (base32 "06c3lcv7nijsgqsjaaa4djrwlzgh9f910zlqxkmgq22h6jl4rici"))))
+       (base32 "0iglkvymfp35zm5pxy5kzqvcv96kkas0chqdx7xpla86sspa9k64"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython) ; for C extensions
@@ -2613,15 +2613,21 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.0.11")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
+       (patches (search-patches "python-alembic-exceptions-cause.patch"))
        (sha256
         (base32
-         "1k5hag0vahd5vrf9abx8fdj2whrwaw2iq2yp736mmxnbsn5xkdyd"))))
+         "0a4hzn76csgbf1px4f5vfm256byvjrqkgi9869nkcjrwjn35c6kr"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest-cov" ,python-pytest-cov)))
@@ -2768,13 +2774,13 @@ designed to be easy and intuitive to use.")
 (define-public python-psycopg2
   (package
     (name "python-psycopg2")
-    (version "2.7.7")
+    (version "2.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psycopg2" version))
        (sha256
-        (base32 "0zjbabb4qjx9dm07imhf8y5a9rpa06d5zah80myiimgdi83nslpl"))))
+        (base32 "1djvh98pi4hjd8rxbq8qzc63bg8v78k33yg6pl99wak61b6fb67q"))))
     (build-system python-build-system)
     (arguments
      ;; Tests would require a postgresql database "psycopg2_test"

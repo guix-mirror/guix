@@ -330,7 +330,7 @@ JNI.")
        ("jamvm" ,jamvm-1-bootstrap)
        ("unzip" ,unzip)
        ("zip" ,zip)))
-    (home-page "http://ant.apache.org")
+    (home-page "https://ant.apache.org")
     (synopsis "Build tool for Java")
     (description
      "Ant is a platform-independent build tool for Java.  It is similar to
@@ -3301,7 +3301,7 @@ decompression and random access decompression have been fully implemented.")
     (version "1.12.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
                                   "com/thoughtworks/qdox/qdox/" version
                                   "/qdox-" version "-sources.jar"))
               (sha256
@@ -3325,10 +3325,39 @@ decompression and random access decompression have been fully implemented.")
            (lambda _
              (delete-file-recursively "src/com/thoughtworks/qdox/junit")
              #t)))))
-    (home-page "http://qdox.codehaus.org/")
+    (home-page "https://github.com/codehaus/qdox")
     (synopsis "Parse definitions from Java source files")
     (description
      "QDox is a high speed, small footprint parser for extracting
+class/interface/method definitions from source files complete with JavaDoc
+@code{@@tags}.  It is designed to be used by active code generators or
+documentation tools.")
+    (license license:asl2.0)))
+
+(define-public java-qdox
+  (package
+    (name "java-qdox")
+    ; Newer version exists, but this version is required by java-plexus-component-metadata
+    (version "2.0-M2")
+    (source (origin
+              (method url-fetch)
+              ;; 2.0-M4, -M5 at https://github.com/paul-hammant/qdox
+              ;; Older releases at https://github.com/codehaus/qdox/
+              ;; Note: The release at maven is pre-generated. The release at
+              ;; github requires jflex.
+              (uri (string-append "https://repo1.maven.org/maven2/"
+                                  "com/thoughtworks/qdox/qdox/" version
+                                  "/qdox-" version "-sources.jar"))
+              (sha256
+               (base32
+                "10xxrcaicq6axszcr2jpygisa4ch4sinyx5q7kqqxv4lknrmxp5x"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "qdox.jar"
+       #:tests? #f)); no tests
+    (home-page "https://github.com/codehaus/qdox")
+    (synopsis "Parse definitions from Java source files")
+    (description "QDox is a high speed, small footprint parser for extracting
 class/interface/method definitions from source files complete with JavaDoc
 @code{@@tags}.  It is designed to be used by active code generators or
 documentation tools.")
@@ -7361,7 +7390,7 @@ used to generate this API.")
     (version "6.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/"
+              (uri (string-append "https://repo1.maven.org/maven2/"
                                   "org/osgi/osgi.cmpn/" version "/osgi.cmpn-"
                                   version "-sources.jar"))
               (sha256
@@ -7392,7 +7421,7 @@ in compiling bundles.")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.component.annotations/"
                                   version "/org.osgi.service.component.annotations-"
                                   version "-sources.jar"))
@@ -7419,7 +7448,7 @@ the support annotations for osgi-service-component.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.dto/" version "/org.osgi.dto-"
                                   version "-sources.jar"))
               (sha256
@@ -7448,7 +7477,7 @@ objects of the listed types or aggregates.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.resource/"
                                   version "/org.osgi.resource-"
                                   version "-sources.jar"))
@@ -7504,7 +7533,7 @@ the names for the attributes and directives for a namespace with contracts.")
     (version "1.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.namespace.extender/"
                                   version "/org.osgi.namespace.extender-"
                                   version "-sources.jar"))
@@ -7532,7 +7561,7 @@ the names for the attributes and directives for an extender namespace.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.namespace.service/"
                                   version "/org.osgi.namespace.service-"
                                   version "-sources.jar"))
@@ -7560,7 +7589,7 @@ the names for the attributes and directives for a service namespace.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.util.function/"
                                   version "/org.osgi.util.function-"
                                   version "-sources.jar"))
@@ -7587,7 +7616,7 @@ an interface for a function that accepts a single argument and produces a result
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.util.promise/"
                                   version "/org.osgi.util.promise-"
                                   version "-sources.jar"))
@@ -7616,7 +7645,7 @@ value.  It handles the interactions for asynchronous processing.")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.metatype.annotations/"
                                   version "/org.osgi.service.metatype.annotations-"
                                   version "-sources.jar"))
@@ -7643,7 +7672,7 @@ the support annotations for metatype.")
     (version "1.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.repository/"
                                   version "/org.osgi.service.repository-"
                                   version "-sources.jar"))
@@ -7672,7 +7701,7 @@ a repository service that contains resources.")
     (version "1.8.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.framework/" version "/org.osgi.framework-"
                                   version "-sources.jar"))
               (sha256
@@ -7699,7 +7728,7 @@ and service platform for the Java programming language.")
     (version "1.3.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.log/"
                                   version "/org.osgi.service.log-"
                                   version "-sources.jar"))
@@ -7726,7 +7755,7 @@ the log service.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.jdbc/"
                                   version "/org.osgi.service.jdbc-"
                                   version "-sources.jar"))
@@ -7758,7 +7787,7 @@ factories for getting JDBC connections:
     (version "1.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.resolver/"
                                   version "/org.osgi.service.resolver-"
                                   version "-sources.jar"))
@@ -7787,7 +7816,7 @@ by the caller.")
     (version "1.5.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.util.tracker/"
                                   version "/org.osgi.util.tracker-"
                                   version "-sources.jar"))
@@ -7815,7 +7844,7 @@ bundle tracking utility classes.")
     (version "1.5.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.cm/"
                                   version "/org.osgi.service.cm-"
                                   version "-sources.jar"))
@@ -7843,7 +7872,7 @@ utility classes for the configuration of services.")
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://central.maven.org/maven2/org/osgi/"
+              (uri (string-append "https://repo1.maven.org/maven2/org/osgi/"
                                   "org.osgi.service.packageadmin/"
                                   version "/org.osgi.service.packageadmin-"
                                   version "-sources.jar"))
@@ -8503,7 +8532,7 @@ of deserialization.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rf5ha6w0waz50jz2479jsrbgmd0dnx0gs337m126j5z7zlmg7mg"))))
+                "0474cqcv46zgv9bhms2vgawakq1vyj0hp3h3f1bfys46msia90bh"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-snakeyaml.jar"
@@ -11383,35 +11412,6 @@ This module can be assimilated to a significantly improved version of log4j.
 Moreover, @code{logback-classic} natively implements the slf4j API so that you
 can readily switch back and forth between logback and other logging frameworks
 such as log4j or @code{java.util.logging} (JUL).")))
-
-(define-public java-qdox
-  (package
-    (name "java-qdox")
-    ; Newer version exists, but this version is required by java-plexus-component-metadata
-    (version "2.0-M2")
-    (source (origin
-              (method url-fetch)
-              ;; 2.0-M4, -M5 at https://github.com/paul-hammant/qdox
-              ;; Older releases at https://github.com/codehaus/qdox/
-              ;; Note: The release at maven is pre-generated. The release at
-              ;; github requires jflex.
-              (uri (string-append "http://central.maven.org/maven2/"
-                                  "com/thoughtworks/qdox/qdox/" version
-                                  "/qdox-" version "-sources.jar"))
-              (sha256
-               (base32
-                "10xxrcaicq6axszcr2jpygisa4ch4sinyx5q7kqqxv4lknrmxp5x"))))
-    (build-system ant-build-system)
-    (arguments
-     `(#:jar-name "qdox.jar"
-       #:tests? #f)); no tests
-    (home-page "http://qdox.codehaus.org/")
-    (synopsis "Parse definitions from Java source files")
-    (description "QDox is a high speed, small footprint parser for extracting
-class/interface/method definitions from source files complete with JavaDoc
-@code{@@tags}.  It is designed to be used by active code generators or
-documentation tools.")
-    (license license:asl2.0)))
 
 (define-public java-jgit
   (package
