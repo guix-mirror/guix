@@ -10727,6 +10727,29 @@ combinators library.")
 including bigint, complex, rational, range iterators, generic integers, and more.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-num-0.1
+  (package
+    (inherit rust-num-0.2)
+    (name "rust-num")
+    (version "0.1.42")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vhmyvfan380f86895z0f8rjscjc6qvwcmyvm15370ik2mjas0s7"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-bigint" ,rust-num-bigint-0.1)
+        ("rust-num-complex" ,rust-num-complex-0.1)
+        ("rust-num-integer" ,rust-num-integer-0.1)
+        ("rust-num-iter" ,rust-num-iter-0.1)
+        ("rust-num-rational" ,rust-num-rational-0.1)
+        ("rust-num-traits" ,rust-num-traits-0.2))))))
+
 (define-public rust-num-bigint-0.2
   (package
     (name "rust-num-bigint")
