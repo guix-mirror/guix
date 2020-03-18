@@ -12286,6 +12286,23 @@ symlink:
 Return a service that sets the host name to @var{name}.
 @end deffn
 
+@defvr {Scheme Variable} console-font-service-type
+Install the given fonts on the specified ttys (fonts are per
+virtual console on the kernel Linux).  The value of this service is a list of
+tty/font pairs.  The font can be the name of a font provided by the @code{kbd}
+package or any valid argument to @command{setfont}, as in this example:
+
+@lisp
+`(("tty1" . "LatGrkCyr-8x16")
+  ("tty2" . ,(file-append
+                font-tamzen
+                "/share/kbd/consolefonts/TamzenForPowerline10x20.psf"))
+  ("tty3" . ,(file-append
+                font-terminus
+                "/share/consolefonts/ter-132n"))) ; for HDPI
+@end lisp
+@end defvr
+
 @deffn {Scheme Procedure} login-service @var{config}
 Return a service to run login according to @var{config}, a
 @code{<login-configuration>} object, which specifies the message of the day,
