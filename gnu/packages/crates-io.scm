@@ -32,6 +32,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pcre)
@@ -1676,6 +1677,34 @@ exposed as Reader/Writer streams.")
     (description
      "The ChaCha family of stream ciphers.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-cairo-sys-rs-0.9
+  (package
+    (name "rust-cairo-sys-rs")
+    (version "0.9.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cairo-sys-rs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qsdy6s57yvscg2rfm7wdqrlhzbn1aq9lhk3dy1vw5f7r81blrgz"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-x11" ,rust-x11-2)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "FFI bindings to libcairo")
+    (description "This package provides FFI bindings to libcairo.")
+    (license license:expat)))
 
 (define-public rust-calloop-0.4
   (package
