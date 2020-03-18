@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
@@ -104,6 +104,7 @@
             add-to-store
             add-file-tree-to-store
             binary-file
+            with-build-handler
             build-things
             build
             query-failed-paths
@@ -1222,6 +1223,46 @@ an arbitrary directory layout in the store without creating a derivation."
             (hash-set! cache tree result)
             result)))))
 
+(define current-build-prompt
+  ;; When true, this is the prompt to abort to when 'build-things' is called.
+  (make-parameter #f))
+
+(define (call-with-build-handler handler thunk)
+  "Register HANDLER as a \"build handler\" and invoke THUNK."
+  (define tag
+    (make-prompt-tag "build handler"))
+
+  (parameterize ((current-build-prompt tag))
+    (call-with-prompt tag
+      thunk
+      (lambda (k . args)
+        ;; Since HANDLER may call K, which in turn may call 'build-things'
+        ;; again, reinstate a prompt (thus, it's not a tail call.)
+        (call-with-build-handler handler
+                                 (lambda ()
+                                   (apply handler k args)))))))
+
+(define (invoke-build-handler store things mode)
+  "Abort to 'current-build-prompt' if it is set."
+  (or (not (current-build-prompt))
+      (abort-to-prompt (current-build-prompt) store things mode)))
+
+(define-syntax-rule (with-build-handler handler exp ...)
+  "Register HANDLER as a \"build handler\" and invoke THUNK.  When
+'build-things' is called within the dynamic extent of the call to THUNK,
+HANDLER is invoked like so:
+
+  (HANDLER CONTINUE STORE THINGS MODE)
+
+where CONTINUE is the continuation, and the remaining arguments are those that
+were passed to 'build-things'.
+
+Build handlers are useful to announce a build plan with 'show-what-to-build'
+and to implement dry runs (by not invoking CONTINUE) in a way that gracefully
+deals with \"dynamic dependencies\" such as grafts---derivations that depend
+on the build output of a previous derivation."
+  (call-with-build-handler handler (lambda () exp ...)))
+
 (define build-things
   (let ((build (operation (build-things (string-list things)
                                         (integer mode))
@@ -1236,20 +1277,24 @@ outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Alternately, an element of THING can be a derivation/output name pair, in
 which case the daemon will attempt to substitute just the requested output of
-the derivation.  Return #t on success."
-      (let ((things (map (match-lambda
-                           ((drv . output) (string-append drv "!" output))
-                           (thing thing))
-                         things)))
-        (parameterize ((current-store-protocol-version
-                        (store-connection-version store)))
-          (if (>= (store-connection-minor-version store) 15)
-              (build store things mode)
-              (if (= mode (build-mode normal))
-                  (build/old store things)
-                  (raise (condition (&store-protocol-error
-                                     (message "unsupported build mode")
-                                     (status  1)))))))))))
+the derivation.  Return #t on success.
+
+When a handler is installed with 'with-build-handler', it is called any time
+'build-things' is called."
+      (or (not (invoke-build-handler store things mode))
+          (let ((things (map (match-lambda
+                               ((drv . output) (string-append drv "!" output))
+                               (thing thing))
+                             things)))
+            (parameterize ((current-store-protocol-version
+                            (store-connection-version store)))
+              (if (>= (store-connection-minor-version store) 15)
+                  (build store things mode)
+                  (if (= mode (build-mode normal))
+                      (build/old store things)
+                      (raise (condition (&store-protocol-error
+                                         (message "unsupported build mode")
+                                         (status  1))))))))))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.
