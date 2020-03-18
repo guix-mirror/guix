@@ -11287,6 +11287,27 @@ system for OpenSSL.")
      "Extra FFI bindings to OpenSSL that require a C shim.")
     (license license:expat)))
 
+(define-public rust-ord-subset-3
+  (package
+    (name "rust-ord-subset")
+    (version "3.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ord-subset" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1vvb6zmz279nb59dki7kbsvixbk8zpg2gxvgcpsjfnxg9ik19knp"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/emerentius/ord_subset")
+    (synopsis "Tools for working with the Ord subset of certain PartialOrd types")
+    (description
+     "This package provides tools for working with the Ord subset of certain
+PartialOrd types, like floats.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-ordered-float-1.0
   (package
     (name "rust-ordered-float")
