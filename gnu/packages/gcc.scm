@@ -560,7 +560,6 @@ It also includes runtime support libraries for these languages.")))
              (base32
               "1la2yy27ziasyf0jvzk58y1i5b5bq2h176qil550bxhifs39gqbi"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
-                                     "gcc-9-libsanitizer-mode-size.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 
