@@ -5227,8 +5227,31 @@ Reader/Writer streams.  Contains bindings for zlib, deflate, and gzip-based
 streams.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-float-cmp-0.5
+  (package
+    (name "rust-float-cmp")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "float-cmp" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "03hmx3n48hjm0x1ig84n1j87kzp75lzr6cj1sgi6a6pykgn4n8km"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-num-traits" ,rust-num-traits-0.2))))
+    (home-page "https://github.com/mikedilger/float-cmp")
+    (synopsis "Floating point approximate comparison traits")
+    (description
+     "Floating point approximate comparison traits in Rust.")
+    (license license:expat)))
+
 (define-public rust-float-cmp-0.3
   (package
+    (inherit rust-float-cmp-0.5)
     (name "rust-float-cmp")
     (version "0.3.0")
     (source
@@ -5240,14 +5263,8 @@ streams.")
         (sha256
          (base32
           "1c0hmj46xma5aysz0qb49padhc26aw875whx6q6rglsj5dqpds1b"))))
-    (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-num" ,rust-num-0.1))))
-    (home-page "https://github.com/mikedilger/float-cmp")
-    (synopsis "Floating point approximate comparison traits")
-    (description
-     "Floating point approximate comparison traits in Rust.")
-    (license license:expat)))
+     `(#:cargo-inputs (("rust-num" ,rust-num-0.1))))))
 
 (define-public rust-float-ord-0.2
   (package
