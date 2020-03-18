@@ -27002,7 +27002,7 @@ be accomplished with the following operating system configuration snippet:
 
 @lisp
 (use-modules ...
-             (gnu system)               ;for %sudoers-specification))
+             (gnu system))               ;for %sudoers-specification
 
 (define %user "username")
 
