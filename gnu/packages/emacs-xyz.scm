@@ -63,6 +63,7 @@
 ;;; Copyright © 2020 Masaya Tojo <masaya@tojo.tokyo>
 ;;; Copyright © 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21760,6 +21761,34 @@ allow the creation of journal records in the current daily, weekly, monthly or
 yearly file and search within all records or specified time intervals.  All
 records can be browsed and searched from the Emacs Calendar for convenience.
 All entries in a specified TODO state will be carried over to the next day.")
+    (license license:bsd-3)))
+
+(define-public emacs-org-static-blog
+  ;; Use the latest commit as the last release only contains half of the
+  ;; current total commits.  New release requested at
+  ;; <https://github.com/bastibe/org-static-blog/issues/50>.
+  (package
+    (name "emacs-org-static-blog")
+    (version "20200117")
+    (home-page "https://github.com/bastibe/org-static-blog")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit "5c19300d7634e94ae813b1b66abc716fbb1e5fc9")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1m7vmibjc6yk2npfrnnqd3g2099300r0q8mr8cvyivmk5ailbfrh"))))
+    (build-system emacs-build-system)
+    (synopsis
+     "Simple Org mode based static blog generator")
+    (description
+     "@code{emacs-org-static-blog} is one more static blog generator, it
+focuses on being simple.  All file are simple Org files in a directory.  The
+only requirement is that every Org file must have a @samp{title} and
+a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
     (license license:bsd-3)))
 
 (define-public emacs-ddskk
