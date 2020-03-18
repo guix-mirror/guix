@@ -7166,6 +7166,29 @@ standard printing of search results, similar to grep itself.")
      "Fast line oriented regex searching as a library.")
     (license (list license:unlicense license:expat))))
 
+(define-public rust-gtk-rs-lgpl-docs-0.1
+  (package
+    (name "rust-gtk-rs-lgpl-docs")
+    (version "0.1.15")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gtk-rs-lgpl-docs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06b1j64zg0xmhwfkyhzh3y0apclg6qihn3f7s1bd7kgjmkia4jlr"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rustdoc-stripper" ,rust-rustdoc-stripper-0.1))))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "LGPL-licensed docs for Gtk-rs crates")
+    (description
+     "LGPL-licensed docs for Gtk-rs crates.")
+    (license license:lgpl2.0)))
+
 (define-public rust-gzip-header-0.3
   (package
     (name "rust-gzip-header")
