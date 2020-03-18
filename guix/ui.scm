@@ -93,6 +93,7 @@
             string->number*
             size->number
             show-derivation-outputs
+            build-notifier
             show-what-to-build
             show-what-to-build*
             show-manifest-transaction
@@ -1044,6 +1045,43 @@ check and report what is prerequisites are available for download."
 
 (define show-what-to-build*
   (store-lift show-what-to-build))
+
+(define* (build-notifier #:key (dry-run? #f) (use-substitutes? #t))
+  "Return a procedure suitable for 'with-build-handler' that, when
+'build-things' is called, invokes 'show-what-to-build' to display the build
+plan.  When DRY-RUN? is true, the 'with-build-handler' form returns without
+any build happening."
+  (define not-comma
+    (char-set-complement (char-set #\,)))
+
+  (define (read-derivation-from-file* item)
+    (catch 'system-error
+      (lambda ()
+        (read-derivation-from-file item))
+      (const #f)))
+
+  (lambda (continue store things mode)
+    (define inputs
+      ;; List of derivation inputs to build.  Filter out non-existent '.drv'
+      ;; files because the daemon transparently tries to substitute them.
+      (filter-map (match-lambda
+                    (((? derivation-path? drv) . output)
+                     (let ((drv     (read-derivation-from-file* drv))
+                           (outputs (string-tokenize output not-comma)))
+                       (and drv (derivation-input drv outputs))))
+                    ((? derivation-path? drv)
+                     (and=> (read-derivation-from-file* drv)
+                            derivation-input))
+                    (_
+                     #f))
+                  things))
+
+    (show-what-to-build store inputs
+                        #:dry-run? dry-run?
+                        #:use-substitutes? use-substitutes?
+                        #:mode mode)
+    (unless dry-run?
+      (continue #t))))
 
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
