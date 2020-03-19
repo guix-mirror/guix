@@ -8533,19 +8533,21 @@ effects models and Bayesian models.")
 (define-public r-ggeffects
   (package
     (name "r-ggeffects")
-    (version "0.14.1")
+    (version "0.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggeffects" version))
        (sha256
         (base32
-         "07pvs18vlybp96zz1wjr7cwiwi1cvjwkb9ahxzq0vd6adnd6ya59"))))
+         "1y3yfb07jrr6vkc8hk6rp52l70dj7042jvqgjzllslzy7hx2jhyw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-insight" ,r-insight)
        ("r-mass" ,r-mass)
        ("r-sjlabelled" ,r-sjlabelled)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/strengejacke/ggeffects")
     (synopsis "Create tidy data frames of marginal effects for ggplot")
     (description
