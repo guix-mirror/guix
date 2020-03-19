@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,19 +99,17 @@ pseudo-terminal (PTY) allocated to a Docker container using the Python
 client.")
     (license license:asl2.0)))
 
-;; When updating, check whether python-jsonschema-2.6 can be removed from Guix
-;; entirely.
 (define-public docker-compose
   (package
     (name "docker-compose")
-    (version "1.24.1")
+    (version "1.25.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker-compose" version))
        (sha256
         (base32
-         "0lx7bx6jvhydbab8vwry0bclhdf0dfj6jrns1m5y45yp9ybqxmd5"))))
+         "1ww8ckpj3n5jdg63qvmiqx3gk0fsrnynnnqj17fppymbwjzf5fps"))))
     (build-system python-build-system)
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
@@ -120,9 +119,9 @@ client.")
        ("python-docker-py" ,python-docker-py)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
-       ("python-jsonschema" ,python-jsonschema-2.6)
+       ("python-jsonschema" ,python-jsonschema)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests-2.20)
+       ("python-requests" ,python-requests)
        ("python-six" ,python-six)
        ("python-texttable" ,python-texttable)
        ("python-websocket-client" ,python-websocket-client)))

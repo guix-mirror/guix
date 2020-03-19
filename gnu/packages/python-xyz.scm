@@ -2306,32 +2306,6 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
               `(("python2-functools32" ,python2-functools32)
                 ,@(package-propagated-inputs jsonschema))))))
 
-;; This old version is still required by docker-compose as of 1.24.0.
-(define-public python-jsonschema-2.6
-  (package
-    (name "python-jsonschema")
-    (version "2.6.0")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "jsonschema" version))
-             (sha256
-              (base32
-               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "nosetests"))))))
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-vcversioner" ,python-vcversioner)))
-    (home-page "https://github.com/Julian/jsonschema")
-    (synopsis "Implementation of JSON Schema for Python")
-    (description
-     "Jsonschema is an implementation of JSON Schema for Python.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-jsonschema))))))
-
 (define-public python-schema
   (package
     (name "python-schema")
