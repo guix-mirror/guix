@@ -13017,19 +13017,21 @@ utilities for sequence data management under the ACNUC system.")
 (define-public r-units
   (package
     (name "r-units")
-    (version "0.6-5")
+    (version "0.6-6")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "units" version))
         (sha256
           (base32
-            "02nls8m0r1r7kljs4x35naz3szq62hyqyd5vracf1xwi1kz5kdsh"))))
+            "11x6xz1fbml28xmrhgn4sii9vfyj3gyfc1dfxahdg9cszdmcgdnh"))))
     (build-system r-build-system)
     (inputs
      `(("udunits" ,udunits)))
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-quantities/units/")
     (synopsis "Measurement Units for R Vectors")
     (description
