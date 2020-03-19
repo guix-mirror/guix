@@ -2242,17 +2242,17 @@ from forcing GEXP-PROMISE."
                     (delete-file-recursively (string-append "vendor/" (car crate)))
                     (invoke "tar" "xvf" (cdr crate) "-C" "vendor"))
                   '(("aho-corasick" . #+(package-source rust-aho-corasick-0.7))
-;; alga 0.9
+                    ("alga" . #+(package-source rust-alga-0.9))
                     ("approx" . #+(package-source rust-approx-0.3))
                     ("arrayvec" . #+(package-source rust-arrayvec-0.4))
                     ("atty" . #+(package-source rust-atty-0.2))
                     ("autocfg" . #+(package-source rust-autocfg-1.0))
                     ("bitflags" . #+(package-source rust-bitflags-1))
-;; block 0.1
+                    ("block" . #+(package-source rust-block-0.1))
                     ("bstr" . #+(package-source rust-bstr-0.2))
                     ("byteorder" . #+(package-source rust-byteorder-1.3))
-;; cairo-rs 0.7
-;; cairo-sys-rs 0.9
+                    ("cairo-rs" . #+(package-source rust-cairo-rs-0.7))
+                    ("cairo-sys-rs" . #+(package-source rust-cairo-sys-rs-0.9))
                     ("cast" . #+(package-source rust-cast-0.2))
                     ("cfg-if" . #+(package-source rust-cfg-if-0.1))
                     ("clap" . #+(package-source rust-clap-2))
@@ -2263,14 +2263,14 @@ from forcing GEXP-PROMISE."
                     ("crossbeam-epoch" . #+(package-source rust-crossbeam-epoch-0.8))
                     ("crossbeam-queue" . #+(package-source rust-crossbeam-queue-0.2))
                     ("crossbeam-utils" . #+(package-source rust-crossbeam-utils-0.7))
-;; cssparser 0.25
-;; cssparser-macros 0.3
+                    ("cssparser" . #+(package-source rust-cssparser-0.25))
+                    ("cssparser-macros" . #+(package-source rust-cssparser-macros-0.3))
                     ("csv" . #+(package-source rust-csv-1.1))
                     ("csv-core" . #+(package-source rust-csv-core-0.1))
-;; data-url 0.1
-;; downcast-rs 1.0
+                    ("data-url" . #+(package-source rust-data-url-0.1))
+                    ("downcast-rs" . #+(package-source rust-downcast-rs-1.1))
                     ("dtoa" . #+(package-source rust-dtoa-0.4))
-;; dtoa-short 0.3
+                    ("dtoa-short" . #+(package-source rust-dtoa-short-0.3))
                     ("either" . #+(package-source rust-either-1.5))
                     ("encoding" . #+(package-source rust-encoding-0.2))
                     ("encoding-index-japanese" . #+(package-source rust-encoding-index-japanese-1.20141219))
@@ -2279,16 +2279,16 @@ from forcing GEXP-PROMISE."
                     ("encoding-index-singlebyte" . #+(package-source rust-encoding-index-singlebyte-1.20141219))
                     ("encoding-index-tradchinese" . #+(package-source rust-encoding-index-tradchinese-1.20141219))
                     ("encoding_index_tests" . #+(package-source rust-encoding-index-tests-0.1))
-;; float-cmp 0.5
-;; fragile 0.3
+                    ("float-cmp" . #+(package-source rust-float-cmp-0.5))
+                    ("fragile" . #+(package-source rust-fragile-0.3))
                     ("fuchsia-cprng" . #+(package-source rust-fuchsia-cprng-0.1))
                     ("futf" . #+(package-source rust-futf-0.1))
-;; gdk-pixbuf 0.7
-;; gdk-pixbuf-sys 0.9
+                    ("gdk-pixbuf" . #+(package-source rust-gdk-pixbuf-0.7))
+                    ("gdk-pixbuf-sys" . #+(package-source rust-gdk-pixbuf-sys-0.9))
                     ("generic-array" . #+(package-source rust-generic-array-0.12))
-;; gio 0.7
+                    ("gio" . #+(package-source rust-gio-0.7))
                     ("gio-sys" . #+(package-source rust-gio-sys-0.9))
-;; glib 0.8
+                    ("glib" . #+(package-source rust-glib-0.8))
                     ("glib-sys" . #+(package-source rust-glib-sys-0.9))
                     ("gobject-sys" . #+(package-source rust-gobject-sys-0.9))
                     ("idna" . #+(package-source rust-idna-0.2))
@@ -2297,17 +2297,17 @@ from forcing GEXP-PROMISE."
                     ("language-tags" . #+(package-source rust-language-tags-0.2))
                     ("lazy_static" . #+(package-source rust-lazy-static-1))
                     ("libc" . #+(package-source rust-libc-0.2))
-                    ("libm" . #+(package-source rust-libm-0.1))
+                    ("libm" . #+(package-source rust-libm-0.2))
                     ("locale_config" . #+(package-source rust-locale-config-0.3))
                     ("log" . #+(package-source rust-log-0.4))
                     ("mac" . #+(package-source rust-mac-0.1))
                     ("malloc_buf" . #+(package-source rust-malloc-buf-0.0))
-;; markup5ever 0.9
+                    ("markup5ever" . #+(package-source rust-markup5ever-0.9))
                     ("matches" . #+(package-source rust-matches-0.1))
-;; matrixmultiply 0.2
+                    ("matrixmultiply" . #+(package-source rust-matrixmultiply-0.2))
                     ("memchr" . #+(package-source rust-memchr-2.2))
                     ("memoffset" . #+(package-source rust-memoffset-0.5))
-;; nalgebra 0.18
+                    ("nalgebra" . #+(package-source rust-nalgebra-0.18))
                     ("new_debug_unreachable" . #+(package-source rust-new-debug-unreachable-1.0))
                     ("nodrop" . #+(package-source rust-nodrop-0.1))
                     ("num-complex" . #+(package-source rust-num-complex-0.2))
@@ -2318,10 +2318,10 @@ from forcing GEXP-PROMISE."
                     ("objc" . #+(package-source rust-objc-0.2))
                     ("objc-foundation" . #+(package-source rust-objc-foundation-0.1))
                     ("objc_id" . #+(package-source rust-objc-id-0.1))
-;; pango 0.7
-;; pango-sys 0.9
-;; pangocairo 0.8
-;; pangocairo-sys 0.10
+                    ("pango" . #+(package-source rust-pango-0.7))
+                    ("pango-sys" . #+(package-source rust-pango-sys-0.9))
+                    ("pangocairo" . #+(package-source rust-pangocairo-0.8))
+                    ("pangocairo-sys" . #+(package-source rust-pangocairo-sys-0.10))
                     ("percent-encoding" . #+(package-source rust-percent-encoding-2.1))
                     ("phf" . #+(package-source rust-phf-0.7))
                     ("phf_codegen" . #+(package-source rust-phf-codegen-0.7))
@@ -2330,7 +2330,7 @@ from forcing GEXP-PROMISE."
                     ("pkg-config" . #+(package-source rust-pkg-config-0.3))
                     ("precomputed-hash" . #+(package-source rust-precomputed-hash-0.1))
                     ("proc-macro2" . #+(package-source rust-proc-macro2-1.0))
-;; procedural-masquerade 0.1
+                    ("procedural-masquerade" . #+(package-source rust-procedural-masquerade-0.1))
                     ("quote" . #+(package-source rust-quote-1.0))
                     ("rand" . #+(package-source rust-rand-0.6))
                     ("rand_chacha" . #+(package-source rust-rand-chacha-0.1))
@@ -2343,10 +2343,10 @@ from forcing GEXP-PROMISE."
                     ("rand_pcg" . #+(package-source rust-rand-pcg-0.1))
                     ("rand_xorshift" . #+(package-source rust-rand-xorshift-0.1))
                     ("rand_xoshiro" . #+(package-source rust-rand-xoshiro-0.1))
-;; rawpointer 0.2
+                    ("rawpointer" . #+(package-source rust-rawpointer-0.2))
                     ("rayon" . #+(package-source rust-rayon-1.3))
                     ("rayon-core" . #+(package-source rust-rayon-core-1.7))
-;; rctree 0.3
+                    ("rctree" . #+(package-source rust-rctree-0.3))
                     ("rdrand" . #+(package-source rust-rdrand-0.4))
                     ("regex" . #+(package-source rust-regex-1.3))
                     ("regex-automata" . #+(package-source rust-regex-automata-0.1))
