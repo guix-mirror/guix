@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -403,7 +403,6 @@ STORE is an open connection to the store."
                       #:old-entries old-entries)))
            (drvs -> (list bootcfg)))
         (mbegin %store-monad
-          (show-what-to-build* drvs)
           (built-derivations drvs)
           ;; Only install bootloader configuration file.
           (install-bootloader local-eval bootloader-config bootcfg
@@ -837,8 +836,7 @@ static checks."
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
                                         drvs))
-                      (maybe-build drvs #:dry-run? dry-run?
-                                   #:use-substitutes? use-substitutes?))))
+                      (built-derivations drvs))))
 
     (if (or dry-run? derivations-only?)
         (return #f)
@@ -1139,42 +1137,46 @@ resulting from command-line parsing."
     (with-store store
       (set-build-options-from-command-line store opts)
 
-      (run-with-store store
-        (mbegin %store-monad
-          (set-guile-for-build (default-guile))
-          (case action
-            ((extension-graph)
-             (export-extension-graph os (current-output-port)))
-            ((shepherd-graph)
-             (export-shepherd-graph os (current-output-port)))
-            (else
-             (unless (memq action '(build init))
-               (warn-about-old-distro #:suggested-command
-                                      "guix system reconfigure"))
+      (with-build-handler (build-notifier #:use-substitutes?
+                                          (assoc-ref opts 'substitutes?)
+                                          #:dry-run?
+                                          (assoc-ref opts 'dry-run?))
+        (run-with-store store
+          (mbegin %store-monad
+            (set-guile-for-build (default-guile))
+            (case action
+              ((extension-graph)
+               (export-extension-graph os (current-output-port)))
+              ((shepherd-graph)
+               (export-shepherd-graph os (current-output-port)))
+              (else
+               (unless (memq action '(build init))
+                 (warn-about-old-distro #:suggested-command
+                                        "guix system reconfigure"))
 
-             (perform-action action os
-                             #:dry-run? dry?
-                             #:derivations-only? (assoc-ref opts
-                                                            'derivations-only?)
-                             #:use-substitutes? (assoc-ref opts 'substitutes?)
-                             #:skip-safety-checks?
-                             (assoc-ref opts 'skip-safety-checks?)
-                             #:file-system-type (assoc-ref opts 'file-system-type)
-                             #:image-size (assoc-ref opts 'image-size)
-                             #:full-boot? (assoc-ref opts 'full-boot?)
-                             #:container-shared-network?
-                             (assoc-ref opts 'container-shared-network?)
-                             #:mappings (filter-map (match-lambda
-                                                      (('file-system-mapping . m)
-                                                       m)
-                                                      (_ #f))
-                                                    opts)
-                             #:install-bootloader? bootloader?
-                             #:target target-file
-                             #:bootloader-target bootloader-target
-                             #:gc-root (assoc-ref opts 'gc-root)))))
-        #:target target
-        #:system system))
+               (perform-action action os
+                               #:dry-run? dry?
+                               #:derivations-only? (assoc-ref opts
+                                                              'derivations-only?)
+                               #:use-substitutes? (assoc-ref opts 'substitutes?)
+                               #:skip-safety-checks?
+                               (assoc-ref opts 'skip-safety-checks?)
+                               #:file-system-type (assoc-ref opts 'file-system-type)
+                               #:image-size (assoc-ref opts 'image-size)
+                               #:full-boot? (assoc-ref opts 'full-boot?)
+                               #:container-shared-network?
+                               (assoc-ref opts 'container-shared-network?)
+                               #:mappings (filter-map (match-lambda
+                                                        (('file-system-mapping . m)
+                                                         m)
+                                                        (_ #f))
+                                                      opts)
+                               #:install-bootloader? bootloader?
+                               #:target target-file
+                               #:bootloader-target bootloader-target
+                               #:gc-root (assoc-ref opts 'gc-root)))))
+          #:target target
+          #:system system)))
     (warn-about-disk-space)))
 
 (define (resolve-subcommand name)
