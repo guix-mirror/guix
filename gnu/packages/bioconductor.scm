@@ -5316,14 +5316,14 @@ coefficients).")
 (define-public r-biosigner
   (package
     (name "r-biosigner")
-    (version "1.14.0")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biosigner" version))
        (sha256
         (base32
-         "1kdfhw629qczrfms0jmphqz0ksjzi8js00xj92h1lnv092npfk0j"))))
+         "184vbbd010yzqv0qn1prxiazibxwiacvlpg9yzcgyhamcx9bvq73"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -5332,10 +5332,7 @@ coefficients).")
        ("r-randomforest" ,r-randomforest)
        ("r-ropls" ,r-ropls)))
     (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("pandoc" ,ghc-pandoc)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc))) ; all for vignettes
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biosigner/")
     (synopsis "Signature discovery from omics data")
     (description
