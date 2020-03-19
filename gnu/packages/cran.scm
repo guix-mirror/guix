@@ -8276,14 +8276,14 @@ comparisons of slopes.")
 (define-public r-pwr
   (package
     (name "r-pwr")
-    (version "1.2-2")
+    (version "1.3-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pwr" version))
        (sha256
         (base32
-         "0r5g781lr677vp3zyhgmi7r68c87l8gd05l1s3ffnxgn5wf043sm"))))
+         "1kfzy73v3z6ipc3kdfkcjrp4b4p5k54nwk796gqi36srm93hgc2v"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
