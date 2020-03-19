@@ -18700,6 +18700,31 @@ unescaping of quotes.")
 @code{end-of-defun} functions for Vimscript files.")
       (license license:gpl3+))))
 
+(define-public emacs-flycheck-elm
+  (let ((revision "0")
+        (commit "1b60050efd4729bfba548f3e5adbcb58436667cb"))
+    (package
+      (name "emacs-flycheck-elm")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/bsermons/flycheck-elm")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1kjms9d2c98ffd1qxs879qhg0n4jzic0r5kni9y4gz3v09ww8zms"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-let-alist" ,emacs-let-alist)))
+      (home-page "https://github.com/bsermons/flycheck-elm")
+      (synopsis "Flycheck support for the Elm language")
+      (description "Flycheck Elm adds Flycheck support for Elm language.")
+      (license license:gpl3+))))
+
 (define-public emacs-flycheck-haskell
   (let ((commit "32ddff87165a7d3a35e7318bee997b5b4bd41278")
         (revision "2"))
