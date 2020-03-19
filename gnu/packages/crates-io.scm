@@ -5562,6 +5562,26 @@ implementation that is more efficient for smaller hash keys.")
         (base32
          "0jxgzd04ra4imjv8jgkmdq59kj8fsz6w4zxsbmlai34h26225c00"))))))
 
+(define-public rust-fragile-0.3
+  (package
+    (name "rust-fragile")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fragile" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1yf2hmkw52x2dva3c9km1x8c2z5kwby7qqn8kz5ms3gs480i9y05"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mitsuhiko/rust-fragile")
+    (synopsis "Wrapper types for sending non-send values to other threads")
+    (description "This package provides wrapper types for sending non-send
+values to other threads.")
+    (license license:asl2.0)))
+
 (define-public rust-freetype-rs-0.23
   (package
     (name "rust-freetype-rs")
