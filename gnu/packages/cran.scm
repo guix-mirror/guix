@@ -20823,3 +20823,24 @@ function @code{[} and replacement function @code{[<-} of custom matrix-like
 types (based on S3, S4, etc.), modeled as closely to the base matrix class
 as possible (with tests to prove it).")
     (license license:expat)))
+
+(define-public r-boa
+  (package
+    (name "r-boa")
+    (version "1.1.8-2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (cran-uri "boa" version))
+      (sha256
+       (base32
+        "04lhqk5qfvaz1jk90glr2yi5vq7cdy0w8m6g2lnzk359l9y41zhp"))))
+    (properties `((upstream-name . "boa")))
+    (build-system r-build-system)
+    (home-page "http://www.jstatsoft.org/v21/i11")
+    (synopsis "Library for @dfn{Bayesian Output Analysis Program} (BOA) for MCMC")
+    (description
+     "This package provides a menu-driven program and library of functions for
+carrying out convergence diagnostics and statistical and graphical analysis of
+@dfn{Markov chain Monte Carlo} (MCMC) sampling output.")
+    (license license:gpl2+)))
