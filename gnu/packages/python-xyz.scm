@@ -11956,9 +11956,9 @@ command @command{natsort} that exposes this functionality in the command line.")
               `(("python2-pathlib" ,python2-pathlib)
                 ,@(package-native-inputs base))))))
 
-(define-public python-glances
+(define-public glances
   (package
-  (name "python-glances")
+  (name "glances")
   (version "3.1.4")
   (source
     (origin
@@ -11988,6 +11988,9 @@ command @command{natsort} that exposes this functionality in the command line.")
 Glances uses the PsUtil library to get information from your system.  It
 monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
+
+(define-public python-glances
+  (deprecated-package "python-glances" glances))
 
 (define-public python-graphql-core
   (package
