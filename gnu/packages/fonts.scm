@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1176,6 +1177,28 @@ programming.  Iosevka is completely generated from its source code.")
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
         (base32 "1rkmgi08kknc1fg54zpa6w92m3b3v7pc8cpwygz22kgd2h0mdrr8"))))))
+
+(define-public font-iosevka-term-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-term-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/06-iosevka-term-slab-" version ".zip"))
+       (sha256
+        (base32
+         "1gc16hih157qy6vpa8f88psq0fnksiigi3msqazc75zsm3z4kzqj"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*"))
+             #t)))))))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
