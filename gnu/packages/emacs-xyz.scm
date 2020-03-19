@@ -7177,6 +7177,20 @@ package @code{emacs-major-mode-hydra} for a user-friendly interface.")
 by side to an Org buffer with your notes relevant to the current page.")
     (license license:gpl3+)))
 
+(define-public emacs-major-mode-hydra
+  (package
+    (inherit emacs-pretty-hydra)
+    (name "emacs-major-mode-hydra")
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-pretty-hydra" ,emacs-pretty-hydra)))
+    (arguments
+     `(#:exclude (cons "^pretty-hydra\\.el" %default-exclude)))
+    (synopsis "Create nice-looking hydras")
+    (description
+     "This package provides the macro @code{pretty-hydra-define} to define
+hydras with one column per group of heads.")))
+
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
