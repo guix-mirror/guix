@@ -9944,8 +9944,38 @@ platform-independently.")
 whether an expression matches a pattern.")
     (license license:expat)))
 
+(define-public rust-matrixmultiply-0.2
+  (package
+    (name "rust-matrixmultiply")
+    (version "0.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "matrixmultiply" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "13s7nfd3dfcsrixld2lk8c563ih5xzczl2w36hprfc016rkfrxyl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rawpointer" ,rust-rawpointer-0.2))
+       #:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-itertools" ,rust-itertools-0.7))))
+    (home-page "https://github.com/bluss/matrixmultiply/")
+    (synopsis "General matrix multiplication for f32 and f64 matrices")
+    (description "General matrix multiplication for f32 and f64 matrices.
+Operates on matrices with general layout (they can use arbitrary row and column
+stride).  Detects and uses AVX or SSE2 on x86 platforms transparently for higher
+performance.  Uses a microkernel strategy, so that the implementation is easy to
+parallelize and optimize.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-matrixmultiply-0.1
   (package
+    (inherit rust-matrixmultiply-0.2)
     (name "rust-matrixmultiply")
     (version "0.1.15")
     (source
@@ -9956,20 +9986,10 @@ whether an expression matches a pattern.")
         (sha256
          (base32
           "00p0fpjhm45qdzi37mgv7ggsy8b9gqvq4999yrbgyn1dxkf6gbfw"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs (("rust-rawpointer" ,rust-rawpointer-0.1))
-       #:cargo-development-inputs (("rust-bencher" ,rust-bencher-0.1))))
-    (home-page "https://github.com/bluss/matrixmultiply/")
-    (synopsis "General matrix multiplication for f32 and f64 matrices")
-    (description "General matrix multiplication for f32 and f64 matrices.
-Operates on matrices with general layout (they can use arbitrary row and column
-stride).  Detects and uses AVX or SSE2 on x86 platforms transparently for higher
-performance.  Uses a microkernel strategy, so that the implementation is easy to
-parallelize and optimize.")
-    (license (list license:asl2.0
-                   license:expat))))
+       #:cargo-development-inputs (("rust-bencher" ,rust-bencher-0.1))))))
 
 (define-public rust-maybe-uninit-2.0
   (package
