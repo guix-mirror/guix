@@ -19479,14 +19479,14 @@ Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
 (define-public r-quanteda
   (package
     (name "r-quanteda")
-    (version "2.0.0")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quanteda" version))
        (sha256
         (base32
-         "0snr610vahbdqkmma0zy5mg5qbb6n1b8sgsclqb2sccn1gg38vyy"))))
+         "0pym6vdzqbkyj87m3pla229092xvvx4j830x67qflxzzdmc9dzhz"))))
     (properties `((upstream-name . "quanteda")))
     (build-system r-build-system)
     (propagated-inputs
@@ -19509,6 +19509,8 @@ Norwegian, Portuguese, Romanian, Russian, Spanish, Swedish and Turkish.")
        ("r-stringi" ,r-stringi)
        ("r-xml2" ,r-xml2)
        ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://quanteda.io")
     (synopsis "Quantitative analysis of textual data")
     (description
