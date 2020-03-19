@@ -430,7 +430,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20191207")
+    (version "20200313")
     (source
      (origin
        (method git-fetch)
@@ -439,7 +439,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "147yjpqnsbfy01fhsflxlixk0985r91a6bjmqq3cwmf7gka3sihm"))))
+        (base32 "1k4k07l6h5krc3fx928qvdq3ssw9fxn95aj7k885xlckd2i1lnb5"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -1391,6 +1391,7 @@ facilities for checking incoming mail.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("bzip2" ,bzip2)
+       ("libsodium" ,libsodium)         ; extra password algorithms
        ("linux-pam" ,linux-pam)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
@@ -1398,7 +1399,8 @@ facilities for checking incoming mail.")
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
-                           "--localstatedir=/var")
+                           "--localstatedir=/var"
+                           "--with-sqlite") ; not auto-detected
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
@@ -1512,8 +1514,8 @@ using libsodium sealed boxes.
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
-       "@code{dovecot-libsodium-plugin} provides libsodium password
-hashing schemes plugin for @code{Dovecot}.")
+       "@code{dovecot-libsodium-plugin} provides a libsodium password
+hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
       (license gpl3+))))
 
 (define-public isync

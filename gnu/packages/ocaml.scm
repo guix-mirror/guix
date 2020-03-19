@@ -570,7 +570,7 @@ Git-friendly development workflow.")
              (install-file "etc/META" (string-append (assoc-ref outputs "out")
                                                      "/lib/ocaml/camlp5/"))
              #t)))))
-    (home-page "http://camlp5.gforge.inria.fr/")
+    (home-page "https://camlp5.github.io/")
     (synopsis "Pre-processor Pretty Printer for OCaml")
     (description
      "Camlp5 is a Pre-Processor-Pretty-Printer for Objective Caml.  It offers
@@ -764,16 +764,16 @@ Knuth’s LR(1) parser construction technique.")
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.8")
+    (version "2.18.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/garrigue/lablgtk")
-                     (commit "lablgtk2188")))
+                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gpww8bkwi5cl68kc006970zvzwvq73h1mwrnd239apmwlxc1l8a"))))
+                "0w8cdfcv2wc19sd3qzj3qq77qc6rbnbynsz02gzbl15kgrvgrfxi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -1038,7 +1038,7 @@ other XUnit testing frameworks.")
        (list "all" "allopt"
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out")
                             "/lib/ocaml"))))
-    (home-page "http://forge.ocamlcore.org/projects/camlzip")
+    (home-page "https://github.com/xavierleroy/camlzip")
     (synopsis "Provides easy access to compressed files")
     (description "Provides easy access to compressed files in ZIP, GZIP and
 JAR format.  It provides functions for reading from and writing to compressed

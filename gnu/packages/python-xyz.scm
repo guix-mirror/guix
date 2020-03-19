@@ -3685,6 +3685,18 @@ writing C extensions for Python as easy as Python itself.")
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
           `(modify-phases ,phases
+             ;; XXX: On i686-linux, running the parallel tests fails on many-core
+             ;; systems, see <https://github.com/cython/cython/issues/2807>.
+             ;; TODO: Move this logic to the regular check phase in a future
+             ;; rebuild cycle.
+             ,@(if (string-prefix? "i686" (%current-system))
+                   '((replace 'check
+                       (lambda _
+                         (setenv "CFLAGS" "-O0")
+                         (invoke "python" "runtests.py" "-vv"
+                                 "-j" (number->string (parallel-job-count))
+                                 "-x" "run.parallel"))))
+                   '())
              (add-before 'check 'adjust-test_embed
                (lambda _
                  (substitute* "runtests.py"
@@ -12028,16 +12040,16 @@ command @command{natsort} that exposes this functionality in the command line.")
               `(("python2-pathlib" ,python2-pathlib)
                 ,@(package-native-inputs base))))))
 
-(define-public python-glances
+(define-public glances
   (package
-  (name "python-glances")
-  (version "3.1.2")
+  (name "glances")
+  (version "3.1.4")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
-        (base32 "15384pbvw9wj4sb8zgvd9v1812vrypbyjg0acicjf1hdb3p30fkk"))
+        (base32 "0dc47gbvp9a3wxppdqihxpglxxaxbj3hcvzgcxxq8zcsciah3plq"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -12061,8 +12073,8 @@ Glances uses the PsUtil library to get information from your system.  It
 monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
 
-(define-public python2-glances
-  (package-with-python2 python-glances))
+(define-public python-glances
+  (deprecated-package "python-glances" glances))
 
 (define-public python-graphql-core
   (package

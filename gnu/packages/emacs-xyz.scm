@@ -21779,7 +21779,7 @@ All entries in a specified TODO state will be carried over to the next day.")
      "Simple Org mode based static blog generator")
     (description
      "@code{emacs-org-static-blog} is one more static blog generator, it
-focuses on being simple.  All file are simple Org files in a directory.  The
+focuses on being simple.  All files are simple Org files in a directory.  The
 only requirement is that every Org file must have a @samp{title} and
 a @samp{date} keywords, and optionally, a @samp{filetags} keyword.")
     (license license:bsd-3)))

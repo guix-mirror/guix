@@ -286,7 +286,8 @@ interface (FFI) of Guile.")
                                                     #:select? select?))
     (gexp->script "compute-guix-derivation"
                   #~(begin
-                      (use-modules (ice-9 match))
+                      (use-modules (ice-9 match)
+                                   (ice-9 threads))
 
                       (eval-when (expand load eval)
                         ;; (gnu packages …) modules are going to be looked up

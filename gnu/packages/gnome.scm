@@ -3675,7 +3675,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.68.4")
+    (version "2.70.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -3683,7 +3683,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "151j5dc84gbl6a917pxvd0b372lw5za48n63lyv6llfc48lv2l1d"))))
+                "0hjk9lgppc5435my0lyywbpmj7ib5vvcylwfin8ki97g9bvj1c2l"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3798,7 +3798,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.20.1")
+    (version "0.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3807,7 +3807,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
                     "libsecret-" version ".tar.xz"))
               (sha256
                (base32
-                "0ir4ynpf8b64xss1azvsi5x6697lik7hkf3z0xxa2qv2xja3xxsp"))))
+                "1hzz34gmsxxf1jm1b7qin390rkwbg8sx198xdkwxqp3q6cw19sc1"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -9258,7 +9258,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.34")
+    (version "1.10.37")
     (source
      (origin
        (method git-fetch)
@@ -9269,8 +9269,11 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0czwhr7nw523753ajcjjfwrf91mq8pmzr19gp0srqsvb1dsn1zcf"))))
+        (base32 "01cxy7606hx9wgxl550l4p2xa9hsy0rk7swsp58hyi842z2z0y13"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     ;; The only tests are maintainer tests (in po/), which fail.
+     `(#:tests? #f))
     (inputs `(("glib" ,glib)
               ("gtk+" ,gtk+)
               ("gdk-pixbuf" ,gdk-pixbuf)

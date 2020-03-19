@@ -154,14 +154,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.25.1")
+   (version "2.25.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2"))))
+              "08vivrv3my8nlp40pwsf7mcc5k7dwyh34hadjszx7qj8w01p34wv"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -178,7 +178,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "15pfm7j4wq8ryp9n9d81h8v0arl15yq9i6cigw45walnq5r6721h"))))
+            "06nlw6vaqvavkr4nia9qvanqbhaig4hbg9r5f0i9lbvw1hmykfvq"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -238,9 +238,6 @@ as well as the classic centralized workflow.")
       #:disallowed-references (,bash)
 
       #:test-target "test"
-
-      ;; Tests fail randomly when parallel: <https://bugs.gnu.org/29512>.
-      #:parallel-tests? #f
 
       ;; The explicit --with-tcltk forces the build system to hardcode the
       ;; absolute file name to 'wish'.

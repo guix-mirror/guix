@@ -1280,7 +1280,7 @@ into existing applications.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://perlpsyc.psyc.eu/"
+       (uri (string-append "https://perl.psyc.eu/"
                            "perlpsyc-" version ".zip"))
        (file-name (string-append name "-" version ".zip"))
        (sha256
@@ -1339,10 +1339,10 @@ into existing applications.")
     (description
      "@code{Net::PSYC} with support for TCP, UDP, Event.pm, @code{IO::Select} and
 Gtk2 event loops.  This package includes 12 applications and additional scripts:
-psycion (a @uref{http://about.psyc.eu,PSYC} chat client), remotor (a control console
+psycion (a @uref{https://about.psyc.eu,PSYC} chat client), remotor (a control console
 for @uref{https://torproject.org,tor} router) and many more.")
     (synopsis "Perl implementation of PSYC protocol")
-    (home-page "http://perlpsyc.psyc.eu/")
+    (home-page "https://perl.psyc.eu")
     (license (list license:gpl2
                    license:perl-license
                    ;; contrib/irssi-psyc.pl:
@@ -1378,7 +1378,7 @@ for @uref{https://torproject.org,tor} router) and many more.")
          ;; therefore we do not include them.
          ;; TODO: Get a cargo build system in Guix.
          (delete 'configure)))) ; no configure script
-    (home-page "http://about.psyc.eu/libpsyc")
+    (home-page "https://about.psyc.eu/libpsyc")
     (description
      "@code{libpsyc} is a PSYC library in C which implements
 core aspects of PSYC, useful for all kinds of clients and servers
