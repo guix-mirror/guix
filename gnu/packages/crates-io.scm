@@ -6679,6 +6679,25 @@ DWARF debugging format.")
     (description "This package provides FFI bindings to libgio-2.0.")
     (license license:expat)))
 
+(define-public rust-gir-format-check-0.1
+  (package
+    (name "rust-gir-format-check")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gir-format-check" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0znl4qcgmg0656zk9vjkwdn9wj1zpkd0m0l5jnzmahd80ii7vf4b"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/gtk-rs/gir-format-check")
+    (synopsis "File format checker")
+    (description "File format checker in Rust.")
+    (license license:expat)))
+
 (define-public rust-git2-0.11
   (package
     (name "rust-git2")
