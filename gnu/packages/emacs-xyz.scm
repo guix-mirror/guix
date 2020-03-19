@@ -65,6 +65,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -13563,6 +13564,45 @@ within Emacs.")
       (description "Adds functionality to Emacs @code{ibuffer} for
 grouping buffers by their projectile root directory.")
       (license license:gpl3+))))
+
+(define-public emacs-elm-mode
+  (package
+    (name "emacs-elm-mode")
+    (version "0.21.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/jcollard/elm-mode")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0iwk4fmw8hq3ry4ky1zc7lgl4cpbnrjyk74c2xzddfspi3ks41fd"))))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-reformatter" ,emacs-reformatter)
+       ("emacs-s" ,emacs-s)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/jcollard/elm-mode")
+    (synopsis "Emacs major mode for editing Elm source code")
+    (description
+     "This package provides a major mode for editing Elm source code, and
+working with common core and third-party Elm tools.  Its features are:
+
+@itemize
+@item Syntax highlighting
+@item Intelligent indentation
+@item Integration with elm-make
+@item Integration with elm-repl
+@item Integration with elm-reactor
+@item Integration with elm-package
+@item Integration with elm-oracle
+@item Integration with elm-format
+@item Integration with elm-test
+@end itemize")
+    (license license:gpl3+)))
 
 (define-public emacs-helm-mode-manager
   (package
