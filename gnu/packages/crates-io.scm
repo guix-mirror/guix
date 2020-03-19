@@ -14682,6 +14682,26 @@ accessors.")
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
         ("rust-scoped-tls" ,rust-scoped-tls-1.0))))))
 
+(define-public rust-rctree-0.3
+  (package
+    (name "rust-rctree")
+    (version "0.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rctree" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1a54z2b850albiqx9vw009p9xg363vqzh1ybkwb89zn8375jk7my"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/RazrFalcon/rctree")
+    (synopsis "DOM-like tree implemented using reference counting")
+    (description "This package provides a @code{DOM-like} tree implemented using
+reference counting.")
+    (license license:expat)))
+
 (define-public rust-rdrand-0.4
   (package
     (name "rust-rdrand")
