@@ -3527,6 +3527,46 @@ intrinsics.")
 Code} (MAC) algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cssparser-0.25
+  (package
+    (name "rust-cssparser")
+    (version "0.25.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cssparser" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "03klvpdzsk4cyh8k0dbnlngzafv7gqywqrnsqqb3gfmrxyj8rqgv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test files missing.
+       #:cargo-inputs
+       (("rust-cssparser-macros" ,rust-cssparser-macros-0.3)
+        ("rust-dtoa-short" ,rust-dtoa-short-0.3)
+        ("rust-heapsize" ,rust-heapsize-0.4)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-matches" ,rust-matches-0.1)
+        ("rust-phf" ,rust-phf-0.7)
+        ("rust-procedural-masquerade" ,rust-procedural-masquerade-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-autocfg" ,rust-autocfg-0.1)
+        ("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-difference" ,rust-difference-2.0)
+        ("rust-encoding-rs" ,rust-encoding-rs-0.8)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/servo/rust-cssparser")
+    (synopsis "Rust implementation of CSS Syntax Level 3")
+    (description
+     "This package contains a Rust implementation of CSS Syntax Level 3.")
+    (license license:mpl2.0)))
+
 (define-public rust-cssparser-macros-0.3
   (package
     (name "rust-cssparser-macros")
