@@ -12345,20 +12345,22 @@ latent growth curve models.")
 (define-public r-nonnest2
   (package
     (name "r-nonnest2")
-    (version "0.5-2")
+    (version "0.5-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nonnest2" version))
        (sha256
         (base32
-         "1bq44qqmm59j91m0sny4xnqmxqlga4cm48qdsw8xfs3x19xwmxk6"))))
+         "1mnv4pa583ir9s03h952hk40lwdywr3g88g76sk1zsa54rcmn82c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-compquadform" ,r-compquadform)
        ("r-lavaan" ,r-lavaan)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-sandwich" ,r-sandwich)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/nonnest2/")
     (synopsis "Tests of non-nested models")
     (description
