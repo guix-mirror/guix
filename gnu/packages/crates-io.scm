@@ -13045,6 +13045,27 @@ in terms of the upstream unstable API.")
        #:cargo-development-inputs
        (("rust-quote" ,rust-quote-0.6))))))
 
+(define-public rust-procedural-masquerade-0.1
+  (package
+    (name "rust-procedural-masquerade")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "procedural-masquerade" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1l098px1hwdzqnxl376a9hfxb9q8kmj2n0y0s8k7plrz3jjp85cs"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/servo/rust-cssparser")
+    (synopsis "Macro rules for proc-macro-derive")
+    (description
+     "This package provides @code{macro_rules} for making
+@code{proc_macro_derive} pretend to be @code{proc_macro}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-proptest-0.9
   (package
     (name "rust-proptest")
