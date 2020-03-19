@@ -14640,6 +14640,27 @@ accessors.")
 @code{rdrand} and @code{rdseed} instructions")
     (license license:isc)))
 
+(define-public rust-recycler-0.1
+  (package
+    (name "rust-recycler")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "recycler" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1yll0sqswy6afk9ik7r22djqafa3wfgvgdzqqh7jbczyiqr2gp4q"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/frankmcsherry/recycler")
+    (synopsis "Rust library for recycling types containing owned memory")
+    (description
+     "This package provides a small Rust library for recycling types containing
+owned memory.")
+    (license license:expat)))
+
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
 (define-public rust-redox-syscall-0.1
