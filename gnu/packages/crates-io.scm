@@ -9987,8 +9987,7 @@ parallelize and optimize.")
          (base32
           "00p0fpjhm45qdzi37mgv7ggsy8b9gqvq4999yrbgyn1dxkf6gbfw"))))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs (("rust-rawpointer" ,rust-rawpointer-0.1))
+     `(#:cargo-inputs (("rust-rawpointer" ,rust-rawpointer-0.1))
        #:cargo-development-inputs (("rust-bencher" ,rust-bencher-0.1))))))
 
 (define-public rust-maybe-uninit-2.0
