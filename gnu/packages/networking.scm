@@ -899,15 +899,14 @@ live network and disk I/O bandwidth monitor.")
 (define-public aircrack-ng
   (package
     (name "aircrack-ng")
-    (version "1.5.2")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.aircrack-ng.org/aircrack-ng-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0hc2x17bxk2n00z8jj5jfwq3z41681fd19n018724il0cpkjyncy"))))
+        (base32 "0ix2k64qg7x3w0bzdsbk1m50kcpq1ws59g3zkwiafvpwdr4gs2sg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
