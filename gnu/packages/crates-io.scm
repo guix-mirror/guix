@@ -12238,6 +12238,43 @@ normally prevent moving a type that has been borrowed from.")
     (description "This package provides FFI bindings to @code{libpango-1.0}.")
     (license license:expat)))
 
+(define-public rust-pangocairo-0.8
+  (package
+    (name "rust-pangocairo")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pangocairo" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qjiwsp73x3w0493dzycyjzxnzwq7ixwmf1ccr5r41pjhxbnk1kl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-rs" ,rust-cairo-rs-0.7)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
+        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-pango" ,rust-pango-0.7)
+        ("rust-pango-sys" ,rust-pango-sys-0.9)
+        ("rust-pangocairo-sys" ,rust-pangocairo-sys-0.10)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (home-page "http://gtk-rs.org/")
+    (synopsis "Rust bindings for the PangoCairo library")
+    (description
+     "Rust bindings for the PangoCairo library.")
+    (license license:expat)))
+
 (define-public rust-pangocairo-sys-0.10
   (package
     (name "rust-pangocairo-sys")
