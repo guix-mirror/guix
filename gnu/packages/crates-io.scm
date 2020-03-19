@@ -9916,19 +9916,19 @@ platform-independently.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-markup5ever-0.8
+(define-public rust-markup5ever-0.9
   (package
     (name "rust-markup5ever")
-    (version "0.8.1")
+    (version "0.9.0")
     (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "markup5ever" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "08ayl9aqjnmf7ly1ipy6dk3wjvyfn4w51l40jzh1fh984ykldbzi"))))
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "markup5ever" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "00wxigkiw8f777pjp7q5kfq77xpwda9zskkwp698assh8yfisf35"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -9940,13 +9940,27 @@ platform-independently.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-string-cache-codegen"
-         ,rust-string-cache-codegen-0.4))))
+        ("rust-string-cache-codegen" ,rust-string-cache-codegen-0.4))))
     (home-page "https://github.com/servo/html5ever")
     (synopsis "Common code for xml5ever and html5ever")
     (description
      "Common code for xml5ever and html5ever.")
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-markup5ever-0.8
+  (package
+    (inherit rust-markup5ever-0.9)
+    (name "rust-markup5ever")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "markup5ever" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08ayl9aqjnmf7ly1ipy6dk3wjvyfn4w51l40jzh1fh984ykldbzi"))))))
 
 (define-public rust-matches-0.1
   (package
