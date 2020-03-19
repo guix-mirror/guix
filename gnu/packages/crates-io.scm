@@ -6399,6 +6399,42 @@ archive to be linked into Rustcode.")
 API library @code{gdi32}.")
     (license license:expat)))
 
+(define-public rust-gdk-pixbuf-0.7
+  (package
+    (name "rust-gdk-pixbuf")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "gdk-pixbuf" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1k2g3w2p57m68bi5sldvkmgjgslgqswrjsijjhqaibdvw67409lp"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fragile" ,rust-fragile-0.3)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-gdk-pixbuf-sys" ,rust-gdk-pixbuf-sys-0.9)
+        ("rust-gio" ,rust-gio-0.7)
+        ("rust-gio-sys" ,rust-gio-sys-0.9)
+        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-gir-format-check" ,rust-gir-format-check-0.1))))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)))
+    (home-page "https://gtk-rs.org/")
+    (synopsis "Rust bindings for the GdkPixbuf library")
+    (description
+     "Rust bindings for the GdkPixbuf library.")
+    (license license:expat)))
+
 (define-public rust-gdk-pixbuf-sys-0.9
   (package
     (name "rust-gdk-pixbuf-sys")
