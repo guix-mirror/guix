@@ -11989,9 +11989,6 @@ Glances uses the PsUtil library to get information from your system.  It
 monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
 
-(define-public python2-glances
-  (package-with-python2 python-glances))
-
 (define-public python-graphql-core
   (package
     (name "python-graphql-core")
