@@ -6729,6 +6729,31 @@ reading and writing git repositories.")
      "Rust bindings for the GLib library.")
     (license license:expat)))
 
+(define-public rust-glib-0.8
+  (package
+    (inherit rust-glib-0.9)
+    (name "rust-glib")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "glib" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ysy87zrwyzhfpf3d8rkyyr3amwj85wky05fsl7kx95s84l269xy"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-futures-preview" ,rust-futures-preview-0.3)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))))
+
 (define-public rust-glib-sys-0.9
   (package
     (name "rust-glib-sys")
