@@ -975,6 +975,16 @@ however, pgpdump produces more detailed and easier to understand output.")
                (base32
                 "1cbpc45f8qbdkd62p12s3q2rdq6fa5xdzwmcwd3xrj55bzkspnwm"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gnupg (assoc-ref inputs "gnupg")))
+               (wrap-program (string-append out "/bin/gpa")
+                 `("PATH" ":" prefix (,(string-append gnupg "/bin"))))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
