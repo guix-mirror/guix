@@ -20802,3 +20802,24 @@ statistics and p-values of the correlation coefficients.")
 scales and utilities, including a spell check function for plot label fields
 and an overall emphasis on typography.")
     (license license:expat)))
+
+(define-public r-crochet
+  (package
+    (name "r-crochet")
+    (version "2.2.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (cran-uri "crochet" version))
+      (sha256
+       (base32
+        "1cbv79nyycxk6f8ldcsnn2pvgxqlnrj0qs19nhafnq2clxy863k6"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/agrueneberg/crochet")
+    (synopsis "Implementation Helper for Matrix-Like Types")
+    (description
+     "Functions to help implement the extraction / subsetting / indexing
+function @code{[} and replacement function @code{[<-} of custom matrix-like
+types (based on S3, S4, etc.), modeled as closely to the base matrix class
+as possible (with tests to prove it).")
+    (license license:expat)))
