@@ -966,7 +966,7 @@ that uses Serde for transforming structs into bytes and vice versa!")
     (home-page
      "https://rust-lang.github.io/rust-bindgen/")
     (synopsis
-     "Automatically generates FFI bindings to C and C++libraries")
+     "Automatically generates FFI bindings to C and C++ libraries")
     (description
      "Automatically generates Rust FFI bindings to C and C++
 libraries.")
