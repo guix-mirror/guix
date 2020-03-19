@@ -1772,6 +1772,32 @@ exposed as Reader/Writer streams.")
      "Rust bindings for the Cairo library.")
     (license license:expat)))
 
+(define-public rust-cairo-rs-0.7
+  (package
+    (inherit rust-cairo-rs-0.8)
+    (name "rust-cairo-rs")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cairo-rs" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "171m98g41avp5mmshqir4ka21napp7ma5fx45wi9mw5hwdyv8pg0"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cairo-sys-rs" ,rust-cairo-sys-rs-0.9)
+        ("rust-glib" ,rust-glib-0.8)
+        ("rust-glib-sys" ,rust-glib-sys-0.9)
+        ("rust-gobject-sys" ,rust-gobject-sys-0.9)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
+       #:cargo-development-inputs
+       (("rust-tempfile" ,rust-tempfile-3.1))))))
+
 (define-public rust-cairo-sys-rs-0.9
   (package
     (name "rust-cairo-sys-rs")
