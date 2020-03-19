@@ -48,6 +48,30 @@
 ;;; Please: Try to add new module packages in alphabetic order.
 ;;;
 
+(define-public rust-abomonation-0.7
+  (package
+    (name "rust-abomonation")
+    (version "0.7.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "abomonation" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1cjg3hjf028n447pdj7zcdgrkngx30as8ndxlxx947wvr49jkrsn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-recycler" ,rust-recycler-0.1))))
+    (home-page "https://github.com/TimelyDataflow/abomonation")
+    (synopsis "High performance and very unsafe serialization library")
+    (description
+     "This package provides a high performance and very unsafe serialization
+library in Rust.")
+    (license license:expat)))
+
 (define-public rust-addr2line-0.9
   (package
     (name "rust-addr2line")
