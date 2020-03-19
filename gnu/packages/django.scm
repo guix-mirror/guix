@@ -223,6 +223,30 @@ with arguments to the field constructor.")
      "Django-taggit is a reusable Django application for simple tagging.")
     (license license:bsd-3)))
 
+(define-public python-easy-thumbnails
+  (package
+    (name "python-easy-thumbnails")
+    (version "2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "easy-thumbnails" version))
+       (sha256
+        (base32
+         "14gzp5cv24z0qhxb7f7k7v9jgzpaj4n8yhjq83ynpx8183fs1rz4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-django" ,python-django)
+       ("python-pillow" ,python-pillow)))
+    (home-page "https://github.com/SmileyChris/easy-thumbnails")
+    (synopsis "Easy thumbnails for Django")
+    (description
+     "Easy thumbnails is a Django plugin to dynamically create thumbnails
+based on source images.  Multiple thumbnails can be created from a single
+source image, using different options to control parameters like the image
+size and quality.")
+    (license license:bsd-3)))
+
 (define-public python-pytest-django
   (package
     (name "python-pytest-django")
