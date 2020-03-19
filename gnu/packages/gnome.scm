@@ -2187,6 +2187,7 @@ library.")
 
 (define-public librsvg-next
   (package
+    (inherit librsvg)
     (name "librsvg")
     (version "2.46.4")
     (source (origin
@@ -2315,27 +2316,6 @@ library.")
                            ;; This test fails on aarch64:
                            "bugs/777834-empty-text-children.svg")))
              #t)))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("vala" ,vala)
-       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
-       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
-    (inputs
-     `(("pango" ,pango)
-       ("libcroco" ,libcroco)
-       ("bzip2" ,bzip2)
-       ("libgsf" ,libgsf)
-       ("libxml2" ,libxml2)))
-    (propagated-inputs
-     ;; librsvg-2.0.pc refers to all of that.
-     `(("cairo" ,cairo)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)))
-    (home-page "https://wiki.gnome.org/LibRsvg")
-    (synopsis "Render SVG files using Cairo")
-    (description
-     "Librsvg is a C library to render SVG files using the Cairo 2D graphics
-library.")
     (license license:lgpl2.1+)))
 
 (define-public libidl
