@@ -1111,7 +1111,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
-  %D%/packages/patches/libksieve-Fix-missing-lInk-libraries.patch \
+  %D%/packages/patches/libksieve-Fix-missing-link-libraries.patch \
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-length-check.patch		\
