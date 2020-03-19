@@ -14412,8 +14412,30 @@ random number generators.")
      "Interoperability library for Rust Windowing applications.")
     (license license:expat)))
 
+(define-public rust-rawpointer-0.2
+  (package
+    (name "rust-rawpointer")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rawpointer" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1qy1qvj17yh957vhffnq6agq0brvylw27xgks171qrah75wmg8v0"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/rawpointer/")
+    (synopsis "Extra methods for raw pointers")
+    (description "Extra methods for raw pointers.  For example
+@code{.post_inc()} and @code{.pre_dec()} (c.f. @code{ptr++} and @code{--ptr})
+and @code{ptrdistance}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rawpointer-0.1
   (package
+    (inherit rust-rawpointer-0.2)
     (name "rust-rawpointer")
     (version "0.1.0")
     (source
@@ -14423,15 +14445,7 @@ random number generators.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/bluss/rawpointer/")
-    (synopsis "Extra methods for raw pointers")
-    (description "Extra methods for raw pointers.  For example
-@code{.post_inc()} and @code{.pre_dec()} (c.f. @code{ptr++} and @code{--ptr})
-and @code{ptrdistance}.")
-    (license (list license:asl2.0
-                   license:expat))))
+          "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))))
 
 (define-public rust-rawslice-0.1
   (package
