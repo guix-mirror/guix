@@ -19868,6 +19868,32 @@ corresponding Evil keys.")
 commands in @code{evil-mode}.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-tmux-navigator
+  (package
+    (name "emacs-evil-tmux-navigator")
+    (version "0.1.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/keith/evil-tmux-navigator")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1na44rbc03sr5b4z9pvnps6n4nmrqcz58nywix9825l74a419ijx"))))
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/keith/evil-tmux-navigator")
+    (synopsis
+     "Navigate seamlessly between emacs windows and tmux panes")
+    (description
+     "This package lets you use C-h, C-j, C-k and C-l to navigate between
+Emacs windows and tmux panes.")
+    (license license:expat)))
+
 (define-public emacs-xterm-color
   (package
     (name "emacs-xterm-color")
