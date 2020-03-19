@@ -270,8 +270,12 @@ packages defined in installation-os."
                                   (lambda (port)
                                     (write '#$target-os-source port)))
                                marionette)
-              (exit (marionette-eval '(zero? (system #$script))
-                                     marionette)))
+
+              ;; Run SCRIPT.  It typically invokes 'reboot' as a last step and
+              ;; thus normally gets killed with SIGTERM by PID 1.
+              (let ((status (marionette-eval '(system #$script) marionette)))
+                (exit (or (equal? (status:term-sig status) SIGTERM)
+                          (equal? (status:exit-val status) 0)))))
 
             (when #$(->bool gui-test)
               (wait-for-unix-socket "/var/guix/installer-socket"
