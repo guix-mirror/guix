@@ -16696,14 +16696,14 @@ elicitation options based on Kass and Vaidyanathan (1992)
 (define-public r-accept
   (package
     (name "r-accept")
-    (version "0.7.0")
+    (version "0.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "accept" version))
        (sha256
         (base32
-         "1r4mhy9g4wjcjgdd0gwdarmr09292il3vdkmx0hz7vh9mffyr9kx"))))
+         "0pn8q0jsi0nb2mm2kv6sjczflflshhy55y7nqqnk70yx9f6wm83y"))))
     (properties `((upstream-name . "accept")))
     (build-system r-build-system)
     (propagated-inputs
