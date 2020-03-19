@@ -64,14 +64,14 @@
 (define-public libwpe
   (package
     (name "libwpe")
-    (version "1.4.0")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wpewebkit.org/releases/libwpe-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1221vs72zs87anrzhbm6pf8jnii7s6ms7mkzj6nlds9zqd7lklz2"))))
+                "141w35b488jjhanl3nrm0awrbcy6hb579fk8n9vbpx07m2wcd1rm"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
