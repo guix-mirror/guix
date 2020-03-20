@@ -12577,7 +12577,7 @@ possible on all supported Python versions.")
                         (invoke "python" "Cheetah/Tests/Test.py")))))))
     (propagated-inputs
      `(("python-markdown" ,python-markdown)))    ;optional
-    (home-page "http://cheetahtemplate.org/")
+    (home-page "https://cheetahtemplate.org/")
     (synopsis "Template engine")
     (description "Cheetah is a text-based template engine and Python code
 generator.
