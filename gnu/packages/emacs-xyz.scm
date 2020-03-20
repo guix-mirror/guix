@@ -3633,7 +3633,7 @@ build jobs.")
 (define-public emacs-company
   (package
     (name "emacs-company")
-    (version "0.9.11")
+    (version "0.9.12")
     (source
      (origin
        (method git-fetch)
@@ -3642,7 +3642,7 @@ build jobs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x7ag716jp4xb7kmcmr8pqlxx1v0f2gkjx5gx34wxxqfrndwyx8i"))))
+        (base32 "0c31amc6gyfkmb1ii6mm56c75za1yxkj2iyhrjc45nn2mrh7yj7a"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
