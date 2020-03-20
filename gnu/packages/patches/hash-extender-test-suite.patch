@@ -1,0 +1,13 @@
+Make the test suite exit with a non-zero exit code if some tests failed.
+Pull request pending upstream: https://github.com/iagox86/hash_extender/pull/13
+--- a/test.c
++++ b/test.c
+@@ -79,5 +79,9 @@ void test_report(void)
+     printf("TESTS PASSED: %d / %d [%2.4f%%]\n", tests_passed, tests_run, 100 * (float)tests_passed / tests_run);
+     printf("--------------------------------------------------------------------------------\n");
+   }
++
++  if (tests_passed != tests_run) {
++      exit(1);
++  }
+ }
