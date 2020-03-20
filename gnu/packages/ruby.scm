@@ -719,7 +719,7 @@ interactions.")
     (description "RSpec is a behavior-driven development (BDD) framework for
 Ruby.  This meta-package includes the RSpec test runner, along with the
 expectations and mocks frameworks.")
-    (home-page "http://rspec.info/")
+    (home-page "https://rspec.info/")
     (license license:expat)))
 
 (define-public ruby-rspec-2
