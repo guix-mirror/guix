@@ -842,7 +842,7 @@ computing environments.")
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)))
-    (home-page "http://scikit-learn.org/")
+    (home-page "https://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
      "Scikit-learn provides simple and efficient tools for data mining and
