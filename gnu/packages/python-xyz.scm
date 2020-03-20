@@ -7686,7 +7686,7 @@ printing of sub-tables by specifying a row range.")
      `(("hdf5" ,hdf5-1.10)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)))
-    (home-page "http://www.pytables.org/")
+    (home-page "https://www.pytables.org/")
     (synopsis "Hierarchical datasets for Python")
     (description "PyTables is a package for managing hierarchical datasets and
 designed to efficiently cope with extremely large amounts of data.")
