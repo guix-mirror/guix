@@ -138,6 +138,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cups.scm				\
   %D%/packages/curl.scm				\
   %D%/packages/cvassistant.scm			\
+  %D%/packages/cybersecurity.scm		\
   %D%/packages/cyrus-sasl.scm			\
   %D%/packages/databases.scm			\
   %D%/packages/datamash.scm			\
