@@ -104,6 +104,7 @@
             read/eval
             read/eval-package-expression
             check-available-space
+            indented-string
             fill-paragraph
             %text-width
             texi->plain-text
@@ -1205,6 +1206,23 @@ replacement if PORT is not Unicode-capable."
      (call-with-error-handling
       (lambda ()
         body ...)))))
+
+(define* (indented-string str indent
+                          #:key (initial-indent? #t))
+  "Return STR with each newline preceded by IDENT spaces.  When
+INITIAL-INDENT? is true, the first line is also indented."
+  (define indent-string
+    (make-list indent #\space))
+
+  (list->string
+   (string-fold-right (lambda (chr result)
+                        (if (eqv? chr #\newline)
+                            (cons chr (append indent-string result))
+                            (cons chr result)))
+                      '()
+                      (if initial-indent?
+                          (string-append (list->string indent-string) str)
+                          str))))
 
 (define* (fill-paragraph str width #:optional (column 0))
   "Fill STR such that each line contains at most WIDTH characters, assuming

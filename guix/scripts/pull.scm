@@ -269,7 +269,7 @@ code, to PORT."
   (let ((body (or (assoc-ref body language)
                   (assoc-ref body (%default-message-language))
                   "")))
-    (format port "    ~a~%"
+    (format port "~a~%"
             (indented-string
              (parameterize ((%text-width (- (%text-width) 4)))
                (string-trim-right
@@ -520,19 +520,6 @@ true, display what would be built without actually building it."
 ;;; Queries.
 ;;;
 
-(define (indented-string str indent)
-  "Return STR with each newline preceded by IDENT spaces."
-  (define indent-string
-    (make-list indent #\space))
-
-  (list->string
-   (string-fold-right (lambda (chr result)
-                        (if (eqv? chr #\newline)
-                            (cons chr (append indent-string result))
-                            (cons chr result)))
-                      '()
-                      str)))
-
 (define profile-package-alist
   (mlambda (profile)
     "Return a name/version alist representing the packages in PROFILE."
@@ -589,7 +576,7 @@ Return true when there is more package info to display."
   (define (pretty str column)
     (indented-string (fill-paragraph str (- (%text-width) 4)
                                      column)
-                     4))
+                     4 #:initial-indent? #f))
 
   (define concise/max-item-count
     ;; Maximum number of items to display when CONCISE? is true.
