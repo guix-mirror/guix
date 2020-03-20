@@ -10345,7 +10345,7 @@ development version of CPython that are not available in older releases.")
     ;; https://github.com/PythonCharmers/python-future/issues/210
     (arguments
      `(#:tests? #f))
-    (home-page "http://python-future.org")
+    (home-page "https://python-future.org")
     (synopsis "Single-source support for Python 3 and 2")
     (description
      "@code{python-future} is the missing compatibility layer between Python 2 and
