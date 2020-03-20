@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3447,6 +3448,105 @@ X server.")
 X server.")
     (license license:x11)))
 
+(define-public v86d
+  (package
+    (name "v86d")
+    (version "0.1.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mjanusz/v86d.git")
+             (commit (string-append name "-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c4iiggb5r9i2hxhk8c6q1m2vpfva39l1w33fsfkrz6fav6x34pp"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; remove bundled x86emu
+           (for-each delete-file
+                     (filter (lambda (name) ;keep customized Makefile
+                               (not (string-suffix? "Makefile" name)))
+                             (find-files "libs/x86emu")))
+           ;; remove non-working vbetest utility program (it is unnecessary)
+           (delete-file "libs/lrmi-0.10/vbe.h")
+           (delete-file "libs/lrmi-0.10/vbetest.c")
+           #t))))
+
+    ;; We keep the bundled copy of the Linux Real Mode Interface lrmi-0.10,
+    ;; because it includes fixes missing from upstream lrmi.  We do not use
+    ;; libx86, because we already use x86emu with the more current lrmi.
+
+    (inputs `(("xorg-server-sources" ,(package-source xorg-server)) ;for x86emu
+              ("xorgproto" ,xorgproto))) ;upstream x86emu uses X11/Xfuncproto.h
+    (outputs '("out" ;main v86d helper
+               "testvbe")) ;test program for listing video modes
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;there are no tests
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Replace the bundled x86emu with its upstream copy from Xorg-server:
+         (add-after 'unpack 'unpack-x86emu-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (begin
+               (format #t "decompressing x86emu source code~%")
+               (with-directory-excursion "libs"
+                 (let ((srcs (assoc-ref inputs "xorg-server-sources"))
+                       (tar-binary (string-append (assoc-ref inputs "tar")
+                                                  "/bin/tar")))
+                   (invoke tar-binary "xvf" srcs "--strip-components=3"
+                           "--wildcards" "*/hw/xfree86/x86emu/")
+                   ;; extract license:
+                   (with-directory-excursion "x86emu"
+                     (invoke tar-binary "xvf" srcs "--strip-components=1"
+                             "--wildcards" "*/COPYING"))
+                   #t)))))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "CC" (which "gcc"))
+               (setenv "DESTDIR" out)
+               (invoke "./configure" "--with-x86emu"))))
+         (add-after 'build 'build-testvbe
+           (lambda _
+             (invoke "make" "testvbe")))
+         (add-after 'install 'install-testvbe
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((testvbe (assoc-ref outputs "testvbe"))
+                   (olddest (getenv "DESTDIR")))
+               (setenv "DESTDIR" testvbe)
+               (invoke "make" "install_testvbe")
+               (setenv "DESTDIR" olddest)
+               #t)))
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc-dir (string-append out "/share/doc/v86d")))
+               (mkdir-p doc-dir)
+               (copy-file "README"
+                          (string-append doc-dir "/README"))
+               (copy-file "libs/lrmi-0.10/README"
+                          (string-append doc-dir "/README.lrmi"))
+               (copy-file "libs/x86emu/COPYING"
+                          (string-append doc-dir "/COPYING.xorg-server.x86emu"))
+               #t))))))
+    (home-page "https://github.com/mjanusz/v86d")
+    (synopsis "Userspace helper for uvesafb")
+    (description
+     "v86d provides a backend for kernel drivers that need to execute x86 BIOS
+code.  The code is executed in a controlled environment and the results are
+passed back to the kernel via the netlink interface.  v86d is required by the
+uvesafb Linux kernel module that provides an fbdev framebuffer when Kernel
+Mode Setting is unavailable.  It can be a last resort when no other Xorg X
+server driver works.")
+    (license (list license:gpl2
+                   license:x11)))) ;for bundled lrmi and x86emu
 
 (define-public xf86-video-vmware
   (package
