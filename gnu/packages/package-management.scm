@@ -170,6 +170,13 @@
                           (lambda (port)
                             (display ,version port)))
 
+                        ;; Install SysV init files to $(prefix)/etc rather
+                        ;; than to /etc.
+                        (substitute* "nix/local.mk"
+                          (("^sysvinitservicedir = .*$")
+                           (string-append "sysvinitservicedir = \
+$(prefix)/etc/init.d\n")))
+
                         (invoke "sh" "bootstrap")))
                     (add-before 'check 'copy-bootstrap-guile
                       (lambda* (#:key system inputs #:allow-other-keys)
