@@ -1043,7 +1043,7 @@ been constructed to maintain extensive documentation on how to use
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
-    (home-page "http://bitbucket.org/mhallin/py-scrypt")
+    (home-page "https://bitbucket.org/mhallin/py-scrypt")
     (synopsis "Bindings for the scrypt key derivation function library")
     (description "This is a set of Python bindings for the scrypt key
 derivation function.")
