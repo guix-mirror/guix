@@ -5516,7 +5516,7 @@ simple method for converting between file types.")
      `(("r-foreign" ,r-foreign)
        ("r-lattice" ,r-lattice)
        ("r-sp" ,r-sp)))
-    (home-page "http://r-forge.r-project.org/projects/maptools/")
+    (home-page "https://r-forge.r-project.org/projects/maptools/")
     (synopsis "Tools for reading and handling spatial objects")
     (description
      "This package provides a set of tools for manipulating and reading
