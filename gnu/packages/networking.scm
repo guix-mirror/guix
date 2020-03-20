@@ -82,6 +82,7 @@
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
@@ -98,6 +99,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -861,6 +863,47 @@ application stack itself.")
 prints timing information for each step of the HTTP request (DNS lookup,
 TCP connection, TLS handshake and so on) in the terminal.")
     (license license:expat)))
+
+(define-public squid
+  (package
+    (name "squid")
+    (version "4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "07sz0adv8nkhy797675bpra7lvdkwjq9isw1ddgylhlazl511w4q"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-true-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "test-suite/testheaders.sh"
+               (("/bin/true")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/true")))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("openldap" ,openldap)
+       ("linux-pam" ,linux-pam)
+       ("libcap" ,libcap)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("expat" ,expat)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Web caching proxy")
+    (description "Squid is a caching proxy for the Web supporting HTTP, HTTPS,
+FTP, and more.  It reduces bandwidth and improves response times by caching and
+reusing frequently-requested web pages.")
+    (home-page "http://www.squid-cache.org/")
+    (license license:gpl2+)))
 
 (define-public bwm-ng
   (package
