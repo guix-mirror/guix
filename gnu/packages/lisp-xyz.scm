@@ -4281,7 +4281,7 @@ streams (though primarily the former, while wrapping the latter).")
         ("sbcl-fast-io" ,sbcl-fast-io)
         ("sbcl-proc-parse" ,sbcl-proc-parse)
         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)))
-     (home-page "http://rudolph-miller.github.io/jonathan/overview.html")
+     (home-page "https://rudolph-miller.github.io/jonathan/overview.html")
      (synopsis "JSON encoder and decoder")
      (description
       "High performance JSON encoder and decoder.  Currently support: SBCL,
