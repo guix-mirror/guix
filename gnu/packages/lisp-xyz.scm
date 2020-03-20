@@ -926,7 +926,7 @@ multiple inspectors with independent history.")
           (base32
            "1wddrnr5kiya5s3gp4cdq6crbfy9fqcz7fr44p81502sj3bvdv39"))))
       (build-system asdf-build-system/sbcl)
-      (home-page "http://marijnhaverbeke.nl/parse-js/")
+      (home-page "https://marijnhaverbeke.nl/parse-js/")
       (synopsis "Parse JavaScript")
       (description "Parse-js is a Common Lisp package for parsing
 JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
