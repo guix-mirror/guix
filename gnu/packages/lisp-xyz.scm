@@ -950,7 +950,7 @@ JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
         (base32
          "0sk06ib1bhqv9y39vwnnw44vmbc4b0kvqm37xxmkxd4dwchq82d7"))))
     (build-system asdf-build-system/sbcl)
-    (home-page "http://www.cliki.net/PARSE-NUMBER")
+    (home-page "https://www.cliki.net/PARSE-NUMBER")
     (synopsis "Parse numbers")
     (description "@code{parse-number} is a library of functions for parsing
 strings into one of the standard Common Lisp number types without using the
