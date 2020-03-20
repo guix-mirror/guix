@@ -923,7 +923,7 @@ exceptions, macros, and a dynamic programming environment.")
       (description
        "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
 images onto Cairo surfaces.")
-      (home-page "http://wingolog.org/projects/guile-rsvg/")
+      (home-page "https://wingolog.org/projects/guile-rsvg/")
       (license license:lgpl2.1+))))
 
 (define-public guile3.0-rsvg
