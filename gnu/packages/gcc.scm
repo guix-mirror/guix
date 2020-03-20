@@ -598,6 +598,7 @@ using compilers other than GCC."
     (outputs '("out"))
     (native-inputs '())
     (propagated-inputs '())
+    (properties '())
     (synopsis "Collection of subroutines used by various GNU programs")))
 
 (define-public libiberty
