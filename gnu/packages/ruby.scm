@@ -7138,7 +7138,7 @@ generation.")
 concise DSL for constructing SQL queries and table schemas.  It includes a
 comprehensive ORM layer for mapping records to Ruby objects and handling
 associated records.")
-    (home-page "http://sequel.jeremyevans.net")
+    (home-page "https://sequel.jeremyevans.net")
     (license license:expat)))
 
 (define-public ruby-timecop
