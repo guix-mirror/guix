@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 David Thompson <davet@gnu.org>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,6 +98,22 @@ Perform the deployment specified by FILE.\n"))
                                            environment-modules))))
     (load* file module)))
 
+(define (show-what-to-deploy machines)
+  "Show the list of machines to deploy, MACHINES."
+  (let ((count (length machines)))
+    (format (current-error-port)
+            (N_ "The following ~*machine will be deployed:~%"
+                "The following ~d machines will be deployed:~%"
+                count)
+            count)
+    (display (indented-string
+              (fill-paragraph (string-join (map machine-display-name machines)
+                                           ", ")
+                              (- (%text-width) 2) 2)
+              2)
+             (current-error-port))
+    (display "\n\n" (current-error-port))))
+
 (define (guix-deploy . args)
   (define (handle-argument arg result)
     (alist-cons 'file arg result))
@@ -105,6 +122,8 @@ Perform the deployment specified by FILE.\n"))
                                    #:argument-handler handle-argument))
          (file (assq-ref opts 'file))
          (machines (or (and file (load-source-file file)) '())))
+    (show-what-to-deploy machines)
+
     (with-status-verbosity (assoc-ref opts 'verbosity)
       (with-store store
         (set-build-options-from-command-line store opts)
