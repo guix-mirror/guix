@@ -3341,7 +3341,7 @@ OCaml projects that contain C stubs.")
   (package
     (name "ocaml-tsdl")
     (version "0.9.6")
-    (home-page "http://erratique.ch/software/tsdl")
+    (home-page "https://erratique.ch/software/tsdl")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/releases/tsdl-"
