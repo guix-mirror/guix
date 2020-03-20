@@ -11125,7 +11125,17 @@ more, possibly remote, memcached servers.")
     (description
      "CliKit is a group of utilities to build testable command line
 interfaces.")
+    (properties `((python2-variant . ,(delay python2-clikit))))
     (license license:expat)))
+
+(define-public python2-clikit
+  (let ((base (package-with-python2 (strip-python2-variant python-clikit))))
+    (package/inherit
+     base
+     (propagated-inputs
+      `(("python-enum34" ,python2-enum34)
+        ("python-typing" ,python2-typing)
+        ,@(package-propagated-inputs base))))))
 
 (define-public python-msgpack-python
   (package
