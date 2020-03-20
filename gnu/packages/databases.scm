@@ -217,7 +217,7 @@ either single machines or networked clusters.")
      "@code{mgo} (pronounced as mango) is a MongoDB driver for the Go language.
 It implements a rich selection of features under a simple API following
 standard Go idioms.")
-    (home-page "http://labix.org/mgo")
+    (home-page "https://labix.org/mgo")
     (license license:bsd-2)))
 
 (define-public ephemeralpg
