@@ -138,22 +138,21 @@ saving time.  Almost all of the Olson timezones are supported.")
 (define-public python-pendulum
   (package
     (name "python-pendulum")
-    (version "1.2.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pendulum" version))
        (sha256
         (base32
-         "1fj36yxi2f4lzchzd8ny1qjl67dbypnk0gn8qwad2w78579m8m8z"))))
+         "1zhzk0ai8is8zclw4v73dllf0hx0l5nmm4sbwrh6cl8h5qsang09"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)))
+    ;; XXX: The PyPI distribution lacks tests, and the upstream repository
+    ;; lacks a setup.py!
+    (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-pytzdata" ,python-pytzdata)
-       ("python-tzlocal" ,python-tzlocal)))
+       ("python-pytzdata" ,python-pytzdata)))
     (home-page "https://github.com/sdispater/pendulum")
     (synopsis "Alternate API for Python datetimes")
     (description "Pendulum is a drop-in replacement for the standard
