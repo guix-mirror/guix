@@ -99,7 +99,7 @@
        ("python-tblib" ,python-tblib)))
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
-    (home-page "http://www.djangoproject.com/")
+    (home-page "https://www.djangoproject.com/")
     (synopsis "High-level Python Web framework")
     (description
      "Django is a high-level Python Web framework that encourages rapid
