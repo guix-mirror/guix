@@ -12163,6 +12163,34 @@ provide extendible implementations of common aspects of a cloud so that you can
 focus on building massively scalable web applications.")
     (license license:expat)))
 
+(define-public python-random2
+  (package
+    (name "python-random2")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "random2" version ".zip"))
+              (sha256
+               (base32
+                "01y0s4747plsx8fdnxy0nz83dp69naddz58m81r9h0s1qfm31b9l"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "http://pypi.python.org/pypi/random2")
+    (synopsis "Python 3 version of the Python 2 @code{random} module")
+    (description
+     "This package provides a Python 3 ported version of Python 2.7’s
+@code{random} module.  It has also been back-ported to work in Python 2.6.
+
+In Python 3, the implementation of @code{randrange()} was changed, so that
+even with the same seed you get different sequences in Python 2 and 3.
+
+This package closes that gap, allowing stable random number generation
+between the different Python versions.")
+    (license license:psfl)))
+
+(define-public python2-random2
+  (package-with-python2 python-random2))
+
 (define-public python-snowballstemmer
   (package
     (name "python-snowballstemmer")
