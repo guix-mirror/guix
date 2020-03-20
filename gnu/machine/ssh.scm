@@ -271,7 +271,7 @@ not available in the initrd."
       (unless (null? missing)
         (raise (condition
                 (&message
-                 (message (format #f (G_ "~a missing modules ~{ ~a~}~%")
+                 (message (format #f (G_ "missing modules for ~a:~{ ~a~}~%")
                                   (file-system-device fs)
                                   missing))))))))
 
