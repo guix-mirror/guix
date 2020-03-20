@@ -873,7 +873,7 @@ OpenStreetMap data.")
 (define-public osm2pgsql
   (package
     (name "osm2pgsql")
-    (version "0.96.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -882,7 +882,7 @@ OpenStreetMap data.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "032cydh8ynaqfhdzmkvgbmqyjql668y6qln1l59l2s3ni9963bbl"))
+        (base32 "1ysan01lpqzjxlq3y2kdminfjs5d9zksicpf9vvzpdk3fzq51fc9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -901,16 +901,17 @@ OpenStreetMap data.")
                             "/include"))))
     (inputs
      `(("boost" ,boost)
+       ("bzip2" ,bzip2)
        ("expat" ,expat)
        ("libosmium" ,libosmium)
        ("lua" ,lua)
        ("postgresql" ,postgresql)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("protozero" ,protozero)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-2" ,python-2)
-       ("python2-psycopg2" ,python2-psycopg2)))
+     `(("python" ,python)
+       ("python-psycopg2" ,python-psycopg2)))
     (home-page "https://github.com/openstreetmap/osm2pgsql")
     (synopsis "OSM data importer to postgresql")
     (description "Osm2pgsql is a tool for loading OpenStreetMap data into a
