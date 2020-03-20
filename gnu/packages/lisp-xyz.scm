@@ -3504,7 +3504,7 @@ RFC 1321 by R. Rivest, published April 1992.")
          ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)
          ("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-trivial-features" ,sbcl-trivial-features)))
-      (home-page "http://common-lisp.net/project/cl-plus-ssl/")
+      (home-page "https://common-lisp.net/project/cl-plus-ssl/")
       (synopsis "Common Lisp bindings to OpenSSL")
       (description
        "This library is a fork of SSL-CMUCL.  The original SSL-CMUCL source
