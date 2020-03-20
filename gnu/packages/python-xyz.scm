@@ -11368,34 +11368,29 @@ parsing UK postcodes.")
 (define-public python-faker
   (package
   (name "python-faker")
-  (version "0.7.9")
+  (version "4.0.2")
   (source (origin
             (method url-fetch)
             (uri (pypi-uri "Faker" version))
             (sha256
              (base32
-              "1fh2p2yz0fsdr4fqwxgddwbvfb6qn6vp8yx0qwqzra27yq5d1wsm"))
-            (patches
-             (search-patches "python-faker-fix-build-32bit.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                (for-each delete-file (find-files "." "\\.pyc$"))
-                #t))))
+              "13qq485ydxmdnqn3xbfv1xfyqbf9qfnfw33v1vw5l6jyy9p8cgrd"))))
   (build-system python-build-system)
   (arguments
    '(#:phases
      (modify-phases %standard-phases
        (replace 'check
-         (lambda _ (invoke "python" "-m" "unittest" "-v" "tests"))))))
+         (lambda _ (invoke "python" "-m" "pytest" "-v"))))))
   (native-inputs
    `(;; For testing
-     ("python-email-validator" ,python-email-validator)
-     ("python-mock" ,python-mock)
-     ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
+     ("python-freezegun" ,python-freezegun)
+     ("python-pytest" ,python-pytest)
+     ("python-random2" ,python-random2)
+     ("python-ukpostcodeparser" ,python-ukpostcodeparser)
+     ("python-validators" ,python-validators)))
   (propagated-inputs
    `(("python-dateutil" ,python-dateutil)
-     ("python-six" ,python-six)))
+     ("python-text-unidecode" ,python-text-unidecode)))
   (home-page "https://github.com/joke2k/faker")
   (synopsis "Python package that generates fake data")
   (description
@@ -11404,11 +11399,22 @@ addresses, and phone numbers.")
   (license license:expat)
   (properties `((python2-variant . ,(delay python2-faker))))))
 
+;; Faker 4.0 dropped Python 2 support, so we stick with this older version here.
 (define-public python2-faker
   (let ((base (package-with-python2 (strip-python2-variant
                                      python-faker))))
     (package
       (inherit base)
+      (version "3.0.1")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "Faker" version))
+                (sha256
+                 (base32
+                  "11cr0qvspkdh6198rqy56qildk7bnp6llj8kyy1dan5sp5n4dxy7"))))
+      (native-inputs
+       `(("python-mock" ,python2-mock)
+         ,@(package-native-inputs base)))
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ,@(package-propagated-inputs base))))))
