@@ -11712,7 +11712,7 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
        ("mesa" ,mesa)
        ("sdl-union"
         ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
-    (home-page "http://kivy.org")
+    (home-page "https://kivy.org")
     (synopsis
      "Multitouch application framework")
     (description
