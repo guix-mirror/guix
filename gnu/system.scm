@@ -594,7 +594,7 @@ of PROVENANCE-SERVICE-TYPE to its services."
 
          bash-completion
 
-         guile-2.2
+         guile-3.0
          guile-readline guile-colorized
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
