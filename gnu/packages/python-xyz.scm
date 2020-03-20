@@ -2398,6 +2398,40 @@ somewhat intelligible.")
 (define-public python2-unidecode
   (package-with-python2 python-unidecode))
 
+(define-public python-text-unidecode
+  (package
+    (name "python-text-unidecode")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "text-unidecode" version))
+              (sha256
+               (base32
+                "14xb99fdv52j21dsljgsbmbaqv10ps4b453p229r29sdn4xn1mms"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/kmike/text-unidecode/")
+    (synopsis "Decode Unicode data")
+    (description
+     "@code{text-unidecode} is a basic Python port of the @code{Text::Unidecode}
+Perl library.  It can create ASCII representations of Unicode data.  In general
+users should prefer the @code{python-unidecode} package which offers better
+memory usage and transliteration quality.")
+    ;; The user can choose either license.
+    (license (list license:clarified-artistic license:gpl2+))))
+
+(define-public python2-text-unidecode
+  (package-with-python2 python-text-unidecode))
+
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
