@@ -15135,7 +15135,7 @@ objects on other machines, also known as remote procedure calls (RPC).")
      `(#:python ,python-2
        ;; Pyro has no test cases for automatic execution
        #:tests? #f))
-    (home-page "http://pythonhosted.org/Pyro/")
+    (home-page "https://pythonhosted.org/Pyro/")
     (synopsis "Distributed object manager for Python")
     (description "Pyro is a Distributed Object Technology system
 written in Python that is designed to be easy to use.  It resembles
