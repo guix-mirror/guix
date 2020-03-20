@@ -4,6 +4,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,6 +145,47 @@ the Obsidian icon theme.")
 and KStatusNotifierItems (KDE's successor of the systray) into
 GNOME Shell.")
     (home-page "https://github.com/ubuntu/gnome-shell-extension-appindicator/")
+    (license license:gpl2+)))
+
+(define-public gnome-shell-extension-topicons-redux
+  (package
+    (name "gnome-shell-extension-topicons-redux")
+    (version "6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/pop-planet/TopIcons-Redux.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1dli9xb545n3xlj6q4wl0y5gzkm903zs47p8fiq71pdvbr6v38rj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib" ,glib "bin")))
+    (arguments
+     `(#:tests? #f                      ;no test defined in the project
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "make"
+                       "install"
+                       (string-append
+                        "INSTALL_PATH="
+                        out
+                        "/share/gnome-shell/extensions"))))))))
+    (home-page "https://gitlab.com/pop-planet/TopIcons-Redux")
+    (synopsis "Display legacy tray icons in the GNOME Shell top panel")
+    (description "Many applications, such as chat clients, downloaders, and
+some media players, are meant to run long-term in the background even after you
+close their window.  These applications remain accessible by adding an icon to
+the GNOME Shell Legacy Tray.  However, the Legacy Tray was removed in GNOME
+3.26.  TopIcons Redux brings those icons back into the top panel so that it's
+easier to keep track of apps running in the backround.")
     (license license:gpl2+)))
 
 (define-public gnome-shell-extension-dash-to-dock
