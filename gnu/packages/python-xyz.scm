@@ -1600,7 +1600,7 @@ commands.")
     (synopsis "Toolkit for XML processing in Python")
     (description
      "ElementTree is a Python library supporting lightweight XML processing.")
-    (home-page "http://effbot.org/zone/element-index.htm")
+    (home-page "https://effbot.org/zone/element-index.htm")
     (license (license:x11-style
               "http://docs.python.org/2/license.html"
               "Like \"CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2\"."))))
