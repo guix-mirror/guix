@@ -10251,7 +10251,7 @@ the same purpose: to provide Python bindings for libmagic.")
        ;; without libmagic bindings at all:
        ;; https://github.com/s3tools/s3cmd/issues/198
        ("python2-magic" ,python2-magic)))
-    (home-page "http://s3tools.org/s3cmd")
+    (home-page "https://s3tools.org/s3cmd")
     (synopsis "Command line tool for S3-compatible storage services")
     (description
      "S3cmd is a command line tool for uploading, retrieving and managing data
