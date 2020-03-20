@@ -2088,7 +2088,7 @@ and consumable.")
            (sha256
             (base32
              "0gsb1jpj3mnqbjgbavi4l95gl6g4agq58j82km22fdfg63j3w3fk"))))))
-    (home-page "http://www.cduce.org/download.html#side")
+    (home-page "https://www.cduce.org/download.html#side")
     (synopsis "Lexer generator for Unicode and OCaml")
     (description "Lexer generator for Unicode and OCaml.")
     (license license:expat)))
