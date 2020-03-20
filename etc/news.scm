@@ -10,6 +10,14 @@
 (channel-news
  (version 0)
 
+ (entry (commit "b6bee63bed4f013064c0d902e7c8b83ed7514ade")
+        (title (en "@code{guile} package now refers to version 3.0"))
+        (body (en "The @code{guile} package has been upgraded to version 3.0
+ (instead of 2.2).  The @code{guile3.0-} packages have been renamed to their
+original name, and @code{guile2.2-} variants of these packages have been
+defined.  Additionally, derivations are now all built with Guile 3.0, and
+system services also run on 3.0.")))
+
  (entry (commit "e3e1a7ba08af2d58c47264c543617e499c239444")
         (title (en "@command{guix pull} now supports SSH authenticated
 repositories")
