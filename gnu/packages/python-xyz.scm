@@ -11417,6 +11417,7 @@ addresses, and phone numbers.")
          ,@(package-native-inputs base)))
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
+         ("python2-six" ,python2-six)
          ,@(package-propagated-inputs base))))))
 
 (define-public python-pyaml
