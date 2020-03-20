@@ -1139,7 +1139,7 @@ implemented in C.")
      `( #:configure-flags '("--enable-install-include" "--enable-shared"
                             "CC=h4cc -Df2cFortran" "LIBS=-lgctp")
         #:parallel-tests? #f))
-    (home-page "http://hdfeos.org/software/library.php#HDF-EOS2")
+    (home-page "https://hdfeos.org/software/library.php#HDF-EOS2")
     (synopsis "HDF4-based data format for NASA's Earth Observing System")
     (description "HDF-EOS2 is a software library built on HDF4 which supports
 the construction of data structures used in NASA's Earth Observing
