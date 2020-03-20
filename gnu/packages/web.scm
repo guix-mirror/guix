@@ -35,7 +35,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
-;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -441,20 +441,10 @@ documentation.")
                (begin
                  ;; The nginx source code is part of the module’s source.
                  (format #t "decompressing nginx source code~%")
-                 (call-with-output-file "nginx.tar"
-                   (lambda (out)
-                     (let* ((gzip (assoc-ref inputs "gzip"))
-                            (nginx-srcs (assoc-ref inputs "nginx-sources"))
-                            (pipe (open-pipe* OPEN_READ
-                                              (string-append gzip "/bin/gzip")
-                                              "-cd"
-                                              nginx-srcs)))
-                       (dump-port pipe out)
-                       (unless (= (status:exit-val (close-pipe pipe)) 0)
-                         (error "gzip decompress failed")))))
-                 (invoke (string-append (assoc-ref inputs "tar") "/bin/tar")
-                         "xvf" "nginx.tar" "--strip-components=1")
-                 (delete-file "nginx.tar")
+                 (let ((tar (assoc-ref inputs "tar"))
+                       (nginx-srcs (assoc-ref inputs "nginx-sources")))
+                   (invoke (string-append tar "/bin/tar")
+                           "xvf" nginx-srcs "--strip-components=1"))
                  #t)))
            (add-after 'unpack 'convert-to-dynamic-module
              (lambda _
