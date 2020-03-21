@@ -11213,18 +11213,26 @@ strings require only one extra byte in addition to the strings themselves.")
 (define-public python-cachy
   (package
     (name "python-cachy")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cachy" version))
        (sha256
         (base32
-         "0v6mjyhgx6j7ya20bk69cr3gdzdkdf6psay0h090rscclgji65dp"))))
+         "1cb9naly8ampzlky7h74n5wj628l7jkpsh0c0jz0namlrvs82r8q"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pifpaf" "run" "memcached" "--port" "11211" "--"
+                             "pytest"))))))
     (native-inputs
-     `(("python-fakeredis" ,python-fakeredis)
+     `(("memcached" ,memcached)
+       ("python-fakeredis" ,python-fakeredis)
        ("python-flexmock" ,python-flexmock)
+       ("python-pifpaf" ,python-pifpaf)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-memcached" ,python-memcached)
