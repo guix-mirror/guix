@@ -3774,7 +3774,7 @@ versions of GHC (i.e., < 6.10).")
 (define-public ghc-extra
   (package
     (name "ghc-extra")
-    (version "1.7.1")
+    (version "1.6.21")
     (source
      (origin
        (method url-fetch)
@@ -3784,7 +3784,7 @@ versions of GHC (i.e., < 6.10).")
              ".tar.gz"))
        (sha256
         (base32
-         "0zshxv9dnd8vksncmb8dj4wvq2wdybzwxyhmy2zp6a81icm4azx4"))))
+         "1gjx98w4w61g043k6rzc8i34cbxpcigi8lb6i7pp1vwp8w8jm5vl"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-clock" ,ghc-clock)
