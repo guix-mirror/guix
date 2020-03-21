@@ -284,6 +284,34 @@ server and embedded PowerPC, and S390 guests.")
                   '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
                     "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2")))))
 
+;; The GRUB test suite fails with later versions of Qemu, so we
+;; keep it at 2.10 for now.  See
+;; <https://lists.gnu.org/archive/html/bug-grub/2018-02/msg00004.html>.
+;; This package is hidden since we do not backport updates to it.
+(define-public qemu-minimal-2.10
+  (hidden-package
+   (package
+    (inherit qemu-minimal)
+    (version "2.10.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qemu.org/qemu-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))
+             (patches
+              (search-patches "qemu-glibc-2.27.patch"))))
+    ;; qemu-minimal-2.10 needs Python 2. Remove below once no longer necessary.
+    (native-inputs `(("python-2" ,python-2)
+                     ,@(fold alist-delete (package-native-inputs qemu-minimal)
+                             '("python-wrapper" "python-sphinx"))))
+    (inputs
+     (fold alist-delete (package-inputs qemu-minimal)
+           ;; Disable seccomp support, because it's not required for the GRUB
+           ;; test suite, and because it fails with libseccomp 2.4.2 and later.
+           '("libseccomp"))))))
+
 (define-public libosinfo
   (package
     (name "libosinfo")
