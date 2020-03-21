@@ -39,6 +39,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages protobuf)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages web))
