@@ -4014,8 +4014,8 @@ applications.")
 
 (define-public blktrace
   ;; Take a newer commit to get the fix for CVE-2018-10689.
-  (let ((commit "f4f8ef7cdea138cfaa2f3ca0ee31fa23d3bcf1cc")
-        (revision "0"))
+  (let ((commit "db4f6340e04716285ea56fe26d76381c3adabe58")
+        (revision "1"))
     (package
       (name "blktrace")
       (version (git-version "1.2.0" revision commit))
@@ -4027,9 +4027,8 @@ applications.")
                       (url home-page)
                       (commit commit)))
                 (sha256
-                 (base32 "1ihdfimg7mfcgdm6l09xfqx5kdyv42x743dxp3z3w65q5vd7xy89"))
-                (file-name (git-file-name name version))
-                (patches (search-patches "blktrace-use-rmtree.patch"))))
+                 (base32 "0ah7xn4qnx09k6bm39p69av7d0c8cl6863drv6a1nf914sq1kpgp"))
+                (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        '(#:make-flags
