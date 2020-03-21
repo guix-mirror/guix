@@ -5339,13 +5339,13 @@ displayed.")
 (define-public python-pexpect
   (package
     (name "python-pexpect")
-    (version "4.6.0")
+    (version "4.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pexpect" version))
        (sha256
-        (base32 "1fla85g47iaxxpjhp9vkxdnv4pgc7rplfy6ja491smrrk0jqi3ia"))))
+        (base32 "032cg337h8awydgypz6f4wx848lw8dyrj4zy988x0lyib4ws8rgw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5359,7 +5359,10 @@ displayed.")
                ;; Many tests try to use the /bin directory which
                ;; is not present in the build environment.
                ;; Use one that's non-empty and unlikely to change.
-               (("/bin'") "/dev'"))
+               (("/bin'") "/dev'")
+               ;; Disable failing test.  See upstream bug report
+               ;; https://github.com/pexpect/pexpect/issues/568
+               (("def test_bash") "def _test_bash"))
              ;; XXX: Socket connection test gets "Connection reset by peer".
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
