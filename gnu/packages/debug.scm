@@ -22,7 +22,7 @@
 
 (define-module (gnu packages debug)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
@@ -96,7 +96,7 @@ isolate a small failure-inducing substring of a large input that causes your
 program to exhibit a bug.")
     ;; See License.txt, which is a bsd-3 license, despite the project's
     ;; home-page pointing to a bsd-2 license.
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public c-reduce
   (package
@@ -156,7 +156,7 @@ property of interest (such as triggering a compiler bug) and automatically
 produces a much smaller C/C++ program that has the same property.  It is
 intended for use by people who discover and report bugs in compilers and other
 tools that process C/C++ code.")
-    (license ncsa)))
+    (license license:ncsa)))
 
 (define-public american-fuzzy-lop
   (let ((machine (match (or (%current-target-system)
@@ -283,7 +283,7 @@ targeted binary.  This substantially improves the functional coverage for the
 fuzzed code.  The compact synthesized corpora produced by the tool are also
 useful for seeding other, more labor- or resource-intensive testing regimes
 down the road.")
-      (license asl2.0))))
+      (license license:asl2.0))))
 
 (define-public stress-make
   (let ((commit "9e92dff8f0157f012aaf31de5b8b8112ad720100")
@@ -346,8 +346,8 @@ Stress Make, then it is likely that the @code{Makefile} contains no race
 conditions.")
       ;; stress-make wrapper is under BSD-3-modifications-must-be-indicated,
       ;; and patched GNU Make is under its own license.
-      (license (list (non-copyleft "LICENSE.md")
-                     gpl3+)))))
+      (license (list (license:non-copyleft "LICENSE.md")
+                     license:gpl3+)))))
 
 (define-public zzuf
   (package
@@ -369,7 +369,7 @@ conditions.")
     (description "Zzuf is a transparent application input fuzzer.  It works by
 intercepting file operations and changing random bits in the program's
 input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
-    (license wtfpl2)))
+    (license license:wtfpl2)))
 
 (define-public scanmem
   (package
@@ -427,7 +427,7 @@ several different times.  After several scans of the process, scanmem isolates
 the position of the variable and allows you to modify its value.")
     ;; The library is covered by LGPLv3 or later; the application is covered
     ;; by GPLv3 or later.
-    (license (list lgpl3+ gpl3+))))
+    (license (list license:lgpl3+ license:gpl3+))))
 
 (define-public rr
   (package
@@ -490,4 +490,4 @@ execution of applications (trees of processes and threads).  Debugging extends
 GDB with very efficient reverse-execution, which in combination with standard
 GDB/x86 features like hardware data watchpoints, makes debugging much more
 fun.")
-    (license expat)))
+    (license license:expat)))
