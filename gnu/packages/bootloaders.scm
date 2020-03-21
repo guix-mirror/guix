@@ -173,10 +173,7 @@
      `(("pkg-config" ,pkg-config)
        ("unifont" ,unifont)
        ("bison" ,bison)
-       ;; Due to a bug in flex >= 2.6.2, GRUB must be built with an older flex:
-       ;; <http://lists.gnu.org/archive/html/grub-devel/2017-02/msg00133.html>
-       ;; TODO Try building with flex > 2.6.4.
-       ("flex" ,flex-2.6.1)
+       ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("help2man" ,help2man)
 
