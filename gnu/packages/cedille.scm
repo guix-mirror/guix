@@ -56,17 +56,12 @@
              (let ((out (assoc-ref outputs "out")))
                (substitute* "cedille-mode.el"
                  (("/usr/share/emacs/site-lisp/cedille-mode")
-                  (string-append
-                   out "/share/emacs/site-lisp/guix.d/cedille-"
-                   ,version)))
+                  (string-append out "/share/emacs/site-lisp")))
                #t)))
          (add-after 'unpack 'copy-cedille-mode
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (lisp
-                     (string-append
-                      out "/share/emacs/site-lisp/guix.d/cedille-"
-                      ,version "/")))
+                    (lisp (string-append out "/share/emacs/site-lisp")))
                (mkdir-p (string-append lisp "cedille-mode"))
                (copy-recursively
                 "cedille-mode"

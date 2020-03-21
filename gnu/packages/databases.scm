@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -217,7 +217,7 @@ either single machines or networked clusters.")
      "@code{mgo} (pronounced as mango) is a MongoDB driver for the Go language.
 It implements a rich selection of features under a simple API following
 standard Go idioms.")
-    (home-page "http://labix.org/mgo")
+    (home-page "https://labix.org/mgo")
     (license license:bsd-2)))
 
 (define-public ephemeralpg
@@ -2391,32 +2391,17 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
 (define-public python-orator
   (package
     (name "python-orator")
-    (version "0.9.7")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "orator" version))
               (sha256
                (base32
-                "14r58z64fdp76ixnvmi4lni762b405ynmsx6chr1qihs3yl9zn6c"))))
+                "0mbgybz63ryhr9p1f4glnls5c57jp6il3dw0kf97f3pj80687rvg"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'loosen-dependencies
-           ;; Tests are not actually run since they are not included with the
-           ;; distributed package, but dependencies are checked.
-           (lambda _
-             (substitute* "setup.py"
-               ((",<.*'") "'")
-               (("flexmock==0.9.7") "flexmock")
-               ;; The pytest-mock package is out of date, so we remove minimum
-               ;; version requirement.
-               (("pytest-mock.*'") "pytest-mock'"))
-             #t)))))
-    (native-inputs
-     `(("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-flexmock" ,python-flexmock)))
+    ;; FIXME: Tests are not distributed with PyPI, and the repository
+    ;; does not contain setup.py.  How to test?
+    (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-backpack" ,python-backpack)
        ("python-blinker" ,python-blinker)
@@ -2427,6 +2412,7 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
        ("python-pendulum" ,python-pendulum)
        ("python-pyaml" ,python-pyaml)
        ("python-pygments" ,python-pygments)
+       ("python-pyyaml" ,python-pyyaml)
        ("python-simplejson" ,python-simplejson)
        ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))

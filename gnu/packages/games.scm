@@ -598,6 +598,136 @@ regular @command{cat}, but it also adds terminal escape codes between
 characters and lines resulting in a rainbow effect.")
       (license license:wtfpl2))))
 
+(define-public foobillard++
+  ;; Even though this latest revision is old already, stable release is
+  ;; lagging way behind it, and has issues with textures rendering.
+  (let ((svn-revision 170))
+    (package
+      (name "foobillard++")
+      (version (string-append "3.43-r" (number->string svn-revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "svn://svn.code.sf.net/p/foobillardplus/code/")
+               (revision svn-revision)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00b693ys5zvzjbjzzj3dqfzm5xw64gwjf9m8qv6bkmf0klbhmayk"))
+         (patches
+          (search-patches "foobillard++-pkg-config.patch"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Unfortunately, the game includes background music with
+             ;; a non-commercial clause.  Delete it.
+             (for-each delete-file (find-files "data/music" "\\.ogg$"))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list
+          ;; Install data in a less exotic location.
+          (string-append "--prefix=" (assoc-ref %outputs "out") "/share")
+          ;; Prevent a build error about undefined trigonometric functions.
+          "--enable-fastmath=no")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-makefile
+             ;; Remove hard-coded directories.  Also fix installation
+             ;; rule: it tries to move around non-existent files or
+             ;; files already moved.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile.am"
+                 (("/usr") (assoc-ref outputs "out"))
+                 (("cp .*?/foobillardplus\\.desktop.*") "")
+                 (("cp .*?/foobillardplus\\.(png|xbm) \\$\\(datarootdir\\).*")
+                  ""))
+               #t))
+           (add-after 'unpack 'unbundle-font
+             ;; XXX: The package ships with LinBiolinum_aSB.ttf and
+             ;; LinBiolinum_aS.ttf, which are not provided by
+             ;; `font-linuxlibertine' package.  Therefore, we cannot replace
+             ;; them yet.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((dejavu (string-append (assoc-ref inputs "font-dejavu")
+                                            "/share/fonts/truetype/")))
+                 (with-directory-excursion "data"
+                   (for-each (lambda (f)
+                               (delete-file f)
+                               (symlink (string-append dejavu f) f))
+                             '("DejaVuSans-Bold.ttf" "DejaVuSans.ttf"))))
+               #t))
+           (replace 'bootstrap
+             (lambda _
+               (invoke "aclocal" "--force")
+               (invoke "autoconf" "-f")
+               (invoke "autoheader" "-f")
+               (invoke "automake" "-a" "-c" "-f")))
+           (add-before 'build 'prepare-build
+             ;; Set correct environment for SDL.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "sdl")
+                                      "/include/SDL:"
+                                      (or (getenv "CPATH") "")))
+               #t))
+           (add-before 'build 'fix-settings-directory
+             ;; Hide foobillardplus settings directory in $HOME.
+             (lambda _
+               (substitute* "src/history.c"
+                 (("/foobillardplus-data") "/.foobillardplus"))
+               #t))
+           (add-before 'install 'create-directories
+             ;; Install process does not create directories before
+             ;; trying to move file in it.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/share/icons"))
+                 (mkdir-p (string-append out "/share/applications")))
+               #t))
+           (add-after 'install 'symlink-executable
+             ;; Symlink executable to $out/bin.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (with-directory-excursion bin
+                   (symlink "../share/foobillardplus/bin/foobillardplus"
+                            "foobillardplus"))
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("font-dejavu" ,font-dejavu)
+         ("freetype" ,freetype)
+         ("glu" ,glu)
+         ("libpng" ,libpng)
+         ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net)))))
+      (home-page "http://foobillardplus.sourceforge.net/")
+      (synopsis "3D billiard game")
+      (description "FooBillard++ is an advanced 3D OpenGL billiard game
+based on the original foobillard 3.0a sources from Florian Berger.
+You can play it with one or two players or against the computer.
+
+The game features:
+
+@itemize
+@item Wood paneled table with gold covers and gold diamonds.
+@item Reflections on balls.
+@item Zoom in and out, rotation, different angles and bird's eye view.
+@item Different game modes: 8 or 9-ball, Snooker or Carambole.
+@item Tournaments.  Compete against other players.
+@item Animated cue with strength and eccentric hit adjustment.
+@item Jump shots and snipping.
+@item Realistic gameplay and billiard sounds.
+@item Red-Green stereo.
+@item And much more.
+@end itemize")
+      (license (list license:gpl2 license:silofl1.1)))))
+
 (define-public freedoom
   (package
     (name "freedoom")

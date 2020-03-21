@@ -81,6 +81,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
@@ -839,7 +840,7 @@ to create databases that are optimized for rendering/tile/map-services.")
 (define-public libosmium
   (package
     (name "libosmium")
-    (version "2.14.2")
+    (version "2.15.4")
     (source
      (origin
        (method git-fetch)
@@ -848,16 +849,18 @@ to create databases that are optimized for rendering/tile/map-services.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "123ri1l0a2b9fljgpwsl7z2w4i3kmgxz79d4ns9z4mwbp8sw0250"))))
+        (base32 "0mlcvqrhp40bzj5r5j9nfc5vbis8hmzcq9xi8jylkciyydaynhz4"))))
     (build-system cmake-build-system)
     (propagated-inputs
      `(("boost" ,boost)
+       ("bzip2" ,bzip2)
        ("expat" ,expat)
        ("gdal" ,gdal)
        ("geos" ,geos)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("protozero" ,protozero)
        ("sparsehash" ,sparsehash)
+       ("utfcpp" ,utfcpp)
        ("zlib" ,zlib)))
     (native-inputs
      `(("doxygen" ,doxygen)))
@@ -870,7 +873,7 @@ OpenStreetMap data.")
 (define-public osm2pgsql
   (package
     (name "osm2pgsql")
-    (version "0.96.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -879,7 +882,7 @@ OpenStreetMap data.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "032cydh8ynaqfhdzmkvgbmqyjql668y6qln1l59l2s3ni9963bbl"))
+        (base32 "1ysan01lpqzjxlq3y2kdminfjs5d9zksicpf9vvzpdk3fzq51fc9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -898,16 +901,17 @@ OpenStreetMap data.")
                             "/include"))))
     (inputs
      `(("boost" ,boost)
+       ("bzip2" ,bzip2)
        ("expat" ,expat)
        ("libosmium" ,libosmium)
        ("lua" ,lua)
        ("postgresql" ,postgresql)
-       ("proj.4" ,proj.4)
+       ("proj" ,proj)
        ("protozero" ,protozero)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("python-2" ,python-2)
-       ("python2-psycopg2" ,python2-psycopg2)))
+     `(("python" ,python)
+       ("python-psycopg2" ,python-psycopg2)))
     (home-page "https://github.com/openstreetmap/osm2pgsql")
     (synopsis "OSM data importer to postgresql")
     (description "Osm2pgsql is a tool for loading OpenStreetMap data into a

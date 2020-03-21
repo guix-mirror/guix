@@ -355,25 +355,24 @@ object."
      (catch 'system-error
        (lambda ()
          ;; In general we want to keep relative file names for modules.
-         (with-fluids ((%file-port-name-canonicalization 'relative))
-           (call-with-input-file (search-path %load-path file)
-             (lambda (port)
-               (goto port line column)
-               (match (read port)
-                 (('package inits ...)
-                  (let ((field (assoc field inits)))
-                    (match field
-                      ((_ value)
-                       ;; Put the `or' here, and not in the first argument of
-                       ;; `and=>', to work around a compiler bug in 2.0.5.
-                       (or (and=> (source-properties value)
-                                  source-properties->location)
-                           (and=> (source-properties field)
-                                  source-properties->location)))
-                      (_
-                       #f))))
-                 (_
-                  #f))))))
+         (call-with-input-file (search-path %load-path file)
+           (lambda (port)
+             (goto port line column)
+             (match (read port)
+               (('package inits ...)
+                (let ((field (assoc field inits)))
+                  (match field
+                    ((_ value)
+                     (let ((props (source-properties value)))
+                       (and props
+                            ;; Preserve the original file name, which may be a
+                            ;; relative file name.
+                            (let ((loc (source-properties->location props)))
+                              (set-field loc (location-file) file)))))
+                    (_
+                     #f))))
+               (_
+                #f)))))
        (lambda _
          #f)))
     (_ #f)))

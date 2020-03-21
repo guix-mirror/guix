@@ -3264,14 +3264,14 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.6.5")
+    (version "0.6.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32 "15nvlh9bg0a52cpg2mii17mlzmxszwivjjalbb4np1v5nj8l5fk6"))
+        (base32 "13hsbqj1dkpz1gbclnjxv50kr7b4gcjai6c1l38g01433h217qjc"))
        (modules '((guix build utils)))
        (snippet
         '(begin

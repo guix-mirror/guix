@@ -130,7 +130,7 @@ programming.")
        ;; The regression tests require a lot more dependencies.
        #:tests? #f))
     (build-system cmake-build-system)
-    (home-page "http://github.khronos.org/OpenCL-CLHPP/")
+    (home-page "https://github.khronos.org/OpenCL-CLHPP/")
     (synopsis "Khronos OpenCL-CLHPP")
     (description
      "This package provides the @dfn{host API} C++ headers for OpenCL.")

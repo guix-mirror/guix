@@ -3669,7 +3669,7 @@ these two libraries to vary independently of one another.")
        #:tests? #f));; FIXME: we need to generate some resources as in pom.xml
     (native-inputs
      `(("java-junit" ,java-junit)))
-    (home-page "http://codehaus-plexus.github.io/plexus-classworlds/")
+    (home-page "https://codehaus-plexus.github.io/plexus-classworlds/")
     (synopsis "Java class loader framework")
     (description "Plexus classworlds replaces the native @code{ClassLoader}
 mechanism of Java.  It is especially useful for dynamic loading of application
@@ -4179,7 +4179,7 @@ project and determining what files need to be rebuilt.")
        ("java-plexus-classworlds" ,java-plexus-classworlds)
        ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
        ("java-guava" ,java-guava)))
-    (home-page "http://codehaus-plexus.github.io/modello/")
+    (home-page "https://codehaus-plexus.github.io/modello/")
     (synopsis "Framework for code generation from a simple model")
     (description "Modello is a framework for code generation from a simple model.
 
@@ -4753,7 +4753,7 @@ available in the Java programming language or Commons Lang.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://openjdk.java.net/projects/code-tools/jmh/")
+    (home-page "https://openjdk.java.net/projects/code-tools/jmh/")
     (synopsis "Benchmark harness for the JVM")
     (description "JMH is a Java harness for building, running, and analysing
 nano/micro/milli/macro benchmarks written in Java and other languages
@@ -8040,7 +8040,7 @@ package contains utilities for obtaining services via the Java SE 6
      `(#:jar-name "java-aqute-bnd-annotation.jar"
        #:source-dir "biz.aQute.bnd.annotation/src"
        #:tests? #f)); empty test dir
-    (home-page "http://bnd.bndtools.org/")
+    (home-page "https://bnd.bndtools.org/")
     (synopsis "Tools for OSGi")
     (description "Bnd is a swiss army knife for OSGi, it creates manifest
 headers based on analyzing the class code, it verifies the project settings,
@@ -10363,7 +10363,7 @@ wider problem of Object to Object transformation.")
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)
        ("tzdata" ,tzdata)))
-    (home-page "http://www.joda.org/joda-time/")
+    (home-page "https://www.joda.org/joda-time/")
     (synopsis "Replacement for the Java date and time classes")
     (description "Joda-Time is a replacement for the Java date and time
 classes prior to Java SE 8.")

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,6 @@
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages guile-wm)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -117,12 +117,6 @@
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by
 'useradd' in the home directory of newly created user accounts."
-  (define copy-guile-wm
-    (with-imported-modules '((guix build utils))
-      #~(begin
-          (use-modules (guix build utils))
-          (copy-file (car (find-files #+guile-wm "wm-init-sample.scm"))
-                     #$output))))
 
   (let ((profile (plain-file "bash_profile" "\
 # Honor per-interactive-shell startup file
@@ -162,7 +156,6 @@ alias grep='grep --color=auto'\n"))
         (zprofile    (plain-file "zprofile" "\
 # Honor system-wide environment variables
 source /etc/profile\n"))
-        (guile-wm  (computed-file "guile-wm" copy-guile-wm))
         (xdefaults (plain-file "Xdefaults" "\
 XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
@@ -202,7 +195,6 @@ convenient interactive line editing and input history.\\n\\n\")))
               (else
                (display \"Consider installing the 'guile-colorized' package
 for a colorful Guile experience.\\n\\n\"))))\n"))
-      (".guile-wm" ,guile-wm)
       (".gdbinit" ,gdbinit))))
 
 (define (skeleton-directory skeletons)

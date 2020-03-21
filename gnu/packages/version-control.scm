@@ -1287,7 +1287,7 @@ though this can be overridden.")
                        (install-file (string-append source "/" script)
                                      bindir)
                        #t))))
-      (home-page "http://dustin.sallings.org/2010/03/28/git-test-sequence.html")
+      (home-page "https://dustin.sallings.org/2010/03/28/git-test-sequence.html")
       (synopsis "Run a command over a sequence of commits")
       (description
        "git-test-sequence is similar to an automated git bisect except it’s

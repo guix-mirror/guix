@@ -182,7 +182,7 @@ language.")
     (inputs
      `(("lua" ,lua)
        ("expat" ,expat)))
-    (home-page "http://matthewwild.co.uk/projects/luaexpat/")
+    (home-page "https://matthewwild.co.uk/projects/luaexpat/")
     (synopsis "SAX XML parser based on the Expat library")
     (description "LuaExpat is a SAX XML parser based on the Expat library.")
     (license (package-license lua-5.1))))

@@ -926,7 +926,7 @@ multiple inspectors with independent history.")
           (base32
            "1wddrnr5kiya5s3gp4cdq6crbfy9fqcz7fr44p81502sj3bvdv39"))))
       (build-system asdf-build-system/sbcl)
-      (home-page "http://marijnhaverbeke.nl/parse-js/")
+      (home-page "https://marijnhaverbeke.nl/parse-js/")
       (synopsis "Parse JavaScript")
       (description "Parse-js is a Common Lisp package for parsing
 JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
@@ -950,7 +950,7 @@ JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
         (base32
          "0sk06ib1bhqv9y39vwnnw44vmbc4b0kvqm37xxmkxd4dwchq82d7"))))
     (build-system asdf-build-system/sbcl)
-    (home-page "http://www.cliki.net/PARSE-NUMBER")
+    (home-page "https://www.cliki.net/PARSE-NUMBER")
     (synopsis "Parse numbers")
     (description "@code{parse-number} is a library of functions for parsing
 strings into one of the standard Common Lisp number types without using the
@@ -3504,7 +3504,7 @@ RFC 1321 by R. Rivest, published April 1992.")
          ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)
          ("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-trivial-features" ,sbcl-trivial-features)))
-      (home-page "http://common-lisp.net/project/cl-plus-ssl/")
+      (home-page "https://common-lisp.net/project/cl-plus-ssl/")
       (synopsis "Common Lisp bindings to OpenSSL")
       (description
        "This library is a fork of SSL-CMUCL.  The original SSL-CMUCL source
@@ -4281,7 +4281,7 @@ streams (though primarily the former, while wrapping the latter).")
         ("sbcl-fast-io" ,sbcl-fast-io)
         ("sbcl-proc-parse" ,sbcl-proc-parse)
         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)))
-     (home-page "http://rudolph-miller.github.io/jonathan/overview.html")
+     (home-page "https://rudolph-miller.github.io/jonathan/overview.html")
      (synopsis "JSON encoder and decoder")
      (description
       "High performance JSON encoder and decoder.  Currently support: SBCL,

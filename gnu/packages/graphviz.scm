@@ -228,7 +228,7 @@ visualization tool suite.")
      `(("python-nose" ,python-nose)
        ("python-mock" ,python-mock)
        ("python-doctest-ignore-unicode" ,python-doctest-ignore-unicode)))
-    (home-page "http://pygraphviz.github.io")
+    (home-page "https://pygraphviz.github.io")
     (synopsis "Python interface to Graphviz")
     (description "PyGraphviz is a Python interface to the Graphviz graph
 layout and visualization package.  With PyGraphviz you can create, edit, read,

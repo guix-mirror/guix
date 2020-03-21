@@ -126,7 +126,8 @@ highlighting your own code that seemed comprehensible when you wrote it.")
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libltdl" ,libltdl)
-              ("sqlite" ,sqlite)))
+              ("sqlite" ,sqlite)
+              ("python-wrapper" ,python-wrapper)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ncurses="

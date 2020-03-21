@@ -66,6 +66,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages calendar)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -1485,7 +1486,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.8.0")
+    (version "0.9.1")
     (source
      (origin
        (method git-fetch)
@@ -1494,12 +1495,14 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s8ck7qxka0l91ayma6amp9sc8cidi43byqgzcavi3a6id983r1z"))))
+        (base32 "0drlv8im5phz39jxp3gxkc40b6f85bb3piff2v3hmnfzh7ib915s"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "-Dout=" (assoc-ref %outputs "out")))))
-    (inputs `(("fmt" ,fmt)
+    (inputs `(("date" ,date)
+              ("fmt" ,fmt)
+              ("gtk-layer-shell" ,gtk-layer-shell)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
               ("libdbusmenu" ,libdbusmenu)
@@ -1513,7 +1516,7 @@ modules for building a Wayland compositor.")
                      ("pkg-config" ,pkg-config)
                      ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
-    (synopsis "Wayland bar for Sway and Wlroots based compositors.")
+    (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and
 Wlroots based compositors.")
     (license license:expat))) ; MIT license

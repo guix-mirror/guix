@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
+;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -605,26 +606,22 @@ using compilers other than GCC."
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'chdir
-                     (lambda _
-                       (chdir "libiberty")
-                       #t))
-         (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out     (assoc-ref outputs "out"))
-                   (lib     (string-append out "/lib/"))
-                   (include (string-append out "/include/")))
-              (mkdir-p lib)
-              (mkdir-p include)
-              (copy-file "libiberty.a"
-                         (string-append lib "libiberty.a"))
-              (copy-file "../include/libiberty.h"
-                         (string-append include "libiberty.h"))
-              #t))))))
+           (lambda _
+             (chdir "libiberty")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (lib     (string-append out "/lib/"))
+                    (include (string-append out "/include/")))
+               (install-file "libiberty.a" lib)
+               (install-file "../include/libiberty.h" include))
+             #t)))))
     (inputs '())
     (outputs '("out"))
     (native-inputs '())
     (propagated-inputs '())
+    (properties '())
     (synopsis "Collection of subroutines used by various GNU programs")))
 
 (define-public libiberty

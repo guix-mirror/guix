@@ -362,42 +362,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.26")
+(define-public linux-libre-5.4-version "5.4.27")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1bqdiw4pjzwm7pxml2dl09bj85ijs82rq788c58681zgmvs796k6")))
+        (hash (base32 "0szc1p9y6z8gs2f1nj45nrz52sxcabg2xh7zqlljazv45lvcvf8r")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.111")
+(define-public linux-libre-4.19-version "4.19.112")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0cjjf3wbvbkjy4mss8c74afx8ng31i22km66ydh9f9mz182piyy6")))
+        (hash (base32 "0yiyqwgh6wcyshpdj98s7dc4ahyx47y6whvnww6sjmzdq0fb3hi4")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.173")
+(define-public linux-libre-4.14-version "4.14.174")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0kxp3mgiags8hdax15masab9zr89xraqvl9ri7zwgksx8ixav0m2")))
+        (hash (base32 "12ai2lc2ny38s93d0m5ngrv030vwv1h2hhzp0fs6fhjxasikq8jc")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.216")
+(define-public linux-libre-4.9-version "4.9.217")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0lgv5k8v5xz9z2z4k42566bh0akyk1gr0dx6s1m1rjrzsf9k86l6")))
+        (hash (base32 "06b8av9f9pk2yp95nzv4322k0d5wsg40sxd9kfim1xzb093abckg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.216")
+(define-public linux-libre-4.4-version "4.4.217")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1hjgh9brvxzi6ypgfnk07l3j28xsxgz88sdshnz19vj96bn1w70q")))
+        (hash (base32 "0vsjchywznmjn01flgvm9vsja5zqni319rfwgy997afcbz0c9spx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4071,6 +4071,48 @@ Linux Device Mapper multipathing driver:
 system calls, important for the performance of databases and other advanced
 applications.")
     (license license:lgpl2.1+)))
+
+(define-public blktrace
+  ;; Take a newer commit to get the fix for CVE-2018-10689.
+  (let ((commit "db4f6340e04716285ea56fe26d76381c3adabe58")
+        (revision "1"))
+    (package
+      (name "blktrace")
+      (version (git-version "1.2.0" revision commit))
+      (home-page
+        "https://git.kernel.org/pub/scm/linux/kernel/git/axboe/blktrace.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32 "0ah7xn4qnx09k6bm39p69av7d0c8cl6863drv6a1nf914sq1kpgp"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         (list "CC=gcc" (string-append "prefix=" %output))
+         #:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; no configure script
+           (add-after 'unpack 'fix-gnuplot-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((gnuplot (assoc-ref inputs "gnuplot")))
+                 (substitute* "btt/bno_plot.py"
+                   (("gnuplot %s")
+                    (string-append gnuplot "/bin/gnuplot %s")))
+                 #t))))))
+      (inputs
+       `(("libaio" ,libaio)
+         ("gnuplot" ,gnuplot)
+         ("python" ,python-wrapper)))             ;for 'bno_plot.py'
+      (synopsis "Block layer IO tracing mechanism")
+      (description "Blktrace is a block layer IO tracing mechanism which provides
+detailed information about request queue operations to user space.  It extracts
+event traces from the kernel (via the relaying through the debug file system).")
+      (license license:gpl2))))
 
 (define-public sbc
   (package

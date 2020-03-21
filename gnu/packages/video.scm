@@ -922,6 +922,8 @@ operate properly.")
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
+             ;; See <https://issues.guix.gnu.org/issue/39719>
+             (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
                "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
@@ -1204,6 +1206,10 @@ videoformats depend on the configuration flags of ffmpeg.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
+       ;; XXX Try removing dav1d here and testing AV1 playback when FFmpeg 4.3
+       ;; is released.
+       ;; <https://issues.guix.gnu.org/issue/39719>
+       ("dav1d" ,dav1d)
        ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("flac" ,flac)

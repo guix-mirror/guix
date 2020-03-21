@@ -5316,14 +5316,14 @@ coefficients).")
 (define-public r-biosigner
   (package
     (name "r-biosigner")
-    (version "1.14.0")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biosigner" version))
        (sha256
         (base32
-         "1kdfhw629qczrfms0jmphqz0ksjzi8js00xj92h1lnv092npfk0j"))))
+         "184vbbd010yzqv0qn1prxiazibxwiacvlpg9yzcgyhamcx9bvq73"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -5332,10 +5332,7 @@ coefficients).")
        ("r-randomforest" ,r-randomforest)
        ("r-ropls" ,r-ropls)))
     (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("pandoc" ,ghc-pandoc)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc))) ; all for vignettes
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biosigner/")
     (synopsis "Signature discovery from omics data")
     (description
@@ -7402,18 +7399,19 @@ gene selection, testing relationships, and so on.")
 (define-public r-biocpkgtools
   (package
     (name "r-biocpkgtools")
-    (version "1.4.0")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocPkgTools" version))
        (sha256
         (base32
-         "0gyhb3071pxmvaxla7cxy9k97s3z3ynl62jnqz9jnkd53c7jnd53"))))
+         "0grwnmncmpqcplbfw3j210m1a8f7mmdizklh4zksg4ic21dpjj1a"))))
     (properties `((upstream-name . "BiocPkgTools")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biocmanager" ,r-biocmanager)
+     `(("r-biocfilecache" ,r-biocfilecache)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-biocviews" ,r-biocviews)
        ("r-dplyr" ,r-dplyr)
        ("r-dt" ,r-dt)
@@ -7425,14 +7423,19 @@ gene selection, testing relationships, and so on.")
        ("r-igraph" ,r-igraph)
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
+       ("r-rappdirs" ,r-rappdirs)
        ("r-rbgl" ,r-rbgl)
        ("r-readr" ,r-readr)
        ("r-rex" ,r-rex)
+       ("r-rlang" ,r-rlang)
        ("r-rvest" ,r-rvest)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/seandavi/BiocPkgTools")
     (synopsis "Collection of tools for learning about Bioconductor packages")
     (description

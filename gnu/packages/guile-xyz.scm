@@ -598,7 +598,7 @@ is not available for Guile 2.0.")
 highlighting library for GNU Guile.  It can parse code written in various
 programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
-    (home-page "http://dthompson.us/projects/guile-syntax-highlight.html")
+    (home-page "https://dthompson.us/projects/guile-syntax-highlight.html")
     (license license:lgpl3+)))
 
 (define-public guile2.2-syntax-highlight

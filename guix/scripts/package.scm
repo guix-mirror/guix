@@ -42,8 +42,6 @@
   #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
-  #:use-module ((guix build syscalls)
-                #:select (with-file-lock/no-wait))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)

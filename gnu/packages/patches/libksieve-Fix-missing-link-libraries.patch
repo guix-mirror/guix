@@ -1,0 +1,59 @@
+From 732861dda9c466841a09329a0b2c992f2b78c40a Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Tue, 21 Jan 2020 23:15:23 +0100
+Subject: [PATCH] Fix missing link libraries.
+
+See <https://phabricator.kde.org/D26818>
+
+These are only actually missing if the libraries reside in different
+prefixes, as it is the case in Guix or Nix.
+---
+ src/ksieveui/autocreatescripts/tests/CMakeLists.txt  | 2 ++
+ src/ksieveui/scriptsparsing/autotests/CMakeLists.txt | 2 +-
+ src/ksieveui/scriptsparsing/tests/CMakeLists.txt     | 8 ++++++--
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/src/ksieveui/autocreatescripts/tests/CMakeLists.txt b/src/ksieveui/autocreatescripts/tests/CMakeLists.txt
+index 8a482b4..c43216c 100644
+--- a/src/ksieveui/autocreatescripts/tests/CMakeLists.txt
++++ b/src/ksieveui/autocreatescripts/tests/CMakeLists.txt
+@@ -15,6 +16,7 @@ set(parsingscript_gui_SRCS parsingscript_gui.cpp ../../tests/capability.cpp)
+ add_executable(parsingscript_gui ${parsingscript_gui_SRCS})
+ target_link_libraries(parsingscript_gui
+   KF5::KIOCore
++  KF5::SyntaxHighlighting
+   KF5::KSieveUi
+   KF5::KSieve
+   KF5::PimCommon
+diff --git a/src/ksieveui/scriptsparsing/autotests/CMakeLists.txt b/src/ksieveui/scriptsparsing/autotests/CMakeLists.txt
+index e41a74e..31703ef 100644
+--- a/src/ksieveui/scriptsparsing/autotests/CMakeLists.txt
++++ b/src/ksieveui/scriptsparsing/autotests/CMakeLists.txt
+@@ -5,7 +5,7 @@ macro(add_sieveeditor_xmlprintingscriptbuilding _source _extrasource)
+     ecm_add_test(${_test}
+         TEST_NAME ${_name}
+         NAME_PREFIX "sieveeditor-xmlprintingscriptbuilding-"
+-        LINK_LIBRARIES Qt5::Test KF5::I18n KF5::KSieveUi
++        LINK_LIBRARIES Qt5::Test KF5::I18n KF5::KSieveUi KF5::SyntaxHighlighting
+         )
+ endmacro()
+ add_sieveeditor_xmlprintingscriptbuilding(xmlprintingscriptbuildertest.cpp "" "")
+diff --git a/src/ksieveui/scriptsparsing/tests/CMakeLists.txt b/src/ksieveui/scriptsparsing/tests/CMakeLists.txt
+index a252039..99a1aaa 100644
+--- a/src/ksieveui/scriptsparsing/tests/CMakeLists.txt
++++ b/src/ksieveui/scriptsparsing/tests/CMakeLists.txt
+@@ -9,5 +9,9 @@ set(xmlsieveparsing_SRCS
+ )
+ 
+ add_executable(xmlsieveparsing ${xmlsieveparsing_SRCS} )
+-target_link_libraries(xmlsieveparsing   KF5::KSieveUi KF5::KSieve KF5::I18n)
+-
++target_link_libraries(xmlsieveparsing
++  KF5::KSieveUi
++  KF5::SyntaxHighlighting
++  KF5::KSieve
++  KF5::I18n
++)
+-- 
+2.21.1
+

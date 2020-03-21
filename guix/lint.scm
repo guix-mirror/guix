@@ -317,6 +317,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "python-pytest-cov" "python2-pytest-cov"
             "python-setuptools-scm" "python2-setuptools-scm"
             "python-sphinx" "python2-sphinx"
+            "scdoc"
             "swig"
             "qmake"
             "qttools"

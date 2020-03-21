@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -89,18 +89,20 @@ expressions.")
 (define-public python-pytzdata
   (package
     (name "python-pytzdata")
-    (version "2017.3.1")
+    (version "2019.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytzdata" version))
        (sha256
         (base32
-         "1wi3jh39zsa9iiyyhynhj7w5b2p9wdyd0ppavpsrmf3wxvr7cwz8"))))
+         "0ppfc6kz4p41mxyqxq1g1zp6gvns99g6b344qj6ih0x9vxy6zh7s"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)))
+    ;; XXX: The PyPI distribution contains no tests, and the upstream
+    ;; repository lacks a setup.py!  How to build from git?
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-cleo" ,python-cleo)))
     (home-page "https://github.com/sdispater/pytzdata")
     (synopsis "Timezone database for Python")
     (description
@@ -136,22 +138,21 @@ saving time.  Almost all of the Olson timezones are supported.")
 (define-public python-pendulum
   (package
     (name "python-pendulum")
-    (version "1.2.4")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pendulum" version))
        (sha256
         (base32
-         "1fj36yxi2f4lzchzd8ny1qjl67dbypnk0gn8qwad2w78579m8m8z"))))
+         "1zhzk0ai8is8zclw4v73dllf0hx0l5nmm4sbwrh6cl8h5qsang09"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)))
+    ;; XXX: The PyPI distribution lacks tests, and the upstream repository
+    ;; lacks a setup.py!
+    (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-pytzdata" ,python-pytzdata)
-       ("python-tzlocal" ,python-tzlocal)))
+       ("python-pytzdata" ,python-pytzdata)))
     (home-page "https://github.com/sdispater/pendulum")
     (synopsis "Alternate API for Python datetimes")
     (description "Pendulum is a drop-in replacement for the standard

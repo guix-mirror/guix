@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
@@ -72,6 +72,7 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
@@ -803,6 +804,43 @@ buffer using OpenGL ES.  The compositor then culls the hidden parts and
 composes the final output.  A Wayland compositor is essentially a
 multiplexer to the KMS/DRM Linux kernel devices.")
     (license license:expat)))
+
+(define-public wev
+  ;; There simple tool has no version or release yet.
+  (let ((commit "cee3dfb2a8b40ee303611018c68ae182d84a7f46"))
+    (package
+      (name "wev")
+      (version (string-append "2020-02-06-" (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.sr.ht/~sircmpwn/wev")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0l71v3fzgiiv6xkk365q1l08qvaymxd4kpaya6r2g8yzkr7i2hms"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags
+         (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("scdoc" ,scdoc)))
+      (inputs
+       `(("libxkbcommon" ,libxkbcommon)
+         ("wayland" ,wayland)
+         ("wayland-protocols" ,wayland-protocols)))
+      (home-page "https://git.sr.ht/~sircmpwn/wev")
+      (synopsis "Wayland event viewer")
+      (description "Wev is a tool that opens a window, printing all events
+sent to a Wayland window, such as key presses.  It is analogous to the X11 tool
+XEv.")
+      (license license:expat))))
 
 (define-public exempi
   (package

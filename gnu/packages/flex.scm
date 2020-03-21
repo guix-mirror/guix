@@ -74,16 +74,3 @@ regular expressions for each rule.  Whenever it finds a match, it
 executes the corresponding C code.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING in the distribution."))))
-
-(define-public flex-2.6.1
-  (package
-    (inherit flex)
-    (version "2.6.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/westes/flex"
-                                  "/releases/download/v" version "/"
-                                  "flex-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0gqhk4vkwy4gl9xbpgkljph8c0a5kpijz6wd0p5r9q202qn42yic"))))))

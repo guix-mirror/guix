@@ -326,7 +326,7 @@ exception-handling library.")
 flexible 3D engine written in C++ designed to make it easier and more intuitive
 for developers to produce applications utilising hardware-accelerated 3D
 graphics.")
-    (home-page "http://www.ogre3d.org/")
+    (home-page "https://www.ogre3d.org/")
     (license license:expat)))
 
 (define-public openexr

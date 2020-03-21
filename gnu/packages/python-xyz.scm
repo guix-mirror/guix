@@ -1600,7 +1600,7 @@ commands.")
     (synopsis "Toolkit for XML processing in Python")
     (description
      "ElementTree is a Python library supporting lightweight XML processing.")
-    (home-page "http://effbot.org/zone/element-index.htm")
+    (home-page "https://effbot.org/zone/element-index.htm")
     (license (license:x11-style
               "http://docs.python.org/2/license.html"
               "Like \"CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2\"."))))
@@ -2306,32 +2306,6 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
               `(("python2-functools32" ,python2-functools32)
                 ,@(package-propagated-inputs jsonschema))))))
 
-;; This old version is still required by docker-compose as of 1.24.0.
-(define-public python-jsonschema-2.6
-  (package
-    (name "python-jsonschema")
-    (version "2.6.0")
-    (source (origin
-             (method url-fetch)
-             (uri (pypi-uri "jsonschema" version))
-             (sha256
-              (base32
-               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'check (lambda _ (invoke "nosetests"))))))
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-vcversioner" ,python-vcversioner)))
-    (home-page "https://github.com/Julian/jsonschema")
-    (synopsis "Implementation of JSON Schema for Python")
-    (description
-     "Jsonschema is an implementation of JSON Schema for Python.")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-jsonschema))))))
-
 (define-public python-schema
   (package
     (name "python-schema")
@@ -2423,6 +2397,40 @@ somewhat intelligible.")
 
 (define-public python2-unidecode
   (package-with-python2 python-unidecode))
+
+(define-public python-text-unidecode
+  (package
+    (name "python-text-unidecode")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "text-unidecode" version))
+              (sha256
+               (base32
+                "14xb99fdv52j21dsljgsbmbaqv10ps4b453p229r29sdn4xn1mms"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/kmike/text-unidecode/")
+    (synopsis "Decode Unicode data")
+    (description
+     "@code{text-unidecode} is a basic Python port of the @code{Text::Unidecode}
+Perl library.  It can create ASCII representations of Unicode data.  In general
+users should prefer the @code{python-unidecode} package which offers better
+memory usage and transliteration quality.")
+    ;; The user can choose either license.
+    (license (list license:clarified-artistic license:gpl2+))))
+
+(define-public python2-text-unidecode
+  (package-with-python2 python-text-unidecode))
 
 (define-public python-pyjwt
   (package
@@ -3451,7 +3459,9 @@ Server (PLS).")
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
        ("python-jsonrpc-server" ,python-jsonrpc-server)
-       ("python-jedi" ,python-jedi)
+       ;; Note: Remove the special versions of Jedi and Parso when updating
+       ;; this package.
+       ("python-jedi" ,python-jedi-0.15)
        ("python-yapf" ,python-yapf)
        ("python-pyflakes" ,python-pyflakes)
        ("python-pydocstyle" ,python-pydocstyle)
@@ -7713,7 +7723,7 @@ printing of sub-tables by specifying a row range.")
      `(("hdf5" ,hdf5-1.10)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)))
-    (home-page "http://www.pytables.org/")
+    (home-page "https://www.pytables.org/")
     (synopsis "Hierarchical datasets for Python")
     (description "PyTables is a package for managing hierarchical datasets and
 designed to efficiently cope with extremely large amounts of data.")
@@ -9469,14 +9479,14 @@ document.")
 (define-public python-botocore
   (package
     (name "python-botocore")
-    (version "1.12.149")
+    (version "1.15.26")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "botocore" version))
        (sha256
         (base32
-         "12597f74khp3ngwr282cb949w0gcqj20rkfc3x275dijavyy5cmf"))))
+         "1a87pbwkk5vlwz92hy1wizfnpiwn11bhaicr6bmji1i5ybwdhnr8"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Many tests are failing.
@@ -10315,7 +10325,7 @@ the same purpose: to provide Python bindings for libmagic.")
        ;; without libmagic bindings at all:
        ;; https://github.com/s3tools/s3cmd/issues/198
        ("python2-magic" ,python2-magic)))
-    (home-page "http://s3tools.org/s3cmd")
+    (home-page "https://s3tools.org/s3cmd")
     (synopsis "Command line tool for S3-compatible storage services")
     (description
      "S3cmd is a command line tool for uploading, retrieving and managing data
@@ -10407,7 +10417,7 @@ development version of CPython that are not available in older releases.")
     ;; https://github.com/PythonCharmers/python-future/issues/210
     (arguments
      `(#:tests? #f))
-    (home-page "http://python-future.org")
+    (home-page "https://python-future.org")
     (synopsis "Single-source support for Python 3 and 2")
     (description
      "@code{python-future} is the missing compatibility layer between Python 2 and
@@ -11223,7 +11233,17 @@ more, possibly remote, memcached servers.")
     (description
      "CliKit is a group of utilities to build testable command line
 interfaces.")
+    (properties `((python2-variant . ,(delay python2-clikit))))
     (license license:expat)))
+
+(define-public python2-clikit
+  (let ((base (package-with-python2 (strip-python2-variant python-clikit))))
+    (package/inherit
+     base
+     (propagated-inputs
+      `(("python-enum34" ,python2-enum34)
+        ("python-typing" ,python2-typing)
+        ,@(package-propagated-inputs base))))))
 
 (define-public python-msgpack-python
   (package
@@ -11422,34 +11442,29 @@ parsing UK postcodes.")
 (define-public python-faker
   (package
   (name "python-faker")
-  (version "0.7.9")
+  (version "4.0.2")
   (source (origin
             (method url-fetch)
             (uri (pypi-uri "Faker" version))
             (sha256
              (base32
-              "1fh2p2yz0fsdr4fqwxgddwbvfb6qn6vp8yx0qwqzra27yq5d1wsm"))
-            (patches
-             (search-patches "python-faker-fix-build-32bit.patch"))
-            (modules '((guix build utils)))
-            (snippet
-             '(begin
-                (for-each delete-file (find-files "." "\\.pyc$"))
-                #t))))
+              "13qq485ydxmdnqn3xbfv1xfyqbf9qfnfw33v1vw5l6jyy9p8cgrd"))))
   (build-system python-build-system)
   (arguments
    '(#:phases
      (modify-phases %standard-phases
        (replace 'check
-         (lambda _ (invoke "python" "-m" "unittest" "-v" "tests"))))))
+         (lambda _ (invoke "python" "-m" "pytest" "-v"))))))
   (native-inputs
    `(;; For testing
-     ("python-email-validator" ,python-email-validator)
-     ("python-mock" ,python-mock)
-     ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
+     ("python-freezegun" ,python-freezegun)
+     ("python-pytest" ,python-pytest)
+     ("python-random2" ,python-random2)
+     ("python-ukpostcodeparser" ,python-ukpostcodeparser)
+     ("python-validators" ,python-validators)))
   (propagated-inputs
    `(("python-dateutil" ,python-dateutil)
-     ("python-six" ,python-six)))
+     ("python-text-unidecode" ,python-text-unidecode)))
   (home-page "https://github.com/joke2k/faker")
   (synopsis "Python package that generates fake data")
   (description
@@ -11458,13 +11473,25 @@ addresses, and phone numbers.")
   (license license:expat)
   (properties `((python2-variant . ,(delay python2-faker))))))
 
+;; Faker 4.0 dropped Python 2 support, so we stick with this older version here.
 (define-public python2-faker
   (let ((base (package-with-python2 (strip-python2-variant
                                      python-faker))))
     (package
       (inherit base)
+      (version "3.0.1")
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "Faker" version))
+                (sha256
+                 (base32
+                  "11cr0qvspkdh6198rqy56qildk7bnp6llj8kyy1dan5sp5n4dxy7"))))
+      (native-inputs
+       `(("python-mock" ,python2-mock)
+         ,@(package-native-inputs base)))
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
+         ("python2-six" ,python2-six)
          ,@(package-propagated-inputs base))))))
 
 (define-public python-pyaml
@@ -11613,6 +11640,20 @@ well.")
 (define-public python2-jedi
   (package-with-python2 python-jedi))
 
+;; python-language-server requires 0.15 specifically.  Remove once unused.
+(define-public python-jedi-0.15
+  (package
+    (inherit python-jedi)
+    (version "0.15.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jedi" version))
+              (sha256
+               (base32
+                "01zqasl690x1i6dq4mvh13pz0cw8i276xsivsrnn00x90iqm42g9"))))
+    (propagated-inputs
+     `(("python-parso" ,python-parso-0.5)))))
+
 (define-public ptpython
   (package
     (name "ptpython")
@@ -11743,7 +11784,7 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
        ("mesa" ,mesa)
        ("sdl-union"
         ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
-    (home-page "http://kivy.org")
+    (home-page "https://kivy.org")
     (synopsis
      "Multitouch application framework")
     (description
@@ -12217,6 +12258,34 @@ provide extendible implementations of common aspects of a cloud so that you can
 focus on building massively scalable web applications.")
     (license license:expat)))
 
+(define-public python-random2
+  (package
+    (name "python-random2")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "random2" version ".zip"))
+              (sha256
+               (base32
+                "01y0s4747plsx8fdnxy0nz83dp69naddz58m81r9h0s1qfm31b9l"))))
+    (build-system python-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "http://pypi.python.org/pypi/random2")
+    (synopsis "Python 3 version of the Python 2 @code{random} module")
+    (description
+     "This package provides a Python 3 ported version of Python 2.7’s
+@code{random} module.  It has also been back-ported to work in Python 2.6.
+
+In Python 3, the implementation of @code{randrange()} was changed, so that
+even with the same seed you get different sequences in Python 2 and 3.
+
+This package closes that gap, allowing stable random number generation
+between the different Python versions.")
+    (license license:psfl)))
+
+(define-public python2-random2
+  (package-with-python2 python-random2))
+
 (define-public python-snowballstemmer
   (package
     (name "python-snowballstemmer")
@@ -12580,7 +12649,7 @@ possible on all supported Python versions.")
                         (invoke "python" "Cheetah/Tests/Test.py")))))))
     (propagated-inputs
      `(("python-markdown" ,python-markdown)))    ;optional
-    (home-page "http://cheetahtemplate.org/")
+    (home-page "https://cheetahtemplate.org/")
     (synopsis "Template engine")
     (description "Cheetah is a text-based template engine and Python code
 generator.
@@ -14145,6 +14214,41 @@ validation of URIs (see RFC 3986) and IRIs (see RFC 3987).")
 (define-public python2-rfc3987
   (package-with-python2 python-rfc3987))
 
+(define-public python-validators
+  (package
+    (name "python-validators")
+    (version "0.14.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "validators" version))
+              (sha256
+               (base32
+                "024m15j33szd0v8k5l4ccish6n0b4knq81gmb4fq25ynwyyyd4mi"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-decorator" ,python-decorator)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-isort" ,python-isort)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/kvesteri/validators")
+    (synopsis "Data validation library")
+    (description
+     "This package contains validators for different things such as email
+addresses, IP addresses, URLs, hashes and more.  It has been designed to
+be easy to use and not require defining a schema or form just to validate
+some input.")
+    (license license:expat)))
+
+(define-public python2-validators
+  (package-with-python2 python-validators))
+
 (define-public python-validate-email
   (package
     (name "python-validate-email")
@@ -15132,7 +15236,7 @@ objects on other machines, also known as remote procedure calls (RPC).")
      `(#:python ,python-2
        ;; Pyro has no test cases for automatic execution
        #:tests? #f))
-    (home-page "http://pythonhosted.org/Pyro/")
+    (home-page "https://pythonhosted.org/Pyro/")
     (synopsis "Distributed object manager for Python")
     (description "Pyro is a Distributed Object Technology system
 written in Python that is designed to be easy to use.  It resembles
@@ -15897,6 +16001,19 @@ Parso is also able to list multiple syntax errors in your Python file.")
 
 (define-public python2-parso
   (package-with-python2 python-parso))
+
+;; This version is required for Jedi@0.15, which in turn is needed for
+;; python-language-server.
+(define-public python-parso-0.5
+  (package
+    (inherit python-parso)
+    (version "0.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "parso" version))
+              (sha256
+               (base32
+                "1qgvrkpma7vylrk047mxxvqd66nwqk978n3ig2w8iz9m3bgjbksm"))))))
 
 (define-public python-async-generator
   (package
@@ -17011,26 +17128,6 @@ source via the Abstract Syntax Tree.")
 (define-public python2-astor
   (package-with-python2 python-astor))
 
-(define-public python-grpcio
-  (package
-    (name "python-grpcio")
-    (version "1.17.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "grpcio" version))
-       (sha256
-        (base32
-         "0qb9y6j83nxa6d4kc60i8yfgdm7a8ms7b54kncjzf5y7nsxp8rzx"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (home-page "https://grpc.io")
-    (synopsis "HTTP/2-based RPC framework")
-    (description "This package provides a Python library for communicating
-with the HTTP/2-based RPC framework gRPC.")
-    (license license:asl2.0)))
-
 (define-public python-astunparse
   (package
     (name "python-astunparse")
@@ -17056,13 +17153,13 @@ distribution.")
 (define-public python-gast
   (package
     (name "python-gast")
-    (version "0.2.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gast" version))
        (sha256
-        (base32 "1w5dzdb3gpcfmd2s0b93d8gff40a1s41rv31458z14inb3s9v4zy"))))
+        (base32 "0mrvvfzqafj1wzd0xxfmjf4vphnlxypbhpic1m283aj9i8lfz0dq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-astunparse" ,python-astunparse)))

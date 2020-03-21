@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -758,7 +758,7 @@ interactions.")
     (description "RSpec is a behavior-driven development (BDD) framework for
 Ruby.  This meta-package includes the RSpec test runner, along with the
 expectations and mocks frameworks.")
-    (home-page "http://rspec.info/")
+    (home-page "https://rspec.info/")
     (license license:expat)))
 
 (define-public ruby-rspec-2
@@ -1318,14 +1318,13 @@ with a similar style to the original OAuth spec.")
 (define-public ruby-omniauth
   (package
     (name "ruby-omniauth")
-    (version "1.9.0")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "omniauth" version))
        (sha256
-        (base32
-         "1p16h1rp8by05k8gfw17xjhgwp60dk8qmj1xalv1n23kmxfsxb1x"))))
+        (base32 "002vi9gwamkmhf0dsj2im1d47xw2n1jfhnzl18shxf3ampkqfmyz"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; No included tests
@@ -7225,7 +7224,7 @@ generation.")
 concise DSL for constructing SQL queries and table schemas.  It includes a
 comprehensive ORM layer for mapping records to Ruby objects and handling
 associated records.")
-    (home-page "http://sequel.jeremyevans.net")
+    (home-page "https://sequel.jeremyevans.net")
     (license license:expat)))
 
 (define-public ruby-timecop
