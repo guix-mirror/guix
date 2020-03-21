@@ -18596,3 +18596,40 @@ we can stop writing custom parsers for syslog-type records.")
     (description "The daiquiri library provides an easy way to configure
 logging in Python.  It also provides some custom formatters and handlers.")
     (license license:asl2.0)))
+
+(define-public python-pifpaf
+  (package
+    (name "python-pifpaf")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pifpaf" version))
+       (sha256
+        (base32
+         "150av2pylsjy8ykrpyi0vzy2q24s9rhh2ya01zvwnvj9j5dspviz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-daiquiri" ,python-daiquiri)
+       ("python-fixtures" ,python-fixtures)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pbr" ,python-pbr)
+       ("python-psutil" ,python-psutil)
+       ("python-six" ,python-six)
+       ("python-xattr" ,python-xattr)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-os-testr" ,python-os-testr)
+       ("python-requests" ,python-requests)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://github.com/jd/pifpaf")
+    (synopsis "Tools and fixtures to manage daemons for testing in Python")
+    (description "Pifpaf is a suite of fixtures and a command-line tool that
+allows to start and stop daemons for a quick throw-away usage.  This is typically
+useful when needing these daemons to run integration testing.  It originally
+evolved from its precursor @code{overtest}.")
+    (license license:asl2.0)))
