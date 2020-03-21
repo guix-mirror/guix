@@ -4148,3 +4148,14 @@ audio plugin UIs, where the dependencies often need to be kept to a
 minimum.")
     (home-page "https://git.zrythm.org/cgit/ztoolkit/")
     (license license:agpl3+)))
+
+(define-public ztoolkit-rsvg
+  (package
+    (inherit ztoolkit)
+    (name "ztoolkit-rsvg")
+    (arguments
+     `(#:configure-flags `("-Denable_rsvg=true")))
+    (inputs
+     `(("librsvg" ,librsvg)
+       ,@(package-inputs ztoolkit)))
+    (synopsis "ZToolkit with SVG support")))
