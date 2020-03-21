@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -353,10 +354,11 @@ used to apply commands with arbitrarily long arguments.")
                      #t)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
-    "GNU Coreutils includes all of the basic command-line tools that are
-expected in a POSIX system.  These provide the basic file, shell and text
-manipulation functions of the GNU system.  Most of these tools offer extended
-functionality beyond that which is outlined in the POSIX standard.")
+    "GNU Coreutils package includes all of the basic command-line tools that
+are expected in a POSIX system, excluding shell.  This package is the union of
+the GNU fileutils, sh-utils, and textutils packages.  Most of these tools
+offer extended functionality beyond that which is outlined in the POSIX
+standard.")
    (license gpl3+)
    (home-page "https://www.gnu.org/software/coreutils/")))
 
