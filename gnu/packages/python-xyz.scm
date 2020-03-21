@@ -65,7 +65,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
@@ -11249,34 +11249,38 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "0.12.17")
-    ;; Poetry can only be built from source with poetry.
+    (version "1.0.5")
+    ;; Poetry can only be built from source with Poetry.
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "0gxwcd65qjmzqzppf53x51sic1rbcd9py6cdzx3aprppipimslvf"))))
+         "02h387k0xssvv78yy82pcpknpq4w5ym2in1zl8cg9r5wljl5w6cf"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
        #:phases
        (modify-phases %standard-phases
-         (replace 'build
+         (add-before 'build 'patch-setup-py
            (lambda _
-             ;; Bug in poetry https://github.com/sdispater/poetry/issues/866.
-             (invoke "sed" "-i" "-e" "s/from distutils.core/from setuptools/"
-                     "setup.py")
+             (substitute* "setup.py"
+               ;; poetry won't update version as 21.0.0 relies on python > 3.6
+               (("keyring>=20.0.1,<21.0.0") "keyring>=21.0.0,<22.0.0")
+               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.16.0")
+               (("importlib-metadata>=1.1.3,<1.2.0") "importlib-metadata>=1.1.3,<1.5.0"))
              #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol)
        ("python-cachy" ,python-cachy)
        ("python-cleo" ,python-cleo)
-       ("python-glob2" ,python-glob2)
+       ("python-clikit" ,python-clikit)
        ("python-html5lib" ,python-html5lib)
+       ("python-importlib-metadata" ,python-importlib-metadata) ;; python < 3.8
        ("python-jsonschema" ,python-jsonschema)
-       ("python-msgpack" ,python-msgpack)
+       ("python-keyring" ,python-keyring)
+       ("python-pexpect" ,python-pexpect)
        ("python-pkginfo" ,python-pkginfo)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pyrsistent" ,python-pyrsistent)
@@ -11285,7 +11289,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        ("python-shellingham" ,python-shellingham)
        ("python-tomlkit" ,python-tomlkit)
        ("python-virtualenv" ,python-virtualenv)))
-    (home-page "https://poetry.eustace.io/")
+    (home-page "https://python-poetry.org")
     (synopsis "Python dependency management and packaging made easy")
     (description "Poetry is a tool for dependency management and packaging
 in Python.  It allows you to declare the libraries your project depends on and
