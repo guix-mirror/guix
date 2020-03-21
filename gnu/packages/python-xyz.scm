@@ -70,6 +70,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18435,3 +18436,27 @@ sequences.")
 prevent debuggers and other applications from inspecting the memory within
 your process.")
     (license license:expat)))
+
+(define-public python-gcovr
+  (package
+    (name "python-gcovr")
+    (version "4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gcovr" version))
+       (sha256
+        (base32
+          "0gyady7x3v3l9fm1zan0idaggqqcm31y7g5vxk7h05p5h7f39bjs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-jinja2" ,python-jinja2)))
+    (home-page "https://gcovr.com/")
+    (synopsis "Utility for generating code coverage results")
+    (description
+      "Gcovr provides a utility for managing the use of the GNU gcov
+utility and generating summarized code coverage results.  It is inspired
+by the Python coverage.py package, which provides a similar utility for
+Python.")
+    (license license:bsd-3)))
