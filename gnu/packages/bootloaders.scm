@@ -196,7 +196,7 @@
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
        ("parted" ,parted)
-       ("qemu" ,qemu-minimal-2.10)
+       ("qemu" ,qemu-minimal)
        ("xorriso" ,xorriso)))
     (home-page "https://www.gnu.org/software/grub/")
     (synopsis "GRand Unified Boot loader")
