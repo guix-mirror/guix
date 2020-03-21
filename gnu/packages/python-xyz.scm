@@ -18550,3 +18550,23 @@ filesystem attributes.  Extended attributes extend the basic attributes of files
 and directories in the file system.  They are stored as name:data pairs
 associated with file system objects (files, directories, symlinks, etc).")
     (license license:expat)))
+
+(define-public python-json-logger
+  (package
+    (name "python-json-logger")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-json-logger" version))
+       (sha256
+        (base32
+         "10g2ya6nsvn5vxzvq2wb8q4d43i3d7756i5rxyjna6d0y9i138xp"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/madzak/python-json-logger")
+    (synopsis "JSON log formatter in Python")
+    (description "This library allows standard Python logging to output log data
+as JSON objects.  With JSON we can make our logs more readable by machines and
+we can stop writing custom parsers for syslog-type records.")
+    (license license:bsd-3)))
