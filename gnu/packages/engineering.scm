@@ -1309,14 +1309,16 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "3.5.1")
+    (version "4.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://radare.mikelloc.com/get/" version "/"
-                                  "radare2-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/radareorg/radare2")
+                    (commit version)))
               (sha256
                (base32
-                "174x5545fw2nyf000gd46hi7rx2bn3bw5bsnvizn9yi99pn7m4mw"))
+                "14b9433cgc2nabhz836zfgvgh2dwailcmvy05krsa0inmzbvx9fg"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin
