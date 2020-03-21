@@ -18570,3 +18570,29 @@ associated with file system objects (files, directories, symlinks, etc).")
 as JSON objects.  With JSON we can make our logs more readable by machines and
 we can stop writing custom parsers for syslog-type records.")
     (license license:bsd-3)))
+
+(define-public python-daiquiri
+  (package
+    (name "python-daiquiri")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "daiquiri" version))
+       (sha256
+        (base32
+         "1qmank3c217ddiig3xr8ps0mqaydcp0q5a62in9a9g4zf72zjnqd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-json-logger" ,python-json-logger)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/jd/daiquiri")
+    (synopsis
+     "Library to configure Python logging easily")
+    (description "The daiquiri library provides an easy way to configure
+logging in Python.  It also provides some custom formatters and handlers.")
+    (license license:asl2.0)))
