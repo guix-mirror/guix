@@ -2138,7 +2138,7 @@ simulation.")
 (define-public cutter
   (package
     (name "cutter")
-    (version "1.8.3")
+    (version "1.10.1")
     (source
      (origin
        (method git-fetch)
@@ -2148,7 +2148,7 @@ simulation.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03f3cdckh51anx9gd1b0ndb2fg7061hqngvygf32ky29mm2m2lyv"))))
+         "1gvsrcskcdd1hxrjpkpc657anmfs25f174vxk4wzvn385rnmrxd3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
