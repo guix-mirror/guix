@@ -21,11 +21,14 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix git-download)
+  #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tls))
 
 (define-public grpc
@@ -100,4 +103,24 @@ services in and across data centers with pluggable support for load balancing,
 tracing, health checking and authentication.  It is also applicable in last
 mile of distributed computing to connect devices, mobile applications and
 browsers to backend services.")
+    (license license:asl2.0)))
+
+(define-public python-grpcio
+  (package
+    (name "python-grpcio")
+    (version "1.17.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "grpcio" version))
+       (sha256
+        (base32
+         "0qb9y6j83nxa6d4kc60i8yfgdm7a8ms7b54kncjzf5y7nsxp8rzx"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://grpc.io")
+    (synopsis "HTTP/2-based RPC framework")
+    (description "This package provides a Python library for communicating
+with the HTTP/2-based RPC framework gRPC.")
     (license license:asl2.0)))

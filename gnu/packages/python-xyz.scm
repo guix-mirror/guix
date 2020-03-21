@@ -17022,26 +17022,6 @@ source via the Abstract Syntax Tree.")
 (define-public python2-astor
   (package-with-python2 python-astor))
 
-(define-public python-grpcio
-  (package
-    (name "python-grpcio")
-    (version "1.17.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "grpcio" version))
-       (sha256
-        (base32
-         "0qb9y6j83nxa6d4kc60i8yfgdm7a8ms7b54kncjzf5y7nsxp8rzx"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (home-page "https://grpc.io")
-    (synopsis "HTTP/2-based RPC framework")
-    (description "This package provides a Python library for communicating
-with the HTTP/2-based RPC framework gRPC.")
-    (license license:asl2.0)))
-
 (define-public python-astunparse
   (package
     (name "python-astunparse")
