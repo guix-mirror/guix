@@ -400,6 +400,15 @@ libskba (working with X.509 certificates and CMS data).")
       (sha256
        (base32 "0imyjfryvvjdbai454p70zcr95m94j9xnzywrlilqdw2fqi0pqy4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-failing-test
+           ;; XXX gnupg@2.2.20 breaks the expected JSON response for this test.
+           (lambda _
+             (substitute* "tests/json/t-json.c"
+               (("\"t-keylist-secret\", ") ""))
+             #t)))))
     (native-inputs
      `(("gnupg" ,gnupg)))
     (propagated-inputs
