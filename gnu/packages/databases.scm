@@ -40,6 +40,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2873,18 +2874,20 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
 (define-public python-fakeredis
   (package
     (name "python-fakeredis")
-    (version "0.8.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "fakeredis" version))
        (sha256
         (base32
-         "0zncahj3byyasyfx9i7k991ph0n0lq8v3a21pqri5qxn9564bk9r"))))
+         "1s12mn4q4hz7402139khn9fx56kibj7nn0d6w81hn0zs07b90wpc"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
      `(#:tests? #f))
+    (propagated-inputs
+      `(("python-sortedcontainers" ,python-sortedcontainers)))
     (home-page "https://github.com/jamesls/fakeredis")
     (synopsis "Fake implementation of redis API for testing purposes")
     (description
