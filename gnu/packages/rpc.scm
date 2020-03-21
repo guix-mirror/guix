@@ -127,15 +127,47 @@ browsers to backend services.")
 (define-public python-grpcio
   (package
     (name "python-grpcio")
-    (version "1.17.1")
+    (version "1.27.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "grpcio" version))
        (sha256
         (base32
-         "0qb9y6j83nxa6d4kc60i8yfgdm7a8ms7b54kncjzf5y7nsxp8rzx"))))
+         "0zl89jwcff9hkd8mi4yf3qbhns9vbv1s4x4vahm5mkpr7jwk5ras"))
+       (modules '((guix build utils) (ice-9 ftw)))
+       (snippet
+        '(begin
+           (with-directory-excursion "third_party"
+             ;; Delete the bundled source code of libraries that are possible
+             ;; to provide as inputs.
+             (for-each delete-file-recursively
+                       (scandir "."
+                                (lambda (file)
+                                  (not (member file
+                                               '("." ".."
+                                                 "abseil-cpp"
+                                                 "address_sorting"
+                                                 "upb")))))))
+           #t))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'use-system-libraries
+                    (lambda _
+                      (setenv "GRPC_PYTHON_BUILD_SYSTEM_CARES" "1")
+                      (setenv "GRPC_PYTHON_BUILD_SYSTEM_OPENSSL" "1")
+                      (setenv "GRPC_PYTHON_BUILD_SYSTEM_ZLIB" "1")
+                      #t))
+                  (add-before 'build 'configure-compiler
+                    (lambda _
+                      (substitute* '("setup.py" "src/python/grpcio/commands.py")
+                        (("'cc'") "'gcc'"))
+                      #t)))))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (propagated-inputs
      `(("python-six" ,python-six)))
     (home-page "https://grpc.io")
