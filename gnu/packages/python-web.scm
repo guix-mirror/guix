@@ -2036,6 +2036,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
      `(#:tests? #f))
     (propagated-inputs
      `(("python-requests" ,python-requests)
+       ("python-msgpack" ,python-msgpack)
        ("python-lockfile" ,python-lockfile)))
     (home-page "https://github.com/ionrock/cachecontrol")
     (synopsis "The httplib2 caching algorithms for use with requests")
