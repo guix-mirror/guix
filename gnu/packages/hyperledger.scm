@@ -190,7 +190,7 @@ link-time.  New implementations can be added as well.")
     (inputs
      `(("boost" ,boost-1.69)
        ("gflags" ,gflags)
-       ("grpc" ,grpc)
+       ("grpc" ,grpc-1.16.1)
        ("hyperledger-iroha-ed25519" ,hyperledger-iroha-ed25519)
        ("postgresql" ,postgresql)
        ("protobuf" ,protobuf)

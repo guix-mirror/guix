@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -34,7 +36,7 @@
 (define-public grpc
   (package
     (name "grpc")
-    (version "1.16.1")
+    (version "1.27.3")
     (outputs '("out" "static"))
     (source (origin
               (method git-fetch)
@@ -44,12 +46,13 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))
+                "0czmbwnafc7jnrrq2fnac2av83vs2q7q0wy4k11w9zbpld7j5h6d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no test target
        #:configure-flags
        (list "-DgRPC_ZLIB_PROVIDER=package"
+             "-DgRPC_ABSL_PROVIDER=package"
              "-DgRPC_CARES_PROVIDER=package"
              "-DgRPC_SSL_PROVIDER=package"
              "-DgRPC_PROTOBUF_PROVIDER=package"
@@ -89,7 +92,8 @@
                    (find-files "." "\\.a$"))))
              #t)))))
     (inputs
-     `(("c-ares" ,c-ares/cmake)
+     `(("abseil-cpp" ,abseil-cpp)
+       ("c-ares" ,c-ares/cmake)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
@@ -104,6 +108,21 @@ tracing, health checking and authentication.  It is also applicable in last
 mile of distributed computing to connect devices, mobile applications and
 browsers to backend services.")
     (license license:asl2.0)))
+
+;; Some packages require this older version.
+(define-public grpc-1.16.1
+  (package
+    (inherit grpc)
+    (version "1.16.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/grpc/grpc.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "grpc" version))
+              (sha256
+               (base32
+                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))))
 
 (define-public python-grpcio
   (package
