@@ -46,10 +46,13 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages astronomy)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -58,6 +61,7 @@
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
@@ -80,8 +84,10 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
@@ -1629,3 +1635,119 @@ track your position right from your laptop.")
                    license:lgpl3+
                    license:sgifreeb2.0
                    license:zlib))))
+
+(define-public grass
+  (let* ((version "7.8.2")
+         (majorminor (string-join (list-head (string-split version #\.) 2) ""))
+         (grassxx (string-append "grass" majorminor)))
+    (package
+      (name "grass")
+      (version version)
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://grass.osgeo.org/" grassxx
+                             "/source/grass-" version ".tar.gz"))
+         (sha256
+          (base32 "1fwsm99kz0bxvjk7442qq1h45ikrmhba8bqclafb61gqg1q6ymrk"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("bzip2", bzip2)
+         ("cairo" ,cairo)
+         ("fftw" ,fftw)
+         ("freetype" ,freetype)
+         ("gdal" ,gdal)
+         ("geos" ,geos)
+         ("glu" ,glu)
+         ("lapack" ,lapack)
+         ("libpng" ,libpng)
+         ("libtiff" ,libtiff)
+         ("mesa" ,mesa)
+         ("mariadb-dev" ,mariadb "dev")
+         ("mariadb-lib" ,mariadb "lib")
+         ("netcdf" ,netcdf)
+         ("openblas" ,openblas)
+         ("perl" ,perl)
+         ("postgresql" ,postgresql)
+         ("proj.4" ,proj.4)
+         ("python" ,python)
+         ("python-dateutil" ,python-dateutil)
+         ("python-numpy" ,python-numpy)
+         ("python-wxpython" ,python-wxpython)
+         ("readline" ,readline)
+         ("sqlite" ,sqlite)
+         ("wxwidgets" ,wxwidgets)
+         ("zlib" ,zlib)
+         ("zstd" ,zstd "lib")))
+      (native-inputs
+       `(("bash" ,bash-minimal)
+         ("bison" ,bison)
+         ("flex" ,flex)
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       `(#:tests? #f ; No tests
+         #:modules ((guix build gnu-build-system)
+                    ((guix build python-build-system) #:prefix python:)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build python-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((shell (string-append (assoc-ref inputs "bash")
+                                           "/bin/bash")))
+                 (setenv "SHELL" shell)
+                 (setenv "CONFIG_SHELL" shell)
+                 (setenv "LDFLAGS" (string-append "-Wl,-rpath -Wl,"
+                                                  (assoc-ref outputs "out")
+                                                  "/" ,grassxx "/lib")))
+               (invoke "./configure"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "out"))
+                       "--with-blas"
+                       "--with-bzlib"
+                       (string-append "--with-freetype-includes="
+                                      (assoc-ref inputs "freetype")
+                                      "/include/freetype2")
+                       (string-append "--with-freetype-libs="
+                                      (assoc-ref inputs "freetype")
+                                      "/lib")
+                       "--with-geos"
+                       "--with-lapack"
+                       "--with-mysql"
+                       (string-append "--with-mysql-includes="
+                                      (assoc-ref inputs "mariadb-dev")
+                                      "/include/mysql")
+                       (string-append "--with-mysql-libs="
+                                      (assoc-ref inputs "mariadb-lib")
+                                      "/lib")
+                       "--with-netcdf"
+                       "--with-postgres"
+                       (string-append "--with-proj-share="
+                                      (assoc-ref inputs "proj.4")
+                                      "/share/proj")
+                       "--with-pthread"
+                       "--with-readline"
+                       "--with-sqlite"
+                       "--with-wxwidgets")))
+           (add-after 'install 'install-links
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Put links for includes and libraries in the standard places.
+               (let* ((out (assoc-ref outputs "out"))
+                      (dir (string-append out "/" ,grassxx)))
+                 (symlink (string-append dir "/include")
+                          (string-append out "/include"))
+                 (symlink (string-append dir "/lib")
+                          (string-append out "/lib")))
+               #t))
+           (add-after 'install-links 'wrap-python
+             (assoc-ref python:%standard-phases 'wrap)))))
+      (synopsis "GRASS Geographic Information System")
+      (description
+       "GRASS (Geographic Resources Analysis Support System), is a Geographic
+Information System (GIS) software suite used for geospatial data management and
+analysis, image processing, graphics and maps production, spatial modeling, and
+visualization.")
+      (home-page "https://grass.osgeo.org/")
+      (license license:gpl2+))))
