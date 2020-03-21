@@ -78,6 +78,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3) ;taglib
   #:use-module (gnu packages multiprecision)
@@ -4081,3 +4082,39 @@ given plugin and its UI(s) match up with the provided metadata and adhere
 to well-known best practices.")
     (home-page "https://open-music-kontrollers.ch/lv2/lv2lint/")
     (license license:artistic2.0)))
+
+(define-public lv2toweb
+  (package
+    (name "lv2toweb")
+    (version "0.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/x42/lv2toweb")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "007aysqvgkf25za8nkmyd5g9kp1zla460dcpidlj5xg1zc3fcdfi"))))
+    (build-system gnu-build-system)
+    (arguments
+    `(#:tests? #f  ; no "check" target
+      #:make-flags (list "CC=gcc"
+                         (string-append "PREFIX=" (assoc-ref %outputs "out")))
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+    (inputs
+      `(("jalv", jalv)
+        ("lilv", lilv)))
+    (native-inputs
+      `(("help2man", help2man)
+        ("pkg-config", pkg-config)))
+    (synopsis "Documentation generator for LV2 plugins")
+    (description
+      "lv2toweb allows the user to create an xhtml page with information
+about the given LV2 plugin, provided that the plugin and its UI(s) match up
+with the provided metadata and adhere to well-known best practices.")
+    (home-page "https://github.com/x42/lv2toweb")
+    (license (list license:isc license:gpl2))))
