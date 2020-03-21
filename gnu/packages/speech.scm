@@ -39,6 +39,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
@@ -507,3 +508,33 @@ the CMU Sphinx trainer and all the Sphinx decoders (Sphinx-II,
 Sphinx-III, and PocketSphinx), as well as some common utilities for
 manipulating acoustic feature and audio files.")
     (license license:bsd-4)))
+
+(define-public pocketsphinx
+  (package
+    (name "pocketsphinx")
+    (version "5prealpha")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/cmusphinx/"
+                           "pocketsphinx/" version "/"
+                           "pocketsphinx-" version ".tar.gz"))
+       (sha256
+        (base32 "1n9yazzdgvpqgnfzsbl96ch9cirayh74jmpjf7svs4i7grabanzg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)                   ;for tests
+       ("python" ,python)
+       ("swig" ,swig)))
+    (inputs
+     `(("gstreamer" ,gstreamer)
+       ("libcap" ,libcap)
+       ("pulseaudio" ,pulseaudio)
+       ("sphinxbase" ,sphinxbase)))
+    (home-page "https://cmusphinx.github.io/")
+    (synopsis "Recognizer library written in C")
+    (description "PocketSphinx is one of Carnegie Mellon University's
+large vocabulary, speaker-independent continuous speech recognition
+engine.")
+    (license license:bsd-2)))
