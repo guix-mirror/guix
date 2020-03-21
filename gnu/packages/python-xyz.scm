@@ -16748,6 +16748,12 @@ that is accessible to other projects developed in Cython.")
     (build-system python-build-system)
     (native-inputs
      `(("python-tox" ,python-tox)))
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-distlib" ,python-distlib)
+       ("python-filelock" ,python-filelock)
+       ("python-importlib-metadata" ,python-importlib-metadata) ;; python < 3.8
+       ("python-six" ,python-six)))
     (home-page "http://www.grantjenks.com/docs/sortedcontainers/")
     (synopsis "Sorted List, Sorted Dict, Sorted Set")
     (description
