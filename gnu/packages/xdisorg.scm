@@ -2147,6 +2147,7 @@ configuring visual settings in different UI toolkits separately.")
                (install-file "README.md" doc)
                #t))))
        #:make-flags (list "CC=gcc")
+       ;; the package provides no test suite:
        #:tests? #f))
     (inputs
      `(("libx11" ,libx11)
