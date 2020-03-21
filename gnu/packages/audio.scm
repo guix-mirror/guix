@@ -4118,3 +4118,33 @@ about the given LV2 plugin, provided that the plugin and its UI(s) match up
 with the provided metadata and adhere to well-known best practices.")
     (home-page "https://github.com/x42/lv2toweb")
     (license (list license:isc license:gpl2))))
+
+(define-public ztoolkit
+  (package
+    (name "ztoolkit")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.zrythm.org/git/ztoolkit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07xl3cmdaf7k9mm58m93cn8i1jvgimmiifdw1w7v2jl88nx60pm1"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "GUI toolkit for LV2 plugins")
+    (description "ZToolkit (Ztk) is a cross-platform GUI toolkit heavily
+inspired by GTK.  It handles events and low level drawing on behalf of
+the user and provides a high-level API for managing the UI and custom
+widgets.  ZToolkit is written in C and was created to be used for building
+audio plugin UIs, where the dependencies often need to be kept to a
+minimum.")
+    (home-page "https://git.zrythm.org/cgit/ztoolkit/")
+    (license license:agpl3+)))
