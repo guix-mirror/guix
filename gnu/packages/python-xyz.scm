@@ -59,7 +59,7 @@
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
@@ -18459,4 +18459,25 @@ your process.")
 utility and generating summarized code coverage results.  It is inspired
 by the Python coverage.py package, which provides a similar utility for
 Python.")
+    (license license:bsd-3)))
+
+(define-public python-owslib
+  (package
+    (name "python-owslib")
+    (version "0.19.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "OWSLib" version))
+       (sha256
+        (base32 "0v8vg0naa9rywvd31cpq65ljbdclpsrx09788v4xj7lg10np8nk0"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; TODO: package dependencies required for tests.
+    (synopsis "Interface for Open Geospatial Consortium web service")
+    (description
+     "OWSLib is a Python package for client programming with Open Geospatial
+Consortium (OGC) web service (hence OWS) interface standards, and their related
+content models.")
+    (home-page "https://geopython.github.io/OWSLib/")
     (license license:bsd-3)))
