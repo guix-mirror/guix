@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
@@ -247,14 +247,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.19")
+    (version "2.2.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1h6yx6sdpz3lf9gdppgxqcf73baynr8gflmh43286fkgw3058994"))))
+                "0c6a4v9p6qzhsw1pfcwc459bxpc8hma0w9z8iqb9khvligack9q4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
