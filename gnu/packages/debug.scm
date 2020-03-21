@@ -28,16 +28,23 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages golang)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -47,6 +54,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages xdisorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -183,61 +191,7 @@ tools that process C/C++ code.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs
-       `(("custom-qemu"
-          ;; The afl-qemu tool builds qemu 2.10.0 with a few patches applied.
-          ,(package (inherit qemu-minimal-2.10)
-             (name "afl-qemu")
-             (inputs
-              `(("afl-src" ,source)
-                ,@(package-inputs qemu-minimal)))
-             ;; afl only supports using a single afl-qemu-trace executable, so
-             ;; we only build qemu for the native target.
-             (arguments
-              `(#:modules ((srfi srfi-1)
-                           ,@%gnu-build-system-modules)
-                ,@(substitute-keyword-arguments (package-arguments qemu-minimal)
-                    ((#:configure-flags config-flags)
-                     ``(,(string-append "--target-list=" ,machine "-linux-user")
-                        ,@(remove (λ (f) (string-prefix? "--target-list=" f))
-                                  ,config-flags)))
-                    ((#:phases qemu-phases)
-                     `(modify-phases ,qemu-phases
-                        (add-after
-                         'unpack 'apply-afl-patches
-                         (lambda* (#:key inputs #:allow-other-keys)
-                           (let* ((afl-src (assoc-ref inputs "afl-src"))
-                                  (patch-dir "qemu_mode/patches"))
-                             (copy-recursively (string-append afl-src "/"
-                                                              patch-dir)
-                                               patch-dir)
-                             (install-file
-                              (string-append patch-dir
-                                             "/afl-qemu-cpu-inl.h")
-                              ".")
-                             (copy-file (string-append afl-src "/config.h")
-                                        "./afl-config.h")
-                             (install-file (string-append afl-src "/types.h")
-                                           ".")
-                             (substitute* "afl-qemu-cpu-inl.h"
-                               (("\\.\\./\\.\\./config.h") "afl-config.h"))
-                             (substitute* (string-append patch-dir
-                                                         "/cpu-exec.diff")
-                               (("\\.\\./patches/") ""))
-
-                             ;; These were already applied to qemu-minimal-2.10.
-                             (for-each (lambda (obsolete-patch)
-                                         (delete-file (string-append
-                                                       patch-dir "/"
-                                                       obsolete-patch)))
-                                       (list "configure.diff"
-                                             "memfd.diff"))
-
-                             (for-each (lambda (patch-file)
-                                         (invoke "patch" "--force" "-p1"
-                                                 "--input" patch-file))
-                                       (find-files patch-dir
-                                                   "\\.diff$"))
-                             #t))))))))))))
+       `(("qemu" ,qemu-for-american-fuzzy-lop)))
       (arguments
        `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                             (string-append "DOC_PATH=$(PREFIX)/share/doc/"
@@ -267,7 +221,7 @@ tools that process C/C++ code.")
                      ;; TODO: Build and install the afl-llvm tool.
                      'install 'install-qemu
                      (lambda* (#:key inputs outputs #:allow-other-keys)
-                       (let ((qemu (assoc-ref inputs "custom-qemu"))
+                       (let ((qemu (assoc-ref inputs "qemu"))
                              (out  (assoc-ref outputs "out")))
                          (symlink (string-append qemu "/bin/qemu-" ,machine)
                                   (string-append out "/bin/afl-qemu-trace"))
@@ -284,6 +238,156 @@ fuzzed code.  The compact synthesized corpora produced by the tool are also
 useful for seeding other, more labor- or resource-intensive testing regimes
 down the road.")
       (license license:asl2.0))))
+
+(define-public qemu-for-american-fuzzy-lop
+  ;; afl only supports using a single afl-qemu-trace executable, so
+  ;; we only build qemu for the native target.
+  (let ((machine (match (or (%current-target-system)
+                            (%current-system))
+                   ("x86_64-linux"   "x86_64")
+                   ("i686-linux"     "i386")
+                   ("aarch64-linux"  "aarch64")
+                   ("armhf-linux"    "arm")
+                   ("mips64el-linux" "mips64el")
+                   ;; Prevent errors when querying this package on unsupported
+                   ;; platforms, e.g. when running "guix package --search="
+                   (_                "UNSUPPORTED"))))
+  (hidden-package
+   (package
+    (name "qemu")
+    (version "2.10.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qemu.org/qemu-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "17w21spvaxaidi2am5lpsln8yjpyp2zi3s3gc6nsxj5arlgamzgw"))
+             (patches
+              (search-patches "qemu-glibc-2.27.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Running tests in parallel can occasionally lead to failures, like:
+       ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
+       #:parallel-tests? #f
+       #:configure-flags
+       (list (string-append "--target-list=" ,machine "-linux-user"))
+       #:make-flags '("V=1")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs (configure-flags '())
+                           #:allow-other-keys)
+             ;; The `configure' script doesn't understand some of the
+             ;; GNU options.  Thus, add a new phase that's compatible.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "SHELL" (which "bash"))
+
+               ;; While we're at it, patch for tests.
+               (substitute* "tests/libqtest.c"
+                 (("/bin/sh") (which "sh")))
+
+               ;; The binaries need to be linked against -lrt.
+               (setenv "LDFLAGS" "-lrt")
+               (apply invoke
+                      `("./configure"
+                        ,(string-append "--cc=" (which "gcc"))
+                        ;; Some architectures insist on using HOST_CC
+                        ,(string-append "--host-cc=" (which "gcc"))
+                        "--disable-debug-info" ; save build space
+                        "--enable-virtfs"      ; just to be sure
+                        ,(string-append "--prefix=" out)
+                        ,(string-append "--sysconfdir=/etc")
+                        ,@configure-flags)))))
+         (add-after
+          'unpack 'apply-afl-patches
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let* ((afl-src (assoc-ref inputs "afl-source"))
+                   (patch-dir "qemu_mode/patches"))
+              (copy-recursively (string-append afl-src "/"
+                                               patch-dir)
+                                patch-dir)
+              (install-file
+               (string-append patch-dir
+                              "/afl-qemu-cpu-inl.h")
+               ".")
+              (copy-file (string-append afl-src "/config.h")
+                         "./afl-config.h")
+              (install-file (string-append afl-src "/types.h")
+                            ".")
+              (substitute* "afl-qemu-cpu-inl.h"
+                (("\\.\\./\\.\\./config.h") "afl-config.h"))
+              (substitute* (string-append patch-dir
+                                          "/cpu-exec.diff")
+                (("\\.\\./patches/") ""))
+
+              ;; These were already applied to qemu-minimal-2.10.
+              (for-each (lambda (obsolete-patch)
+                          (delete-file (string-append
+                                        patch-dir "/"
+                                        obsolete-patch)))
+                        (list "configure.diff"
+                              "memfd.diff"))
+
+              (for-each (lambda (patch-file)
+                          (invoke "patch" "--force" "-p1"
+                                  "--input" patch-file))
+                        (find-files patch-dir
+                                    "\\.diff$"))
+              #t)))
+         (add-before 'check 'disable-unusable-tests
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "tests/Makefile.include"
+               ;; Comment out the test-qga test, which needs /sys and
+               ;; fails within the build environment.
+               (("check-unit-.* tests/test-qga" all)
+                (string-append "# " all)))
+             (substitute* "tests/Makefile.include"
+               ;; Comment out the test-char test, which needs networking and
+               ;; fails within the build environment.
+               (("check-unit-.* tests/test-char" all)
+                (string-append "# " all)))
+             #t)))))
+    (native-inputs
+     `(("python-2" ,python-2) ; QEMU 2 needs Python 2
+       ("glib:bin" ,glib "bin")
+       ("perl" ,perl)
+       ("flex" ,flex)
+       ("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("afl-source" ,(package-source american-fuzzy-lop))
+       ("alsa-lib" ,alsa-lib)
+       ("attr" ,attr)
+       ("glib" ,glib)
+       ("libaio" ,libaio)
+       ("libattr" ,attr)
+       ("libcap" ,libcap)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("ncurses" ,ncurses)
+       ("pixman" ,pixman)
+       ("util-linux" ,util-linux)
+       ("zlib" ,zlib)))
+    (home-page "https://www.qemu.org")
+    (synopsis "Machine emulator and virtualizer (without GUI) for american fuzzy lop")
+    (description
+     "QEMU is a generic machine emulator and virtualizer.  This package
+of QEMU is used only by the american fuzzy lop package.
+
+When used as a machine emulator, QEMU can run OSes and programs made for one
+machine (e.g. an ARM board) on a different machine---e.g., your own PC.  By
+using dynamic translation, it achieves very good performance.
+
+When used as a virtualizer, QEMU achieves near native performances by
+executing the guest code directly on the host CPU.  QEMU supports
+virtualization when executing under the Xen hypervisor or using
+the KVM kernel module in Linux.  When using KVM, QEMU can virtualize x86,
+server and embedded PowerPC, and S390 guests.")
+    ;; Many files are GPLv2+, but some are GPLv2-only---e.g., `memory.c'.
+    (license license:gpl2)
+    ;; Several tests fail on MIPS.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))))
 
 (define-public stress-make
   (let ((commit "9e92dff8f0157f012aaf31de5b8b8112ad720100")
