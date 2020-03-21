@@ -34,7 +34,6 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
-
 (define-public rsync
   (package
    (name "rsync")
@@ -47,10 +46,17 @@
              (base32
               "1h0011dj6jgqpgribir4anljjv7bbrdcs8g91pbsmzf5zr75bk2m"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags
+      ;; The bundled copies are preferred by default.
+      (list "--without-included-zlib"
+            "--without-included-popt")))
    (native-inputs
     `(("perl" ,perl)))
    (inputs
-    `(("acl" ,acl)))
+    `(("acl" ,acl)
+      ("popt" ,popt)
+      ("zlib" ,zlib)))
    (synopsis "Remote (and local) file copying tool")
    (description
     "Rsync is a fast and versatile file copying tool.  It can copy locally,
