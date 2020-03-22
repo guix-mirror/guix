@@ -336,13 +336,11 @@ languages.")
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments emacs)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'install-site-start)))
        ((#:configure-flags flags ''())
         `(list "--with-gnutls=no" "--disable-build-details"))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("guix-emacs.el" ,(search-auxiliary-file "emacs/guix-emacs.el"))
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))))
 
