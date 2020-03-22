@@ -363,12 +363,12 @@ object."
                 (let ((field (assoc field inits)))
                   (match field
                     ((_ value)
-                     (let ((props (source-properties value)))
-                       (and props
+                     (let ((loc (and=> (source-properties value)
+                                       source-properties->location)))
+                       (and loc
                             ;; Preserve the original file name, which may be a
                             ;; relative file name.
-                            (let ((loc (source-properties->location props)))
-                              (set-field loc (location-file) file)))))
+                            (set-field loc (location-file) file))))
                     (_
                      #f))))
                (_
