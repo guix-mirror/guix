@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
@@ -369,7 +369,7 @@ conditions.")
     (description "Zzuf is a transparent application input fuzzer.  It works by
 intercepting file operations and changing random bits in the program's
 input.  Zzuf's behaviour is deterministic, making it easy to reproduce bugs.")
-    (license (non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+    (license wtfpl2)))
 
 (define-public scanmem
   (package
