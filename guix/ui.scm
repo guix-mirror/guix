@@ -913,8 +913,10 @@ that the rest."
 derivations listed in DRV using MODE, a 'build-mode' value.  The elements of
 DRV can be either derivations or derivation inputs.
 
-Return #t if there's something to build, #f otherwise.  When USE-SUBSTITUTES?,
-check and report what is prerequisites are available for download."
+Return two values: a Boolean indicating whether there's something to build,
+and a Boolean indicating whether there's something to download.  When
+USE-SUBSTITUTES?, check and report what is prerequisites are available for
+download."
   (define inputs
     (map (match-lambda
            ((? derivation? drv) (derivation-input drv))
@@ -1041,7 +1043,7 @@ check and report what is prerequisites are available for download."
 
     (check-available-space installed-size)
 
-    (pair? build/full)))
+    (values (pair? build/full) (pair? download))))
 
 (define show-what-to-build*
   (store-lift show-what-to-build))
