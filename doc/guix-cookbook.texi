@@ -11,6 +11,7 @@
 Copyright @copyright{} 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2019 Efraim Flashner@*
 Copyright @copyright{} 2019 Pierre Neidhardt@*
+Copyright @copyright{} 2020 Oleg Pykhalov@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1319,7 +1320,8 @@ chapter is to demonstrate some advanced configuration concepts.
 reference.
 
 @menu
-* Customizing the Kernel::     Creating and using a custom Linux kernel on Guix System.
+* Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
+* Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
 @end menu
 
 @node Customizing the Kernel
@@ -1561,6 +1563,56 @@ Left undiscussed however, is Guix's initrd and its customization.  It is
 likely that you'll need to modify the initrd on a machine using a custom
 kernel, since certain modules which are expected to be built may not be
 available for inclusion into the initrd.
+
+@node Customizing a Window Manager
+@section Customizing a Window Manager
+@cindex wm
+
+@node StumpWM
+@subsection StumpWM
+@cindex stumpwm
+
+You could install StumpWM with a Guix system by adding
+@code{stumpwm-checkout} and optionally @code{`(,stumpwm-checkout "lib")}
+packages to a system configuration file, e.g. @file{/etc/config.scm}.
+
+An example configuration can look like this:
+
+@lisp
+(use-modules (gnu))
+(use-package-modules wm)
+
+(operating-system
+  ;; …
+  (packages (append (list sbcl stumpwm-checkout `(,stumpwm-checkout "lib"))
+                    %base-packages)))
+@end lisp
+
+@cindex stumpwm fonts
+By default StumpWM uses X11 fonts, which could be small or pixelated on
+your system.  You could fix this by installing StumpWM contrib Lisp
+module @code{sbcl-stumpwm-ttf-fonts}, adding it to Guix system packages:
+
+@lisp
+(use-modules (gnu))
+(use-package-modules fonts wm)
+
+(operating-system
+  ;; …
+  (packages (append (list sbcl stumpwm-checkout `(,stumpwm-checkout "lib"))
+                    sbcl-stumpwm-ttf-fonts font-dejavu %base-packages)))
+@end lisp
+
+Then you need to add the following code to a StumpWM configuration file
+@file{~/.stumpwm.d/init.lisp}:
+
+@lisp
+(require :ttf-fonts)
+(setf xft:*font-dirs* '("/run/current-system/profile/share/fonts/"))
+(setf clx-truetype:+font-cache-filename+ (concat (getenv "HOME") "/.fonts/font-cache.sexp"))
+(xft:cache-fonts)
+(set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
+@end lisp
 
 @c *********************************************************************
 @node Advanced package management

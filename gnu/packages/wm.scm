@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
@@ -1660,6 +1660,37 @@ productive, customizable lisp based systems.")
 
 (define-public sbcl-stumpwm+slynk
   (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
+
+(define-public sbcl-stumpwm-ttf-fonts
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-ttf-fonts")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")
+         ("clx-truetype" ,sbcl-clx-truetype)))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/ttf-fonts"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Implementation of TTF font rendering for Lisp")
+      (description "This package provides a Lisp implementation of TTF font
+rendering.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
