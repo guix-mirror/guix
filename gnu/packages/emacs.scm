@@ -131,6 +131,16 @@
                                "--disable-build-details")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-program-file-names
+           (lambda _
+             (substitute* '("src/callproc.c"
+                            "lisp/term.el"
+                            "lisp/htmlfontify.el"
+                            "lisp/textmodes/artist.el"
+                            "lisp/progmodes/sh-script.el")
+               (("\"/bin/sh\"")
+                (format "~s" (which "sh"))))
+             #t))
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
              ;; Use `pwd', not `/bin/pwd'.
