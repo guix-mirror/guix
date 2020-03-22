@@ -1078,12 +1078,15 @@ any build happening."
                      #f))
                   things))
 
-    (show-what-to-build store inputs
-                        #:dry-run? dry-run?
-                        #:use-substitutes? use-substitutes?
-                        #:mode mode)
-    (unless dry-run?
-      (continue #t))))
+    (let-values (((build? download?)
+                  (show-what-to-build store inputs
+                                      #:dry-run? dry-run?
+                                      #:use-substitutes? use-substitutes?
+                                      #:mode mode)))
+
+      (unless (and (or build? download?)
+                   dry-run?)
+        (continue #t)))))
 
 (define (right-arrow port)
   "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
