@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -143,7 +143,18 @@
            ;; Elisp packages found in EMACSLOADPATH.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out      (assoc-ref outputs "out"))
-                    (lisp-dir (string-append out "/share/emacs/site-lisp")))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp"))
+                    (emacs (string-append out "/bin/emacs")))
+
+               ;; This is duplicated from emacs-utils to prevent coupling.
+               (define* (emacs-byte-compile-directory dir)
+                 (let ((expr `(progn
+                               (setq byte-compile-debug t)
+                               (byte-recompile-directory
+                                (file-name-as-directory ,dir) 0 1))))
+                   (invoke emacs "--quick" "--batch"
+                           (format "--eval=~s" expr))))
+
                (copy-file (assoc-ref inputs "guix-emacs.el")
                           (string-append lisp-dir "/guix-emacs.el"))
                (with-output-to-file (string-append lisp-dir "/site-start.el")
@@ -156,7 +167,8 @@
                ;; share/emacs/site-lisp union when added to EMACSLOADPATH,
                ;; which leads to conflicts.
                (delete-file (string-append lisp-dir "/subdirs.el"))
-               #t))))))
+               ;; Byte compile the site-start files.
+               (emacs-byte-compile-directory lisp-dir)))))))
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
