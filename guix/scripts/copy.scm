@@ -68,12 +68,7 @@ package names, build the underlying packages before sending them."
                 (ssh-spec->user+host+port target))
                ((drv items)
                 (options->derivations+files local opts)))
-    (show-what-to-build local drv
-                        #:use-substitutes? (assoc-ref opts 'substitutes?)
-                        #:dry-run? (assoc-ref opts 'dry-run?))
-
-    (and (or (assoc-ref opts 'dry-run?)
-             (build-derivations local drv))
+    (and (build-derivations local drv)
          (let* ((session (open-ssh-session host #:user user
                                            #:port (or port 22)))
                 (sent    (send-files local items
@@ -178,7 +173,11 @@ Copy ITEMS to or from the specified host over SSH.\n"))
            (target   (assoc-ref opts 'destination)))
       (with-store store
         (set-build-options-from-command-line store opts)
-        (with-status-verbosity (assoc-ref opts 'verbosity)
-          (cond (target (send-to-remote-host store target opts))
-                (source (retrieve-from-remote-host store source opts))
-                (else   (leave (G_ "use '--to' or '--from'~%")))))))))
+        (with-build-handler (build-notifier #:use-substitutes?
+                                            (assoc-ref opts 'substitutes?)
+                                            #:dry-run?
+                                            (assoc-ref opts 'dry-run?))
+          (with-status-verbosity (assoc-ref opts 'verbosity)
+            (cond (target (send-to-remote-host store target opts))
+                  (source (retrieve-from-remote-host store source opts))
+                  (else   (leave (G_ "use '--to' or '--from'~%"))))))))))
