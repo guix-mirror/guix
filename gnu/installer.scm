@@ -61,6 +61,14 @@
     (('guix 'build _ ...) #t)
     (_ #f)))
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix _ ...) #t)
+    (('gnu _ ...) #t)
+    (_ #f)))
+
 (define* (build-compiled-file name locale-builder)
   "Return a file-like object that evalutes the gexp LOCALE-BUILDER and store
 its result in the scheme file NAME. The derivation will also build a compiled
@@ -75,8 +83,10 @@ version of this file."
 
   (define builder
     (with-extensions (list guile-json-3)
-      (with-imported-modules (source-module-closure
-                              '((gnu installer locale)))
+      (with-imported-modules `(,@(source-module-closure
+                                  '((gnu installer locale))
+                                  #:select? not-config?)
+                               ((guix config) => ,(make-config.scm)))
         #~(begin
             (use-modules (gnu installer locale))
 
