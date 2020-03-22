@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -946,67 +947,71 @@ build (current-guix) and then store a couple of full system images.")
         (marionette-control (string-append "screendump " file)
                             #$marionette))
 
+      (define-syntax-rule (marionette-eval* exp marionette)
+        (or (marionette-eval exp marionette)
+            (throw 'marionette-eval-failure 'exp)))
+
       (setvbuf (current-output-port) 'none)
       (setvbuf (current-error-port) 'none)
 
-      (marionette-eval '(use-modules (gnu installer tests))
-                       #$marionette)
+      (marionette-eval* '(use-modules (gnu installer tests))
+                        #$marionette)
 
       ;; Arrange so that 'converse' prints debugging output to the console.
-      (marionette-eval '(let ((console (open-output-file "/dev/console")))
-                          (setvbuf console 'none)
-                          (conversation-log-port console))
-                       #$marionette)
+      (marionette-eval* '(let ((console (open-output-file "/dev/console")))
+                           (setvbuf console 'none)
+                           (conversation-log-port console))
+                        #$marionette)
 
       ;; Tell the installer to not wait for the Connman "online" status.
-      (marionette-eval '(call-with-output-file "/tmp/installer-assume-online"
-                          (const #t))
-                       #$marionette)
+      (marionette-eval* '(call-with-output-file "/tmp/installer-assume-online"
+                           (const #t))
+                        #$marionette)
 
       ;; Run 'guix system init' with '--no-grafts', to cope with the lack of
       ;; network access.
-      (marionette-eval '(call-with-output-file
-                            "/tmp/installer-system-init-options"
-                          (lambda (port)
-                            (write '("--no-grafts" "--no-substitutes")
-                                   port)))
-                       #$marionette)
+      (marionette-eval* '(call-with-output-file
+                             "/tmp/installer-system-init-options"
+                           (lambda (port)
+                             (write '("--no-grafts" "--no-substitutes")
+                                    port)))
+                        #$marionette)
 
-      (marionette-eval '(define installer-socket
-                          (open-installer-socket))
-                       #$marionette)
+      (marionette-eval* '(define installer-socket
+                           (open-installer-socket))
+                        #$marionette)
       (screenshot "installer-start.ppm")
 
-      (marionette-eval '(choose-locale+keyboard installer-socket)
-                       #$marionette)
+      (marionette-eval* '(choose-locale+keyboard installer-socket)
+                        #$marionette)
       (screenshot "installer-locale.ppm")
 
       ;; Choose the host name that the "basic" test expects.
-      (marionette-eval '(enter-host-name+passwords installer-socket
-                                                   #:host-name "liberigilo"
-                                                   #:root-password
-                                                   #$%root-password
-                                                   #:users
-                                                   '(("alice" "pass1")
-                                                     ("bob" "pass2")))
-                       #$marionette)
+      (marionette-eval* '(enter-host-name+passwords installer-socket
+                                                    #:host-name "liberigilo"
+                                                    #:root-password
+                                                    #$%root-password
+                                                    #:users
+                                                    '(("alice" "pass1")
+                                                      ("bob" "pass2")))
+                        #$marionette)
       (screenshot "installer-services.ppm")
 
-      (marionette-eval '(choose-services installer-socket
-                                         #:desktop-environments '()
-                                         #:choose-network-service?
-                                         (const #f))
-                       #$marionette)
+      (marionette-eval* '(choose-services installer-socket
+                                          #:desktop-environments '()
+                                          #:choose-network-service?
+                                          (const #f))
+                        #$marionette)
       (screenshot "installer-partitioning.ppm")
 
-      (marionette-eval '(choose-partitioning installer-socket
-                                             #:encrypted? #$encrypted?
-                                             #:passphrase #$%luks-passphrase)
-                       #$marionette)
+      (marionette-eval* '(choose-partitioning installer-socket
+                                              #:encrypted? #$encrypted?
+                                              #:passphrase #$%luks-passphrase)
+                        #$marionette)
       (screenshot "installer-run.ppm")
 
-      (marionette-eval '(conclude-installation installer-socket)
-                       #$marionette)
+      (marionette-eval* '(conclude-installation installer-socket)
+                        #$marionette)
 
       (sync)
       #t))
