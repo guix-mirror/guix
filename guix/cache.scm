@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,13 +32,6 @@
 ;;; individual files.
 ;;;
 ;;; Code:
-
-(cond-expand
-  (guile-2.2
-   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
-   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
-   (define time-monotonic time-tai))
-  (else #t))
 
 (define (obsolete? date now ttl)
   "Return #t if DATE is obsolete compared to NOW + TTL seconds."
