@@ -75,7 +75,8 @@ as \"x86_64-linux\"."
              ("powerpc"     => "PowerPC")
              ("riscv"       => "RISCV")
              ("x86_64"      => "X86")
-             ("i686"        => "X86"))))
+             ("i686"        => "X86")
+             ("i586"        => "X86"))))
 
 (define (llvm-download-uri component version)
   (if (version>=? version "9.0.1")
