@@ -76,54 +76,54 @@
     (name "emacs")
     (version "26.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/emacs/emacs-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "119ldpk7sgn9jlpyngv5y4z3i7bb8q3xp4p0qqi7i5nq39syd42d"))
-             (patches (search-patches "emacs-exec-path.patch"
-                                      "emacs-fix-scheme-indent-function.patch"
-                                      "emacs-source-date-epoch.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              '(with-directory-excursion "lisp"
-                 ;; Delete the bundled byte-compiled elisp files and generated
-                 ;; autoloads.
-                 (for-each delete-file
-                           (append (find-files "." "\\.elc$")
-                                   (find-files "." "loaddefs\\.el$")
-                                   ;; This is the only "autoloads" file that
-                                   ;; does not have "*loaddefs.el" name.
-                                   ;; TODO: Next time changing this package,
-                                   ;; replace the following with a call to
-                                   ;; `find-files', so that `delete-file'
-                                   ;; wouldn't error out when the file is
-                                   ;; missing, making the entire snippet field
-                                   ;; reusable as-is for `emacs-next' below.
-                                   '("eshell/esh-groups.el")))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/emacs/emacs-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "119ldpk7sgn9jlpyngv5y4z3i7bb8q3xp4p0qqi7i5nq39syd42d"))
+              (patches (search-patches "emacs-exec-path.patch"
+                                       "emacs-fix-scheme-indent-function.patch"
+                                       "emacs-source-date-epoch.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(with-directory-excursion "lisp"
+                  ;; Delete the bundled byte-compiled elisp files and generated
+                  ;; autoloads.
+                  (for-each delete-file
+                            (append (find-files "." "\\.elc$")
+                                    (find-files "." "loaddefs\\.el$")
+                                    ;; This is the only "autoloads" file that
+                                    ;; does not have "*loaddefs.el" name.
+                                    ;; TODO: Next time changing this package,
+                                    ;; replace the following with a call to
+                                    ;; `find-files', so that `delete-file'
+                                    ;; wouldn't error out when the file is
+                                    ;; missing, making the entire snippet field
+                                    ;; reusable as-is for `emacs-next' below.
+                                    '("eshell/esh-groups.el")))
 
-                 ;; Make sure Tramp looks for binaries in the right places on
-                 ;; remote Guix System machines, where 'getconf PATH' returns
-                 ;; something bogus.
-                 (substitute* "net/tramp-sh.el"
-                   ;; Patch the line after "(defcustom tramp-remote-path".
-                   (("\\(tramp-default-remote-path")
-                    (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
-                            "~/.guix-profile/bin" "~/.guix-profile/sbin"
-                            "/run/current-system/profile/bin"
-                            "/run/current-system/profile/sbin")))
+                  ;; Make sure Tramp looks for binaries in the right places on
+                  ;; remote Guix System machines, where 'getconf PATH' returns
+                  ;; something bogus.
+                  (substitute* "net/tramp-sh.el"
+                    ;; Patch the line after "(defcustom tramp-remote-path".
+                    (("\\(tramp-default-remote-path")
+                     (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
+                             "~/.guix-profile/bin" "~/.guix-profile/sbin"
+                             "/run/current-system/profile/bin"
+                             "/run/current-system/profile/sbin")))
 
-                 ;; Make sure Man looks for C header files in the right
-                 ;; places.
-                 (substitute* "man.el"
-                   (("\"/usr/local/include\"" line)
-                    (string-join
-                     (list line
-                           "\"~/.guix-profile/include\""
-                           "\"/var/guix/profiles/system/profile/include\"")
-                     " ")))
-                 #t))))
+                  ;; Make sure Man looks for C header files in the right
+                  ;; places.
+                  (substitute* "man.el"
+                    (("\"/usr/local/include\"" line)
+                     (string-join
+                      (list line
+                            "\"~/.guix-profile/include\""
+                            "\"/var/guix/profiles/system/profile/include\"")
+                      " ")))
+                  #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
