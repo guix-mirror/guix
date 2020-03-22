@@ -6690,7 +6690,7 @@ indentation guides in Emacs:
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.31.0")
+    (version "1.32.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6699,20 +6699,20 @@ indentation guides in Emacs:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bvmgqs3c80bhs9v5ymgadv7vk4iamha10y7rl09pixmjm4mzagk"))))
+                "0f00mdnzx6xqwni86rgvaa6sfkwyh62xfbwz8qsar15j0j6vc2dj"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
        #:phases
-       ;; TODO: Make `elpy-config' display Guix commands :)
        (modify-phases %standard-phases
-         ;; One elpy test depends on being run inside a Python virtual
-         ;; environment to pass. We have nothing to gain from doing so here,
-         ;; so we just trick Elpy into thinking we are (see:
-         ;; https://github.com/jorgenschaefer/elpy/pull/1293).
-         (add-before 'check 'fake-virtualenv
+         ;; The default environment of the RPC uses Virtualenv to install
+         ;; Python dependencies from PyPI.  We don't want/need this in Guix.
+         (add-before 'check 'do-not-use-virtualenv
            (lambda _
-             (setenv "VIRTUAL_ENV" "/tmp")
+             (setenv "ELPY_TEST_DONT_USE_VIRTUALENV" "1")
+             (substitute* "elpy-rpc.el"
+               (("defcustom elpy-rpc-virtualenv-path 'default")
+                "defcustom elpy-rpc-virtualenv-path 'system"))
              #t))
          (add-before 'check 'build-doc
            (lambda _
@@ -6738,16 +6738,20 @@ indentation guides in Emacs:
        ("emacs-highlight-indentation" ,emacs-highlight-indentation)
        ("emacs-yasnippet" ,emacs-yasnippet)
        ("pyvenv" ,emacs-pyvenv)
-       ("s" ,emacs-s)))
-    (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)
-       ("emacs-f" ,emacs-f)
-       ("python" ,python-wrapper)
+       ("s" ,emacs-s)
+       ;; The following are recommended Python dependencies that make Elpy
+       ;; much more useful.  Installing these avoids Elpy prompting to install them
+       ;; from PyPI using pip.
        ("python-autopep8" ,python-autopep8)
        ("python-black" ,python-black)
        ("python-flake8" ,python-flake8)
        ("python-jedi" ,python-jedi)
-       ("python-yapf" ,python-yapf)
+       ("python-rope" ,python-rope)
+       ("python-yapf" ,python-yapf)))
+    (native-inputs
+     `(("ert-runner" ,emacs-ert-runner)
+       ("emacs-f" ,emacs-f)
+       ("python" ,python-wrapper)
        ;; For documentation.
        ("python-sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
