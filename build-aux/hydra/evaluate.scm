@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -24,6 +24,7 @@
 (use-modules (guix store)
              (guix git-download)
              ((guix build utils) #:select (with-directory-excursion))
+             ((guix ui) #:select (build-notifier))
              (srfi srfi-19)
              (ice-9 match)
              (ice-9 pretty-print)
@@ -89,49 +90,42 @@ Otherwise return THING."
                           #:use-substitutes? #f
                           #:substitute-urls '())
 
-       ;; Grafts can trigger early builds.  We do not want that to happen
-       ;; during evaluation, so use a sledgehammer to catch such problems.
-       ;; An exception, though, is the evaluation of Guix itself, which
-       ;; requires building a "trampoline" program.
-       (set! build-things
-         (lambda (store . args)
-           (format (current-error-port)
-                   "warning: building things during evaluation~%")
-           (format (current-error-port)
-                   "'build-things' arguments: ~s~%" args)
-           (apply real-build-things store args)))
+       ;; The evaluation of Guix itself requires building a "trampoline"
+       ;; program, and possibly everything it depends on.  Thus, allow builds
+       ;; but print a notification.
+       (with-build-handler (build-notifier #:use-substitutes? #f)
 
-       ;; Add %TOP-SRCDIR to the store with a proper Git predicate so we work
-       ;; from a clean checkout
-       (let ((source (add-to-store store "guix-source" #t
-                                   "sha256" %top-srcdir
-                                   #:select? (git-predicate %top-srcdir))))
-         (with-directory-excursion source
-           (save-module-excursion
-            (lambda ()
-              (set-current-module %user-module)
-              (format (current-error-port)
-                      "loading '~a' relative to '~a'...~%"
-                      file source)
-              (primitive-load file))))
+         ;; Add %TOP-SRCDIR to the store with a proper Git predicate so we work
+         ;; from a clean checkout
+         (let ((source (add-to-store store "guix-source" #t
+                                     "sha256" %top-srcdir
+                                     #:select? (git-predicate %top-srcdir))))
+           (with-directory-excursion source
+             (save-module-excursion
+              (lambda ()
+                (set-current-module %user-module)
+                (format (current-error-port)
+                        "loading '~a' relative to '~a'...~%"
+                        file source)
+                (primitive-load file))))
 
-         ;; Call the entry point of FILE and print the resulting job sexp.
-         (pretty-print
-          (match ((module-ref %user-module
-                              (if (equal? cuirass? "cuirass")
-                                  'cuirass-jobs
-                                  'hydra-jobs))
-                  store `((guix
-                           . ((file-name . ,source)))))
-            (((names . thunks) ...)
-             (map (lambda (job thunk)
-                    (format (current-error-port) "evaluating '~a'... " job)
-                    (force-output (current-error-port))
-                    (cons job
-                          (assert-valid-job job
-                                            (call-with-time-display thunk))))
-                  names thunks)))
-          port)))))
+           ;; Call the entry point of FILE and print the resulting job sexp.
+           (pretty-print
+            (match ((module-ref %user-module
+                                (if (equal? cuirass? "cuirass")
+                                    'cuirass-jobs
+                                    'hydra-jobs))
+                    store `((guix
+                             . ((file-name . ,source)))))
+              (((names . thunks) ...)
+               (map (lambda (job thunk)
+                      (format (current-error-port) "evaluating '~a'... " job)
+                      (force-output (current-error-port))
+                      (cons job
+                            (assert-valid-job job
+                                              (call-with-time-display thunk))))
+                    names thunks)))
+            port))))))
   ((command _ ...)
    (format (current-error-port) "Usage: ~a FILE [cuirass]
 Evaluate the Hydra or Cuirass jobs defined in FILE.~%"
