@@ -70,11 +70,13 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages java)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -85,6 +87,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
@@ -1751,3 +1754,46 @@ analysis, image processing, graphics and maps production, spatial modeling, and
 visualization.")
       (home-page "https://grass.osgeo.org/")
       (license license:gpl2+))))
+
+(define-public saga
+  (package
+    (name "saga")
+    (version "7.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/saga-gis/SAGA%20-%20"
+                           (version-major version) "/SAGA%20-%20" version
+                           "/saga-" version ".tar.gz"))
+       (sha256
+        (base32 "09j5magmayq2y620kqa490mfd1kpdp3lng2ifcgbrmssc079ybm0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("curl" ,curl)
+       ("fftw" ,fftw)
+       ("gdal" ,gdal)
+       ("hdf5" ,hdf5)
+       ("jasper" ,jasper)
+       ("libharu" ,libharu)
+       ("libtiff" ,libtiff)
+       ("opencv" ,opencv)
+       ("postgresql" ,postgresql)
+       ("proj.4" ,proj.4)
+       ("python" ,python)
+       ("qhull" ,qhull)
+       ("unixodbc" ,unixodbc)
+       ("vigra" ,vigra)
+       ("wxwidgets" ,wxwidgets)))
+    (arguments
+     '(#:configure-flags '("--enable-python")))
+    (synopsis "System for Automated Geoscientific Analyses")
+    (description
+     "SAGA (System for Automated Geoscientific Analyses) is a Geographic
+Information System (GIS) software.  It has been designed for an easy and
+effective implementation of spatial algorithms and it offers a comprehensive,
+growing set of geoscientific methods.")
+    (home-page "http://www.saga-gis.org")
+    (license (list license:gpl2+ license:lgpl2.1+))))
