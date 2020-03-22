@@ -30,7 +30,7 @@
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
-;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2019, 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
@@ -338,7 +338,7 @@ many programming languages.")
 (define-public i3-gaps
   (package (inherit i3-wm)
            (name "i3-gaps")
-           (version "4.17.1")
+           (version "4.18")
            (source (origin
                      (method url-fetch)
                      (uri (string-append
@@ -346,7 +346,7 @@ many programming languages.")
                            version "/i3-" version ".tar.bz2"))
                      (sha256
                       (base32
-                       "0gqcr6s53dk3f2y9h6cna00rnwnh4yymk96li7lbym3d84cxjzrs"))))
+                       "0id4qm9a7kc5yawff85blmph4zbizhb6ka88aqm10wrpfsknri3j"))))
            (home-page "https://github.com/Airblader/i3")
            (synopsis "Tiling window manager with gaps")
            (description "i3-gaps is a fork of i3wm, a tiling window manager
