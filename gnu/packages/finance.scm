@@ -451,9 +451,8 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 
 (define-public electron-cash
   (package
-    (inherit electrum)
     (name "electron-cash")
-    (version "4.0.12")
+    (version "4.0.13")
     (source
      (origin
        (method git-fetch)
@@ -462,22 +461,52 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0gidrx8499v7rig7ljhd70wssshs1qm0gp1553g70i323hcbf62x"))))
+        (base32 "1x9as1dn9n93vgyrixwvp9bh0aarr9vsfz5hdmw16j3wj3wj621f"))))
+    (build-system python-build-system)
     (inputs
-     `(,@(package-inputs electrum)
+     `(("libevent" ,libevent)
        ("libsecp256k1", libsecp256k1)
+       ("openssl" ,openssl)
+       ("python-cython" ,python-cython)
        ("python-dateutil", python-dateutil)
-       ("python-dnspython", python-dnspython)))
+       ("python-dnspython" ,python-dnspython)
+       ("python-ecdsa" ,python-ecdsa)
+       ("python-hidapi" ,python-hidapi)
+       ("python-jsonrpclib-pelix" ,python-jsonrpclib-pelix)
+       ("python-keepkey" ,python-keepkey)
+       ("python-protobuf" ,python-protobuf)
+       ("python-pyaes" ,python-pyaes)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pysocks" ,python-pysocks)
+       ("python-qrcode" ,python-qrcode)
+       ("python-requests" ,python-requests)
+       ("python-stem" ,python-stem)
+       ("python-trezor" ,python-trezor)
+       ("qtsvg" ,qtsvg)
+       ("zlib" ,zlib)))
     (arguments
-     (substitute-keyword-arguments (package-arguments electrum)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'use-libsecp256k1-input
-             (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "lib/secp256k1.py"
-                 (("library_paths = .* 'libsecp256k1.so.0'.")
-                  (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))))))
+     `(#:tests? #f ; No tests
+       #:modules ((guix build python-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%python-build-system-modules
+                           (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-home
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("~/.local/share")
+                (string-append (assoc-ref outputs "out") "/local/share")))))
+         (add-after 'unpack 'use-libsecp256k1-input
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/secp256k1.py"
+               (("library_paths = .* 'libsecp256k1.so.0'.")
+                (string-append "library_paths = ('" (assoc-ref inputs "libsecp256k1") "/lib/libsecp256k1.so.0'")))))
+         (add-after 'install 'wrap-qt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "electron-cash")
+             #t)))))
     (home-page "https://electroncash.org/")
     (synopsis "Bitcoin Cash wallet")
     (description
