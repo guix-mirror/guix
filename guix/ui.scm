@@ -934,7 +934,7 @@ check and report what is prerequisites are available for download."
         colorize-store-file-name
         identity))
 
-  (let*-values (((build download)
+  (let*-values (((build/full download)
                  (derivation-build-plan store inputs
                                         #:mode mode
                                         #:substitutable-info
@@ -958,7 +958,7 @@ check and report what is prerequisites are available for download."
                                          #:hook ,hook
                                          #:build ,(cons file build))))))))
                               '(#:graft () #:hook () #:build ())
-                              build)
+                              build/full)
                    ((#:graft graft #:hook hook #:build build)
                     (values graft hook build)))))
     (define installed-size
@@ -1041,7 +1041,7 @@ check and report what is prerequisites are available for download."
 
     (check-available-space installed-size)
 
-    (pair? build)))
+    (pair? build/full)))
 
 (define show-what-to-build*
   (store-lift show-what-to-build))
