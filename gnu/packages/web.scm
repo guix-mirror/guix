@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6109,14 +6110,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.46")
+    (version "8.5.53")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0fb49gsqa3r6jrwc54yynvsakq9qbzr2pbxr7a29c2zvja2v65iq"))
+                "15lwq3clf21hzk7mma70sffpxjqn8ww5mjq6zhmwcp4m17m22z26"))
               (modules '((guix build utils)))
               ;; Delete bundled jars.
               (snippet
@@ -6194,6 +6195,7 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
              (let ((out (assoc-ref outputs "out")))
                (copy-recursively "output/build" out))
              #t)))))
+    (properties '((cpe-name . "tomcat")))
     (home-page "https://tomcat.apache.org")
     (synopsis "Java Servlet, JavaServer Pages, Java Expression Language and Java
 WebSocket")
