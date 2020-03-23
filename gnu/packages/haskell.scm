@@ -19,6 +19,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
+;;; Copyright © Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -582,14 +583,20 @@ interactive environment for the functional language Haskell.")
                ,make-flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           ;; These two tests refer to the root user, which doesn't exist
-           ;; (see <https://bugs.gnu.org/36692>).
            (add-after 'unpack-testsuite 'skip-tests
              (lambda _
+               ;; These two tests refer to the root user, which doesn't exist
+               ;; (see <https://bugs.gnu.org/36692>).
                (substitute* "libraries/unix/tests/all.T"
                  (("^test\\('T8108'") "# guix skipped: test('T8108'"))
                (substitute* "libraries/unix/tests/libposix/all.T"
                  (("^test\\('posix010'") "# guix skipped: test('posix010'"))
+               ;; This test attempts to dlopen() a position-independent
+               ;; executable(!), which is disallowed since glibc 2.30.  See
+               ;; https://sourceware.org/bugzilla/show_bug.cgi?id=24323
+               (substitute* "testsuite/tests/dynlibs/Makefile"
+                 (("\\./T13702a")
+                  "# ./T13702a"))
                #t))))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
