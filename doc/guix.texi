@@ -27028,7 +27028,7 @@ be accomplished with the following operating system configuration snippet:
      (plain-file "sudoers"
                  (string-append (plain-file-content %sudoers-specification)
                                 (format #f "~a ALL = NOPASSWD: ALL~%"
-                                        %username)))))
+                                        %user)))))
 
 @end lisp
 
