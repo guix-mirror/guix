@@ -109,6 +109,7 @@
             operating-system-skeletons
             operating-system-sudoers-file
             operating-system-swap-devices
+            operating-system-kernel-loadable-modules
 
             operating-system-derivation
             operating-system-profile
