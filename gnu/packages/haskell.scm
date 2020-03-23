@@ -422,14 +422,14 @@ interactive environment for the functional language Haskell.")
 (define-public ghc-8.4
   (package (inherit ghc-8.0)
     (name "ghc")
-    (version "8.4.3")
+    (version "8.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.haskell.org/ghc/dist/"
                            version "/" name "-" version "-src.tar.xz"))
        (sha256
-        (base32 "1mk046vb561j75saz05rghhbkps46ym5aci4264dwc2qk3dayixf"))))
+        (base32 "1ch4j2asg7pr52ai1hwzykxyj553wndg7wq93i47ql4fllspf48i"))))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
@@ -448,7 +448,7 @@ interactive environment for the functional language Haskell.")
                  version "/" name "-" version "-testsuite.tar.xz"))
            (sha256
             (base32
-             "1z55b1z0m3plqd2d1ks6w5wvx7igm7zsk3i4v7cms003z0as0hzz"))))))
+             "0s8lf9sxj7n89pjagi58b3fahnp34qvmwhnn0j1fbg6955vbrfj6"))))))
     (arguments
      `(#:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
