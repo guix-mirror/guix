@@ -1673,6 +1673,15 @@ To load this plugin, specify the following option when starting mpv:
                           (("'share/")
                            (string-append "'" prefix "/share/")))
                         #t)))
+                  (add-after 'install 'install-completion
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (zsh (string-append out
+                                                 "/share/zsh/site-functions")))
+                        (mkdir-p zsh)
+                        (copy-file "youtube-dl.zsh"
+                                   (string-append zsh "/_youtube-dl"))
+                        #t)))
                   (add-after 'install 'wrap-executable
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let ((out (assoc-ref outputs "out"))
