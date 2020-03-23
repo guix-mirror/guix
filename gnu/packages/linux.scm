@@ -835,15 +835,15 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Specialized kernel variants.
 ;;;
 
-(define-public linux-libre-arm-veyron
-  (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
-
 (define-public linux-libre-arm-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
                      #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-veyron
+  (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre* linux-libre-4.19-version
