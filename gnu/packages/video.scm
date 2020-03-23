@@ -1681,17 +1681,7 @@ To load this plugin, specify the following option when starting mpv:
                         (mkdir-p zsh)
                         (copy-file "youtube-dl.zsh"
                                    (string-append zsh "/_youtube-dl"))
-                        #t)))
-                  (add-after 'install 'wrap-executable
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out"))
-                            (ffmpeg (assoc-ref inputs "ffmpeg")))
-                        (wrap-program (string-append out "/bin/youtube-dl")
-                          `("PATH" ":" prefix
-                            ,(list (string-append ffmpeg "/bin")))))
-                      #t)))))
-    (inputs
-     `(("ffmpeg" ,ffmpeg)))
+                        #t))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
