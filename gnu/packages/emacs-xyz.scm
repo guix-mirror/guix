@@ -9969,57 +9969,54 @@ Emacs.")
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public emacs-ert-runner
-  (let ((version "0.7.0")
-        (revision "1")
-        (commit "90b8fdd5970ef76a4649be60003b37f82cdc1a65"))
-    (package
-      (name "emacs-ert-runner")
-      (version (git-version "0.7.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/rejeep/ert-runner.el.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "04nxmyzncacj2wmzd84vv9wkkr2dk9lcb10dvygqmg3p1gadnwzz"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("emacs-ansi" ,emacs-ansi)
-         ("emacs-commander" ,emacs-commander)
-         ("emacs-dash" ,emacs-dash)
-         ("emacs-f" ,emacs-f)
-         ("emacs-s" ,emacs-s)
-         ("emacs-shut-up" ,emacs-shut-up)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-executable
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (source-directory (string-append
-                                  (getenv "TMPDIR") "/source")))
-                 (substitute* "bin/ert-runner"
-                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
-                    (string-append "ERT_RUNNER=\"" out
-                                   "/share/emacs/site-lisp")))
-                 (install-file "bin/ert-runner" (string-append out "/bin"))
-                 (wrap-program (string-append out "/bin/ert-runner")
-                   (list "EMACSLOADPATH" ":" 'prefix
-                         ;; Do not capture the transient source directory in
-                         ;; the wrapper.
-                         (delete source-directory
-                                 (string-split (getenv "EMACSLOADPATH") #\:))))
-                 #t))))
-         #:include (cons* "^reporters/.*\\.el$" %default-include)))
-      (home-page "https://github.com/rejeep/ert-runner.el")
-      (synopsis "Opinionated Ert testing workflow")
-      (description "@code{ert-runner} is a tool for Emacs projects tested
+  (package
+    (name "emacs-ert-runner")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	     (url "https://github.com/rejeep/ert-runner.el.git")
+	     (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+	(base32
+	 "08gygn9fjank5gpi4v6ynrkn0jbknxbwsn7md4p9ndygdbmnkf98"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-ansi" ,emacs-ansi)
+       ("emacs-commander" ,emacs-commander)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)
+       ("emacs-shut-up" ,emacs-shut-up)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+	 (add-after 'install 'install-executable
+	   (lambda* (#:key inputs outputs #:allow-other-keys)
+	     (let ((out (assoc-ref outputs "out"))
+		   (source-directory (string-append
+				      (getenv "TMPDIR") "/source")))
+	       (substitute* "bin/ert-runner"
+		 (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+		  (string-append "ERT_RUNNER=\"" out
+				 "/share/emacs/site-lisp")))
+	       (install-file "bin/ert-runner" (string-append out "/bin"))
+	       (wrap-program (string-append out "/bin/ert-runner")
+		 (list "EMACSLOADPATH" ":" 'prefix
+		       ;; Do not capture the transient source directory in
+		       ;; the wrapper.
+		       (delete source-directory
+			       (string-split (getenv "EMACSLOADPATH") #\:))))
+	       #t))))
+       #:include (cons* "^reporters/.*\\.el$" %default-include)))
+    (home-page "https://github.com/rejeep/ert-runner.el")
+    (synopsis "Opinionated Ert testing workflow")
+    (description "@code{ert-runner} is a tool for Emacs projects tested
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public ert-runner
   (deprecated-package "ert-runner" emacs-ert-runner))
