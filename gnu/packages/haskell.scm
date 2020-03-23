@@ -37,10 +37,8 @@
 
 (define-module (gnu packages haskell)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
@@ -435,11 +433,7 @@ interactive environment for the functional language Haskell.")
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
-       ("libffi" ,libffi)
-       ("target-binutils" ,binutils)
-       ("target-gcc" ,gcc)
-       ("target-ld-wrapper" ,(make-ld-wrapper "ld-wrapper"
-                                              #:binutils binutils))))
+       ("libffi" ,libffi)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)               ; for tests
@@ -514,9 +508,9 @@ interactive environment for the functional language Haskell.")
          ;; plain command names.
          (add-before 'configure 'set-target-programs
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((binutils (assoc-ref inputs "target-binutils"))
-                   (gcc (assoc-ref inputs "target-gcc"))
-                   (ld-wrapper (assoc-ref inputs "target-ld-wrapper")))
+             (let ((binutils (assoc-ref inputs "binutils"))
+                   (gcc (assoc-ref inputs "gcc"))
+                   (ld-wrapper (assoc-ref inputs "ld-wrapper")))
                (setenv "CC" (string-append gcc "/bin/gcc"))
                (setenv "CXX" (string-append gcc "/bin/g++"))
                (setenv "LD" (string-append ld-wrapper "/bin/ld"))
