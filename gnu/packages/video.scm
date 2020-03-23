@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1671,7 +1672,17 @@ To load this plugin, specify the following option when starting mpv:
                            (string-append "'" prefix "/etc/"))
                           (("'share/")
                            (string-append "'" prefix "/share/")))
-                        #t))))))
+                        #t)))
+                  (add-after 'install 'wrap-executable
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (ffmpeg (assoc-ref inputs "ffmpeg")))
+                        (wrap-program (string-append out "/bin/youtube-dl")
+                          `("PATH" ":" prefix
+                            ,(list (string-append ffmpeg "/bin")))))
+                      #t)))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
