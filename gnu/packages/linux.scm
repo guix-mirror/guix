@@ -566,15 +566,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "linux-libre/" name)))
     (search-auxiliary-file file)))
 
-;; FIXME: merge into kernel-config
-(define* (kernel-config-veyron arch #:key variant)
-  "Return the absolute file name of the Linux-Libre build configuration file
-for ARCH and optionally VARIANT, or #f if there is no such configuration."
-  (let* ((name (string-append (if variant (string-append variant "-") "")
-                              (if (string=? "i386" arch) "i686" arch) "-veyron.conf"))
-         (file (string-append "linux-libre/" name)))
-    (search-auxiliary-file file)))
-
 (define %default-extra-linux-options
   `(;; Some very mild hardening.
     ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
@@ -845,11 +836,7 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 
 (define-public linux-libre-arm-veyron
-  (make-linux-libre* linux-libre-version
-                     linux-libre-source
-                     '("armhf-linux")
-                     #:configuration-file kernel-config-veyron
-                     #:extra-version "arm-veyron"))
+  (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
 (define-public linux-libre-arm-generic
   (make-linux-libre* linux-libre-version

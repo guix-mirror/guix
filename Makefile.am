@@ -322,7 +322,6 @@ AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
   gnu/packages/aux-files/linux-libre/5.4-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.4-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/5.4-arm64.conf	\
   gnu/packages/aux-files/linux-libre/5.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/5.4-x86_64.conf	\
