@@ -14689,7 +14689,7 @@ bookmarks and history.")
     (license license:gpl3+)))
 
 (define-public emacs-stumpwm-mode
-  (let ((commit "5328f85fbf6a8b08c758c17b9435368bf7a68f39"))
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91"))
     (package
       (name "emacs-stumpwm-mode")
       (version (git-version "0.0.1" "1" commit))
@@ -14701,7 +14701,7 @@ bookmarks and history.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00kf4k8bqadi5s667wb96sn549v2kvw01zwszjrg7nhd805m1ng6"))))
+                  "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
