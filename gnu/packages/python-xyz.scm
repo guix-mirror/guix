@@ -71,6 +71,7 @@
 ;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18481,3 +18482,30 @@ Consortium (OGC) web service (hence OWS) interface standards, and their related
 content models.")
     (home-page "https://geopython.github.io/OWSLib/")
     (license license:bsd-3)))
+
+(define-public python-docusign-esign
+  (package
+    (name "python-docusign-esign")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "docusign_esign" version))
+              (sha256
+               (base32
+                "01f3h03vc97syjlmqyl7xa5j90pzgmwpspc5a0gra9saynnbkx37"))))
+    (build-system python-build-system)
+    ;; Testing requires undocumented setup changes, and so testing is disabled here.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+      `(("python-certifi", python-certifi)
+        ("python-six", python-six)
+        ("python-dateutil", python-dateutil)
+        ("python-urllib3", python-urllib3)
+        ("python-pyjwt", python-pyjwt)
+        ("python-cryptography", python-cryptography)
+        ("python-nose", python-nose)))
+    (synopsis "DocuSign Python Client")
+    (description "The Official DocuSign Python Client Library used to interact
+ with the eSign REST API.  Send, sign, and approve documents using this client.")
+    (home-page "https://www.docusign.com/devcenter")
+    (license license:expat)))
