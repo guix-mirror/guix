@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -54,14 +54,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20200122")
+    (version "20200322")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "070cv3b1ja8lmn2a5h1ry6b5y35jpm4z5r9yv9nb5kd5im11wvqi"))))
+       (base32 "0kg95glnfg25i1w7qg2vr5v4671vigsazmz4qdf223l64khq8x10"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
