@@ -380,17 +380,17 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.13.2")
+    (version "1.13.4")
     (source (origin
              (method url-fetch)
              (uri (list
-                    (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
-                                   version ".tar.gz")
                     (string-append "https://bitbucket.org/mutt/mutt/downloads/"
-                                   "mutt-" version ".tar.gz")))
+                                   "mutt-" version ".tar.gz")
+                    (string-append "http://ftp.mutt.org/pub/mutt/mutt-"
+                                   version ".tar.gz")))
              (sha256
               (base32
-               "0x4yfvk8415p80h9an242n6q3b43mw6mnnczh95zd3j0zwdr6wrg"))
+               "016dzx2c0kr9xgnw4nfzpkn4nvpk56rdlcqhrwa820fq8083yzdm"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
