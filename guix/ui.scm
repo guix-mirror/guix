@@ -1144,15 +1144,14 @@ separator between subsequent columns."
 (define* (show-manifest-transaction store manifest transaction
                                     #:key dry-run?)
   "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
-  (define (package-strings name version output item)
-    (map (lambda (name version output item)
-           (format #f "   ~a~:[:~a~;~*~]\t~a\t~a"
-                   name
-                   (equal? output "out") output version
-                   (if (package? item)
-                       (package-output store item output)
-                       item)))
-         name version output item))
+  (define (package-strings names versions outputs)
+    (tabulate (zip (map (lambda (name output)
+                          (if (string=? output "out")
+                              name
+                              (string-append name ":" output)))
+                        names outputs)
+                   versions)
+              #:initial-indent 3))
 
   (define →                        ;an arrow that can be represented on stderr
     (right-arrow (current-error-port)))
@@ -1175,7 +1174,7 @@ separator between subsequent columns."
     (match remove
       ((($ <manifest-entry> name version output item) ..1)
        (let ((len    (length name))
-             (remove (package-strings name version output item)))
+             (remove (package-strings name version output)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be removed:~%~{~a~%~}~%"
@@ -1228,7 +1227,7 @@ separator between subsequent columns."
     (match install
       ((($ <manifest-entry> name version output item _) ..1)
        (let ((len     (length name))
-             (install (package-strings name version output item)))
+             (install (package-strings name version output)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be installed:~%~{~a~%~}~%"
