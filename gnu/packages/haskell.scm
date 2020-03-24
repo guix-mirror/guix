@@ -171,10 +171,6 @@ top of CLISP.")
        ;; execution.
        #:parallel-tests? #f
 
-       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-       ;; gremlin) doesn't support it yet, so skip this phase.
-       #:validate-runpath? #f
-
        ;; Don't pass --build=<triplet>, because the configure script
        ;; auto-detects slightly different triplets for --host and --target and
        ;; then complains that they don't match.
@@ -348,10 +344,6 @@ interactive environment for the functional language Haskell.")
        ;; execution.
        #:parallel-tests? #f
 
-       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-       ;; gremlin) doesn't support it yet, so skip this phase.
-       #:validate-runpath? #f
-
        ;; Don't pass --build=<triplet>, because the configure script
        ;; auto-detects slightly different triplets for --host and --target and
        ;; then complains that they don't match.
@@ -453,10 +445,6 @@ interactive environment for the functional language Haskell.")
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
        #:parallel-tests? #f
-
-       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-       ;; gremlin) doesn't support it yet, so skip this phase.
-       #:validate-runpath? #f
 
        ;; Don't pass --build=<triplet>, because the configure script
        ;; auto-detects slightly different triplets for --host and --target and
