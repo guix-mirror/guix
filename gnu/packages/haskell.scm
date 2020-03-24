@@ -19,7 +19,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
-;;; Copyright © Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -568,6 +568,7 @@ interactive environment for the functional language Haskell.")
            (uri (string-append
                  "https://www.haskell.org/ghc/dist/"
                  version "/" name "-" version "-testsuite.tar.xz"))
+           (patches (search-patches "ghc-testsuite-dlopen-pie.patch"))
            (sha256
             (base32
              "0pw9r91g2np3i806g2f4f8z4jfdd7mx226cmdizk4swa7av1qf91"))))
@@ -591,12 +592,6 @@ interactive environment for the functional language Haskell.")
                  (("^test\\('T8108'") "# guix skipped: test('T8108'"))
                (substitute* "libraries/unix/tests/libposix/all.T"
                  (("^test\\('posix010'") "# guix skipped: test('posix010'"))
-               ;; This test attempts to dlopen() a position-independent
-               ;; executable(!), which is disallowed since glibc 2.30.  See
-               ;; https://sourceware.org/bugzilla/show_bug.cgi?id=24323
-               (substitute* "testsuite/tests/dynlibs/Makefile"
-                 (("\\./T13702a")
-                  "# ./T13702a"))
                #t))))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
