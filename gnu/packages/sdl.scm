@@ -115,16 +115,15 @@ joystick, and graphics hardware.")
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.10")
+    (version "2.0.12")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "https://libsdl.org/release/SDL2-"
                              version ".tar.gz"))
-             (patches (search-patches "sdl2-mesa-compat.patch"))
              (sha256
               (base32
-               "0mqxp6w5jhbq6y1j690g9r3gpzwjxh4czaglw8x05l7hl49nqrdl"))))
+               "0qy8wbqvfkb5ps8kxgaaf2zzpkjqbsw712hlp74znbn0jpv6i4il"))))
     (arguments
      (substitute-keyword-arguments (package-arguments sdl)
        ((#:configure-flags flags)
