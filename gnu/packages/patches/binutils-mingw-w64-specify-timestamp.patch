@@ -1,0 +1,137 @@
+This following patch was originally found at the debian mingw-w64 team's
+binutils repo located here:
+https://salsa.debian.org/mingw-w64-team/binutils-mingw-w64.git
+
+Invoke the following in the aforementioned repo to see the original patch:
+
+  $ git show da63f6b:debian/patches/specify-timestamp.patch
+
+Description: Allow the PE timestamp to be specified
+Author: Stephen Kitt <skitt@debian.org>
+
+--- a/bfd/peXXigen.c
++++ b/bfd/peXXigen.c
+@@ -70,6 +70,9 @@
+ #include <wctype.h>
+ #endif
+ 
++#include <errno.h>
++#include <limits.h>
++
+ /* NOTE: it's strange to be including an architecture specific header
+    in what's supposed to be general (to PE/PEI) code.  However, that's
+    where the definitions are, and they don't vary per architecture
+@@ -879,10 +882,38 @@
+ 
+   /* Use a real timestamp by default, unless the no-insert-timestamp
+      option was chosen.  */
+-  if ((pe_data (abfd)->insert_timestamp))
+-    H_PUT_32 (abfd, time (0), filehdr_out->f_timdat);
+-  else
++  if (pe_data (abfd)->insert_timestamp) {
++    time_t now;
++    char *source_date_epoch;
++    unsigned long long epoch;
++    char *endptr;
++
++    now = time(NULL);
++    source_date_epoch = getenv("SOURCE_DATE_EPOCH");
++    if (source_date_epoch) {
++      errno = 0;
++      epoch = strtoull(source_date_epoch, &endptr, 10);
++      if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0))
++          || (errno != 0 && epoch == 0)) {
++        _bfd_error_handler("Environment variable $SOURCE_DATE_EPOCH: strtoull: %s\n",
++                           strerror(errno));
++      } else if (endptr == source_date_epoch) {
++        _bfd_error_handler("Environment variable $SOURCE_DATE_EPOCH: No digits were found: %s\n",
++                           endptr);
++      } else if (*endptr != '\0') {
++        _bfd_error_handler("Environment variable $SOURCE_DATE_EPOCH: Trailing garbage: %s\n",
++                           endptr);
++      } else if (epoch > ULONG_MAX) {
++        _bfd_error_handler("Environment variable $SOURCE_DATE_EPOCH: value must be smaller than or equal to: %lu but was found to be: %llu\n",
++                           ULONG_MAX, epoch);
++      } else {
++        now = epoch;
++      }
++    }
++    H_PUT_32 (abfd, now, filehdr_out->f_timdat);
++  } else {
+     H_PUT_32 (abfd, 0, filehdr_out->f_timdat);
++  }
+ 
+   PUT_FILEHDR_SYMPTR (abfd, filehdr_in->f_symptr,
+ 		      filehdr_out->f_symptr);
+--- a/ld/pe-dll.c
++++ b/ld/pe-dll.c
+@@ -26,6 +26,8 @@
+ #include "filenames.h"
+ #include "safe-ctype.h"
+ 
++#include <errno.h>
++#include <limits.h>
+ #include <time.h>
+ 
+ #include "ld.h"
+@@ -1202,8 +1204,36 @@
+ 
+   memset (edata_d, 0, edata_sz);
+ 
+-  if (pe_data (abfd)->insert_timestamp)
+-    H_PUT_32 (abfd, time (0), edata_d + 4);
++  if (pe_data (abfd)->insert_timestamp) {
++    time_t now;
++    char *source_date_epoch;
++    unsigned long long epoch;
++    char *endptr;
++
++    now = time(NULL);
++    source_date_epoch = getenv("SOURCE_DATE_EPOCH");
++    if (source_date_epoch) {
++      errno = 0;
++      epoch = strtoull(source_date_epoch, &endptr, 10);
++      if ((errno == ERANGE && (epoch == ULLONG_MAX || epoch == 0))
++	  || (errno != 0 && epoch == 0)) {
++	einfo("Environment variable $SOURCE_DATE_EPOCH: strtoull: %s\n",
++	      strerror(errno));
++      } else if (endptr == source_date_epoch) {
++	einfo("Environment variable $SOURCE_DATE_EPOCH: No digits were found: %s\n",
++	      endptr);
++      } else if (*endptr != '\0') {
++	einfo("Environment variable $SOURCE_DATE_EPOCH: Trailing garbage: %s\n",
++	      endptr);
++      } else if (epoch > ULONG_MAX) {
++	einfo("Environment variable $SOURCE_DATE_EPOCH: value must be smaller than or equal to: %lu but was found to be: %llu\n",
++	      ULONG_MAX, epoch);
++      } else {
++	now = epoch;
++      }
++    }
++    H_PUT_32 (abfd, now, edata_d + 4);
++  }
+ 
+   if (pe_def_file->version_major != -1)
+     {
+--- a/ld/emultempl/pe.em
++++ b/ld/emultempl/pe.em
+@@ -303,7 +303,7 @@
+      OPTION_USE_NUL_PREFIXED_IMPORT_TABLES},
+     {"no-leading-underscore", no_argument, NULL, OPTION_NO_LEADING_UNDERSCORE},
+     {"leading-underscore", no_argument, NULL, OPTION_LEADING_UNDERSCORE},
+-    {"insert-timestamp", no_argument, NULL, OPTION_INSERT_TIMESTAMP},
++    {"insert-timestamp", optional_argument, NULL, OPTION_INSERT_TIMESTAMP},
+     {"no-insert-timestamp", no_argument, NULL, OPTION_NO_INSERT_TIMESTAMP},
+ #ifdef DLL_SUPPORT
+     /* getopt allows abbreviations, so we do this to stop it
+--- a/ld/emultempl/pep.em
++++ b/ld/emultempl/pep.em
+@@ -321,7 +321,7 @@
+     {"no-bind", no_argument, NULL, OPTION_NO_BIND},
+     {"wdmdriver", no_argument, NULL, OPTION_WDM_DRIVER},
+     {"tsaware", no_argument, NULL, OPTION_TERMINAL_SERVER_AWARE},
+-    {"insert-timestamp", no_argument, NULL, OPTION_INSERT_TIMESTAMP},
++    {"insert-timestamp", optional_argument, NULL, OPTION_INSERT_TIMESTAMP},
+     {"no-insert-timestamp", no_argument, NULL, OPTION_NO_INSERT_TIMESTAMP},
+     {"build-id", optional_argument, NULL, OPTION_BUILD_ID},
+     {NULL, no_argument, NULL, 0}

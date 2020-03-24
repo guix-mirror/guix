@@ -76,6 +76,12 @@
     (source (origin (inherit (package-source original))
               (patches (list patch))))))
 
+(define (package-with-extra-patches original patches)
+  "Return package ORIGINAL with all PATCHES appended to its list of patches."
+  (package-with-patch original
+                      `(,@(origin-patches (package-source original))
+                        ,@patches))
+
 (define (cross-binutils target)
   "Return a cross-Binutils for TARGET."
   (let ((binutils (package (inherit binutils)
@@ -97,11 +103,17 @@
                         `(cons "--with-sysroot=/" ,flags)))))))
 
     ;; For Xtensa, apply Qualcomm's patch.
-    (cross (if (string-prefix? "xtensa-" target)
-               (package-with-patch binutils
-                                   (search-patch
-                                    "ath9k-htc-firmware-binutils.patch"))
-               binutils)
+    (cross (cond ((string-prefix? "xtensa-" target)
+                  (package-with-patch binutils
+                                      (search-patch
+                                       "ath9k-htc-firmware-binutils.patch")))
+                 ((target-mingw? target)
+                  (package-with-extra-patches
+                   binutils
+                   (search-patches
+                    "binutils-mingw-w64-specify-timestamp.patch"
+                    "binutils-mingw-w64-reproducible-import-libraries.patch")))
+                 (else binutils))
            target)))
 
 (define (cross-gcc-arguments target xgcc libc)
