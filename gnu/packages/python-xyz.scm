@@ -18527,3 +18527,26 @@ content models.")
  with the eSign REST API.  Send, sign, and approve documents using this client.")
     (home-page "https://www.docusign.com/devcenter")
     (license license:expat)))
+
+(define-public python-xattr
+  (package
+    (name "python-xattr")
+    (version "0.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xattr" version))
+       (sha256
+        (base32
+         "0i4xyiqbhjz2g16zbim17zjdbjkw79xsw8k59942vvq4is1cmfxh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (home-page "https://github.com/xattr/xattr")
+    (synopsis
+     "Python wrapper for extended filesystem attributes")
+    (description "This package provides a Python wrapper for using extended
+filesystem attributes.  Extended attributes extend the basic attributes of files
+and directories in the file system.  They are stored as name:data pairs
+associated with file system objects (files, directories, symlinks, etc).")
+    (license license:expat)))
