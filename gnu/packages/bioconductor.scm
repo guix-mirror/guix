@@ -3393,20 +3393,22 @@ information about samples and features can be added to the plot.")
 (define-public r-gosemsim
   (package
     (name "r-gosemsim")
-    (version "2.12.0")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOSemSim" version))
        (sha256
         (base32
-         "0pqnlgdvh5szjhwc1mw1snjgpj9lrsnk44bn164cl3zwvdayccya"))))
+         "1r8yx6qw6d6602cp8aspzl3shi1l1zqcrc8fm9d5wg01sw1whs05"))))
     (properties `((upstream-name . "GOSemSim")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-go-db" ,r-go-db)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/GOSemSim")
     (synopsis "GO-terms semantic similarity measures")
     (description
