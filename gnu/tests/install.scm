@@ -32,15 +32,23 @@
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ocr)
+  #:use-module (gnu packages openbox)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages ratpoison)
+  #:use-module (gnu packages suckless)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu services desktop)
   #:use-module (gnu services networking)
+  #:use-module (gnu services xorg)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:export (%test-installed-os
             %test-installed-extlinux-os
             %test-iso-image-installer
@@ -52,7 +60,8 @@
             %test-jfs-root-os
 
             %test-gui-installed-os
-            %test-gui-installed-os-encrypted))
+            %test-gui-installed-os-encrypted
+            %test-gui-installed-desktop-os-encrypted))
 
 ;;; Commentary:
 ;;;
@@ -203,6 +212,7 @@ reboot\n")
                                                 (gnu installer tests)
                                                 (guix combinators))))
                       (installation-disk-image-file-system-type "ext4")
+                      (install-size 'guess)
                       (target-size (* 2200 MiB)))
   "Run SCRIPT (a shell script following the system installation procedure) in
 OS to install TARGET-OS.  Return a VM image of TARGET-SIZE bytes containing
@@ -220,7 +230,7 @@ packages defined in installation-os."
                        (image  (system-disk-image
                                 (operating-system-with-gc-roots
                                  os (list target))
-                                #:disk-image-size 'guess
+                                #:disk-image-size install-size
                                 #:file-system-type
                                 installation-disk-image-file-system-type)))
     (define install
@@ -941,7 +951,10 @@ build (current-guix) and then store a couple of full system images.")
 
 (define %root-password "foo")
 
-(define* (gui-test-program marionette #:key (encrypted? #f))
+(define* (gui-test-program marionette
+                           #:key
+                           (desktop? #f)
+                           (encrypted? #f))
   #~(let ()
       (define (screenshot file)
         (marionette-control (string-append "screendump " file)
@@ -998,7 +1011,8 @@ build (current-guix) and then store a couple of full system images.")
       (screenshot "installer-services.ppm")
 
       (marionette-eval* '(choose-services installer-socket
-                                          #:desktop-environments '()
+                                          #:choose-desktop-environment?
+                                          (const #$desktop?)
                                           #:choose-network-service?
                                           (const #f))
                         #$marionette)
@@ -1038,53 +1052,111 @@ build (current-guix) and then store a couple of full system images.")
                         (gnu installer tests)
                         (guix combinators))))
 
-(define* (guided-installation-test name #:key encrypted?)
-  (define os
-    (operating-system
-      (inherit %minimal-os)
-      (users (append (list (user-account
-                            (name "alice")
-                            (comment "Bob's sister")
-                            (group "users")
-                            (supplementary-groups
-                             '("wheel" "audio" "video")))
-                           (user-account
-                            (name "bob")
-                            (comment "Alice's brother")
-                            (group "users")
-                            (supplementary-groups
-                             '("wheel" "audio" "video"))))
-                     %base-user-accounts))
-      ;; The installer does not create a swap device in guided mode with
-      ;; encryption support.
-      (swap-devices (if encrypted? '() '("/dev/vdb2")))
-      (services (cons (service dhcp-client-service-type)
-                      (operating-system-user-services %minimal-os)))))
+(define* (installation-target-os-for-gui-tests
+          #:key (encrypted? #f))
+  (operating-system
+    (inherit %minimal-os)
+    (users (append (list (user-account
+                          (name "alice")
+                          (comment "Bob's sister")
+                          (group "users")
+                          (supplementary-groups
+                           '("wheel" "audio" "video")))
+                         (user-account
+                          (name "bob")
+                          (comment "Alice's brother")
+                          (group "users")
+                          (supplementary-groups
+                           '("wheel" "audio" "video"))))
+                   %base-user-accounts))
+    ;; The installer does not create a swap device in guided mode with
+    ;; encryption support.
+    (swap-devices (if encrypted? '() '("/dev/vdb2")))
+    (services (cons (service dhcp-client-service-type)
+                    (operating-system-user-services %minimal-os)))))
 
+(define* (installation-target-desktop-os-for-gui-tests
+          #:key (encrypted? #f))
+  (operating-system
+    (inherit (installation-target-os-for-gui-tests
+              #:encrypted? encrypted?))
+    (keyboard-layout (keyboard-layout "us" "altgr-intl"))
+
+    ;; Make sure that all the packages and services that may be used by the
+    ;; graphical installer are available.
+    (packages (append
+               (list openbox awesome i3-wm i3status
+                     dmenu st ratpoison xterm)
+               %base-packages))
+    (services
+     (append
+      (list (service gnome-desktop-service-type)
+            (service xfce-desktop-service-type)
+            (service mate-desktop-service-type)
+            (service enlightenment-desktop-service-type)
+            (set-xorg-configuration
+             (xorg-configuration
+              (keyboard-layout keyboard-layout)))
+            (service marionette-service-type
+                     (marionette-configuration
+                      (imported-modules '((gnu services herd)
+                                          (guix build utils)
+                                          (guix combinators))))))
+      %desktop-services))))
+
+(define* (guided-installation-test name
+                                   #:key
+                                   (desktop? #f)
+                                   (encrypted? #f)
+                                   target-os
+                                   (install-size 'guess)
+                                   (target-size (* 2200 MiB)))
   (system-test
    (name name)
    (description
     "Install an OS using the graphical installer and test it.")
    (value
-    (mlet* %store-monad ((image   (run-install os '(this is unused)
-                                               #:script #f
-                                               #:os installation-os-for-gui-tests
-                                               #:gui-test
-                                               (lambda (marionette)
-                                                 (gui-test-program
-                                                  marionette
-                                                  #:encrypted? encrypted?))))
-                         (command (qemu-command/writable-image image)))
-      (run-basic-test os command name
+    (mlet* %store-monad
+        ((image   (run-install target-os '(this is unused)
+                               #:script #f
+                               #:os installation-os-for-gui-tests
+                               #:install-size install-size
+                               #:target-size target-size
+                               #:gui-test
+                               (lambda (marionette)
+                                 (gui-test-program
+                                  marionette
+                                  #:desktop? desktop?
+                                  #:encrypted? encrypted?))))
+         (command (qemu-command/writable-image image)))
+      (run-basic-test target-os command name
                       #:initialization (and encrypted? enter-luks-passphrase)
                       #:root-password %root-password)))))
 
 (define %test-gui-installed-os
-  (guided-installation-test "gui-installed-os"
-                            #:encrypted? #f))
+  (guided-installation-test
+   "gui-installed-os"
+   #:target-os (installation-target-os-for-gui-tests)))
 
 (define %test-gui-installed-os-encrypted
-  (guided-installation-test "gui-installed-os-encrypted"
-                            #:encrypted? #t))
+  (guided-installation-test
+   "gui-installed-os-encrypted"
+   #:encrypted? #t
+   #:target-os (installation-target-os-for-gui-tests
+                #:encrypted? #t)))
+
+;; Building a desktop image is very time and space consuming. Install all
+;; desktop environments in a single test to reduce the overhead.
+(define %test-gui-installed-desktop-os-encrypted
+  (guided-installation-test "gui-installed-desktop-os-encrypted"
+                            #:desktop? #t
+                            #:encrypted? #t
+                            #:target-os
+                            (installation-target-desktop-os-for-gui-tests
+                             #:encrypted? #t)
+                            ;; XXX: The disk-image size guess is too low. Use
+                            ;; a constant value until this is fixed.
+                            #:install-size (* 8000 MiB)
+                            #:target-size (* 9000 MiB)))
 
 ;;; install.scm ends here
