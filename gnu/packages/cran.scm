@@ -4983,14 +4983,14 @@ systems.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "1.0.6")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "08x7zasxf429m021482p86lx3zc6dqz2mih0id8s34isg4gafapg"))
+         "19sjjb49inrfl7jzq4zpwhdslni0zrp30bl58pisin29ka3ylpzs"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -5008,15 +5008,17 @@ systems.")
        ("r-dt" ,r-dt)
        ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)
        ("r-import" ,r-import)
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-markdown" ,r-markdown)
+       ("r-mass" ,r-mass)
+       ("r-patchwork" ,r-patchwork)
        ("r-plotly" ,r-plotly)
        ("r-psych" ,r-psych)
+       ("r-randomizr" ,r-randomizr)
        ("r-readr" ,r-readr)
        ("r-readxl" ,r-readxl)
        ("r-rlang" ,r-rlang)
