@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Stephen J. Scheck <sscheck@cpan.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5280,6 +5281,28 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 @item Mail::Util
 \"Smart functions\" you should not depend on.
 @end table")
+    (license perl-license)))
+(define-public perl-mail-sendmail
+  (package
+    (name "perl-mail-sendmail")
+    (version "0.80")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/N/NE/NEILB/Mail-Sendmail-"
+            version
+            ".tar.gz"))
+      (sha256
+       (base32
+        "1r38qbkj7jwj8cqy1rnqzkk81psxi08b1aiq392817f3bk5ri2jv"))))
+    (build-system perl-build-system)
+    (arguments `(#:tests? #f))      ;socket not available during build
+    (home-page "https://metacpan.org/release/Mail-Sendmail")
+    (synopsis "Simple platform independent mailer")
+    (description "Mail::Sendmail is a pure perl module that provides a
+simple means to send email from a perl script.  The module only
+requires Perl5 and a network connection.")
     (license perl-license)))
 
 (define-public perl-math-bezier
