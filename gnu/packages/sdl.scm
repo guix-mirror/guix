@@ -132,20 +132,26 @@ joystick, and graphics hardware.")
                    "--disable-kmsdrm-shared")
                  ,flags))
        ((#:make-flags flags ''())
-        ;; Add the Fcitx header files to GCCs "system header" search path
-        ;; in order to suppress compiler warnings induced by those:
-        ;;   .../include/fcitx-utils/utarray.h:178:9: error: ISO C90 forbids
-        ;;   mixed declarations and code [-Werror=declaration-after-statement]
-        `(append (list (string-append "C_INCLUDE_PATH="
-                                      (assoc-ref %build-inputs "fcitx")
-                                      "/include"))
-                 ,flags))))
+        `(cons*
+          ;; Add the Fcitx header files to GCCs "system header" search path
+          ;; in order to suppress compiler warnings induced by those:
+          ;;   .../include/fcitx-utils/utarray.h:178:9: error: ISO C90 forbids
+          ;;   mixed declarations and code [-Werror=declaration-after-statement]
+          (string-append "C_INCLUDE_PATH="
+                         (assoc-ref %build-inputs "fcitx") "/include")
+          ;; SDL dlopens libudev, so make sure it is in rpath. This overrides
+          ;; the LDFLAG set in sdl’s configure-flags, which isn’t necessary
+          ;; as sdl2 includes Mesa by default.
+          (string-append "LDFLAGS=-Wl,-rpath,"
+                         (assoc-ref %build-inputs "eudev") "/lib")
+          ,flags))))
     (inputs
      ;; SDL2 needs to be built with ibus support otherwise some systems
      ;; experience a bug where input events are doubled.
      ;;
      ;; For more information, see: https://dev.solus-project.com/T1721
      (append `(("dbus" ,dbus)
+               ("eudev" ,eudev) ; for discovering input devices
                ("fcitx" ,fcitx) ; helps with CJK input
                ("glib" ,glib)
                ("ibus" ,ibus)
