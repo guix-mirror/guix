@@ -759,7 +759,7 @@ data structures in C++.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.4.0")
+    (version "1.4.0.2")
     (source
      (origin
        (method git-fetch)
@@ -769,7 +769,7 @@ data structures in C++.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17ac48g414h9dhi0k4wrah4gyik0q5r0xw3kc01c02qfjwimqsx7"))))
+         "005wgcxq7f2q9g6wvfk29n2nms262w0abpz93sfvx79yv6qxppzs"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
