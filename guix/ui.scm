@@ -1104,6 +1104,43 @@ replacement if PORT is not Unicode-capable."
       (lambda (key . args)
         "->"))))
 
+(define* (tabulate rows #:key (initial-indent 0) (max-width 25)
+                   (inter-column " "))
+  "Return a list of strings where each string is a tabulated representation of
+an element of ROWS.  All the ROWS must be lists of the same number of cells.
+
+Add INITIAL-INDENT white space at the beginning of each row.  Ensure that
+columns are at most MAX-WIDTH characters wide.  Use INTER-COLUMN as a
+separator between subsequent columns."
+  (define column-widths
+    ;; List of column widths.
+    (let loop ((rows rows)
+               (widths '()))
+      (match rows
+        (((? null?) ...)
+         (reverse widths))
+        (((column rest ...) ...)
+         (loop rest
+               (cons (min (apply max (map string-length column))
+                          max-width)
+                     widths))))))
+
+  (define indent
+    (make-string initial-indent #\space))
+
+  (define (string-pad-right* str len)
+    (if (> (string-length str) len)
+        str
+        (string-pad-right str len)))
+
+  (map (lambda (row)
+         (string-trim-right
+          (string-append indent
+                         (string-join
+                          (map string-pad-right* row column-widths)
+                          inter-column))))
+       rows))
+
 (define* (show-manifest-transaction store manifest transaction
                                     #:key dry-run?)
   "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
@@ -1120,13 +1157,18 @@ replacement if PORT is not Unicode-capable."
   (define →                        ;an arrow that can be represented on stderr
     (right-arrow (current-error-port)))
 
-  (define (upgrade-string name old-version new-version output item)
-    (format #f "   ~a~:[:~a~;~*~]\t~a ~a ~a\t~a"
-            name (equal? output "out") output
-            old-version → new-version
-            (if (package? item)
-                (package-output store item output)
-                item)))
+  (define (upgrade-string names old-version new-version outputs)
+    (tabulate (zip (map (lambda (name output)
+                          (if (string=? output "out")
+                              name
+                              (string-append name ":" output)))
+                        names outputs)
+                   (map (lambda (old new)
+                          (if (string=? old new)
+                              (G_ "(dependencies changed)")
+                              (string-append old " " → " " new)))
+                        old-version new-version))
+              #:initial-indent 3))
 
   (let-values (((remove install upgrade downgrade)
                 (manifest-transaction-effects manifest transaction)))
@@ -1150,8 +1192,8 @@ replacement if PORT is not Unicode-capable."
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
        (let ((len       (length name))
-             (downgrade (map upgrade-string
-                             name old-version new-version output item)))
+             (downgrade (upgrade-string name old-version new-version
+                                        output)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be downgraded:~%~{~a~%~}~%"
@@ -1168,8 +1210,9 @@ replacement if PORT is not Unicode-capable."
       (((($ <manifest-entry> name old-version)
          . ($ <manifest-entry> _ new-version output item)) ..1)
        (let ((len     (length name))
-             (upgrade (map upgrade-string
-                           name old-version new-version output item)))
+             (upgrade (upgrade-string name
+                                      old-version new-version
+                                      output)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be upgraded:~%~{~a~%~}~%"
