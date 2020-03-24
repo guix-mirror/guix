@@ -4931,6 +4931,28 @@ files.")
 environment within Shiny.")
     (license license:expat)))
 
+(define-public r-randomizr
+  (package
+    (name "r-randomizr")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randomizr" version))
+       (sha256
+        (base32
+         "0dljyfldnardaps3fq6vi5wcs9x6qfaq5apapa78c51lnaa6fn9h"))))
+    (properties `((upstream-name . "randomizr")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://declaredesign.org/r/randomizr/")
+    (synopsis "Tools for common forms of random assignment and sampling")
+    (description
+     "This package provides tools for generating random assignments for common
+experimental designs and random samples for common sampling designs.")
+    (license license:expat)))
+
 (define-public r-base64url
   (package
     (name "r-base64url")
