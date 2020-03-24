@@ -3134,13 +3134,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.12")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "0089288ma1cj9nf4jscmpbagyqlg4r90mw8bwl4zv1d4hjl0d693"))))
+                "1db35mi4m4q3kha4vhvh693bv04y7h9pdawhsx8f234qjvz7783r"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
@@ -3151,6 +3151,8 @@ using the multicore functionality of the parallel package.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-promises" ,r-promises)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rstudio.github.io/DT")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
