@@ -27,6 +27,7 @@
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix store)
   #:autoload   (guix store database) (register-path)
+  #:use-module (guix describe)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module (guix derivations)
@@ -718,16 +719,11 @@ checking this by themselves in their 'check' procedure."
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
-  ;; The reason for this is that the 'guix' binding that we see here comes
-  ;; from either ~/.config/latest or, if it's missing, from the
-  ;; globally-installed Guix, which is necessarily older.  See
-  ;; <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html> for
-  ;; a discussion.
-  (define latest
-    (string-append (config-directory) "/current"))
-
-  (unless (file-exists? latest)
-    (warning (G_ "~a not found: 'guix pull' was never run~%") latest)
+  ;; Check whether we're running a 'guix pull'-provided 'guix' command.  When
+  ;; 'current-profile' returns #f, we may be running the globally-installed
+  ;; 'guix' and thus run the risk of deploying an older 'guix'.  See
+  ;; <https://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>
+  (unless (or (current-profile) (getenv "GUIX_UNINSTALLED"))
     (warning (G_ "Consider running 'guix pull' before 'reconfigure'.~%"))
     (warning (G_ "Failing to do that may downgrade your system!~%"))))
 
