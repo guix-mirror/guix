@@ -12334,6 +12334,47 @@ keychains.  The keychain entries are displayed in a directory-like structure
 and can be consulted and modified.")
     (license license:gpl3+)))
 
+(define-public emacs-psc-ide
+  (let ((commit "7fc2b841be25f5bc5e1eb7d0634436181c38b3fe")
+        (revision "1"))
+    (package
+      (name "emacs-psc-ide")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/purescript-emacs/psc-ide-emacs")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r0fymyai30jimm34z1cmav4wgij8ci6s1d9y7qigygfbbfrdsmj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-let-alist" ,emacs-let-alist)
+         ("emacs-s" ,emacs-s)
+         ("emacs-seq" ,emacs-seq)))
+      (home-page "https://github.com/purescript-emacs/psc-ide-emacs")
+      (synopsis "Emacs integration for PureScript's psc-ide tool")
+      (description
+       "This package provices Emacs integration for @code{psc-ide}, an IDE
+protocol for PureScript programming language.  It features:
+
+@itemize
+@item Completions
+@item Type at point
+@item Go to definition
+@item Automatic imports
+@item Case split
+@item Build system integration, and
+@item Flycheck support
+@end itemize")
+      (license license:gpl3+))))
+
 (define-public emacs-evil-anzu
   (package
     (name "emacs-evil-anzu")
