@@ -12869,7 +12869,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
 
 (operating-system
   ;; @dots{}
-  (users (cons (user-acount
+  (users (cons (user-account
                 ;; @dots{}
                 (supplementary-groups
                  '("adbusers"   ;for adb
