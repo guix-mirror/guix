@@ -373,6 +373,10 @@ added to the pack."
                      ;; file system since it's useless in this case.
                      "-no-recovery"
 
+                     ;; Do not attempt to store extended attributes.
+                     ;; See <https://bugs.gnu.org/40043>.
+                     "-no-xattrs"
+
                      ;; Set file times and the file system creation time to
                      ;; one second after the Epoch.
                      "-all-time" "1" "-mkfs-time" "1"
