@@ -5282,6 +5282,7 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 \"Smart functions\" you should not depend on.
 @end table")
     (license perl-license)))
+
 (define-public perl-mail-sendmail
   (package
     (name "perl-mail-sendmail")
