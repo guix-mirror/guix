@@ -1728,6 +1728,39 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
 Emacs buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-chronometrist
+  (package
+    (name "emacs-chronometrist")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://framagit.org/contrapunctus/chronometrist.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ccy7qz1wcmggqlf3hwigbqq4wrx1amds4x9bxz9py6bypglyjc5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://framagit.org/contrapunctus/chronometrist")
+    (synopsis "Time tracker for Emacs")
+    (description "Chronometrist is a time tracker in Emacs, largely modelled
+after the Android application, @emph{A Time Tracker}.
+
+Its features are:
+@itemize
+@item Simple and efficient to use,
+@item Displays useful information about your time usage,
+@item Support for both mouse and keyboard,
+@item Human errors in tracking are easily fixed by editing a plain text file,
+@item Hooks to let you perform arbitrary actions when starting/stopping tasks.
+@end itemize")
+    ;; Software is dual-licensed.
+    (license (list license:unlicense license:wtfpl2))))
+
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
