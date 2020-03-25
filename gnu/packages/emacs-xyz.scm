@@ -15626,32 +15626,31 @@ from @code{emms-source-file-default-directory}.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-exwm
-  (let ((commit "56266f261ba3b3d2753b374b50da20eb768c06f5"))
-    (package
-      (name "emacs-helm-exwm")
-      (version (git-version "20180703" "2" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-helm/helm-exwm.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "064ziinqa5sdv7rfjn0y278l12kld176fr88k4h78pgf2f2n7cd8"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-exwm" ,emacs-exwm)))
-      (home-page
-       "https://github.com/emacs-helm/helm-exwm")
-      (synopsis "Helm for EXWM buffers")
-      (description
-       "@code{helm-exwm} runs a Helm session over the list of EXWM buffers.
+  (package
+    (name "emacs-helm-exwm")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-helm/helm-exwm.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g4k01ps14bp2az8v6dcag9llg045k2b4kdis81xx4lvw76znr9v"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-exwm" ,emacs-exwm)))
+    (home-page
+     "https://github.com/emacs-helm/helm-exwm")
+    (synopsis "Helm for EXWM buffers")
+    (description
+     "@code{helm-exwm} runs a Helm session over the list of EXWM buffers.
 @code{helm-exwm-switch} is a convenience X application launcher using Helm to
 switch between the various windows of one or several specific applications.
 See @code{helm-exwm-switch-browser} for an example.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-flycheck
   (let ((commit "3cf7d3bb194acacc6395f88360588013d92675d6"))
