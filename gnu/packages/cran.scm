@@ -20992,3 +20992,30 @@ reading user input with masking, so that the input is not displayed as it is
 typed.  Currently, RStudio, the command line (every OS), and any platform
 where tcltk is present are supported.")
     (license license:bsd-2)))
+
+(define-public r-remoter
+  (package
+    (name "r-remoter")
+    (version "0.4-0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "remoter" version))
+        (sha256
+          (base32
+            "1a7m63l8phv5jnazvdqdrqkaqjwqzaac5y4jm2jn0ypy4n8jvkfl"))))
+    (properties `((upstream-name . "remoter")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-argon2" ,r-argon2)
+        ("r-getpass" ,r-getpass)
+        ("r-pbdzmq" ,r-pbdzmq)
+        ("r-png" ,r-png)))
+    (home-page "https://github.com/RBigData/remoter")
+    (synopsis
+      "Control a Remote R Session from a Local One")
+    (description
+      "This package provides a set of utilities for client/server computing
+with R, controlling a remote R session (the server) from a local one (the
+client).")
+    (license license:bsd-2)))
