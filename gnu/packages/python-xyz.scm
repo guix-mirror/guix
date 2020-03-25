@@ -19112,3 +19112,34 @@ Certificate Authority.
 txacme is an implementation of the protocol for Twisted, the event-driven
 networking engine for Python.")
     (license license:expat)))
+
+(define-public python-pysaml2
+  (package
+    (name "python-pysaml2")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pysaml2" version))
+       (sha256
+        (base32
+         "1h8cmxh9cvxhrdfmkh92wg6zpxmhi2fixq1cy4hxismmaar7bsny"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-dateutil" ,python-dateutil)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytz" ,python-pytz)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://idpy.org")
+    (synopsis "Python implementation of SAML Version 2 Standard")
+    (description
+     "PySAML2 is a pure python implementation of SAML Version 2 Standard.
+It contains all necessary pieces for building a SAML2 service provider or
+an identity provider.  The distribution contains examples of both.
+
+This package was originally written to work in a WSGI environment, but
+there are extensions that allow you to use it with other frameworks.")
+    (license license:asl2.0)))
