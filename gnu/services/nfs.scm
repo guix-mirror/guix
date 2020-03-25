@@ -274,9 +274,19 @@
                rpcmountd-port rpcstatd-port nfsd-port nfsd-threads
                pipefs-directory debug)
     (list (shepherd-service
+           (documentation "Mount the nfsd pseudo file system.")
+           (provision '(/proc/fs/nfsd))
+           (start #~(lambda ()
+                      (mount "nfsd" "/proc/fs/nfsd" "nfsd")
+                      (member "/proc/fs/nfsd" (mount-points))))
+
+           (stop #~(lambda (pid . args)
+                     (umount "/proc/fs/nfsd" MNT_DETACH)
+                     (not (member "/proc/fs/nfsd" (mount-points))))))
+          (shepherd-service
            (documentation "Run the NFS statd daemon.")
            (provision '(rpc.statd))
-           (requirement '(rpcbind-daemon))
+           (requirement '(/proc/fs/nfsd rpcbind-daemon))
            (start
             #~(make-forkexec-constructor
                (list #$(file-append nfs-utils "/sbin/rpc.statd")
@@ -295,7 +305,7 @@
           (shepherd-service
            (documentation "Run the NFS mountd daemon.")
            (provision '(rpc.mountd))
-           (requirement '(rpc.statd))
+           (requirement '(/proc/fs/nfsd rpc.statd))
            (start
             #~(make-forkexec-constructor
                (list #$(file-append nfs-utils "/sbin/rpc.mountd")
@@ -310,7 +320,7 @@
           (shepherd-service
            (documentation "Run the NFS daemon.")
            (provision '(rpc.nfsd))
-           (requirement '(rpc.statd networking))
+           (requirement '(/proc/fs/nfsd rpc.statd networking))
            (start
             #~(lambda _
                 (zero? (system* #$(file-append nfs-utils "/sbin/rpc.nfsd")
@@ -329,7 +339,7 @@
           (shepherd-service
            (documentation "Run the NFS mountd daemon and refresh exports.")
            (provision '(nfs))
-           (requirement '(rpc.nfsd rpc.mountd rpc.statd rpcbind-daemon))
+           (requirement '(/proc/fs/nfsd rpc.nfsd rpc.mountd rpc.statd rpcbind-daemon))
            (start
             #~(lambda _
                 (let ((rpcdebug #$(file-append nfs-utils "/sbin/rpcdebug")))
