@@ -20967,3 +20967,28 @@ service.  Functions are provided to work with the OAI-PMH verbs:
     (description
      "Utilities for secure password hashing via the argon2 algorithm.")
     (license license:bsd-2)))
+
+(define-public r-getpass
+  (package
+    (name "r-getpass")
+    (version "0.2-2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "getPass" version))
+        (sha256
+          (base32
+            "03ydafhh0sk3rcnpr3paajyji64x2ddp6p814p9mvbmyrblcgzcc"))))
+    (properties `((upstream-name . "getPass")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-rstudioapi" ,r-rstudioapi)))
+    (home-page
+      "https://github.com/wrathematics/getPass")
+    (synopsis "Masked User Input")
+    (description
+      "This package provides a micro-package for reading \"passwords\", i.e.
+reading user input with masking, so that the input is not displayed as it is
+typed.  Currently, RStudio, the command line (every OS), and any platform
+where tcltk is present are supported.")
+    (license license:bsd-2)))
