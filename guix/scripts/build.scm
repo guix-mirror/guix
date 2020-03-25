@@ -920,8 +920,10 @@ build."
   (with-unbound-variable-handling
    (parameterize ((%graft? graft?))
      (append-map (lambda (system)
-                   (append-map (cut compute-derivation <> system)
-                               things-to-build))
+                   (concatenate
+                    (map/accumulate-builds store
+                                           (cut compute-derivation <> system)
+                                           things-to-build)))
                  systems))))
 
 (define (show-build-log store file urls)
