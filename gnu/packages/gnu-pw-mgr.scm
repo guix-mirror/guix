@@ -49,8 +49,7 @@
                (("/usr/bin/printf") (which "printf")))
              #t)))))
     (native-inputs
-     `(("which" ,which)
-       ("autogen" ,autogen)))
+     `(("which" ,which)))
     (home-page "https://www.gnu.org/software/gnu-pw-mgr/")
     (synopsis "Retrieve login credentials without recording passwords")
     (description
