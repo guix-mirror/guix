@@ -18,6 +18,7 @@
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20946,3 +20947,23 @@ service.  Functions are provided to work with the OAI-PMH verbs:
 @code{GetRecord}, @code{Identify}, @code{ListIdentifiers},
 @code{ListMetadataFormats}, @code{ListRecords}, and @code{ListSets}.")
     (license license:expat)))
+
+(define-public r-argon2
+  (package
+    (name "r-argon2")
+    (version "0.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "argon2" version))
+       (sha256
+        (base32
+         "0kqn06rpb39jlzizjlnc5c44mfic8llrshxn7ljgmyj35lbqwxqh"))))
+    (properties `((upstream-name . "argon2")))
+    (build-system r-build-system)
+    (home-page
+     "https://github.com/wrathematics/argon2")
+    (synopsis "Secure Password Hashing based on Argon2 Algorithm")
+    (description
+     "Utilities for secure password hashing via the argon2 algorithm.")
+    (license license:bsd-2)))
