@@ -135,7 +135,7 @@ Copy ITEMS to or from the specified host over SSH.\n"))
                                  (alist-delete 'verbosity result)))))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+                   (alist-cons 'dry-run? #t result)))
 
          (option '(#\h "help") #f #f
                  (lambda args

@@ -489,8 +489,7 @@ kind of search path~%")
                            #f)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result arg-handler)
-                   (values (alist-cons 'dry-run? #t
-                                       (alist-cons 'graft? #f result))
+                   (values (alist-cons 'dry-run? #t result)
                            #f)))
          (option '(#\v "verbosity") #t #f
                  (lambda (opt name arg result arg-handler)
