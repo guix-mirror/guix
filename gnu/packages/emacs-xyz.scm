@@ -19293,11 +19293,11 @@ as Emacs Lisp.")
       (license license:gpl3+))))
 
 (define-public emacs-transient
-  ;; 0.1.0 depends on lv.el but not later versions.
-  (let ((commit "7e45a57ec81185631fe763733f64c99021df2a06"))
+  (let ((revision "1")
+        (commit "a6e4cced303b3febd59412b24a97eaf1e855e6d7"))
     (package
       (name "emacs-transient")
-      (version (git-version "0.1.0" "1" commit))
+      (version (git-version "0.2.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -19306,41 +19306,33 @@ as Emacs Lisp.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0r6d4c1lga3bk0s7q7y4v4hbpxnd9h40cjxybqvax2z902931fz1"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("texinfo" ,texinfo)
-                       ("emacs" ,emacs-minimal)))
-      (propagated-inputs
-       `(("dash" ,emacs-dash)))
+                  "01xsw9sxr50valc2q590ngy3ra2ll01p39l9cbzvqqz6mxyymxmd"))))
+      (build-system emacs-build-system)
       (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-26)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:tests? #f                   ; tests are not included in the release
-         #:make-flags (list "lisp" "info")
+       `(#:tests? #f                      ;no test suite
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
-           (replace 'install
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (lisp (string-append out "/share/emacs/site-lisp"))
-                      (info (string-append out "/share/info")))
-                 (for-each (cut install-file <> lisp)
-                           (find-files "." "\\.elc*$"))
-                 (install-file "docs/transient.info" (string-append info)))
+           (add-after 'unpack 'build-info-manual
+             (lambda _
+               (invoke "make" "info")
+               ;; Move the info file to lisp so that it gets installed by the
+               ;; emacs-build-system.
+               (rename-file "docs/transient.info" "lisp/transient.info")))
+           (add-after 'build-info-manual 'enter-lisp-directory
+             (lambda _
+               (chdir "lisp")
                #t)))))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (propagated-inputs
+       `(("dash" ,emacs-dash)))
       (home-page "https://magit.vc/manual/transient")
       (synopsis "Transient commands in Emacs")
-      (description
-       "Taking inspiration from prefix keys and prefix arguments in Emacs,
-Transient implements a similar abstraction involving a prefix command, infix
-arguments and suffix commands.  We could call this abstraction a \"transient
-command\", but because it always involves at least two commands (a prefix and
-a suffix) we prefer to call it just a \"transient\".")
+      (description "Taking inspiration from prefix keys and prefix arguments
+in Emacs, Transient implements a similar abstraction involving a prefix
+command, infix arguments and suffix commands.  We could call this abstraction
+a \"transient command\", but because it always involves at least two
+commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
 (define-public emacs-forge
