@@ -105,6 +105,8 @@
             add-file-tree-to-store
             binary-file
             with-build-handler
+            map/accumulate-builds
+            mapm/accumulate-builds
             build-things
             build
             query-failed-paths
@@ -1263,6 +1265,48 @@ deals with \"dynamic dependencies\" such as grafts---derivations that depend
 on the build output of a previous derivation."
   (call-with-build-handler handler (lambda () exp ...)))
 
+;; Unresolved dynamic dependency.
+(define-record-type <unresolved>
+  (unresolved things continuation)
+  unresolved?
+  (things       unresolved-things)
+  (continuation unresolved-continuation))
+
+(define (build-accumulator continue store things mode)
+  "This build handler accumulates THINGS and returns an <unresolved> object."
+  (if (= mode (build-mode normal))
+      (unresolved things continue)
+      (continue #t)))
+
+(define (map/accumulate-builds store proc lst)
+  "Apply PROC over each element of LST, accumulating 'build-things' calls and
+coalescing them into a single call."
+  (define result
+    (map (lambda (obj)
+           (with-build-handler build-accumulator
+             (proc obj)))
+         lst))
+
+  (match (append-map (lambda (obj)
+                       (if (unresolved? obj)
+                           (unresolved-things obj)
+                           '()))
+                     result)
+    (()
+     result)
+    (to-build
+     ;; We've accumulated things TO-BUILD.  Actually build them and resume the
+     ;; corresponding continuations.
+     (build-things store (delete-duplicates to-build))
+     (map/accumulate-builds store
+                            (lambda (obj)
+                              (if (unresolved? obj)
+                                  ;; Pass #f because 'build-things' is now
+                                  ;; unnecessary.
+                                  ((unresolved-continuation obj) #f)
+                                  obj))
+                            result))))
+
 (define build-things
   (let ((build (operation (build-things (string-list things)
                                         (integer mode))
@@ -1788,6 +1832,18 @@ taking the store as its first argument."
   (preserve-documentation proc
                           (lambda (store . args)
                             (run-with-store store (apply proc args)))))
+
+(define (mapm/accumulate-builds mproc lst)
+  "Like 'mapm' in %STORE-MONAD, but accumulate 'build-things' calls and
+coalesce them into a single call."
+  (lambda (store)
+    (values (map/accumulate-builds store
+                                   (lambda (obj)
+                                     (run-with-store store
+                                       (mproc obj)))
+                                   lst)
+            store)))
+
 
 ;;
 ;; Store monad operators.
