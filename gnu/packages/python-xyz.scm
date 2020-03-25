@@ -19017,3 +19017,29 @@ actions: actions can spawn other actions, and eventually they either succeed
 or fail. The resulting logs tell you the story of what your software did: what
 happened, and what caused it.")
     (license license:asl2.0)))
+
+(define-public python-pem
+  (package
+    (name "python-pem")
+    (version "20.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pem" version))
+       (sha256
+        (base32
+         "1xh88ss279fprxnzd10dczmqwjhppbyvljm33zrg2mgybwd66qr7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-coverage" ,python-coverage)
+       ("python-pretend" ,python-pretend)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://pem.readthedocs.io/")
+    (synopsis "Easy PEM file parsing in Python")
+    (description
+     "This package provides a Python module for parsing and splitting PEM files.")
+    (license license:expat)))
