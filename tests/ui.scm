@@ -252,12 +252,12 @@ Second line" 24))
   (let* ((m (manifest (list guile-1.8.8)))
          (t (manifest-transaction (install (list guile-2.0.9)))))
     (with-store store
-      (and (string-match "guile\t1.8.8 → 2.0.9"
+      (and (string-match "guile +1.8.8 → 2.0.9"
                          (with-fluids ((%default-port-encoding "UTF-8"))
                            (with-error-to-string
                             (lambda ()
                               (show-manifest-transaction store m t)))))
-           (string-match "guile\t1.8.8 -> 2.0.9"
+           (string-match "guile +1.8.8 -> 2.0.9"
                          (with-error-to-string
                            (lambda ()
                              ;; In Guile 2.2, %DEFAULT-PORT-ENCODING doesn't
