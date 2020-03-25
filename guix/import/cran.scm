@@ -45,6 +45,7 @@
   #:use-module (guix utils)
   #:use-module (guix git)
   #:use-module ((guix build-system r) #:select (cran-uri bioconductor-uri))
+  #:use-module (guix ui)
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module (gnu packages)
