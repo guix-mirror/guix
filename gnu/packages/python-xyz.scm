@@ -18933,3 +18933,34 @@ enforcement of that policy.")
      "LDAP3 is a strictly RFC 4510 conforming LDAP V3 pure Python client
 library.")
     (license license:lgpl3+)))
+
+(define-public python-boltons
+  (package
+    (name "python-boltons")
+    (version "20.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "boltons" version))
+       (sha256
+        (base32
+         "0lrr40qqj3ch8xarvyzbnbjs79pz5aywklllq53l347h1b8xnkg4"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mahmoud/boltons")
+    (synopsis "Extensions to the Python standard library")
+    (description
+     "Boltons is a set of over 230 pure-Python utilities in the same spirit
+as — and yet conspicuously missing from — the standard library, including:
+
+@itemize
+@item Atomic file saving, bolted on with fileutils
+@item A highly-optimized OrderedMultiDict, in dictutils
+@item Two types of PriorityQueue, in queueutils
+@item Chunked and windowed iteration, in iterutils
+@item Recursive data structure iteration and merging, with iterutils.remap
+@item Exponential backoff functionality, including jitter, through
+iterutils.backoff
+@item A full-featured TracebackInfo type, for representing stack traces, in
+tbutils
+@end itemize")
+    (license license:bsd-3)))
