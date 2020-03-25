@@ -236,7 +236,7 @@
                      (use-modules (gnu services herd))
                      (start-service 'nfs))
                   marionette)
-                 (wait-for-file "/var/run/rpc.statd.pid")))
+                 (wait-for-file "/var/run/rpc.statd.pid" marionette)))
 
           (test-assert "nfs share is advertised"
             (marionette-eval
