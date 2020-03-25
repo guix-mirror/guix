@@ -159,7 +159,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.51")
+    (version "9.52")
     (source
       (origin
         (method url-fetch)
@@ -169,7 +169,7 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "0wdpcq9lq19v8an8xs28cgg7vfzb23f1j12m9p2wdnwa1vwk64by"))
+          "0z1w42y2jmcpl2m1l3z0sfii6zmvzcwcgzn6bydklia6ig7jli2p"))
         (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
@@ -240,31 +240,7 @@ printing, and psresize, for adjusting page sizes.")
                (("/bin/sh") (which "sh")))
              #t))
          ,@(if (%current-target-system)
-               `((add-after 'unpack 'define-ARCH_MAX_SIZE_T
-                   (lambda _
-                     ;; XXX: arch_autoconf.h is missing the recent addition of
-                     ;; ARCH_MAX_SIZE_T.  Just add it here based on the definition
-                     ;; in "base/genarch.c".  This can likely be removed for
-                     ;; Ghostscript > 9.51.
-                     (substitute* "arch/arch_autoconf.h.in"
-                       (("#define ARCH_MAX_ULONG.*" all)
-                        (string-append all "\n"
-                                       "#define ARCH_MAX_SIZE_T "
-                                       "((size_t)~0L + (size_t)0)\n")))
-                     #t))
-                 (add-before 'configure 'do-not-fail-without-native-freetype
-                   (lambda _
-                     ;; The configure script recurses to build the native tools.
-                     ;; They are built with --disable-freetype, which was made a
-                     ;; hard error in 9.51, causing a build failure because a
-                     ;; native freetype is not detected.  Just ignore the check
-                     ;; because it's not needed for these auxiliary tools.
-                     (substitute* "configure"
-                       (("as_fn_error \\$\\? \"(No usable Freetype.*found)\".*" all msg)
-                        (string-append "$as_echo \"$as_me:${as_lineno-$LINENO}: "
-                                       "WARNING: " msg "\"\n")))
-                     #t))
-                 (add-after 'configure 'add-native-lz
+               `((add-after 'configure 'add-native-lz
                    (lambda _
                      ;; Add missing '-lz' for native tools such as 'mkromfs'.
                      (substitute* "Makefile"
