@@ -18964,3 +18964,56 @@ iterutils.backoff
 tbutils
 @end itemize")
     (license license:bsd-3)))
+
+(define-public python-eliot
+  (package
+    (name "python-eliot")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "eliot" version))
+       (sha256
+        (base32 "0wabv7hk63l12881f4zw02mmj06583qsx2im0yywdjlj8f56vqdn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-journald-support
+           (lambda _
+             (for-each delete-file
+                     '("eliot/tests/test_journald.py"
+                       "eliot/journald.py"))
+             #t))
+         (add-after 'remove-journald-support 'remove-eliot-prettyprint-tests
+           ;; remove command-line tool's tests. TODO eliot-prettyprint should
+           ;; be installed and these tests should pass.
+           (lambda _
+             (delete-file "eliot/tests/test_prettyprint.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-boltons" ,python-boltons)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-six" ,python-six)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-coverage" ,python-coverage)
+       ("python-dask" ,python-dask)
+       ("python-flake8" ,python-flake8)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-testtools" ,python-testtools)
+       ("python-twine" ,python-twine)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/itamarst/eliot/")
+    (synopsis "Eliot: the logging system that tells you why it happened")
+    (description
+     "@dfn{eliot} is a Python logging system that outputs causal chains of
+actions: actions can spawn other actions, and eventually they either succeed
+or fail. The resulting logs tell you the story of what your software did: what
+happened, and what caused it.")
+    (license license:asl2.0)))
