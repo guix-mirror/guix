@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -55,7 +55,25 @@
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the
        ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
-       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")))
+       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
+
+       ;; TODO: Inline patch on next rebuild cycle.
+       ,@(if (string-prefix? "powerpc-" (or (%current-target-system)
+                                            (%current-system)))
+             '(#:phases (modify-phases %standard-phases
+                          (add-after 'unpack 'apply-patch
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              (let ((patch (assoc-ref inputs
+                                                      "powerpc-patch")))
+                                (invoke "patch" "--batch" "-p1"
+                                        "-i" patch))))))
+             '())))
+    (inputs
+     (if (string-prefix? "powerpc-" (or (%current-target-system)
+                                        (%current-system)))
+         `(("powerpc-patch" ,@(search-patches
+                               "libffi-3.3-powerpc-fixes.patch")))
+         '()))
     (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description
