@@ -250,14 +250,14 @@ output is indexed in many ways to simplify browsing.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.16.1")
+    (version "1.16.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-                "08g979ficj18i1w6w5219bgmns7czr03iadf20mk3lrzl8wbn1ax"))
+                "1l7dkqbsmbf94ax29jj1jf6a0r6ikc8jybg1p5m0c3ki7pg5ki6c"))
              (patches
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
@@ -288,6 +288,15 @@ output is indexed in many ways to simplify browsing.")
                (setenv "SHELL" sh)
                (setenv "CONFIG_SHELL" sh)
                #t)))
+
+           (add-before 'check 'skip-test
+             (lambda _
+               ;; This test requires 'etags' and fails if it's missing.
+               ;; Skip it.
+               (substitute* "t/tags-lisp-space.sh"
+                 (("^required.*" all)
+                  (string-append "exit 77\n" all "\n")))
+               #t))
 
          ;; Files like `install-sh', `mdate.sh', etc. must use
          ;; #!/bin/sh, otherwise users could leak erroneous shebangs
@@ -324,32 +333,6 @@ standards-compliant Makefiles.  Build requirements are entered in an
 intuitive format and then Automake works with Autoconf to produce a robust
 Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
-
-(define-public automake-1.16.2
-  (package
-    (inherit automake)
-    (version "1.16.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/automake/automake-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-                "1l7dkqbsmbf94ax29jj1jf6a0r6ikc8jybg1p5m0c3ki7pg5ki6c"))
-             (patches
-              (search-patches "automake-skip-amhello-tests.patch"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments automake)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-before 'check 'skip-test
-             (lambda _
-               ;; This test requires 'etags' and fails if it's missing.
-               ;; Skip it.
-               (substitute* "t/tags-lisp-space.sh"
-                 (("^required.*" all)
-                  (string-append "exit 77\n" all "\n")))
-               #t))))))))
 
 (define-public libtool
   (package
