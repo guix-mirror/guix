@@ -1267,6 +1267,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
+  %D%/packages/patches/openssl-1.1.1e-revert-detect-eof.patch	\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/openssl-CVE-2019-1559.patch		\
   %D%/packages/patches/open-zwave-hidapi.patch			\

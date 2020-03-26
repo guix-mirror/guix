@@ -293,7 +293,8 @@ required structures.")
              (sha256
               (base32
                "1gnwlri1dphr5wdzmg9vlhkh6aq2yqgpfkpmffzwjlfb26n62kv9"))
-             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))))
+             (patches (search-patches "openssl-1.1-c-rehash-in.patch"
+                                      "openssl-1.1.1e-revert-detect-eof.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"         ;6.8 MiB of man3 pages and full HTML documentation
