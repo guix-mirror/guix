@@ -1,0 +1,63 @@
+Revert upstream commit 04bb9a08b3c25f8e3c0c235f9cefc0f94df59a5a because it
+causes a test failure on i686 and possibly other architectures.
+
+See <https://github.com/libgd/libgd/issues/613>.
+
+diff --git a/src/gdft.c b/src/gdft.c
+--- a/src/gdft.c
++++ b/src/gdft.c
+@@ -1579,6 +1579,12 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, const c
+ 		double scalex = (double)hdpi / (64 * METRIC_RES);
+ 		double scaley = (double)vdpi / (64 * METRIC_RES);
+ 
++		/* increase by 1 pixel to allow for rounding */
++		total_min.x -= METRIC_RES;
++		total_min.y -= METRIC_RES;
++		total_max.x += METRIC_RES;
++		total_max.y += METRIC_RES;
++
+ 		/* rotate bounding rectangle, scale and round to int pixels, and translate */
+ 		brect[0] = x + (total_min.x * cos_a + total_max.y * sin_a)*scalex;
+ 		brect[1] = y - (total_min.x * sin_a - total_max.y * cos_a)*scaley;
+diff --git a/tests/gdimagestringft/gdimagestringft_bbox.c b/tests/gdimagestringft/gdimagestringft_bbox.c
+--- a/tests/gdimagestringft/gdimagestringft_bbox.c
++++ b/tests/gdimagestringft/gdimagestringft_bbox.c
+@@ -8,22 +8,22 @@
+ #define DELTA (PI/8)
+ 
+ static int EXPECT[16][8] = {
+-	{500, 400, 628, 400, 628, 376, 500, 376},
+-	{492, 362, 611, 312, 601, 290, 483, 339},
+-	{470, 330, 561, 239, 544, 221, 453, 312},
+-	{437, 308, 486, 189, 464, 180, 414, 299},
+-	{400, 301, 400, 173, 376, 173, 376, 301},
+-	{363, 309, 313, 190, 291, 200, 340, 318},
+-	{332, 331, 241, 240, 223, 257, 314, 348},
+-	{311, 363, 192, 314, 183, 336, 302, 386},
+-	{304, 399, 176, 399, 176, 423, 304, 423},
+-	{312, 435, 193, 485, 203, 507, 321, 458},
+-	{333, 465, 242, 556, 259, 574, 350, 483},
+-	{364, 486, 315, 605, 337, 614, 387, 495},
+-	{399, 492, 399, 620, 423, 620, 423, 492},
+-	{434, 484, 484, 603, 506, 593, 457, 475},
+-	{463, 464, 554, 555, 572, 538, 481, 447},
+-	{483, 434, 602, 483, 611, 461, 492, 411},
++	{498, 401, 630, 401, 630, 374, 498, 374},
++	{491, 364, 613, 313, 602, 288, 481, 338},
++	{470, 332, 563, 239, 544, 219, 451, 312},
++	{438, 310, 488, 189, 463, 178, 412, 300},
++	{401, 303, 401, 171, 374, 171, 374, 303},
++	{365, 310, 314, 188, 289, 199, 339, 320},
++	{334, 331, 241, 238, 221, 257, 314, 350},
++	{313, 362, 192, 312, 181, 337, 303, 388},
++	{306, 398, 174, 398, 174, 425, 306, 425},
++	{313, 433, 191, 484, 202, 509, 323, 459},
++	{333, 463, 240, 556, 259, 576, 352, 483},
++	{363, 484, 313, 605, 338, 616, 389, 494},
++	{398, 490, 398, 622, 425, 622, 425, 490},
++	{432, 483, 483, 605, 508, 594, 458, 473},
++	{461, 464, 554, 557, 574, 538, 481, 445},
++	{481, 435, 602, 485, 613, 460, 491, 409},
+ };
+ 
+ int main()

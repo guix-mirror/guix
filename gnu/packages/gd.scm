@@ -42,7 +42,7 @@
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.2.5")
+    (version "2.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -50,14 +50,9 @@
                    version "/libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "0lfy5f241sbv8s3splm2zqiaxv7lxrcshh875xryryk7yk5jqc4c"))
-
-             (patches (search-patches "gd-CVE-2018-5711.patch"
-                                      "gd-CVE-2018-1000222.patch"
-                                      "gd-CVE-2019-6977.patch"
-                                      "gd-CVE-2019-6978.patch"
-                                      "gd-fix-tests-on-i686.patch"
-                                      "gd-freetype-test-failure.patch"))))
+               "0n5czhxzinvjvmhkf5l9fwjdx5ip69k5k7pj6zwb6zs1k9dibngc"))
+             (patches (search-patches "gd-fix-tests-on-i686.patch"
+                                      "gd-brect-bounds.patch"))))
     (build-system gnu-build-system)
     (arguments
       ;; As recommended by github.com/libgd/libgd/issues/278 to fix rounding
@@ -78,12 +73,11 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("freetype" ,freetype)
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("zlib" ,zlib)))
-    (propagated-inputs
-     `(("fontconfig" ,fontconfig)
-       ("libjpeg" ,libjpeg-turbo)))
     (home-page "https://www.libgd.org/")
     (synopsis "Library for the dynamic creation of images by programmers")
     (description
