@@ -36,7 +36,6 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (replacement icu4c/fixed)
    (version "66.1")
    (source (origin
             (method url-fetch)
@@ -46,6 +45,8 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
+            (patch-flags '("-p2"))
+            (patches (search-patches "icu4c-CVE-2020-10531.patch"))
             (sha256
              (base32 "0bharwzc9nzkbrcf405z2nb3h7q0711z450arz0mjmdrk8hg58sj"))))
    (build-system gnu-build-system)
@@ -112,17 +113,6 @@ C/C++ part.")
                  (copy-recursively "../build" out)
                  #t)))))))
     (native-inputs '())))
-
-(define icu4c/fixed
-  (package
-    (inherit icu4c)
-    (source (origin
-              (inherit (package-source icu4c))
-              (patch-flags '("-p2"))
-              (patches (append
-                         (origin-patches (package-source icu4c))
-                         (search-patches
-                           "icu4c-CVE-2020-10531.patch")))))))
 
 (define-public java-icu4j
   (package
