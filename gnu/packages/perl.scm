@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Stephen J. Scheck <sscheck@cpan.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages less)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
@@ -860,6 +862,101 @@ the Carp.pm module doesn't help.")
     (description "This module can retrieve information from the CDDB.")
     ;; Either GPLv2 or the "Artistic" license.
     (license (list gpl2 artistic2.0))))
+
+(define-public circos
+  (package
+    (name "circos")
+    (version "0.69-9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://circos.ca/distribution/circos-" version ".tgz"))
+              (sha256
+               (base32 "1ll9yxbk0v64813np0qz6h8bc53qlnhg9y1053b57xgkxgmxgn1l"))
+              (patches (list (search-patch "circos-remove-findbin.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (datapath (string-append out "/share/Circos"))
+                    (error (string-append out "/share/Circos/error"))
+                    (fonts (string-append out "/share/Circos/fonts"))
+                    (data (string-append out "/share/Circos/data"))
+                    (tiles (string-append out "/share/Circos/tiles"))
+                    (etc (string-append out "/share/Circos/etc"))
+                    (lib (string-append out "/lib/perl5/site_perl/"
+                                        ,(package-version perl)))
+                    (install-directory (lambda (source target)
+                                         (mkdir-p target)
+                                         (copy-recursively source target))))
+               ;; Circos looks into a relative path for its configuration
+               ;; files.  We need to provide an absolute path towards the
+               ;; corresponding paths in the store.
+               (substitute* '("bin/circos" "etc/colors_fonts_patterns.conf"
+                              "etc/gddiag.conf" "etc/brewer.conf" "README")
+                 (("<<include etc") (string-append "<<include " etc)))
+               (substitute* '("etc/colors.conf" "etc/image.black.conf"
+                              "etc/patterns.conf" "etc/image.conf")
+                 (("<<include ") (string-append "<<include " etc "/")))
+               (substitute* '("etc/fonts.conf" "fonts/README.fonts")
+                 (("= fonts") (string-append "= " fonts)))
+               (substitute* "etc/patterns.conf"
+                 (("= tiles") (string-append "= " tiles)))
+               (substitute* "lib/Circos/Error.pm"
+                 (("error/configuration.missing.txt")
+                  (string-append error "/configuration.missing.txt")))
+               (substitute* "etc/housekeeping.conf"
+                 (("# data_path = /home/martink/circos-tutorials ")
+                  (string-append "data_path = " datapath)))
+               (substitute* "lib/Circos/Configuration.pm"
+                 (("my @possibilities = \\(")
+                  (string-append "my @possibilities = ("
+                                 "catfile( \"" datapath "\", $arg ), "
+                                 "catfile( \"" etc "\", $arg ), "
+                                 "catfile( \"" etc "/tracks\", $arg ), ")))
+               (for-each install-directory
+                         (list "error" "fonts" "data" "tiles" "etc" "lib")
+                         (list error fonts data tiles etc lib))
+               (install-file "bin/circos" bin)
+               #t))))))
+    (propagated-inputs
+     `(("perl" ,perl)
+       ("perl-carp" ,perl-carp)
+       ("perl-clone" ,perl-clone)
+       ("perl-config-general" ,perl-config-general)
+       ("perl-digest-md5" ,perl-digest-md5)
+       ("perl-file-temp" ,perl-file-temp)
+       ("perl-font-ttf" ,perl-font-ttf)
+       ("perl-gd" ,perl-gd)
+       ("perl-getopt-long" ,perl-getopt-long)
+       ("perl-list-allutils" ,perl-list-allutils)
+       ("perl-math-bezier" ,perl-math-bezier)
+       ("perl-math-round" ,perl-math-round)
+       ("perl-math-vecstat" ,perl-math-vecstat)
+       ("perl-memoize" ,perl-memoize)
+       ("perl-number-format" ,perl-number-format)
+       ("perl-params-validate" ,perl-params-validate)
+       ("perl-readonly" ,perl-readonly)
+       ("perl-regexp-common" ,perl-regexp-common)
+       ("perl-set-intspan" ,perl-set-intspan)
+       ("perl-statistics-basic" ,perl-statistics-basic)
+       ("perl-svg" ,perl-svg)
+       ("perl-text-balanced" ,perl-text-balanced)
+       ("perl-text-format" ,perl-text-format)
+       ("perl-time-hires" ,perl-time-hires)))
+    (home-page "http://circos.ca/")
+    (synopsis "Generation of circularly composited renditions")
+    (description
+     "Circos is a program for the generation of publication-quality, circularly
+composited renditions of genomic data and related annotations.")
+    (license gpl2+)))
 
 (define-public perl-class-accessor
   (package
@@ -5175,6 +5272,29 @@ Build a Mail::Internet object, and then send it out using Mail::Mailer.
 @item Mail::Util
 \"Smart functions\" you should not depend on.
 @end table")
+    (license perl-license)))
+
+(define-public perl-mail-sendmail
+  (package
+    (name "perl-mail-sendmail")
+    (version "0.80")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/N/NE/NEILB/Mail-Sendmail-"
+            version
+            ".tar.gz"))
+      (sha256
+       (base32
+        "1r38qbkj7jwj8cqy1rnqzkk81psxi08b1aiq392817f3bk5ri2jv"))))
+    (build-system perl-build-system)
+    (arguments `(#:tests? #f))      ;socket not available during build
+    (home-page "https://metacpan.org/release/Mail-Sendmail")
+    (synopsis "Simple platform independent mailer")
+    (description "Mail::Sendmail is a pure perl module that provides a
+simple means to send email from a perl script.  The module only
+requires Perl5 and a network connection.")
     (license perl-license)))
 
 (define-public perl-math-bezier

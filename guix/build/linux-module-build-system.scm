@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,14 +34,13 @@
 ;; Code:
 
 ;; Copied from make-linux-libre's "configure" phase.
-(define* (configure #:key inputs target #:allow-other-keys)
+(define* (configure #:key inputs target arch #:allow-other-keys)
   (setenv "KCONFIG_NOTIMESTAMP" "1")
   (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
-  ;(let ((arch ,(system->linux-architecture
-  ;                         (or (%current-target-system)
-  ;                             (%current-system)))))
-  ;  (setenv "ARCH" arch)
-  ;  (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
+
+  (setenv "ARCH" arch)
+  (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
+
   (when target
     (setenv "CROSS_COMPILE" (string-append target "-"))
     (format #t "`CROSS_COMPILE' set to `~a'~%"
@@ -85,8 +85,9 @@
     (replace 'install install)))
 
 (define* (linux-module-build #:key inputs (phases %standard-phases)
-                       #:allow-other-keys #:rest args)
-  "Build the given package, applying all of PHASES in order, with a Linux kernel in attendance."
+                             #:allow-other-keys #:rest args)
+  "Build the given package, applying all of PHASES in order, with a Linux
+kernel in attendance."
   (apply gnu:gnu-build
          #:inputs inputs #:phases phases
          args))

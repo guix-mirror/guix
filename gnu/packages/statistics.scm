@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -1762,14 +1762,14 @@ side.")
 (define-public r-locfit
   (package
     (name "r-locfit")
-    (version "1.5-9.1")
+    (version "1.5-9.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "locfit" version))
        (sha256
         (base32
-         "0lafrmq1q7x026m92h01hc9cjjiximqqi3v1g2hw7ai9vf7i897m"))))
+         "00l0s6cxnv95zybkgki0380fih2kr1kbm7m88x56phklln3nx27b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -3134,13 +3134,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.12")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "0089288ma1cj9nf4jscmpbagyqlg4r90mw8bwl4zv1d4hjl0d693"))))
+                "1db35mi4m4q3kha4vhvh693bv04y7h9pdawhsx8f234qjvz7783r"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
@@ -3151,6 +3151,8 @@ using the multicore functionality of the parallel package.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-promises" ,r-promises)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rstudio.github.io/DT")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
@@ -3166,7 +3168,7 @@ Shiny).  The @code{DataTables} library has been included in this R package.")
     (license (list license:gpl3
                    license:expat
                    license:asl2.0
-                   (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+                   license:wtfpl2))))
 
 (define-public r-base64enc
   (package
@@ -3238,14 +3240,14 @@ path-wise fashion.")
 (define-public r-pkgmaker
   (package
     (name "r-pkgmaker")
-    (version "0.31")
+    (version "0.31.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgmaker" version))
        (sha256
         (base32
-         "0cc6v6kpwxwwh7k7zyw13wqdp0f9qzzr1a7vv02lskgii54aa4nb"))))
+         "0r0ga20dy25v9y5gjbds4y6kaa5a7qknh503qdkzllcpzbibh0hp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -3964,13 +3966,13 @@ package instead.")
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "4.3-1")
+    (version "4.4-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
-        (base32 "02ni7719acdmc8pcbx07b7x2nqsjrwq4smnx9qlzqjmx4pmp3cwc"))))
+        (base32 "1ivfamwghd2z408fkhs7jy5zl3q0z1a2la16yi8js872br6cyvpi"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
@@ -4757,14 +4759,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-5")
+    (version "0.93-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "0mkzbsjl5nihyj7mzks14p6kr3spp44xvygjz4ran11gspdn9rdx"))))
+         "1cr478xi4n9jwsdpbq182a7ig47rpb413q28dz6d1am08sk6657a"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))

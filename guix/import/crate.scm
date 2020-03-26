@@ -112,7 +112,7 @@ record or #f if it was not found."
          (url  (string-append (%crate-base-url) path)))
     (match (assoc-ref (or (json-fetch url) '()) "dependencies")
       ((? vector? vector)
-       (map json->crate-dependency (vector->list vector)))
+       (delete-duplicates (map json->crate-dependency (vector->list vector))))
       (_
        '()))))
 

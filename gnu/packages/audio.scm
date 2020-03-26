@@ -78,6 +78,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3) ;taglib
   #:use-module (gnu packages multiprecision)
@@ -4074,3 +4075,80 @@ given plugin and its UI(s) match up with the provided metadata and adhere
 to well-known best practices.")
     (home-page "https://open-music-kontrollers.ch/lv2/lv2lint/")
     (license license:artistic2.0)))
+
+(define-public lv2toweb
+  (package
+    (name "lv2toweb")
+    (version "0.4")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/x42/lv2toweb")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "007aysqvgkf25za8nkmyd5g9kp1zla460dcpidlj5xg1zc3fcdfi"))))
+    (build-system gnu-build-system)
+    (arguments
+    `(#:tests? #f  ; no "check" target
+      #:make-flags (list "CC=gcc"
+                         (string-append "PREFIX=" (assoc-ref %outputs "out")))
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure))))
+    (inputs
+      `(("jalv", jalv)
+        ("lilv", lilv)))
+    (native-inputs
+      `(("help2man", help2man)
+        ("pkg-config", pkg-config)))
+    (synopsis "Documentation generator for LV2 plugins")
+    (description
+      "lv2toweb allows the user to create an xhtml page with information
+about the given LV2 plugin, provided that the plugin and its UI(s) match up
+with the provided metadata and adhere to well-known best practices.")
+    (home-page "https://github.com/x42/lv2toweb")
+    (license (list license:isc license:gpl2))))
+
+(define-public ztoolkit
+  (package
+    (name "ztoolkit")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.zrythm.org/git/ztoolkit")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07xl3cmdaf7k9mm58m93cn8i1jvgimmiifdw1w7v2jl88nx60pm1"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "GUI toolkit for LV2 plugins")
+    (description "ZToolkit (Ztk) is a cross-platform GUI toolkit heavily
+inspired by GTK.  It handles events and low level drawing on behalf of
+the user and provides a high-level API for managing the UI and custom
+widgets.  ZToolkit is written in C and was created to be used for building
+audio plugin UIs, where the dependencies often need to be kept to a
+minimum.")
+    (home-page "https://git.zrythm.org/cgit/ztoolkit/")
+    (license license:agpl3+)))
+
+(define-public ztoolkit-rsvg
+  (package
+    (inherit ztoolkit)
+    (name "ztoolkit-rsvg")
+    (arguments
+     `(#:configure-flags `("-Denable_rsvg=true")))
+    (inputs
+     `(("librsvg" ,librsvg)
+       ,@(package-inputs ztoolkit)))
+    (synopsis "ZToolkit with SVG support")))

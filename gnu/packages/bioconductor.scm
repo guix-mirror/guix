@@ -2649,6 +2649,8 @@ interactive exploration of results.")
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/RGLab/MAST/")
     (synopsis "Model-based analysis of single cell transcriptomics")
     (description
@@ -3393,20 +3395,22 @@ information about samples and features can be added to the plot.")
 (define-public r-gosemsim
   (package
     (name "r-gosemsim")
-    (version "2.12.0")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOSemSim" version))
        (sha256
         (base32
-         "0pqnlgdvh5szjhwc1mw1snjgpj9lrsnk44bn164cl3zwvdayccya"))))
+         "1r8yx6qw6d6602cp8aspzl3shi1l1zqcrc8fm9d5wg01sw1whs05"))))
     (properties `((upstream-name . "GOSemSim")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-go-db" ,r-go-db)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/GOSemSim")
     (synopsis "GO-terms semantic similarity measures")
     (description
@@ -5316,14 +5320,14 @@ coefficients).")
 (define-public r-biosigner
   (package
     (name "r-biosigner")
-    (version "1.14.2")
+    (version "1.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biosigner" version))
        (sha256
         (base32
-         "184vbbd010yzqv0qn1prxiazibxwiacvlpg9yzcgyhamcx9bvq73"))))
+         "0hypk784xcax99mp673md6kvx45chk2nxbqniww7zm9q2hj983hl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -6995,14 +6999,14 @@ a file-backed matrix with factor properties.")
 (define-public r-bigpint
   (package
     (name "r-bigpint")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigPint" version))
        (sha256
         (base32
-         "10vs0lzfyxp6sm4r9pxfwipjvzmmaqnvwn1hc5q37s5qz44fg0hk"))))
+         "1zkakxi1iqavzmjxnkkd02qm5jk28ldcvcdcxaafz748dz6s67fs"))))
     (properties `((upstream-name . "bigPint")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7022,6 +7026,8 @@ a file-backed matrix with factor properties.")
        ("r-shinydashboard" ,r-shinydashboard)
        ("r-stringr" ,r-stringr)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/lindsayrutter/bigPint")
     (synopsis "Big multivariate data plotted interactively")
     (description
@@ -7296,14 +7302,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.12.4")
+    (version "1.12.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "01cnp00y5bk551c8gqgqp5468dvccg72i0rvh5cxgbx1c42zy6xn"))))
+         "0a7zsq3adg8rph1w2qr75bpmrq53j99rsypmxj9w5mz9q23r2qlr"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)
@@ -7315,6 +7321,8 @@ access.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://waldronlab.io/MultiAssayExperiment/")
     (synopsis "Integration of multi-omics experiments in Bioconductor")
     (description

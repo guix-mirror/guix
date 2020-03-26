@@ -44,6 +44,9 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages libftdi))
 
 (define-public abc
@@ -212,8 +215,8 @@ For synthesis, the compiler generates netlists in the desired format.")
     (license license:isc)))
 
 (define-public icestorm
-  (let ((commit "c0cbae88ab47a3879aacf80d53b6a85710682a6b")
-        (revision "2"))
+  (let ((commit "0ec00d892a91cc68e45479b46161f649caea2933")
+        (revision "3"))
    (package
     (name "icestorm")
     (version (git-version "0.0" revision commit))
@@ -225,7 +228,7 @@ For synthesis, the compiler generates netlists in the desired format.")
               (file-name (git-file-name name version))
               (sha256
                 (base32
-                   "0bqm0rpywm64yvbq75klpyzb1g9sdsp1kvdlyqg4hvm8jw9w8lya"))))
+                   "1qlh99fafb7xga702k64fmc9m700nsddrfgcq4x8qn8fplsb64f1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no unit tests that don't need an FPGA exist.
@@ -255,6 +258,41 @@ For synthesis, the compiler generates netlists in the desired format.")
     (description "Project IceStorm - Lattice iCE40 FPGAs Bitstream Tools.
 Includes the actual FTDI connector.")
     (license license:isc))))
+
+(define-public nextpnr-ice40
+  (let [(commit "c192ba261d77ad7f0a744fb90b01e4a5b63938c4")
+        (revision "0")]
+  (package
+    (name "nextpnr-ice40")
+    (version (git-version "0.0.0" revision commit))
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "git://github.com/YosysHQ/nextpnr")
+               (commit commit)))
+        (sha256
+          (base32
+            "0g2ar1z89b31qw5vgqj2rrcv9rzncs94184dgcsrz19p866654mf"))))
+    (inputs
+      `(("qtbase" ,qtbase)
+        ("boost" ,boost-with-python3)
+        ("yosys" ,yosys)
+        ("eigen" ,eigen)
+        ("python" ,python)
+        ("icestorm" ,icestorm)))
+    (build-system cmake-build-system)
+    (arguments
+      `(#:configure-flags `("-DARCH=ice40"
+                            ,(string-append "-DICEBOX_ROOT="
+                                            (assoc-ref %build-inputs "icestorm")
+                                            "/share/icebox"))
+        #:tests? #f))
+    (synopsis "Place-and-Route tool for FPGAs")
+    (description "nextpnr aims to be a vendor neutral, timing driven,
+FOSS FPGA place and route tool.  ")
+    (home-page "https://github.com/YosysHQ/nextpnr")
+    (license license:expat))))
 
 (define-public arachne-pnr
   (let ((commit "840bdfdeb38809f9f6af4d89dd7b22959b176fdd")

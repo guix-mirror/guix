@@ -18,6 +18,7 @@
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system r)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages c)
@@ -759,7 +761,7 @@ data structures in C++.")
 (define-public r-shiny
   (package
     (name "r-shiny")
-    (version "1.4.0")
+    (version "1.4.0.2")
     (source
      (origin
        (method git-fetch)
@@ -769,7 +771,7 @@ data structures in C++.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17ac48g414h9dhi0k4wrah4gyik0q5r0xw3kc01c02qfjwimqsx7"))))
+         "005wgcxq7f2q9g6wvfk29n2nms262w0abpz93sfvx79yv6qxppzs"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build r-build-system)
@@ -837,15 +839,19 @@ data structures in C++.")
              #t)))))
     (propagated-inputs
      `(("r-crayon" ,r-crayon)
-       ("r-fastmap" ,r-fastmap)
-       ("r-httpuv" ,r-httpuv)
-       ("r-mime" ,r-mime)
-       ("r-jsonlite" ,r-jsonlite)
-       ("r-xtable" ,r-xtable)
        ("r-digest" ,r-digest)
+       ("r-fastmap" ,r-fastmap)
        ("r-htmltools" ,r-htmltools)
+       ("r-httpuv" ,r-httpuv)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-later" ,r-later)
+       ("r-mime" ,r-mime)
+       ("r-promises" ,r-promises)
        ("r-r6" ,r-r6)
-       ("r-sourcetools" ,r-sourcetools)))
+       ("r-rlang" ,r-rlang)
+       ("r-sourcetools" ,r-sourcetools)
+       ("r-withr" ,r-withr)
+       ("r-xtable" ,r-xtable)))
     (inputs
      `(("js-datatables" ,js-datatables)
        ("js-html5shiv" ,js-html5shiv)
@@ -856,7 +862,8 @@ data structures in C++.")
        ("js-highlight" ,js-highlight)
        ("js-es5-shim" ,js-es5-shim)))
     (native-inputs
-     `(("uglify-js" ,uglify-js)))
+     `(("uglify-js" ,uglify-js)
+       ("gfortran" ,gfortran)))
     (home-page "http://shiny.rstudio.com")
     (synopsis "Easy interactive web applications with R")
     (description
@@ -4931,6 +4938,28 @@ files.")
 environment within Shiny.")
     (license license:expat)))
 
+(define-public r-randomizr
+  (package
+    (name "r-randomizr")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "randomizr" version))
+       (sha256
+        (base32
+         "0dljyfldnardaps3fq6vi5wcs9x6qfaq5apapa78c51lnaa6fn9h"))))
+    (properties `((upstream-name . "randomizr")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://declaredesign.org/r/randomizr/")
+    (synopsis "Tools for common forms of random assignment and sampling")
+    (description
+     "This package provides tools for generating random assignments for common
+experimental designs and random samples for common sampling designs.")
+    (license license:expat)))
+
 (define-public r-base64url
   (package
     (name "r-base64url")
@@ -4961,14 +4990,14 @@ systems.")
 (define-public r-radiant-data
   (package
     (name "r-radiant-data")
-    (version "1.0.6")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "radiant.data" version))
        (sha256
         (base32
-         "08x7zasxf429m021482p86lx3zc6dqz2mih0id8s34isg4gafapg"))
+         "19sjjb49inrfl7jzq4zpwhdslni0zrp30bl58pisin29ka3ylpzs"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4986,15 +5015,17 @@ systems.")
        ("r-dt" ,r-dt)
        ("r-glue" ,r-glue)
        ("r-ggplot2" ,r-ggplot2)
-       ("r-gridextra" ,r-gridextra)
        ("r-import" ,r-import)
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
        ("r-lubridate" ,r-lubridate)
        ("r-magrittr" ,r-magrittr)
        ("r-markdown" ,r-markdown)
+       ("r-mass" ,r-mass)
+       ("r-patchwork" ,r-patchwork)
        ("r-plotly" ,r-plotly)
        ("r-psych" ,r-psych)
+       ("r-randomizr" ,r-randomizr)
        ("r-readr" ,r-readr)
        ("r-readxl" ,r-readxl)
        ("r-rlang" ,r-rlang)
@@ -6864,14 +6895,14 @@ containing one or more SNPs that evolved under directional selection.")
 (define-public r-proc
   (package
     (name "r-proc")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pROC" version))
        (sha256
         (base32
-         "0qkp1byl2xspxaaf0by6mvvrhg7wlz6fxmynz2hkh0ds24w7ig9m"))))
+         "0apwa5zzqh74pjnvf5a1s5qf6i9r5h44jdllfrwymkd2v479d2xn"))))
     (properties `((upstream-name . "pROC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11583,14 +11614,14 @@ lasso, adaptive lasso and Ridge regression based on cross-validation.")
 (define-public r-mcmc
   (package
     (name "r-mcmc")
-    (version "0.9-6.1")
+    (version "0.9-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mcmc" version))
        (sha256
         (base32
-         "1i1nhdapyijvm58zx38q28zk01ndmi6smjivxk5xs2cx9b6v2av9"))))
+         "0q42m8ab7b6bxhns494ksjdss5f3c5m2jjfdlfj6fk1nz7ax7i5p"))))
     (build-system r-build-system)
     (home-page "https://www.stat.umn.edu/geyer/mcmc/")
     (synopsis "Markov chain Monte Carlo")
@@ -15040,14 +15071,14 @@ extends the lme4 package.")
 (define-public r-batchtools
   (package
     (name "r-batchtools")
-    (version "0.9.12")
+    (version "0.9.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "batchtools" version))
        (sha256
         (base32
-         "16x524hvy9d8p7r4fi1c8mixcvzgsjbf3y0vxaa56ssbbab4p7f9"))))
+         "02bwfinwgn5nl638997javig61jmr0ci0qybmprz13jnvmam1yns"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
@@ -15062,6 +15093,8 @@ extends the lme4 package.")
        ("r-rappdirs" ,r-rappdirs)
        ("r-stringi" ,r-stringi)
        ("r-withr" ,r-withr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/mllg/batchtools")
     (synopsis "Tools for computation on batch systems")
     (description
@@ -15322,20 +15355,22 @@ the current document.")
 (define-public r-xgboost
   (package
     (name "r-xgboost")
-    (version "0.90.0.2")
+    (version "1.0.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xgboost" version))
        (sha256
         (base32
-         "1gy9rzg43mjpfis893vf15drmbigfn0481zrzss9ajnmnk0q8194"))))
+         "0fx5qjpjjirzhplddqmxlysyqszp79w74x00b5shp6p2lzy6yd9a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
        ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-stringi" ,r-stringi)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/dmlc/xgboost")
     (synopsis "Extreme gradient boosting")
     (description
@@ -15561,35 +15596,31 @@ guaranteeing well-connected communities.\" <arXiv:1810.08473>.")
     (license license:gpl3)))
 
 (define-public r-patchwork
-  ;; There has been no public release yet.
-  (let ((commit "fd7958bae3e7a1e30237c751952e412a0a1d1242")
-        (revision "1"))
-    (package
-      (name "r-patchwork")
-      (version (git-version "0.0.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/thomasp85/patchwork.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "00fq520xwy1ysg4k8x48x9b0yy9wyi8y8zj6dvxjg4bwx0yyp6s4"))))
-      (build-system r-build-system)
-      (propagated-inputs
-       `(("r-ggplot2" ,r-ggplot2)
-         ("r-gtable" ,r-gtable)))
-      (home-page "https://github.com/thomasp85/patchwork")
-      (synopsis "Compose ggplot2 plots")
-      (description
-       "The @code{ggplot2} package provides a strong API for sequentially
+  (package
+    (name "r-patchwork")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "patchwork" version))
+       (sha256
+        (base32
+         "0qrwbcswh7ylrmghi17k6wk7w51cz6mcmvcyyd41hy3m2ywmkywb"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gtable" ,r-gtable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/thomasp85/patchwork")
+    (synopsis "Compose ggplot2 plots")
+    (description
+     "The @code{ggplot2} package provides a strong API for sequentially
 building up a plot, but does not concern itself with composition of multiple
 plots.  Patchwork is a package that expands the API to allow for arbitrarily
 complex composition of plots by providing mathmatical operators for combining
 multiple plots.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public r-liger
   (package
@@ -15666,43 +15697,47 @@ dataset-specific factors.")
     (license license:gpl3)))
 
 (define-public r-harmony
-  ;; There are no tagged commits
-  (let ((commit "4d1653870d4dd70fff1807c182882db1fbf9af5a")
-        (revision "1"))
-    (package
-      (name "r-harmony")
-      (version (git-version "1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/immunogenomics/harmony")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1gasdldr4aalr9h2q9kmm3y4i7azkgnhdn4bmvsszs7lg9xacw85"))))
-      (build-system r-build-system)
-      (propagated-inputs
-       `(("r-cowplot" ,r-cowplot)
-         ("r-dplyr" ,r-dplyr)
-         ("r-ggplot2" ,r-ggplot2)
-         ("r-irlba" ,r-irlba)
-         ("r-matrix" ,r-matrix)
-         ("r-rcpp" ,r-rcpp)
-         ("r-rcpparmadillo" ,r-rcpparmadillo)
-         ("r-rcppprogress" ,r-rcppprogress)
-         ("r-rlang" ,r-rlang)
-         ("r-tibble" ,r-tibble)
-         ("r-tidyr" ,r-tidyr)))
-      (home-page "https://github.com/immunogenomics/harmony")
-      (synopsis "Integration of single cell sequencing data")
-      (description
-       "This package provides an implementation of the Harmony algorithm for
+  (package
+    (name "r-harmony")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/immunogenomics/harmony")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "05r401q09rbr6fqhb9mbd95082cjdi3nag1cv6zn96xkr0f6imq9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file '("config.status" "configure"))
+           #t))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-irlba" ,r-irlba)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppprogress" ,r-rcppprogress)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (home-page "https://github.com/immunogenomics/harmony")
+    (synopsis "Integration of single cell sequencing data")
+    (description
+     "This package provides an implementation of the Harmony algorithm for
 single cell integration, described in Korsunsky et al
 @url{doi.org/10.1101/461954}.  The package includes a standalone Harmony
 function and interfaces to external frameworks.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public r-covr
   (package
@@ -18389,14 +18424,14 @@ it may be seen by an animal with less acute vision.")
 (define-public r-caret
   (package
     (name "r-caret")
-    (version "6.0-85")
+    (version "6.0-86")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "caret" version))
        (sha256
         (base32
-         "0jxbf2zcvbb5s2pnjzg182awjvylc57q7z5plx6gs6gm62zxjafs"))))
+         "0dyflixdw98lvk2x3w136sw24ij0fwx5c7l709dmqr5z7xy1qjns"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreach" ,r-foreach)
@@ -18409,6 +18444,8 @@ it may be seen by an animal with less acute vision.")
        ("r-recipes" ,r-recipes)
        ("r-reshape2" ,r-reshape2)
        ("r-withr" ,r-withr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/topepo/caret")
     (synopsis "Classification and regression training")
     (description
@@ -20910,3 +20947,73 @@ service.  Functions are provided to work with the OAI-PMH verbs:
 @code{GetRecord}, @code{Identify}, @code{ListIdentifiers},
 @code{ListMetadataFormats}, @code{ListRecords}, and @code{ListSets}.")
     (license license:expat)))
+
+(define-public r-argon2
+  (package
+    (name "r-argon2")
+    (version "0.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "argon2" version))
+       (sha256
+        (base32
+         "0kqn06rpb39jlzizjlnc5c44mfic8llrshxn7ljgmyj35lbqwxqh"))))
+    (properties `((upstream-name . "argon2")))
+    (build-system r-build-system)
+    (home-page "https://github.com/wrathematics/argon2")
+    (synopsis "Secure password hashing based on the argon2 algorithm")
+    (description
+     "This package provides utilities for secure password hashing via the
+argon2 algorithm.")
+    (license license:bsd-2)))
+
+(define-public r-getpass
+  (package
+    (name "r-getpass")
+    (version "0.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "getPass" version))
+       (sha256
+        (base32
+         "03ydafhh0sk3rcnpr3paajyji64x2ddp6p814p9mvbmyrblcgzcc"))))
+    (properties `((upstream-name . "getPass")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rstudioapi" ,r-rstudioapi)))
+    (home-page "https://github.com/wrathematics/getPass")
+    (synopsis "Masked user input")
+    (description
+     "This package provides a micro-package for reading \"passwords\", i.e.
+reading user input with masking, so that the input is not displayed as it is
+typed.  Currently, RStudio, the command line (every OS), and any platform
+where tcltk is present are supported.")
+    (license license:bsd-2)))
+
+(define-public r-remoter
+  (package
+    (name "r-remoter")
+    (version "0.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "remoter" version))
+       (sha256
+        (base32
+         "1a7m63l8phv5jnazvdqdrqkaqjwqzaac5y4jm2jn0ypy4n8jvkfl"))))
+    (properties `((upstream-name . "remoter")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-argon2" ,r-argon2)
+       ("r-getpass" ,r-getpass)
+       ("r-pbdzmq" ,r-pbdzmq)
+       ("r-png" ,r-png)))
+    (home-page "https://github.com/RBigData/remoter")
+    (synopsis "Control a remote R session from a local one")
+    (description
+     "This package provides a set of utilities for client/server computing
+with R, controlling a remote R session (the server) from a local one (the
+client).")
+    (license license:bsd-2)))

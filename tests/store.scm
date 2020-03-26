@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -379,6 +379,38 @@
                  (list o))
          (equal? (valid-derivers %store o)
                  (list (derivation-file-name d))))))
+
+(test-equal "with-build-handler"
+  'success
+  (let* ((b  (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s  (add-to-store %store "bash" #t "sha256"
+                           (search-bootstrap-binary "bash"
+                                                    (%current-system))))
+         (d1 (derivation %store "the-thing"
+                         s `("-e" ,b)
+                         #:env-vars `(("foo" . ,(random-text)))
+                         #:sources (list b s)))
+         (d2 (derivation %store "the-thing"
+                         s `("-e" ,b)
+                         #:env-vars `(("foo" . ,(random-text))
+                                      ("bar" . "baz"))
+                         #:sources (list b s)))
+         (o1 (derivation->output-path d1))
+         (o2 (derivation->output-path d2)))
+    (with-build-handler
+        (let ((counter 0))
+          (lambda (continue store things mode)
+            (match things
+              ((drv)
+               (set! counter (+ 1 counter))
+               (if (string=? drv (derivation-file-name d1))
+                   (continue #t)
+                   (and (string=? drv (derivation-file-name d2))
+                        (= counter 2)
+                        'success))))))
+      (build-derivations %store (list d1))
+      (build-derivations %store (list d2))
+      'fail)))
 
 (test-assert "topologically-sorted, one item"
   (let* ((a (add-text-to-store %store "a" "a"))

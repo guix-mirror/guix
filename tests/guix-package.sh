@@ -189,8 +189,7 @@ emacs_tarball="$module_dir/emacs-42.5.9rc7.tar.gz"
 touch "$emacs_tarball"
 guix package -p "$profile" -i emacs --with-source="$emacs_tarball" -n \
      2> "$tmpfile"
-grep -E 'emacs[[:blank:]]+42\.5\.9rc7[[:blank:]]+.*-emacs-42.5.9rc7' \
-     "$tmpfile"
+grep -E 'emacs[[:blank:]]+42\.5\.9rc7' "$tmpfile"
 rm "$emacs_tarball" "$tmpfile"
 rmdir "$module_dir"
 

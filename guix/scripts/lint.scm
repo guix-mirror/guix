@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix lint)
   #:use-module (guix ui)
+  #:use-module (guix store)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu packages)
@@ -53,7 +54,7 @@
              (lint-warning-message lint-warning))))
    warnings))
 
-(define (run-checkers package checkers)
+(define* (run-checkers package checkers #:key store)
   "Run the given CHECKERS on PACKAGE."
   (let ((tty? (isatty? (current-error-port))))
     (for-each (lambda (checker)
@@ -63,7 +64,9 @@
                           (lint-checker-name checker))
                   (force-output (current-error-port)))
                 (emit-warnings
-                 ((lint-checker-check checker) package)))
+                 (if (lint-checker-requires-store? checker)
+                     ((lint-checker-check checker) package #:store store)
+                     ((lint-checker-check checker) package))))
               checkers)
     (when tty?
       (format (current-error-port) "\x1b[K")
@@ -167,12 +170,27 @@ run the checkers on all packages.\n"))
                              (_ #f))
                            (reverse opts)))
          (checkers (or (assoc-ref opts 'checkers) %all-checkers)))
-    (cond
-     ((assoc-ref opts 'list?)
+
+    (when (assoc-ref opts 'list?)
       (list-checkers-and-exit checkers))
-     ((null? args)
-      (fold-packages (lambda (p r) (run-checkers p checkers)) '()))
-     (else
-      (for-each (lambda (spec)
-                  (run-checkers (specification->package spec) checkers))
-                args)))))
+
+    (let ((any-lint-checker-requires-store?
+           (any lint-checker-requires-store? checkers)))
+
+      (define (call-maybe-with-store proc)
+        (if any-lint-checker-requires-store?
+            (with-store store
+              (proc store))
+            (proc #f)))
+
+      (call-maybe-with-store
+       (lambda (store)
+         (cond
+          ((null? args)
+           (fold-packages (lambda (p r) (run-checkers p checkers
+                                                      #:store store)) '()))
+          (else
+           (for-each (lambda (spec)
+                       (run-checkers (specification->package spec) checkers
+                                     #:store store))
+                     args))))))))

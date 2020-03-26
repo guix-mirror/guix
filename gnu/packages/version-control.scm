@@ -154,14 +154,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.25.2")
+   (version "2.26.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "08vivrv3my8nlp40pwsf7mcc5k7dwyh34hadjszx7qj8w01p34wv"))))
+              "1mlmwibfgcv42c28fxmbd3iim8fc06r17dljd8vdgq550z5hvkly"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -178,7 +178,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "06nlw6vaqvavkr4nia9qvanqbhaig4hbg9r5f0i9lbvw1hmykfvq"))))
+            "09ilv5gg7167mwc0qqw2fz3lmdm360crnxc0xzkqn53wnsh4cziq"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -354,8 +354,10 @@ as well as the classic centralized workflow.")
         (add-after 'install 'install-credential-netrc
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((netrc (assoc-ref outputs "credential-netrc")))
-              (install-file "contrib/credential/netrc/git-credential-netrc"
+              (install-file "contrib/credential/netrc/git-credential-netrc.perl"
                             (string-append netrc "/bin"))
+              (rename-file (string-append netrc "/bin/git-credential-netrc.perl")
+                           (string-append netrc "/bin/git-credential-netrc"))
               ;; Previously, Git.pm was automatically found by netrc.
               ;; Perl 5.26 changed how it locates modules so that @INC no
               ;; longer includes the current working directory (the Perl

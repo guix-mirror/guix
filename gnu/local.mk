@@ -635,6 +635,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/ldap.scm				\
+  %D%/tests/linux-modules.scm			\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
@@ -776,6 +777,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
   %D%/packages/patches/casync-renameat2-declaration.patch	\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
+  %D%/packages/patches/circos-remove-findbin.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
@@ -983,6 +985,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
+  %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -1044,6 +1047,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
+  %D%/packages/patches/icu4c-CVE-2020-10531.patch  		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/id3lib-UTF16-writing-bug.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
@@ -1167,6 +1171,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
+  %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\

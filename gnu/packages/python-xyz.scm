@@ -59,18 +59,21 @@
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
-;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2020 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 sirgazil <sirgazil@zoho.com>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -111,6 +114,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -2269,19 +2273,20 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "3.0.1")
+    (version "3.2.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "jsonschema" version))
              (sha256
               (base32
-               "03g20i1xfg4qdlk4475pl4pp7y0h37g1fbgs5qhy678q9xb822hc"))))
+               "0ykr61yiiizgvm3bzipa3l73rvj49wmrybbfwhvpgk3pscl5pa68"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
              (setenv "PYTHONPATH" (string-append ".:" (getenv "PYTHONPATH")))
              (invoke "trial" "jsonschema"))))))
     (native-inputs
@@ -2289,6 +2294,7 @@ compare, diff, and patch JSON and JSON-like structures in Python.")
        ("python-twisted" ,python-twisted)))
     (propagated-inputs
      `(("python-attrs" ,python-attrs)
+       ("python-importlib-metadata" ,python-importlib-metadata) ;; python < 3.8
        ("python-pyrsistent" ,python-pyrsistent)
        ("python-six" ,python-six)))
     (home-page "https://github.com/Julian/jsonschema")
@@ -5045,6 +5051,35 @@ localized only in frequency instead of in time and frequency.")
 (define-public python2-pywavelets
   (package-with-python2 python-pywavelets))
 
+(define-public python-pywinrm
+  (package
+    (name "python-pywinrm")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pywinrm" version))
+       (sha256
+        (base32
+         "10gabhhg3rgacd5ahmi2r128z99fzbrbx6mz1nnq0dxmhmn5rpjf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-requests_ntlm" ,python-requests_ntlm)
+       ("python-xmltodict" ,python-xmltodict)
+       ("python-kerberos" ,python-kerberos)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/diyan/pywinrm/")
+    (synopsis
+     "Python library for Windows Remote Management (WinRM)")
+    (description
+     "pywinrm is a Python client for the Windows Remote Management (WinRM)
+service.  It allows you to invoke commands on target Windows machines from
+any machine that can run Python.")
+    (license license:expat)))
+
 (define-public python-xcffib
   (package
     (name "python-xcffib")
@@ -5337,13 +5372,13 @@ displayed.")
 (define-public python-pexpect
   (package
     (name "python-pexpect")
-    (version "4.6.0")
+    (version "4.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pexpect" version))
        (sha256
-        (base32 "1fla85g47iaxxpjhp9vkxdnv4pgc7rplfy6ja491smrrk0jqi3ia"))))
+        (base32 "032cg337h8awydgypz6f4wx848lw8dyrj4zy988x0lyib4ws8rgw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5357,7 +5392,10 @@ displayed.")
                ;; Many tests try to use the /bin directory which
                ;; is not present in the build environment.
                ;; Use one that's non-empty and unlikely to change.
-               (("/bin'") "/dev'"))
+               (("/bin'") "/dev'")
+               ;; Disable failing test.  See upstream bug report
+               ;; https://github.com/pexpect/pexpect/issues/568
+               (("def test_bash") "def _test_bash"))
              ;; XXX: Socket connection test gets "Connection reset by peer".
              ;; Why does it not work? Delete for now.
              (delete-file "tests/test_socket.py")
@@ -7465,13 +7503,13 @@ should be stored on various operating systems.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.5.6")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "msgpack" version))
               (sha256
                (base32
-                "1hz2dba1nvvn52afg34liijsm7kn65cmn06dl0xbwld6bb4cis0f"))))
+                "1h5mxh84rcw04dvxy1qbfn2hisavfqgilh9k09rgyjhd936dad4m"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -7507,6 +7545,13 @@ reading and writing MessagePack data.")
   (package
     (inherit python-msgpack)
     (name "python-msgpack-transitional")
+    (version "0.5.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "msgpack" version))
+              (sha256
+               (base32
+                "1hz2dba1nvvn52afg34liijsm7kn65cmn06dl0xbwld6bb4cis0f"))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-msgpack)
        ((#:phases phases)
@@ -8234,22 +8279,24 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-bleach
   (package
     (name "python-bleach")
-    (version "3.1.1")
+    (version "3.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bleach" version))
        (sha256
         (base32
-         "0j4xlnw99m1xy0s7wxz9fk5f3c1n8r296fh75jn5p5j61w6qg2xa"))))
+         "0al437aw4p2xp83az5hhlrp913nsf0cg6kg4qj3fjhv4wakxipzq"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-webencodings" ,python-webencodings)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner-2)))
-    (home-page "https://github.com/jsocol/bleach")
+     `(("python-datrie" ,python-datrie)
+       ("python-genshi" ,python-genshi)
+       ("python-lxml" ,python-lxml)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/mozilla/bleach")
     (synopsis "Whitelist-based HTML-sanitizing tool")
     (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
     (license license:asl2.0)))
@@ -11216,14 +11263,14 @@ more, possibly remote, memcached servers.")
 (define-public python-clikit
   (package
     (name "python-clikit")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "clikit" version))
        (sha256
         (base32
-         "10gab65pq0jdf589n33sj2513pxal2lisl4xwf1ijysdjxmpdr4a"))))
+         "1jnnr21hvzx4i29nbph1z96ympv0njiwyvngjq48w1q05133cwzn"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pastel" ,python-pastel)
@@ -11269,18 +11316,26 @@ strings require only one extra byte in addition to the strings themselves.")
 (define-public python-cachy
   (package
     (name "python-cachy")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cachy" version))
        (sha256
         (base32
-         "0v6mjyhgx6j7ya20bk69cr3gdzdkdf6psay0h090rscclgji65dp"))))
+         "1cb9naly8ampzlky7h74n5wj628l7jkpsh0c0jz0namlrvs82r8q"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pifpaf" "run" "memcached" "--port" "11211" "--"
+                             "pytest"))))))
     (native-inputs
-     `(("python-fakeredis" ,python-fakeredis)
+     `(("memcached" ,memcached)
+       ("python-fakeredis" ,python-fakeredis)
        ("python-flexmock" ,python-flexmock)
+       ("python-pifpaf" ,python-pifpaf)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-memcached" ,python-memcached)
@@ -11297,34 +11352,38 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
 (define-public poetry
   (package
     (name "poetry")
-    (version "0.12.17")
-    ;; Poetry can only be built from source with poetry.
+    (version "1.0.5")
+    ;; Poetry can only be built from source with Poetry.
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "poetry" version))
        (sha256
         (base32
-         "0gxwcd65qjmzqzppf53x51sic1rbcd9py6cdzx3aprppipimslvf"))))
+         "02h387k0xssvv78yy82pcpknpq4w5ym2in1zl8cg9r5wljl5w6cf"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ;; Pypi does not have tests.
        #:phases
        (modify-phases %standard-phases
-         (replace 'build
+         (add-before 'build 'patch-setup-py
            (lambda _
-             ;; Bug in poetry https://github.com/sdispater/poetry/issues/866.
-             (invoke "sed" "-i" "-e" "s/from distutils.core/from setuptools/"
-                     "setup.py")
+             (substitute* "setup.py"
+               ;; poetry won't update version as 21.0.0 relies on python > 3.6
+               (("keyring>=20.0.1,<21.0.0") "keyring>=21.0.0,<22.0.0")
+               (("pyrsistent>=0.14.2,<0.15.0") "pyrsistent>=0.14.2,<0.16.0")
+               (("importlib-metadata>=1.1.3,<1.2.0") "importlib-metadata>=1.1.3,<1.5.0"))
              #t)))))
     (propagated-inputs
      `(("python-cachecontrol" ,python-cachecontrol)
        ("python-cachy" ,python-cachy)
        ("python-cleo" ,python-cleo)
-       ("python-glob2" ,python-glob2)
+       ("python-clikit" ,python-clikit)
        ("python-html5lib" ,python-html5lib)
+       ("python-importlib-metadata" ,python-importlib-metadata) ;; python < 3.8
        ("python-jsonschema" ,python-jsonschema)
-       ("python-msgpack" ,python-msgpack)
+       ("python-keyring" ,python-keyring)
+       ("python-pexpect" ,python-pexpect)
        ("python-pkginfo" ,python-pkginfo)
        ("python-pyparsing" ,python-pyparsing)
        ("python-pyrsistent" ,python-pyrsistent)
@@ -11333,7 +11392,7 @@ database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
        ("python-shellingham" ,python-shellingham)
        ("python-tomlkit" ,python-tomlkit)
        ("python-virtualenv" ,python-virtualenv)))
-    (home-page "https://poetry.eustace.io/")
+    (home-page "https://python-poetry.org")
     (synopsis "Python dependency management and packaging made easy")
     (description "Poetry is a tool for dependency management and packaging
 in Python.  It allows you to declare the libraries your project depends on and
@@ -16150,6 +16209,39 @@ MacFUSE.  The binding is created using the standard @code{ctypes} library.")
 (define-public python2-fusepy
   (package-with-python2 python-fusepy))
 
+(define-public python-fusepyng
+  (package
+    (name "python-fusepyng")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "fusepyng" version))
+        (sha256
+         (base32
+          "17w9iw6m6zjbmnhs4ikd27pq4mb1nan6k4ahlwyz40463vw6wkwb"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-libfuse-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((fuse (assoc-ref inputs "fuse")))
+               (substitute* "fusepyng.py"
+                 (("os.environ.get\\('FUSE_LIBRARY_PATH'\\)")
+                  (string-append "\"" fuse "/lib/libfuse.so\""))))
+             #t)))))
+    (inputs
+     `(("fuse" ,fuse)))
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)))
+    (home-page "https://github.com/rianhunter/fusepyng")
+    (synopsis "Simple ctypes bindings for FUSE")
+    (description "@code{fusepyng} is a Python module that provides a simple
+interface to FUSE on various operating systems.  It's just one file and is
+implemented using @code{ctypes}.")
+    (license license:isc)))
+
 (define-public python2-gdrivefs
   (package
     (name "python2-gdrivefs")
@@ -16190,6 +16282,27 @@ MacFUSE.  The binding is created using the standard @code{ctypes} library.")
     (description "@code{gdrivefs} provides a FUSE wrapper for Google Drive
 under Python 2.7.")
     (license license:gpl2)))
+
+(define-public python-userspacefs
+  (package
+    (name "python-userspacefs")
+    (version "1.0.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "userspacefs" version))
+        (sha256
+         (base32
+          "0kyz52jyxw3m7hqvn5g6z0sx9cq6k0nq1wj44lvdrghdljjgyk2z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-fusepyng" ,python-fusepyng)))
+    (home-page "https://github.com/rianhunter/userspacefs")
+    (synopsis "User-space file systems for Python")
+    (description
+     "@code{userspacefs} is a library that allows you to easily write
+user-space file systems in Python.")
+    (license license:gpl3+)))
 
 (define-public pybind11
   (package
@@ -16781,6 +16894,11 @@ that is accessible to other projects developed in Cython.")
      ;; FIXME: Tests require many extra dependencies, and would introduce
      ;; a circular dependency on hypothesis, which uses this package.
      '(#:tests? #f))
+    (propagated-inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-distlib" ,python-distlib)
+       ("python-filelock" ,python-filelock)
+       ("python-six" ,python-six-bootstrap)))
     (home-page "http://www.grantjenks.com/docs/sortedcontainers/")
     (synopsis "Sorted List, Sorted Dict, Sorted Set")
     (description
@@ -18464,3 +18582,202 @@ sequences.")
 
 (define-public python2-fuzzywuzzy
   (package-with-python2 python-fuzzywuzzy))
+
+(define-public python-block-tracing
+  (package
+    (name "python-block-tracing")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "block_tracing" version))
+        (sha256
+         (base32
+          "0s2y729qr5rs7n506qfh8cssk8m2bi6k2y5vbrh2z3raf2d01alz"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; no tests
+    (home-page "https://github.com/rianhunter/block_tracing")
+    (synopsis "Protect process memory")
+    (description
+     "@code{block_tracing} is a tiny Python library that can be used to
+prevent debuggers and other applications from inspecting the memory within
+your process.")
+    (license license:expat)))
+
+(define-public python-gcovr
+  (package
+    (name "python-gcovr")
+    (version "4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "gcovr" version))
+       (sha256
+        (base32
+          "0gyady7x3v3l9fm1zan0idaggqqcm31y7g5vxk7h05p5h7f39bjs"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-jinja2" ,python-jinja2)))
+    (home-page "https://gcovr.com/")
+    (synopsis "Utility for generating code coverage results")
+    (description
+      "Gcovr provides a utility for managing the use of the GNU gcov
+utility and generating summarized code coverage results.  It is inspired
+by the Python coverage.py package, which provides a similar utility for
+Python.")
+    (license license:bsd-3)))
+
+(define-public python-owslib
+  (package
+    (name "python-owslib")
+    (version "0.19.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "OWSLib" version))
+       (sha256
+        (base32 "0v8vg0naa9rywvd31cpq65ljbdclpsrx09788v4xj7lg10np8nk0"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; TODO: package dependencies required for tests.
+    (synopsis "Interface for Open Geospatial Consortium web service")
+    (description
+     "OWSLib is a Python package for client programming with Open Geospatial
+Consortium (OGC) web service (hence OWS) interface standards, and their related
+content models.")
+    (home-page "https://geopython.github.io/OWSLib/")
+    (license license:bsd-3)))
+
+(define-public python-docusign-esign
+  (package
+    (name "python-docusign-esign")
+    (version "3.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "docusign_esign" version))
+              (sha256
+               (base32
+                "01f3h03vc97syjlmqyl7xa5j90pzgmwpspc5a0gra9saynnbkx37"))))
+    (build-system python-build-system)
+    ;; Testing requires undocumented setup changes, and so testing is disabled here.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+      `(("python-certifi", python-certifi)
+        ("python-six", python-six)
+        ("python-dateutil", python-dateutil)
+        ("python-urllib3", python-urllib3)
+        ("python-pyjwt", python-pyjwt)
+        ("python-cryptography", python-cryptography)
+        ("python-nose", python-nose)))
+    (synopsis "DocuSign Python Client")
+    (description "The Official DocuSign Python Client Library used to interact
+ with the eSign REST API.  Send, sign, and approve documents using this client.")
+    (home-page "https://www.docusign.com/devcenter")
+    (license license:expat)))
+
+(define-public python-xattr
+  (package
+    (name "python-xattr")
+    (version "0.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "xattr" version))
+       (sha256
+        (base32
+         "0i4xyiqbhjz2g16zbim17zjdbjkw79xsw8k59942vvq4is1cmfxh"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)))
+    (home-page "https://github.com/xattr/xattr")
+    (synopsis
+     "Python wrapper for extended filesystem attributes")
+    (description "This package provides a Python wrapper for using extended
+filesystem attributes.  Extended attributes extend the basic attributes of files
+and directories in the file system.  They are stored as name:data pairs
+associated with file system objects (files, directories, symlinks, etc).")
+    (license license:expat)))
+
+(define-public python-json-logger
+  (package
+    (name "python-json-logger")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-json-logger" version))
+       (sha256
+        (base32
+         "10g2ya6nsvn5vxzvq2wb8q4d43i3d7756i5rxyjna6d0y9i138xp"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/madzak/python-json-logger")
+    (synopsis "JSON log formatter in Python")
+    (description "This library allows standard Python logging to output log data
+as JSON objects.  With JSON we can make our logs more readable by machines and
+we can stop writing custom parsers for syslog-type records.")
+    (license license:bsd-3)))
+
+(define-public python-daiquiri
+  (package
+    (name "python-daiquiri")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "daiquiri" version))
+       (sha256
+        (base32
+         "1qmank3c217ddiig3xr8ps0mqaydcp0q5a62in9a9g4zf72zjnqd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-json-logger" ,python-json-logger)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/jd/daiquiri")
+    (synopsis
+     "Library to configure Python logging easily")
+    (description "The daiquiri library provides an easy way to configure
+logging in Python.  It also provides some custom formatters and handlers.")
+    (license license:asl2.0)))
+
+(define-public python-pifpaf
+  (package
+    (name "python-pifpaf")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pifpaf" version))
+       (sha256
+        (base32
+         "150av2pylsjy8ykrpyi0vzy2q24s9rhh2ya01zvwnvj9j5dspviz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-daiquiri" ,python-daiquiri)
+       ("python-fixtures" ,python-fixtures)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pbr" ,python-pbr)
+       ("python-psutil" ,python-psutil)
+       ("python-six" ,python-six)
+       ("python-xattr" ,python-xattr)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-os-testr" ,python-os-testr)
+       ("python-requests" ,python-requests)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://github.com/jd/pifpaf")
+    (synopsis "Tools and fixtures to manage daemons for testing in Python")
+    (description "Pifpaf is a suite of fixtures and a command-line tool that
+allows to start and stop daemons for a quick throw-away usage.  This is typically
+useful when needing these daemons to run integration testing.  It originally
+evolved from its precursor @code{overtest}.")
+    (license license:asl2.0)))

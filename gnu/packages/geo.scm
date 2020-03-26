@@ -46,10 +46,13 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages astronomy)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -58,19 +61,25 @@
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gps)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -80,12 +89,16 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages wxwidgets)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public geos
   (package
@@ -1621,3 +1634,394 @@ track your position right from your laptop.")
                    license:lgpl3+
                    license:sgifreeb2.0
                    license:zlib))))
+
+(define-public grass
+  (let* ((version "7.8.2")
+         (majorminor (string-join (list-head (string-split version #\.) 2) ""))
+         (grassxx (string-append "grass" majorminor)))
+    (package
+      (name "grass")
+      (version version)
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://grass.osgeo.org/" grassxx
+                             "/source/grass-" version ".tar.gz"))
+         (sha256
+          (base32 "1fwsm99kz0bxvjk7442qq1h45ikrmhba8bqclafb61gqg1q6ymrk"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("bzip2", bzip2)
+         ("cairo" ,cairo)
+         ("fftw" ,fftw)
+         ("freetype" ,freetype)
+         ("gdal" ,gdal)
+         ("geos" ,geos)
+         ("glu" ,glu)
+         ("lapack" ,lapack)
+         ("libpng" ,libpng)
+         ("libtiff" ,libtiff)
+         ("mesa" ,mesa)
+         ("mariadb-dev" ,mariadb "dev")
+         ("mariadb-lib" ,mariadb "lib")
+         ("netcdf" ,netcdf)
+         ("openblas" ,openblas)
+         ("perl" ,perl)
+         ("postgresql" ,postgresql)
+         ("proj.4" ,proj.4)
+         ("python" ,python)
+         ("python-dateutil" ,python-dateutil)
+         ("python-numpy" ,python-numpy)
+         ("python-wxpython" ,python-wxpython)
+         ("readline" ,readline)
+         ("sqlite" ,sqlite)
+         ("wxwidgets" ,wxwidgets)
+         ("zlib" ,zlib)
+         ("zstd" ,zstd "lib")))
+      (native-inputs
+       `(("bash" ,bash-minimal)
+         ("bison" ,bison)
+         ("flex" ,flex)
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       `(#:tests? #f ; No tests
+         #:modules ((guix build gnu-build-system)
+                    ((guix build python-build-system) #:prefix python:)
+                    (guix build utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build python-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((shell (string-append (assoc-ref inputs "bash")
+                                           "/bin/bash")))
+                 (setenv "SHELL" shell)
+                 (setenv "CONFIG_SHELL" shell)
+                 (setenv "LDFLAGS" (string-append "-Wl,-rpath -Wl,"
+                                                  (assoc-ref outputs "out")
+                                                  "/" ,grassxx "/lib")))
+               (invoke "./configure"
+                       (string-append "--prefix="
+                                      (assoc-ref outputs "out"))
+                       "--with-blas"
+                       "--with-bzlib"
+                       (string-append "--with-freetype-includes="
+                                      (assoc-ref inputs "freetype")
+                                      "/include/freetype2")
+                       (string-append "--with-freetype-libs="
+                                      (assoc-ref inputs "freetype")
+                                      "/lib")
+                       "--with-geos"
+                       "--with-lapack"
+                       "--with-mysql"
+                       (string-append "--with-mysql-includes="
+                                      (assoc-ref inputs "mariadb-dev")
+                                      "/include/mysql")
+                       (string-append "--with-mysql-libs="
+                                      (assoc-ref inputs "mariadb-lib")
+                                      "/lib")
+                       "--with-netcdf"
+                       "--with-postgres"
+                       (string-append "--with-proj-share="
+                                      (assoc-ref inputs "proj.4")
+                                      "/share/proj")
+                       "--with-pthread"
+                       "--with-readline"
+                       "--with-sqlite"
+                       "--with-wxwidgets")))
+           (add-after 'install 'install-links
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Put links for includes and libraries in the standard places.
+               (let* ((out (assoc-ref outputs "out"))
+                      (dir (string-append out "/" ,grassxx)))
+                 (symlink (string-append dir "/include")
+                          (string-append out "/include"))
+                 (symlink (string-append dir "/lib")
+                          (string-append out "/lib")))
+               #t))
+           (add-after 'install-links 'wrap-python
+             (assoc-ref python:%standard-phases 'wrap)))))
+      (synopsis "GRASS Geographic Information System")
+      (description
+       "GRASS (Geographic Resources Analysis Support System), is a Geographic
+Information System (GIS) software suite used for geospatial data management and
+analysis, image processing, graphics and maps production, spatial modeling, and
+visualization.")
+      (home-page "https://grass.osgeo.org/")
+      (license license:gpl2+))))
+
+(define-public saga
+  (package
+    (name "saga")
+    (version "7.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/saga-gis/SAGA%20-%20"
+                           (version-major version) "/SAGA%20-%20" version
+                           "/saga-" version ".tar.gz"))
+       (sha256
+        (base32 "09j5magmayq2y620kqa490mfd1kpdp3lng2ifcgbrmssc079ybm0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("curl" ,curl)
+       ("fftw" ,fftw)
+       ("gdal" ,gdal)
+       ("hdf5" ,hdf5)
+       ("jasper" ,jasper)
+       ("libharu" ,libharu)
+       ("libtiff" ,libtiff)
+       ("opencv" ,opencv)
+       ("postgresql" ,postgresql)
+       ("proj.4" ,proj.4)
+       ("python" ,python)
+       ("qhull" ,qhull)
+       ("unixodbc" ,unixodbc)
+       ("vigra" ,vigra)
+       ("wxwidgets" ,wxwidgets)))
+    (arguments
+     '(#:configure-flags '("--enable-python")))
+    (synopsis "System for Automated Geoscientific Analyses")
+    (description
+     "SAGA (System for Automated Geoscientific Analyses) is a Geographic
+Information System (GIS) software.  It has been designed for an easy and
+effective implementation of spatial algorithms and it offers a comprehensive,
+growing set of geoscientific methods.")
+    (home-page "http://www.saga-gis.org")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public qgis
+  (package
+    (name "qgis")
+    (version "3.12.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://qgis.org/downloads/qgis-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1a41525y8ac44gzcfaffjx0lyrm49hgnr83jrq40r5mqd3vpmp57"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:prefix python:)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system)
+                           (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Configure correct path to PyQt5 SIP directory
+         (add-after 'unpack 'configure-pyqt5-sip-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake/FindPyQt5.cmake"
+               (("\"\\\\\\\\1\" PYQT5_SIP_DIR")
+                (string-append "\"" (assoc-ref inputs "python-pyqt+qscintilla")
+                               "/share/sip\" PYQT5_SIP_DIR")))
+             (substitute* (list "scripts/prepare-commit.sh"
+                                "scripts/runtests-local-travis-config.sh"
+                                "scripts/sip_include.sh"
+                                "scripts/sipdiff"
+                                "scripts/sipify_all.sh"
+                                "scripts/spell_check/check_spelling.sh"
+                                "scripts/spell_check/spell_test.sh"
+                                "scripts/verify-indentation.sh"
+                                "tests/code_layout/test_banned_keywords.sh"
+                                "tests/code_layout/test_licenses.sh"
+                                "tests/code_layout/test_shellcheck.sh"
+                                "tests/code_layout/test_sip_include.sh"
+                                "tests/code_layout/test_sipfiles_uptodate.sh"
+                                "tests/code_layout/test_sipify.sh")
+               (("\\$\\(git rev-parse --show-toplevel\\)")
+                (getcwd)))
+             (substitute* "tests/code_layout/test_sip_include.sh"
+               (("^REV=.*") "REV=currentrev\n"))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "HOME" "/tmp")
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
+             (setenv "TRAVIS" "true")
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             (invoke "ctest"
+                     "-E" (string-join
+                           '(;; Disable tests that require network access
+                             "qgis_filedownloader"
+                             ;; TODO: Find why the following tests fail
+                             "ProcessingQgisAlgorithmsTestPt1"
+                             "ProcessingQgisAlgorithmsTestPt3"
+                             "ProcessingQgisAlgorithmsTestPt4"
+                             "ProcessingGdalAlgorithmsRasterTest"
+                             "ProcessingGdalAlgorithmsVectorTest"
+                             "ProcessingGrass7AlgorithmsImageryTest"
+                             "ProcessingGrass7AlgorithmsRasterTest"
+                             "ProcessingGrass7AlgorithmsVectorTest"
+                             "ProcessingOtbAlgorithmsTest"
+                             "qgis_authmanagertest"
+                             "qgis_compositionconvertertest"
+                             "qgis_coordinatereferencesystemtest"
+                             "qgis_geometrytest"
+                             "qgis_layouthtmltest"
+                             "qgis_layoutmaptest"
+                             "qgis_painteffecttest"
+                             "qgis_pallabelingtest"
+                             "qgis_svgmarkertest"
+                             "qgis_taskmanagertest"
+                             "qgis_ziplayertest"
+                             "qgis_processingtest"
+                             "qgis_wcsprovidertest"
+                             "qgis_arcgisrestutilstest"
+                             "qgis_grassprovidertest7"
+                             "qgis_gpsinformationwidget"
+                             "PyCoreAdittions"
+                             "PyQgsPythonProvider"
+                             "PyQgsAnnotation"
+                             "PyQgsAuthenticationSystem"
+                             "PyQgsProject"
+                             "PyQgsFileUtils"
+                             "PyQgsGeometryTest"
+                             "PyQgsImageCache"
+                             "PyQgsLayoutExporter"
+                             "PyQgsLayoutLegend"
+                             "PyQgsMapLayer"
+                             "PyQgsOGRProviderGpkg"
+                             "PyQgsPalLabelingLayout"
+                             "PyQgsImportIntoPostGIS"
+                             "PyQgsProviderConnectionPostgres"
+                             "PyQgsProviderConnectionGpkg"
+                             "PyQgsShapefileProvider"
+                             "PyQgsSvgCache"
+                             "PyQgsTextRenderer"
+                             "PyQgsOGRProvider"
+                             "PyQgsSpatialiteProvider"
+                             "PyQgsVectorFileWriter"
+                             "PyQgsVectorLayer"
+                             "PyQgsVectorLayerUtils"
+                             "PyQgsVirtualLayerProvider"
+                             "PyQgsWFSProvider"
+                             "PyQgsOapifProvider"
+                             "PyQgsLayerDependencies"
+                             "PyQgsDBManagerGpkg"
+                             "PyQgsDBManagerSpatialite"
+                             "PyQgsSettings"
+                             "PyQgsAuxiliaryStorage"
+                             "PyQgsSelectiveMasking"
+                             "PyQgsAppStartup"
+                             "qgis_geometrycheckstest"
+                             "qgis_shellcheck"
+                             "qgis_sipify"
+                             "qgis_sip_include"
+                             "qgis_sip_uptodate")
+                           "|"))))
+         (add-after 'install 'wrap-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'wrap-python 'wrap-qt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "qgis")
+             #t)))))
+    (inputs
+     `(("exiv2" ,exiv2)
+       ("expat" ,expat)
+       ("gdal" ,gdal)
+       ("geos" ,geos)
+       ("gpsbabel" ,gpsbabel)
+       ("grass" ,grass)
+       ("gsl" ,gsl)
+       ("hdf5" ,hdf5)
+       ("libspatialindex" ,libspatialindex)
+       ("libspatialite" ,libspatialite)
+       ("libxml2" ,libxml2)
+       ("libzip" ,libzip)
+       ("netcdf" ,netcdf)
+       ("postgresql" ,postgresql)
+       ("proj" ,proj)
+       ("python" ,python)
+       ("python-chardet" ,python-chardet)
+       ("python-dateutil" ,python-dateutil)
+       ("python-gdal" ,python-gdal)
+       ("python-jinja2" ,python-jinja2)
+       ("python-numpy" ,python-numpy)
+       ("python-owslib" ,python-owslib)
+       ("python-psycopg2" ,python-psycopg2)
+       ("python-pygments" ,python-pygments)
+       ("python-pyqt+qscintilla" ,python-pyqt+qscintilla)
+       ("python-pytz" ,python-pytz)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-sip" ,python-sip)
+       ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3)
+       ("qca" ,qca)
+       ("qscintilla" ,qscintilla)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtkeychain" ,qtkeychain)
+       ("qtlocation" ,qtlocation)
+       ("qtserialport" ,qtserialport)
+       ("qtsvg" ,qtsvg)
+       ("qtwebkit" ,qtwebkit)
+       ("qwt" ,qwt)
+       ("saga" ,saga)
+       ("sqlite" ,sqlite-with-column-metadata)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("perl" ,perl)
+       ("perl-yaml-tiny" ,perl-yaml-tiny)
+       ("pkg-config" ,pkg-config)
+       ("python-mock" ,python-mock)
+       ("python-nose2" ,python-nose2)
+       ("qttools" ,qttools)
+       ("shellcheck" ,shellcheck)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (home-page "https://qgis.org")
+    (synopsis "Geographical information system")
+    (description "QGIS is an easy to use Geographical Information
+System (GIS).  It is a GIS data viewer and editor.  QGIS supports a number of
+raster and vector data formats, with new support easily added using the plugin
+architecture.")
+    (license
+     (list
+      license:asl1.1
+      license:asl2.0
+      license:bsd-2
+      license:bsd-3
+      license:boost1.0
+      license:cc-by3.0
+      license:cc-by4.0
+      license:cc-by-sa3.0
+      license:cc-by-sa4.0
+      (license:fsdg-compatible "https://www.deviantart.com/elvensword")
+      (license:fsf-free "file://debian/copyright" "Go Squared")
+      license:expat
+      license:fdl1.2+
+      (license:fsf-free
+       "https://www.deviantart.com/webgoddess/art/Reddish-Inspired-Gradients-42208824")
+      (license:fsf-free
+       "file://debian/copyright"
+       "QT-Commercial or LGPL-2.1 with Digia Qt LGPL Exception 1.1 or GPL-3")
+      license:gpl2
+      license:gpl2+
+      license:gpl3
+      license:gpl3+
+      license:isc
+      license:lgpl2.0+
+      license:lgpl2.1
+      license:lgpl2.1+
+      license:lgpl3
+      (license:non-copyleft "file://debian/copyright" "BSD-like-gist")
+      (license:non-copyleft "file://debian/copyright" "Jim Mossman Attribution")
+      (license:non-copyleft
+       "https://www.ncl.ucar.edu/Download/NCL_source_license.shtml"
+       "NCL Source Code License")
+      license:ogl-psi1.0
+      license:opl1.0+
+      license:public-domain
+      license:qwt1.0))))

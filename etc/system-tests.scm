@@ -79,7 +79,11 @@ the 'TESTS' environment variable."
   ;; Intern SOURCE so that 'build-from-source' in (guix channels) sees
   ;; "fresh" file names and thus doesn't find itself loading .go files
   ;; from ~/.cache/guile when it loads 'build-aux/build-self.scm'.
-  (let* ((source (local-file source "guix-source"
+  (let* ((source (local-file source
+                             (if commit
+                                 (string-append "guix-"
+                                                (string-take commit 7))
+                                 "guix-source")
                              #:recursive? #t
                              #:select?
                              (or (git-predicate source)

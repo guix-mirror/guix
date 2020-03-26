@@ -269,7 +269,7 @@ code, to PORT."
   (let ((body (or (assoc-ref body language)
                   (assoc-ref body (%default-message-language))
                   "")))
-    (format port "    ~a~%"
+    (format port "~a~%"
             (indented-string
              (parameterize ((%text-width (- (%text-width) 4)))
                (string-trim-right
@@ -389,8 +389,7 @@ previous generation.  Return true if there are news to display."
 
   (display-channel-news profile))
 
-(define* (build-and-install instances profile
-                            #:key use-substitutes? dry-run?)
+(define* (build-and-install instances profile)
   "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
 true, display what would be built without actually building it."
   (define update-profile
@@ -403,29 +402,27 @@ true, display what would be built without actually building it."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
       (update-profile profile manifest
-                      #:use-substitutes? use-substitutes?
-                      #:hooks %channel-profile-hooks
-                      #:dry-run? dry-run?)
-      (munless dry-run?
-        (return (newline))
-        (return
-         (let ((more? (list (display-profile-news profile #:concise? #t)
-                            (display-channel-news-headlines profile))))
-           (when (any ->bool more?)
-             (display-hint
-              (G_ "Run @command{guix pull --news} to read all the news.")))))
-        (if guix-command
-            (let ((new (map (cut string-append <> "/bin/guix")
-                            (list (user-friendly-profile profile)
-                                  profile))))
-              ;; Is the 'guix' command previously in $PATH the same as the new
-              ;; one?  If the answer is "no", then suggest 'hash guix'.
-              (unless (member guix-command new)
-                (display-hint (format #f (G_ "After setting @code{PATH}, run
+                      #:hooks %channel-profile-hooks)
+
+      (return
+       (let ((more? (list (display-profile-news profile #:concise? #t)
+                          (display-channel-news-headlines profile))))
+         (newline)
+         (when (any ->bool more?)
+           (display-hint
+            (G_ "Run @command{guix pull --news} to read all the news.")))))
+      (if guix-command
+          (let ((new (map (cut string-append <> "/bin/guix")
+                          (list (user-friendly-profile profile)
+                                profile))))
+            ;; Is the 'guix' command previously in $PATH the same as the new
+            ;; one?  If the answer is "no", then suggest 'hash guix'.
+            (unless (member guix-command new)
+              (display-hint (format #f (G_ "After setting @code{PATH}, run
 @command{hash guix} to make sure your shell refers to @file{~a}.")
-                                      (first new))))
-              (return #f))
-            (return #f))))))
+                                    (first new))))
+            (return #f))
+          (return #f)))))
 
 (define (honor-lets-encrypt-certificates! store)
   "Tell Guile-Git to use the Let's Encrypt certificates."
@@ -523,19 +520,6 @@ true, display what would be built without actually building it."
 ;;; Queries.
 ;;;
 
-(define (indented-string str indent)
-  "Return STR with each newline preceded by IDENT spaces."
-  (define indent-string
-    (make-list indent #\space))
-
-  (list->string
-   (string-fold-right (lambda (chr result)
-                        (if (eqv? chr #\newline)
-                            (cons chr (append indent-string result))
-                            (cons chr result)))
-                      '()
-                      str)))
-
 (define profile-package-alist
   (mlambda (profile)
     "Return a name/version alist representing the packages in PROFILE."
@@ -592,7 +576,7 @@ Return true when there is more package info to display."
   (define (pretty str column)
     (indented-string (fill-paragraph str (- (%text-width) 4)
                                      column)
-                     4))
+                     4 #:initial-indent? #f))
 
   (define concise/max-item-count
     ;; Maximum number of items to display when CONCISE? is true.
@@ -760,10 +744,12 @@ Use '~/.config/guix/channels.scm' instead."))
 (define (guix-pull . args)
   (with-error-handling
     (with-git-error-handling
-     (let* ((opts     (parse-command-line args %options
-                                          (list %default-options)))
-            (channels (channel-list opts))
-            (profile  (or (assoc-ref opts 'profile) %current-profile)))
+     (let* ((opts         (parse-command-line args %options
+                                              (list %default-options)))
+            (substitutes? (assoc-ref opts 'substitutes?))
+            (dry-run?     (assoc-ref opts 'dry-run?))
+            (channels     (channel-list opts))
+            (profile      (or (assoc-ref opts 'profile) %current-profile)))
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
              ((assoc-ref opts 'generation)
@@ -773,38 +759,37 @@ Use '~/.config/guix/channels.scm' instead."))
                 (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?)))
-                    (set-build-options-from-command-line store opts)
-                    (ensure-default-profile)
-                    (honor-x509-certificates store)
+                    (with-build-handler (build-notifier #:use-substitutes?
+                                                        substitutes?
+                                                        #:dry-run? dry-run?)
+                      (set-build-options-from-command-line store opts)
+                      (ensure-default-profile)
+                      (honor-x509-certificates store)
 
-                    (let ((instances (latest-channel-instances store channels)))
-                      (format (current-error-port)
-                              (N_ "Building from this channel:~%"
-                                  "Building from these channels:~%"
-                                  (length instances)))
-                      (for-each (lambda (instance)
-                                  (let ((channel
-                                         (channel-instance-channel instance)))
-                                    (format (current-error-port)
-                                            "  ~10a~a\t~a~%"
-                                            (channel-name channel)
-                                            (channel-url channel)
-                                            (string-take
-                                             (channel-instance-commit instance)
-                                             7))))
-                                instances)
-                      (parameterize ((%guile-for-build
-                                      (package-derivation
-                                       store
-                                       (if (assoc-ref opts 'bootstrap?)
-                                           %bootstrap-guile
-                                           (default-guile)))))
-                        (with-profile-lock profile
-                          (run-with-store store
-                            (build-and-install instances profile
-                                               #:dry-run?
-                                               (assoc-ref opts 'dry-run?)
-                                               #:use-substitutes?
-                                               (assoc-ref opts 'substitutes?)))))))))))))))
+                      (let ((instances (latest-channel-instances store channels)))
+                        (format (current-error-port)
+                                (N_ "Building from this channel:~%"
+                                    "Building from these channels:~%"
+                                    (length instances)))
+                        (for-each (lambda (instance)
+                                    (let ((channel
+                                           (channel-instance-channel instance)))
+                                      (format (current-error-port)
+                                              "  ~10a~a\t~a~%"
+                                              (channel-name channel)
+                                              (channel-url channel)
+                                              (string-take
+                                               (channel-instance-commit instance)
+                                               7))))
+                                  instances)
+                        (parameterize ((%guile-for-build
+                                        (package-derivation
+                                         store
+                                         (if (assoc-ref opts 'bootstrap?)
+                                             %bootstrap-guile
+                                             (default-guile)))))
+                          (with-profile-lock profile
+                            (run-with-store store
+                              (build-and-install instances profile)))))))))))))))
 
 ;;; pull.scm ends here

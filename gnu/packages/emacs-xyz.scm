@@ -124,6 +124,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages music)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
@@ -1727,6 +1728,39 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
 Emacs buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-chronometrist
+  (package
+    (name "emacs-chronometrist")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://framagit.org/contrapunctus/chronometrist.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ccy7qz1wcmggqlf3hwigbqq4wrx1amds4x9bxz9py6bypglyjc5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://framagit.org/contrapunctus/chronometrist")
+    (synopsis "Time tracker for Emacs")
+    (description "Chronometrist is a time tracker in Emacs, largely modelled
+after the Android application, @emph{A Time Tracker}.
+
+Its features are:
+@itemize
+@item Simple and efficient to use,
+@item Displays useful information about your time usage,
+@item Support for both mouse and keyboard,
+@item Human errors in tracking are easily fixed by editing a plain text file,
+@item Hooks to let you perform arbitrary actions when starting/stopping tasks.
+@end itemize")
+    ;; Software is dual-licensed.
+    (license (list license:unlicense license:wtfpl2))))
+
 (define-public emacs-direnv
   (package
     (name "emacs-direnv")
@@ -2059,7 +2093,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.16.0")
+    (version "2.17.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2068,7 +2102,7 @@ and stored in memory.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "150k48llqz2mb66vbznpyj47r6g16amfl7hbg8q46djq8mp7zc2v"))))
+                "153f55dqkhs8w2xlf6b88wp5vlkap7h8vjd9wxh4jp2ram5g4l1n"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -6690,7 +6724,7 @@ indentation guides in Emacs:
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.31.0")
+    (version "1.32.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6699,20 +6733,20 @@ indentation guides in Emacs:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bvmgqs3c80bhs9v5ymgadv7vk4iamha10y7rl09pixmjm4mzagk"))))
+                "0f00mdnzx6xqwni86rgvaa6sfkwyh62xfbwz8qsar15j0j6vc2dj"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
        #:phases
-       ;; TODO: Make `elpy-config' display Guix commands :)
        (modify-phases %standard-phases
-         ;; One elpy test depends on being run inside a Python virtual
-         ;; environment to pass. We have nothing to gain from doing so here,
-         ;; so we just trick Elpy into thinking we are (see:
-         ;; https://github.com/jorgenschaefer/elpy/pull/1293).
-         (add-before 'check 'fake-virtualenv
+         ;; The default environment of the RPC uses Virtualenv to install
+         ;; Python dependencies from PyPI.  We don't want/need this in Guix.
+         (add-before 'check 'do-not-use-virtualenv
            (lambda _
-             (setenv "VIRTUAL_ENV" "/tmp")
+             (setenv "ELPY_TEST_DONT_USE_VIRTUALENV" "1")
+             (substitute* "elpy-rpc.el"
+               (("defcustom elpy-rpc-virtualenv-path 'default")
+                "defcustom elpy-rpc-virtualenv-path 'system"))
              #t))
          (add-before 'check 'build-doc
            (lambda _
@@ -6738,16 +6772,20 @@ indentation guides in Emacs:
        ("emacs-highlight-indentation" ,emacs-highlight-indentation)
        ("emacs-yasnippet" ,emacs-yasnippet)
        ("pyvenv" ,emacs-pyvenv)
-       ("s" ,emacs-s)))
-    (native-inputs
-     `(("ert-runner" ,emacs-ert-runner)
-       ("emacs-f" ,emacs-f)
-       ("python" ,python-wrapper)
+       ("s" ,emacs-s)
+       ;; The following are recommended Python dependencies that make Elpy
+       ;; much more useful.  Installing these avoids Elpy prompting to install them
+       ;; from PyPI using pip.
        ("python-autopep8" ,python-autopep8)
        ("python-black" ,python-black)
        ("python-flake8" ,python-flake8)
        ("python-jedi" ,python-jedi)
-       ("python-yapf" ,python-yapf)
+       ("python-rope" ,python-rope)
+       ("python-yapf" ,python-yapf)))
+    (native-inputs
+     `(("ert-runner" ,emacs-ert-runner)
+       ("emacs-f" ,emacs-f)
+       ("python" ,python-wrapper)
        ;; For documentation.
        ("python-sphinx" ,python-sphinx)
        ("texinfo" ,texinfo)))
@@ -7539,11 +7577,11 @@ using package inferred style.")
       (license license:gpl3+))))
 
 (define-public emacs-lua-mode
-  (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
-        (revision "2"))
+  (let ((commit "1f596a93b3f1caadd7bba01030f8c179b029600b")
+        (revision "1"))
     (package
       (name "emacs-lua-mode")
-      (version (git-version "20151025" revision commit))
+      (version (git-version "20191204" revision commit))
       (home-page "https://github.com/immerrr/lua-mode/")
       (source (origin
                 (method git-fetch)
@@ -7553,8 +7591,14 @@ using package inferred style.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1mra4db25ds64526dsj8m5yv0kfq3lgggjh1x6xmqypdaryddbcp"))))
+                  "0i4adlaik3qjx1wkb7rwk2clvj7ci2g8pm0siyb3yk90r6z5mspi"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+	 #:test-command '("buttercup" "-l" "lua-mode.el")))
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)
+	 ("lua" ,lua)))
       (synopsis "Major mode for lua")
       (description
        "This Emacs package provides a mode for @uref{https://www.lua.org/,
@@ -9962,57 +10006,54 @@ Emacs.")
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public emacs-ert-runner
-  (let ((version "0.7.0")
-        (revision "1")
-        (commit "90b8fdd5970ef76a4649be60003b37f82cdc1a65"))
-    (package
-      (name "emacs-ert-runner")
-      (version (git-version "0.7.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/rejeep/ert-runner.el.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "04nxmyzncacj2wmzd84vv9wkkr2dk9lcb10dvygqmg3p1gadnwzz"))))
-      (build-system emacs-build-system)
-      (inputs
-       `(("emacs-ansi" ,emacs-ansi)
-         ("emacs-commander" ,emacs-commander)
-         ("emacs-dash" ,emacs-dash)
-         ("emacs-f" ,emacs-f)
-         ("emacs-s" ,emacs-s)
-         ("emacs-shut-up" ,emacs-shut-up)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-executable
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out"))
-                     (source-directory (string-append
-                                  (getenv "TMPDIR") "/source")))
-                 (substitute* "bin/ert-runner"
-                   (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
-                    (string-append "ERT_RUNNER=\"" out
-                                   "/share/emacs/site-lisp")))
-                 (install-file "bin/ert-runner" (string-append out "/bin"))
-                 (wrap-program (string-append out "/bin/ert-runner")
-                   (list "EMACSLOADPATH" ":" 'prefix
-                         ;; Do not capture the transient source directory in
-                         ;; the wrapper.
-                         (delete source-directory
-                                 (string-split (getenv "EMACSLOADPATH") #\:))))
-                 #t))))
-         #:include (cons* "^reporters/.*\\.el$" %default-include)))
-      (home-page "https://github.com/rejeep/ert-runner.el")
-      (synopsis "Opinionated Ert testing workflow")
-      (description "@code{ert-runner} is a tool for Emacs projects tested
+  (package
+    (name "emacs-ert-runner")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	     (url "https://github.com/rejeep/ert-runner.el.git")
+	     (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+	(base32
+	 "08gygn9fjank5gpi4v6ynrkn0jbknxbwsn7md4p9ndygdbmnkf98"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("emacs-ansi" ,emacs-ansi)
+       ("emacs-commander" ,emacs-commander)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)
+       ("emacs-shut-up" ,emacs-shut-up)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+	 (add-after 'install 'install-executable
+	   (lambda* (#:key inputs outputs #:allow-other-keys)
+	     (let ((out (assoc-ref outputs "out"))
+		   (source-directory (string-append
+				      (getenv "TMPDIR") "/source")))
+	       (substitute* "bin/ert-runner"
+		 (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
+		  (string-append "ERT_RUNNER=\"" out
+				 "/share/emacs/site-lisp")))
+	       (install-file "bin/ert-runner" (string-append out "/bin"))
+	       (wrap-program (string-append out "/bin/ert-runner")
+		 (list "EMACSLOADPATH" ":" 'prefix
+		       ;; Do not capture the transient source directory in
+		       ;; the wrapper.
+		       (delete source-directory
+			       (string-split (getenv "EMACSLOADPATH") #\:))))
+	       #t))))
+       #:include (cons* "^reporters/.*\\.el$" %default-include)))
+    (home-page "https://github.com/rejeep/ert-runner.el")
+    (synopsis "Opinionated Ert testing workflow")
+    (description "@code{ert-runner} is a tool for Emacs projects tested
 using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public ert-runner
   (deprecated-package "ert-runner" emacs-ert-runner))
@@ -15582,32 +15623,31 @@ from @code{emms-source-file-default-directory}.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-exwm
-  (let ((commit "56266f261ba3b3d2753b374b50da20eb768c06f5"))
-    (package
-      (name "emacs-helm-exwm")
-      (version (git-version "20180703" "2" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacs-helm/helm-exwm.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "064ziinqa5sdv7rfjn0y278l12kld176fr88k4h78pgf2f2n7cd8"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-exwm" ,emacs-exwm)))
-      (home-page
-       "https://github.com/emacs-helm/helm-exwm")
-      (synopsis "Helm for EXWM buffers")
-      (description
-       "@code{helm-exwm} runs a Helm session over the list of EXWM buffers.
+  (package
+    (name "emacs-helm-exwm")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emacs-helm/helm-exwm.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0g4k01ps14bp2az8v6dcag9llg045k2b4kdis81xx4lvw76znr9v"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-exwm" ,emacs-exwm)))
+    (home-page
+     "https://github.com/emacs-helm/helm-exwm")
+    (synopsis "Helm for EXWM buffers")
+    (description
+     "@code{helm-exwm} runs a Helm session over the list of EXWM buffers.
 @code{helm-exwm-switch} is a convenience X application launcher using Helm to
 switch between the various windows of one or several specific applications.
 See @code{helm-exwm-switch-browser} for an example.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-flycheck
   (let ((commit "3cf7d3bb194acacc6395f88360588013d92675d6"))

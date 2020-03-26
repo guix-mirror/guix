@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -405,11 +405,24 @@ to the system ACL file if it has not yet been authorized."
   "Send the subset of FILES from LOCAL (a local store) that's missing to
 REMOTE, a remote store.  When RECURSIVE? is true, send the closure of FILES.
 Return the list of store items actually sent."
+  (define (inferior-remote-eval* exp session)
+    (guard (c ((inferior-exception? c)
+               (match (inferior-exception-arguments c)
+                 (('quit 7)
+                  (report-module-error (remote-store-host remote)))
+                 (_
+                  (report-inferior-exception c (remote-store-host remote))))))
+      (inferior-remote-eval exp session)))
+
   ;; Compute the subset of FILES missing on SESSION and send them.
   (let* ((files   (if recursive? (requisites local files) files))
          (session (channel-get-session (store-connection-socket remote)))
-         (missing (inferior-remote-eval
+         (missing (inferior-remote-eval*
                    `(begin
+                      (eval-when (load expand eval)
+                        (unless (resolve-module '(guix) #:ensure #f)
+                          (exit 7)))
+
                       (use-modules (guix)
                                    (srfi srfi-1) (srfi srfi-26))
 
@@ -566,5 +579,10 @@ check.")
 own module directory.  Run @command{ssh ~A env | grep GUILE_LOAD_PATH} to
 check.")
                    host)))
+
+(define (report-inferior-exception exception host)
+  "Report EXCEPTION, an &inferior-exception that occurred on HOST."
+  (raise-error (G_ "exception occurred on remote host '~A': ~s")
+               host (inferior-exception-arguments exception)))
 
 ;;; ssh.scm ends here

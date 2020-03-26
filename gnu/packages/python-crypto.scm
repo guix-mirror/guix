@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,8 +46,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
@@ -308,6 +311,31 @@ etc.).  The package is structured to make adding new modules easy.")
             "python"
             (package-inputs pycrypto)))))))
 
+(define-public python-kerberos
+  (package
+    (name "python-kerberos")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kerberos" version))
+       (sha256
+        (base32
+         "19663qxmma0i8bfbjc2iwy5hgq0g4pfb75r023v5dps68zfvffgh"))))
+    (build-system python-build-system)
+    (inputs
+     `(("mit-krb5" ,mit-krb5)))
+    (home-page "https://github.com/apple/ccs-pykerberos")
+    (synopsis
+     "Python Kerberos library used by CalendarServer")
+    (description
+     "This Python package is a high-level wrapper for Kerberos (GSSAPI)
+operations.  The goal is to avoid having to build a module that wraps the
+entire Kerberos.framework, and instead offer a limited set of functions that
+do what is needed for client/server Kerberos authentication based on
+<http://www.ietf.org/rfc/rfc4559.txt>.")
+    (license license:asl2.0)))
+
 (define-public python-keyring
   (package
     (name "python-keyring")
@@ -376,6 +404,45 @@ password storage.")
          ("python2-setuptools-scm" ,python2-setuptools-scm)))
       (propagated-inputs
        `(("python2-pycrypto" ,python2-pycrypto))))))
+
+(define-public python-keyrings.alt
+  (package
+    (name "python-keyrings.alt")
+    (version "3.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "keyrings.alt" version))
+        (sha256
+         (base32
+          "0gdjdqpq2hf770p6iwi891mil0vbsdhvy88x0v8b2w4y4b28lcli"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            (delete-file "keyrings/alt/_win_crypto.py")
+            ;; Rely on python-keyring>20:
+            ;; https://github.com/jaraco/keyrings.alt/issues/33
+            (substitute* '("keyrings/alt/tests/test_Gnome.py"
+                           "keyrings/alt/tests/test_Google.py"
+                           "keyrings/alt/tests/test_Windows.py"
+                           "keyrings/alt/tests/test_file.py"
+                           "keyrings/alt/tests/test_pyfs.py")
+              (("keyring.tests.test_backend") "keyring.testing.backend")
+              (("keyring.tests.util") "keyring.testing.util"))
+            #t))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-keyring" ,python-keyring)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/jaraco/keyrings.alt")
+    (synopsis "Alternate keyring implementations")
+    (description "Keyrings in this package may have security risks or other
+implications.  These backends were extracted from the main keyring project to
+make them available for those who wish to employ them, but are discouraged for
+general production use.  Include this module and use its backends at your own
+risk.")
+    (license license:expat)))
 
 (define-public python-certifi
   (package
@@ -1214,6 +1281,35 @@ package provides a tool to securely sign firmware images for booting by
 MCUboot.")
     (license license:expat)))
 
+(define-public python-ntlm-auth
+  (package
+    (name "python-ntlm-auth")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ntlm-auth" version))
+       (sha256
+        (base32
+         "16mavidki4ma5ip8srqalr19gz4f5yn3cnmmgps1fmgfr24j63rm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)))
+    (home-page "https://github.com/jborean93/ntlm-auth")
+    (synopsis
+     "Calculates NTLM Authentication codes")
+    (description
+     "This library handles the low-level details of NTLM authentication for
+use in authenticating with a service that uses NTLM.  It will create and parse
+the 3 different message types in the order required and produce a base64
+encoded value that can be attached to the HTTP header.
+
+The goal of this library is to offer full NTLM support including signing and
+sealing of messages as well as supporting MIC for message integrity and the
+ability to customise and set limits on the messages sent.  Please see Features
+and Backlog for a list of what is and is not currently supported.")
+    (license license:expat)))
+
 (define-public python-secretstorage
   (package
     (name "python-secretstorage")
@@ -1264,3 +1360,81 @@ items and collections, editing items, locking and unlocking collections
      "This is a low-level, pure Python DBus protocol client.  It has an
 I/O-free core, and integration modules for different event loops.")
     (license license:expat)))
+
+(define-public python-argon2-cffi
+  (package
+    (name "python-argon2-cffi")
+    (version "19.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "argon2-cffi" version))
+        (sha256
+         (base32
+          "18xxfw30gi3lwaz4vwb05iavzlrk3fa1x9fippzrgd3px8z65apz"))
+        (modules '((guix build utils)))
+        (snippet '(begin (delete-file-recursively "extras") #t))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (setenv "ARGON2_CFFI_USE_SYSTEM" "1")
+             (invoke "python" "setup.py" "build")))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest")
+             (invoke "python" "-m" "argon2" "--help")
+             ;; see tox.ini
+             (invoke "python" "-m" "argon2" "-n" "1" "-t" "1" "-m" "8" "-p" "1"))))))
+    (propagated-inputs
+     `(("python-cffi" ,python-cffi)
+       ("python-six" ,python-six)))
+    (inputs `(("argon2" ,argon2)))
+    (native-inputs
+     `(("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://argon2-cffi.readthedocs.io/")
+    (synopsis "Secure Password Hashes for Python")
+    (description
+     "Argon2 is a secure password hashing algorithm.  It is designed to have
+both a configurable runtime as well as memory consumption.  This means that you
+can decide how long it takes to hash a password and how much memory is required.")
+    (license license:expat)))
+
+(define-public python-privy
+  (package
+    (name "python-privy")
+    (version "6.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               ;; Releases are untagged
+               (url "https://github.com/ofek/privy")
+               (commit "2838db3df239797c71bddacc48a4c49a83f35747")))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1m32dh5fqc8cy7jyf1z5fs6zvmdkbq5fi98hr609gbl7s0l0y0i9"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "pytest"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-argon2-cffi" ,python-argon2-cffi)
+       ("python-cryptography" ,python-cryptography)))
+    (home-page "https://www.dropbox.com/developers")
+    (synopsis "Library to password-protect your data")
+    (description
+     "Privy is a small and fast utility for password-protecting secret
+data such as API keys, cryptocurrency wallets, or seeds for digital
+signatures.")
+    (license (list license:expat license:asl2.0)))) ; dual licensed

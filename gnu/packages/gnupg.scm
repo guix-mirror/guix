@@ -258,7 +258,8 @@ compatible to GNU Pth.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0c6a4v9p6qzhsw1pfcwc459bxpc8hma0w9z8iqb9khvligack9q4"))))
+                "0c6a4v9p6qzhsw1pfcwc459bxpc8hma0w9z8iqb9khvligack9q4"))
+              (patches (search-patches "gnupg-default-pinentry.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

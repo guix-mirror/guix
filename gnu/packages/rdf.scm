@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -319,6 +320,8 @@ ideal (e.g. in LV2 implementations or embedded applications).")
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
             #t)))))
+    (inputs
+     `(("pcre" ,pcre)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs

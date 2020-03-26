@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -750,7 +751,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
 pixels, so that it can work on older video cards or text terminals.  It
 supports Unicode, 2048 colors, dithering of color images, and advanced text
 canvas operations.")
-    (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
+    (license license:wtfpl2)))
 
 (define-public libdca
   (package
@@ -1671,6 +1672,15 @@ To load this plugin, specify the following option when starting mpv:
                            (string-append "'" prefix "/etc/"))
                           (("'share/")
                            (string-append "'" prefix "/share/")))
+                        #t)))
+                  (add-after 'install 'install-completion
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (zsh (string-append out
+                                                 "/share/zsh/site-functions")))
+                        (mkdir-p zsh)
+                        (copy-file "youtube-dl.zsh"
+                                   (string-append zsh "/_youtube-dl"))
                         #t))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
@@ -1817,7 +1827,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.4")
+    (version "3.7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1826,7 +1836,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1plsm1sc04lwlg5h2gapxpykc3cpd4frjll14lamql89dm4a50vi"))))
+                "1caz56sxy554avz2vdv9gm7gyqcq0gyixzrh5v9ixmg6vxif5d4f"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -1835,6 +1845,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        ("perl-file-sharedir" ,perl-file-sharedir)
        ("perl-gtk2" ,perl-gtk2)
        ("perl-json" ,perl-json)
+       ("perl-json-xs" ,perl-json-xs)
        ("perl-libwww" ,perl-libwww)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
        ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
@@ -1849,7 +1860,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:module-build-flags '("--gtk")
+       #:module-build-flags '("--gtk2")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-inputs

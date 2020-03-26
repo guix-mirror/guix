@@ -194,9 +194,9 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.4.19"
+   "5.4.28"
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "1ajzwyy6vgmihxpz3sbshzfzd0w8yzj0fihv0d5rjpr4z3gm48bk")))
+   (base32 "08ls4gx5vanyiq9rn0869nfq4piw4lx1dl8hh9w9xgkr4ypc1j4k")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -362,18 +362,18 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.27")
+(define-public linux-libre-5.4-version "5.4.28")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0szc1p9y6z8gs2f1nj45nrz52sxcabg2xh7zqlljazv45lvcvf8r")))
+        (hash (base32 "197p7rjmbs229ncj1y8s80f7n4bm8g9w0jrv1109m3rl8q9wqqy8")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.112")
+(define-public linux-libre-4.19-version "4.19.113")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0yiyqwgh6wcyshpdj98s7dc4ahyx47y6whvnww6sjmzdq0fb3hi4")))
+        (hash (base32 "1rf0jz7r1f4rb4k0g3glssfa1hm2ka6vlbwjlkmsx1bybxnmg85m")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -433,7 +433,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch from linux-next,
+                             ;; can be dropped for linux-libre 5.7
+                             (search-patch
+                              "linux-libre-support-for-Pinebook-Pro.patch"))))
 
 (define-public linux-libre-4.19-source
   (source-with-patches linux-libre-4.19-pristine-source
@@ -566,15 +570,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "linux-libre/" name)))
     (search-auxiliary-file file)))
 
-;; FIXME: merge into kernel-config
-(define* (kernel-config-veyron arch #:key variant)
-  "Return the absolute file name of the Linux-Libre build configuration file
-for ARCH and optionally VARIANT, or #f if there is no such configuration."
-  (let* ((name (string-append (if variant (string-append variant "-") "")
-                              (if (string=? "i386" arch) "i686" arch) "-veyron.conf"))
-         (file (string-append "linux-libre/" name)))
-    (search-auxiliary-file file)))
-
 (define %default-extra-linux-options
   `(;; Some very mild hardening.
     ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
@@ -654,7 +649,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
      `(("perl" ,perl)
        ("bc" ,bc)
        ("openssl" ,openssl)
-       ("kmod" ,kmod)
        ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
        ("flex" ,flex)
        ("bison" ,bison)
@@ -678,6 +672,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (guix build utils)
                   (srfi srfi-1)
                   (srfi srfi-26)
+                  (ice-9 ftw)
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
@@ -729,8 +724,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
-                    (dtbdir (string-append out "/lib/dtbs"))
-                    (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
+                    (dtbdir (string-append out "/lib/dtbs")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
                          (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
@@ -742,12 +736,29 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                ;; Install kernel modules
                (mkdir-p moddir)
                (invoke "make"
-                       (string-append "DEPMOD=" kmod "/bin/depmod")
+                       ;; Disable depmod because the Guix system's module directory
+                       ;; is an union of potentially multiple packages.  It is not
+                       ;; possible to use depmod to usefully calculate a dependency
+                       ;; graph while building only one of those packages.
+                       "DEPMOD=true"
                        (string-append "MODULE_DIR=" moddir)
                        (string-append "INSTALL_PATH=" out)
                        (string-append "INSTALL_MOD_PATH=" out)
                        "INSTALL_MOD_STRIP=1"
-                       "modules_install")))))
+                       "modules_install")
+               (let* ((versions (filter (lambda (name)
+                                          (not (string-prefix? "." name)))
+                                        (scandir moddir)))
+                      (version (match versions
+                                ((x) x))))
+                 ;; There are symlinks to the build and source directory,
+                 ;; both of which will point to target /tmp/guix-build*
+                 ;; and thus not be useful in a profile.  Delete the symlinks.
+                 (false-if-file-not-found
+                  (delete-file (string-append moddir "/" version "/build")))
+                 (false-if-file-not-found
+                  (delete-file (string-append moddir "/" version "/source"))))
+               #t))))
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
@@ -807,19 +818,15 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Specialized kernel variants.
 ;;;
 
-(define-public linux-libre-arm-veyron
-  (make-linux-libre* linux-libre-version
-                     linux-libre-source
-                     '("armhf-linux")
-                     #:configuration-file kernel-config-veyron
-                     #:extra-version "arm-veyron"))
-
 (define-public linux-libre-arm-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
                      #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-veyron
+  (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre* linux-libre-4.19-version
@@ -855,6 +862,13 @@ It has been modified to remove all non-free binary blobs.")
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
                      #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm64-generic
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"))
 
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Brant Gardner <brantcgardner@brantware.com>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,7 @@
 (define-public boinc-client
   (package
     (name "boinc-client")
-    (version "7.16.4")
+    (version "7.16.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -54,7 +55,7 @@
               (file-name (git-file-name "boinc" version))
               (sha256
                (base32
-                "08xx2kzb7c46k1zb91w74kyig3b5kilxdw5ilfs67r8p55mxk0g1"))))
+                "107rpw9qd5x4pyxm9jd1lqxva5nxwb01dm5h61d6msv2vgiy0r8n"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-server")))
     (inputs `(("openssl" ,openssl)
@@ -88,9 +89,9 @@ resources).  It supports virtualized, parallel, and GPU-based applications.")
                  #:tests? #f)) ; FIXME: Looks like bad test syntax in the
                                ; source package, 2 tests fail.  Disable for
                                ; now.
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("openssl" ,openssl-1.0)
               ("curl" ,curl)
-              ("mariadb" ,mariadb)
+              ("mariadb:dev" ,mariadb "dev")
               ("zlib" ,zlib)))
     (propagated-inputs `(("python" ,python-wrapper)
                          ("perl" ,perl)))))

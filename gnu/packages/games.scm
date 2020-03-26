@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
+;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2561,7 +2562,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.7.5")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2569,7 +2570,7 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "1ly63316c07i0gyqqmyzsyvygsvygn0fpk3bnbg25fi6li99rlsg"))))
+                "05ysaxvsgps9fxc421kdifsxmc1sn6n79cjaa0k0i3fs9qqrja2b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -10299,4 +10300,36 @@ range with the objective to hit as many dummy targets as possible within
 3 minutes.  You control a gun that may either fire small or large grenades at
 soldiers, jeeps and tanks.  The gameplay is simple but it is not that easy to
 get high scores.")
+    (license license:gpl2+)))
+
+(define-public 7kaa
+  (package
+    (name "7kaa")
+    (version "2.15.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/the3dfxdude/7kaa/"
+                           "releases/download/v" version "/"
+                           "7kaa-" version ".tar.xz"))
+       (sha256
+        (base32 "0blj47mcsfw1sn3465j6iham8m6ki07iggnq4q8nnaqnryx710jc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("enet" ,enet)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)))
+    (home-page "https://7kfans.com/")
+    (synopsis "Seven Kingdoms Ancient Adversaries: real-time strategy game")
+    (description
+     "Seven Kingdoms, designed by Trevor Chan, brings a blend of Real-Time
+Strategy with the addition of trade, diplomacy, and espionage.  The game
+enables players to compete against up to six other kingdoms allowing players
+to conquer opponents by defeating them in war (with troops or machines),
+capturing their buildings with spies, or offering opponents money for their
+kingdom.")
     (license license:gpl2+)))

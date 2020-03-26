@@ -834,14 +834,14 @@ rendering SVG graphics.")
 (define-public python-pastel
   (package
     (name "python-pastel")
-    (version "0.1.1")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pastel" version))
        (sha256
         (base32
-         "1qxcrcl8pzh66l8s6hym153mijdhwna0afcsmgca0bj4n80ijfxz"))))
+         "0dnaw44ss10i10z4ksy0xljknvjap7rb7g0b8p6yzm5x4g2my5a6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

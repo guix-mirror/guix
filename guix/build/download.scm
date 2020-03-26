@@ -693,6 +693,13 @@ otherwise simply ignore them."
       (()
        (format (current-error-port) "failed to download ~s from ~s~%"
                file url)
+
+       ;; Remove FILE in case we made an incomplete download, for example due
+       ;; to ENOSPC.
+       (catch 'system-error
+         (lambda ()
+           (delete-file file))
+         (const #f))
        #f))))
 
 ;;; download.scm ends here

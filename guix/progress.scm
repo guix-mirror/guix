@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -95,13 +95,6 @@ stopped."
 ;;;
 ;;; File download progress report.
 ;;;
-
-(cond-expand
-  (guile-2.2
-   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
-   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
-   (define time-monotonic time-tai))
-  (else #t))
 
 (define (nearest-exact-integer x)
   "Given a real number X, return the nearest exact integer, with ties going to

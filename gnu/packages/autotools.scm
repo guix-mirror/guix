@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
@@ -324,6 +324,32 @@ standards-compliant Makefiles.  Build requirements are entered in an
 intuitive format and then Automake works with Autoconf to produce a robust
 Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
+
+(define-public automake-1.16.2
+  (package
+    (inherit automake)
+    (version "1.16.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/automake/automake-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+                "1l7dkqbsmbf94ax29jj1jf6a0r6ikc8jybg1p5m0c3ki7pg5ki6c"))
+             (patches
+              (search-patches "automake-skip-amhello-tests.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments automake)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-before 'check 'skip-test
+             (lambda _
+               ;; This test requires 'etags' and fails if it's missing.
+               ;; Skip it.
+               (substitute* "t/tags-lisp-space.sh"
+                 (("^required.*" all)
+                  (string-append "exit 77\n" all "\n")))
+               #t))))))))
 
 (define-public libtool
   (package
