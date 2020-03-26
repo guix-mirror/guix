@@ -468,7 +468,7 @@ and returns a sequence of positioned glyphids from the font.")
 (define-public potrace
   (package
     (name "potrace")
-    (version "1.15")
+    (version "1.16")
     (source
      (origin
       (method url-fetch)
@@ -476,8 +476,7 @@ and returns a sequence of positioned glyphids from the font.")
                           "/potrace-" version ".tar.gz"))
       (sha256
        (base32
-        "17ajildjp14shsy339xarh1lw1p0k60la08ahl638a73mh23kcx9"))
-      (patches (search-patches "potrace-tests.patch"))))
+        "1k3sxgjqq0jnpk9xxys05q32sl5hbf1lbk1gmfxcrmpdgnhli0my"))))
     (build-system gnu-build-system)
     (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
     (inputs `(("zlib" ,zlib)))
