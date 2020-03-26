@@ -2059,7 +2059,7 @@ XML/CSS rendering engine.")
 (define-public libgsf
   (package
     (name "libgsf")
-    (version "1.14.46")
+    (version "1.14.47")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2067,7 +2067,7 @@ XML/CSS rendering engine.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0bddmlzg719sjhlbzqlhb7chwk93qc7g68m2r9r8xz112jdradpa"))))
+                "0kbpp9ksl7977xiga37sk1gdw1r039v6zviqznl7alvvg39yp26i"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
