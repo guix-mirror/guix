@@ -161,10 +161,6 @@ hooks\" run when building the profile."
                (switch-symlinks profile (basename name))
                (unless (string=? profile %current-profile)
                  (register-gc-root store name))
-               (format #t (N_ "~a package in profile~%"
-                              "~a packages in profile~%"
-                              count)
-                       count)
                (display-search-path-hint entries profile)))
 
         (warn-about-disk-space profile))))))
