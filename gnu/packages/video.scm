@@ -1860,7 +1860,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:module-build-flags '("--gtk")
+       #:module-build-flags '("--gtk2")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-inputs
