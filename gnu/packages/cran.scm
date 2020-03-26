@@ -21012,8 +21012,7 @@ where tcltk is present are supported.")
         ("r-pbdzmq" ,r-pbdzmq)
         ("r-png" ,r-png)))
     (home-page "https://github.com/RBigData/remoter")
-    (synopsis
-      "Control a Remote R Session from a Local One")
+    (synopsis "Control a remote R session from a local one")
     (description
       "This package provides a set of utilities for client/server computing
 with R, controlling a remote R session (the server) from a local one (the
