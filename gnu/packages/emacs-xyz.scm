@@ -1704,6 +1704,25 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
 Emacs buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-caps-lock
+  (package
+    (name "emacs-caps-lock")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "caps-lock-" version ".el"))
+       (sha256
+        (base32 "1i4hwam81p4dr0bk8257fkiz4xmv6knkjxj7a00fa35kgx5blpva"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/caps-lock.html")
+    (synopsis "Caps Lock as a minor mode")
+    (description
+     "This package provides a minor mode to emulate the behavior of a Caps
+Lock key.")
+    (license license:gpl3+)))
+
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
