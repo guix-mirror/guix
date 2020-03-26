@@ -2099,7 +2099,7 @@ libxml2 and libxslt.")
 (define-public python-xmlschema
   (package
     (name "python-xmlschema")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               ;; Unit tests are not distributed with the PyPI archive.
               (method git-fetch)
@@ -2109,7 +2109,7 @@ libxml2 and libxslt.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nqhqbvp0kpd1bz11b6gpkc0mkg068mqs56ww4k5ang1cl9d8gd6"))))
+                "03bz5mp45y4shmlc1gxq1h69vjx60z1acg9cy4kq7fczgx8qg9jw"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
