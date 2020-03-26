@@ -1,0 +1,138 @@
+This is a combination of the following 4 commits:
+https://github.com/libffi/libffi/commit/01a75ed76ea7e57f1b7a5c183e2b1e890e6aa0fd.patch
+https://github.com/libffi/libffi/commit/6663047f56c2932a6b10a790f4ac6666dd181326.patch
+https://github.com/libffi/libffi/commit/e50b9ef8b910fa642ef158f6642e60d54d7ad740.patch
+https://github.com/libffi/libffi/commit/4d6d2866ae43e55325e8ee96561221804602cd7a.patch
+
+From 2dbfa92a95e3bacabca431b89d2a5925e48a0e40 Mon Sep 17 00:00:00 2001
+From: Sergei Trofimovich <slyfox@gentoo.org>
+Date: Thu, 28 Nov 2019 12:42:41 +0000
+
+powerpc: fix build failure on power7 and older (#532)
+
+Build failure looks as:
+```
+libtool: compile:  powerpc-unknown-linux-gnu-gcc \
+    -O2 -mcpu=powerpc -mtune=powerpc -pipe ... -c src/powerpc/ffi.c ...
+In file included from src/powerpc/ffi.c:33:
+src/powerpc/ffi_powerpc.h:65:9: error: '__int128' is not supported on this target
+   65 | typedef __int128 float128;
+      |         ^~~~~~~~
+```
+
+The fix avoids using __int128 in favour of aligned char[16].
+
+Closes: https://github.com/libffi/libffi/issues/531
+Signed-off-by: Sergei Trofimovich <slyfox@gentoo.org>
+
+Address platforms with no __int128.
+
+powerpc64: Use memcpy to help platforms with no __int128. (#534)
+
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+
+Update powerpc sysv assembly for ffi_powerpc.h changes (#541)
+
+Some of the flag bits were moved when adding powerpc64 vector support.
+
+Fixes #536
+---
+ src/powerpc/ffi_linux64.c | 12 ++++++------
+ src/powerpc/ffi_powerpc.h |  2 +-
+ src/powerpc/sysv.S        | 12 +++++-------
+ 3 files changed, 12 insertions(+), 14 deletions(-)
+
+diff --git a/src/powerpc/ffi_linux64.c b/src/powerpc/ffi_linux64.c
+index de0d033..4d50878 100644
+--- a/src/powerpc/ffi_linux64.c
++++ b/src/powerpc/ffi_linux64.c
+@@ -547,9 +547,9 @@ ffi_prep_args64 (extended_cif *ecif, unsigned long *const stack)
+               if (next_arg.ul == gpr_end.ul)
+                 next_arg.ul = rest.ul;
+               if (vecarg_count < NUM_VEC_ARG_REGISTERS64 && i < nfixedargs)
+-                *vec_base.f128++ = **p_argv.f128;
++		memcpy (vec_base.f128++, *p_argv.f128, sizeof (float128));
+               else
+-                *next_arg.f128 = **p_argv.f128;
++		memcpy (next_arg.f128, *p_argv.f128, sizeof (float128));
+               if (++next_arg.f128 == gpr_end.f128)
+                 next_arg.f128 = rest.f128;
+               vecarg_count++;
+@@ -680,9 +680,9 @@ ffi_prep_args64 (extended_cif *ecif, unsigned long *const stack)
+                     {
+                       if (vecarg_count < NUM_VEC_ARG_REGISTERS64
+                           && i < nfixedargs)
+-                        *vec_base.f128++ = *arg.f128++;
++		        memcpy (vec_base.f128++, arg.f128, sizeof (float128));
+                       else
+-                        *next_arg.f128 = *arg.f128++;
++		        memcpy (next_arg.f128, arg.f128++, sizeof (float128));
+                       if (++next_arg.f128 == gpr_end.f128)
+                         next_arg.f128 = rest.f128;
+                       vecarg_count++;
+@@ -986,9 +986,9 @@ ffi_closure_helper_LINUX64 (ffi_cif *cif,
+                   do
+                     {
+                       if (pvec < end_pvec && i < nfixedargs)
+-                        *to.f128 = *pvec++;
++		        memcpy (to.f128, pvec++, sizeof (float128));
+                       else
+-                        *to.f128 = *from.f128;
++		        memcpy (to.f128, from.f128, sizeof (float128));
+                       to.f128++;
+                       from.f128++;
+                     }
+diff --git a/src/powerpc/ffi_powerpc.h b/src/powerpc/ffi_powerpc.h
+index 5ee2a70..8e2f2f0 100644
+--- a/src/powerpc/ffi_powerpc.h
++++ b/src/powerpc/ffi_powerpc.h
+@@ -62,7 +62,7 @@ typedef _Float128 float128;
+ #elif defined(__FLOAT128__)
+ typedef __float128 float128;
+ #else
+-typedef __int128 float128;
++typedef char float128[16] __attribute__((aligned(16)));
+ #endif
+ 
+ void FFI_HIDDEN ffi_closure_SYSV (void);
+diff --git a/src/powerpc/sysv.S b/src/powerpc/sysv.S
+index 1474ce7..df97734 100644
+--- a/src/powerpc/sysv.S
++++ b/src/powerpc/sysv.S
+@@ -104,17 +104,16 @@ ENTRY(ffi_call_SYSV)
+ 	bctrl
+ 
+ 	/* Now, deal with the return value.  */
+-	mtcrf	0x01,%r31 /* cr7  */
++	mtcrf	0x03,%r31 /* cr6-cr7  */
+ 	bt-	31,L(small_struct_return_value)
+ 	bt-	30,L(done_return_value)
+ #ifndef __NO_FPRS__
+ 	bt-	29,L(fp_return_value)
+ #endif
+ 	stw	%r3,0(%r30)
+-	bf+	28,L(done_return_value)
++	bf+	27,L(done_return_value)
+ 	stw	%r4,4(%r30)
+-	mtcrf	0x02,%r31 /* cr6  */
+-	bf	27,L(done_return_value)
++	bf	26,L(done_return_value)
+ 	stw     %r5,8(%r30)
+ 	stw	%r6,12(%r30)
+ 	/* Fall through...  */
+@@ -145,10 +144,9 @@ L(done_return_value):
+ #ifndef __NO_FPRS__
+ L(fp_return_value):
+ 	.cfi_restore_state
+-	bf	28,L(float_return_value)
++	bf	27,L(float_return_value)
+ 	stfd	%f1,0(%r30)
+-	mtcrf   0x02,%r31 /* cr6  */
+-	bf	27,L(done_return_value)
++	bf	26,L(done_return_value)
+ 	stfd	%f2,8(%r30)
+ 	b	L(done_return_value)
+ L(float_return_value):
+-- 
+2.26.0
+

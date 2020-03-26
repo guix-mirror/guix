@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -49,7 +49,8 @@
                               name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))))
+                "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))
+              (patches (search-patches "libffi-3.3-powerpc-fixes.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the

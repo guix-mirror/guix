@@ -1117,6 +1117,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jsoncpp-fix-inverted-case.patch		\
   %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/libffi-3.3-powerpc-fixes.patch		\
   %D%/packages/patches/libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
