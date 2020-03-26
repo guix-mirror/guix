@@ -433,7 +433,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch from linux-next,
+                             ;; can be dropped for linux-libre 5.7
+                             (search-patch
+                              "linux-libre-support-for-Pinebook-Pro.patch"))))
 
 (define-public linux-libre-4.19-source
   (source-with-patches linux-libre-4.19-pristine-source
