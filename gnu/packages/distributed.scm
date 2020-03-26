@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Brant Gardner <brantcgardner@brantware.com>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,9 +89,9 @@ resources).  It supports virtualized, parallel, and GPU-based applications.")
                  #:tests? #f)) ; FIXME: Looks like bad test syntax in the
                                ; source package, 2 tests fail.  Disable for
                                ; now.
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("openssl" ,openssl-1.0)
               ("curl" ,curl)
-              ("mariadb" ,mariadb)
+              ("mariadb:dev" ,mariadb "dev")
               ("zlib" ,zlib)))
     (propagated-inputs `(("python" ,python-wrapper)
                          ("perl" ,perl)))))
