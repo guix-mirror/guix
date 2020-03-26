@@ -1590,7 +1590,13 @@ are cross-built for TARGET."
                       ;; Disable substitution because it would trigger a
                       ;; connection to the substitute server, which is likely
                       ;; to have no substitute to offer.
-                      #:substitutable? #f)))
+                      #:substitutable? #f
+
+                      #:properties `((type . profile)
+                                     (profile
+                                      (count
+                                       . ,(length
+                                           (manifest-entries manifest))))))))
 
 (define* (profile-search-paths profile
                                #:optional (manifest (profile-manifest profile))
