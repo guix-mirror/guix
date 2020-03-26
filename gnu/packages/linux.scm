@@ -4368,6 +4368,40 @@ repair and easy administration.")
 from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
 
+(define-public cramfs-tools
+  (package
+    (name "cramfs-tools")
+    (home-page "https://github.com/npitre/cramfs-tools")
+    (version "2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "183rfqqyzx52q0vxicdgf0p984idh3rqkvzfb93gjvyzfhc15c0p"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "mkcramfs" (string-append out "/sbin"))
+               (install-file "cramfsck" (string-append out "/sbin")))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "Tools to manage Cramfs file systems")
+    (description "Cramfs is a Linux file system designed to be simple, small,
+and to compress things well.  It is used on a number of embedded systems and
+small devices.  This version has additional features such as uncompressed
+blocks and random block placement.")
+    (license license:gpl2+)))
+
 (define-public compsize
   (package
     (name "compsize")
