@@ -405,7 +405,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
        (begin
          (use-modules (guix build utils))
 
-         (setvbuf (current-output-port) _IOLBF)
+         (setvbuf (current-output-port)
+                  (cond-expand (guile-2.0 _IOLBF) (else 'line)))
          (let* ((in  (assoc-ref %build-inputs "binutils"))
                 (out (assoc-ref %outputs "out"))
                 (bin (string-append out "/bin")))
@@ -545,7 +546,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                       (srfi srfi-26)
                       (guix build utils))
 
-         (setvbuf (current-output-port) _IOLBF)
+         (setvbuf (current-output-port)
+                  (cond-expand (guile-2.0 _IOLBF) (else 'line)))
          (let* ((out        (assoc-ref %outputs "out"))
                 (bindir     (string-append out "/bin"))
                 (libdir     (string-append out "/lib"))
@@ -869,7 +871,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                       (ice-9 match)
                       (srfi srfi-26))
 
-         (setvbuf (current-output-port) _IOLBF)
+         (setvbuf (current-output-port)
+                  (cond-expand (guile-2.0 _IOLBF) (else 'line)))
          (mkdir out)
          (chdir out)
          (for-each (match-lambda
