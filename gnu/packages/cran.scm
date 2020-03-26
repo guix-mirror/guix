@@ -20961,11 +20961,11 @@ service.  Functions are provided to work with the OAI-PMH verbs:
          "0kqn06rpb39jlzizjlnc5c44mfic8llrshxn7ljgmyj35lbqwxqh"))))
     (properties `((upstream-name . "argon2")))
     (build-system r-build-system)
-    (home-page
-     "https://github.com/wrathematics/argon2")
-    (synopsis "Secure Password Hashing based on Argon2 Algorithm")
+    (home-page "https://github.com/wrathematics/argon2")
+    (synopsis "Secure password hashing based on the argon2 algorithm")
     (description
-     "Utilities for secure password hashing via the argon2 algorithm.")
+     "This package provides utilities for secure password hashing via the
+argon2 algorithm.")
     (license license:bsd-2)))
 
 (define-public r-getpass
