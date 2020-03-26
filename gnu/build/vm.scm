@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -182,6 +182,15 @@ the #:references-graphs parameter of 'derivation'."
                                          ",id=myhd"))
               '())
           arch-specific-flags))
+
+  (unless (file-exists? "xchg/.exit-status")
+    (error "VM did not produce an exit code"))
+
+  (match (call-with-input-file "xchg/.exit-status" read)
+    (0 #t)
+    (status (error "guest VM code exited with a non-zero status" status)))
+
+  (delete-file "xchg/.exit-status")
 
   ;; When MAKE-DISK-IMAGE? is true, the image is in OUTPUT already.
   (unless make-disk-image?
