@@ -111,6 +111,7 @@ C/C++ part.")
     (inherit icu4c)
     (source (origin
               (inherit (package-source icu4c))
+              (patch-flags '("-p2"))
               (patches (append
                          (origin-patches (package-source icu4c))
                          (search-patches
