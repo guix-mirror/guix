@@ -10977,7 +10977,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.6.8")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -10987,7 +10987,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0k0cz3qcv98p6cq09zlbgnjsggxcqbcmzxg5zikgcgbr2nfq4lry"))))
+         "111h05b60pj8dxbidiamy4imc92x2962b3lmb7wgysl6lx064qis"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -11006,7 +11006,6 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (add-after 'unpack 'place-biod-and-undead
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "biod") "BioD")
-             (copy-recursively (assoc-ref inputs "undead") "undeaD")
              #t))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
@@ -11020,14 +11019,15 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin")))
                (mkdir-p bin)
-               (install-file "bin/sambamba" bin)
+               (copy-file (string-append "bin/sambamba-" ,version)
+                          (string-append bin "/sambamba"))
                #t))))))
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
        ("python" ,python)
        ("biod"
-        ,(let ((commit "4f1a7d2fb7ef3dfe962aa357d672f354ebfbe42e"))
+        ,(let ((commit "7969eb0a847b05874e83ffddead26e193ece8101"))
            (origin
              (method git-fetch)
              (uri (git-reference
@@ -11038,20 +11038,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
                                        "-checkout"))
              (sha256
               (base32
-               "1k5pdjv1qvi0a3rwd1sfq6zbj37l86i7bf710m4c0y6737lxj426")))))
-       ("undead"
-        ,(let ((commit "9be93876982b5f14fcca60832563b3cd767dd84d"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/biod/undeaD.git")
-                   (commit commit)))
-             (file-name (string-append "undead-"
-                                       (string-take commit 9)
-                                       "-checkout"))
-             (sha256
-              (base32
-               "1xfarj0nqlmi5jd1vmcmm7pabzaf9hxyvk6hp0d6jslb5k9r8r3d")))))))
+               "0mjxsmbmv0jxl3pq21p8j5r829d648if8q58ka50b2956lc6qkpm")))))))
     (inputs
      `(("lz4" ,lz4)
        ("htslib" ,htslib-for-sambamba)))
