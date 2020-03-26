@@ -16284,10 +16284,10 @@ text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
       (license license:gpl3))))
 
 (define-public emacs-helm-org-contacts
-  (let ((commit "0af703bd9a43032b89fdf5559673151d1ac2fffc"))
+  (let ((commit "e7f11615802df55bb8b679450b5a5ef82a9081f9"))
     (package
       (name "emacs-helm-org-contacts")
-      (version (git-version "20180707" "1" commit))
+      (version (git-version "20200310" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -16297,7 +16297,7 @@ text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1cl7cm2ic9pg4vc9cdh84vzjj1x2lpd5ymimiva8h4l17kiphk4s"))))
+           "06a1gbrq3qcfsn0kyv4i24x1xxfrrwqa3kgfj4xa4va88q2vqyb5"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
