@@ -5201,15 +5201,15 @@ protocol.")
 (define-public libxcb
   (package
     (name "libxcb")
-    (version "1.13")
+    (version "1.14")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://xcb.freedesktop.org/dist/"
-                            "libxcb-" version ".tar.bz2"))
+                            "libxcb-" version ".tar.xz"))
         (sha256
           (base32
-           "1ahxhmdqp4bhb90zmc275rmf5wixqra4bnw9pqnzyl1w3598g30q"))))
+           "0d2chjgyn5lr9sfhacfvqgnj9l9faz11vn322a06jd6lk3dxcpm5"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libpthread-stubs" ,libpthread-stubs)
