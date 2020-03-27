@@ -269,17 +269,14 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "mirror://gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1jakps3127h8g69ixgb4zwc8v2g29dmwql1vi3pwg30kzp8fm5nn"))
-              (patches
-               (append (search-patches "guile-3.0-crash.patch")
-                       (origin-patches (package-source guile-2.2))))))
+                "12lziar4j27j9whqp2n18427q45y9ghq7gdd8lqhmj1k0lr7vi2k"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
