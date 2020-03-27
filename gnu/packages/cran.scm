@@ -8514,18 +8514,20 @@ differentiation.")
 (define-public r-bayestestr
   (package
     (name "r-bayestestr")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bayestestR" version))
        (sha256
         (base32
-         "1l0kqw793d8fnk0745fllmqwjwnj9srvqzv4baq5s05ls1gbi2mw"))))
+         "1q24qh5p6bz4nbf4546kckh7d518x5pm1yhhbc8fwcnbca4kgqjz"))))
     (properties `((upstream-name . "bayestestR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-insight" ,r-insight)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/easystats/bayestestR")
     (synopsis "Describe Bayesian models and posterior distributions")
     (description
