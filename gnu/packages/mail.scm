@@ -144,14 +144,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.8")
+    (version "3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
+               "1g1xf2lal04nsnf1iym9n9n0wxjpqbcr9nysxpm98v4pniinqwsz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -166,7 +166,8 @@
              ;; Tests try to invoke 'mda' such that it looks up the
              ;; 'root' user, which does not exist in the build
              ;; environment.
-             (substitute* "mda/tests/testsuite"
+             (substitute* '("mda/mda/tests/testsuite"
+                            "mda/lmtpd/tests/testsuite")
                (("root <")         "nobody <")
                (("spool/root")     "spool/nobody")
                (("root@localhost") "nobody@localhost"))
