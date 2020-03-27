@@ -320,7 +320,7 @@ coreboot.")
     (build-system gnu-build-system)
     (native-inputs
      `(("acpica" ,acpica)
-       ("gcc" ,gcc-5)
+       ("gcc@5" ,gcc-5)
        ("nasm" ,nasm)
        ("python-2" ,python-2)
        ("util-linux" ,util-linux "lib")))
@@ -328,6 +328,18 @@ coreboot.")
      `(#:tests? #f ; No check target.
        #:phases
        (modify-phases %standard-phases
+         ;; Hide the default GCC from CPLUS_INCLUDE_PATH to prevent it from
+         ;; shadowing the version of GCC provided in native-inputs.
+         (add-after 'set-paths 'hide-gcc7
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                              #\:))
+                        ":"))
+               #t)))
          (replace 'configure
            (lambda _
              (let* ((cwd (getcwd))
