@@ -22233,9 +22233,9 @@ It has the following parameters:
 @item @code{nfs-utils} (default: @code{nfs-utils})
 The nfs-utils package to use.
 
-@item @code{nfs-version} (default: @code{#f})
-If a string value is provided, the @command{rpc.nfsd} daemon will be
-limited to supporting the given version of the NFS protocol.
+@item @code{nfs-versions} (default: @code{'("4.2" "4.1" "4.0")})
+If a list of string values is provided, the @command{rpc.nfsd} daemon
+will be limited to supporting the given versions of the NFS protocol.
 
 @item @code{exports} (default: @code{'()})
 This is a list of directories the NFS server should export.  Each entry
