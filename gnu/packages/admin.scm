@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2927,35 +2928,34 @@ tool for remote execution and deployment.")
     (license license:bsd-2)))
 
 (define-public neofetch
-  (let ((commit "501d6b7594296d9eac8943140f8581daf555873d"))
-    (package
-      (name "neofetch")
-      (version (git-version "6.1.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/dylanaraps/neofetch")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1h5md9jimyc6z4d7w66j27hn8qghzyxgpkh5h9dclzxpp5cs8whb"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                      ; there are no tests
-         #:make-flags
-         (list (string-append "PREFIX=" %output))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))         ; no configure script
-      (home-page "https://github.com/dylanaraps/neofetch")
-      (synopsis "System information script")
-      (description "Neofetch is a command-line system information tool written in
+  (package
+    (name "neofetch")
+    (version "7.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dylanaraps/neofetch")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xc0fdc7n5bhqirh83agqiy8r14l14zwca07czvj8vgnsnfybslr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:make-flags
+       (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://github.com/dylanaraps/neofetch")
+    (synopsis "System information script")
+    (description "Neofetch is a command-line system information tool written in
 Bash.  Neofetch displays information about your system next to an image, your OS
 logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public screenfetch
   (package
