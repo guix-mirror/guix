@@ -3367,15 +3367,15 @@ for Flow files.")
 (define-public emacs-flycheck-grammalecte
   (package
     (name "emacs-flycheck-grammalecte")
-    (version "0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://git.deparis.io/"
-                                  "flycheck-grammalecte/snapshot/"
-                                  "flycheck-grammalecte-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0wjm9xyra870pci4bcrbnc9x66x18mi7iz08rkxa4clxv28xzryb"))))
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.deparis.io/"
+                           "flycheck-grammalecte/snapshot/"
+                           "flycheck-grammalecte-" version ".tar.xz"))
+       (sha256
+        (base32 "02wxaw228dia8cps0v02327hrrribfqb4601qggjpi4l4ms1lf8b"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.(el|py)$")
@@ -3397,7 +3397,7 @@ for Flow files.")
                    (out (assoc-ref outputs "out"))
                    (version ,(version-major+minor (package-version python))))
                (with-directory-excursion
-                 (string-append out "/share/emacs/site-lisp")
+                   (string-append out "/share/emacs/site-lisp")
                  (symlink (string-append grammalecte "/lib/"
                                          "python" version "/site-packages/"
                                          "grammalecte")
