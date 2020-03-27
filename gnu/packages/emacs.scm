@@ -139,7 +139,7 @@
                             "lisp/textmodes/artist.el"
                             "lisp/progmodes/sh-script.el")
                (("\"/bin/sh\"")
-                (format "~s" (which "sh"))))
+                (format #f "~s" (which "sh"))))
              #t))
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
@@ -163,7 +163,7 @@
                                (byte-recompile-directory
                                 (file-name-as-directory ,dir) 0 1))))
                    (invoke emacs "--quick" "--batch"
-                           (format "--eval=~s" expr))))
+                           (format #f "--eval=~s" expr))))
 
                (copy-file (assoc-ref inputs "guix-emacs.el")
                           (string-append lisp-dir "/guix-emacs.el"))
