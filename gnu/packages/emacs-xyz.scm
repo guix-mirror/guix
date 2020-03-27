@@ -66,6 +66,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,6 +214,32 @@ Geiser.  A bundle of Elisp shims orchestrates the dialog between the Scheme
 implementation, Emacs and, ultimately, the schemer, giving them access to live
 metadata.")
     (license license:bsd-3)))
+
+(define-public emacs-ac-geiser
+  (let ((commit "93818c936ee7e2f1ba1b315578bde363a7d43d05")
+        (revision "0"))
+    (package
+      (name "emacs-ac-geiser")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (uri (git-reference
+               (url "https://github.com/xiaohanyu/ac-geiser.git")
+               (commit commit)))
+         (method git-fetch)
+         (sha256
+          (base32 "00n2qa26yilaj837n1yp6lbqa4gf30nkkbvanl7m9ih7k48ssqmw"))
+         (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("geiser" ,emacs-geiser)
+         ("auto-complete" ,emacs-auto-complete)))
+      (synopsis "Auto-complete backend for geiser")
+      (description
+       "This package provides an auto-complete source for Scheme projects
+using geiser.")
+      (license license:bsd-3)
+      (home-page "https://github.com/xiaohanyu/ac-geiser"))))
 
 (define-public emacs-paredit
   (package
