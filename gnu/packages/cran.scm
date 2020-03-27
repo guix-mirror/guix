@@ -677,7 +677,11 @@ LaTeX.")
                (("if \\(!grepl\\(\"mingw\".*")
                 "if (FALSE)\n"))
              (substitute* "src/handle.c"
-               (("#ifdef _WIN32") "#if 1"))
+               (("/\\* Only set" m)
+                (string-append "\
+const char *_ca_bundle = getenv(\"CURL_CA_BUNDLE\");
+if(_ca_bundle != NULL) { curl_easy_setopt(handle, CURLOPT_CAINFO, _ca_bundle); }
+" m)))
              #t)))))
     (inputs
      `(("libcurl" ,curl)
