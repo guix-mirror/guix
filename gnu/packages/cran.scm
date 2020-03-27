@@ -13182,14 +13182,14 @@ tessellation.")
 (define-public r-sf
   (package
     (name "r-sf")
-    (version "0.8-1")
+    (version "0.9-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sf" version))
        (sha256
         (base32
-         "17wyv74m1ppc3s5jdv60r74jj23nidxpzl46vjhfclfhnpvm7sx9"))))
+         "117r9l3v7nkdj9bfy6qr0yz0gd5bv0pwnkc9vk2gv3xqj0h1fpf6"))))
     (build-system r-build-system)
     (inputs
      `(("gdal" ,gdal)
@@ -13202,7 +13202,9 @@ tessellation.")
        ("r-magrittr" ,r-magrittr)
        ("r-rcpp" ,r-rcpp)
        ("r-units" ,r-units)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-spatial/sf/")
     (synopsis "Simple features for R")
     (description
