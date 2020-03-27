@@ -532,6 +532,8 @@ of graphs.")
         (base32
          "08yw3maxhn5fl1lff81gmcrpa4j9aas4mmby1g9w5qcr0np82d1w"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gd" ,gd)))
     (home-page "http://www.mcternan.me.uk/mscgen/")
