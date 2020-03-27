@@ -441,14 +441,14 @@ Applied Statistics with S\" (4th edition, 2002) by Venables and Ripley.")
 (define-public r-class
   (package
     (name "r-class")
-    (version "7.3-15")
+    (version "7.3-16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "class" version))
        (sha256
         (base32
-         "1x1hqz8xyhbpq4krsh02glqnlzcch25agkmn4a3da9n723b37gzn"))))
+         "1jpdgj0lsi60q0mqbhfw809w8d66whix27y6wpdzll6775g3j3ll"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
