@@ -3390,14 +3390,14 @@ hard or impossible to fix in cssselect.")
 (define-public gunicorn
   (package
     (name "gunicorn")
-    (version "20.0.0")
+    (version "20.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gunicorn" version))
        (sha256
         (base32
-         "0l1zm8a0vz8ws3lkn8q9a0f93ipdzyvlf2zlwdj5xyadh6jdwsgg"))))
+         "09n6fc019bgrvph1s5h1lwhn2avcsprw6ncd203qhra3i8mvn10r"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (arguments
@@ -3413,11 +3413,6 @@ hard or impossible to fix in cssselect.")
            (lambda _
              (setenv "PYTHONPATH"
                      (string-append ".:" (getenv "PYTHONPATH")))
-             ;; Remove test modules failing due to libc not found due to
-             ;; section '.dynamic' not found in libc.so
-             (delete-file "tests/test_arbiter.py")
-             (delete-file "tests/test_config.py")
-             (delete-file "tests/test_sock.py")
              (invoke "pytest")))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
