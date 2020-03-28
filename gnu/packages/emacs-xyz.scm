@@ -31,7 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -317,6 +317,82 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 For remote processes a substitute is provided, which communicates with Emacs
 on stdout instead of using a socket as the Emacsclient does.")
     (license license:gpl3+)))
+
+(define-public emacs-libgit
+  (let ((commit "0ef8b13aef011a98b7da756e4f1ce3bb18e4d55a")
+        (revision "1"))
+    (package
+      (name "emacs-libgit")
+      (version (git-version "20200515" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/magit/libegit2.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0pnjr3bg6y6354dfjjxfj0g51swzgl1fncpprah75x4k94rd369f"))
+                (patches (search-patches
+                          ;; Submitted for inclusion upstream (see:
+                          ;; https://github.com/magit/libegit2/pull/96).
+                          "emacs-libgit-use-system-libgit2.patch"))))
+      ;; Use the cmake-build-system as it provides support for cross builds.
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DUSE_SYSTEM_LIBGIT2=x")
+         ;; Add the emacs-build-system byte compilation and install phases.
+         #:imported-modules (,@%cmake-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:modules ((guix build cmake-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build emacs-utils)
+                    (guix build utils))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-libgit--module-file
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (make-file-writable "libgit.el")
+                 (emacs-substitute-variables "libgit.el"
+                   ("libgit--module-file"
+                    (string-append out "/share/emacs/site-lisp/libegit2.so")))
+                 #t)))
+           (add-before 'install 'prepare-for-install
+             (lambda _
+               (let ((s (string-append "../" ,name "-" ,version "-checkout")))
+                 (copy-file "libegit2.so" (string-append s "/libegit2.so"))
+                 (chdir s)
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((install (assoc-ref emacs:%standard-phases 'install)))
+                 (install #:outputs outputs
+                          #:include (cons "\\.so$"
+                                          emacs:%default-include)))))
+           (add-after 'install 'make-autoloads
+             (assoc-ref emacs:%standard-phases 'make-autoloads))
+           (add-after 'make-autoloads 'enable-autoloads-compilation
+             (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation))
+           (add-after 'enable-autoloads-compilation 'patch-el-files
+             (assoc-ref emacs:%standard-phases 'patch-el-files))
+           (add-after 'patch-el-files 'emacs-build
+             (assoc-ref emacs:%standard-phases 'build))
+           (add-after 'emacs-build 'validate-compiled-autoloads
+             (assoc-ref emacs:%standard-phases 'validate-compiled-autoloads)))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("emacs" ,emacs-no-x)
+         ("git" ,git-minimal)))
+      (inputs
+       `(("libgit2" ,libgit2)))
+      (home-page "https://github.com/magit/libegit2")
+      (synopsis "Emacs bindings for libgit2")
+      (description "This is an experimental module written in C providing
+libgit2 bindings for Emacs, intended to boost the performance of Magit.")
+      ;; The LICENSE file says GPL v2+, but libgit.el says GPL v3+.
+      (license license:gpl3+))))
 
 (define-public emacs-magit
   ;; `magit-setup-buffer' macro introduced in c761d28d and required in
