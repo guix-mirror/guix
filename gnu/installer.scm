@@ -271,7 +271,7 @@ selected keymap."
           (description (G_ "Services"))
           (compute (lambda _
                      ((installer-services-page current-installer))))
-	  (configuration-formatter system-services->configuration))
+          (configuration-formatter system-services->configuration))
 
          ;; Run a partitioning tool allowing the user to modify
          ;; partition tables, partitions and their mount points.
@@ -284,7 +284,7 @@ selected keymap."
                      ((installer-partition-page current-installer))))
           (configuration-formatter user-partitions->configuration))
 
-	 (installer-step
+         (installer-step
           (id 'final)
           (description (G_ "Configuration file"))
           (compute
