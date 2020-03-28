@@ -56,6 +56,12 @@
              '("--disable-gcj-support")
              '()))))
    (native-inputs `(("pkg-config" ,pkg-config)))
+   (propagated-inputs
+    (if (%current-target-system)
+        ;; The build system refuses to check for compiler intrinsics when
+        ;; cross-compiling, and demands using libatomic-ops instead.
+        `(("libatomic-ops" ,libatomic-ops))
+        '()))
    (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
