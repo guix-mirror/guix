@@ -106,13 +106,6 @@ scope."
                '()
                packages)))))
 
-(cond-expand
-  (guile-2.2
-   ;; Guile 2.2.2 has a bug whereby 'time-monotonic' objects have seconds and
-   ;; nanoseconds swapped (fixed in Guile commit 886ac3e).  Work around it.
-   (define time-monotonic time-tai))
-  (else #t))
-
 (define (call-with-time thunk kont)
   "Call THUNK and pass KONT the elapsed time followed by THUNK's return
 values."

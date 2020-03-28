@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,6 +21,7 @@
 
 (define-module (guix build emacs-utils)
   #:use-module (guix build utils)
+  #:use-module (ice-9 format)
   #:export (%emacs
             emacs-batch-eval
             emacs-batch-edit-file
@@ -47,10 +48,12 @@
       expr
       (format #f "~s" expr)))
 
-(define (emacs-batch-eval expr)
-  "Run Emacs in batch mode, and execute the elisp code EXPR."
+(define* (emacs-batch-eval expr #:key dynamic?)
+  "Run Emacs in batch mode, and execute the Elisp code EXPR.  If DYNAMIC? is
+true, evaluate using dynamic scoping."
   (invoke (%emacs) "--quick" "--batch"
-          (string-append "--eval=" (expr->string expr))))
+          (format #f "--eval=(eval '~a ~:[t~;nil~])"
+                  (expr->string expr) dynamic?)))
 
 (define (emacs-batch-edit-file file expr)
   "Load FILE in Emacs using batch mode, and execute the elisp code EXPR."
@@ -70,7 +73,7 @@
          (expr `(let ((backup-inhibited t)
                       (generated-autoload-file ,file))
                   (update-directory-autoloads ,directory))))
-    (emacs-batch-eval expr)))
+    (emacs-batch-eval expr #:dynamic? #t)))
 
 (define* (emacs-byte-compile-directory dir)
   "Byte compile all files in DIR and its sub-directories."

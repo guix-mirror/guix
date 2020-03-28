@@ -111,12 +111,13 @@ USERS."
 
   (let ((pids
          (filter-map (lambda (pid)
-                       (call-with-input-file
-                           (string-append "/proc/" pid "/maps")
-                         (lambda (port)
-                           (and (string-contains (get-string-all port)
-                                                 cow-path)
-                                (string->number pid)))))
+                       (false-if-exception
+                        (call-with-input-file
+                            (string-append "/proc/" pid "/maps")
+                          (lambda (port)
+                            (and (string-contains (get-string-all port)
+                                                  cow-path)
+                                 (string->number pid))))))
                      (scandir "/proc" string->number))))
     (for-each (lambda (pid)
                 ;; cmdline does not always exist.

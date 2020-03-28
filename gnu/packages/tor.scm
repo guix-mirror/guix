@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -50,14 +50,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.2.6")
+    (version "0.4.2.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1i766s211nrbjvwvkd2375mjsbbc28yrg46564rbx6w46cj10005"))))
+               "0v82ngwwmmcb7i9563bgsmrjy6xp83xyhqhaljygd0pkvlsxi886"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

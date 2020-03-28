@@ -817,13 +817,13 @@ tty/font pairs.  The font can be the name of a font provided by the @code{kbd}
 package or any valid argument to @command{setfont}, as in this example:
 
 @example
-'((\"tty1\" . \"LatGrkCyr-8x16\")
-  (\"tty2\" . (file-append
-                font-tamzen
-                \"/share/kbd/consolefonts/TamzenForPowerline10x20.psf\"))
-  (\"tty3\" . (file-append
-                font-terminus
-                \"/share/consolefonts/ter-132n\"))) ; for HDPI
+`((\"tty1\" . \"LatGrkCyr-8x16\")
+  (\"tty2\" . ,(file-append
+                 font-tamzen
+                 \"/share/kbd/consolefonts/TamzenForPowerline10x20.psf\"))
+  (\"tty3\" . ,(file-append
+                 font-terminus
+                 \"/share/consolefonts/ter-132n\"))) ; for HDPI
 @end example\n")))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))

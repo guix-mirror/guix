@@ -29,7 +29,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
@@ -1139,7 +1139,7 @@ implemented in C.")
      `( #:configure-flags '("--enable-install-include" "--enable-shared"
                             "CC=h4cc -Df2cFortran" "LIBS=-lgctp")
         #:parallel-tests? #f))
-    (home-page "http://hdfeos.org/software/library.php#HDF-EOS2")
+    (home-page "https://hdfeos.org/software/library.php#HDF-EOS2")
     (synopsis "HDF4-based data format for NASA's Earth Observing System")
     (description "HDF-EOS2 is a software library built on HDF4 which supports
 the construction of data structures used in NASA's Earth Observing
@@ -3030,7 +3030,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.02.4")
+    (version "20.03.1")
     (source
      (origin
        (method git-fetch)
@@ -3039,7 +3039,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "106a7jrjwfmymzj70nsv44fm3jbxngr8pmkaghhpwy0ln38lhf54"))))
+        (base32 "09ciip0wkahps5jdsqqr72bwjrd15bacw38zp23v3hm71xfk8hky"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -3125,7 +3125,7 @@ directly in C++, or quick conversion of research code into production
 environments.  It can be used for machine learning, pattern recognition,
 signal processing, bioinformatics, statistics, econometrics, etc.  The library
 provides efficient classes for vectors, matrices and cubes, as well as 150+
-associated functions (eg. contiguous and non-contiguous submatrix views).")
+associated functions (e.g., contiguous and non-contiguous submatrix views).")
     (license license:asl2.0)))
 
 (define-public muparser

@@ -1,0 +1,74 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Mon, 16 Mar 2020 22:51:37 +0000
+Subject: gnu: eigen: Stabilise sparseqr test.
+
+Taken verbatim from this[0] upstream commit.
+
+[0]: https://gitlab.com/libeigen/eigen/-/commit/3b5deeb546d4017b24846f5b0dc3296a50a039fe
+
+From 3b5deeb546d4017b24846f5b0dc3296a50a039fe Mon Sep 17 00:00:00 2001
+From: Gael Guennebaud <g.gael@free.fr>
+Date: Tue, 19 Feb 2019 22:57:51 +0100
+Subject: [PATCH] bug #899: make sparseqr unit test more stable by 1) trying
+ with larger threshold and 2) relax rank computation for rank-deficient
+ problems.
+
+---
+ test/sparseqr.cpp | 31 ++++++++++++++++++++++++++-----
+ 1 file changed, 26 insertions(+), 5 deletions(-)
+
+diff --git a/test/sparseqr.cpp b/test/sparseqr.cpp
+index 3ffe62314..3576cc626 100644
+--- a/test/sparseqr.cpp
++++ b/test/sparseqr.cpp
+@@ -43,6 +43,7 @@ int generate_sparse_rectangular_problem(MatrixType& A, DenseMat& dA, int maxRows
+ 
+ template<typename Scalar> void test_sparseqr_scalar()
+ {
++  typedef typename NumTraits<Scalar>::Real RealScalar;
+   typedef SparseMatrix<Scalar,ColMajor> MatrixType; 
+   typedef Matrix<Scalar,Dynamic,Dynamic> DenseMat;
+   typedef Matrix<Scalar,Dynamic,1> DenseVector;
+@@ -91,14 +92,34 @@ template<typename Scalar> void test_sparseqr_scalar()
+     exit(0);
+     return;
+   }
+-  
+-  VERIFY_IS_APPROX(A * x, b);
+-  
+-  //Compare with a dense QR solver
++
++  // Compare with a dense QR solver
+   ColPivHouseholderQR<DenseMat> dqr(dA);
+   refX = dqr.solve(b);
+   
+-  VERIFY_IS_EQUAL(dqr.rank(), solver.rank());
++  bool rank_deficient = A.cols()>A.rows() || dqr.rank()<A.cols();
++  if(rank_deficient)
++  {
++    // rank deficient problem -> we might have to increase the threshold
++    // to get a correct solution.
++    RealScalar th = RealScalar(20)*dA.colwise().norm().maxCoeff()*(A.rows()+A.cols()) * NumTraits<RealScalar>::epsilon();
++    for(Index k=0; (k<16) && !test_isApprox(A*x,b); ++k)
++    {
++      th *= RealScalar(10);
++      solver.setPivotThreshold(th);
++      solver.compute(A);
++      x = solver.solve(b);
++    }
++  }
++
++  VERIFY_IS_APPROX(A * x, b);
++  
++  // For rank deficient problem, the estimated rank might
++  // be slightly off, so let's only raise a warning in such cases.
++  if(rank_deficient) ++g_test_level;
++  VERIFY_IS_EQUAL(solver.rank(), dqr.rank());
++  if(rank_deficient) --g_test_level;
++
+   if(solver.rank()==A.cols()) // full rank
+     VERIFY_IS_APPROX(x, refX);
+ //   else
+-- 
+2.24.1
+

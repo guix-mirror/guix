@@ -276,7 +276,17 @@ combination.")
                          "/include/guile/2.2/")
           (string-append "-DGUILE_SITE_DIR="
                          (assoc-ref %outputs "out")
-                         "/share/guile/site/2.2/"))))
+                         "/share/guile/site/2.2/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-unqualified-load
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "bioscience/bioscience.scm"
+                 (("\\(load \"bioscience/types/bioscience_types.scm\"\\)")
+                  (format #f "(load \"~a/bioscience/types/bioscience_types.scm\")"
+                          (string-append (assoc-ref outputs "out")
+                                         "/share/guile/site/2.2/opencog"))))
+               #t)))))
       (inputs
        `(("atomspace" ,atomspace)
          ("cogutil" ,cogutil)

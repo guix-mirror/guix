@@ -392,7 +392,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.3.6")
+    (version "2.3.7")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -400,7 +400,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "070gkwffi73i2p0azga9yxj8km32bp8bw4jvkvz1vzlpavyii5kn"))))
+                "134lx7pjnglrl4wdmyr9dz3rjb6d4ir6rvapg00gp52n44dbhnrq"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description

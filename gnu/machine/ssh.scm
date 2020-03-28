@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
+;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -142,9 +144,24 @@ an environment type of 'managed-host."
 ;;; Safety checks.
 ;;;
 
+;; Assertion to be executed remotely.  This abstraction exists to allow us to
+;; gather a list of expressions to be evaluated and eventually evaluate them
+;; all at once instead of one by one.  (This is pretty much a monad.)
+(define-record-type <remote-assertion>
+  (remote-assertion exp proc)
+  remote-assertion?
+  (exp   remote-assertion-expression)
+  (proc  remote-assertion-procedure))
+
+(define-syntax-rule (remote-let ((var exp)) body ...)
+  "Return a <remote-assertion> that binds VAR to the result of evaluating EXP,
+a gexp, remotely, and evaluate BODY in that context."
+  (remote-assertion exp (lambda (var) body ...)))
+
 (define (machine-check-file-system-availability machine)
-  "Raise a '&message' error condition if any of the file-systems specified in
-MACHINE's 'system' declaration do not exist on the machine."
+  "Return a list of <remote-assertion> that raise a '&message' error condition
+if any of the file-systems specified in MACHINE's 'system' declaration do not
+exist on the machine."
   (define file-systems
     (filter (lambda (fs)
               (and (file-system-mount? fs)
@@ -154,22 +171,18 @@ MACHINE's 'system' declaration do not exist on the machine."
             (operating-system-file-systems (machine-operating-system machine))))
 
   (define (check-literal-file-system fs)
-    (define remote-exp
-      #~(catch 'system-error
-          (lambda ()
-            (stat #$(file-system-device fs))
-            #t)
-          (lambda args
-            (system-error-errno args))))
-
-    (mlet %store-monad ((errno (machine-remote-eval machine remote-exp)))
+    (remote-let ((errno #~(catch 'system-error
+                            (lambda ()
+                              (stat #$(file-system-device fs))
+                              #t)
+                            (lambda args
+                              (system-error-errno args)))))
       (when (number? errno)
         (raise (condition
                 (&message
                  (message (format #f (G_ "device '~a' not found: ~a")
                                   (file-system-device fs)
-                                  (strerror errno)))))))
-      (return #t)))
+                                  (strerror errno)))))))))
 
   (define (check-labeled-file-system fs)
     (define remote-exp
@@ -180,14 +193,13 @@ MACHINE's 'system' declaration do not exist on the machine."
             (find-partition-by-label #$(file-system-label->string
                                         (file-system-device fs))))))
 
-    (mlet %store-monad ((result (machine-remote-eval machine remote-exp)))
+    (remote-let ((result remote-exp))
       (unless result
         (raise (condition
                 (&message
                  (message (format #f (G_ "no file system with label '~a'")
                                   (file-system-label->string
-                                   (file-system-device fs))))))))
-      (return #t)))
+                                   (file-system-device fs))))))))))
 
   (define (check-uuid-file-system fs)
     (define remote-exp
@@ -203,31 +215,30 @@ MACHINE's 'system' declaration do not exist on the machine."
 
             (find-partition-by-uuid uuid))))
 
-    (mlet %store-monad ((result (machine-remote-eval machine remote-exp)))
+    (remote-let ((result remote-exp))
       (unless result
         (raise (condition
                 (&message
                  (message (format #f (G_ "no file system with UUID '~a'")
-                                  (uuid->string (file-system-device fs))))))))
-      (return #t)))
+                                  (uuid->string (file-system-device fs))))))))))
 
-  (mbegin %store-monad
-    (mapm %store-monad check-literal-file-system
-          (filter (lambda (fs)
-                    (string? (file-system-device fs)))
-                  file-systems))
-    (mapm %store-monad check-labeled-file-system
-          (filter (lambda (fs)
-                    (file-system-label? (file-system-device fs)))
-                  file-systems))
-    (mapm %store-monad check-uuid-file-system
-          (filter (lambda (fs)
-              (uuid? (file-system-device fs)))
-                  file-systems))))
+  (append (map check-literal-file-system
+               (filter (lambda (fs)
+                         (string? (file-system-device fs)))
+                       file-systems))
+          (map check-labeled-file-system
+               (filter (lambda (fs)
+                         (file-system-label? (file-system-device fs)))
+                       file-systems))
+          (map check-uuid-file-system
+               (filter (lambda (fs)
+                         (uuid? (file-system-device fs)))
+                       file-systems))))
 
 (define (machine-check-initrd-modules machine)
-  "Raise a '&message' error condition if any of the modules needed by
-'needed-for-boot' file systems in MACHINE are not available in the initrd."
+  "Return a list of <remote-assertion> that raise a '&message' error condition
+if any of the modules needed by 'needed-for-boot' file systems in MACHINE are
+not available in the initrd."
   (define file-systems
     (filter file-system-needed-for-boot?
             (operating-system-file-systems (machine-operating-system machine))))
@@ -255,20 +266,16 @@ MACHINE's 'system' declaration do not exist on the machine."
 
               (missing-modules dev '#$(operating-system-initrd-modules
                                        (machine-operating-system machine)))))))
-    (mlet %store-monad ((missing (machine-remote-eval machine remote-exp)))
-      (return (list fs missing))))
 
-  (mlet %store-monad ((device (mapm %store-monad missing-modules file-systems)))
-    (for-each (match-lambda
-                ((fs missing)
-                 (unless (null? missing)
-                   (raise (condition
-                           (&message
-                            (message (format #f (G_ "~a missing modules ~{ ~a~}~%")
-                                             (file-system-device fs)
-                                             missing))))))))
-              device)
-    (return #t)))
+    (remote-let ((missing remote-exp))
+      (unless (null? missing)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "missing modules for ~a:~{ ~a~}~%")
+                                  (file-system-device fs)
+                                  missing))))))))
+
+  (map missing-modules file-systems))
 
 (define (machine-check-building-for-appropriate-system machine)
   "Raise a '&message' error condition if MACHINE is configured to be built
@@ -280,21 +287,38 @@ by MACHINE."
                (not (string= system (machine-ssh-configuration-system config))))
       (raise (condition
               (&message
-               (message (format #f (G_ "incorrect target system \
-('~a' was given, while the system reports that it is '~a')~%")
+               (message (format #f (G_ "incorrect target system\
+ ('~a' was given, while the system reports that it is '~a')~%")
                                 (machine-ssh-configuration-system config)
-                                system)))))))
-  (with-monad %store-monad (return #t)))
+                                system))))))))
 
 (define (check-deployment-sanity machine)
   "Raise a '&message' error condition if it is clear that deploying MACHINE's
 'system' declaration would fail."
-  ;; Order is important here -- an incorrect value for 'system' will cause
-  ;; invocations of 'remote-eval' to fail.
-  (mbegin %store-monad
-    (machine-check-building-for-appropriate-system machine)
-    (machine-check-file-system-availability machine)
-    (machine-check-initrd-modules machine)))
+  (define assertions
+    (append (machine-check-file-system-availability machine)
+            (machine-check-initrd-modules machine)))
+
+  (define aggregate-exp
+    ;; Gather all the expressions so that a single round-trip is enough to
+    ;; evaluate all the ASSERTIONS remotely.
+    #~(map (lambda (file)
+             (false-if-exception (primitive-load file)))
+           '#$(map (lambda (assertion)
+                     (scheme-file "remote-assertion.scm"
+                                  (remote-assertion-expression assertion)))
+                   assertions)))
+
+  ;; First check MACHINE's system type--an incorrect value for 'system' would
+  ;; cause subsequent invocations of 'remote-eval' to fail.
+  (machine-check-building-for-appropriate-system machine)
+
+  (mlet %store-monad ((values (machine-remote-eval machine aggregate-exp)))
+    (for-each (lambda (proc value)
+                (proc value))
+              (map remote-assertion-procedure assertions)
+              values)
+    (return #t)))
 
 
 ;;;

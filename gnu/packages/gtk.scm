@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -922,7 +923,7 @@ exceptions, macros, and a dynamic programming environment.")
       (description
        "Guile-RSVG wraps the RSVG library for Guile, allowing you to render SVG
 images onto Cairo surfaces.")
-      (home-page "http://wingolog.org/projects/guile-rsvg/")
+      (home-page "https://wingolog.org/projects/guile-rsvg/")
       (license license:lgpl2.1+))))
 
 (define-public guile3.0-rsvg
@@ -1892,3 +1893,30 @@ displayed on the other side of the bus.")
 
     ;; Dual-licensed under either LGPLv2.1 or LGPLv3.
     (license (list license:lgpl2.1 license:lgpl3))))
+
+(define-public gtk-layer-shell
+  (package
+    (name "gtk-layer-shell")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/wmww/gtk-layer-shell/releases/download/v"
+             version "/gtk-layer-shell-" version ".tar.xz"))
+       (sha256
+        (base32 "0ncklk3z0fzlz6p76jdcrr1ykyp1f4ykjjch4x2hfp9bwsnl4a3m"))))
+    (build-system meson-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("gobject-introspection" ,gobject-introspection)))
+    (inputs `(("wayland" ,wayland)
+              ("gtk+" ,gtk+)))
+    (home-page "https://github.com/wmww/gtk-layer-shell")
+    (synopsis "Library to create Wayland desktop components using the Layer
+Shell protocol")
+    (description "Layer Shell is a Wayland protocol for desktop shell
+components, such as panels, notifications and wallpapers.  It can be used to
+anchor windows to a corner or edge of the output, or stretch them across the
+entire output.  It supports all Layer Shell features including popups and
+popovers.")
+    (license license:expat)))

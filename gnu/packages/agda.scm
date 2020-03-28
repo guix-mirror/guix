@@ -126,7 +126,7 @@
                (for-each (cut invoke agda-compiler <>)
                          (find-files (string-append out "/share") "\\.agda$"))
                #t))))))
-    (home-page "http://wiki.portal.chalmers.se/agda/")
+    (home-page "https://wiki.portal.chalmers.se/agda/")
     (synopsis
      "Dependently typed functional programming language and proof assistant")
     (description

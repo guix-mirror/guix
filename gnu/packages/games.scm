@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
+;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -597,6 +598,136 @@ tired of cows, a variety of other ASCII-art messengers are available.")
 regular @command{cat}, but it also adds terminal escape codes between
 characters and lines resulting in a rainbow effect.")
       (license license:wtfpl2))))
+
+(define-public foobillard++
+  ;; Even though this latest revision is old already, stable release is
+  ;; lagging way behind it, and has issues with textures rendering.
+  (let ((svn-revision 170))
+    (package
+      (name "foobillard++")
+      (version (string-append "3.43-r" (number->string svn-revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "svn://svn.code.sf.net/p/foobillardplus/code/")
+               (revision svn-revision)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00b693ys5zvzjbjzzj3dqfzm5xw64gwjf9m8qv6bkmf0klbhmayk"))
+         (patches
+          (search-patches "foobillard++-pkg-config.patch"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Unfortunately, the game includes background music with
+             ;; a non-commercial clause.  Delete it.
+             (for-each delete-file (find-files "data/music" "\\.ogg$"))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list
+          ;; Install data in a less exotic location.
+          (string-append "--prefix=" (assoc-ref %outputs "out") "/share")
+          ;; Prevent a build error about undefined trigonometric functions.
+          "--enable-fastmath=no")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-makefile
+             ;; Remove hard-coded directories.  Also fix installation
+             ;; rule: it tries to move around non-existent files or
+             ;; files already moved.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "Makefile.am"
+                 (("/usr") (assoc-ref outputs "out"))
+                 (("cp .*?/foobillardplus\\.desktop.*") "")
+                 (("cp .*?/foobillardplus\\.(png|xbm) \\$\\(datarootdir\\).*")
+                  ""))
+               #t))
+           (add-after 'unpack 'unbundle-font
+             ;; XXX: The package ships with LinBiolinum_aSB.ttf and
+             ;; LinBiolinum_aS.ttf, which are not provided by
+             ;; `font-linuxlibertine' package.  Therefore, we cannot replace
+             ;; them yet.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((dejavu (string-append (assoc-ref inputs "font-dejavu")
+                                            "/share/fonts/truetype/")))
+                 (with-directory-excursion "data"
+                   (for-each (lambda (f)
+                               (delete-file f)
+                               (symlink (string-append dejavu f) f))
+                             '("DejaVuSans-Bold.ttf" "DejaVuSans.ttf"))))
+               #t))
+           (replace 'bootstrap
+             (lambda _
+               (invoke "aclocal" "--force")
+               (invoke "autoconf" "-f")
+               (invoke "autoheader" "-f")
+               (invoke "automake" "-a" "-c" "-f")))
+           (add-before 'build 'prepare-build
+             ;; Set correct environment for SDL.
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "sdl")
+                                      "/include/SDL:"
+                                      (or (getenv "CPATH") "")))
+               #t))
+           (add-before 'build 'fix-settings-directory
+             ;; Hide foobillardplus settings directory in $HOME.
+             (lambda _
+               (substitute* "src/history.c"
+                 (("/foobillardplus-data") "/.foobillardplus"))
+               #t))
+           (add-before 'install 'create-directories
+             ;; Install process does not create directories before
+             ;; trying to move file in it.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/share/icons"))
+                 (mkdir-p (string-append out "/share/applications")))
+               #t))
+           (add-after 'install 'symlink-executable
+             ;; Symlink executable to $out/bin.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (with-directory-excursion bin
+                   (symlink "../share/foobillardplus/bin/foobillardplus"
+                            "foobillardplus"))
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("font-dejavu" ,font-dejavu)
+         ("freetype" ,freetype)
+         ("glu" ,glu)
+         ("libpng" ,libpng)
+         ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net)))))
+      (home-page "http://foobillardplus.sourceforge.net/")
+      (synopsis "3D billiard game")
+      (description "FooBillard++ is an advanced 3D OpenGL billiard game
+based on the original foobillard 3.0a sources from Florian Berger.
+You can play it with one or two players or against the computer.
+
+The game features:
+
+@itemize
+@item Wood paneled table with gold covers and gold diamonds.
+@item Reflections on balls.
+@item Zoom in and out, rotation, different angles and bird's eye view.
+@item Different game modes: 8 or 9-ball, Snooker or Carambole.
+@item Tournaments.  Compete against other players.
+@item Animated cue with strength and eccentric hit adjustment.
+@item Jump shots and snipping.
+@item Realistic gameplay and billiard sounds.
+@item Red-Green stereo.
+@item And much more.
+@end itemize")
+      (license (list license:gpl2 license:silofl1.1)))))
 
 (define-public freedoom
   (package
@@ -2428,7 +2559,7 @@ Protocol).")
 (define-public extremetuxracer
   (package
     (name "extremetuxracer")
-    (version "0.7.5")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2436,7 +2567,7 @@ Protocol).")
                     version "/etr-" version ".tar.xz"))
               (sha256
                (base32
-                "1ly63316c07i0gyqqmyzsyvygsvygn0fpk3bnbg25fi6li99rlsg"))))
+                "05ysaxvsgps9fxc421kdifsxmc1sn6n79cjaa0k0i3fs9qqrja2b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3916,7 +4047,7 @@ a style similar to the original Super Mario games.")
 (define-public tintin++
   (package
     (name "tintin++")
-    (version "2.02.00")
+    (version "2.02.02")
     (source
      (origin
        (method url-fetch)
@@ -3924,8 +4055,7 @@ a style similar to the original Super Mario games.")
                            (string-drop-right version 1)
                            "/tintin-" version ".tar.gz"))
        (sha256
-        (base32
-         "02qmbhzhh2sdy5b37v54gihs9k4bxmlz3j96gyx7icvx2grkbg5i"))))
+        (base32 "11ylbp8ip7dwmh4gzb53z147pcfxkl3lwhyy8ngyn2zc634vdn65"))))
     (inputs
      `(("gnutls" ,gnutls)
        ("pcre" ,pcre)
@@ -5663,7 +5793,7 @@ elements to achieve a simple goal in the most complex way possible.")
        #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
                                (string-append "-DPIONEER_DATA_DIR="
                                               %output "/share/games/pioneer"))))
-    (home-page "http://pioneerspacesim.net")
+    (home-page "https://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description
      "Pioneer is a space adventure game set in our galaxy at the turn of the
@@ -10189,4 +10319,36 @@ range with the objective to hit as many dummy targets as possible within
 3 minutes.  You control a gun that may either fire small or large grenades at
 soldiers, jeeps and tanks.  The gameplay is simple but it is not that easy to
 get high scores.")
+    (license license:gpl2+)))
+
+(define-public 7kaa
+  (package
+    (name "7kaa")
+    (version "2.15.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/the3dfxdude/7kaa/"
+                           "releases/download/v" version "/"
+                           "7kaa-" version ".tar.xz"))
+       (sha256
+        (base32 "0blj47mcsfw1sn3465j6iham8m6ki07iggnq4q8nnaqnryx710jc"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("enet" ,enet)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)))
+    (home-page "https://7kfans.com/")
+    (synopsis "Seven Kingdoms Ancient Adversaries: real-time strategy game")
+    (description
+     "Seven Kingdoms, designed by Trevor Chan, brings a blend of Real-Time
+Strategy with the addition of trade, diplomacy, and espionage.  The game
+enables players to compete against up to six other kingdoms allowing players
+to conquer opponents by defeating them in war (with troops or machines),
+capturing their buildings with spies, or offering opponents money for their
+kingdom.")
     (license license:gpl2+)))

@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -597,7 +598,7 @@ is not available for Guile 2.0.")
 highlighting library for GNU Guile.  It can parse code written in various
 programming languages into a simple s-expression that can be converted to
 HTML (via SXML) or any other format for rendering.")
-    (home-page "http://dthompson.us/projects/guile-syntax-highlight.html")
+    (home-page "https://dthompson.us/projects/guile-syntax-highlight.html")
     (license license:lgpl3+)))
 
 (define-public guile3.0-syntax-highlight
@@ -2174,7 +2175,7 @@ is no support for parsing block and inline level HTML.")
                       #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("tzdata" ,tzdata-for-tests)))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-2.2.7)))       ;fix <https://bugs.gnu.org/37237>
     (home-page "https://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
@@ -2996,6 +2997,13 @@ comparing, and writing Semantic Versions.  It also includes ranges in
 the style of the Node Package Manager (NPM).")
     (license license:gpl3+)))
 
+(define-public guile3.0-semver
+  (package
+    (inherit guile-semver)
+    (name "guile3.0-semver")
+    (inputs
+     `(("guile" ,guile-3.0)))))
+
 (define-public guile-hashing
   (package
     (name "guile-hashing")
@@ -3201,3 +3209,35 @@ models and also supports a rich set of boolean query operators.")
 @code{.torrent} or metainfo files.  Implements a bencode reader and writer
 according to Bitorrent BEP003.")
     (license license:gpl3+)))
+
+(define-public guile-irc
+  (let ((commit "375d3bde9c6ae7ccc9d7cc65817966b6fda8f26a")
+        (revision "0"))
+    (package
+      (name "guile-irc")
+      (version (git-version "0.3.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rekado/guile-irc.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "113lcckcywrz9060w1c3fnvr8d7crdsjgsv4h47hgmr1slgadl4y"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags '("--enable-gnutls=yes")))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("gnutls" ,gnutls)
+         ("guile" ,guile-2.2)))
+      (home-page "https://github.com/rekado/guile-irc")
+      (synopsis "IRC library for Guile")
+      (description "This package provides a Guile library for @dfn{Internet
+Relay Chat} (IRC).")
+      ;; Some file headers incorrectly say LGPLv2+.
+      (license license:lgpl2.1+))))

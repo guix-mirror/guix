@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,49 +61,40 @@ number (or #f) corresponding to SPEC."
     (x
      (leave (G_ "~a: invalid SSH specification~%") spec))))
 
-(define (send-to-remote-host target opts)
+(define (send-to-remote-host local target opts)
   "Send ITEMS to TARGET.  ITEMS is a list of store items or package names; for ;
 package names, build the underlying packages before sending them."
-  (with-store local
-    (set-build-options-from-command-line local opts)
-    (let-values (((user host port)
-                  (ssh-spec->user+host+port target))
-                 ((drv items)
-                  (options->derivations+files local opts)))
-      (show-what-to-build local drv
-                          #:use-substitutes? (assoc-ref opts 'substitutes?)
-                          #:dry-run? (assoc-ref opts 'dry-run?))
+  (let-values (((user host port)
+                (ssh-spec->user+host+port target))
+               ((drv items)
+                (options->derivations+files local opts)))
+    (and (build-derivations local drv)
+         (let* ((session (open-ssh-session host #:user user
+                                           #:port (or port 22)))
+                (sent    (send-files local items
+                                     (connect-to-remote-daemon session)
+                                     #:recursive? #t)))
+           (format #t "~{~a~%~}" sent)
+           sent))))
 
-      (and (or (assoc-ref opts 'dry-run?)
-               (build-derivations local drv))
-           (let* ((session (open-ssh-session host #:user user
-                                             #:port (or port 22)))
-                  (sent    (send-files local items
-                                       (connect-to-remote-daemon session)
-                                       #:recursive? #t)))
-             (format #t "~{~a~%~}" sent)
-             sent)))))
-
-(define (retrieve-from-remote-host source opts)
+(define (retrieve-from-remote-host local source opts)
   "Retrieve ITEMS from SOURCE."
-  (with-store local
-    (let*-values (((user host port)
-                   (ssh-spec->user+host+port source))
-                  ((session)
-                   (open-ssh-session host #:user user #:port (or port 22)))
-                  ((remote)
-                   (connect-to-remote-daemon session)))
-      (set-build-options-from-command-line local opts)
-      ;; TODO: Here we could to compute and build the derivations on REMOTE
-      ;; rather than on LOCAL (one-off offloading) but that is currently too
-      ;; slow due to the many RPC round trips.  So we just assume that REMOTE
-      ;; contains ITEMS.
-      (let*-values (((drv items)
-                     (options->derivations+files local opts))
-                    ((retrieved)
-                     (retrieve-files local items remote #:recursive? #t)))
-        (format #t "~{~a~%~}" retrieved)
-        retrieved))))
+  (let*-values (((user host port)
+                 (ssh-spec->user+host+port source))
+                ((session)
+                 (open-ssh-session host #:user user #:port (or port 22)))
+                ((remote)
+                 (connect-to-remote-daemon session)))
+    ;; TODO: Here we could to compute and build the derivations on REMOTE
+    ;; rather than on LOCAL (one-off offloading) but that is currently too
+    ;; slow due to the many RPC round trips.  So we just assume that REMOTE
+    ;; contains ITEMS.
+    (let*-values (((drv items)
+                   (options->derivations+files local opts))
+                  ((retrieved)
+                   (retrieve-files local items remote #:recursive? #t)))
+      (format #t "~{~a~%~}" retrieved)
+      retrieved)))
 
 
 ;;;
@@ -142,6 +133,10 @@ Copy ITEMS to or from the specified host over SSH.\n"))
                    (let ((level (string->number* arg)))
                      (alist-cons 'verbosity level
                                  (alist-delete 'verbosity result)))))
+         (option '(#\n "dry-run") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+
          (option '(#\h "help") #f #f
                  (lambda args
                    (show-help)
@@ -176,7 +171,13 @@ Copy ITEMS to or from the specified host over SSH.\n"))
     (let* ((opts     (parse-command-line args %options (list %default-options)))
            (source   (assoc-ref opts 'source))
            (target   (assoc-ref opts 'destination)))
-      (with-status-verbosity (assoc-ref opts 'verbosity)
-        (cond (target (send-to-remote-host target opts))
-              (source (retrieve-from-remote-host source opts))
-              (else   (leave (G_ "use '--to' or '--from'~%"))))))))
+      (with-store store
+        (set-build-options-from-command-line store opts)
+        (with-build-handler (build-notifier #:use-substitutes?
+                                            (assoc-ref opts 'substitutes?)
+                                            #:dry-run?
+                                            (assoc-ref opts 'dry-run?))
+          (with-status-verbosity (assoc-ref opts 'verbosity)
+            (cond (target (send-to-remote-host store target opts))
+                  (source (retrieve-from-remote-host store source opts))
+                  (else   (leave (G_ "use '--to' or '--from'~%"))))))))))

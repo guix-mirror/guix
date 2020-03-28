@@ -926,7 +926,7 @@ multiple inspectors with independent history.")
           (base32
            "1wddrnr5kiya5s3gp4cdq6crbfy9fqcz7fr44p81502sj3bvdv39"))))
       (build-system asdf-build-system/sbcl)
-      (home-page "http://marijnhaverbeke.nl/parse-js/")
+      (home-page "https://marijnhaverbeke.nl/parse-js/")
       (synopsis "Parse JavaScript")
       (description "Parse-js is a Common Lisp package for parsing
 JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
@@ -950,7 +950,7 @@ JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
         (base32
          "0sk06ib1bhqv9y39vwnnw44vmbc4b0kvqm37xxmkxd4dwchq82d7"))))
     (build-system asdf-build-system/sbcl)
-    (home-page "http://www.cliki.net/PARSE-NUMBER")
+    (home-page "https://www.cliki.net/PARSE-NUMBER")
     (synopsis "Parse numbers")
     (description "@code{parse-number} is a library of functions for parsing
 strings into one of the standard Common Lisp number types without using the
@@ -3008,7 +3008,7 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "79ad41996a1bd7fc8e53fe8d168e8f2030603b14"))
+  (let ((commit "4832c99c31e0eb1fcce3779d119343ae8a423952"))
     (package
       (name "sbcl-cl-webkit")
       (version (git-version "2.4" "1" commit))
@@ -3021,7 +3021,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "1gxvmxmss5k79v2ccigx92q46zbydxh9r7plnnqh8na348pffgcs"))))
+           "0sn7m181wfg1q49q45dlsry8c38x7pziqcs0frnymk6yvgndybxd"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -3504,7 +3504,7 @@ RFC 1321 by R. Rivest, published April 1992.")
          ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)
          ("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-trivial-features" ,sbcl-trivial-features)))
-      (home-page "http://common-lisp.net/project/cl-plus-ssl/")
+      (home-page "https://common-lisp.net/project/cl-plus-ssl/")
       (synopsis "Common Lisp bindings to OpenSSL")
       (description
        "This library is a fork of SSL-CMUCL.  The original SSL-CMUCL source
@@ -4281,7 +4281,7 @@ streams (though primarily the former, while wrapping the latter).")
         ("sbcl-fast-io" ,sbcl-fast-io)
         ("sbcl-proc-parse" ,sbcl-proc-parse)
         ("sbcl-cl-ppcre" ,sbcl-cl-ppcre)))
-     (home-page "http://rudolph-miller.github.io/jonathan/overview.html")
+     (home-page "https://rudolph-miller.github.io/jonathan/overview.html")
      (synopsis "JSON encoder and decoder")
      (description
       "High performance JSON encoder and decoder.  Currently support: SBCL,
@@ -6643,8 +6643,8 @@ which implements a set of utilities.")
   (sbcl-package->ecl-package sbcl-metatilities-base))
 
 (define-public sbcl-cl-containers
-  (let ((commit "810927e19d933bcf38ffeb7a23ce521efc432d45")
-        (revision "1"))
+  (let ((commit "b2980bac9ac87ad32b63b722ce520fa26cb36ee6")
+        (revision "2"))
     (package
       (name "sbcl-cl-containers")
       (version (git-version "0.12.1" revision commit))
@@ -6657,7 +6657,7 @@ which implements a set of utilities.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1s9faxw7svhbjpkhfrz2qxgjm3cvyjb8wpyb4m8dx4i5g7vvprkv"))))
+           "19hmlax19hq0xjaqr8za90vwf06ymxw1m29sj053a309k3hm84gx"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("lift" ,sbcl-lift)))
@@ -11250,3 +11250,28 @@ If features:
 
 (define-public cl-sycamore
   (sbcl-package->cl-source-package sbcl-sycamore))
+
+(define-public sbcl-trivial-package-local-nicknames
+  (package
+    (name "sbcl-trivial-package-local-nicknames")
+    (version "0.2")
+    (home-page "https://github.com/phoe/trivial-package-local-nicknames")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit "16b7ad4c2b120f50da65154191f468ea5598460e")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18qc27xkjzdcqrilpk3pm7djldwq5rm3ggd5h9cr8hqcd54i2fqg"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp compatibility library for package local nicknames")
+    (description
+     "This library is a portable compatibility layer around package local nicknames (PLN).
+This was done so there is a portability library for the PLN API not included
+in DEFPACKAGE.")
+    (license license:unlicense)))
+
+(define-public cl-trivial-package-local-nicknames
+  (sbcl-package->cl-source-package sbcl-trivial-package-local-nicknames))

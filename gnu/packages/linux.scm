@@ -194,9 +194,9 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.4.19"
+   "5.4.28"
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "1ajzwyy6vgmihxpz3sbshzfzd0w8yzj0fihv0d5rjpr4z3gm48bk")))
+   (base32 "08ls4gx5vanyiq9rn0869nfq4piw4lx1dl8hh9w9xgkr4ypc1j4k")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -362,42 +362,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.25")
+(define-public linux-libre-5.4-version "5.4.28")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "09ay0adc3s3m7qk0nj5lkmrp5i0q76a9kax0xix8914d115rgvf0")))
+        (hash (base32 "197p7rjmbs229ncj1y8s80f7n4bm8g9w0jrv1109m3rl8q9wqqy8")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.109")
+(define-public linux-libre-4.19-version "4.19.113")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0kwnlv5336vqdf38dzn077ic17zkb4rl5khxmc47syzd9zm4fhnh")))
+        (hash (base32 "1rf0jz7r1f4rb4k0g3glssfa1hm2ka6vlbwjlkmsx1bybxnmg85m")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.173")
+(define-public linux-libre-4.14-version "4.14.174")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0kxp3mgiags8hdax15masab9zr89xraqvl9ri7zwgksx8ixav0m2")))
+        (hash (base32 "12ai2lc2ny38s93d0m5ngrv030vwv1h2hhzp0fs6fhjxasikq8jc")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.216")
+(define-public linux-libre-4.9-version "4.9.217")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0lgv5k8v5xz9z2z4k42566bh0akyk1gr0dx6s1m1rjrzsf9k86l6")))
+        (hash (base32 "06b8av9f9pk2yp95nzv4322k0d5wsg40sxd9kfim1xzb093abckg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.216")
+(define-public linux-libre-4.4-version "4.4.217")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1hjgh9brvxzi6ypgfnk07l3j28xsxgz88sdshnz19vj96bn1w70q")))
+        (hash (base32 "0vsjchywznmjn01flgvm9vsja5zqni319rfwgy997afcbz0c9spx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -433,7 +433,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch from linux-next,
+                             ;; can be dropped for linux-libre 5.7
+                             (search-patch
+                              "linux-libre-support-for-Pinebook-Pro.patch"))))
 
 (define-public linux-libre-4.19-source
   (source-with-patches linux-libre-4.19-pristine-source
@@ -566,15 +570,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
          (file (string-append "linux-libre/" name)))
     (search-auxiliary-file file)))
 
-;; FIXME: merge into kernel-config
-(define* (kernel-config-veyron arch #:key variant)
-  "Return the absolute file name of the Linux-Libre build configuration file
-for ARCH and optionally VARIANT, or #f if there is no such configuration."
-  (let* ((name (string-append (if variant (string-append variant "-") "")
-                              (if (string=? "i386" arch) "i686" arch) "-veyron.conf"))
-         (file (string-append "linux-libre/" name)))
-    (search-auxiliary-file file)))
-
 (define %default-extra-linux-options
   `(;; Some very mild hardening.
     ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
@@ -654,7 +649,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
      `(("perl" ,perl)
        ("bc" ,bc)
        ("openssl" ,openssl)
-       ("kmod" ,kmod)
        ("elfutils" ,elfutils)  ; Needed to enable CONFIG_STACK_VALIDATION
        ("flex" ,flex)
        ("bison" ,bison)
@@ -678,6 +672,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                   (guix build utils)
                   (srfi srfi-1)
                   (srfi srfi-26)
+                  (ice-9 ftw)
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
@@ -750,8 +745,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (moddir (string-append out "/lib/modules"))
-                    (dtbdir (string-append out "/lib/dtbs"))
-                    (kmod   (assoc-ref (or native-inputs inputs) "kmod")))
+                    (dtbdir (string-append out "/lib/dtbs")))
                ;; Install kernel image, kernel configuration and link map.
                (for-each (lambda (file) (install-file file out))
                          (find-files "." "^(\\.config|bzImage|zImage|Image|vmlinuz|System\\.map|Module\\.symvers)$"))
@@ -763,12 +757,29 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                ;; Install kernel modules
                (mkdir-p moddir)
                (invoke "make"
-                       (string-append "DEPMOD=" kmod "/bin/depmod")
+                       ;; Disable depmod because the Guix system's module directory
+                       ;; is an union of potentially multiple packages.  It is not
+                       ;; possible to use depmod to usefully calculate a dependency
+                       ;; graph while building only one of those packages.
+                       "DEPMOD=true"
                        (string-append "MODULE_DIR=" moddir)
                        (string-append "INSTALL_PATH=" out)
                        (string-append "INSTALL_MOD_PATH=" out)
                        "INSTALL_MOD_STRIP=1"
-                       "modules_install")))))
+                       "modules_install")
+               (let* ((versions (filter (lambda (name)
+                                          (not (string-prefix? "." name)))
+                                        (scandir moddir)))
+                      (version (match versions
+                                ((x) x))))
+                 ;; There are symlinks to the build and source directory,
+                 ;; both of which will point to target /tmp/guix-build*
+                 ;; and thus not be useful in a profile.  Delete the symlinks.
+                 (false-if-file-not-found
+                  (delete-file (string-append moddir "/" version "/build")))
+                 (false-if-file-not-found
+                  (delete-file (string-append moddir "/" version "/source"))))
+               #t))))
        #:tests? #f))
     (home-page "https://www.gnu.org/software/linux-libre/")
     (synopsis "100% free redistribution of a cleaned Linux kernel")
@@ -828,19 +839,15 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Specialized kernel variants.
 ;;;
 
-(define-public linux-libre-arm-veyron
-  (make-linux-libre* linux-libre-version
-                     linux-libre-source
-                     '("armhf-linux")
-                     #:configuration-file kernel-config-veyron
-                     #:extra-version "arm-veyron"))
-
 (define-public linux-libre-arm-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
                      #:extra-version "arm-generic"))
+
+(define-public linux-libre-arm-veyron
+  (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre* linux-libre-4.19-version
@@ -876,6 +883,13 @@ It has been modified to remove all non-free binary blobs.")
                      '("armhf-linux")
                      #:defconfig "omap2plus_defconfig"
                      #:extra-version "arm-omap2plus"))
+
+(define-public linux-libre-arm64-generic
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"))
 
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
@@ -2099,8 +2113,7 @@ Linux-based operating systems.")
              #t)))
        #:tests? #f))                              ; no 'check' target
 
-    (home-page
-     "http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge")
+    (home-page "https://wiki.linuxfoundation.org/networking/bridge")
     (synopsis "Manipulate Ethernet bridges")
     (description
      "Utilities for Linux's Ethernet bridging facilities.  A bridge is a way
@@ -3065,7 +3078,7 @@ Linux Wireless Extensions; consider using @code{iw} instead.  The Wireless
 Extension was an interface allowing you to set Wireless LAN specific
 parameters and get the specific stats.  It is deprecated in favor the nl80211
 interface.")
-    (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
+    (home-page "https://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     ;; wireless.21.h and wireless.22.h are distributed under lgpl2.1+, the
     ;; other files are distributed under gpl2.
     (license (list license:gpl2 license:lgpl2.1+))))
@@ -4012,6 +4025,48 @@ Linux Device Mapper multipathing driver:
 system calls, important for the performance of databases and other advanced
 applications.")
     (license license:lgpl2.1+)))
+
+(define-public blktrace
+  ;; Take a newer commit to get the fix for CVE-2018-10689.
+  (let ((commit "db4f6340e04716285ea56fe26d76381c3adabe58")
+        (revision "1"))
+    (package
+      (name "blktrace")
+      (version (git-version "1.2.0" revision commit))
+      (home-page
+        "https://git.kernel.org/pub/scm/linux/kernel/git/axboe/blktrace.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32 "0ah7xn4qnx09k6bm39p69av7d0c8cl6863drv6a1nf914sq1kpgp"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         (list "CC=gcc" (string-append "prefix=" %output))
+         #:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; no configure script
+           (add-after 'unpack 'fix-gnuplot-path
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((gnuplot (assoc-ref inputs "gnuplot")))
+                 (substitute* "btt/bno_plot.py"
+                   (("gnuplot %s")
+                    (string-append gnuplot "/bin/gnuplot %s")))
+                 #t))))))
+      (inputs
+       `(("libaio" ,libaio)
+         ("gnuplot" ,gnuplot)
+         ("python" ,python-wrapper)))             ;for 'bno_plot.py'
+      (synopsis "Block layer IO tracing mechanism")
+      (description "Blktrace is a block layer IO tracing mechanism which provides
+detailed information about request queue operations to user space.  It extracts
+event traces from the kernel (via the relaying through the debug file system).")
+      (license license:gpl2))))
 
 (define-public sbc
   (package

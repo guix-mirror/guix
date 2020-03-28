@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -130,7 +130,7 @@ type by using either Perl modules, or command-line tools on your system.")
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
-    (version "1.67")
+    (version "1.68")
     (source
      (origin
        (method url-fetch)
@@ -138,7 +138,7 @@ type by using either Perl modules, or command-line tools on your system.")
              "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
              version ".tar.gz"))
        (sha256
-        (base32 "0x17b7s5c3bqy9gx7psdqxbzkilylnwwd3c3i68vynbn9hs788my"))))
+        (base32 "0l663s3a68p8r2qjy4pn1g05lx0i8js8wpz7qqln3bsvg1fihklq"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.

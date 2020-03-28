@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -444,7 +445,7 @@ point and then, after each tween step, plugging back the result.")
 (define-public abseil-cpp
   (package
     (name "abseil-cpp")
-    (version "20200225")
+    (version "20200225.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -453,7 +454,7 @@ point and then, after each tween step, plugging back the result.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wb04pszzrl39ny1pz9jvvq8lbbm355dd60jspcyqfwxnk6njgd1"))))
+                "035bffayslawc19q2gmlkr6n6r7k7mvriaq7352rv6gyzaplr98w"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"

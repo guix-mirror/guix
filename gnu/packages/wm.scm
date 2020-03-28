@@ -30,7 +30,7 @@
 ;;; Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Noodles! <nnoodle@chiru.no>
-;;; Copyright © 2019 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
+;;; Copyright © 2019, 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
@@ -66,6 +66,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages calendar)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -337,7 +338,7 @@ many programming languages.")
 (define-public i3-gaps
   (package (inherit i3-wm)
            (name "i3-gaps")
-           (version "4.17.1")
+           (version "4.18")
            (source (origin
                      (method url-fetch)
                      (uri (string-append
@@ -345,7 +346,7 @@ many programming languages.")
                            version "/i3-" version ".tar.bz2"))
                      (sha256
                       (base32
-                       "0gqcr6s53dk3f2y9h6cna00rnwnh4yymk96li7lbym3d84cxjzrs"))))
+                       "0id4qm9a7kc5yawff85blmph4zbizhb6ka88aqm10wrpfsknri3j"))))
            (home-page "https://github.com/Airblader/i3")
            (synopsis "Tiling window manager with gaps")
            (description "i3-gaps is a fork of i3wm, a tiling window manager
@@ -1485,7 +1486,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.8.0")
+    (version "0.9.1")
     (source
      (origin
        (method git-fetch)
@@ -1494,12 +1495,14 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0s8ck7qxka0l91ayma6amp9sc8cidi43byqgzcavi3a6id983r1z"))))
+        (base32 "0drlv8im5phz39jxp3gxkc40b6f85bb3piff2v3hmnfzh7ib915s"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "-Dout=" (assoc-ref %outputs "out")))))
-    (inputs `(("fmt" ,fmt)
+    (inputs `(("date" ,date)
+              ("fmt" ,fmt)
+              ("gtk-layer-shell" ,gtk-layer-shell)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
               ("libdbusmenu" ,libdbusmenu)
@@ -1513,7 +1516,7 @@ modules for building a Wayland compositor.")
                      ("pkg-config" ,pkg-config)
                      ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
-    (synopsis "Wayland bar for Sway and Wlroots based compositors.")
+    (synopsis "Wayland bar for Sway and Wlroots based compositors")
     (description "Waybar is a highly customisable Wayland bar for Sway and
 Wlroots based compositors.")
     (license license:expat))) ; MIT license

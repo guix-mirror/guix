@@ -259,12 +259,7 @@ build and a list of store files to transfer."
 resulting archive to the standard output port."
   (let-values (((drv files)
                 (options->derivations+files store opts)))
-    (show-what-to-build store drv
-                        #:use-substitutes? (assoc-ref opts 'substitutes?)
-                        #:dry-run? (assoc-ref opts 'dry-run?))
-
-    (if (or (assoc-ref opts 'dry-run?)
-            (build-derivations store drv))
+    (if (build-derivations store drv)
         (export-paths store files (current-output-port)
                       #:recursive? (assoc-ref opts 'export-recursive?))
         (leave (G_ "unable to export the given packages~%")))))
@@ -382,22 +377,27 @@ output port."
                (with-status-verbosity (assoc-ref opts 'verbosity)
                  (with-store store
                    (set-build-options-from-command-line store opts)
-                   (cond ((assoc-ref opts 'export)
-                          (export-from-store store opts))
-                         ((assoc-ref opts 'import)
-                          (import-paths store (current-input-port)))
-                         ((assoc-ref opts 'missing)
-                          (let* ((files   (lines (current-input-port)))
-                                 (missing (remove (cut valid-path? store <>)
-                                                  files)))
-                            (format #t "~{~a~%~}" missing)))
-                         ((assoc-ref opts 'list)
-                          (list-contents (current-input-port)))
-                         ((assoc-ref opts 'extract)
-                          =>
-                          (lambda (target)
-                            (restore-file (current-input-port) target)))
-                         (else
-                          (leave
-                           (G_ "either '--export' or '--import' \
-must be specified~%"))))))))))))
+                   (with-build-handler
+                       (build-notifier #:use-substitutes?
+                                       (assoc-ref opts 'substitutes?)
+                                       #:dry-run?
+                                       (assoc-ref opts 'dry-run?))
+                     (cond ((assoc-ref opts 'export)
+                            (export-from-store store opts))
+                           ((assoc-ref opts 'import)
+                            (import-paths store (current-input-port)))
+                           ((assoc-ref opts 'missing)
+                            (let* ((files   (lines (current-input-port)))
+                                   (missing (remove (cut valid-path? store <>)
+                                                    files)))
+                              (format #t "~{~a~%~}" missing)))
+                           ((assoc-ref opts 'list)
+                            (list-contents (current-input-port)))
+                           ((assoc-ref opts 'extract)
+                            =>
+                            (lambda (target)
+                              (restore-file (current-input-port) target)))
+                           (else
+                            (leave
+                             (G_ "either '--export' or '--import' \
+must be specified~%")))))))))))))

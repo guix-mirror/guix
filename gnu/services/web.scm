@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,7 @@
             nginx-configuration-server-names-hash-bucket-size
             nginx-configuration-server-names-hash-bucket-max-size
             nginx-configuration-modules
+            nginx-configuration-global-directives
             nginx-configuration-extra-content
             nginx-configuration-file
 
@@ -529,7 +531,8 @@
   (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
                                      (default #f))
   (modules nginx-configuration-modules (default '()))
-  (global-directives nginx-configuration-global-directives (default '()))
+  (global-directives nginx-configuration-global-directives
+                     (default '((events . ()))))
   (extra-content nginx-configuration-extra-content
                  (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like

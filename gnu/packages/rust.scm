@@ -55,6 +55,32 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26))
 
+;; This is the hash for the empty file, and the reason it's relevant is not
+;; the most obvious.
+;;
+;; The root of the problem is that Cargo keeps track of a file called
+;; Cargo.lock, that contains the hash of the tarball source of each dependency.
+;;
+;; However, tarball sources aren't handled well by Guix because of the need to
+;; patch shebangs in any helper scripts. This is why we use Cargo's vendoring
+;; capabilities, where instead of the tarball, a directory is provided in its
+;; place. (In the case of rustc, the source code already ships with vendored
+;; dependencies, but crates built with cargo-build-system undergo vendoring
+;; during the build.)
+;;
+;; To preserve the advantages of checksumming, vendored dependencies contain
+;; a file called .cargo-checksum.json, which contains the hash of the tarball,
+;; as well as the list of files in it, with the hash of each file.
+;;
+;; The patch-cargo-checksums phase of cargo-build-system runs after
+;; any Guix-specific patches to the vendored dependencies and regenerates the
+;; .cargo-checksum.json files, but it's hard to know the tarball checksum that
+;; should be written to the file - and taking care of any unhandled edge case
+;; would require rebuilding everything that depends on rust. This is why we lie,
+;; and say that the tarball has the hash of an empty file. It's not a problem
+;; because cargo-build-system removes the Cargo.lock file. We can't do that
+;; for rustc because of a quirk of its build system, so we modify the lock file
+;; to substitute the hash.
 (define %cargo-reference-hash
   "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
 
@@ -909,8 +935,29 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              (replace 'disable-amd64-avx-test
                (lambda _
                  (substitute* "src/test/ui/run-pass/issues/issue-44056.rs"
-	          (("only-x86_64") "ignore-test"))
+                  (("only-x86_64") "ignore-test"))
                   #t)))))))))
+
+(define (patch-command-exec-tests-phase test-path)
+  "The command-exec.rs test moves around between releases.  We need to apply
+a Guix-specific patch to it for each release.  This function generates the phase
+that applies said patch, parametrized by the test-path.  This is done this way
+because the phase is more complex than the equivalents for other tests that
+move around."
+ `(lambda* (#:key inputs #:allow-other-keys)
+    (let ((coreutils (assoc-ref inputs "coreutils")))
+      (substitute* ,test-path
+        ;; This test suite includes some tests that the stdlib's
+        ;; `Command` execution properly handles situations where
+        ;; the environment or PATH variable are empty, but this
+        ;; fails since we don't have `echo` available in the usual
+        ;; Linux directories.
+        ;; NB: the leading space is so we don't fail a tidy check
+        ;; for trailing whitespace, and the newlines are to ensure
+        ;; we don't exceed the 100 chars tidy check as well
+        ((" Command::new\\(\"echo\"\\)")
+         (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
+      #t)))
 
 (define-public rust-1.31
   (let ((base-rust
@@ -923,26 +970,14 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after 'patch-tests 'patch-command-exec-tests
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((coreutils (assoc-ref inputs "coreutils")))
-                   (substitute* "src/test/run-pass/command-exec.rs"
-                     ;; This test suite includes some tests that the stdlib's
-                     ;; `Command` execution properly handles situations where
-                     ;; the environment or PATH variable are empty, but this
-                     ;; fails since we don't have `echo` available in the usual
-                     ;; Linux directories.
-                     ;; NB: the leading space is so we don't fail a tidy check
-                     ;; for trailing whitespace, and the newlines are to ensure
-                     ;; we don't exceed the 100 chars tidy check as well
-                     ((" Command::new\\(\"echo\"\\)")
-                      (string-append "\nCommand::new(\"" coreutils "/bin/echo\")\n")))
-                   #t)))
-	      ;; The test has been moved elsewhere.
-	      (replace 'disable-amd64-avx-test
-	        (lambda _
-	          (substitute* "src/test/ui/issues/issue-44056.rs"
-                   (("only-x86_64") "ignore-test"))
-                  #t))
+               ,(patch-command-exec-tests-phase
+                  "src/test/run-pass/command-exec.rs"))
+             ;; The test has been moved elsewhere.
+             (replace 'disable-amd64-avx-test
+               (lambda _
+                 (substitute* "src/test/ui/issues/issue-44056.rs"
+                  (("only-x86_64") "ignore-test"))
+                 #t))
              (add-after 'patch-tests 'patch-process-docs-rev-cmd
                (lambda* _
                  ;; Disable some doc tests which depend on the "rev" command
@@ -1084,7 +1119,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           `(modify-phases ,phases
              (delete 'patch-process-docs-rev-cmd))))))))
 
-(define-public rust
+(define-public rust-1.37
   (let ((base-rust
          (rust-bootstrapped-package rust-1.36 "1.37.0"
            "1hrqprybhkhs6d9b5pjskfnc5z9v2l2gync7nb39qjb5s0h703hj")))
@@ -1100,3 +1135,45 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (mkdir-p cargo-home)
                    (setenv "CARGO_HOME" cargo-home)
                    #t))))))))))
+
+(define-public rust-1.38
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.37 "1.38.0"
+           "101dlpsfkq67p0hbwx4acqq6n90dj4bbprndizpgh1kigk566hk4")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'patch-command-exec-tests
+               ,(patch-command-exec-tests-phase
+                  "src/test/ui/command-exec.rs"))
+             (add-after 'patch-tests 'patch-command-uid-gid-test
+               (lambda _
+                 (substitute* "src/test/ui/command-uid-gid.rs"
+                   (("/bin/sh") (which "sh"))
+                   (("ignore-sgx") "ignore-sgx\n// ignore-tidy-linelength"))
+                 #t)))))))))
+
+(define-public rust-1.39
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.38 "1.39.0"
+           "0mwkc1bnil2cfyf6nglpvbn2y0zfbv44zfhsd5qg4c9rm6vgd8dl")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'patch-cargo-checksums
+               ;; The Cargo.lock format changed.
+               (lambda* _
+                 (use-modules (guix build cargo-utils))
+                 (substitute* "Cargo.lock"
+                   (("(checksum = )\".*\"" all name)
+                    (string-append name "\"" ,%cargo-reference-hash "\"")))
+                 (generate-all-checksums "vendor")
+                 #t)))))))))
+
+(define-public rust rust-1.37)

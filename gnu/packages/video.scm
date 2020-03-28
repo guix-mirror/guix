@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Riku Viitanen <riku.viitanen@protonmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -123,6 +124,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
@@ -511,6 +513,90 @@ H.264 (MPEG-4 AVC) video streams.")
 (@command{mkvmerge}).")
     (license license:gpl2)))
 
+(define-public straw-viewer
+  (package
+    (name "straw-viewer")
+    (version "0.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/trizen/straw-viewer")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "067j8wdfy29bi5ahky10xzzs8cr3mn95wl4kyqqjvjzri77a25j3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)))
+    (inputs
+     `(("perl-data-dump" ,perl-data-dump)
+       ("perl-json" ,perl-json)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
+       ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
+       ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-term-readline-gnu" ,perl-term-readline-gnu)
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+       ("xdg-utils" ,xdg-utils)
+
+       ;; Some videos play without youtube-dl, but others silently fail to.
+       ("youtube-dl" ,youtube-dl)))
+
+       ;; Required only when building the graphical interface (--gtk).
+       ;;("perl-file-sharedir" ,perl-file-sharedir)
+    (arguments
+     `(#:modules ((guix build perl-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/WWW/StrawViewer.pm"
+               (("'youtube-dl'")
+                (format #f "'~a/bin/youtube-dl'"
+                        (assoc-ref inputs "youtube-dl"))))
+             (substitute* "bin/gtk-straw-viewer"
+               (("'xdg-open'")
+                (format #f "'~a/bin/xdg-open'"
+                        (assoc-ref inputs "xdg-utils"))))
+             #t))
+         (add-after 'install 'install-desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sharedir (string-append out "/share")))
+               (install-file "share/gtk-straw-viewer.desktop"
+                             (string-append sharedir "/applications"))
+               (install-file "share/icons/gtk-straw-viewer.png"
+                             (string-append sharedir "/pixmaps"))
+               #t)))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin-dir (string-append out "/bin/"))
+                    (site-dir (string-append out "/lib/perl5/site_perl/"))
+                    (lib-path (getenv "PERL5LIB")))
+               (for-each (cut wrap-program <>
+                              `("PERL5LIB" ":" prefix (,lib-path ,site-dir)))
+                         (find-files bin-dir))
+               #t))))))
+    (synopsis
+     "Light-weight application for searching and streaming videos from YouTube")
+    (description
+     "Straw-viewer searches for YouTube videos using @uref{https://invidio.us/,
+invidio.us} and plays them locally in a native media player like @command{vlc}
+or @command{mpv}.
+
+You can search for videos, playlists, and/or channels.  The videos are streamed
+directly to the player at the best chosen resolution and with closed captions if
+available.")
+    ;; XXX Add #:module-build-flags '("--gtk") dependencies and this sentence.
+    ;; Both a command-line and a graphical interface are available.
+    (home-page "https://github.com/trizen/youtube-viewer")
+    (license license:perl-license)))
+
 (define-public x265
   (package
     (name "x265")
@@ -665,7 +751,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
 pixels, so that it can work on older video cards or text terminals.  It
 supports Unicode, 2048 colors, dithering of color images, and advanced text
 canvas operations.")
-    (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
+    (license license:wtfpl2)))
 
 (define-public libdca
   (package
@@ -837,6 +923,8 @@ operate properly.")
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
+             ;; See <https://issues.guix.gnu.org/issue/39719>
+             (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
                "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
@@ -1119,6 +1207,10 @@ videoformats depend on the configuration flags of ffmpeg.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("avahi" ,avahi)
+       ;; XXX Try removing dav1d here and testing AV1 playback when FFmpeg 4.3
+       ;; is released.
+       ;; <https://issues.guix.gnu.org/issue/39719>
+       ("dav1d" ,dav1d)
        ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("flac" ,flac)
@@ -1580,6 +1672,15 @@ To load this plugin, specify the following option when starting mpv:
                            (string-append "'" prefix "/etc/"))
                           (("'share/")
                            (string-append "'" prefix "/share/")))
+                        #t)))
+                  (add-after 'install 'install-completion
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (zsh (string-append out
+                                                 "/share/zsh/site-functions")))
+                        (mkdir-p zsh)
+                        (copy-file "youtube-dl.zsh"
+                                   (string-append zsh "/_youtube-dl"))
                         #t))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
@@ -1726,7 +1827,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.4")
+    (version "3.7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1735,7 +1836,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1plsm1sc04lwlg5h2gapxpykc3cpd4frjll14lamql89dm4a50vi"))))
+                "1caz56sxy554avz2vdv9gm7gyqcq0gyixzrh5v9ixmg6vxif5d4f"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -1744,6 +1845,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        ("perl-file-sharedir" ,perl-file-sharedir)
        ("perl-gtk2" ,perl-gtk2)
        ("perl-json" ,perl-json)
+       ("perl-json-xs" ,perl-json-xs)
        ("perl-libwww" ,perl-libwww)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
        ("perl-lwp-useragent-cached" ,perl-lwp-useragent-cached)
@@ -1758,7 +1860,9 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
                   (srfi srfi-26))
-       #:module-build-flags '("--gtk")
+       ;; gtk-2/3 variants are both installed by default but the gtk3 variant
+       ;; is broken without perl-gtk3.
+       #:module-build-flags '("--gtk2")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'refer-to-inputs
@@ -2546,7 +2650,7 @@ making @dfn{screencasts}.")
        (list "-DWITH_QT5=TRUE")
        #:tests? #f))                    ; no test suite
     ;; Using HTTPS causes part of the page to be displayed improperly.
-    (home-page "http://www.maartenbaert.be/simplescreenrecorder/")
+    (home-page "https://www.maartenbaert.be/simplescreenrecorder/")
     (synopsis "Screen recorder")
     (description "SimpleScreenRecorder is an easy to use screen recorder with
 a graphical user interface.  It supports recording the entire screen, or a
@@ -3616,7 +3720,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.5.2")
+    (version "0.6.0")
     (source
       (origin
         (method url-fetch)
@@ -3624,7 +3728,7 @@ transitions, and effects and then export your film to many common formats.")
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
         (sha256
          (base32
-          "02hgarv2x2bqbac15pdj7pbm8f4lyn78ws0dncygvhis9a6ghk7r"))))
+          "0w5k572jzxp7zwdbsa0jgjzri6hsrkydawzzilrw46nxpcak37q9"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

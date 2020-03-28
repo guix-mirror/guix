@@ -1670,7 +1670,9 @@ match from local for any action outbound
            ;; Create mbox and spool directories.
            (mkdir-p "/var/mail")
            (mkdir-p "/var/spool/smtpd")
-           (chmod "/var/spool/smtpd" #o711))))))
+           (chmod "/var/spool/smtpd" #o711)
+           (mkdir-p "/var/spool/mail")
+           (chmod "/var/spool/mail" #o711))))))
 
 (define %opensmtpd-pam-services
   (list (unix-pam-service "smtpd")))

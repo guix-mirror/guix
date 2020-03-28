@@ -307,7 +307,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.1.1c")
-   (replacement openssl-1.1.1d)
+   (replacement openssl-1.1.1e)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -409,10 +409,10 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
-(define openssl-1.1.1d
+(define openssl-1.1.1e
   (package
    (inherit openssl)
-   (version "1.1.1d")
+   (version "1.1.1e")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -425,7 +425,7 @@ required structures.")
              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "1whinyw402z3b9xlb3qaxv4b9sk4w1bgh9k0y8df1z4x3yy92fhy"))))))
+               "1gnwlri1dphr5wdzmg9vlhkh6aq2yqgpfkpmffzwjlfb26n62kv9"))))))
 
 (define-public openssl-1.0
   (package

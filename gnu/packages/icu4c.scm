@@ -56,6 +56,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
+   (replacement icu4c/fixed)
    (version "64.2")
    (source (origin
             (method url-fetch)
@@ -104,6 +105,17 @@ globalisation support for software applications.  This package contains the
 C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
+
+(define icu4c/fixed
+  (package
+    (inherit icu4c)
+    (source (origin
+              (inherit (package-source icu4c))
+              (patch-flags '("-p2"))
+              (patches (append
+                         (origin-patches (package-source icu4c))
+                         (search-patches
+                           "icu4c-CVE-2020-10531.patch")))))))
 
 (define-public java-icu4j
   (package

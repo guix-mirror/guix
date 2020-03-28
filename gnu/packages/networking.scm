@@ -32,7 +32,7 @@
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
@@ -82,6 +82,7 @@
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
@@ -98,6 +99,7 @@
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -862,6 +864,47 @@ prints timing information for each step of the HTTP request (DNS lookup,
 TCP connection, TLS handshake and so on) in the terminal.")
     (license license:expat)))
 
+(define-public squid
+  (package
+    (name "squid")
+    (version "4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "07sz0adv8nkhy797675bpra7lvdkwjq9isw1ddgylhlazl511w4q"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-true-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "test-suite/testheaders.sh"
+               (("/bin/true")
+                (string-append (assoc-ref inputs "coreutils")
+                               "/bin/true")))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("openldap" ,openldap)
+       ("linux-pam" ,linux-pam)
+       ("libcap" ,libcap)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("expat" ,expat)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("cppunit" ,cppunit)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Web caching proxy")
+    (description "Squid is a caching proxy for the Web supporting HTTP, HTTPS,
+FTP, and more.  It reduces bandwidth and improves response times by caching and
+reusing frequently-requested web pages.")
+    (home-page "http://www.squid-cache.org/")
+    (license license:gpl2+)))
+
 (define-public bwm-ng
   (package
     (name "bwm-ng")
@@ -899,15 +942,14 @@ live network and disk I/O bandwidth monitor.")
 (define-public aircrack-ng
   (package
     (name "aircrack-ng")
-    (version "1.5.2")
+    (version "1.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.aircrack-ng.org/aircrack-ng-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0hc2x17bxk2n00z8jj5jfwq3z41681fd19n018724il0cpkjyncy"))))
+        (base32 "0ix2k64qg7x3w0bzdsbk1m50kcpq1ws59g3zkwiafvpwdr4gs2sg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -990,15 +1032,15 @@ non-existing entropy of some access points.")
 (define-public reaver
   (package
     (name "reaver")
-    (version "1.6.5")
+    (version "1.6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/t6x/reaver-wps-fork-t6x/releases/"
-                    "download/v" version "/" name "-" version ".tar.xz"))
+                    "download/v" version "/reaver-" version ".tar.xz"))
               (sha256
                (base32
-                "0sva3g0kwgv143n9l3lg4qp5iiqz7nk76nr0hwivsnglbhk9sbil"))))
+                "00k7mc81ifv0wma7k4v18mj498badbw5yls6c28qin3d1gda0ag3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1021,7 +1063,7 @@ non-existing entropy of some access points.")
                          (find-files "." "README.*"))
                (install-file "reaver.1" man1)
                #t))))
-       #:tests? #f)) ; there are no tests
+       #:tests? #f))                    ; there are no tests
     (inputs
      `(("libpcap" ,libpcap)))
     (propagated-inputs
@@ -1724,7 +1766,7 @@ speedtest.net.")
      "This is a tftp client derived from OpenBSD tftp with some extra options
 added and bugs fixed.  The source includes readline support but it is not
 enabled due to license conflicts between the BSD advertising clause and the GPL.")
-    (home-page "http://git.kernel.org/cgit/network/tftp/tftp-hpa.git/about/")
+    (home-page "https://git.kernel.org/cgit/network/tftp/tftp-hpa.git/about/")
     ;; Some source files are distributed under a 3-clause BSD license, and
     ;; others under a 4-clause BSD license. Refer to the files in the source
     ;; distribution for clarification.
@@ -2748,7 +2790,7 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.5.0.191126")
+    (version "1.5.0.200327")
     (source
      (origin
        (method git-fetch)
@@ -2757,7 +2799,7 @@ module @code{batman-adv}, for Layer 2.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mncfjfrr13sm84g5z49qxg5cy791h5qxphjsl77x91zs3m36c8l"))))
+        (base32 "1vw7kjwxqd3qvm7kpxgjzl6797y0i1f16yfkfad84qpx2ij0gvdm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2864,6 +2906,24 @@ easy-to-understand binary values.")
 network interfaces, enabling user applications to simulate network traffic.
 Such interfaces are useful for VPN software, virtualization, emulation,
 simulation, and a number of other applications.")
+    (license license:gpl2)))
+
+(define-public wol
+  (package
+    (name "wol")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/wake-on-lan/wol/"
+                           version "/wol-" version ".tar.gz"))
+       (sha256
+        (base32 "08i6l5lr14mh4n3qbmx6kyx7vjqvzdnh3j9yfvgjppqik2dnq270"))))
+    (build-system gnu-build-system)
+    (home-page "https://sourceforge.net/projects/wake-on-lan/")
+    (synopsis "Implements Wake On LAN functionality in a small program")
+    (description "Tool to send a magic packet to wake another host on the
+network.  This must be enabled on the target host, usually in the BIOS.")
     (license license:gpl2)))
 
 (define-public vde2

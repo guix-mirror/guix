@@ -250,7 +250,7 @@ path to the repository."
                         (substring version 1)
                         version)))))
 
-(define* (opam->guix-package name #:key repository)
+(define* (opam->guix-package name #:key (repository (get-opam-repository)))
   "Import OPAM package NAME from REPOSITORY (a directory name) or, if
 REPOSITORY is #f, from the official OPAM repository.  Return a 'package' sexp
 or #f on failure."

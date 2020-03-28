@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Valentin Ignatev <valentignatev@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -906,7 +907,7 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
 (define-public tmate
   (package
     (name "tmate")
-    (version "2.2.1")
+    (version "2.4.0")
     (source
      (origin
        (method git-fetch)
@@ -916,7 +917,7 @@ per-line fullscreen terminal rendering, and keyboard input event reporting.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pfl9vrswzim9ydi1n652h3rax2zrmy6sqkp0r09yy3lw83h4y1r"))))
+         "0x5c31yq7ansmiy20a0qf59wagba9v3pq97mlkxrqxn4n1gcc6vi"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)

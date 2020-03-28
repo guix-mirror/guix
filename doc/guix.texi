@@ -32,7 +32,7 @@ Copyright @copyright{} 2015, 2016, 2017, 2019, 2020 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
-Copyright @copyright{} 2016, 2017, 2018, 2019 Efraim Flashner@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 ng0@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
@@ -75,6 +75,7 @@ Copyright @copyright{} 2020 Wiktor Żelazny@*
 Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
+Copyright @copyright{} 2020 Naga Malleswari@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1597,7 +1598,7 @@ $ export GUIX_LOCPATH=$HOME/.guix-profile/lib/locale
 
 Note that the @code{glibc-locales} package contains data for all the
 locales supported by the GNU@tie{}libc and weighs in at around
-110@tie{}MiB.  Alternatively, the @code{glibc-utf8-locales} is smaller but
+917@tie{}MiB.  Alternatively, the @code{glibc-utf8-locales} is smaller but
 limited to a few UTF-8 locales.
 
 The @code{GUIX_LOCPATH} variable plays a role similar to @code{LOCPATH}
@@ -1738,22 +1739,18 @@ information.
 @subsection Emacs Packages
 
 @cindex @code{emacs}
-When you install Emacs packages with Guix, the elisp files may be placed
-either in @file{$HOME/.guix-profile/share/emacs/site-lisp/} or in
-sub-directories of
-@file{$HOME/.guix-profile/share/emacs/site-lisp/guix.d/}.  The latter
-directory exists because potentially there may exist thousands of Emacs
-packages and storing all their files in a single directory may not be
-reliable (because of name conflicts).  So we think using a separate
-directory for each package is a good idea.  It is very similar to how
-the Emacs package system organizes the file structure (@pxref{Package
-Files,,, emacs, The GNU Emacs Manual}).
+When you install Emacs packages with Guix, the Elisp files are placed
+under the @file{share/emacs/site-lisp/} directory of the profile in
+which they are installed.  The Elisp libraries are made available to
+Emacs through the @code{EMACSLOADPATH} environment variable, which is
+set when installing Emacs itself.
 
-By default, Emacs (installed with Guix) ``knows'' where these packages
-are placed, so you do not need to perform any configuration.  If, for
-some reason, you want to avoid auto-loading Emacs packages installed
-with Guix, you can do so by running Emacs with @code{--no-site-file}
-option (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
+Additionally, autoload definitions are automatically evaluated at the
+initialization of Emacs, by the Guix-specific
+@code{guix-emacs-autoload-packages} procedure.  If, for some reason, you
+want to avoid auto-loading the Emacs packages installed with Guix, you
+can do so by running Emacs with the @code{--no-site-file} option
+(@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
 @subsection The GCC toolchain
 
@@ -4211,7 +4208,7 @@ guix time-machine @var{options}@dots{} -- @var{command} @var {arg}@dots{}
 @end example
 
 where @var{command} and @var{arg}@dots{} are passed unmodified to the
-@command{guix} command if the specified revision.  The @var{options} that define
+@command{guix} command of the specified revision.  The @var{options} that define
 this revision are the same as for @command{guix pull} (@pxref{Invoking guix pull}):
 
 @table @code
@@ -4750,7 +4747,7 @@ the following command creates a Guix development environment that
 additionally includes Git and strace:
 
 @example
-guix environment guix --ad-hoc git strace
+guix environment --pure guix --ad-hoc git strace
 @end example
 
 Sometimes it is desirable to isolate the environment as much as
@@ -6681,9 +6678,8 @@ of Emacs itself (@pxref{Packages,,, emacs, The GNU Emacs Manual}).
 It first creates the @code{@code{package}-autoloads.el} file, then it
 byte compiles all Emacs Lisp files.  Differently from the Emacs
 packaging system, the Info documentation files are moved to the standard
-documentation directory and the @file{dir} file is deleted.  Each
-package is installed in its own directory under
-@file{share/emacs/site-lisp/guix.d}.
+documentation directory and the @file{dir} file is deleted.  The Elisp
+package files are installed directly under @file{share/emacs/site-lisp}.
 @end defvr
 
 @defvr {Scheme Variable} font-build-system
@@ -11226,6 +11222,10 @@ The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
 
+@item @code{kernel-loadable-modules} (default: '())
+A list of objects (usually packages) to collect loadable kernel modules
+from--e.g. @code{(list ddcci-driver-linux)}.
+
 @item @code{kernel-arguments} (default: @code{'("quiet")})
 List of strings or gexps representing additional arguments to pass on
 the command-line of the kernel---e.g., @code{("console=ttyS0")}.
@@ -12287,6 +12287,23 @@ symlink:
 Return a service that sets the host name to @var{name}.
 @end deffn
 
+@defvr {Scheme Variable} console-font-service-type
+Install the given fonts on the specified ttys (fonts are per
+virtual console on the kernel Linux).  The value of this service is a list of
+tty/font pairs.  The font can be the name of a font provided by the @code{kbd}
+package or any valid argument to @command{setfont}, as in this example:
+
+@lisp
+`(("tty1" . "LatGrkCyr-8x16")
+  ("tty2" . ,(file-append
+                font-tamzen
+                "/share/kbd/consolefonts/TamzenForPowerline10x20.psf"))
+  ("tty3" . ,(file-append
+                font-terminus
+                "/share/consolefonts/ter-132n"))) ; for HDPI
+@end lisp
+@end defvr
+
 @deffn {Scheme Procedure} login-service @var{config}
 Return a service to run login according to @var{config}, a
 @code{<login-configuration>} object, which specifies the message of the day,
@@ -12852,7 +12869,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
 
 (operating-system
   ;; @dots{}
-  (users (cons (user-acount
+  (users (cons (user-account
                 ;; @dots{}
                 (supplementary-groups
                  '("adbusers"   ;for adb
@@ -18152,7 +18169,7 @@ record as in this example:
 @lisp
 (service prosody-service-type
          (prosody-configuration
-          (modules-enabled (cons "groups" "mam" %default-modules-enabled))
+          (modules-enabled (cons* "groups" "mam" %default-modules-enabled))
           (int-components
            (list
             (int-component-configuration
@@ -20272,7 +20289,7 @@ names of loadable modules, as in this example:
 /etc/nginx/modules/ngx_http_accept_language_module.so")))
 @end lisp
 
-@item @code{global-directives} (default: @code{'()})
+@item @code{global-directives} (default: @code{'((events . ()))})
 Association list of global directives for the top level of the nginx
 configuration.  Values may themselves be association lists.
 
@@ -22216,9 +22233,9 @@ It has the following parameters:
 @item @code{nfs-utils} (default: @code{nfs-utils})
 The nfs-utils package to use.
 
-@item @code{nfs-version} (default: @code{#f})
-If a string value is provided, the @command{rpc.nfsd} daemon will be
-limited to supporting the given version of the NFS protocol.
+@item @code{nfs-versions} (default: @code{'("4.2" "4.1" "4.0")})
+If a list of string values is provided, the @command{rpc.nfsd} daemon
+will be limited to supporting the given versions of the NFS protocol.
 
 @item @code{exports} (default: @code{'()})
 This is a list of directories the NFS server should export.  Each entry
@@ -26996,8 +27013,28 @@ login over SSH may be forbidden in some cases.  To work around this,
 @command{guix deploy} can log in as an unprivileged user and employ
 @code{sudo} to escalate privileges.  This will only work if @code{sudo} is
 currently installed on the remote and can be invoked non-interactively as
-@code{user}.  That is: the line in @code{sudoers} granting @code{user} the
-ability to use @code{sudo} must contain the @code{NOPASSWD} tag.
+@code{user}.  That is, the line in @code{sudoers} granting @code{user} the
+ability to use @code{sudo} must contain the @code{NOPASSWD} tag.  This can
+be accomplished with the following operating system configuration snippet:
+
+@lisp
+(use-modules ...
+             (gnu system))               ;for %sudoers-specification
+
+(define %user "username")
+
+(operating-system
+  ...
+  (sudoers-file
+     (plain-file "sudoers"
+                 (string-append (plain-file-content %sudoers-specification)
+                                (format #f "~a ALL = NOPASSWD: ALL~%"
+                                        %user)))))
+
+@end lisp
+
+For more information regarding the format of the @file{sudoers} file,
+consult @command{man sudoers}.
 
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix

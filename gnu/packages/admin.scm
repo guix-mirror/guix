@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -709,7 +710,7 @@ IPv6, proxies, and Unix sockets.")
         (base32
          "0mv3wndj4z2bsshh2k8d5sy3j8wxzgf8mzmmkvj1k8gpcz37dm6g"))))
     (build-system gnu-build-system)
-    (home-page "http://www.routemeister.net/projects/sipcalc/")
+    (home-page "https://www.routemeister.net/projects/sipcalc/")
     (synopsis "Command-line IP subnet calculator")
     (description
      "Sipcalc is an advanced command-line IP subnet calculator.  It can take
@@ -1916,13 +1917,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.9.5")
+    (version "2.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "19fav6rs58zdc3gfhh1lxhki36jn4252183rrd769sv46b9m1bji"))))
+        (base32 "1jfbp1i3nl4yvqwd5ssy43dz3pq2x03mn875vb8r56gqh43kmksr"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2927,35 +2928,34 @@ tool for remote execution and deployment.")
     (license license:bsd-2)))
 
 (define-public neofetch
-  (let ((commit "501d6b7594296d9eac8943140f8581daf555873d"))
-    (package
-      (name "neofetch")
-      (version (git-version "6.1.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/dylanaraps/neofetch")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1h5md9jimyc6z4d7w66j27hn8qghzyxgpkh5h9dclzxpp5cs8whb"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                      ; there are no tests
-         #:make-flags
-         (list (string-append "PREFIX=" %output))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))         ; no configure script
-      (home-page "https://github.com/dylanaraps/neofetch")
-      (synopsis "System information script")
-      (description "Neofetch is a command-line system information tool written in
+  (package
+    (name "neofetch")
+    (version "7.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dylanaraps/neofetch")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xc0fdc7n5bhqirh83agqiy8r14l14zwca07czvj8vgnsnfybslr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:make-flags
+       (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://github.com/dylanaraps/neofetch")
+    (synopsis "System information script")
+    (description "Neofetch is a command-line system information tool written in
 Bash.  Neofetch displays information about your system next to an image, your OS
 logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public screenfetch
   (package
@@ -3234,7 +3234,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.37-1")
+      (version "3.0.38-1")
       (source
        (origin
          (method git-fetch)
@@ -3243,7 +3243,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "15wvj9w601ci3bavd1hk5qlm8dfm7a7cjglczk29yir5yw2jww3f"))))
+          (base32 "1qw3sxgd3ly916bzzl3873s3flngwd3vh57slw0shsj7ivz8bfnm"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

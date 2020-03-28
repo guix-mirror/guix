@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -441,14 +441,14 @@ Applied Statistics with S\" (4th edition, 2002) by Venables and Ripley.")
 (define-public r-class
   (package
     (name "r-class")
-    (version "7.3-15")
+    (version "7.3-16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "class" version))
        (sha256
         (base32
-         "1x1hqz8xyhbpq4krsh02glqnlzcch25agkmn4a3da9n723b37gzn"))))
+         "1jpdgj0lsi60q0mqbhfw809w8d66whix27y6wpdzll6775g3j3ll"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
@@ -1762,14 +1762,14 @@ side.")
 (define-public r-locfit
   (package
     (name "r-locfit")
-    (version "1.5-9.1")
+    (version "1.5-9.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "locfit" version))
        (sha256
         (base32
-         "0lafrmq1q7x026m92h01hc9cjjiximqqi3v1g2hw7ai9vf7i897m"))))
+         "1vcw16qww4v4547w0gfvhqg60l051bsdlxa6zfcgcj9xbxf6dlyr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -3134,13 +3134,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.12")
+    (version "0.13")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "0089288ma1cj9nf4jscmpbagyqlg4r90mw8bwl4zv1d4hjl0d693"))))
+                "1db35mi4m4q3kha4vhvh693bv04y7h9pdawhsx8f234qjvz7783r"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
@@ -3151,6 +3151,8 @@ using the multicore functionality of the parallel package.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-promises" ,r-promises)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rstudio.github.io/DT")
     (synopsis "R wrapper of the DataTables JavaScript library")
     (description
@@ -3166,7 +3168,7 @@ Shiny).  The @code{DataTables} library has been included in this R package.")
     (license (list license:gpl3
                    license:expat
                    license:asl2.0
-                   (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+                   license:wtfpl2))))
 
 (define-public r-base64enc
   (package
@@ -3179,7 +3181,7 @@ Shiny).  The @code{DataTables} library has been included in this R package.")
                (base32
                 "13b89fhg1nx7zds82a0biz847ixphg9byf5zl2cw9kab6s56v1bd"))))
     (build-system r-build-system)
-    (home-page "http://www.rforge.net/base64enc")
+    (home-page "https://www.rforge.net/base64enc")
     (synopsis "Tools for Base64 encoding")
     (description
      "This package provides tools for handling Base64 encoding.  It is more
@@ -3238,14 +3240,14 @@ path-wise fashion.")
 (define-public r-pkgmaker
   (package
     (name "r-pkgmaker")
-    (version "0.31")
+    (version "0.31.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgmaker" version))
        (sha256
         (base32
-         "0cc6v6kpwxwwh7k7zyw13wqdp0f9qzzr1a7vv02lskgii54aa4nb"))))
+         "0r0ga20dy25v9y5gjbds4y6kaa5a7qknh503qdkzllcpzbibh0hp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -3573,13 +3575,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.55.0")
+    (version "0.56.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "06fvx0rlaz80k0lkqq2n7v0309xpz7h7ss0m9kgyikp4xs8bvmhn"))))
+                "09qgfv9x32x6ncgf19iy7yjp26fwy6p5wm8spc2xzfc0qhylmqrr"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (native-inputs
@@ -3964,13 +3966,13 @@ package instead.")
 (define-public r-hmisc
   (package
     (name "r-hmisc")
-    (version "4.3-1")
+    (version "4.4-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Hmisc" version))
        (sha256
-        (base32 "02ni7719acdmc8pcbx07b7x2nqsjrwq4smnx9qlzqjmx4pmp3cwc"))))
+        (base32 "1ivfamwghd2z408fkhs7jy5zl3q0z1a2la16yi8js872br6cyvpi"))))
     (properties `((upstream-name . "Hmisc")))
     (build-system r-build-system)
     (native-inputs
@@ -4328,7 +4330,7 @@ within a category based on their density using quasirandom noise.")
                (base32
                 "0hy89bwv7jixlg91li1fywa77916am2whqp1m1fx1khd45g44581"))))
     (build-system r-build-system)
-    (home-page "http://www.cbs.dtu.dk/~eklund/beeswarm/")
+    (home-page "https://www.cbs.dtu.dk/~eklund/beeswarm/")
     (synopsis "Implementation of bee swarm plots")
     (description
      "This package provides an implementation of bee swarm plots.  The bee
@@ -4563,7 +4565,7 @@ mixture models.")
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www-stat.stanford.edu/~hastie/Papers/#LARS")
+    (home-page "https://web.stanford.edu/~hastie/Papers/LARS/")
     (synopsis "Least angle regression software")
     (description
      "Least Angle Regression (\"LAR\") is a model selection algorithm; a
@@ -4698,7 +4700,7 @@ models, generalized linear models and model-based clustering.")
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www.stat.washington.edu/mclust/")
+    (home-page "https://www.stat.washington.edu/mclust/")
     (synopsis "Gaussian mixture modelling for model-based clustering etc.")
     (description
      "This package provides Gaussian finite mixture models fitted via EM
@@ -4757,14 +4759,14 @@ can be efficiently implemented directly in the R language.")
 (define-public r-robustbase
   (package
     (name "r-robustbase")
-    (version "0.93-5")
+    (version "0.93-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "robustbase" version))
        (sha256
         (base32
-         "0mkzbsjl5nihyj7mzks14p6kr3spp44xvygjz4ran11gspdn9rdx"))))
+         "1cr478xi4n9jwsdpbq182a7ig47rpb413q28dz6d1am08sk6657a"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -5029,14 +5031,14 @@ decompositions of such matrices, and solutions of linear systems.")
 (define-public r-modelmetrics
   (package
     (name "r-modelmetrics")
-    (version "1.2.2.1")
+    (version "1.2.2.2")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "ModelMetrics" version))
         (sha256
          (base32
-          "17yw46yr0n9hddvlhh73jdpmpdlpa581n5xjpwkr6cpr2f7xxpqc"))))
+          "0mrlsw4c5y1vdsqynxr2dcvmhh5h37pnd71jw5a5djpbda9g21jy"))))
     (properties `((upstream-name . "ModelMetrics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5499,7 +5501,7 @@ and the corresponding decision threshold.")
        ("r-magrittr" ,r-magrittr)
        ("r-tibble" ,r-tibble)
        ("r-rlang" ,r-rlang)))
-    (home-page "http://forcats.tidyverse.org")
+    (home-page "https://forcats.tidyverse.org")
     (synopsis "Tools for working with factors")
     (description "This package provides helpers for reordering factor
 levels (including moving specified levels to front, ordering by first

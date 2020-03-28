@@ -42,8 +42,6 @@
   #:autoload   (guix store roots) (gc-roots user-owned?)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
-  #:use-module ((guix build syscalls)
-                #:select (with-file-lock/no-wait))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -134,8 +132,7 @@ denote ranges as interpreted by 'matching-generations'."
                                 #:key
                                 (hooks %default-profile-hooks)
                                 allow-collisions?
-                                bootstrap? use-substitutes?
-                                dry-run?)
+                                bootstrap?)
   "Build a new generation of PROFILE, a file name, using the packages
 specified in MANIFEST, a manifest object.  When ALLOW-COLLISIONS? is true,
 do not treat collisions in MANIFEST as an error.  HOOKS is a list of \"profile
@@ -146,12 +143,8 @@ hooks\" run when building the profile."
                                          #:hooks (if bootstrap? '() hooks)
                                          #:locales? (not bootstrap?))))
          (prof     (derivation->output-path prof-drv)))
-    (show-what-to-build store (list prof-drv)
-                        #:use-substitutes? use-substitutes?
-                        #:dry-run? dry-run?)
 
     (cond
-     (dry-run? #t)
      ((and (file-exists? profile)
            (and=> (readlink* profile) (cut string=? prof <>)))
       (format (current-error-port) (G_ "nothing to be done~%")))
@@ -168,10 +161,6 @@ hooks\" run when building the profile."
                (switch-symlinks profile (basename name))
                (unless (string=? profile %current-profile)
                  (register-gc-root store name))
-               (format #t (N_ "~a package in profile~%"
-                              "~a packages in profile~%"
-                              count)
-                       count)
                (display-search-path-hint entries profile)))
 
         (warn-about-disk-space profile))))))
@@ -922,9 +911,7 @@ processed, #f otherwise."
                                    #:dry-run? dry-run?)
         (build-and-use-profile store profile new
                                #:allow-collisions? allow-collisions?
-                               #:bootstrap? bootstrap?
-                               #:use-substitutes? substitutes?
-                               #:dry-run? dry-run?)))))
+                               #:bootstrap? bootstrap?)))))
 
 
 ;;;
@@ -953,10 +940,14 @@ option processing with 'parse-command-line'."
                        (%graft? (assoc-ref opts 'graft?)))
           (with-status-verbosity (assoc-ref opts 'verbosity)
             (set-build-options-from-command-line (%store) opts)
-            (parameterize ((%guile-for-build
-                            (package-derivation
-                             (%store)
-                             (if (assoc-ref opts 'bootstrap?)
-                                 %bootstrap-guile
-                                 (canonical-package guile-2.2)))))
-              (process-actions (%store) opts)))))))
+            (with-build-handler (build-notifier #:use-substitutes?
+                                                (assoc-ref opts 'substitutes?)
+                                                #:dry-run?
+                                                (assoc-ref opts 'dry-run?))
+              (parameterize ((%guile-for-build
+                              (package-derivation
+                               (%store)
+                               (if (assoc-ref opts 'bootstrap?)
+                                   %bootstrap-guile
+                                   (canonical-package guile-2.2)))))
+                (process-actions (%store) opts))))))))

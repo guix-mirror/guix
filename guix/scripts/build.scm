@@ -952,64 +952,60 @@ needed."
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (parameterize ((current-terminal-columns (terminal-columns))
+        (with-build-handler (build-notifier #:use-substitutes?
+                                            (assoc-ref opts 'substitutes?)
+                                            #:dry-run?
+                                            (assoc-ref opts 'dry-run?))
+          (parameterize ((current-terminal-columns (terminal-columns))
 
-                       ;; Set grafting upfront in case the user's input
-                       ;; depends on it (e.g., a manifest or code snippet that
-                       ;; calls 'gexp->derivation').
-                       (%graft?                  graft?))
-          (let* ((mode  (assoc-ref opts 'build-mode))
-                 (drv   (options->derivations store opts))
-                 (urls  (map (cut string-append <> "/log")
-                             (if (assoc-ref opts 'substitutes?)
-                                 (or (assoc-ref opts 'substitute-urls)
-                                     ;; XXX: This does not necessarily match the
-                                     ;; daemon's substitute URLs.
-                                     %default-substitute-urls)
-                                 '())))
-                 (items (filter-map (match-lambda
-                                      (('argument . (? store-path? file))
-                                       ;; If FILE is a .drv that's not in
-                                       ;; store, keep it so that it can be
-                                       ;; substituted.
-                                       (and (or (not (derivation-path? file))
-                                                (not (file-exists? file)))
-                                            file))
-                                      (_ #f))
-                                    opts))
-                 (roots (filter-map (match-lambda
-                                      (('gc-root . root) root)
-                                      (_ #f))
-                                    opts)))
+                         ;; Set grafting upfront in case the user's input
+                         ;; depends on it (e.g., a manifest or code snippet that
+                         ;; calls 'gexp->derivation').
+                         (%graft?                  graft?))
+            (let* ((mode  (assoc-ref opts 'build-mode))
+                   (drv   (options->derivations store opts))
+                   (urls  (map (cut string-append <> "/log")
+                               (if (assoc-ref opts 'substitutes?)
+                                   (or (assoc-ref opts 'substitute-urls)
+                                       ;; XXX: This does not necessarily match the
+                                       ;; daemon's substitute URLs.
+                                       %default-substitute-urls)
+                                   '())))
+                   (items (filter-map (match-lambda
+                                        (('argument . (? store-path? file))
+                                         ;; If FILE is a .drv that's not in
+                                         ;; store, keep it so that it can be
+                                         ;; substituted.
+                                         (and (or (not (derivation-path? file))
+                                                  (not (file-exists? file)))
+                                              file))
+                                        (_ #f))
+                                      opts))
+                   (roots (filter-map (match-lambda
+                                        (('gc-root . root) root)
+                                        (_ #f))
+                                      opts)))
 
-            (unless (or (assoc-ref opts 'log-file?)
-                        (assoc-ref opts 'derivations-only?))
-              (show-what-to-build store drv
-                                  #:use-substitutes?
-                                  (assoc-ref opts 'substitutes?)
-                                  #:dry-run? (assoc-ref opts 'dry-run?)
-                                  #:mode mode))
-
-            (cond ((assoc-ref opts 'log-file?)
-                   ;; Pass 'show-build-log' the output file names, not the
-                   ;; derivation file names, because there can be several
-                   ;; derivations leading to the same output.
-                   (for-each (cut show-build-log store <> urls)
-                             (delete-duplicates
-                              (append (map derivation->output-path drv)
-                                      items))))
-                  ((assoc-ref opts 'derivations-only?)
-                   (format #t "~{~a~%~}" (map derivation-file-name drv))
-                   (for-each (cut register-root store <> <>)
-                             (map (compose list derivation-file-name) drv)
-                             roots))
-                  ((not (assoc-ref opts 'dry-run?))
-                   (and (build-derivations store (append drv items)
-                                           mode)
-                        (for-each show-derivation-outputs drv)
-                        (for-each (cut register-root store <> <>)
-                                  (map (lambda (drv)
-                                         (map cdr
-                                              (derivation->output-paths drv)))
-                                       drv)
-                                  roots))))))))))
+              (cond ((assoc-ref opts 'log-file?)
+                     ;; Pass 'show-build-log' the output file names, not the
+                     ;; derivation file names, because there can be several
+                     ;; derivations leading to the same output.
+                     (for-each (cut show-build-log store <> urls)
+                               (delete-duplicates
+                                (append (map derivation->output-path drv)
+                                        items))))
+                    ((assoc-ref opts 'derivations-only?)
+                     (format #t "~{~a~%~}" (map derivation-file-name drv))
+                     (for-each (cut register-root store <> <>)
+                               (map (compose list derivation-file-name) drv)
+                               roots))
+                    (else
+                     (and (build-derivations store (append drv items)
+                                             mode)
+                          (for-each show-derivation-outputs drv)
+                          (for-each (cut register-root store <> <>)
+                                    (map (lambda (drv)
+                                           (map cdr
+                                                (derivation->output-paths drv)))
+                                         drv)
+                                    roots)))))))))))

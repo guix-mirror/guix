@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
@@ -313,7 +313,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
              (with-output-to-file #$lease-file
                (lambda _ (display ""))))
            ;; Validate the config.
-           (invoke
+           (invoke/quiet
             #$(file-append package "/sbin/dhcpd") "-t" "-cf"
             #$config-file))))))
 

@@ -17,7 +17,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017, 2020 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -40,6 +40,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -217,7 +218,7 @@ either single machines or networked clusters.")
      "@code{mgo} (pronounced as mango) is a MongoDB driver for the Go language.
 It implements a rich selection of features under a simple API following
 standard Go idioms.")
-    (home-page "http://labix.org/mgo")
+    (home-page "https://labix.org/mgo")
     (license license:bsd-2)))
 
 (define-public ephemeralpg
@@ -1070,7 +1071,7 @@ Most public APIs are compatible with @command{mysqlclient} and MySQLdb.")
                                               (assoc-ref %outputs "out")
                                               "/lib"))
        #:make-flags (list "CFLAGS=-fPIC")))
-    (home-page "http://fallabs.com/qdbm")
+    (home-page "https://fallabs.com/qdbm/")
     (synopsis "Key-value database")
     (description "QDBM is a library of routines for managing a
 database.  The database is a simple data file containing key-value
@@ -1140,7 +1141,7 @@ including field and record folding.")))
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "6.6.4")
+    (version "6.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1149,7 +1150,7 @@ including field and record folding.")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h7y31b05w4vv4v509l368j9qlbv5assmdq9hp2788zipqbpywc0"))
+                "19nacd7fb98i97ir07jjsk3l1vf7zzq04c4nqywizq8wakcx99s9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1892,7 +1893,7 @@ similar to BerkeleyDB, LevelDB, etc.")
     (description "Redis is an advanced key-value cache and store.  Redis
 supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
-    (home-page "http://redis.io/")
+    (home-page "https://redis.io/")
     (license license:bsd-3)))
 
 (define-public kyotocabinet
@@ -2391,32 +2392,17 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
 (define-public python-orator
   (package
     (name "python-orator")
-    (version "0.9.7")
+    (version "0.9.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "orator" version))
               (sha256
                (base32
-                "14r58z64fdp76ixnvmi4lni762b405ynmsx6chr1qihs3yl9zn6c"))))
+                "0mbgybz63ryhr9p1f4glnls5c57jp6il3dw0kf97f3pj80687rvg"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'loosen-dependencies
-           ;; Tests are not actually run since they are not included with the
-           ;; distributed package, but dependencies are checked.
-           (lambda _
-             (substitute* "setup.py"
-               ((",<.*'") "'")
-               (("flexmock==0.9.7") "flexmock")
-               ;; The pytest-mock package is out of date, so we remove minimum
-               ;; version requirement.
-               (("pytest-mock.*'") "pytest-mock'"))
-             #t)))))
-    (native-inputs
-     `(("python-pytest-mock" ,python-pytest-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-flexmock" ,python-flexmock)))
+    ;; FIXME: Tests are not distributed with PyPI, and the repository
+    ;; does not contain setup.py.  How to test?
+    (arguments '(#:tests? #f))
     (propagated-inputs
      `(("python-backpack" ,python-backpack)
        ("python-blinker" ,python-blinker)
@@ -2427,6 +2413,7 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
        ("python-pendulum" ,python-pendulum)
        ("python-pyaml" ,python-pyaml)
        ("python-pygments" ,python-pygments)
+       ("python-pyyaml" ,python-pyyaml)
        ("python-simplejson" ,python-simplejson)
        ("python-six" ,python-six)
        ("python-wrapt" ,python-wrapt)))
@@ -2887,18 +2874,20 @@ parsing code in hiredis.  It primarily speeds up parsing of multi bulk replies."
 (define-public python-fakeredis
   (package
     (name "python-fakeredis")
-    (version "0.8.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "fakeredis" version))
        (sha256
         (base32
-         "0zncahj3byyasyfx9i7k991ph0n0lq8v3a21pqri5qxn9564bk9r"))))
+         "1s12mn4q4hz7402139khn9fx56kibj7nn0d6w81hn0zs07b90wpc"))))
     (build-system python-build-system)
     (arguments
      ;; no tests
      `(#:tests? #f))
+    (propagated-inputs
+      `(("python-sortedcontainers" ,python-sortedcontainers)))
     (home-page "https://github.com/jamesls/fakeredis")
     (synopsis "Fake implementation of redis API for testing purposes")
     (description

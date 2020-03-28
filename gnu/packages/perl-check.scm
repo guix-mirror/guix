@@ -10,7 +10,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -1237,14 +1237,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.302171")
+    (version "1.302172")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "12in730hr51h42dwd3c5k7ysyp0xyk17583mfvx6zg56nb990zz2"))))
+                "1z1l8dgssf0mqbgik33sc5j48iiapppkwmacwah990hj0j7pd23k"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description

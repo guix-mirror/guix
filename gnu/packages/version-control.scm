@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -150,14 +150,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.25.1")
+   (version "2.26.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2"))))
+              "1mlmwibfgcv42c28fxmbd3iim8fc06r17dljd8vdgq550z5hvkly"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -170,7 +170,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "15pfm7j4wq8ryp9n9d81h8v0arl15yq9i6cigw45walnq5r6721h"))))
+            "09ilv5gg7167mwc0qqw2fz3lmdm360crnxc0xzkqn53wnsh4cziq"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -234,9 +234,6 @@ as well as the classic centralized workflow.")
       #:disallowed-references (,bash)
 
       #:test-target "test"
-
-      ;; Tests fail randomly when parallel: <https://bugs.gnu.org/29512>.
-      #:parallel-tests? #f
 
       ;; The explicit --with-tcltk forces the build system to hardcode the
       ;; absolute file name to 'wish'.
@@ -341,8 +338,10 @@ as well as the classic centralized workflow.")
         (add-after 'install 'install-credential-netrc
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((netrc (assoc-ref outputs "credential-netrc")))
-              (install-file "contrib/credential/netrc/git-credential-netrc"
+              (install-file "contrib/credential/netrc/git-credential-netrc.perl"
                             (string-append netrc "/bin"))
+              (rename-file (string-append netrc "/bin/git-credential-netrc.perl")
+                           (string-append netrc "/bin/git-credential-netrc"))
               ;; Previously, Git.pm was automatically found by netrc.
               ;; Perl 5.26 changed how it locates modules so that @INC no
               ;; longer includes the current working directory (the Perl
@@ -1017,9 +1016,6 @@ with performance and scalability in mind.  It operates exclusively on streams,
 allowing to handle large objects with a small memory footprint.")
     (license license:bsd-3)))
 
-(define-public python2-gitdb
-  (package-with-python2 python-gitdb))
-
 (define-public python-gitpython
   (package
     (name "python-gitpython")
@@ -1060,9 +1056,6 @@ and additionally allows you to access the Git repository more directly using
 either a pure Python implementation, or the faster, but more resource intensive
 @command{git} command implementation.")
     (license license:bsd-3)))
-
-(define-public python2-gitpython
-  (package-with-python2 python-gitpython))
 
 (define-public shflags
   (package
@@ -1265,7 +1258,7 @@ though this can be overridden.")
                        (install-file (string-append source "/" script)
                                      bindir)
                        #t))))
-      (home-page "http://dustin.sallings.org/2010/03/28/git-test-sequence.html")
+      (home-page "https://dustin.sallings.org/2010/03/28/git-test-sequence.html")
       (synopsis "Run a command over a sequence of commits")
       (description
        "git-test-sequence is similar to an automated git bisect except it’s
@@ -2069,36 +2062,6 @@ supports a large number of version control systems: Git, Subversion,
 Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (license license:gpl2+)))
 
-(define-public git-annex-remote-hubic
-  (package
-    (name "git-annex-remote-hubic")
-    (version "0.3.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Schnouki/git-annex-remote-hubic.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "16y9sk67hfi17h9n2kkffyabfccksh5rab40hhk69v6cxmbpn2sx"))))
-    (build-system python-build-system)
-    (arguments `(#:python ,python-2))
-    (native-inputs
-     `(;; for the tests
-       ("python2-six" ,python2-six)))
-    (propagated-inputs
-     `(("python2-dateutil" ,python2-dateutil)
-       ("python2-futures" ,python2-futures)
-       ("python2-rauth" ,python2-rauth)
-       ("python2-swiftclient" ,python2-swiftclient)))
-    (home-page "https://github.com/Schnouki/git-annex-remote-hubic/")
-    (synopsis "Use hubic as a git-annex remote")
-    (description
-     "This package allows you to use your hubic account as a \"special
-repository\" with git-annex.")
-    (license license:gpl3+)))
-
 (define-public git-annex-remote-rclone
   (package
     (name "git-annex-remote-rclone")
@@ -2443,3 +2406,60 @@ interrupted, published, and collaborated on while in progress.")
 videos, datasets, and graphics with text pointers inside Git, while storing the
 file contents on a remote server.")
     (license license:expat)))
+
+(define-public tla
+  (package
+    (name "gnu-arch")
+    (version "1.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.gnu.org/old-gnu/gnu-arch/"
+                                  "tla-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01mfzj1i6p4s8191cgd5850hds1zls88hkf9rb6qx1vqjv585aj0"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; In tar 1.32, '--preserve' is ambiguous and leads to an
+                  ;; error, so address that.
+                  (substitute* "src/tla/libarch/archive.c"
+                    (("\"--preserve\"")
+                     "\"--preserve-permissions\""))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (chdir "src")
+
+                        (mkdir "=build")
+                        (chdir "=build")
+
+                        ;; For libneon's 'configure' script.
+                        ;; XXX: There's a bundled copy of neon.
+                        (setenv "CONFIG_SHELL" (which "sh"))
+
+                        (invoke "../configure" "--prefix" out
+                                "--config-shell" (which "sh")
+                                "--with-posix-shell" (which "sh")
+                                "--with-cc" "gcc")))))
+
+
+       ;; There are build failures when building in parallel.
+       #:parallel-build? #f
+       #:parallel-tests? #f
+
+       #:test-target "test"))
+    (native-inputs
+     `(("which" ,which)))
+    (synopsis "Historical distributed version-control system")
+    (description
+     "GNU Arch, aka. @code{tla}, was one of the first free distributed
+version-control systems (DVCS).  It saw its last release in 2006.  This
+package is provided for users who need to recover @code{tla} repositories and
+for historians.")
+    (home-page "https://www.gnu.org/software/gnu-arch/")
+    (license license:gpl2)))                      ;version 2 only

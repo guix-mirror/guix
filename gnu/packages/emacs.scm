@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -19,7 +19,7 @@
 ;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
-;;; Copyright © 2019 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,66 +76,71 @@
     (name "emacs")
     (version "26.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/emacs/emacs-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "119ldpk7sgn9jlpyngv5y4z3i7bb8q3xp4p0qqi7i5nq39syd42d"))
-             (patches (search-patches "emacs-exec-path.patch"
-                                      "emacs-fix-scheme-indent-function.patch"
-                                      "emacs-source-date-epoch.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              '(with-directory-excursion "lisp"
-                 ;; Delete the bundled byte-compiled elisp files and generated
-                 ;; autoloads.
-                 (for-each delete-file
-                           (append (find-files "." "\\.elc$")
-                                   (find-files "." "loaddefs\\.el$")
-                                   ;; This is the only "autoloads" file that
-                                   ;; does not have "*loaddefs.el" name.
-                                   ;; TODO: Next time changing this package,
-                                   ;; replace the following with a call to
-                                   ;; `find-files', so that `delete-file'
-                                   ;; wouldn't error out when the file is
-                                   ;; missing, making the entire snippet field
-                                   ;; reusable as-is for `emacs-next' below.
-                                   '("eshell/esh-groups.el")))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/emacs/emacs-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "119ldpk7sgn9jlpyngv5y4z3i7bb8q3xp4p0qqi7i5nq39syd42d"))
+              (patches (search-patches "emacs-exec-path.patch"
+                                       "emacs-fix-scheme-indent-function.patch"
+                                       "emacs-source-date-epoch.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(with-directory-excursion "lisp"
+                  ;; Delete the bundled byte-compiled elisp files and generated
+                  ;; autoloads.
+                  (for-each delete-file
+                            (append (find-files "." "\\.elc$")
+                                    (find-files "." "loaddefs\\.el$")
+                                    ;; This is the only "autoloads" file that
+                                    ;; does not have "*loaddefs.el" name.
+                                    ;; TODO: Next time changing this package,
+                                    ;; replace the following with a call to
+                                    ;; `find-files', so that `delete-file'
+                                    ;; wouldn't error out when the file is
+                                    ;; missing, making the entire snippet field
+                                    ;; reusable as-is for `emacs-next' below.
+                                    '("eshell/esh-groups.el")))
 
-                 ;; Make sure Tramp looks for binaries in the right places on
-                 ;; remote Guix System machines, where 'getconf PATH' returns
-                 ;; something bogus.
-                 (substitute* "net/tramp-sh.el"
-                   ;; Patch the line after "(defcustom tramp-remote-path".
-                   (("\\(tramp-default-remote-path")
-                    (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
-                            "~/.guix-profile/bin" "~/.guix-profile/sbin"
-                            "/run/current-system/profile/bin"
-                            "/run/current-system/profile/sbin")))
+                  ;; Make sure Tramp looks for binaries in the right places on
+                  ;; remote Guix System machines, where 'getconf PATH' returns
+                  ;; something bogus.
+                  (substitute* "net/tramp-sh.el"
+                    ;; Patch the line after "(defcustom tramp-remote-path".
+                    (("\\(tramp-default-remote-path")
+                     (format #f "(tramp-default-remote-path ~s ~s ~s ~s "
+                             "~/.guix-profile/bin" "~/.guix-profile/sbin"
+                             "/run/current-system/profile/bin"
+                             "/run/current-system/profile/sbin")))
 
-                 ;; Make sure Man looks for C header files in the right
-                 ;; places.
-                 (substitute* "man.el"
-                   (("\"/usr/local/include\"" line)
-                    (string-join
-                     (list line
-                           "\"~/.guix-profile/include\""
-                           "\"/var/guix/profiles/system/profile/include\"")
-                     " ")))
-                 #t))))
+                  ;; Make sure Man looks for C header files in the right
+                  ;; places.
+                  (substitute* "man.el"
+                    (("\"/usr/local/include\"" line)
+                     (string-join
+                      (list line
+                            "\"~/.guix-profile/include\""
+                            "\"/var/guix/profiles/system/profile/include\"")
+                      " ")))
+                  #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
        #:configure-flags (list "--with-modules"
                                "--disable-build-details")
-       #:modules ((guix build emacs-utils)
-                  (guix build glib-or-gtk-build-system)
-                  (guix build utils))
-       #:imported-modules ((guix build emacs-utils)
-                           ,@%glib-or-gtk-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-program-file-names
+           (lambda _
+             (substitute* '("src/callproc.c"
+                            "lisp/term.el"
+                            "lisp/htmlfontify.el"
+                            "lisp/textmodes/artist.el"
+                            "lisp/progmodes/sh-script.el")
+               (("\"/bin/sh\"")
+                (format "~s" (which "sh"))))
+             #t))
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
              ;; Use `pwd', not `/bin/pwd'.
@@ -150,6 +155,16 @@
              (let* ((out      (assoc-ref outputs "out"))
                     (lisp-dir (string-append out "/share/emacs/site-lisp"))
                     (emacs (string-append out "/bin/emacs")))
+
+               ;; This is duplicated from emacs-utils to prevent coupling.
+               (define* (emacs-byte-compile-directory dir)
+                 (let ((expr `(progn
+                               (setq byte-compile-debug t)
+                               (byte-recompile-directory
+                                (file-name-as-directory ,dir) 0 1))))
+                   (invoke emacs "--quick" "--batch"
+                           (format "--eval=~s" expr))))
+
                (copy-file (assoc-ref inputs "guix-emacs.el")
                           (string-append lisp-dir "/guix-emacs.el"))
                (with-output-to-file (string-append lisp-dir "/site-start.el")
@@ -163,9 +178,7 @@
                ;; which leads to conflicts.
                (delete-file (string-append lisp-dir "/subdirs.el"))
                ;; Byte compile the site-start files.
-               (parameterize ((%emacs emacs))
-                 (emacs-byte-compile-directory lisp-dir))
-               #t))))))
+               (emacs-byte-compile-directory lisp-dir)))))))
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
@@ -333,19 +346,11 @@ languages.")
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments emacs)
-       ((#:modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
-       ((#:imported-modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (delete 'install-site-start)))
        ((#:configure-flags flags ''())
         `(list "--with-gnutls=no" "--disable-build-details"))))
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("guix-emacs.el" ,(search-auxiliary-file "emacs/guix-emacs.el"))
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))))
 
@@ -358,12 +363,6 @@ editor (with xwidgets support)")
     (build-system gnu-build-system)
     (arguments
      (substitute-keyword-arguments (package-arguments emacs)
-       ((#:modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
-       ((#:imported-modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
        ((#:configure-flags flags ''())
         `(cons "--with-xwidgets" ,flags))))
     (inputs
@@ -377,14 +376,6 @@ editor (with xwidgets support)")
     (synopsis "The extensible, customizable, self-documenting text
 editor (console only)")
     (build-system gnu-build-system)
-    (arguments
-     (substitute-keyword-arguments (package-arguments emacs)
-       ((#:modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
-       ((#:imported-modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))))
     (inputs (fold alist-delete
                   (package-inputs emacs)
                   '("libx11" "gtk+" "libxft" "libtiff" "giflib" "libjpeg"
@@ -403,15 +394,9 @@ editor (without an X toolkit)" )
     (inputs (append `(("inotify-tools" ,inotify-tools))
                     (alist-delete "gtk+" (package-inputs emacs))))
     (arguments
-     (substitute-keyword-arguments (package-arguments emacs)
-       ((#:modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
-       ((#:imported-modules _)
-        `((guix build emacs-utils)
-          ,@%gnu-build-system-modules))
-       ((#:configure-flags cf)
-        `(cons "--with-x-toolkit=no" ,cf))))))
+     `(,@(substitute-keyword-arguments (package-arguments emacs)
+           ((#:configure-flags cf)
+            `(cons "--with-x-toolkit=no" ,cf)))))))
 
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")

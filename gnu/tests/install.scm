@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,15 +32,23 @@
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ocr)
+  #:use-module (gnu packages openbox)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages ratpoison)
+  #:use-module (gnu packages suckless)
   #:use-module (gnu packages virtualization)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu services desktop)
   #:use-module (gnu services networking)
+  #:use-module (gnu services xorg)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:export (%test-installed-os
             %test-installed-extlinux-os
             %test-iso-image-installer
@@ -51,7 +60,8 @@
             %test-jfs-root-os
 
             %test-gui-installed-os
-            %test-gui-installed-os-encrypted))
+            %test-gui-installed-os-encrypted
+            %test-gui-installed-desktop-os-encrypted))
 
 ;;; Commentary:
 ;;;
@@ -202,6 +212,7 @@ reboot\n")
                                                 (gnu installer tests)
                                                 (guix combinators))))
                       (installation-disk-image-file-system-type "ext4")
+                      (install-size 'guess)
                       (target-size (* 2200 MiB)))
   "Run SCRIPT (a shell script following the system installation procedure) in
 OS to install TARGET-OS.  Return a VM image of TARGET-SIZE bytes containing
@@ -219,7 +230,7 @@ packages defined in installation-os."
                        (image  (system-disk-image
                                 (operating-system-with-gc-roots
                                  os (list target))
-                                #:disk-image-size 'guess
+                                #:disk-image-size install-size
                                 #:file-system-type
                                 installation-disk-image-file-system-type)))
     (define install
@@ -270,8 +281,12 @@ packages defined in installation-os."
                                   (lambda (port)
                                     (write '#$target-os-source port)))
                                marionette)
-              (exit (marionette-eval '(zero? (system #$script))
-                                     marionette)))
+
+              ;; Run SCRIPT.  It typically invokes 'reboot' as a last step and
+              ;; thus normally gets killed with SIGTERM by PID 1.
+              (let ((status (marionette-eval '(system #$script) marionette)))
+                (exit (or (equal? (status:term-sig status) SIGTERM)
+                          (equal? (status:exit-val status) 0)))))
 
             (when #$(->bool gui-test)
               (wait-for-unix-socket "/var/guix/installer-socket"
@@ -936,73 +951,81 @@ build (current-guix) and then store a couple of full system images.")
 
 (define %root-password "foo")
 
-(define* (gui-test-program marionette #:key (encrypted? #f))
+(define* (gui-test-program marionette
+                           #:key
+                           (desktop? #f)
+                           (encrypted? #f))
   #~(let ()
       (define (screenshot file)
         (marionette-control (string-append "screendump " file)
                             #$marionette))
 
+      (define-syntax-rule (marionette-eval* exp marionette)
+        (or (marionette-eval exp marionette)
+            (throw 'marionette-eval-failure 'exp)))
+
       (setvbuf (current-output-port) 'none)
       (setvbuf (current-error-port) 'none)
 
-      (marionette-eval '(use-modules (gnu installer tests))
-                       #$marionette)
+      (marionette-eval* '(use-modules (gnu installer tests))
+                        #$marionette)
 
       ;; Arrange so that 'converse' prints debugging output to the console.
-      (marionette-eval '(let ((console (open-output-file "/dev/console")))
-                          (setvbuf console 'none)
-                          (conversation-log-port console))
-                       #$marionette)
+      (marionette-eval* '(let ((console (open-output-file "/dev/console")))
+                           (setvbuf console 'none)
+                           (conversation-log-port console))
+                        #$marionette)
 
       ;; Tell the installer to not wait for the Connman "online" status.
-      (marionette-eval '(call-with-output-file "/tmp/installer-assume-online"
-                          (const #t))
-                       #$marionette)
+      (marionette-eval* '(call-with-output-file "/tmp/installer-assume-online"
+                           (const #t))
+                        #$marionette)
 
       ;; Run 'guix system init' with '--no-grafts', to cope with the lack of
       ;; network access.
-      (marionette-eval '(call-with-output-file
-                            "/tmp/installer-system-init-options"
-                          (lambda (port)
-                            (write '("--no-grafts" "--no-substitutes")
-                                   port)))
-                       #$marionette)
+      (marionette-eval* '(call-with-output-file
+                             "/tmp/installer-system-init-options"
+                           (lambda (port)
+                             (write '("--no-grafts" "--no-substitutes")
+                                    port)))
+                        #$marionette)
 
-      (marionette-eval '(define installer-socket
-                          (open-installer-socket))
-                       #$marionette)
+      (marionette-eval* '(define installer-socket
+                           (open-installer-socket))
+                        #$marionette)
       (screenshot "installer-start.ppm")
 
-      (marionette-eval '(choose-locale+keyboard installer-socket)
-                       #$marionette)
+      (marionette-eval* '(choose-locale+keyboard installer-socket)
+                        #$marionette)
       (screenshot "installer-locale.ppm")
 
       ;; Choose the host name that the "basic" test expects.
-      (marionette-eval '(enter-host-name+passwords installer-socket
-                                                   #:host-name "liberigilo"
-                                                   #:root-password
-                                                   #$%root-password
-                                                   #:users
-                                                   '(("alice" "pass1")
-                                                     ("bob" "pass2")))
-                       #$marionette)
+      (marionette-eval* '(enter-host-name+passwords installer-socket
+                                                    #:host-name "liberigilo"
+                                                    #:root-password
+                                                    #$%root-password
+                                                    #:users
+                                                    '(("alice" "pass1")
+                                                      ("bob" "pass2")))
+                        #$marionette)
       (screenshot "installer-services.ppm")
 
-      (marionette-eval '(choose-services installer-socket
-                                         #:desktop-environments '()
-                                         #:choose-network-service?
-                                         (const #f))
-                       #$marionette)
+      (marionette-eval* '(choose-services installer-socket
+                                          #:choose-desktop-environment?
+                                          (const #$desktop?)
+                                          #:choose-network-service?
+                                          (const #f))
+                        #$marionette)
       (screenshot "installer-partitioning.ppm")
 
-      (marionette-eval '(choose-partitioning installer-socket
-                                             #:encrypted? #$encrypted?
-                                             #:passphrase #$%luks-passphrase)
-                       #$marionette)
+      (marionette-eval* '(choose-partitioning installer-socket
+                                              #:encrypted? #$encrypted?
+                                              #:passphrase #$%luks-passphrase)
+                        #$marionette)
       (screenshot "installer-run.ppm")
 
-      (marionette-eval '(conclude-installation installer-socket)
-                       #$marionette)
+      (marionette-eval* '(conclude-installation installer-socket)
+                        #$marionette)
 
       (sync)
       #t))
@@ -1029,53 +1052,111 @@ build (current-guix) and then store a couple of full system images.")
                         (gnu installer tests)
                         (guix combinators))))
 
-(define* (guided-installation-test name #:key encrypted?)
-  (define os
-    (operating-system
-      (inherit %minimal-os)
-      (users (append (list (user-account
-                            (name "alice")
-                            (comment "Bob's sister")
-                            (group "users")
-                            (supplementary-groups
-                             '("wheel" "audio" "video")))
-                           (user-account
-                            (name "bob")
-                            (comment "Alice's brother")
-                            (group "users")
-                            (supplementary-groups
-                             '("wheel" "audio" "video"))))
-                     %base-user-accounts))
-      ;; The installer does not create a swap device in guided mode with
-      ;; encryption support.
-      (swap-devices (if encrypted? '() '("/dev/vdb2")))
-      (services (cons (service dhcp-client-service-type)
-                      (operating-system-user-services %minimal-os)))))
+(define* (installation-target-os-for-gui-tests
+          #:key (encrypted? #f))
+  (operating-system
+    (inherit %minimal-os)
+    (users (append (list (user-account
+                          (name "alice")
+                          (comment "Bob's sister")
+                          (group "users")
+                          (supplementary-groups
+                           '("wheel" "audio" "video")))
+                         (user-account
+                          (name "bob")
+                          (comment "Alice's brother")
+                          (group "users")
+                          (supplementary-groups
+                           '("wheel" "audio" "video"))))
+                   %base-user-accounts))
+    ;; The installer does not create a swap device in guided mode with
+    ;; encryption support.
+    (swap-devices (if encrypted? '() '("/dev/vdb2")))
+    (services (cons (service dhcp-client-service-type)
+                    (operating-system-user-services %minimal-os)))))
 
+(define* (installation-target-desktop-os-for-gui-tests
+          #:key (encrypted? #f))
+  (operating-system
+    (inherit (installation-target-os-for-gui-tests
+              #:encrypted? encrypted?))
+    (keyboard-layout (keyboard-layout "us" "altgr-intl"))
+
+    ;; Make sure that all the packages and services that may be used by the
+    ;; graphical installer are available.
+    (packages (append
+               (list openbox awesome i3-wm i3status
+                     dmenu st ratpoison xterm)
+               %base-packages))
+    (services
+     (append
+      (list (service gnome-desktop-service-type)
+            (service xfce-desktop-service-type)
+            (service mate-desktop-service-type)
+            (service enlightenment-desktop-service-type)
+            (set-xorg-configuration
+             (xorg-configuration
+              (keyboard-layout keyboard-layout)))
+            (service marionette-service-type
+                     (marionette-configuration
+                      (imported-modules '((gnu services herd)
+                                          (guix build utils)
+                                          (guix combinators))))))
+      %desktop-services))))
+
+(define* (guided-installation-test name
+                                   #:key
+                                   (desktop? #f)
+                                   (encrypted? #f)
+                                   target-os
+                                   (install-size 'guess)
+                                   (target-size (* 2200 MiB)))
   (system-test
    (name name)
    (description
     "Install an OS using the graphical installer and test it.")
    (value
-    (mlet* %store-monad ((image   (run-install os '(this is unused)
-                                               #:script #f
-                                               #:os installation-os-for-gui-tests
-                                               #:gui-test
-                                               (lambda (marionette)
-                                                 (gui-test-program
-                                                  marionette
-                                                  #:encrypted? encrypted?))))
-                         (command (qemu-command/writable-image image)))
-      (run-basic-test os command name
+    (mlet* %store-monad
+        ((image   (run-install target-os '(this is unused)
+                               #:script #f
+                               #:os installation-os-for-gui-tests
+                               #:install-size install-size
+                               #:target-size target-size
+                               #:gui-test
+                               (lambda (marionette)
+                                 (gui-test-program
+                                  marionette
+                                  #:desktop? desktop?
+                                  #:encrypted? encrypted?))))
+         (command (qemu-command/writable-image image)))
+      (run-basic-test target-os command name
                       #:initialization (and encrypted? enter-luks-passphrase)
                       #:root-password %root-password)))))
 
 (define %test-gui-installed-os
-  (guided-installation-test "gui-installed-os"
-                            #:encrypted? #f))
+  (guided-installation-test
+   "gui-installed-os"
+   #:target-os (installation-target-os-for-gui-tests)))
 
 (define %test-gui-installed-os-encrypted
-  (guided-installation-test "gui-installed-os-encrypted"
-                            #:encrypted? #t))
+  (guided-installation-test
+   "gui-installed-os-encrypted"
+   #:encrypted? #t
+   #:target-os (installation-target-os-for-gui-tests
+                #:encrypted? #t)))
+
+;; Building a desktop image is very time and space consuming. Install all
+;; desktop environments in a single test to reduce the overhead.
+(define %test-gui-installed-desktop-os-encrypted
+  (guided-installation-test "gui-installed-desktop-os-encrypted"
+                            #:desktop? #t
+                            #:encrypted? #t
+                            #:target-os
+                            (installation-target-desktop-os-for-gui-tests
+                             #:encrypted? #t)
+                            ;; XXX: The disk-image size guess is too low. Use
+                            ;; a constant value until this is fixed.
+                            #:install-size (* 8000 MiB)
+                            #:target-size (* 9000 MiB)))
 
 ;;; install.scm ends here

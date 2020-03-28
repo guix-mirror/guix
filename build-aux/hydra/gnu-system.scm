@@ -65,6 +65,8 @@ Return #f if no such checkout is found."
     (run-with-store store
       (channel-instances->derivation (list instance))))
 
+  ;; TODO: Remove 'show-what-to-build' call when Cuirass' 'evaluate' scripts
+  ;; uses 'with-build-handler'.
   (show-what-to-build store (list derivation))
   (build-derivations store (list derivation))
 

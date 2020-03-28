@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1072,3 +1073,47 @@ cryptographic ratchet.  It is written in C and C++11, and exposed as a C
 API.")
     (home-page "https://matrix.org/docs/projects/other/olm/")
     (license license:asl2.0)))
+
+(define-public hash-extender
+  (let ((commit "9ecef26809a1ceea2a455f6f591b004298df551b")
+        (revision "1"))
+    (package
+      (name "hash-extender")
+      (version (git-version "0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/iagox86/hash_extender")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0fqy3d559zgf71w39py0931d8na0ylils45r8zs6r79wgr6qn78c"))
+                (file-name (git-file-name name version))
+                (patches
+                  (search-patches "hash-extender-test-suite.patch"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'check
+             (lambda _
+               (invoke "./hash_extender_test")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((outdir (assoc-ref outputs "out"))
+                      (bindir (string-append outdir "/bin"))
+                      (docdir (string-append outdir
+                                             "/share/doc/hash-extender-"
+                                             ,version)))
+                 (install-file "hash_extender" bindir)
+                 (install-file "README.md" docdir)
+                 #t))))))
+      (inputs
+       `(("openssl" ,openssl)))
+      (synopsis "Tool for hash length extension attacks")
+      (description "@command{hash_extender} is a utility for performing hash
+length extension attacks supporting MD4, MD5, RIPEMD-160, SHA-0, SHA-1,
+SHA-256, SHA-512, and WHIRLPOOL hashes.")
+      (home-page "https://github.com/iagox86/hash_extender")
+      (license license:bsd-3))))

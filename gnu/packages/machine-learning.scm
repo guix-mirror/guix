@@ -73,12 +73,12 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
-  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -566,7 +566,7 @@ optimizing, and searching weighted finite-state transducers (FSTs).")
     ;; Non-portable SSE instructions are used so building fails on platforms
     ;; other than x86_64.
     (supported-systems '("x86_64-linux"))
-    (home-page "http://shogun-toolbox.org/")
+    (home-page "https://shogun-toolbox.org/")
     (synopsis "Machine learning toolbox")
     (description
      "The Shogun Machine learning toolbox provides a wide range of unified and
@@ -842,7 +842,7 @@ computing environments.")
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-scipy" ,python-scipy)))
-    (home-page "http://scikit-learn.org/")
+    (home-page "https://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
      "Scikit-learn provides simple and efficient tools for data mining and
@@ -1296,80 +1296,6 @@ based on the Kaldi toolkit and the GStreamer framework and implemented in
 Python.")
       (license license:bsd-2))))
 
-(define-public grpc
-  (package
-    (name "grpc")
-    (version "1.16.1")
-    (outputs '("out" "static"))
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/grpc/grpc.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f ; no test target
-       #:configure-flags
-       (list "-DgRPC_ZLIB_PROVIDER=package"
-             "-DgRPC_CARES_PROVIDER=package"
-             "-DgRPC_SSL_PROVIDER=package"
-             "-DgRPC_PROTOBUF_PROVIDER=package"
-             (string-append "-DCMAKE_INSTALL_PREFIX="
-                            (assoc-ref %outputs "out"))
-             "-DCMAKE_INSTALL_LIBDIR=lib"
-             (string-append "-DCMAKE_INSTALL_RPATH="
-                            (assoc-ref %outputs "out") "/lib")
-             "-DCMAKE_VERBOSE_MAKEFILE=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'configure-shared
-           (lambda* (#:key (configure-flags '()) #:allow-other-keys)
-             (mkdir "../build-shared")
-             (with-directory-excursion "../build-shared"
-               (apply invoke
-                      "cmake" "../source"
-                      "-DBUILD_SHARED_LIBS=ON"
-                      configure-flags)
-               (apply invoke "make"
-                      `("-j" ,(number->string (parallel-job-count)))))))
-         (add-after 'install 'install-shared-libraries
-           (lambda _
-             (with-directory-excursion "../build-shared"
-               (invoke "make" "install"))))
-         (add-before 'strip 'move-static-libs
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (static (assoc-ref outputs "static")))
-               (mkdir-p (string-append static "/lib"))
-               (with-directory-excursion
-                 (string-append out "/lib")
-                 (for-each
-                   (lambda (file)
-                     (rename-file file
-                                  (string-append static "/lib/" file)))
-                   (find-files "." "\\.a$"))))
-             #t)))))
-    (inputs
-     `(("c-ares" ,c-ares/cmake)
-       ("openssl" ,openssl)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("protobuf" ,protobuf)
-       ("python" ,python-wrapper)))
-    (home-page "https://grpc.io")
-    (synopsis "High performance universal RPC framework")
-    (description "gRPC is a modern high performance @dfn{Remote Procedure Call}
-(RPC) framework that can run in any environment.  It can efficiently connect
-services in and across data centers with pluggable support for load balancing,
-tracing, health checking and authentication.  It is also applicable in last
-mile of distributed computing to connect devices, mobile applications and
-browsers to backend services.")
-    (license license:asl2.0)))
-
 ;; Note that Tensorflow includes a "third_party" directory, which seems to not
 ;; only contain modified subsets of upstream library source code, but also
 ;; adapter headers provided by Google (such as the fft.h header, which is not
@@ -1782,7 +1708,6 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
              (sha256
               (base32
                "161g9841rjfsy5pn52fcis0s9hdr7rxvb06pad38j5rppfihvign")))))
-       ("grpc" ,grpc "static")
        ("googletest" ,googletest)
        ("swig" ,swig)
        ("unzip" ,unzip)))
@@ -1804,7 +1729,8 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("giflib" ,giflib)
-       ("grpc:bin" ,grpc)
+       ("grpc" ,grpc-1.16.1 "static")
+       ("grpc:bin" ,grpc-1.16.1)
        ("jsoncpp" ,jsoncpp-for-tensorflow)
        ("snappy" ,snappy)
        ("sqlite" ,sqlite)

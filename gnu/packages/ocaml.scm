@@ -570,7 +570,7 @@ Git-friendly development workflow.")
              (install-file "etc/META" (string-append (assoc-ref outputs "out")
                                                      "/lib/ocaml/camlp5/"))
              #t)))))
-    (home-page "http://camlp5.gforge.inria.fr/")
+    (home-page "https://camlp5.github.io/")
     (synopsis "Pre-processor Pretty Printer for OCaml")
     (description
      "Camlp5 is a Pre-Processor-Pretty-Printer for Objective Caml.  It offers
@@ -764,16 +764,16 @@ Knuth’s LR(1) parser construction technique.")
 (define-public lablgtk
   (package
     (name "lablgtk")
-    (version "2.18.8")
+    (version "2.18.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/garrigue/lablgtk")
-                     (commit "lablgtk2188")))
+                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gpww8bkwi5cl68kc006970zvzwvq73h1mwrnd239apmwlxc1l8a"))))
+                "0w8cdfcv2wc19sd3qzj3qq77qc6rbnbynsz02gzbl15kgrvgrfxi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ocaml" ,ocaml)
@@ -1038,7 +1038,7 @@ other XUnit testing frameworks.")
        (list "all" "allopt"
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out")
                             "/lib/ocaml"))))
-    (home-page "http://forge.ocamlcore.org/projects/camlzip")
+    (home-page "https://github.com/xavierleroy/camlzip")
     (synopsis "Provides easy access to compressed files")
     (description "Provides easy access to compressed files in ZIP, GZIP and
 JAR format.  It provides functions for reading from and writing to compressed
@@ -2088,7 +2088,7 @@ and consumable.")
            (sha256
             (base32
              "0gsb1jpj3mnqbjgbavi4l95gl6g4agq58j82km22fdfg63j3w3fk"))))))
-    (home-page "http://www.cduce.org/download.html#side")
+    (home-page "https://www.cduce.org/download.html#side")
     (synopsis "Lexer generator for Unicode and OCaml")
     (description "Lexer generator for Unicode and OCaml.")
     (license license:expat)))
@@ -3340,8 +3340,8 @@ OCaml projects that contain C stubs.")
 (define-public ocaml-tsdl
   (package
     (name "ocaml-tsdl")
-    (version "0.9.6")
-    (home-page "http://erratique.ch/software/tsdl")
+    (version "0.9.7")
+    (home-page "https://erratique.ch/software/tsdl")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/releases/tsdl-"
@@ -3349,7 +3349,7 @@ OCaml projects that contain C stubs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00krjhmnchsnz33h9zhh0v69xbvi86l0xf0dvy7iivylb7f7x3n4"))))
+                "1zwv0ixkigh1gzk5n49rwvz2f2m62jdkkqg40j7dclg4gri7691f"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:build-flags '("build")
@@ -3360,12 +3360,10 @@ OCaml projects that contain C stubs.")
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
        ("ocaml-astring" ,ocaml-astring)
-       ("ocaml-ocb-stubblr" ,ocaml-ocb-stubblr)
        ("opam" ,opam)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("topkg" ,ocaml-topkg)
-       ("result" ,ocaml-result)
        ("sdl2" ,sdl2)
        ("integers" ,ocaml-integers)
        ("ctypes" ,ocaml-ctypes)))

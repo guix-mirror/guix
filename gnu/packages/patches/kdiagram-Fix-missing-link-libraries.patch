@@ -1,0 +1,23 @@
+From c59acf1f54a2cd760e55082a01593a31a690d786 Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Wed, 22 Jan 2020 00:56:27 +0100
+Subject: [PATCH] Fix missing link libraries.
+
+These are only actually missing if the libraries reside in different
+prefixes, as it is the case in Guix or Nix.
+---
+ examples/Bars/Simple/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/examples/Bars/Simple/CMakeLists.txt b/examples/Bars/Simple/CMakeLists.txt
+index be2a6fc..b13befb 100644
+--- a/examples/Bars/Simple/CMakeLists.txt
++++ b/examples/Bars/Simple/CMakeLists.txt
+@@ -1,3 +1,3 @@
+ add_executable(BarsSimple  main.cpp)
+ 
+-target_link_libraries(BarsSimple KChart Qt5::Widgets)
++target_link_libraries(BarsSimple KChart Qt5::Widgets Qt5::Svg)
+-- 
+2.21.1
+

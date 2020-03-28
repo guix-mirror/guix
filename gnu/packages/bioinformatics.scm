@@ -42,6 +42,7 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system ocaml)
@@ -68,15 +69,17 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
+  #:use-module (gnu packages dlang)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
-  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graph)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages haskell-check)
@@ -87,7 +90,6 @@
   #:use-module (gnu packages java)
   #:use-module (gnu packages java-compression)
   #:use-module (gnu packages jemalloc)
-  #:use-module (gnu packages dlang)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
@@ -2766,7 +2768,12 @@ quantitative phenotypes.")
                 "093zp7klv81ph0y8mm8d78a9hnpfxbv2kdym70gzdf3vz176rw33"))
               (modules '((guix build utils)))
               (snippet
-               '(begin (delete-file "Mozilla-CA.tar.gz") #t))))
+               '(begin (delete-file "Mozilla-CA.tar.gz")
+                       (substitute* "rchive.go"
+                         ;; This go library does not have any license.
+                         (("github.com/fiam/gounidecode/unidecode")
+                          "golang.org/rainycape/unidecode"))
+                       #t))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -2774,19 +2781,48 @@ quantitative phenotypes.")
          (delete 'configure)
          (delete 'build)
          (delete 'check)                ; simple check after install
+         (add-after 'unpack 'patch-programs
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Ignore errors about missing xtract.Linux and rchive.Linux.
+              (substitute* "pm-refresh"
+                (("cat \\\"\\$target")
+                 "grep ^[[:digit:]] \"$target"))
+              #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (install-file "edirect.pl"
-                           (string-append (assoc-ref outputs "out") "/bin"))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (edirect-go (assoc-ref inputs "edirect-go-programs")))
+               (for-each
+                 (lambda (file)
+                   (install-file file bin))
+                 '("archive-pubmed" "asp-cp" "asp-ls" "download-ncbi-data"
+                   "download-pubmed" "edirect.pl" "efetch" "epost" "esearch"
+                   "fetch-pubmed" "ftp-cp" "ftp-ls" "has-asp" "index-pubmed"
+                   "pm-prepare" "pm-refresh" "pm-stash" "pm-collect"
+                   "pm-index" "pm-invert" "pm-merge" "pm-promote"))
+               (symlink (string-append edirect-go "/bin/xtract.Linux")
+                        (string-append bin "/xtract"))
+               (symlink (string-append edirect-go "/bin/rchive.Linux")
+                        (string-append bin "/rchive")))
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Make sure 'edirect.pl' finds all perl inputs at runtime.
-             (let* ((out (assoc-ref outputs "out"))
+              ;; Make sure everything can run in a pure environment.
+              (let ((out (assoc-ref outputs "out"))
                     (path (getenv "PERL5LIB")))
-               (wrap-program (string-append out "/bin/edirect.pl")
-                 `("PERL5LIB" ":" prefix (,path))))
-             #t))
+                (for-each
+                  (lambda (file)
+                    (wrap-program file
+                      `("PERL5LIB" ":" prefix (,path)))
+                    (wrap-program file
+                      `("PATH" ":" prefix (,(string-append out "/bin")
+                                           ,(dirname (which "sed"))
+                                           ,(dirname (which "gzip"))
+                                           ,(dirname (which "grep"))
+                                           ,(dirname (which "perl"))
+                                           ,(dirname (which "uname"))))))
+                  (find-files out ".")))
+              #t))
          (add-after 'wrap-program 'check
            (lambda* (#:key outputs #:allow-other-keys)
              (invoke (string-append (assoc-ref outputs "out")
@@ -2794,7 +2830,8 @@ quantitative phenotypes.")
                      "-filter" "-help")
              #t)))))
     (inputs
-     `(("perl-html-parser" ,perl-html-parser)
+     `(("edirect-go-programs" ,edirect-go-programs)
+       ("perl-html-parser" ,perl-html-parser)
        ("perl-encode-locale" ,perl-encode-locale)
        ("perl-file-listing" ,perl-file-listing)
        ("perl-html-tagset" ,perl-html-tagset)
@@ -2824,7 +2861,58 @@ EDirect also provides an argument-driven function that simplifies the
 extraction of data from document summaries or other results that are returned
 in structured XML format.  This can eliminate the need for writing custom
 software to answer ad hoc questions.")
+    (native-search-paths
+     ;; Ideally this should be set for LWP somewhere.
+     (list (search-path-specification
+            (variable "PERL_LWP_SSL_CA_FILE")
+            (file-type 'regular)
+            (separator #f)
+            (files '("/etc/ssl/certs/ca-certificates.crt")))))
     (license license:public-domain)))
+
+(define-public edirect-go-programs
+  (package
+    (inherit edirect)
+    (name "edirect-go-programs")
+    (build-system go-build-system)
+    (arguments
+     `(#:install-source? #f
+       #:tests? #f      ; No tests.
+       #:import-path "ncbi.nlm.nih.gov/entrez/edirect"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key import-path #:allow-other-keys)
+             (with-directory-excursion (string-append "src/" import-path)
+               (invoke "go" "build" "-v" "-x" "j2x.go")
+               (invoke "go" "build" "-v" "-x" "t2x.go")
+               (invoke "go" "build" "-v" "-x" "-o"
+                       "xtract.Linux" "xtract.go" "common.go")
+               (invoke "go" "build" "-v" "-x" "-o"
+                       "rchive.Linux" "rchive.go" "common.go")
+               (invoke "go" "build" "-v" "-x" "-o" "symbols.Linux" "s2p.go"))))
+         (replace 'install
+           (lambda* (#:key outputs import-path #:allow-other-keys)
+             (let ((dest    (string-append (assoc-ref outputs "out") "/bin"))
+                   (source  (string-append "src/" import-path "/")))
+               (for-each (lambda (file)
+                           (format #t "installing ~a~%" file)
+                           (install-file (string-append source file) dest))
+                         '("j2x" "t2x" "symbols.Linux" "xtract.Linux" "rchive.Linux"))
+               #t))))))
+    (native-inputs '())
+    (propagated-inputs '())
+    (inputs
+     `(("go-github-com-fatih-color" ,go-github-com-fatih-color)
+       ("go-github-com-fogleman-gg" ,go-github-com-fogleman-gg)
+       ("go-github-com-gedex-inflector" ,go-github-com-gedex-inflector)
+       ("go-github-com-golang-freetype" ,go-github-com-golang-freetype)
+       ("go-github-com-klauspost-cpuid" ,go-github-com-klauspost-cpuid)
+       ("go-github-com-pbnjay-memory" ,go-github-com-pbnjay-memory)
+       ("go-github-com-surgebase-porter2" ,go-github-com-surgebase-porter2)
+       ("go-golang-org-rainycape-unidecode" ,go-golang-org-rainycape-unidecode)
+       ("go-golang-org-x-image" ,go-golang-org-x-image)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)))))
 
 (define-public exonerate
   (package
@@ -6322,16 +6410,16 @@ application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
 (define-public star
   (package
     (name "star")
-    (version "2.7.1a")
+    (version "2.7.3a")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/alexdobin/STAR.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0n6g4s4hgw7qygs1z97j7a2dgz8gfaa4cv5pjvvvmarvk0x07hyg"))
+                "1hgiqw5qhs0pc1xazzihcfd92na02xyq2kb469z04y1v51kpvvjq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -8654,14 +8742,16 @@ factors bound at the specific regions.")
 (define-public r-tximport
   (package
     (name "r-tximport")
-    (version "1.14.0")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "tximport" version))
               (sha256
                (base32
-                "09r23n2812q89by0r0cz2fx1gfnmn3jb3hwbg61m52bika82pakj"))))
+                "1avy0zhgnszmg0dr9w74yq9ml10kwdrrgcni2wysrd48zzskc1n0"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/tximport")
     (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
     (description
@@ -10887,7 +10977,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
 (define-public sambamba
   (package
     (name "sambamba")
-    (version "0.6.8")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -10897,7 +10987,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0k0cz3qcv98p6cq09zlbgnjsggxcqbcmzxg5zikgcgbr2nfq4lry"))))
+         "111h05b60pj8dxbidiamy4imc92x2962b3lmb7wgysl6lx064qis"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there is no test target
@@ -10916,7 +11006,6 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
          (add-after 'unpack 'place-biod-and-undead
            (lambda* (#:key inputs #:allow-other-keys)
              (copy-recursively (assoc-ref inputs "biod") "BioD")
-             (copy-recursively (assoc-ref inputs "undead") "undeaD")
              #t))
          (add-after 'unpack 'unbundle-prerequisites
            (lambda _
@@ -10930,14 +11019,15 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
              (let* ((out   (assoc-ref outputs "out"))
                     (bin   (string-append out "/bin")))
                (mkdir-p bin)
-               (install-file "bin/sambamba" bin)
+               (copy-file (string-append "bin/sambamba-" ,version)
+                          (string-append bin "/sambamba"))
                #t))))))
     (native-inputs
      `(("ldc" ,ldc)
        ("rdmd" ,rdmd)
        ("python" ,python)
        ("biod"
-        ,(let ((commit "4f1a7d2fb7ef3dfe962aa357d672f354ebfbe42e"))
+        ,(let ((commit "7969eb0a847b05874e83ffddead26e193ece8101"))
            (origin
              (method git-fetch)
              (uri (git-reference
@@ -10948,20 +11038,7 @@ droplet sequencing.  It has been particularly tailored for Drop-seq.")
                                        "-checkout"))
              (sha256
               (base32
-               "1k5pdjv1qvi0a3rwd1sfq6zbj37l86i7bf710m4c0y6737lxj426")))))
-       ("undead"
-        ,(let ((commit "9be93876982b5f14fcca60832563b3cd767dd84d"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/biod/undeaD.git")
-                   (commit commit)))
-             (file-name (string-append "undead-"
-                                       (string-take commit 9)
-                                       "-checkout"))
-             (sha256
-              (base32
-               "1xfarj0nqlmi5jd1vmcmm7pabzaf9hxyvk6hp0d6jslb5k9r8r3d")))))))
+               "0mjxsmbmv0jxl3pq21p8j5r829d648if8q58ka50b2956lc6qkpm")))))))
     (inputs
      `(("lz4" ,lz4)
        ("htslib" ,htslib-for-sambamba)))
@@ -12815,7 +12892,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12823,7 +12900,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0ga2jr4968qzwml6aycky4603q64lny3y7lzw6dmafch5pydl1qi"))))
+                "1d5l3gywypi67yz9advxq5xkgfhr4733gj0bwnngm723i3hdf5w9"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)

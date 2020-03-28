@@ -648,7 +648,7 @@ multipole-accelerated algorithm.")
            (sha256
             (base32
              "1d2v8k7p176j0lczx4vx9n9gbg3vw09n2c4b6w0wj5wqmifywhc1"))))))
-    (home-page "http://fritzing.org")
+    (home-page "https://fritzing.org")
     (synopsis "Electronic circuit design")
     (description
      "The Fritzing application is @dfn{Electronic Design Automation} (EDA)
@@ -1309,14 +1309,16 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "3.5.1")
+    (version "4.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://radare.mikelloc.com/get/" version "/"
-                                  "radare2-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/radareorg/radare2")
+                    (commit version)))
               (sha256
                (base32
-                "174x5545fw2nyf000gd46hi7rx2bn3bw5bsnvizn9yi99pn7m4mw"))
+                "14b9433cgc2nabhz836zfgvgh2dwailcmvy05krsa0inmzbvx9fg"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2136,7 +2138,7 @@ simulation.")
 (define-public cutter
   (package
     (name "cutter")
-    (version "1.8.3")
+    (version "1.10.1")
     (source
      (origin
        (method git-fetch)
@@ -2146,7 +2148,7 @@ simulation.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03f3cdckh51anx9gd1b0ndb2fg7061hqngvygf32ky29mm2m2lyv"))))
+         "1gvsrcskcdd1hxrjpkpc657anmfs25f174vxk4wzvn385rnmrxd3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

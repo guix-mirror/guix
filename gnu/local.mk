@@ -25,7 +25,9 @@
 # Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 # Copyright © 2019 Evan Straw <evan.straw99@gmail.com>
 # Copyright © 2019 Brett Gilio <brettg@gnu.org>
-# Copyright © 2019 Amin Bandali <mab@gnu.org>
+# Copyright © 2019 Amin Bandali <bandali@gnu.org>
+# Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+# Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -136,6 +138,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cups.scm				\
   %D%/packages/curl.scm				\
   %D%/packages/cvassistant.scm			\
+  %D%/packages/cybersecurity.scm		\
   %D%/packages/cyrus-sasl.scm			\
   %D%/packages/databases.scm			\
   %D%/packages/datamash.scm			\
@@ -439,6 +442,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rednotebook.scm			\
   %D%/packages/regex.scm				\
   %D%/packages/robotics.scm			\
+  %D%/packages/rpc.scm				\
   %D%/packages/rrdtool.scm			\
   %D%/packages/rsync.scm			\
   %D%/packages/ruby.scm				\
@@ -632,6 +636,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
   %D%/tests/ldap.scm				\
+  %D%/tests/linux-modules.scm			\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
@@ -756,6 +761,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
+  %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
@@ -771,6 +777,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
   %D%/packages/patches/casync-renameat2-declaration.patch	\
   %D%/packages/patches/catdoc-CVE-2017-11110.patch		\
+  %D%/packages/patches/circos-remove-findbin.patch		\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/cdrtools-3.01-mkisofs-isoinfo.patch 	\
   %D%/packages/patches/ceph-disable-cpu-optimizations.patch	\
@@ -803,6 +810,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
+  %D%/packages/patches/date-output-pkg-config-files.patch	\
   %D%/packages/patches/darkice-workaround-fpermissive-error.patch	\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
@@ -824,6 +832,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dstat-fix-crash-when-specifying-delay.patch	\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
+  %D%/packages/patches/eigen-stabilise-sparseqr-test.patch	\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-path-length.patch			\
@@ -859,6 +868,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/fasthenry-spSolve.patch			\
   %D%/packages/patches/fasthenry-spFactor.patch			\
   %D%/packages/patches/fbreader-curl-7.62.patch		\
+  %D%/packages/patches/ffmpeg-prefer-dav1d.patch		\
   %D%/packages/patches/fifo-map-fix-flags-for-gcc.patch		\
   %D%/packages/patches/fifo-map-remove-catch.hpp.patch		\
   %D%/packages/patches/file-CVE-2018-10360.patch		\
@@ -868,6 +878,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/findutils-test-xargs.patch		\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
+  %D%/packages/patches/foobillard++-pkg-config.patch		\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
   %D%/packages/patches/fribidi-CVE-2019-18397.patch		\
@@ -978,7 +989,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-1.8-cpp-4.5.patch			\
   %D%/packages/patches/guile-2.2-default-utf8.patch		\
   %D%/packages/patches/guile-2.2-skip-oom-test.patch            \
-  %D%/packages/patches/guile-3.0-crash.patch			\
   %D%/packages/patches/guile-default-utf8.patch			\
   %D%/packages/patches/guile-gdbm-ffi-support-gdbm-1.14.patch	\
   %D%/packages/patches/guile-linux-syscalls.patch		\
@@ -995,6 +1005,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtksourceview-2-add-default-directory.patch \
   %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
   %D%/packages/patches/gzdoom-find-system-libgme.patch	\
+  %D%/packages/patches/hash-extender-test-suite.patch		\
   %D%/packages/patches/haskell-mode-unused-variables.patch	\
   %D%/packages/patches/haskell-mode-make-check.patch		\
   %D%/packages/patches/hdf4-architectures.patch 		\
@@ -1021,6 +1032,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
+  %D%/packages/patches/icu4c-CVE-2020-10531.patch  		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/id3lib-UTF16-writing-bug.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
@@ -1049,6 +1061,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
+  %D%/packages/patches/kdepim-runtime-Fix-missing-link-libraries.patch \
+  %D%/packages/patches/kdiagram-Fix-missing-link-libraries.patch \
   %D%/packages/patches/kiki-level-selection-crash.patch		\
   %D%/packages/patches/kiki-makefile.patch			\
   %D%/packages/patches/kiki-missing-includes.patch		\
@@ -1056,6 +1070,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kinit-kdeinit-extra_libs.patch		\
   %D%/packages/patches/kinit-kdeinit-libpath.patch		\
   %D%/packages/patches/kio-search-smbd-on-PATH.patch		\
+  %D%/packages/patches/kmail-Fix-missing-link-libraries.patch \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/kmscon-runtime-keymap-switch.patch	\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
@@ -1105,6 +1120,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
+  %D%/packages/patches/libksieve-Fix-missing-link-libraries.patch \
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
   %D%/packages/patches/libmad-length-check.patch		\
@@ -1142,6 +1158,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
+  %D%/packages/patches/linux-libre-support-for-Pinebook-Pro.patch \
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
@@ -1325,7 +1342,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-cffi-x87-stack-clean.patch	\
   %D%/packages/patches/python2-larch-coverage-4.0a6-compatibility.patch \
   %D%/packages/patches/python-configobj-setuptools.patch	\
-  %D%/packages/patches/python-faker-fix-build-32bit.patch	\
+  %D%/packages/patches/python-flask-restful-werkzeug-compat.patch	\
   %D%/packages/patches/python-keras-integration-test.patch	\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\

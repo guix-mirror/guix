@@ -35,10 +35,11 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
-;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -441,20 +442,10 @@ documentation.")
                (begin
                  ;; The nginx source code is part of the module’s source.
                  (format #t "decompressing nginx source code~%")
-                 (call-with-output-file "nginx.tar"
-                   (lambda (out)
-                     (let* ((gzip (assoc-ref inputs "gzip"))
-                            (nginx-srcs (assoc-ref inputs "nginx-sources"))
-                            (pipe (open-pipe* OPEN_READ
-                                              (string-append gzip "/bin/gzip")
-                                              "-cd"
-                                              nginx-srcs)))
-                       (dump-port pipe out)
-                       (unless (= (status:exit-val (close-pipe pipe)) 0)
-                         (error "gzip decompress failed")))))
-                 (invoke (string-append (assoc-ref inputs "tar") "/bin/tar")
-                         "xvf" "nginx.tar" "--strip-components=1")
-                 (delete-file "nginx.tar")
+                 (let ((tar (assoc-ref inputs "tar"))
+                       (nginx-srcs (assoc-ref inputs "nginx-sources")))
+                   (invoke (string-append tar "/bin/tar")
+                           "xvf" nginx-srcs "--strip-components=1"))
                  #t)))
            (add-after 'unpack 'convert-to-dynamic-module
              (lambda _
@@ -4391,8 +4382,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "18eb9dfdcb3174bfd4bab5b9089acffa13aa1214")
-        (revision "18"))
+  (let ((commit "d1c243f7fd8902f359ff06fb78dce663cf4297ce")
+        (revision "19"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4404,11 +4395,13 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0lb78cqzqaz0r4sspg272w2a3yhzhqah30j0kxf0z182b0qpmp37"))))
+                  "1ji8d4vwmv7j9h7z96hvzi3zvik594yngjrdal37w13fbxy2v6sw"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
                     (guix build gnu-build-system)
+                    (ice-9 ftw)
+                    (ice-9 match)
                     (ice-9 rdelim)
                     (ice-9 popen))
          #:test-target "check-with-tmp-database"
@@ -4436,20 +4429,28 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                                           "/site-ccache")))
                  (for-each
                   (lambda (file)
+                    (simple-format (current-error-port)
+                                   "wrapping: ~A\n"
+                                   (string-append bin "/" file))
                     (wrap-program (string-append bin "/" file)
                       `("PATH" ":" prefix
-                        (,bin))
+                        ,(cons*
+                          bin
+                          (map (lambda (input)
+                                 (string-append
+                                  (assoc-ref inputs input)
+                                  "/bin"))
+                               '("ephemeralpg"
+                                 "util-linux"
+                                 "postgresql"))))
                       `("GUILE_LOAD_PATH" ":" prefix
                         (,scm ,(getenv "GUILE_LOAD_PATH")))
                       `("GUILE_LOAD_COMPILED_PATH" ":" prefix
                         (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
-                  '("guix-data-service"
-                    "guix-data-service-process-branch-updated-email"
-                    "guix-data-service-process-branch-updated-mbox"
-                    "guix-data-service-process-job"
-                    "guix-data-service-process-jobs"
-                    "guix-data-service-manage-build-servers"
-                    "guix-data-service-query-build-servers"))
+                  (scandir bin
+                           (match-lambda
+                             ((or "." "..") #f)
+                             (_ #t))))
                  #t)))
            (delete 'strip))))           ; As the .go files aren't compatible
       (inputs
@@ -4458,13 +4459,14 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
          ("guile-json" ,guile3.0-json)
          ("guile-email" ,guile3.0-email)
          ("guile-squee" ,guile3.0-squee)
-         ("postgresql" ,postgresql)
+         ("ephemeralpg" ,ephemeralpg)
+         ("util-linux" ,util-linux)
+         ("postgresql" ,postgresql-11)
          ("sqitch" ,sqitch)))
       (native-inputs
        `(("guile" ,guile-3.0)
          ("autoconf" ,autoconf)
          ("automake" ,automake)
-         ("ephemeralpg" ,ephemeralpg)
          ("emacs-minimal" ,emacs-minimal)
          ("emacs-htmlize" ,emacs-htmlize)
          ("pkg-config" ,pkg-config)))
@@ -5480,13 +5482,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.3.2")
+    (version "6.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "1f5ahzdh3am6fij5jhiybv3knwl11rhc5r3ig1ybzw55ai7788q8"))))
+                "1hkn98vbxk7rc1sd08367qn6rcv8wkxgwbmm1x46y50vi0nvldpn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -6119,14 +6121,14 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
 (define-public java-tomcat
   (package
     (name "java-tomcat")
-    (version "8.5.46")
+    (version "8.5.53")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/tomcat/tomcat-8/v"
                                   version "/src/apache-tomcat-" version "-src.tar.gz"))
               (sha256
                (base32
-                "0fb49gsqa3r6jrwc54yynvsakq9qbzr2pbxr7a29c2zvja2v65iq"))
+                "15lwq3clf21hzk7mma70sffpxjqn8ww5mjq6zhmwcp4m17m22z26"))
               (modules '((guix build utils)))
               ;; Delete bundled jars.
               (snippet
@@ -6204,6 +6206,7 @@ encoder/decoder based on the draft-12 specification for UBJSON.")
              (let ((out (assoc-ref outputs "out")))
                (copy-recursively "output/build" out))
              #t)))))
+    (properties '((cpe-name . "tomcat")))
     (home-page "https://tomcat.apache.org")
     (synopsis "Java Servlet, JavaServer Pages, Java Expression Language and Java
 WebSocket")
@@ -7207,7 +7210,7 @@ the Internet to a local directory, building recursively all directories,
 getting HTML, images, and other files from the server to your computer.
 
 HTTrack arranges the original site's relative link-structure.  Simply open
-a page of the @code{mirrored} website in your browser, and you can browse the
+a page of the @emph{mirrored} website in your browser, and you can browse the
 site from link to link, as if you were viewing it online.  HTTrack can also
 update an existing mirrored site, and resume interrupted downloads.
 

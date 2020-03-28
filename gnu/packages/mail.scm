@@ -144,14 +144,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.8")
+    (version "3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
+               "1g1xf2lal04nsnf1iym9n9n0wxjpqbcr9nysxpm98v4pniinqwsz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -166,7 +166,8 @@
              ;; Tests try to invoke 'mda' such that it looks up the
              ;; 'root' user, which does not exist in the build
              ;; environment.
-             (substitute* "mda/tests/testsuite"
+             (substitute* '("mda/mda/tests/testsuite"
+                            "mda/lmtpd/tests/testsuite")
                (("root <")         "nobody <")
                (("spool/root")     "spool/nobody")
                (("root@localhost") "nobody@localhost"))
@@ -380,17 +381,17 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.13.2")
+    (version "1.13.4")
     (source (origin
              (method url-fetch)
              (uri (list
-                    (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
-                                   version ".tar.gz")
                     (string-append "https://bitbucket.org/mutt/mutt/downloads/"
-                                   "mutt-" version ".tar.gz")))
+                                   "mutt-" version ".tar.gz")
+                    (string-append "http://ftp.mutt.org/pub/mutt/mutt-"
+                                   version ".tar.gz")))
              (sha256
               (base32
-               "0x4yfvk8415p80h9an242n6q3b43mw6mnnczh95zd3j0zwdr6wrg"))
+               "016dzx2c0kr9xgnw4nfzpkn4nvpk56rdlcqhrwa820fq8083yzdm"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -427,7 +428,7 @@ operating systems.")
 (define-public neomutt
   (package
     (name "neomutt")
-    (version "20191207")
+    (version "20200313")
     (source
      (origin
        (method git-fetch)
@@ -436,7 +437,7 @@ operating systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "147yjpqnsbfy01fhsflxlixk0985r91a6bjmqq3cwmf7gka3sihm"))))
+        (base32 "1k4k07l6h5krc3fx928qvdq3ssw9fxn95aj7k885xlckd2i1lnb5"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -673,7 +674,7 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("ruby" ,ruby))) ; to set GEM_PATH so ruby-sqlite3 is found at runtime
     (build-system gnu-build-system)
     (arguments
-     (let ((elisp-dir "/share/emacs/site-lisp/guix.d/mew")
+     (let ((elisp-dir "/share/emacs/site-lisp")
            (icon-dir  "/share/mew"))
        `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
@@ -1393,14 +1394,17 @@ facilities for checking incoming mail.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("openssl" ,openssl)
-       ("zlib" ,zlib)
-       ("bzip2" ,bzip2)
+     `(("bzip2" ,bzip2)
+       ("libsodium" ,libsodium)         ; extra password algorithms
+       ("linux-pam" ,linux-pam)
+       ("lz4" ,lz4)
+       ("openssl" ,openssl)
        ("sqlite" ,sqlite)
-       ("linux-pam" ,linux-pam)))
+       ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
-                           "--localstatedir=/var")
+                           "--localstatedir=/var"
+                           "--with-sqlite") ; not auto-detected
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
@@ -1514,8 +1518,8 @@ using libsodium sealed boxes.
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
-       "@code{dovecot-libsodium-plugin} provides libsodium password
-hashing schemes plugin for @code{Dovecot}.")
+       "@code{dovecot-libsodium-plugin} provides a libsodium password
+hashing scheme (such as scrypt) plug-in for @code{Dovecot}.")
       (license gpl3+))))
 
 (define-public isync

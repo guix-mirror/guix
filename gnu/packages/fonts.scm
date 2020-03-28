@@ -29,7 +29,7 @@
 ;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
-;;; Copyright © 2020 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

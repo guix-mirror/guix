@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
@@ -36,7 +36,7 @@
   #:use-module (gnu services networking)
   #:use-module (gnu services sound)
   #:use-module ((gnu system file-systems)
-                #:select (%elogind-file-systems))
+                #:select (%elogind-file-systems file-system))
   #:use-module (gnu system)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
@@ -105,6 +105,9 @@
             elogind-configuration?
             elogind-service
             elogind-service-type
+
+            %fontconfig-file-system
+            fontconfig-file-system-service
 
             accountsservice-service-type
             accountsservice-service
@@ -797,6 +800,27 @@ when they log out."
 
 
 ;;;
+;;; Fontconfig and other desktop file-systems.
+;;;
+
+(define %fontconfig-file-system
+  (file-system
+    (device "none")
+    (mount-point "/var/cache/fontconfig")
+    (type "tmpfs")
+    (flags '(read-only))
+    (check? #f)))
+
+;; The global fontconfig cache directory can sometimes contain stale entries,
+;; possibly referencing fonts that have been GC'd, so mount it read-only.
+;; As mentioned https://debbugs.gnu.org/cgi/bugreport.cgi?bug=36924#8 and
+;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=38046#10 and elsewhere.
+(define fontconfig-file-system-service
+  (simple-service 'fontconfig-file-system
+                  file-system-service-type
+                  (list %fontconfig-file-system)))
+
+;;;
 ;;; AccountsService service.
 ;;;
 
@@ -1184,6 +1208,11 @@ or setting its password with passwd.")))
          ;; Add polkit rules, so that non-root users in the wheel group can
          ;; perform administrative tasks (similar to "sudo").
          polkit-wheel-service
+
+         ;; The global fontconfig cache directory can sometimes contain
+         ;; stale entries, possibly referencing fonts that have been GC'd,
+         ;; so mount it read-only.
+         fontconfig-file-system-service
 
          ;; NetworkManager and its applet.
          (service network-manager-service-type)

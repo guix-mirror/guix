@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -211,7 +212,7 @@ ROOT-PASSWORD, and USERS."
 
 (define* (choose-services port
                           #:key
-                          (desktop-environments '("GNOME"))
+                          (choose-desktop-environment? (const #f))
                           (choose-network-service?
                            (lambda (service)
                              (or (string-contains service "SSH")
@@ -220,10 +221,14 @@ ROOT-PASSWORD, and USERS."
                            (lambda (service)
                              (string-contains service "DHCP"))))
   "Converse over PORT to choose networking services."
+  (define desktop-environments '())
+
   (converse port
     ((checkbox-list (title "Desktop environment") (text _)
-                    (items _))
-     desktop-environments)
+                    (items ,services))
+     (let ((desktops (filter choose-desktop-environment? services)))
+       (set! desktop-environments desktops)
+       desktops))
     ((checkbox-list (title "Network service") (text _)
                     (items ,services))
      (filter choose-network-service? services))

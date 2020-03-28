@@ -245,8 +245,8 @@
   nfs-configuration?
   (nfs-utils           nfs-configuration-nfs-utils
                        (default nfs-utils))
-  (nfs-version         nfs-configuration-nfs-version
-                       (default #f)) ; string
+  (nfs-versions        nfs-configuration-nfs-versions
+                       (default '("4.2" "4.1" "4.0")))
   (exports             nfs-configuration-exports
                        (default '()))
   (rpcmountd-port      nfs-configuration-rpcmountd-port
@@ -270,13 +270,23 @@
 (define (nfs-shepherd-services config)
   "Return a list of <shepherd-service> for the NFS daemons with CONFIG."
   (match-record config <nfs-configuration>
-    (nfs-utils nfs-version exports
+    (nfs-utils nfs-versions exports
                rpcmountd-port rpcstatd-port nfsd-port nfsd-threads
                pipefs-directory debug)
     (list (shepherd-service
+           (documentation "Mount the nfsd pseudo file system.")
+           (provision '(/proc/fs/nfsd))
+           (start #~(lambda ()
+                      (mount "nfsd" "/proc/fs/nfsd" "nfsd")
+                      (member "/proc/fs/nfsd" (mount-points))))
+
+           (stop #~(lambda (pid . args)
+                     (umount "/proc/fs/nfsd" MNT_DETACH)
+                     (not (member "/proc/fs/nfsd" (mount-points))))))
+          (shepherd-service
            (documentation "Run the NFS statd daemon.")
            (provision '(rpc.statd))
-           (requirement '(rpcbind-daemon))
+           (requirement '(/proc/fs/nfsd rpcbind-daemon))
            (start
             #~(make-forkexec-constructor
                (list #$(file-append nfs-utils "/sbin/rpc.statd")
@@ -295,7 +305,7 @@
           (shepherd-service
            (documentation "Run the NFS mountd daemon.")
            (provision '(rpc.mountd))
-           (requirement '(rpc.statd))
+           (requirement '(/proc/fs/nfsd rpc.statd))
            (start
             #~(make-forkexec-constructor
                (list #$(file-append nfs-utils "/sbin/rpc.mountd")
@@ -310,18 +320,19 @@
           (shepherd-service
            (documentation "Run the NFS daemon.")
            (provision '(rpc.nfsd))
-           (requirement '(rpc.statd networking))
+           (requirement '(/proc/fs/nfsd rpc.statd networking))
            (start
             #~(lambda _
-                (zero? (system* #$(file-append nfs-utils "/sbin/rpc.nfsd")
-                                #$@(if (member 'nfsd debug)
-                                       '("--debug")
-                                       '())
-                                "--port" #$(number->string nfsd-port)
-                                #$@(if nfs-version
-                                       '("--nfs-version" nfs-version)
-                                       '())
-                                #$(number->string nfsd-threads)))))
+                (zero? (apply system* #$(file-append nfs-utils "/sbin/rpc.nfsd")
+                              (list
+                               #$@(if (member 'nfsd debug)
+                                      '("--debug")
+                                      '())
+                               "--port" #$(number->string nfsd-port)
+                               #$@(map (lambda (version)
+                                         (string-append "--nfs-version=" version))
+                                       nfs-versions)
+                               #$(number->string nfsd-threads))))))
            (stop
             #~(lambda _
                 (zero?
@@ -329,7 +340,7 @@
           (shepherd-service
            (documentation "Run the NFS mountd daemon and refresh exports.")
            (provision '(nfs))
-           (requirement '(rpc.nfsd rpc.mountd rpc.statd rpcbind-daemon))
+           (requirement '(/proc/fs/nfsd rpc.nfsd rpc.mountd rpc.statd rpcbind-daemon))
            (start
             #~(lambda _
                 (let ((rpcdebug #$(file-append nfs-utils "/sbin/rpcdebug")))
@@ -360,31 +371,31 @@
                 #t))
            (respawn? #f)))))
 
+(define %nfs-activation
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        ;; directory containing monitor list
+        (mkdir-p "/var/lib/nfs/sm")
+        ;; Needed for client recovery tracking
+        (mkdir-p "/var/lib/nfs/v4recovery")
+        (let ((user (getpw "nobody")))
+          (chown "/var/lib/nfs"
+                 (passwd:uid user)
+                 (passwd:gid user))
+          (chown "/var/lib/nfs/v4recovery"
+                 (passwd:uid user)
+                 (passwd:gid user)))
+        #t)))
+
 (define nfs-service-type
   (service-type
    (name 'nfs)
    (extensions
     (list
      (service-extension shepherd-root-service-type nfs-shepherd-services)
-     (service-extension activation-service-type
-                        (const #~(begin
-                                   (use-modules (guix build utils))
-                                   (system* "mount" "-t" "nfsd"
-                                            "nfsd" "/proc/fs/nfsd")
-
-                                   (mkdir-p "/var/lib/nfs")
-                                   ;; directory containing monitor list
-                                   (mkdir-p "/var/lib/nfs/sm")
-                                   ;; Needed for client recovery tracking
-                                   (mkdir-p "/var/lib/nfs/v4recovery")
-                                   (let ((user (getpw "nobody")))
-                                     (chown "/var/lib/nfs"
-                                            (passwd:uid user)
-                                            (passwd:gid user))
-                                     (chown "/var/lib/nfs/v4recovery"
-                                            (passwd:uid user)
-                                            (passwd:gid user)))
-                                   #t)))
+     (service-extension activation-service-type (const %nfs-activation))
      (service-extension etc-service-type
                         (lambda (config)
                           `(("exports"

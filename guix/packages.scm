@@ -355,25 +355,24 @@ object."
      (catch 'system-error
        (lambda ()
          ;; In general we want to keep relative file names for modules.
-         (with-fluids ((%file-port-name-canonicalization 'relative))
-           (call-with-input-file (search-path %load-path file)
-             (lambda (port)
-               (goto port line column)
-               (match (read port)
-                 (('package inits ...)
-                  (let ((field (assoc field inits)))
-                    (match field
-                      ((_ value)
-                       ;; Put the `or' here, and not in the first argument of
-                       ;; `and=>', to work around a compiler bug in 2.0.5.
-                       (or (and=> (source-properties value)
-                                  source-properties->location)
-                           (and=> (source-properties field)
-                                  source-properties->location)))
-                      (_
-                       #f))))
-                 (_
-                  #f))))))
+         (call-with-input-file (search-path %load-path file)
+           (lambda (port)
+             (goto port line column)
+             (match (read port)
+               (('package inits ...)
+                (let ((field (assoc field inits)))
+                  (match field
+                    ((_ value)
+                     (let ((loc (and=> (source-properties value)
+                                       source-properties->location)))
+                       (and loc
+                            ;; Preserve the original file name, which may be a
+                            ;; relative file name.
+                            (set-field loc (location-file) file))))
+                    (_
+                     #f))))
+               (_
+                #f)))))
        (lambda _
          #f)))
     (_ #f)))
@@ -445,12 +444,12 @@ derivations."
   (let ((distro (resolve-interface '(gnu packages commencement))))
     (module-ref distro 'guile-final)))
 
-(define (guile-2.0)
-  "Return Guile 2.0."
-  ;; FIXME: This is used as a workaround for <https://bugs.gnu.org/28211> when
+(define (guile-for-grafts)
+  "Return the Guile package used to build grafting derivations."
+  ;; Guile 2.2 would not work due to <https://bugs.gnu.org/28211> when
   ;; grafting packages.
   (let ((distro (resolve-interface '(gnu packages guile))))
-    (module-ref distro 'guile-2.0)))
+    (module-ref distro 'guile-3.0)))
 
 (define* (default-guile-derivation #:optional (system (%current-system)))
   "Return the derivation for SYSTEM of the default Guile package used to run
@@ -1270,7 +1269,7 @@ This is an internal procedure."
                   (()
                    drv)
                   (grafts
-                   (let ((guile (package-derivation store (guile-2.0)
+                   (let ((guile (package-derivation store (guile-for-grafts)
                                                     system #:graft? #f)))
                      ;; TODO: As an optimization, we can simply graft the tip
                      ;; of the derivation graph since 'graft-derivation'
@@ -1296,7 +1295,7 @@ system identifying string)."
                    (graft-derivation store drv grafts
                                      #:system system
                                      #:guile
-                                     (package-derivation store (guile-2.0)
+                                     (package-derivation store (guile-for-grafts)
                                                          system #:graft? #f))))
                 drv))))
 

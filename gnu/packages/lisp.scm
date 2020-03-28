@@ -494,6 +494,7 @@ an interpreter, a compiler, a debugger, and much more.")
                                          `("clisp")))
                      (string-append "--prefix="
                                     (assoc-ref outputs "out"))
+                     "--dynamic-space-size=2Gb"
                      "--with-sb-core-compression"
                      "--with-sb-xref-for-internals")))
          (replace 'install

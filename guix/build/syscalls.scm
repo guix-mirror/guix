@@ -1104,47 +1104,49 @@ exception if it's already taken."
   #t)
 
 (define (call-with-file-lock file thunk)
-  (let ((port (catch 'system-error
-                (lambda ()
-                  (lock-file file))
-                (lambda args
-                  ;; When using the statically-linked Guile in the initrd,
-                  ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore
-                  ;; that error since we're typically the only process running
-                  ;; at this point.
-                  (if (= ENOSYS (system-error-errno args))
-                      #f
-                      (apply throw args))))))
+  (let ((port #f))
     (dynamic-wind
       (lambda ()
-        #t)
+        (set! port
+          (catch 'system-error
+            (lambda ()
+              (lock-file file))
+            (lambda args
+              ;; When using the statically-linked Guile in the initrd,
+              ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore
+              ;; that error since we're typically the only process running
+              ;; at this point.
+              (if (= ENOSYS (system-error-errno args))
+                  #f
+                  (apply throw args))))))
       thunk
       (lambda ()
         (when port
           (unlock-file port))))))
 
 (define (call-with-file-lock/no-wait file thunk handler)
-  (let ((port (catch #t
-                (lambda ()
-                  (lock-file file #:wait? #f))
-                (lambda (key . args)
-                  (match key
-                    ('flock-error
-                     (apply handler args)
-                     ;; No open port to the lock, so return #f.
-                     #f)
-                    ('system-error
-                      ;; When using the statically-linked Guile in the initrd,
-                      ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore
-                      ;; that error since we're typically the only process running
-                      ;; at this point.
-                      (if (= ENOSYS (system-error-errno (cons key args)))
-                          #f
-                          (apply throw key args)))
-                    (_ (apply throw key args)))))))
+  (let ((port #f))
     (dynamic-wind
       (lambda ()
-        #t)
+        (set! port
+          (catch #t
+            (lambda ()
+              (lock-file file #:wait? #f))
+            (lambda (key . args)
+              (match key
+                ('flock-error
+                 (apply handler args)
+                 ;; No open port to the lock, so return #f.
+                 #f)
+                ('system-error
+                 ;; When using the statically-linked Guile in the initrd,
+                 ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore
+                 ;; that error since we're typically the only process running
+                 ;; at this point.
+                 (if (= ENOSYS (system-error-errno (cons key args)))
+                     #f
+                     (apply throw key args)))
+                (_ (apply throw key args)))))))
       thunk
       (lambda ()
         (when port

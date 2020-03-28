@@ -434,7 +434,18 @@ desktops.")
                             (assoc-ref %build-inputs "boost")
                             "/lib")
              "--enable-debug"
-             "QMAKE_LRELEASE=lrelease")))
+             "QMAKE_LRELEASE=lrelease")
+       #:modules ((guix build gnu-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-qt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "qbittorrent")
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))

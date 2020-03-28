@@ -754,7 +754,7 @@ MusePack, Monkey's Audio, and WavPack files.")
        ("emacs" ,emacs-no-x)))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))
-    (home-page "http://digego.github.io/extempore/")
+    (home-page "https://digego.github.io/extempore/")
     (synopsis "Programming environment for live coding of multimedia")
     (description
      "Extempore is a programming language and runtime environment designed
@@ -1040,7 +1040,7 @@ Guile.")
          ("ntk" ,ntk)))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
-      (home-page "http://non.tuxfamily.org/wiki/Non%20Sequencer")
+      (home-page "https://non.tuxfamily.org/wiki/Non%20Sequencer")
       (synopsis "Pattern-based MIDI sequencer")
       (description
        "The Non Sequencer is a powerful, lightweight, real-time,
@@ -1064,7 +1064,7 @@ transport is rolling.")
        ("ntk" ,ntk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://non.tuxfamily.org/nsm/")
+    (home-page "https://non.tuxfamily.org/nsm/")
     (synopsis "Audio session management")
     (description
      "The Non Session Manager is an API and an implementation for audio
@@ -1088,7 +1088,7 @@ communicate with the session management daemon.")
        ("ntk" ,ntk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://non.tuxfamily.org/wiki/Non%20Mixer")
+    (home-page "https://non.tuxfamily.org/wiki/Non%20Mixer")
     (synopsis "Modular digital audio mixer")
     (description
      "The Non Mixer is a powerful, reliable and fast modular digital audio
@@ -1113,7 +1113,7 @@ studio.")
        ("ntk" ,ntk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://non.tuxfamily.org/wiki/Non%20Timeline")
+    (home-page "https://non.tuxfamily.org/wiki/Non%20Timeline")
     (synopsis "Modular digital audio timeline arranger")
     (description
      "The Non Timeline is a powerful, reliable and fast modular digital audio
@@ -2941,6 +2941,7 @@ Songs can be searched by artist, name or even by a part of the song text.")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
+              (patches (search-patches "beets-werkzeug-compat.patch"))
               (sha256
                (base32
                 "0m40rjimvfgy1dv04p8f8d5dvi2855v4ix99a9xr900cmcn476yj"))))
@@ -5212,3 +5213,83 @@ featureful and easy to use.  It offers unlimited automation options, LV2
 plugin support, JACK support and chord assistance.")
    (home-page "https://www.zrythm.org")
    (license license:agpl3+)))
+
+(define-public dragonfly-reverb
+  (package
+    (name "dragonfly-reverb")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/michaelwillis/dragonfly-reverb.git")
+         (commit version)
+         ;; Bundles a specific commit of the DISTRHO plugin framework.
+         (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1qrbv4kk5v6ynx424h1i54qj0w8v6vpw81b759jawxvzzprpgq72"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure target
+         (replace 'install              ;no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lv2 (string-append out "/lib/lv2")))
+               ;; Install LV2.
+               (for-each
+                (lambda (file)
+                  (copy-recursively file
+                                    (string-append lv2 "/" (basename file))))
+                (find-files "bin" "\\.lv2$" #:directories? #t))
+               ;; Install executables.
+               (install-file "bin/DragonflyRoomReverb" bin)
+               (install-file "bin/DragonflyHallReverb" bin)
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("jack" ,jack-1)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)))
+    (home-page "https://michaelwillis.github.io/dragonfly-reverb/")
+    (synopsis "Concert hall reverb and room reverb effects")
+    (description
+     "Dragonfly Reverb is a bundle of two free audio effects: a concert
+hall reverb and a room reverb.  Both are available as LV2 plugins as well
+as JACK standalone applications.")
+    (license license:gpl3+)))
+
+(define-public zlfo
+  (package
+    (name "zlfo")
+    (version "0.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.zrythm.org/git/ZLFO")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bm466ci5xyvxvq7l9p6xyh789lvk6i31b4zja1igqh13akbjnjz"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("librsvg" ,librsvg)
+       ("lv2" ,lv2)
+       ("ztoolkit-rsvg" ,ztoolkit-rsvg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Low frequency oscillator plugin")
+    (description "ZLFO is a fully featured
+@dfn{low frequency oscillator} (LFO) for @dfn{control voltage} (CV)-based
+automation that comes as an LV2 plugin bundle with a custom UI.")
+    (home-page "https://git.zrythm.org/cgit/ZLFO/")
+    (license license:agpl3+)))

@@ -9,6 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -249,7 +250,7 @@ supports HTTP, HTTPS and GnuTLS.")
 (define-public gnunet
   (package
    (name "gnunet")
-   (version "0.11.8")
+   (version "0.12.2")
    (source
     (origin
       (method url-fetch)
@@ -257,7 +258,7 @@ supports HTTP, HTTPS and GnuTLS.")
                           ".tar.gz"))
       (sha256
        (base32
-        "1zkmcq75sfr3iyg8rgxp9dbl7fwsvc1a71rc0vgisghcbrx1n7yj"))))
+        "1mwcy7fj1rpd39w7j7k3jdwlil5s889b2qlhfdggqmhigl28na5c"))))
    (build-system gnu-build-system)
    (inputs
     `(("bluez" ,bluez)
@@ -269,6 +270,7 @@ supports HTTP, HTTPS and GnuTLS.")
       ("libextractor" ,libextractor)
       ("libidn" ,libidn2)
       ("libgcrypt" ,libgcrypt)
+      ("libjpeg" ,libjpeg)
       ("libltdl" ,libltdl)
       ("libmicrohttpd" ,libmicrohttpd)
       ("libogg" ,libogg)
@@ -289,11 +291,30 @@ supports HTTP, HTTPS and GnuTLS.")
       #:phases
       (modify-phases %standard-phases
         (add-after 'configure 'remove-failing-tests
-          ;; These tests fail in Guix's building envrionment.
+          ;; These tests fail in Guix's building environment.
           (lambda _
+            (substitute* "src/cadet/Makefile"
+              (("test_cadet_2_reopen\\$\\(EXEEXT\\) \\\\\n") "test_cadet_2_reopen$(EXEEXT)")
+              (("test_cadet_5_forward\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_signal\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_keepalive\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_speed\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_speed_ack\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_speed_reliable\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_speed_reliable_backwards\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_speed_backwards\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_cadet_5_reopen\\$\\(EXEEXT\\)") ""))
             (substitute* "src/transport/Makefile"
+              (("\\$\\(am__EXEEXT_15\\)") "") ; test_transport_api_https
+              (("test_transport_api_manipulation_cfg\\$\\(EXEEXT\\) \\\\\n") "")
               (("test_transport_api_udp_nat\\$\\(EXEEXT\\) \\\\\n") "")
-              (("test_transport_api_manipulation_cfg\\$\\(EXEEXT\\) \\\\\n") ""))
+              (("test_transport_blacklisting_multiple_plugins\\$\\(EXEEXT\\) \\\\\n") ""))
+            (substitute* "src/testbed/Makefile"
+              (("test_testbed_api_2peers_1controller\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_test\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_statistics\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_topology\\$\\(EXEEXT\\) \\\\\n") "")
+              (("test_testbed_api_topology_clique\\$\\(EXEEXT\\) \\\\\n") ""))
             (substitute* "src/topology/Makefile"
               (("^check_PROGRAMS.*") "\n")
               (("test_gnunet_daemon_topology\\$\\(EXEEXT\\)\n") ""))
@@ -308,6 +329,9 @@ supports HTTP, HTTPS and GnuTLS.")
                            "src/transport/gnunet-transport-certificate-creation.in")
               (("gnutls-certtool") "certtool"))
             #t))
+        (add-before 'check 'set-env-var-for-tests
+          (lambda _
+            (setenv "LANG" "en_US.UTF-8")))
         ;; Swap 'check and 'install phases and add installed binaries to $PATH.
         (add-before 'check 'set-path-for-check
           (lambda* (#:key outputs #:allow-other-keys)
@@ -364,14 +388,14 @@ services.")
 (define-public gnunet-gtk
   (package (inherit gnunet)
     (name "gnunet-gtk")
-    (version "0.11.7")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gnunet/gnunet-gtk-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "061ifhqk6q9kx71z5404fm4d60yj2dihlwwmdqmhkn5nn4bvcwb5"))))
+                "08a43ayv1rhajdklfcv78w2h76jfaz64kgp5krqgj1w1sq8xm6fb"))))
     (arguments
      `(#:configure-flags
        (list "--with-libunique"

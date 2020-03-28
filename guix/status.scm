@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -476,6 +476,14 @@ addition to build events."
                                     "applying ~a grafts for ~a..."
                                     count))
                      count drv)))
+         ('profile
+          (let ((count (match (assq-ref properties 'profile)
+                         (#f  0)
+                         (lst (or (assq-ref lst 'count) 0)))))
+            (format port (info (N_ "building profile with ~a package..."
+                                   "building profile with ~a packages..."
+                                   count))
+                    count)))
          ('profile-hook
           (let ((hook-type (assq-ref properties 'hook)))
             (or (and=> (hook-message hook-type)

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
@@ -59,7 +59,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.3")
+    (version "7.4.4")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -67,7 +67,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "0alqqs5hn4jmz1adrbysbw92n55nkw6f9vfivqj829kwhxnqa7yg"))
+                "0k57zj1z8kf8403rd72wymj08bswpa5ikcpzviw9mpykzp7c8wqq"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"

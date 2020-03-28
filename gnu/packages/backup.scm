@@ -59,6 +59,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -470,10 +471,26 @@ rsnapshot uses hard links to deduplicate identical files.")
               (sha256
                (base32
                 "0fpdyxww41ba52d98blvnf543xvirq1v9xz1i3x1gm9lzlzpmc2g"))
-              (patches (search-patches "diffutils-gets-undeclared.patch"))))
+              (patches (search-patches "diffutils-gets-undeclared.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Include all the libtirpc headers necessary to get the
+                  ;; definitions of 'u_int', etc.
+                  (substitute* '("src/block-server.c"
+                                 "include/chop/block-server.h"
+                                 "utils/chop-block-server.c")
+                    (("#include <rpc/(.*)\\.h>" _ header)
+                     (string-append "#include <rpc/types.h>\n"
+                                    "#include <rpc/rpc.h>\n"
+                                    "#include <rpc/" header ".h>\n")))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     '(;; Link against libtirpc.
+       #:configure-flags '("LDFLAGS=-ltirpc -Wl,--as-needed")
+
+       #:phases (modify-phases %standard-phases
                   (add-before 'configure 'adjust-configure-script
                     (lambda _
                       ;; Mimic upstream commit
@@ -483,6 +500,15 @@ rsnapshot uses hard links to deduplicate identical files.")
                          (string-append "GUILE=" middle
                                         "--variable bindir`/guile")))
                       #t))
+                  (add-before 'build 'set-libtirpc-include-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Allow <rpc/rpc.h> & co. to be found.
+                      (let ((libtirpc (assoc-ref inputs "libtirpc")))
+                        (setenv "CPATH"
+                                (string-append (getenv "CPATH")
+                                               ":" libtirpc
+                                               "/include/tirpc"))
+                        #t)))
                   (add-before 'check 'skip-test
                     (lambda _
                       ;; XXX: This test fails (1) because current GnuTLS no
@@ -493,10 +519,12 @@ rsnapshot uses hard links to deduplicate identical files.")
     (native-inputs
      `(("guile" ,guile-2.0)
        ("gperf" ,gperf-3.0)                  ;see <https://bugs.gnu.org/32382>
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("rpcsvc-proto" ,rpcsvc-proto)))           ;for 'rpcgen'
     (inputs
      `(("guile" ,guile-2.0)
        ("util-linux" ,util-linux)
+       ("libtirpc" ,libtirpc)
        ("gnutls" ,gnutls)
        ("tdb" ,tdb)
        ("bdb" ,bdb)

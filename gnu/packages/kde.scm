@@ -325,6 +325,37 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
 ;; kdevplatform was merged into kdevelop as of 5.2.x
 (define-deprecated kdevplatform kdevelop)
 
+(define-public kdiagram
+  (package
+    (name "kdiagram")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/kdiagram/" version
+                           "/kdiagram-" version ".tar.xz"))
+       (sha256
+        (base32 "1c6dbp9gssjrx59z8yxzq1ay56pnw7h28symjrv0gcvhxyjirrxx"))
+       (patches (search-patches
+                 "kdiagram-Fix-missing-link-libraries.patch"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://cgit.kde.org/kdiagram.git/")
+    (synopsis "Libraries for creating business diagrams")
+    (description "This package provides libraries for integrating business
+diagrams in Qt-based applications.
+
+@code{KCharts} provides an implementation of the ODF Chart specification.  It
+supports stock charts, box charts, and whisker charts.  @code{KGantt} provides
+a module for implementing ODF Gantt charts, which are bar charts that
+illustrate project schedules.")
+    (license license:gpl2+)))
+
 (define-public krita
   (package
     (name "krita")

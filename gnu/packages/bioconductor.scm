@@ -2649,6 +2649,8 @@ interactive exploration of results.")
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/RGLab/MAST/")
     (synopsis "Model-based analysis of single cell transcriptomics")
     (description
@@ -3393,20 +3395,22 @@ information about samples and features can be added to the plot.")
 (define-public r-gosemsim
   (package
     (name "r-gosemsim")
-    (version "2.12.0")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOSemSim" version))
        (sha256
         (base32
-         "0pqnlgdvh5szjhwc1mw1snjgpj9lrsnk44bn164cl3zwvdayccya"))))
+         "1r8yx6qw6d6602cp8aspzl3shi1l1zqcrc8fm9d5wg01sw1whs05"))))
     (properties `((upstream-name . "GOSemSim")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-go-db" ,r-go-db)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/GOSemSim")
     (synopsis "GO-terms semantic similarity measures")
     (description
@@ -5316,14 +5320,14 @@ coefficients).")
 (define-public r-biosigner
   (package
     (name "r-biosigner")
-    (version "1.14.0")
+    (version "1.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biosigner" version))
        (sha256
         (base32
-         "1kdfhw629qczrfms0jmphqz0ksjzi8js00xj92h1lnv092npfk0j"))))
+         "0hypk784xcax99mp673md6kvx45chk2nxbqniww7zm9q2hj983hl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -5332,10 +5336,7 @@ coefficients).")
        ("r-randomforest" ,r-randomforest)
        ("r-ropls" ,r-ropls)))
     (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("pandoc" ,ghc-pandoc)
-       ("pandoc-citeproc" ,ghc-pandoc-citeproc))) ; all for vignettes
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biosigner/")
     (synopsis "Signature discovery from omics data")
     (description
@@ -6630,7 +6631,8 @@ measures.")
        ("r-gplots" ,r-gplots)
        ("r-limma" ,r-limma)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
-    (home-page "http://www.ebi.ac.uk/bertone/software")
+    (home-page (string-append "https://www.ebi.ac.uk/sites/ebi.ac.uk/files/"
+                              "groups/bertone/software/HTqPCR.pdf"))
     (synopsis "Automated analysis of high-throughput qPCR data")
     (description
      "Analysis of Ct values from high throughput quantitative real-time
@@ -6997,14 +6999,14 @@ a file-backed matrix with factor properties.")
 (define-public r-bigpint
   (package
     (name "r-bigpint")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigPint" version))
        (sha256
         (base32
-         "10vs0lzfyxp6sm4r9pxfwipjvzmmaqnvwn1hc5q37s5qz44fg0hk"))))
+         "1zkakxi1iqavzmjxnkkd02qm5jk28ldcvcdcxaafz748dz6s67fs"))))
     (properties `((upstream-name . "bigPint")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7024,6 +7026,8 @@ a file-backed matrix with factor properties.")
        ("r-shinydashboard" ,r-shinydashboard)
        ("r-stringr" ,r-stringr)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/lindsayrutter/bigPint")
     (synopsis "Big multivariate data plotted interactively")
     (description
@@ -7298,14 +7302,14 @@ access.")
 (define-public r-multiassayexperiment
   (package
     (name "r-multiassayexperiment")
-    (version "1.12.4")
+    (version "1.12.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiAssayExperiment" version))
        (sha256
         (base32
-         "01cnp00y5bk551c8gqgqp5468dvccg72i0rvh5cxgbx1c42zy6xn"))))
+         "174vzlxsyayb5il77cb3zzgszxl3l0wkprc9w6pgz4yv5ix13adi"))))
     (properties
      `((upstream-name . "MultiAssayExperiment")))
     (build-system r-build-system)
@@ -7317,6 +7321,8 @@ access.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://waldronlab.io/MultiAssayExperiment/")
     (synopsis "Integration of multi-omics experiments in Bioconductor")
     (description
@@ -7401,18 +7407,19 @@ gene selection, testing relationships, and so on.")
 (define-public r-biocpkgtools
   (package
     (name "r-biocpkgtools")
-    (version "1.4.0")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocPkgTools" version))
        (sha256
         (base32
-         "0gyhb3071pxmvaxla7cxy9k97s3z3ynl62jnqz9jnkd53c7jnd53"))))
+         "0grwnmncmpqcplbfw3j210m1a8f7mmdizklh4zksg4ic21dpjj1a"))))
     (properties `((upstream-name . "BiocPkgTools")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-biocmanager" ,r-biocmanager)
+     `(("r-biocfilecache" ,r-biocfilecache)
+       ("r-biocmanager" ,r-biocmanager)
        ("r-biocviews" ,r-biocviews)
        ("r-dplyr" ,r-dplyr)
        ("r-dt" ,r-dt)
@@ -7424,14 +7431,19 @@ gene selection, testing relationships, and so on.")
        ("r-igraph" ,r-igraph)
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
+       ("r-rappdirs" ,r-rappdirs)
        ("r-rbgl" ,r-rbgl)
        ("r-readr" ,r-readr)
        ("r-rex" ,r-rex)
+       ("r-rlang" ,r-rlang)
        ("r-rvest" ,r-rvest)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/seandavi/BiocPkgTools")
     (synopsis "Collection of tools for learning about Bioconductor packages")
     (description
