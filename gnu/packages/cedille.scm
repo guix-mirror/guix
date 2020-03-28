@@ -51,15 +51,19 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-cedille-path-el
+         (add-after 'unpack 'patch-cedille-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* "cedille-mode.el"
                  (("/usr/share/emacs/site-lisp/cedille-mode")
                   (string-append
                    out "/share/emacs/site-lisp/cedille")))
+               (substitute* "cedille-mode/cedille-mode-info.el"
+                 (("\\(concat cedille-path-el \"cedille-info-main.info\"\\)")
+                  (string-append
+                   "\"" out "/share/info/cedille-info-main.info.gz\"")))
                #t)))
-         (add-after 'unpack 'copy-cedille-mode
+         (add-after 'patch-cedille-paths 'copy-cedille-mode
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (lisp
@@ -107,6 +111,8 @@
                (install-file "cedille" (string-append out "/bin"))
                (install-file "core/cedille-core"
                              (string-append out "/bin"))
+               (install-file "docs/info/cedille-info-main.info"
+                             (string-append out "/share/info"))
                #t))))))
     (home-page "https://cedille.github.io/")
     (synopsis
