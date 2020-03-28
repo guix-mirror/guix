@@ -24,6 +24,7 @@
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3241,3 +3242,45 @@ according to Bitorrent BEP003.")
 Relay Chat} (IRC).")
       ;; Some file headers incorrectly say LGPLv2+.
       (license license:lgpl2.1+))))
+
+(define-public guile3.0-websocket
+  (let ((commit "c854e0f84a40d972cbd532bbb89c97ca0126a7cf"))
+    (package
+      (name "guile3.0-websocket")
+      (version "0.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://dthompson.us/guile-websocket.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1hymvsfrmq9qxr5cxnsgdz7y757yp1cpsgxmdp3f5wxxxpqgsmzx"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0")
+         #:phases
+         (modify-phases %standard-phases
+           ;; The package was developed for Guile 2.0 and has this version
+           ;; hardcoded in the configure.ac and Makefile.am files. Substitute
+           ;; 3.0 instead so it can support Guile 3.0.
+           (add-after 'unpack 'update-guile-version
+             (lambda _
+               (substitute* "configure.ac"
+                 (("2.0.9") "3.0.0"))
+               (substitute* "Makefile.am"
+                 (("2.0") "3.0"))
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("guile" ,guile-next)))
+      (synopsis "Websocket server/client for Guile")
+      (description "Guile-websocket provides an implementation of the
+WebSocket protocol as defined by RFC 6455.")
+      (home-page "https://git.dthompson.us/guile-websocket.git")
+      (license license:lgpl3+))))
