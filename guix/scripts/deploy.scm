@@ -102,7 +102,7 @@ Perform the deployment specified by FILE.\n"))
   "Show the list of machines to deploy, MACHINES."
   (let ((count (length machines)))
     (format (current-error-port)
-            (N_ "The following ~*machine will be deployed:~%"
+            (N_ "The following ~d machine will be deployed:~%"
                 "The following ~d machines will be deployed:~%"
                 count)
             count)
