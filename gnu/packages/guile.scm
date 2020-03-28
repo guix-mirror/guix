@@ -371,8 +371,8 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 
 (define package-for-guile-2.0
   ;; A procedure that rewrites the dependency tree of the given package to use
-  ;; GUILE-2.0 instead of GUILE-2.2.
-  (package-input-rewriting `((,guile-2.2 . ,guile-2.0))
+  ;; GUILE-2.0 instead of GUILE-3.0.
+  (package-input-rewriting `((,guile-3.0 . ,guile-2.0))
                            (guile-variant-package-name "guile2.0")))
 
 (define package-for-guile-2.2
