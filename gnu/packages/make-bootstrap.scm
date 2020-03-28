@@ -464,54 +464,54 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
      (name "gcc-static")
      (outputs '("out"))                           ; all in one
      (arguments
-      `(#:modules ((guix build utils)
-                   (guix build gnu-build-system)
-                   (srfi srfi-1)
-                   (srfi srfi-26)
-                   (ice-9 regex))
-        ,@(substitute-keyword-arguments (package-arguments gcc-5)
-            ((#:guile _) #f)
-            ((#:implicit-inputs? _) #t)
-            ((#:configure-flags flags)
-             `(append (list
-                       ;; We don't need a full bootstrap here.
-                       "--disable-bootstrap"
+      (substitute-keyword-arguments (package-arguments gcc-5)
+        ((#:modules modules %gnu-build-system-modules)
+         `((srfi srfi-1)
+           (srfi srfi-26)
+           (ice-9 regex)
+           ,@modules))
+        ((#:guile _) #f)
+        ((#:implicit-inputs? _) #t)
+        ((#:configure-flags flags)
+         `(append (list
+                   ;; We don't need a full bootstrap here.
+                   "--disable-bootstrap"
 
-                       ;; Make sure '-static' is passed where it matters.
-                       "--with-stage1-ldflags=-static"
+                   ;; Make sure '-static' is passed where it matters.
+                   "--with-stage1-ldflags=-static"
 
-                       ;; GCC 4.8+ requires a C++ compiler and library.
-                       "--enable-languages=c,c++"
+                   ;; GCC 4.8+ requires a C++ compiler and library.
+                   "--enable-languages=c,c++"
 
-                       ;; Make sure gcc-nm doesn't require liblto_plugin.so.
-                       "--disable-lto"
+                   ;; Make sure gcc-nm doesn't require liblto_plugin.so.
+                   "--disable-lto"
 
-                       "--disable-shared"
-                       "--disable-plugin"
-                       "--disable-libmudflap"
-                       "--disable-libatomic"
-                       "--disable-libsanitizer"
-                       "--disable-libitm"
-                       "--disable-libgomp"
-                       "--disable-libcilkrts"
-                       "--disable-libvtv"
-                       "--disable-libssp"
-                       "--disable-libquadmath")
-                      (remove (cut string-match "--(.*plugin|enable-languages)" <>)
-                              ,flags)))
-            ((#:phases phases)
-             `(modify-phases ,phases
-                (add-after 'pre-configure 'remove-lgcc_s
-                  (lambda _
-                    ;; Remove the '-lgcc_s' added to GNU_USER_TARGET_LIB_SPEC in
-                    ;; the 'pre-configure phase of our main gcc package, because
-                    ;; that shared library is not present in this static gcc.  See
-                    ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
-                    (substitute* (cons "gcc/config/rs6000/sysv4.h"
-                                       (find-files "gcc/config"
-                                                   "^gnu-user.*\\.h$"))
-                      ((" -lgcc_s}}") "}}"))
-                    #t)))))))
+                   "--disable-shared"
+                   "--disable-plugin"
+                   "--disable-libmudflap"
+                   "--disable-libatomic"
+                   "--disable-libsanitizer"
+                   "--disable-libitm"
+                   "--disable-libgomp"
+                   "--disable-libcilkrts"
+                   "--disable-libvtv"
+                   "--disable-libssp"
+                   "--disable-libquadmath")
+                  (remove (cut string-match "--(.*plugin|enable-languages)" <>)
+                          ,flags)))
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-after 'pre-configure 'remove-lgcc_s
+              (lambda _
+                ;; Remove the '-lgcc_s' added to GNU_USER_TARGET_LIB_SPEC in
+                ;; the 'pre-configure phase of our main gcc package, because
+                ;; that shared library is not present in this static gcc.  See
+                ;; <https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00008.html>.
+                (substitute* (cons "gcc/config/rs6000/sysv4.h"
+                                   (find-files "gcc/config"
+                                               "^gnu-user.*\\.h$"))
+                  ((" -lgcc_s}}") "}}"))
+                #t))))))
      (inputs
       `(("zlib:static" ,zlib "static")
         ("isl:static" ,isl-0.18 "static")
