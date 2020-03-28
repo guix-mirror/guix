@@ -19,7 +19,7 @@
 ;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
-;;; Copyright © 2019 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
