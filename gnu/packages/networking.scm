@@ -32,7 +32,7 @@
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
@@ -2790,7 +2790,7 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.5.0.191126")
+    (version "1.5.0.200327")
     (source
      (origin
        (method git-fetch)
@@ -2799,7 +2799,7 @@ module @code{batman-adv}, for Layer 2.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0mncfjfrr13sm84g5z49qxg5cy791h5qxphjsl77x91zs3m36c8l"))))
+        (base32 "1vw7kjwxqd3qvm7kpxgjzl6797y0i1f16yfkfad84qpx2ij0gvdm"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
