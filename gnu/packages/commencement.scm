@@ -2466,7 +2466,7 @@ exec " gcc "/bin/" program
     ("gcc" ,gcc-mesboot)
     ,@(fold alist-delete (%boot-mesboot4-inputs) '("gcc" "gcc-wrapper"))))
 
-(define-public coreutils-mesboot
+(define coreutils-mesboot
   (package
     (inherit coreutils)
     (name "coreutils-mesboot")
