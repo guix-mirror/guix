@@ -1860,6 +1860,8 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
                   (srfi srfi-26))
+       ;; gtk-2/3 variants are both installed by default but the gtk3 variant
+       ;; is broken without perl-gtk3.
        #:module-build-flags '("--gtk2")
        #:phases
        (modify-phases %standard-phases
