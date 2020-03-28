@@ -24,6 +24,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages hurd))
@@ -83,6 +84,14 @@ C or C++ programs, though that is not its primary goal.")
    (home-page "https://www.hboehm.info/gc/")
 
    (license (x11-style (string-append home-page "license.txt")))))
+
+;; TODO: Add a static output in libgc in the next rebuild cycle.
+(define-public libgc/static-libs
+  (package/inherit
+   libgc
+   (arguments (substitute-keyword-arguments (package-arguments libgc)
+                ((#:configure-flags flags ''())
+                 `(cons "--enable-static" ,flags))))))
 
 (define-public libgc-7
   (package

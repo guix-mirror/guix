@@ -699,7 +699,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                      ,@(package-inputs guile-2.2)))
 
                   (propagated-inputs
-                   `(("bdw-gc" ,libgc)
+                   `(("bdw-gc" ,libgc/static-libs)
                      ,@(alist-delete "bdw-gc"
                                      (package-propagated-inputs guile-2.0))))
                   (arguments
