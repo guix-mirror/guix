@@ -5348,7 +5348,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -5356,7 +5356,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
              (url "https://github.com/haikarainen/light.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
+        (base32 "1a70zcf88ifsnwll486aicjnh48zisdf8f7vi34ihw61kdadsq9s"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
