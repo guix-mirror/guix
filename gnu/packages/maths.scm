@@ -3125,7 +3125,7 @@ directly in C++, or quick conversion of research code into production
 environments.  It can be used for machine learning, pattern recognition,
 signal processing, bioinformatics, statistics, econometrics, etc.  The library
 provides efficient classes for vectors, matrices and cubes, as well as 150+
-associated functions (eg. contiguous and non-contiguous submatrix views).")
+associated functions (e.g., contiguous and non-contiguous submatrix views).")
     (license license:asl2.0)))
 
 (define-public muparser
