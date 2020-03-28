@@ -21652,9 +21652,11 @@ supports generation of phonetic and numeric passwords.")
          "1vmazjrfcsa9aa9aw8bq5sazdhqvhxyj837dyw5lmh8gk7z0xdaa"))))
     (build-system emacs-build-system)
     (synopsis "Elisp functions for reading and parsing CSV files")
-    (description "@code{csv.el} provides functions for reading and parsing CSV (Comma
-Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
-Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
+    (description
+     "@code{csv.el} provides functions for reading and parsing @acronym{CSV,
+Comma-Separated Values} files.  It follows the format as defined in RFC 4180
+@emph{Common Format and MIME Type for CSV
+Files} (@url{http://tools.ietf.org/html/rfc4180}).")
     (license license:gpl3+)))
 
 (define-public emacs-org-journal
