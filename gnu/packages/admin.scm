@@ -77,6 +77,7 @@
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages imagemagick)
@@ -2474,7 +2475,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.29")
+    (version "3.30")
     (source
      (origin
        (method git-fetch)
@@ -2483,7 +2484,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qhxwjjgrzpqrqjv7l2847ywpln76lyd6j8bl9gz2r6kl0fx2fqs"))
+        (base32 "0fnf78956pwhb9cgv1jmgypnkma5xzflkivfrkfiadbgin848yfg"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2505,7 +2506,8 @@ throughput (in the same interval).")
        ("python-pyte" ,python-pyte)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("go" ,go)
+       ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/nvbn/thefuck")
