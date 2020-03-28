@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
+;;; Copyright © 2020 Danjela Lura <danielaluraa@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,31 @@
      "This package provides simple utility functions to read from and write to
 the system clipboards.")
     (license license:gpl3)))
+
+(define-public r-oenb
+  (package
+    (name "r-oenb")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "oenb" version))
+       (sha256
+        (base32
+         "1x1jlqp6r27c4gb7wafzpmh5rq6yq61a2d395r5lsmv2g5jb4biz"))))
+    (properties `((upstream-name . "oenb")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-xml" ,r-xml)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/franzmohr/oenb")
+    (synopsis "Tools for the OeNB Data Web Service")
+    (description
+     "Tools to access data from the data web service of the
+@acronym{OeNB, Oesterreichische Nationalbank},
+@url{https://www.oenb.at/en/Statistics/User-Defined-Tables/webservice.html}.")
+    (license license:gpl2+)))
 
 (define-public r-scales
   (package
