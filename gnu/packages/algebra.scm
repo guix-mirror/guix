@@ -432,9 +432,6 @@ maple, mupad and the TI89.  It is available as a standalone program (graphic
 or text interfaces) or as a C++ library.")
     (license license:gpl3+)))
 
-(define-public giac-xcas
-  (deprecated-package "giac-xcas" giac))
-
 (define-public flint
   (package
    (name "flint")

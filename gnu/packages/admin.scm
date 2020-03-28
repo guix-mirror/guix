@@ -2880,9 +2880,6 @@ Intel DRM Driver.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
 
-(define-public intel-gpu-tools
-  (deprecated-package "intel-gpu-tools" igt-gpu-tools))
-
 (define-public fabric
   (package
     (name "fabric")
