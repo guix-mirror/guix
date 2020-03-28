@@ -395,12 +395,11 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
       (license license:gpl3+))))
 
 (define-public emacs-magit
-  ;; `magit-setup-buffer' macro introduced in c761d28d and required in
-  ;; `emacs-forge'.
-  (let ((commit "c761d28d49e5238037512b898db0ec9b40d85770"))
+  ;; There hasn't been an official release since 2018-11-16.
+  (let ((commit "d05545ec2fd7edf915eaf1b9c15c785bb08975cc"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "3" commit))
+      (version (git-version "2.90.1" "4" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -409,93 +408,76 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "16qx0404l05q1m6w7y5j8ck1z5nfmpinm00w0p2yh1hn5zzwy6dd"))
-                ;; FIXME: emacs-forge uses a function defined in this patch,
-                ;; which is newer than the current commit.
-                (patches
-                 (search-patches
-                  "emacs-magit-log-format-author-margin.patch"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    ;; Fix syntax error
-                    (substitute* "lisp/magit-extras.el"
-                      (("rev\\)\\)\\)\\)\\)\\)") "rev)))))"))
-                    #t))))
-      (build-system gnu-build-system)
-      (native-inputs `(("texinfo" ,texinfo)
-                       ("emacs" ,emacs-minimal)))
+                  "11aqyy4r9hrdi9nlypd70hn8384b6q89c7xavgv8c5q7f2g5z9qg"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:emacs ,emacs-no-x            ;module support is required
+         #:tests? #t
+         #:test-command '("make" "test")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'build-info-manual
+             (lambda _
+               (invoke "make" "info")
+               ;; Copy info files to the lisp directory, which acts as
+               ;; the root of the project for the emacs-build-system.
+               (for-each (lambda (f)
+                           (install-file f "lisp"))
+                         (find-files "Documentation" "\\.info$"))
+               (chdir "lisp")
+               #t))
+           (add-after 'build-info-manual 'set-magit-version
+             (lambda _
+               (make-file-writable "magit.el")
+               (emacs-substitute-variables "magit.el"
+                 ("magit-version" ,version))
+               #t))
+           (add-after 'set-magit-version 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((perl (assoc-ref inputs "perl")))
+                 (make-file-writable "magit-sequence.el")
+                 (emacs-substitute-variables "magit-sequence.el"
+                   ("magit-perl-executable" (string-append perl "/bin/perl")))
+                 #t)))
+           (add-before 'check 'configure-git
+             (lambda _
+               ;; Otherwise some tests fail with error "unable to auto-detect
+               ;; email address".
+               (setenv "HOME" (getcwd))
+               (invoke "git" "config" "--global" "user.name" "toto")
+               (invoke "git" "config" "--global" "user.email"
+                       "toto@toto.com")))
+           (add-after 'configure-git 'disable-tramp-test
+             (lambda _
+               ;; There is an issue causing TRAMP to fail in the build
+               ;; environment.  Setting the tramp-remote-shell parameter of
+               ;; the sudo-method to the file name of the shell didn't help.
+               (chdir "..")
+               (substitute* "t/magit-tests.el"
+                 (("^\\(ert-deftest magit-toplevel:tramp.*" all)
+                  (string-append all "  (skip-unless nil)")))
+               #t))
+           (add-before 'install 'enter-lisp-directory
+             (lambda _
+               (chdir "lisp")
+               #t)))))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
       (inputs
        `(("git" ,git)
          ("perl" ,perl)))
       (propagated-inputs
-       `(("dash" ,emacs-dash)
-         ("with-editor" ,emacs-with-editor)
-         ("transient" ,emacs-transient)))
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:test-target "test"
-         #:tests? #f                   ; tests are not included in the release
-         #:make-flags
-         (list (string-append "PREFIX=" %output)
-               ;; Don't put .el files in a sub-directory.
-               (string-append "lispdir=" %output "/share/emacs/site-lisp"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch
-             (lambda _
-               (chmod "lisp/magit-extras.el" #o644)
-               (emacs-batch-edit-file "lisp/magit-extras.el"
-                 `(progn (progn
-                          (goto-char (point-min))
-                          (re-search-forward "(defun magit-copy-buffer-revision ()")
-                          (forward-sexp 2)
-                          (kill-sexp)
-                          (insert ,(format #f "~S"
-                                           '(if (use-region-p)
-                                                (copy-region-as-kill nil nil 'region)
-                                                (when-let ((rev (cl-case major-mode
-                                                                         ((magit-cherry-mode
-                                                                           magit-log-select-mode
-                                                                           magit-reflog-mode
-                                                                           magit-refs-mode
-                                                                           magit-revision-mode
-                                                                           magit-stash-mode
-                                                                           magit-stashes-mode)
-                                                                          (car magit-refresh-args))
-                                                                         ((magit-diff-mode magit-log-mode)
-                                                                          (let ((r (caar magit-refresh-args)))
-                                                                            (if (string-match "\\.\\.\\.?\\(.+\\)" r)
-                                                                                (match-string 1 r)
-                                                                                r)))
-                                                                         (magit-status-mode "HEAD"))))
-                                                          (when (magit-commit-p rev)
-                                                            (setq rev (magit-rev-parse rev))
-                                                            (push (list rev default-directory) magit-revision-stack)
-                                                            (kill-new (message "%s" rev))))))))
-                         (basic-save-buffer)))
-               #t))
-           (delete 'configure)
-           (add-before
-               'build 'patch-exec-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((perl (assoc-ref inputs "perl")))
-                 (make-file-writable "lisp/magit-sequence.el")
-                 (emacs-substitute-variables "lisp/magit-sequence.el"
-                   ("magit-perl-executable" (string-append perl "/bin/perl")))
-                 #t))))))
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-libgit" ,emacs-libgit)
+         ("emacs-transient" ,emacs-transient)
+         ("emacs-with-editor" ,emacs-with-editor)))
       (home-page "https://magit.vc/")
       (synopsis "Emacs interface for the Git version control system")
-      (description
-       "With Magit, you can inspect and modify your Git repositories with Emacs.
-You can review and commit the changes you have made to the tracked files, for
-example, and you can browse the history of past changes.  There is support for
-cherry picking, reverting, merging, rebasing, and other common Git
-operations.")
+      (description "With Magit, you can inspect and modify your Git
+repositories with Emacs.  You can review and commit the changes you have made
+to the tracked files, for example, and you can browse the history of past
+changes.  There is support for cherry picking, reverting, merging, rebasing,
+and other common Git operations.")
       (license license:gpl3+))))
 
 (define-public emacs-magit-svn
