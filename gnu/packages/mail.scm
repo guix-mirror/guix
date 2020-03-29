@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -1263,6 +1263,10 @@ which can add many functionalities to the base client.")
                (install-file (string-append msmtpq "/msmtp-queue") bin)
                (install-file (string-append msmtpq "/README.msmtpq") doc)
                (install-file "scripts/vim/msmtp.vim" vimfiles)
+               ;; Don't rely on netcat being in the PATH to test for a
+               ;; connection, instead try tp ing debian.org.
+               (substitute* (string-append bin "/msmtpq")
+                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
                #t))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
