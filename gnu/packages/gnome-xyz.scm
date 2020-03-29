@@ -483,7 +483,10 @@ notebooks and tiling window managers.")
                 "12mw0kr0kkvg395qlbsvkvaqccr90cmxw5rrsl236zh43kj8grb7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+     '(#:make-flags
+       (list (string-append "INSTALL_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/themes/Numix"))
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
