@@ -1690,6 +1690,6 @@ non-Haskell dependencies.")
      "High level web scraping library for Haskell")
     (description
      "Scalpel is a web scraping library inspired by libraries like Parsec
-and Perl's @code{Web::Scraper} Scalpel builds on top of TagSoup to provide a
+and Perl's @code{Web::Scraper}.  Scalpel builds on top of TagSoup to provide a
 declarative and monadic interface.")
     (license license:asl2.0)))
