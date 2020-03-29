@@ -4210,6 +4210,10 @@ as equations, scalars, vectors, and matrices.")
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'enable-bytecode-determinism
+           (lambda _
+             (setenv "PYTHONHASHSEED" "0")
+             #t))
          (add-after 'unpack 'fix-compatability
            ;; Versions after 4.8.3 have immintrin.h IFDEFed for Windows only.
            (lambda _
