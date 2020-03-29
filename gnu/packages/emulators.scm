@@ -511,7 +511,8 @@ and Game Boy Color games.")
                (with-directory-excursion "build/bin/SDL"
                  (install-file "sameboy" bin)
                  (delete-file "sameboy")
-                 (copy-recursively "." data))))))))
+                 (copy-recursively "." data))
+               #t))))))
     (home-page "https://sameboy.github.io/")
     (synopsis "Accurate Game Boy, Game Boy Color and Super Game Boy emulator")
     (description "SameBoy is a user friendly Game Boy, Game Boy Color
