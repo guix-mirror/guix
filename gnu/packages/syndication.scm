@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -130,3 +130,42 @@ file system, and many more features.")
      "RTV provides a text-based interface to view and interact with Reddit.")
     (license (list license:expat
                    license:gpl3+)))) ; rtv/packages/praw
+
+(define-public tuir
+  (package
+    (name "tuir")
+    (version "1.28.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "tuir" version))
+        (sha256
+         (base32
+          "1gpyjrl7jdfjq30m32nzh59ajv91gq19l93jjri2wsv5yrf90hdr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest"))))))
+    (inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-decorator" ,python-decorator)
+       ("python-kitchen" ,python-kitchen)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-coveralls" ,python-coveralls)
+       ("python-mock" ,python-mock)
+       ("python-pylint" ,python-pylint)
+       ("python-pytest" ,python-pytest)
+       ("python-vcrpy" ,python-vcrpy)))
+    (home-page "https://gitlab.com/ajak/tuir")
+    (synopsis "Terminal viewer for Reddit (Terminal UI for Reddit)")
+    (description
+     "Tuir provides a simple terminal viewer for Reddit (Terminal UI for Reddit).")
+    (license (list license:expat
+                   license:gpl3+))))    ; tuir/packages/praw
