@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
