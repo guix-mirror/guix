@@ -2373,7 +2373,7 @@ different kinds of sliders, and much more.")
 (define-public qtwebkit
   (package
     (name "qtwebkit")
-    (version "5.212.0-alpha3")
+    (version "5.212.0-alpha4")
     (source
       (origin
         (method url-fetch)
@@ -2381,12 +2381,12 @@ different kinds of sliders, and much more.")
                             "qtwebkit-" version "/qtwebkit-" version ".tar.xz"))
         (sha256
          (base32
-          "05syvwi3jw9abwsc93rmjkna0vyh6bkfrsqhwir48ms54icfwzim"))
+          "1rm9sjkabxna67dl7myx9d9vpdyfxfdhrk9w7b94srkkjbd2d8cw"))
         (patches (search-patches "qtwebkit-pbutils-include.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
-       ("python" ,python-2.7)
+       ("python" ,python)
        ("ruby" ,ruby)
        ("bison" ,bison)
        ("flex" ,flex)
