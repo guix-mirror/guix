@@ -559,7 +559,7 @@ fonts.")
 (define-public font-rachana
   (package
     (name "font-rachana")
-    (version "7.0")
+    (version "7.0.3")
     (source
      (origin
        (method url-fetch)
@@ -568,8 +568,7 @@ fonts.")
              version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0jc091gshna6p1dd6lf507jxkgk6rsja835fc9dm71mcplq53bm1"))))
+        (base32 "17w7n2dxl0a98wrgfmdx5sars4dd3dy5krrz57fv28867zcij8ac"))))
     (build-system font-build-system)
     (home-page "https://smc.org.in")
     (synopsis "Malayalam font")
