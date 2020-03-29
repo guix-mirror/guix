@@ -3381,13 +3381,16 @@ for Flow files.")
      `(#:include '("\\.(el|py)$")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-python
-           ;; Hardcode python3 executable in the Emacs library.
+         (add-after 'unpack 'set-external-executables
+           ;; Hardcode python3 and curl executables in the Emacs library.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
-                                           "/bin/python3")))
+                                           "/bin/python3"))
+                   (curl (string-append (assoc-ref inputs "curl")
+                                        "/bin/curl")))
                (substitute* "flycheck-grammalecte.el"
-                 (("python3") python3))
+                 (("\"python3?") (string-append "\"" python3))
+                 (("\"curl") (string-append "\"" curl)))
                #t)))
          (add-after 'install 'link-to-grammalecte
            ;; The package expects grammalecte to be in a sub-directory.
@@ -3404,7 +3407,8 @@ for Flow files.")
                           "grammalecte"))
                #t))))))
     (inputs
-     `(("grammalecte" ,grammalecte)
+     `(("curl" ,curl)
+       ("grammalecte" ,grammalecte)
        ("python" ,python)))
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)))
