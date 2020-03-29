@@ -1029,39 +1029,39 @@ information in exceptions."
                        #:key (graft? (%graft?)))
   "Compile PACKAGE into a bag for SYSTEM, possibly cross-compiled to TARGET,
 and return it."
-  (cached (=> %bag-cache)
-          package (list system target graft?)
-          ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked
-          ;; field values can refer to it.
-          (parameterize ((%current-system system)
-                         (%current-target-system target))
-            (match (if graft?
-                       (or (package-replacement package) package)
-                       package)
-              ((and self
-                    ($ <package> name version source build-system
-                                 args inputs propagated-inputs native-inputs
-                                 outputs))
-               ;; Even though we prefer to use "@" to separate the package
-               ;; name from the package version in various user-facing parts
-               ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
-               ;; prohibits the use of "@", so use "-" instead.
-               (or (make-bag build-system (string-append name "-" version)
-                             #:system system
-                             #:target target
-                             #:source source
-                             #:inputs (append (inputs self)
-                                              (propagated-inputs self))
-                             #:outputs outputs
-                             #:native-inputs (native-inputs self)
-                             #:arguments (args self))
-                   (raise (if target
-                              (condition
-                               (&package-cross-build-system-error
-                                (package package)))
-                              (condition
-                               (&package-error
-                                (package package)))))))))))
+  (let ((package (or (and graft? (package-replacement package))
+                     package)))
+    (cached (=> %bag-cache)
+            package (list system target)
+            ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked
+            ;; field values can refer to it.
+            (parameterize ((%current-system system)
+                           (%current-target-system target))
+              (match package
+                ((and self
+                      ($ <package> name version source build-system
+                                   args inputs propagated-inputs native-inputs
+                                   outputs))
+                 ;; Even though we prefer to use "@" to separate the package
+                 ;; name from the package version in various user-facing parts
+                 ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
+                 ;; prohibits the use of "@", so use "-" instead.
+                 (or (make-bag build-system (string-append name "-" version)
+                               #:system system
+                               #:target target
+                               #:source source
+                               #:inputs (append (inputs self)
+                                                (propagated-inputs self))
+                               #:outputs outputs
+                               #:native-inputs (native-inputs self)
+                               #:arguments (args self))
+                     (raise (if target
+                                (condition
+                                 (&package-cross-build-system-error
+                                  (package package)))
+                                (condition
+                                 (&package-error
+                                  (package package))))))))))))
 
 (define %graft-cache
   ;; 'eq?' cache mapping package objects to a graft corresponding to their
