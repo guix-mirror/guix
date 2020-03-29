@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,7 +173,7 @@ set auto-load safe-path /gnu/store/*/lib\n")))
       ;; after ~/.zshrc.  To avoid interfering with any customizations a user
       ;; may have made in their ~/.zshrc, put this in .zprofile, not .zlogin.
       (".zprofile" ,zprofile)
-      (".nanorc" ,(plain-file "nanorc" "\
+      (".config/nano/nanorc" ,(plain-file "nanorc" "\
 # Include all the syntax highlighting modules.
 include /run/current-system/profile/share/nano/*.nanorc\n"))
       (".Xdefaults" ,xdefaults)
