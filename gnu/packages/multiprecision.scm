@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -50,18 +50,38 @@
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
-   (arguments `(#:parallel-tests? #f ; mpz/reuse fails otherwise
-                #:configure-flags
-                '(;; Build a "fat binary", with routines for several
-                  ;; sub-architectures.
-                  "--enable-fat"
-                  "--enable-cxx"
-                  ,@(cond ((target-mingw?)
-                           ;; Static and shared cannot be built in one go:
-                           ;; they produce different headers.  We need shared.
-                           `("--disable-static"
-                             "--enable-shared"))
-                          (else '())))))
+   (arguments
+    `(#:parallel-tests? #f ; mpz/reuse fails otherwise
+      #:configure-flags
+      '(;; Build a "fat binary", with routines for several
+        ;; sub-architectures.
+        "--enable-fat"
+        "--enable-cxx"
+        ,@(cond ((target-mingw?)
+                 ;; Static and shared cannot be built in one go:
+                 ;; they produce different headers.  We need shared.
+                 `("--disable-static"
+                   "--enable-shared"))
+                (else '())))
+      ;; Remove after core-updates merge.
+      ;; Workaround for gcc-7 transition breakage, -system and cross-build,
+      ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
+      ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
+      ,@(if (target-mingw?)
+            `(#:phases
+              (modify-phases %standard-phases
+                (add-before 'configure 'setenv
+                  (lambda _
+                    (let ((gcc (assoc-ref %build-inputs "cross-gcc"))
+                          (libc (assoc-ref %build-inputs "cross-libc")))
+                      (setenv "CROSS_CPLUS_INCLUDE_PATH"
+                              (string-append gcc "/include/c++"
+                                             ":" gcc "/include"
+                                             ":" libc "/include"))
+                      (format #t "environment variable `CROSS_CPLUS_INCLUDE_PATH' set to `~a'\n"
+                              (getenv "CROSS_CPLUS_INCLUDE_PATH"))
+                      #t)))))
+            '())))
    (synopsis "Multiple-precision arithmetic library")
    (description
     "The @acronym{GMP, the GNU Multiple Precision Arithmetic} library performs
