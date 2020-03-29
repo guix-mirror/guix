@@ -290,8 +290,8 @@ Includes the actual FTDI connector.")
                                             "/share/icebox"))
         #:tests? #f))
     (synopsis "Place-and-Route tool for FPGAs")
-    (description "nextpnr aims to be a vendor neutral, timing driven,
-FOSS FPGA place and route tool.  ")
+    (description "Nextpnr aims to be a vendor neutral, timing driven,
+FOSS FPGA place and route tool.")
     (home-page "https://github.com/YosysHQ/nextpnr")
     (license license:expat))))
 
