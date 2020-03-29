@@ -2867,7 +2867,7 @@ buffers.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
+    (home-page "https://gitlab.freedesktop.org/drm/igt-gpu-tools")
     (synopsis "Tools for development and testing of the Intel DRM driver")
     (description "IGT GPU Tools is a collection of tools for development and
 testing of the Intel DRM driver.  There are many macro-level test suites that
