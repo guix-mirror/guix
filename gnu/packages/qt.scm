@@ -352,6 +352,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "0pb68d30clksdhgy8n6rrs838bb3qcsfq4pv463yy2nr4p5kk2di"))
              ;; Use TZDIR to avoid depending on package "tzdata".
              (patches (search-patches "qtbase-use-TZDIR.patch"
+                                      "qtbase-moc-ignore-gcc-macro.patch"
                                       "qtbase-QTBUG-81715.patch"))
              (modules '((guix build utils)))
              (snippet
