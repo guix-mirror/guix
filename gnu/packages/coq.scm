@@ -132,15 +132,17 @@ It is developed using Objective Caml and Camlp5.")
 (define-public proof-general
   (package
     (name "proof-general")
-    (version "4.2")
+    (version "4.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://proofgeneral.inf.ed.ac.uk/releases/"
-                    "ProofGeneral-" version ".tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append
+                          "https://github.com/ProofGeneral/PG"))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09qb0myq66fw17v4ziz401ilsb5xlxz1nl2wsp69d0vrfy0bcrrm"))))
+                "0bdfk91wf71z80mdfnl8hpinripndcjgdkz854zil6521r84nqk8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
@@ -175,10 +177,6 @@ It is developed using Objective Caml and Camlp5.")
                             (emacs (assoc-ref inputs "host-emacs")))
                         (define (coq-prog name)
                           (string-append coq "/bin/" name))
-                        (emacs-substitute-variables "coq/coq.el"
-                          ("coq-prog-name"           (coq-prog "coqtop"))
-                          ("coq-compiler"            (coq-prog "coqc"))
-                          ("coq-dependency-analyzer" (coq-prog "coqdep")))
                         (substitute* "Makefile"
                           (("/sbin/install-info") "install-info"))
                         (substitute* "bin/proofgeneral"
