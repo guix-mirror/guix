@@ -2192,10 +2192,6 @@ format is also supported.")
     (name "guile3.0-mcron")
     (inputs `(("guile" ,guile-3.0)))))
 
-(define-public mcron2
-  ;; This was mthl's mcron development branch, and it became mcron 1.1.
-  (deprecated-package "mcron2" mcron))
-
 (define-public guile-picture-language
   (let ((commit "91d10c96708d732145006dd2802acc4de08b632e")
         (revision "1"))

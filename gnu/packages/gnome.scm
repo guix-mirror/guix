@@ -8156,10 +8156,6 @@ alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
 
-;; This package has been renamed by upstream.
-(define-public gnome-tweak-tool
-  (deprecated-package "gnome-tweak-tool" gnome-tweaks))
-
 (define-public gnome-shell-extensions
   (package
     (name "gnome-shell-extensions")

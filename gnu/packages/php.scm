@@ -341,6 +341,3 @@ systems, web content management systems and web frameworks." )
               license:lgpl2.1+                              ; ext/bcmath/libbcmath
               license:bsd-2                                 ; ext/fileinfo/libmagic
               license:expat))))                             ; ext/date/lib
-
-(define-public php-with-bcmath
-  (deprecated-package "php-with-bcmath" php))

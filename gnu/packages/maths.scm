@@ -1649,9 +1649,6 @@ script files.")
                   "qscintilla2_qt5"))
                #t))))))))
 
-(define-public qtoctave
-  (deprecated-package "qtoctave" octave))
-
 (define-public opencascade-oce
   (package
     (name "opencascade-oce")

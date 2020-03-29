@@ -891,9 +891,6 @@ monitor/GPU.")
      (supported-systems '("i686-linux" "x86_64-linux"))
      (license license:gpl2+))))
 
-(define-public lookingglass
-  (deprecated-package "lookingglass" looking-glass-client))
-
 (define-public runc
   (package
     (name "runc")

@@ -2311,9 +2311,6 @@ and custom quantization matrices.")
 from sites like Twitch.tv and pipes them into a video player of choice.")
     (license license:bsd-2)))
 
-(define-public livestreamer
-  (deprecated-package "livestreamer" streamlink))
-
 (define-public twitchy
   (let ((commit "9beb36d80b16662414129693e74fa3a2fd97554e")) ; 3.4 has no tag
     (package

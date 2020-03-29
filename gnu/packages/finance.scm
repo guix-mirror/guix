@@ -744,9 +744,6 @@ the Monero command line client and daemon.")
 the Monero GUI client.")
     (license license:bsd-3)))
 
-(define-public monero-core
-  (deprecated-package "monero-core" monero-gui))
-
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")

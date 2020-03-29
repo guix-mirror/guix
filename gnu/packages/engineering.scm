@@ -791,9 +791,6 @@ language.")
       (license (list license:mpl2.0               ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
-(define-public ao
-  (deprecated-package "ao-cad" libfive))
-
 ;; TODO Add doc https://gitlab.com/kicad/services/kicad-doc/-/tree/master
 (define-public kicad
   (package

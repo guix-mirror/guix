@@ -2919,9 +2919,6 @@ time.")
                    (string-append out "/bin")))
                 #t)))))))))
 
-(define-public eudev-with-hwdb
-  (deprecated-package "eudev-with-hwdb" eudev))
-
 (define-public lvm2
   (package
     (name "lvm2")

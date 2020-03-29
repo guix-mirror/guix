@@ -1142,11 +1142,6 @@ standards of the IceCat project.")
        (cpe-name . "firefox_esr")
        (cpe-version . ,(first (string-split version #\-)))))))
 
-(define-public conkeror
-  ;; The Conkeror web browser relied on XULRunner, which IceCat > 50 no longer
-  ;; provides.  See <http://conkeror.org> for the original web page.
-  (deprecated-package "conkeror" icecat))
-
 (define-public firefox-decrypt
   (package
     (name "firefox-decrypt")

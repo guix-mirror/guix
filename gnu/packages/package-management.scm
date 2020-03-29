@@ -401,9 +401,6 @@ the Nix package manager.")
                (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
 
-(define-public guile2.0-guix
-  (deprecated-package "guile2.0-guix" guix))
-
 (define-public guile3.0-guix
   (package
     (inherit guix)

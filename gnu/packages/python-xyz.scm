@@ -11786,12 +11786,6 @@ hardware-accelerated multitouch applications.")
 (define-public python2-kivy
   (package-with-python2 python-kivy))
 
-(define-public python-kivy-next
-  (deprecated-package "python-kivy-next" python-kivy))
-
-(define-public python2-kivy-next
-  (deprecated-package "python2-kivy-next" python2-kivy))
-
 (define-public python-binaryornot
   (package
     (name "python-binaryornot")

@@ -211,9 +211,6 @@ implementation, Emacs and, ultimately, the schemer, giving them access to live
 metadata.")
     (license license:bsd-3)))
 
-(define-public geiser
-  (deprecated-package "geiser" emacs-geiser))
-
 (define-public emacs-paredit
   (package
     (name "emacs-paredit")
@@ -239,9 +236,6 @@ for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
 
-(define-public paredit
-  (deprecated-package "paredit" emacs-paredit))
-
 (define-public git-modes
   (package
     (name "emacs-git-modes")
@@ -262,9 +256,6 @@ when typing parentheses directly or commenting out code line by line.")
      "This package provides Emacs major modes for editing various Git
 configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
-
-(define-public git-modes/old-name
-  (deprecated-package "git-modes" git-modes))
 
 (define-public emacs-with-editor
   (package
@@ -395,9 +386,6 @@ cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
       (license license:gpl3+))))
 
-(define-public magit
-  (deprecated-package "magit" emacs-magit))
-
 (define-public emacs-magit-svn
   (let ((commit "9e33ceee32f665db59909e1c00a667ccdd04178f"))
     (package
@@ -423,9 +411,6 @@ operations.")
        "This package is an extension to Magit, the Git Emacs mode, providing
 support for Git-SVN.")
       (license license:gpl3+))))
-
-(define-public magit-svn
-  (deprecated-package "magit-svn" emacs-magit-svn))
 
 (define-public emacs-magit-popup
   (package
@@ -767,9 +752,6 @@ replacement.")
      "This is an Emacs mode for editing, debugging and developing Haskell
 programs.")
     (license license:gpl3+)))
-
-(define-public haskell-mode
-  (deprecated-package "haskell-mode" emacs-haskell-mode))
 
 (define-public emacs-dante
   (let ((commit "38b589417294c7ea44bf65b73b8046d950f9531b")
@@ -1383,10 +1365,6 @@ light user interface.")
     (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
-(define-public emacs-emms-player-mpv
-  ;; A new mpv backend is included in Emms from 5.0.
-  (deprecated-package "emacs-emms-player-mpv" emacs-emms))
-
 (define-public emacs-emms-mode-line-cycle
   (package
     (name "emacs-emms-mode-line-cycle")
@@ -1484,9 +1462,6 @@ an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
-
-(define-public bbdb
-  (deprecated-package "bbdb" emacs-bbdb))
 
 (define-public emacs-aggressive-indent
   (package
@@ -10062,9 +10037,6 @@ using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
     (license license:gpl3+)))
 
-(define-public ert-runner
-  (deprecated-package "ert-runner" emacs-ert-runner))
-
 (define-public emacs-xtest
   (package
     (name "emacs-xtest")
@@ -11427,9 +11399,6 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 Groovy source files, REPL integration with run-groovy and Grails project
 navigation with the grails mode.")
     (license license:gpl3+)))
-
-(define-public groovy-emacs-modes
-  (deprecated-package "groovy-emacs-modes" emacs-groovy-modes))
 
 (define-public emacs-org-tree-slide
   (let ((commit "036a36eec1cf712d3db155572aed325daa372eb5")
@@ -14047,10 +14016,6 @@ functions.")
 time is being spent during Emacs startup in order to optimize startup time.")
     (license license:gpl3+)))
 
-(define-public emacs-emms-player-simple-mpv
-  ;; A new mpv backend is included in Emms from 5.0.
-  (deprecated-package "emacs-emms-player-simple-mpv" emacs-emms))
-
 (define-public emacs-magit-gerrit
   (let ((version "0.3")
         (revision "1")
@@ -15209,10 +15174,6 @@ and the Zotero research assistant: Insertion of links to Zotero items into an
 Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
 
-(define-public emacs-evil-ediff
-  ;; Evil-Ediff is included in Evil Collection from 20180617.
-  (deprecated-package "emacs-evil-ediff" emacs-evil-collection))
-
 (define-public emacs-evil-magit
   (let ((commit "4b66a1db8285457147a5436f209391016a819ea1")
         (revision "3"))
@@ -15248,10 +15209,6 @@ For some background see @url{https://github.com/magit/evil-magit/issues/1}.
 See the README at @url{https://github.com/justbur/evil-magit} for a table
 describing the key binding changes.")
       (license license:gpl3+))))
-
-(define-public emacs-evil-mu4e
-  ;; Evil-mu4e is included in Evil Collection from 20180617.
-  (deprecated-package "emacs-evil-mu4e" emacs-evil-collection))
 
 (define-public emacs-evil-multiedit
   (package
@@ -15881,10 +15838,6 @@ file.")
 @item Undo and browse history of undoable commands.
 @end itemize")
       (license license:gpl3+))))
-
-(define-public emacs-wgrep-helm
-  ;; `emacs-wgrep-helm' was mistakenly added.
-  (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
 
 (define-public emacs-mu4e-conversation
   (let ((commit "98110bb9c300fc9866dee8e0023355f9f79c9b96")

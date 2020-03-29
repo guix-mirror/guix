@@ -84,15 +84,9 @@ interface that might look familiar to @command{mutt} or @command{slrn} users.
 
 Newsboat supports OPML import/exports, HTML rendering, podcasts (with
 @command{podboat}), off-line reading, searching and storing articles to your
-file system, and many more features.
-
-It started life as a fork of the currently unmaintained Newsbeuter.")
+file system, and many more features.")
     (license (list license:gpl2+        ; filter/*
                    license:expat))))    ; everything else
-
-(define-public newsbeuter
-  ;; Newsbeuter is unmaintained with multiple CVEs, and was forked as Newsboat.
-  (deprecated-package "newsbeuter" newsboat))
 
 (define-public rtv
   (package
