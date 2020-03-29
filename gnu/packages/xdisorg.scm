@@ -1211,7 +1211,7 @@ protocol.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.43")
+    (version "5.44")
     (source
      (origin
        (method url-fetch)
@@ -1219,7 +1219,7 @@ protocol.")
         (string-append "https://www.jwz.org/xscreensaver/xscreensaver-"
                        version ".tar.gz"))
        (sha256
-        (base32 "1571pj1a9998sq14y9366s2rw9wd2kq3l3dvvsk610vyd0fki3qm"))))
+        (base32 "15bv05vpfjwsrqbazrjmm382jd7vvw0mp6y9vasn6wvxzjf0in3k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
