@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,8 +151,8 @@ so that they use INPUTS (a thunk) instead of implicit inputs."
         p))
 
   (define (cut? p)
-    (and (eq? (package-build-system p) gnu-build-system)
-         (memq #:implicit-inputs? (package-arguments p))))
+    (or (not (eq? (package-build-system p) gnu-build-system))
+        (memq #:implicit-inputs? (package-arguments p))))
 
   (package-mapping add-explicit-inputs cut?))
 
