@@ -3687,12 +3687,14 @@ components.")
     (name "java-plexus-container-default-bootstrap")
     (version "1.7.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-containers"
-                                  "/archive/plexus-containers-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-containers")
+                     (commit (string-append "plexus-containers-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xw5g30qf4a83608rw9v2hv8pfsz7d69dkdhk6r0wia4q78hh1pc"))))
+                "1316hrp5vqfv0aw7miq2fp0wwy833h66h502h29vnh5sxj27x228"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "container-default.jar"
