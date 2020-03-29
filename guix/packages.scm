@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -449,7 +449,7 @@ derivations."
   ;; Guile 2.2 would not work due to <https://bugs.gnu.org/28211> when
   ;; grafting packages.
   (let ((distro (resolve-interface '(gnu packages guile))))
-    (module-ref distro 'guile-3.0)))
+    (module-ref distro 'guile-2.0)))
 
 (define* (default-guile-derivation #:optional (system (%current-system)))
   "Return the derivation for SYSTEM of the default Guile package used to run
