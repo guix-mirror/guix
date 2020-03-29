@@ -152,4 +152,6 @@ Perform the deployment specified by FILE.\n"))
         (with-build-handler (build-notifier #:use-substitutes?
                                             (assoc-ref opts 'substitutes?))
           (parameterize ((%graft? (assq-ref opts 'graft?)))
-            (for-each (cut deploy-machine* store <>) machines)))))))
+            (map/accumulate-builds store
+                                   (cut deploy-machine* store <>)
+                                   machines)))))))
