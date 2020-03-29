@@ -1075,8 +1075,8 @@ API.")
     (license license:asl2.0)))
 
 (define-public hash-extender
-  (let ((commit "9ecef26809a1ceea2a455f6f591b004298df551b")
-        (revision "1"))
+  (let ((commit "cb8aaee49f93e9c0d2f03eb3cafb429c9eed723d")
+        (revision "2"))
     (package
       (name "hash-extender")
       (version (git-version "0.0" revision commit))
@@ -1087,10 +1087,8 @@ API.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0fqy3d559zgf71w39py0931d8na0ylils45r8zs6r79wgr6qn78c"))
-                (file-name (git-file-name name version))
-                (patches
-                  (search-patches "hash-extender-test-suite.patch"))))
+                  "1fj118566hr1wv03az2w0iqknazsqqkak0mvlcvwpgr6midjqi9b"))
+                (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases
