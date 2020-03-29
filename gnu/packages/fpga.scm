@@ -271,6 +271,7 @@ Includes the actual FTDI connector.")
         (uri (git-reference
                (url "git://github.com/YosysHQ/nextpnr")
                (commit commit)))
+        (file-name (git-file-name name version))
         (sha256
           (base32
             "0g2ar1z89b31qw5vgqj2rrcv9rzncs94184dgcsrz19p866654mf"))))
