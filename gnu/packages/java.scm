@@ -3660,13 +3660,14 @@ these two libraries to vary independently of one another.")
     (name "java-plexus-classworlds")
     (version "2.5.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/"
-                                  "plexus-classworlds/archive/plexus-classworlds-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-classworlds")
+                     (commit (string-append "plexus-classworlds-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qm4p0rl8d82lzhsiwnviw11jnq44s0gflg78zq152xyyr2xmh8g"))))
+                "1iv8x55fbni2hg4l7pdpbwfq75xmvq1f25g6nxma8rcdpihsh13r"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-classworlds.jar"
