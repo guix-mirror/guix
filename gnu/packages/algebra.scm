@@ -558,42 +558,50 @@ these types and other mathematical functions.")
 (define-public ntl
   (package
    (name "ntl")
-   (version "9.7.0")
+   (version "11.4.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://shoup.net/ntl/ntl-"
+            (uri (string-append "https://shoup.net/ntl/ntl-"
                                 version ".tar.gz"))
-            (sha256 (base32
-                     "115frp5flyvw9wghz4zph1b3llmr5nbxk1skgsggckr81fh3gmxq"))))
+            (sha256
+             (base32
+              "1lisp3064rch3jaa2wrhy1s9kll7i3ka3d0y6lj6l3l4ckfcrhdp"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                (delete-file-recursively "src/libtool-origin")
+                #t))))
    (build-system gnu-build-system)
    (native-inputs
     `(("libtool" ,libtool)
       ("perl" ,perl))) ; for configuration
-   ;; FIXME: Add optional input gf2x once available; then also add
-   ;; configure flag "NTL_GF2X_LIB=on".
    (inputs
-    `(("gmp" ,gmp)))
+    `(("gmp" ,gmp)
+      ("gf2x" ,gf2x)))
    (arguments
     `(#:phases
       (modify-phases %standard-phases
         (replace 'configure
-         (lambda* (#:key outputs #:allow-other-keys)
+         (lambda* (#:key inputs outputs #:allow-other-keys)
            (chdir "src")
-           (system* "./configure"
+           (invoke "./configure"
                     (string-append "PREFIX=" (assoc-ref outputs "out"))
+                    (string-append "LIBTOOL=" (assoc-ref inputs "libtool") "/bin/libtool")
+                    ;; set the library prefixes explicitly so that they get
+                    ;; embedded in the .la file
+                    (string-append "GMP_PREFIX=" (assoc-ref inputs "gmp"))
+                    (string-append "GF2X_PREFIX=" (assoc-ref inputs "gf2x"))
                     ;; Do not build especially for the build machine.
                     "NATIVE=off"
-                    ;; Also do not tune to the build machine.
-                    "WIZARD=off"
-                    "SHARED=on")
-           #t)))))
+                    "NTL_GF2X_LIB=on"
+                    "SHARED=on"))))))
    (synopsis "C++ library for number theory")
    (description
     "NTL is a C++ library providing data structures and algorithms
 for manipulating signed, arbitrary length integers, and for vectors,
 matrices, and polynomials over the integers and over finite fields.")
    (license license:gpl2+)
-   (home-page "http://shoup.net/ntl/")))
+   (home-page "https://shoup.net/ntl/")))
 
 (define-public singular
   (package
@@ -1451,8 +1459,7 @@ of M4RI from F_2 to F_{2^e}.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (inputs
-     `(("gmp" ,gmp)
-       ("ntl" ,ntl)
+     `(("ntl" ,ntl)
        ("pari-gp" ,pari-gp)))
     (synopsis "Ranks of elliptic curves and modular symbols")
     (description "The eclib package includes mwrank (for 2-descent on
