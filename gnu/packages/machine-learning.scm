@@ -962,21 +962,26 @@ the following advantages:
     (name "vowpal-wabbit")
     (version "8.5.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/JohnLangford/vowpal_wabbit/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/JohnLangford/vowpal_wabbit")
+                     (commit version)))
               (sha256
                (base32
-                "0clp2kb7rk5sckhllxjr5a651awf4s8dgzg4659yh4hf5cqnf0gr"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "04bwzk6ifgnz3fmzid8b7avxf9n5pnx9xcjm61nkjng1vv0bpj8x"))
+              (file-name (git-file-name name version))))
     (inputs
      `(("boost" ,boost)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-boost="
-                            (assoc-ref %build-inputs "boost")))))
+                            (assoc-ref %build-inputs "boost")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*")) #t)))))
     (build-system gnu-build-system)
     (home-page "https://github.com/JohnLangford/vowpal_wabbit")
     (synopsis "Fast machine learning library for online learning")
