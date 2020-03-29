@@ -3542,13 +3542,14 @@ testing frameworks, mocking libraries and UI validation rules.")
     (name "java-junit")
     (version "4.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/junit-team/junit/"
-                                  "archive/r" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/junit-team/junit/")
+                     (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "090dn5v1vs0b3acyaqc0gjf6p8lmd2h24wfzsbq7sly6b214anws"))
+                "1j8avi91px1z8rjc89cfikwrvfifdmmsarwiyrcnr59ynvpz0v8h"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3561,7 +3562,7 @@ testing frameworks, mocking libraries and UI validation rules.")
        #:jar-name "junit.jar"))
     (inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "https://junit.org/")
+    (home-page "https://junit.org/junit4/")
     (synopsis "Test framework for Java")
     (description
      "JUnit is a simple framework to write repeatable tests for Java projects.
