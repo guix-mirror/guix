@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -3435,12 +3435,14 @@ an Ant task that extends the built-in @code{jar} task.")
     (name "java-hamcrest-core")
     (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hamcrest/JavaHamcrest/"
-                                  "archive/hamcrest-java-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hamcrest/JavaHamcrest/")
+                     (commit (string-append "hamcrest-java-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "11g0s105fmwzijbv08lx8jlb521yravjmxnpgdx08fvg1kjivhva"))
+                "16fxxkrd31ahqvcaby30jgh3z1i0zxh51m24hxgz0z2agxj6bc63"))
               (modules '((guix build utils)))
               (snippet
                '(begin
