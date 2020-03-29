@@ -562,13 +562,13 @@ fonts.")
     (version "7.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/smc/rachana/repository/archive.tar.gz?ref=Version"
-             version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/smc/fonts/rachana")
+             (commit (string-append "Version" version))))
        (sha256
-        (base32 "17w7n2dxl0a98wrgfmdx5sars4dd3dy5krrz57fv28867zcij8ac"))))
+        (base32 "0r100pvk56y1s38nbv24d78s8nd7dkblgasbn8s887dzj6dps23d"))
+       (file-name (git-file-name name version))))
     (build-system font-build-system)
     (home-page "https://smc.org.in")
     (synopsis "Malayalam font")
