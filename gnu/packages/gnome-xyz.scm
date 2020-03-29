@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -483,10 +484,10 @@ notebooks and tiling window managers.")
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check))))
+         (delete 'configure))))             ; no configure script
     (native-inputs
      `(("glib:bin" ,glib "bin")             ; for glib-compile-schemas
        ("gnome-shell" ,gnome-shell)
