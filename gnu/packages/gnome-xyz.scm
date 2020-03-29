@@ -468,9 +468,9 @@ scrollable tiling of windows and per monitor workspaces.  It's inspired by paper
 notebooks and tiling window managers.")
     (license license:gpl3)))
 
-(define-public numix-theme
+(define-public numix-gtk-theme
   (package
-    (name "numix-theme")
+    (name "numix-gtk-theme")
     (version "2.6.7")
     (source (origin
               (method git-fetch)
@@ -499,6 +499,9 @@ notebooks and tiling window managers.")
 dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
     (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
+
+(define-public numix-theme
+  (deprecated-package "numix-theme" numix-gtk-theme))
 
 (define-public papirus-icon-theme
   (let ((version "0.0.0") ;; The package does not use semver
