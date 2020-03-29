@@ -3575,13 +3575,14 @@ sharing common test data, and test runners for running tests.")
     (name "java-plexus-utils")
     (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/"
-                                  "plexus-utils/archive/plexus-utils-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-utils")
+                     (commit (string-append "plexus-utils-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ihfigar20lvk4pinii7dq05i173xphhw4iyrk6gjfy04m01j2lz"))))
+                "1mlx7xrq7lgqjqcpg7y4hi1ghavf28vvk3har82037dqx61n0f15"))))
     (build-system ant-build-system)
     ;; FIXME: The default build.xml does not include a target to install
     ;; javadoc files.
