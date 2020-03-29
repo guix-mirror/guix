@@ -307,7 +307,7 @@ access to servers running the Discord protocol.")
                (("if 'DESTDIR' not in os.environ:")
                  "if False:"))
              #t)))))
-    (synopsis "Graphical IRC Client")
+    (synopsis "Graphical IRC client")
     (description
      "HexChat lets you connect to multiple IRC networks at once.  The main
 window shows the list of currently connected networks and their channels, the
