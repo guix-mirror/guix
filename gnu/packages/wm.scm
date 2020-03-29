@@ -194,6 +194,8 @@ the leaves of a full binary tree.")
          (list "CC=gcc"
                (string-append "PREFIX=''")
                (string-append "DESTDIR=" out)
+               (string-append "FISHCOMPLETIONDIR="
+                              "/share/fish/vendor_completions.d")
                (string-append "BASHCOMPLETIONDIR=" out
                               "/etc/bash_completion.d")))))
     (synopsis "Tiling window manager for X11")
