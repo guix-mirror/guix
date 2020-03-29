@@ -196,7 +196,7 @@ It is developed using Objective Caml and Camlp5.")
              (substitute* "Makefile"
                ((" [^ ]*\\.pdf") ""))
              (apply invoke "make" "install-doc" make-flags))))))
-    (home-page "http://proofgeneral.inf.ed.ac.uk/")
+    (home-page "https://proofgeneral.github.io/ ")
     (synopsis "Generic front-end for proof assistants based on Emacs")
     (description
      "Proof General is a major mode to turn Emacs into an interactive proof
