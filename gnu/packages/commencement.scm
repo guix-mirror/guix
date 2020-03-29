@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
@@ -1760,20 +1760,21 @@ exec " gcc "/bin/" program
 
 (define flex-boot0
   ;; This Flex is needed to build MiG as well as Linux-Libre headers.
-  (package
-    (inherit flex)
-    (native-inputs `(("bison" ,bison-boot0)))
-    (propagated-inputs
-     ;; XXX: Here we use an 'm4-boot0' package that's not eq? so that it
-     ;; appears twice in '%build-inputs', like when we were using
-     ;; 'package-with-explicit-inputs'.
-     ;; TODO: Remove this hack on the next rebuild cycle.
-     `(("m4" ,(package (inherit m4-boot0*)))))
-    (inputs (%boot0-inputs))
-    (arguments
-     `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile
-       #:tests? #f))))
+  (let ((m4-boot0* (package (inherit m4-boot0*))))
+    (package
+      (inherit flex)
+      (native-inputs `(("bison" ,bison-boot0)))
+      (propagated-inputs
+       ;; XXX: Here we use an 'm4-boot0' package that's not eq? so that it
+       ;; appears twice in '%build-inputs', like when we were using
+       ;; 'package-with-explicit-inputs'.
+       ;; TODO: Remove this hack on the next rebuild cycle.
+       `(("m4" ,m4-boot0*)))
+      (inputs (%boot0-inputs))
+      (arguments
+       `(#:implicit-inputs? #f
+         #:guile ,%bootstrap-guile
+         #:tests? #f)))))
 
 (define linux-libre-headers-boot0
   (mlambda ()
