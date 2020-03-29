@@ -3629,13 +3629,14 @@ more.")
     (name "java-plexus-interpolation")
     (version "1.23")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/"
-                                  "plexus-interpolation/archive/"
-                                  "plexus-interpolation-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-interpolation")
+                     (commit (string-append "plexus-interpolation-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03377yzlx5q440m6sxxgv6a5qb8fl30zzcgxgc0hxk5qgl2z1jjn"))))
+                "005hxxg1adv71a96lz4vp65bk3v1pi76j4c45z29xzizclib16vl"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-interpolation.jar"
