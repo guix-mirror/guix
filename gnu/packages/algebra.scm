@@ -449,6 +449,8 @@ or text interfaces) or as a C++ library.")
             (sha256 (base32
                      "0h08a71kn8347zsqjamqnmrxjpsnnzpmhvxb6d2xmfrcs6nyv2ch"))))
    (build-system gnu-build-system)
+   (inputs
+    `(("ntl" ,ntl)))
    (propagated-inputs
     `(("gmp" ,gmp)
       ("mpfr" ,mpfr))) ; header files from both are included by flint/arith.h
@@ -456,17 +458,24 @@ or text interfaces) or as a C++ library.")
     `(#:parallel-tests? #f ; seems to be necessary on arm
       #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'newer-c++
+           (lambda _
+             (substitute* "configure"
+               (("-ansi") ""))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (gmp (assoc-ref inputs "gmp"))
-                   (mpfr (assoc-ref inputs "mpfr")))
+                   (mpfr (assoc-ref inputs "mpfr"))
+                   (ntl (assoc-ref inputs "ntl")))
                ;; do not pass "--enable-fast-install", which makes the
                ;; homebrew configure process fail
                (invoke "./configure"
                        (string-append "--prefix=" out)
                        (string-append "--with-gmp=" gmp)
-                       (string-append "--with-mpfr=" mpfr))
+                       (string-append "--with-mpfr=" mpfr)
+                       (string-append "--with-ntl=" ntl))
                #t))))))
    (synopsis "Fast library for number theory")
    (description
