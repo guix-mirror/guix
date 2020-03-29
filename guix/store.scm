@@ -135,6 +135,7 @@
 
             built-in-builders
             references
+            references/cached
             references/substitutes
             references*
             query-path-info*
@@ -1392,6 +1393,13 @@ error if there is no such root."
   ;; 'references/substitutes' many times with the same arguments.  Ideally we
   ;; would use a cache associated with the daemon connection instead (XXX).
   (make-hash-table 100))
+
+(define (references/cached store item)
+  "Like 'references', but cache results."
+  (or (hash-ref %reference-cache item)
+      (let ((references (references store item)))
+        (hash-set! %reference-cache item references)
+        references)))
 
 (define (references/substitutes store items)
   "Return the list of list of references of ITEMS; the result has the same
