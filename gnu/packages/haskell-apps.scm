@@ -777,3 +777,6 @@ Replace some ASCII sequences by their Unicode equivalent (turned off by
 default)
 @end itemize")
     (license license:bsd-3)))
+
+(define-public ghc-stylish-haskell
+  (deprecated-package "ghc-stylish-haskell" stylish-haskell))

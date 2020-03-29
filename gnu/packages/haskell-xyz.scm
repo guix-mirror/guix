@@ -11118,9 +11118,6 @@ functions for breaking or splitting on substrings and replacing all
 occurrences of a substring (the first in case of overlaps) with another.")
     (license license:bsd-3)))
 
-(define-public ghc-stylish-haskell
-  (deprecated-package "ghc-stylish-haskell" stylish-haskell))
-
 (define-public ghc-svg-builder
   (package
     (name "ghc-svg-builder")
