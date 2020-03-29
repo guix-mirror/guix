@@ -1176,4 +1176,4 @@ move around."
                  (generate-all-checksums "vendor")
                  #t)))))))))
 
-(define-public rust rust-1.37)
+(define-public rust rust-1.39)
