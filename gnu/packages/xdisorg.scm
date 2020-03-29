@@ -1235,7 +1235,7 @@ protocol.")
                            "--without-readdisplay")
        #:make-flags (list (string-append "AD_DIR="
                                          (assoc-ref %outputs "out")
-                                         "/usr/lib/X11/app-defaults"))))
+                                         "/lib/X11/app-defaults"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
