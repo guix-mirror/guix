@@ -3652,7 +3652,7 @@ directly uses the type system, rather than out-of-band exceptions.")
 (define-public ghc-esqueleto
   (package
     (name "ghc-esqueleto")
-    (version "3.0.0")
+    (version "3.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -3660,7 +3660,7 @@ directly uses the type system, rather than out-of-band exceptions.")
                            "esqueleto/esqueleto-" version ".tar.gz"))
        (sha256
         (base32
-         "187c098h2xyf2nhifkdy2bqfl6iap7a93mzwd2kirl5yyicpc9zy"))))
+         "1qi28ma8j5kfygjxnixlazxsyrkdqv8ljz3icwqi5dlscsnj6v3v"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f  ; Haddock reports an internal error.
