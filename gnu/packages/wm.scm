@@ -61,8 +61,10 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -97,6 +99,7 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages suckless)
@@ -1657,6 +1660,43 @@ productive, customizable lisp based systems.")
            (delete 'create-asd-file)
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
+
+(define-public stumpish
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "stumpish")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("bash" ,bash)
+         ("rlwrap" ,rlwrap)))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (copy-recursively (assoc-ref %build-inputs "source") ".")
+           (chdir "util/stumpish")
+           (substitute* "stumpish"
+             (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
+                                        "/bin/rlwrap"))
+             (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
+                                         "/bin/bash")))
+           (install-file "stumpish" (string-append %output "/bin")))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "StumpWM interactive shell")
+      (description "This package provides a StumpWM interactive shell.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
 (define-public sbcl-stumpwm+slynk
   (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
