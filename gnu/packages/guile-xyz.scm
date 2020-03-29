@@ -3272,7 +3272,10 @@ Relay Chat} (IRC).")
                (substitute* "configure.ac"
                  (("2.0.9") "3.0.0"))
                (substitute* "Makefile.am"
-                 (("2.0") "3.0"))
+                 (("2.0") "3.0")
+
+                 ;; Install .go files where they belong.
+                 (("/ccache") "/site-ccache"))
                #t)))))
       (native-inputs
        `(("autoconf" ,autoconf)
