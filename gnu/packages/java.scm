@@ -3728,12 +3728,14 @@ implementation.")
     (name "java-plexus-io")
     (version "3.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-io"
-                                  "/archive/plexus-io-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-io")
+                     (commit (string-append "plexus-io-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f2j41kihaymxkpbm55smpxjja235vad8cgz94frfy3ppcp021dw"))))
+                "1h4q9l2j9sfbscvxpnyy2hazi0r83h3am86y4r959wrl1b24xxwd"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-io.jar"
