@@ -89,7 +89,7 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
 
     (add-component-callback
      entry-name
-     (lambda (component)
+     (lambda ()
        (set-entry-text entry-home-directory
                        (string-append "/home/" (entry-value entry-name)))
 
@@ -99,7 +99,7 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
 
     (add-component-callback
      password-visible-cb
-     (lambda (component)
+     (lambda ()
        (set-entry-flags entry-password
                         FLAG-PASSWORD
                         FLAG-ROLE-TOGGLE)))

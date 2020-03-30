@@ -231,7 +231,7 @@ input box, such as FLAG-PASSWORD."
 
     (add-component-callback
      input-visible-cb
-     (lambda (component)
+     (lambda ()
        (set-entry-flags input-entry
                         FLAG-PASSWORD
                         FLAG-ROLE-TOGGLE)))
@@ -486,7 +486,7 @@ the current listbox item has to be selected by key."
       ;; do nothing.
       (add-component-callback
        listbox
-       (lambda (component)
+       (lambda ()
          (let* ((current-key (current-listbox-entry listbox))
                 (listbox-keys (map car keys))
                 (last-key (last-listbox-key))
