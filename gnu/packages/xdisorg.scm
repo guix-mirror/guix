@@ -2206,17 +2206,17 @@ tools to complement clipnotify.")
     (license license:public-domain)))
 
 (define-public clipmenu
-  (let ((commit "a495bcc7a4ab125182a661c5808364f66938a87c")
+  (let ((commit "bcbe7b144598db4a103f14e8408c4b7327d6d5e1")
         (revision "1"))
     (package
       (name "clipmenu")
-      (version (string-append "5.6.0-"
+      (version (string-append "6.0.1-"
                               revision "." (string-take commit 7)))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cdown/clipnotify.git")
+               (url "https://github.com/cdown/clipmenu.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
