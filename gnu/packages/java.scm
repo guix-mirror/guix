@@ -4159,12 +4159,14 @@ project and determining what files need to be rebuilt.")
     (name "java-modello-core")
     (version "1.9.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/modello"
-                                  "/archive/modello-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/modello")
+                     (commit (string-append "modello-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0l2pvns8pmlrmjm3iknp7gpg3654y1m8qhy55b19sdwdchdcyxfh"))))
+                "1di6ni42aqllpdvkpyfcw70352vr2i8wf6hd5nhd9kmqjb5dj5j4"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "modello-core.jar"
