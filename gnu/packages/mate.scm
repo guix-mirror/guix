@@ -948,7 +948,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
 (define-public mate-control-center
   (package
     (name "mate-control-center")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -956,7 +956,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "06wpfsxsiv7w3dl7p395r5vcxqbjlllydqbnvbr6yn0lrac15i71"))))
+         "192plsh83m2qz7jgakns2yvhqbj53v7i54iwb0z26i2awy0j9rcd"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -993,6 +993,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
        ("mate-menus" ,mate-menus)
        ("mate-settings-daemon" ,mate-settings-daemon)
        ("pango" ,pango)
+       ("polkit" ,polkit)
        ("startup-notification" ,startup-notification)))
     (propagated-inputs
      `(("gdk-pixbuf" ,gdk-pixbuf+svg) ; mate-slab.pc
