@@ -3048,6 +3048,27 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 (define-public python2-sql
   (package-with-python2 python-sql))
 
+(define-public python-pypika
+  (package
+    (name "python-pypika")
+    (version "0.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyPika" version))
+       (sha256
+        (base32
+         "0qzn5vygirg52dlizm6ayzdc5llq8p2krrx0kymr236lrz89wqp8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-parameterized" ,python-parameterized)))
+    (home-page "https://github.com/kayak/pypika")
+    (synopsis "SQL query builder API for Python")
+    (description
+     "PyPika is a python SQL query builder that exposes the full richness of
+the SQL language using a syntax that reflects the resulting query.")
+    (license license:asl2.0)))
+
 (define-public mongo-tools
   (package
     (name "mongo-tools")
