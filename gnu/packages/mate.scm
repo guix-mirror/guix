@@ -660,7 +660,7 @@ mate-volume-control, a MATE volume control application and applet.")
 (define-public mate-panel
   (package
     (name "mate-panel")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -668,7 +668,7 @@ mate-volume-control, a MATE volume control application and applet.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "17l4ryy71bkszr6shm9dm31zcsd7m0digi1mmvdlib5hqzvc7li7"))))
+         "1hrh10pqk8mva1ix2nmsp3cbbn81cgqy0b9lqhsl0b5p0s40i7in"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags
