@@ -4435,13 +4435,14 @@ to generate and transform Java byte code.")
     (name "java-objenesis")
     (version "2.5.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/easymock/objenesis/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "objenesis-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/easymock/objenesis")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1va5qz1i2wawwavhnxfzxnfgrcaflz9p1pg03irrjh4nd3rz8wh6"))))
+                "054yi200wj00x6dp1sxfrwgndwywadsbn8d8ij1j0v45j9g2vdya"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "objenesis.jar"
