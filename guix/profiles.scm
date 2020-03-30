@@ -87,6 +87,7 @@
             manifest-entry-search-paths
             manifest-entry-parent
             manifest-entry-properties
+            lower-manifest-entry
 
             manifest-pattern
             manifest-pattern?
@@ -272,6 +273,7 @@ file name."
                             (output -> (manifest-entry-output entry)))
           (return (manifest-entry
                     (inherit entry)
+                    ;; TODO: Lower dependencies, recursively.
                     (item (derivation->output-path drv output))))))))
 
 (define* (check-for-collisions manifest system #:key target)

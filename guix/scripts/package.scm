@@ -199,6 +199,10 @@ non-zero relevance score."
 (define (transaction-upgrade-entry store entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
 <manifest-entry>."
+  (define (lower-manifest-entry* entry)
+    (run-with-store store
+      (lower-manifest-entry entry (%current-system))))
+
   (define (supersede old new)
     (info (G_ "package '~a' has been superseded by '~a'~%")
           (manifest-entry-name old) (package-name new))
@@ -211,40 +215,41 @@ non-zero relevance score."
         (output (manifest-entry-output old)))
       transaction)))
 
-  (match (if (manifest-transaction-removal-candidate? entry transaction)
-             'dismiss
-             entry)
-    ('dismiss
-     transaction)
-    (($ <manifest-entry> name version output (? string? path))
-     (match (find-best-packages-by-name name #f)
-       ((pkg . rest)
-        (let ((candidate-version (package-version pkg)))
-          (match (package-superseded pkg)
-            ((? package? new)
-             (supersede entry new))
-            (#f
-             (case (version-compare candidate-version version)
-               ((>)
-                (manifest-transaction-install-entry
-                 (package->manifest-entry* pkg output)
-                 transaction))
-               ((<)
-                transaction)
-               ((=)
-                (let ((candidate-path (derivation->output-path
-                                       (package-derivation store pkg))))
-                  ;; XXX: When there are propagated inputs, assume we need to
-                  ;; upgrade the whole entry.
-                  (if (and (string=? path candidate-path)
-                           (null? (package-propagated-inputs pkg)))
-                      transaction
-                      (manifest-transaction-install-entry
-                       (package->manifest-entry* pkg output)
-                       transaction)))))))))
-       (()
-        (warning (G_ "package '~a' no longer exists~%") name)
-        transaction)))))
+  (define (upgrade entry)
+    (match entry
+      (($ <manifest-entry> name version output (? string? path))
+       (match (find-best-packages-by-name name #f)
+         ((pkg . rest)
+          (let ((candidate-version (package-version pkg)))
+            (match (package-superseded pkg)
+              ((? package? new)
+               (supersede entry new))
+              (#f
+               (case (version-compare candidate-version version)
+                 ((>)
+                  (manifest-transaction-install-entry
+                   (package->manifest-entry* pkg output)
+                   transaction))
+                 ((<)
+                  transaction)
+                 ((=)
+                  (let* ((new (package->manifest-entry* pkg output)))
+                    ;; XXX: When there are propagated inputs, assume we need to
+                    ;; upgrade the whole entry.
+                    (if (and (string=? (manifest-entry-item
+                                        (lower-manifest-entry* new))
+                                       (manifest-entry-item entry))
+                             (null? (package-propagated-inputs pkg)))
+                        transaction
+                        (manifest-transaction-install-entry
+                         new transaction)))))))))
+         (()
+          (warning (G_ "package '~a' no longer exists~%") name)
+          transaction)))))
+
+  (if (manifest-transaction-removal-candidate? entry transaction)
+      transaction
+      (upgrade entry)))
 
 
 ;;;
