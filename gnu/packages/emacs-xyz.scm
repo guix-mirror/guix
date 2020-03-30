@@ -17092,23 +17092,39 @@ other frame parameters.")
     (license license:gpl3+)))
 
 (define-public emacs-arduino-mode
-  (let ((commit "3e2bad4569ad26e929e6db2cbcff0d6d36812698")) ;no release yet
+  (let ((commit "23ae47c9f28f559e70b790b471f20310e163a39b")
+        (revision "1")) ;no release yet
     (package
       (name "emacs-arduino-mode")
-      (version (git-version "0" "0" commit))
+      (version (git-version "0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/bookest/arduino-mode.git")
+                      (url "https://github.com/stardiviner/arduino-mode.git")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1yvaqjc9hadbnnay5fprnh890xsp53kidad1zpb4a5z4a5z61n3c"))
+                  "08vnbz9gpah1l93fzfd87aawrhcnh2v1kyfxgsn88pdwg8awz8rx"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
+      (inputs
+       `(("spinner" ,emacs-spinner)
+         ("flycheck" ,emacs-flycheck)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Emacs complains that "defmethod" and "defgeneric" are obsolete
+           ;; macros when compiling. Substitute them with the recommended
+           ;; macros "cl-defmethod" and "cl-defgeneric", respectively.
+           (add-after 'unpack 'fix-obsolete
+             (lambda _
+               (substitute* "ede-arduino.el"
+                 (("defmethod") "cl-defmethod")
+                 (("defgeneric") "cl-defgeneric"))
+               #t)))))
       (synopsis "Emacs major mode for editing Arduino sketches")
       (description "Emacs major mode for editing Arduino sketches.")
-      (home-page "https://github.com/bookest/arduino-mode")
+      (home-page "https://github.com/stardiviner/arduino-mode")
       (license license:gpl3+))))
 
 (define-public emacs-annalist
