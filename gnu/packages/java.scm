@@ -7160,7 +7160,7 @@ tree walking, and translation.")
     (inputs
      `(("junit" ,java-junit)))))
 
-(define antlr3-3.3
+(define-public antlr3-3.3
   (package
     (inherit antlr3)
     (name "antlr3")
