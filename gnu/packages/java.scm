@@ -4566,13 +4566,14 @@ The jMock library
     (name "java-jmock")
     (version "2.8.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jmock-developers/"
-                                  "jmock-library/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jmock-developers/jmock-library")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "18650a9g8xffcsdb6w91pbswa7f40fp2sh6s3nclkclz5dbzq8f0"))))
+                "12b7l22g3nrjvf2dzcw3z03fpd2chrgp0d8xkvn8w55rwb57pax6"))))
     (inputs
      `(("java-hamcrest-all" ,java-hamcrest-all)
        ("java-asm" ,java-asm)
