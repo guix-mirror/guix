@@ -4333,7 +4333,7 @@ on the XPP3 API (XML Pull Parser).")))
     (version "6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.forge.ow2.org/asm/"
+              (uri (string-append "https://download.forge.ow2.org/asm/"
                                   "asm-" version ".tar.gz"))
               (sha256
                (base32
