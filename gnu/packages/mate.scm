@@ -221,7 +221,7 @@ themes for both gtk+-2 and gtk+-3.")
 (define-public mate-desktop
   (package
     (name "mate-desktop")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -229,7 +229,7 @@ themes for both gtk+-2 and gtk+-3.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "09gn840p6qds21kxab4pidjd53g76s76i7178fdibrz462mda217"))))
+         "0l4bbj6nz315s5ndq5sw1jcgi3s1whk59bj12c4mbpsvmlb33adg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
