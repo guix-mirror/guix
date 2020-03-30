@@ -133,7 +133,7 @@ actions.")
 (define-public mate-icon-theme
   (package
     (name "mate-icon-theme")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -141,7 +141,7 @@ actions.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "090vfxpn1b1wwvkilv1j3cx4swdm4z0s7xyvhvqhdzj58zsf2000"))))
+         "0a2lz61ivwwcdznmwlmgjr6ipr9sdl5g2czbagnpxkwz8f3m77na"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
