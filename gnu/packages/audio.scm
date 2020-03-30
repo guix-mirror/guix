@@ -96,6 +96,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
+  #:use-module (gnu packages linphone)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
