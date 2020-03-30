@@ -3416,6 +3416,32 @@ It also provides an easy way to find synonyms and antonyms for a given
 word (to avoid repetitions for example).")
     (license license:gpl3+)))
 
+(define-public emacs-flycheck-rust
+  (package
+    (name "emacs-flycheck-rust")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/flycheck/flycheck-rust")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fh6j5w2387nh2fwwjphkhq17cgj5m2q5k0fhidvgc2w65lzbr1r"))))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-let-alist" ,emacs-let-alist)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/flycheck/flycheck-rust")
+    (synopsis "Rust/Cargo support for Flycheck")
+    (description
+     "This Flycheck extension configures Flycheck automatically for
+the current Cargo project.")
+    (license license:gpl3+)))
+
 (define-public emacs-elisp-demos
   (package
     (name "emacs-elisp-demos")
