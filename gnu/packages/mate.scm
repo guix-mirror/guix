@@ -510,7 +510,7 @@ MATE desktop environment.")
 (define-public mate-menus
   (package
     (name "mate-menus")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -518,7 +518,7 @@ MATE desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1lkakbf2f1815c146z4xp5f0h4lim6jzr02681wbvzalc6k97v5c"))))
+         "1vv4j38h7mrbfrsj99k25z6y7b5dg30fzd2qnhk7pl8ca8s1jhrd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
