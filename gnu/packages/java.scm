@@ -6742,12 +6742,14 @@ This is a part of the Apache Commons Project.")
     (name "java-javaewah")
     (version "1.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lemire/javaewah/"
-                                  "archive/JavaEWAH-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lemire/javaewah/")
+                     (commit (string-append "JavaEWAH-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n7j1r1h24wlhwv9zdcj6yqjrhma2ixwyzm15l5vrv6yqjs6753b"))))
+                "1m8qcb1py76v7avbjjrkvyy6fhr5dk2ywy73gbsxqry04gkm2nhw"))))
     (build-system ant-build-system)
     (arguments `(#:jar-name "javaewah.jar"))
     (inputs
@@ -6760,7 +6762,7 @@ This is a part of the Apache Commons Project.")
 compression scheme.  It can be used to implement bitmap indexes.
 
 The goal of word-aligned compression is not to achieve the best compression,
-but rather to improve query processing time. Hence, JavaEWAH tries to save CPU
+but rather to improve query processing time.  Hence, JavaEWAH tries to save CPU
 cycles, maybe at the expense of storage.  However, the EWAH scheme is always
 more efficient storage-wise than an uncompressed bitmap (as implemented in the
 @code{BitSet} class by Sun).")
