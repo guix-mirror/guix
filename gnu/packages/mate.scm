@@ -340,7 +340,7 @@ configurations (profiles).")
 (define-public mate-session-manager
   (package
     (name "mate-session-manager")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -348,7 +348,7 @@ configurations (profiles).")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1kpfmgay01gm74paaxccs3lim4jfb4hsm7i85jfdypr51985pwyj"))))
+         "01scj5d1xlri9b2id8gm9kfni9nzhdjdf7rag7fvcxwqp7baz3h3"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-elogind"
@@ -389,6 +389,7 @@ configurations (profiles).")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
+       ("libxcomposite" ,libxcomposite)
        ("xtrans" ,xtrans)
        ("gobject-introspection" ,gobject-introspection)))
     (inputs
