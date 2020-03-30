@@ -3898,6 +3898,43 @@ completion candidate when using the Company text completion framework.")
 @code{company-math}.")
       (license license:gpl3+))))
 
+(define-public emacs-company-coq
+  (package
+    (name "emacs-company-coq")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/cpitclaudel/company-coq")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0dxi4h8xqq5647k7h89s4pi8nwyj3brlhsckrv3p3b1g4dr6mk3b"))))
+    (inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-company-math" ,emacs-company-math)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-yasnippet" ,emacs-yasnippet)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cpitclaudel/company-coq")
+    (synopsis "Emacs extensions for Proof General's Coq mode")
+    (description "This package includes a collection of Company mode backends
+for Proof-General's Coq mode, and many useful extensions to Proof-General.  It
+features:
+
+@itemize
+@item Prettification of operators, types, and subscripts,
+@item Auto-completion,
+@item Insertion of cases,
+@item Fully explicit intros,
+@item Outlines, code folding, and jumping to definition,
+@item Help with errors,
+@item and more.
+@end itemize")
+    (license license:gpl3+)))
+
 (define-public emacs-company-math
   (let ((commit "600e49449644f6835f9dc3501bc58461999e8ab9")
         (revision "1"))
