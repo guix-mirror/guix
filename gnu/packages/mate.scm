@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -194,14 +195,14 @@ from Mint-X-F and Faenza-Fresh icon packs.")
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version "3.22.20")
+    (version "3.22.21")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/themes/" (version-major+minor version)
                            "/mate-themes-" version ".tar.xz"))
        (sha256
-        (base32 "0c3dhf8p9nc2maky4g9xr04iil9wwbdkmhpzynlc6lfg4ksqq2bx"))))
+        (base32 "051g2vq817g84yrqzf7hjcqr4xrghnw1rprjd6jf5mhhzmwcas6n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
