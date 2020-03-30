@@ -1315,7 +1315,7 @@ can be used as backgrounds in the MATE Desktop environment.")
 (define-public eom
   (package
     (name "eom")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -1323,7 +1323,7 @@ can be used as backgrounds in the MATE Desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "093vbip848bp9y603yasbrg1bcp68m64hma7zhi5m37x2r103r6l"))))
+         "0zzximp2534bky0vac219alafblw6m0lis0gncq92017s6c1mb77"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
