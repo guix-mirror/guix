@@ -1097,7 +1097,7 @@ sessions, panels, menus, file management, and preferences.")
 (define-public mate-calc
   (package
     (name "mate-calc")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -1105,7 +1105,7 @@ sessions, panels, menus, file management, and preferences.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1njk6v7z3969ikvcrabr1lw5f5572vb14w064zm3mydj8cc5inlr"))))
+         "0f7hc1gg41kcwcyvsqqg79qylrp0qqymris8qizk2x3cfvvg7261"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
