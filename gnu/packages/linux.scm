@@ -5647,13 +5647,13 @@ used by nftables.")
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
-    (inputs `(("bison" ,bison)
-              ("flex" ,flex)
-              ("gmp" ,gmp)
+    (inputs `(("gmp" ,gmp)
               ("libmnl" ,libmnl)
               ("libnftnl" ,libnftnl)
               ("readline" ,readline)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("bison" ,bison)
+                     ("flex" ,flex)))
     (home-page "https://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing
