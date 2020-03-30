@@ -3980,13 +3980,14 @@ Compiler component.")))
     (source (origin
               ;; This project doesn't tag releases or publish tarballs, so we take
               ;; the "prepare release plexus-sec-dispatcher-1.4" git commit.
-              (method url-fetch)
-              (uri (string-append "https://github.com/sonatype/plexus-sec-dispatcher/"
-                                  "archive/7db8f88048.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/plexus-sec-dispatcher/")
+                     (commit "7db8f880486e192a1c5ea9544e01e756c3d49d0f")))
               (sha256
                (base32
-                "1smfrk4n7xbrsxpxcp2j4i0j8q86j73w0w6xg7qz83dp6dagdjgp"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1ng4yliy4cqpjr4fxxjbpwyk1wkch5f8vblm1kvwf328s4gibszs"))
+              (file-name (git-file-name name version))))
     (arguments
      `(#:jar-name "plexus-sec-dispatcher.jar"
        #:source-dir "src/main/java"
