@@ -2824,6 +2824,39 @@ format of RSS 1.0.  It can be used to parse these formats in order to create
 the appropriate objects.")
     (license (package-license perl))))
 
+(define-public perl-devel-callchecker
+  (package
+    (name "perl-devel-callchecker")
+    (version "0.008")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Devel-CallChecker-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1p0ij2k2i81zhl7064h9ghld1w5xy2zsbghkpdzm2hjryl5lwn2x"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-b-hooks-op-check" ,perl-b-hooks-op-check)
+       ("perl-dynaloader-functions" ,perl-dynaloader-functions)))
+    (home-page "https://metacpan.org/release/Devel-CallChecker")
+    (synopsis "Custom op checking attached to subroutines")
+    (description "This module makes some new features of the Perl
+5.14.0 C API available to XS modules running on older versions of
+Perl.  The features are centred around the function
+@code{cv_set_call_checker}, which allows XS code to attach a magical
+annotation to a Perl subroutine, resulting in resolvable calls to that
+subroutine being mutated at compile time by arbitrary C code.  This
+module makes @code{cv_set_call_checker} and several supporting
+functions available.")
+    (license perl-license)))
+
 (define-public perl-devel-caller
   (package
     (name "perl-devel-caller")
