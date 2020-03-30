@@ -1150,7 +1150,7 @@ can be used as backgrounds in the MATE Desktop environment.")
 (define-public mate-netbook
   (package
     (name "mate-netbook")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -1158,7 +1158,7 @@ can be used as backgrounds in the MATE Desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "17p1wv9bcr3kvlahnxmxj786vka86nysi90x5xci6ilwyjlaxh0l"))))
+         "1bmk9gq5gcqkvfppa7i1hqfph8sajc3xs189s4ha97g0ifwd98a8"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
