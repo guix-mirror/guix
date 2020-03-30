@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (gnu installer utils)
   #:use-module (gnu installer newt ethernet)
   #:use-module (gnu installer newt final)
+  #:use-module (gnu installer newt help)
   #:use-module (gnu installer newt hostname)
   #:use-module (gnu installer newt keymap)
   #:use-module (gnu installer newt locale)
@@ -44,7 +45,9 @@
 (define (init)
   (newt-init)
   (clear-screen)
-  (set-screen-size!))
+  (set-screen-size!)
+  (push-help-line
+   (format #f (G_ "Press <F1> for help."))))
 
 (define (exit)
   (newt-finish)
@@ -91,8 +94,8 @@ problem. The backtrace is displayed below. Please report it by email to \
 (define (menu-page steps)
   (run-menu-page steps))
 
-(define* (keymap-page layouts)
-  (run-keymap-page layouts))
+(define* (keymap-page layouts context)
+  (run-keymap-page layouts #:context context))
 
 (define (network-page)
   (run-network-page))
@@ -108,6 +111,12 @@ problem. The backtrace is displayed below. Please report it by email to \
 
 (define (services-page)
   (run-services-page))
+
+(define (help-menu menu-proc)
+  (newt-set-help-callback menu-proc))
+
+(define (help-page keyboard-layout-selection)
+  (run-help-page keyboard-layout-selection))
 
 (define newt-installer
   (installer
@@ -125,4 +134,6 @@ problem. The backtrace is displayed below. Please report it by email to \
    (user-page user-page)
    (partition-page partition-page)
    (services-page services-page)
-   (welcome-page welcome-page)))
+   (welcome-page welcome-page)
+   (help-menu help-menu)
+   (help-page help-page)))

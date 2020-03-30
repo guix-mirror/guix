@@ -172,7 +172,7 @@ been performed at build time."
        (kmscon-update-keymap (default-keyboard-model)
                              layout variant))))
 
-(define* (compute-keymap-step)
+(define* (compute-keymap-step context)
   "Return a gexp that runs the keymap-page of INSTALLER and install the
 selected keymap."
   #~(lambda (current-installer)
@@ -184,7 +184,7 @@ selected keymap."
                                    "/share/X11/xkb/rules/base.xml")))
                (lambda (models layouts)
                  ((installer-keymap-page current-installer)
-                  layouts)))))
+                  layouts '#$context)))))
         (#$apply-keymap result)
         result)))
 
@@ -193,10 +193,15 @@ selected keymap."
                       #:locales-name "locales"
                       #:iso639-languages-name "iso639-languages"
                       #:iso3166-territories-name "iso3166-territories"))
-        (keymap-step (compute-keymap-step))
         (timezone-data #~(string-append #$tzdata
                                         "/share/zoneinfo/zone.tab")))
     #~(lambda (current-installer)
+        ((installer-help-menu current-installer)
+         (lambda ()
+           ((installer-help-page current-installer)
+            (lambda _
+              (#$(compute-keymap-step 'help)
+               current-installer)))))
         (list
          ;; Ask the user to choose a locale among those supported by
          ;; the glibc.  Install the selected locale right away, so that
@@ -238,7 +243,8 @@ selected keymap."
           (id 'keymap)
           (description (G_ "Keyboard mapping selection"))
           (compute (lambda _
-                     (#$keymap-step current-installer)))
+                     (#$(compute-keymap-step 'default)
+                      current-installer)))
           (configuration-formatter keyboard-layout->configuration))
 
          ;; Ask the user to input a hostname for the system.
@@ -295,8 +301,8 @@ selected keymap."
 (define guile-newt
   ;; Guile-Newt with 'form-watch-fd'.
   ;; TODO: Remove once a new release is out.
-  (let ((commit "b3c885d42cfac327d3531c9d064939514ce6bf12")
-        (revision "1"))
+  (let ((commit "c3cdeb0b53ac71aedabee669f57d44563c662446")
+        (revision "2"))
     (package
       (inherit (@ (gnu packages guile-xyz) guile-newt))
       (name "guile-newt")
@@ -309,7 +315,7 @@ selected keymap."
                  (file-name (git-file-name name version))
                  (sha256
                   (base32
-                   "02p0bi6c05699idgx6gfkljhqgi8zf09clhzx81i8wa064s70r1y")))))))
+                   "1gksd1lzgjjh1p9vczghg8jw995d22hm34kbsiv8rcryirv2xy09")))))))
 
 (define (installer-program)
   "Return a file-like object that runs the given INSTALLER."

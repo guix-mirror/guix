@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,20 +33,32 @@
   #:export (run-keymap-page
             keyboard-layout->configuration))
 
-(define (run-layout-page layouts layout->text)
+(define (run-layout-page layouts layout->text context)
   (let ((title (G_ "Layout")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Please choose your keyboard layout.")
+     #:info-text
+     (case context
+       ((help) (G_ "Please choose your keyboard layout. \
+It will only be used during the installation process."))
+       (else (G_ "Please choose your keyboard layout. \
+It will be used during the install process, and for the installed system. \
+You can switch to different layout at any time from the help menu.")))
      #:listbox-items layouts
      #:listbox-item->text layout->text
      #:sort-listbox-items? #f
-     #:button-text (G_ "Exit")
+     #:button-text
+     (case context
+       ((help) (G_ "Continue"))
+       (else (G_ "Exit")))
      #:button-callback-procedure
-     (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+     (case context
+       ((help) (const #t))
+       (else
+        (lambda _
+          (raise
+           (condition
+            (&installer-step-abort)))))))))
 
 (define (run-variant-page variants variant->text)
   (let ((title (G_ "Variant")))
@@ -100,7 +112,7 @@
          variants))
     (cut append <> <>)))
 
-(define* (run-keymap-page layouts)
+(define* (run-keymap-page layouts #:key (context #f))
   "Run a page asking the user to select a keyboard layout and variant. LAYOUTS
 is a list of supported X11-KEYMAP-LAYOUT. Return a list of two elements, the
 names of the selected keyboard layout and variant."
@@ -114,7 +126,8 @@ names of the selected keyboard layout and variant."
           (sort-layouts layouts)
           (lambda (layout)
             (gettext (x11-keymap-layout-description layout)
-                     "xkeyboard-config"))))))
+                     "xkeyboard-config"))
+          context))))
      ;; Propose the user to select a variant among those supported by the
      ;; previously selected layout.
      (installer-step
