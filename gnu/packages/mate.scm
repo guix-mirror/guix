@@ -255,7 +255,7 @@ desktop and the mate-about program.")
 (define-public libmateweather
   (package
     (name "libmateweather")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -263,7 +263,7 @@ desktop and the mate-about program.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1ribgcwl4ncfbcf9bkcbxrgc7yzajdnxg12837psngymkqswlp6a"))))
+         "094mnlczxq9crjj8z7dzs1zmwscdkbp54l3qjaf4a4bhd8lihv8d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
