@@ -3221,6 +3221,32 @@ SHA-1 message digest algorithm for use by Perl programs.")
 modules separately and deal with them after the module is done installing.")
     (license (package-license perl))))
 
+(define-public perl-dynaloader-functions
+  (package
+    (name "perl-dynaloader-functions")
+    (version "0.003")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/DynaLoader-Functions-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "10x13q920j9kid7vmbj6fiaz153042dy4mwdmpzrdrxw2ir39ciy"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/DynaLoader-Functions")
+    (synopsis "Deconstructed dynamic C library loading")
+    (description "This module provides a function-based interface to
+dynamic loading as used by Perl.  Some details of dynamic loading are
+very platform-dependent, so correct use of these functions requires
+the programmer to be mindfulof the space of platform variations.")
+    (license perl-license)))
+
 (define-public perl-encode-detect
   (package
     (name "perl-encode-detect")
