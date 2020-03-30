@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2715,6 +2716,29 @@ translate the complete SQLite API into Python.")
 
 (define-public python2-apsw
   (package-with-python2 python-apsw))
+
+(define-public python-aiosqlite
+  (package
+    (name "python-aiosqlite")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiosqlite" version))
+       (sha256
+        (base32
+         "1f3zdldp9zgrw6qz5fsp3wa5zw73cjf139pj4vf24ryv895320jg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-aiounittest" ,python-aiounittest)))
+    (home-page "https://github.com/jreese/aiosqlite")
+    (synopsis
+     "Asyncio bridge for sqlite3")
+    (description
+     "The package aiosqlite replicates the standard sqlite3 module, but with
+async versions of all the standard connection and cursor methods, and context
+managers for automatically closing connections.")
+    (license license:expat)))
 
 (define-public python2-neo4j-driver
   (package
