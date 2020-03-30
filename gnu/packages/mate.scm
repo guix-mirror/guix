@@ -1262,7 +1262,7 @@ can be used as backgrounds in the MATE Desktop environment.")
 (define-public mate-utils
   (package
     (name "mate-utils")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -1270,7 +1270,7 @@ can be used as backgrounds in the MATE Desktop environment.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0kz95hicjksgkwaj83fdp2rnaygfgjbj0jsnwy4n0lj5q90j7r28"))))
+         "1b16n1628gcsym5mph6lr9x5xm4rgkxsa8xwr2wlx8g2gw2775i1"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -1294,6 +1294,7 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("libxext" ,libxext)
        ("mate-panel" ,mate-panel)
        ("pango" ,pango)
+       ("udisks" ,udisks)
        ("zlib" ,zlib)))
     (home-page "https://mate-desktop.org/")
     (synopsis "Utilities for the MATE Desktop")
