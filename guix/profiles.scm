@@ -264,17 +264,24 @@ procedure takes two arguments: the entry name and output."
 (define* (lower-manifest-entry entry system #:key target)
   "Lower ENTRY for SYSTEM and TARGET such that its 'item' field is a store
 file name."
+  (define (recurse entry)
+    (mapm/accumulate-builds (lambda (entry)
+                              (lower-manifest-entry entry system
+                                                    #:target target))
+                            (manifest-entry-dependencies entry)))
+
   (let ((item (manifest-entry-item entry)))
     (if (string? item)
         (with-monad %store-monad
           (return entry))
         (mlet %store-monad ((drv (lower-object item system
                                                #:target target))
+                            (dependencies (recurse entry))
                             (output -> (manifest-entry-output entry)))
           (return (manifest-entry
                     (inherit entry)
-                    ;; TODO: Lower dependencies, recursively.
-                    (item (derivation->output-path drv output))))))))
+                    (item (derivation->output-path drv output))
+                    (dependencies dependencies)))))))
 
 (define* (check-for-collisions manifest system #:key target)
   "Check whether the entries of MANIFEST conflict with one another; raise a
