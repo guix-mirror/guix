@@ -109,6 +109,19 @@
                      (manifest-transaction)))))
     (manifest-transaction-null? tx)))
 
+(test-assert "transaction-upgrade-entry, zero upgrades, equivalent package"
+  (let* ((old (dummy-package "foo" (version "1")))
+         (drv (package-derivation %store old))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list old)))
+                    (transaction-upgrade-entry
+                     %store
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (derivation->output-path drv)))
+                     (manifest-transaction)))))
+    (manifest-transaction-null? tx)))
+
 (test-assert "transaction-upgrade-entry, one upgrade"
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "foo" (version "2")))
