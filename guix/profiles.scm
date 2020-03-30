@@ -89,6 +89,8 @@
             manifest-entry-properties
             lower-manifest-entry
 
+            manifest-entry=?
+
             manifest-pattern
             manifest-pattern?
             manifest-pattern-name
@@ -216,6 +218,33 @@
                 (default #f))
   (output       manifest-pattern-output           ; string | #f
                 (default "out")))
+
+(define (list=? = lst1 lst2)
+  "Return true if LST1 and LST2 have the same length and their elements are
+pairwise equal per =."
+  (match lst1
+    (()
+     (null? lst2))
+    ((head1 . tail1)
+     (match lst2
+       ((head2 . tail2)
+        (and (= head1 head2) (list=? = tail1 tail2)))
+       (()
+        #f)))))
+
+(define (manifest-entry=? entry1 entry2)
+  "Return true if ENTRY1 is equivalent to ENTRY2, ignoring their 'properties'
+field."
+  (match entry1
+    (($ <manifest-entry> name1 version1 output1 item1 dependencies1 paths1)
+     (match entry2
+       (($ <manifest-entry> name2 version2 output2 item2 dependencies2 paths2)
+        (and (string=? name1 name2)
+             (string=? version1 version2)
+             (string=? output1 output2)
+             (equal? item1 item2)      ;XXX: could be <package> vs. store item
+             (equal? paths1 paths2)
+             (list=? manifest-entry=? dependencies1 dependencies2)))))))
 
 (define (manifest-transitive-entries manifest)
   "Return the entries of MANIFEST along with their propagated inputs,

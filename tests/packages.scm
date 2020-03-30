@@ -122,6 +122,28 @@
                      (manifest-transaction)))))
     (manifest-transaction-null? tx)))
 
+(test-assert "transaction-upgrade-entry, zero upgrades, propagated inputs"
+  ;; Properly detect equivalent packages even when they have propagated
+  ;; inputs.  See <https://bugs.gnu.org/35872>.
+  (let* ((dep (dummy-package "dep" (version "2")))
+         (old (dummy-package "foo" (version "1")
+                             (propagated-inputs `(("dep" ,dep)))))
+         (drv (package-derivation %store old))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list old)))
+                    (transaction-upgrade-entry
+                     %store
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (derivation->output-path drv))
+                       (dependencies
+                        (list (manifest-entry
+                                (inherit (package->manifest-entry dep))
+                                (item (derivation->output-path
+                                       (package-derivation %store dep)))))))
+                     (manifest-transaction)))))
+    (manifest-transaction-null? tx)))
+
 (test-assert "transaction-upgrade-entry, one upgrade"
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "foo" (version "2")))

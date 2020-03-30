@@ -240,14 +240,9 @@ non-zero relevance score."
                     ;; displaying the list of packages to install/upgrade
                     ;; upfront.  Thus, if lowering NEW triggers a build (due
                     ;; to grafts), assume NEW differs from ENTRY.
-
-                    ;; XXX: When there are propagated inputs, assume we need to
-                    ;; upgrade the whole entry.
-                    (if (and (with-build-handler (const #f)
-                               (string=? (manifest-entry-item
-                                          (lower-manifest-entry* new))
-                                         (manifest-entry-item entry)))
-                             (null? (package-propagated-inputs pkg)))
+                    (if (with-build-handler (const #f)
+                          (manifest-entry=? (lower-manifest-entry* new)
+                                            entry))
                         transaction
                         (manifest-transaction-install-entry
                          new transaction)))))))))
