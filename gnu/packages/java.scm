@@ -3889,12 +3889,14 @@ from source tags and class annotations.")))
     (name "java-plexus-cipher")
     (version "1.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-cipher"
-                                  "/archive/plexus-cipher-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-cipher")
+                     (commit (string-append "plexus-cipher-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j3r8xzlxlk340snkjp6lk2ilkxlkn8qavsfiq01f43xmvv8ymk3"))))
+                "0m638nzlxbmnbcj5cwdpgs326ab584yv0k803zlx37r6iqwvf6b0"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-cipher.jar"
