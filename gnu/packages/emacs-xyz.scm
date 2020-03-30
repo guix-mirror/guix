@@ -7831,6 +7831,30 @@ a popup window for previewing candidates.")
 arguments, such as arguments separated by commas and semicolons.")
       (license license:expat))))
 
+(define-public emacs-evil-escape
+  (package
+    (name "emacs-evil-escape")
+    (version "3.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/syl20bnr/evil-escape")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0s8lmmm25qabicwaj9jybpbd8mkc62yl7jnhk1lpablydjkv3w2i"))))
+    (propagated-inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/syl20bnr/evil-escape")
+    (synopsis "Escape from insert state and everything else in Emacs")
+    (description
+     "Evil escape provides a customizable key sequence to escape from insert
+state and everything else in Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-exchange
   (let ((commit "47691537815150715e64e6f6ec79be7746c96120")
         (version "0.41")
