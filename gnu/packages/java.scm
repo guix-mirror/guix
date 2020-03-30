@@ -4102,12 +4102,14 @@ Plexus components.")
     (name "java-sisu-build-api")
     (version "0.0.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sonatype/sisu-build-api/"
-                                  "archive/plexus-build-api-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/sisu-build-api")
+                     (commit (string-append "plexus-build-api-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c3rrpma3x634xp2rm2p5iskfhzdyc7qfbhjzr70agrl1jwghgy2"))))
+                "1d5w6c58gkx30d51v7qwv1xrhc0ly76848gihmgshj19yf6yhca0"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "sisu-build-api.jar"
