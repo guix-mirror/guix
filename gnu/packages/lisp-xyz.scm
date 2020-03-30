@@ -6643,8 +6643,8 @@ which implements a set of utilities.")
   (sbcl-package->ecl-package sbcl-metatilities-base))
 
 (define-public sbcl-cl-containers
-  (let ((commit "b2980bac9ac87ad32b63b722ce520fa26cb36ee6")
-        (revision "2"))
+  (let ((commit "3d1df53c22403121bffb5d553cf7acb1503850e7")
+        (revision "3"))
     (package
       (name "sbcl-cl-containers")
       (version (git-version "0.12.1" revision commit))
@@ -6657,7 +6657,7 @@ which implements a set of utilities.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "19hmlax19hq0xjaqr8za90vwf06ymxw1m29sj053a309k3hm84gx"))))
+           "18s6jfq11n8nv9k4biz32pm1s7y9zl054ry1gmdbcf39nisy377y"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("lift" ,sbcl-lift)))
