@@ -234,11 +234,19 @@ non-zero relevance score."
                   transaction)
                  ((=)
                   (let* ((new (package->manifest-entry* pkg output)))
+                    ;; Here we want to determine whether the NEW actually
+                    ;; differs from ENTRY, but we need to intercept
+                    ;; 'build-things' calls because they would prevent us from
+                    ;; displaying the list of packages to install/upgrade
+                    ;; upfront.  Thus, if lowering NEW triggers a build (due
+                    ;; to grafts), assume NEW differs from ENTRY.
+
                     ;; XXX: When there are propagated inputs, assume we need to
                     ;; upgrade the whole entry.
-                    (if (and (string=? (manifest-entry-item
-                                        (lower-manifest-entry* new))
-                                       (manifest-entry-item entry))
+                    (if (and (with-build-handler (const #f)
+                               (string=? (manifest-entry-item
+                                          (lower-manifest-entry* new))
+                                         (manifest-entry-item entry)))
                              (null? (package-propagated-inputs pkg)))
                         transaction
                         (manifest-transaction-install-entry
