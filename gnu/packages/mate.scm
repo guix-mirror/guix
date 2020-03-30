@@ -624,7 +624,7 @@ Interactive Weather Information Network (IWIN).
 (define-public mate-media
   (package
     (name "mate-media")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -632,7 +632,7 @@ Interactive Weather Information Network (IWIN).
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0jrxbz00vjas0yp3ixvyzfsdby2ac3p3bds9yd7q1437mmhf71mj"))))
+         "1d5dx79yfqghjaxrdrdh053nfnvkbx8p3ma7j87s7rsvy5irs963"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
