@@ -551,7 +551,7 @@ assorted menu related utility programs.")
 (define-public mate-applets
   (package
     (name "mate-applets")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -559,7 +559,7 @@ assorted menu related utility programs.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0f5ym6z7awi0kw6i1sdkj2qly88sl692j5r1zhklihyz1z9a6j0h"))))
+         "0nm3amb3v458mxv1mbz9y8f4230gldmydmkkm7vqxsrxbccynkxq"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
