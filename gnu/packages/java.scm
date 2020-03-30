@@ -4528,13 +4528,14 @@ mock objects in unit testing.")
     (name "java-jmock")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jmock-developers/"
-                                  "jmock-library/archive/" version ".tar.gz"))
-              (file-name (string-append "jmock-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jmock-developers/jmock-library")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xmrlhq0fszldkbv281k9463mv496143vvmqwpxp62yzjvdkx9w0"))))
+                "0lkga995xd9b9mmzxmcd301hlw83p1h78nibh7djlx7wydscr85z"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "jars"
@@ -4542,7 +4543,7 @@ mock objects in unit testing.")
        #:phases
        (modify-phases %standard-phases
          (replace 'install (install-jars "build")))))
-    (home-page "http://www.jmock.org")
+    (home-page "http://jmock.org/")
     (synopsis "Mock object library for test-driven development")
     (description "JMock is a library that supports test-driven development of
 Java code with mock objects.  Mock objects help you design and test the
