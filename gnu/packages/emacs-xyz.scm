@@ -16352,6 +16352,49 @@ and 'text viewing modes' respectively.")
 files.  It focuses on highlighting the document to improve readability.")
     (license license:gpl2+)))
 
+(define-public emacs-racer
+  (package
+    (name "emacs-racer")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/racer-rust/emacs-racer")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xj5iki10cg8j8vvqjlw6lfx97k3agwirhchcjnzbnkry48x9qi6"))))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("\\$\\{CASK\\} exec ") ""))
+             #t)))))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)
+       ("emacs-undercover" ,emacs-undercover)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-pos-tip" ,emacs-pos-tip)
+       ("emacs-rust-mode" ,emacs-rust-mode)
+       ("emacs-s" ,emacs-s)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/racer-rust/emacs-racer")
+    (synopsis "Racer support for Emacs")
+    (description
+     "This is the official Emacs package for Racer.  It supports code
+completion of variables, functions and modules.  It can also jump to
+definition of functions and types, and show a help buffer based on the
+docstring of the thing at point.")
+    (license license:expat)))
+
 (define-public emacs-rust-mode
   (package
     (name "emacs-rust-mode")
