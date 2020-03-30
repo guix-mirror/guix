@@ -1485,6 +1485,42 @@ always indented.  It reindents after every change, making it more reliable
 than @code{electric-indent-mode}.")
     (license license:gpl2+)))
 
+(define-public emacs-dhall-mode
+  ;; There is no proper release.  The base version is extracted from the
+  ;; "Version" keyword in the main file.
+  (let ((revision "0")
+        (commit  "ef4d33debe224c6ba37e51a29b9dc8b74f20f1c2"))
+    (package
+      (name "emacs-dhall-mode")
+      (version (git-version "0.1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/psibi/dhall-mode")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1232y2k4l3bsz90pgis78zxmrw7jv09dfaip21yc1w4vpxfyr384"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-reformatter" ,emacs-reformatter)))
+      (home-page "https://github.com/psibi/dhall-mode")
+      (synopsis "Major mode for working with Dhall configuration language")
+      (description
+       "Dhall-mode provides an Emacs Major mode for working with the Dhall
+configuration language. It features:
+
+@itemize
+@item Syntax highlighting
+@item Multiline support for String
+@item Basic indendation, commenting
+@item Automatic formatting on save using dhall-format.
+@item Error highlighting.
+@end itemize")
+      (license license:gpl3+))))
+
 (define-public emacs-link-hint
   ;; Last release was in 2015.
   (let ((commit "d74a483652486260c052941fedeadddb1ea71f88")
