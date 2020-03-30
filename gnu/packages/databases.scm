@@ -2206,6 +2206,41 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public python2-peewee
   (package-with-python2 python-peewee))
 
+(define-public python-tortoise-orm
+  (package
+    (name "python-tortoise-orm")
+    (version "0.16.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tortoise-orm" version))
+       (sha256
+        (base32
+         "01hbvfyxs2qd1mjc96aipwsdxxhydw8ww686r4gsf87bl6f98dvz"))))
+    (build-system python-build-system)
+    ;; Disable tests for now. They pull in a lot of dependencies.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("python-ciso8601" ,python-ciso8601)
+       ("python-asynctest" ,python-asynctest)
+       ("python-nose2" ,python-nose2)))
+    (propagated-inputs
+     `(("python-aiosqlite" ,python-aiosqlite)
+       ("python-pypika" ,python-pypika)
+       ("python-typing-extensions"
+        ,python-typing-extensions)))
+    (home-page
+     "https://github.com/tortoise/tortoise-orm")
+    (synopsis
+     "Easy async ORM for python, built with relations in mind")
+    (description
+     "Tortoise ORM is an easy-to-use asyncio ORM (Object Relational Mapper)
+inspired by Django.  Tortoise ORM was build with relations in mind and
+admiration for the excellent and popular Django ORM.  It’s engraved in its
+design that you are working not with just tables, you work with relational
+data.")
+    (license license:asl2.0)))
+
 (define-public sqlcipher
   (package
     (name "sqlcipher")
