@@ -7051,13 +7051,14 @@ StringTemplate also powers ANTLR.")
     (name "antlr3")
     (version "3.5.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/antlr/antlr3/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr3")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0218v683081lg54z9hvjxinhxd4dqp870jx6n39gslm0bkyi4vd6"))))
+                "0cafavrjmzqhklghrk8c2jqxkdwxgzskm20pbrfd3r41cn00dpnf"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
