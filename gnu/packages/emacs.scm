@@ -19,7 +19,7 @@
 ;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
-;;; Copyright © 2019 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -290,6 +290,8 @@ languages.")
              #t))))
       (arguments
        (substitute-keyword-arguments (package-arguments emacs)
+         ((#:configure-flags flags)
+          `(cons* "--with-harfbuzz" ,flags))
          ((#:phases phases)
           `(modify-phases ,phases
              ;; The 'reset-gzip-timestamps phase will throw a
@@ -318,6 +320,7 @@ languages.")
                    #t)))))))
       (inputs
        `(("jansson" ,jansson)
+         ("harfbuzz" ,harfbuzz)
          ,@(package-inputs emacs)))
       (native-inputs
        `(("autoconf" ,autoconf)      ; needed when building from trunk

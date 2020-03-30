@@ -32,6 +32,7 @@
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,11 +50,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages admin)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix utils)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
@@ -61,42 +57,59 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages hurd)
-  #:use-module (gnu packages libbsd)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages guile)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages hurd)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages inkscape)
+  #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libftdi)
+  #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
+  #:use-module (gnu packages patchutils)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages tcl)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages cross-base)
-  #:use-module (gnu packages tls)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages flex)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages openldap)
-  #:use-module (gnu packages mcrypt)
-  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
@@ -104,28 +117,17 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages groff)
-  #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages libunwind)
-  #:use-module (gnu packages libusb)
-  #:use-module (gnu packages libftdi)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages man)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages kerberos)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages boost)
-  #:use-module (gnu packages elf)
-  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public aide
   (package
@@ -1605,7 +1607,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200214")
+    (version "20200326")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1613,7 +1615,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0jdasziq184l3iqyp5vhrsbi6g89n10wr0ssliiz0xi3dqwsxcqk"))))
+                "0y08l6djjn87jmsp5kj0myjdb48000g20xlfs0a22jzzi383h3by"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2496,7 +2498,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.29")
+    (version "3.30")
     (source
      (origin
        (method git-fetch)
@@ -2505,7 +2507,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qhxwjjgrzpqrqjv7l2847ywpln76lyd6j8bl9gz2r6kl0fx2fqs"))
+        (base32 "0fnf78956pwhb9cgv1jmgypnkma5xzflkivfrkfiadbgin848yfg"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2527,7 +2529,8 @@ throughput (in the same interval).")
        ("python-pyte" ,python-pyte)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("go" ,go)
+       ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/nvbn/thefuck")
@@ -2880,7 +2883,7 @@ buffers.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
+    (home-page "https://gitlab.freedesktop.org/drm/igt-gpu-tools")
     (synopsis "Tools for development and testing of the Intel DRM driver")
     (description "IGT GPU Tools is a collection of tools for development and
 testing of the Intel DRM driver.  There are many macro-level test suites that
@@ -2892,9 +2895,6 @@ low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
-
-(define-public intel-gpu-tools
-  (deprecated-package "intel-gpu-tools" igt-gpu-tools))
 
 (define-public fabric
   (package
@@ -2943,35 +2943,34 @@ tool for remote execution and deployment.")
     (license license:bsd-2)))
 
 (define-public neofetch
-  (let ((commit "501d6b7594296d9eac8943140f8581daf555873d"))
-    (package
-      (name "neofetch")
-      (version (git-version "6.1.0" "1" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/dylanaraps/neofetch")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1h5md9jimyc6z4d7w66j27hn8qghzyxgpkh5h9dclzxpp5cs8whb"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:tests? #f                      ; there are no tests
-         #:make-flags
-         (list (string-append "PREFIX=" %output))
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure))))         ; no configure script
-      (home-page "https://github.com/dylanaraps/neofetch")
-      (synopsis "System information script")
-      (description "Neofetch is a command-line system information tool written in
+  (package
+    (name "neofetch")
+    (version "7.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dylanaraps/neofetch")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xc0fdc7n5bhqirh83agqiy8r14l14zwca07czvj8vgnsnfybslr"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; there are no tests
+       #:make-flags
+       (list (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ; no configure script
+    (home-page "https://github.com/dylanaraps/neofetch")
+    (synopsis "System information script")
+    (description "Neofetch is a command-line system information tool written in
 Bash.  Neofetch displays information about your system next to an image, your OS
 logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public screenfetch
   (package

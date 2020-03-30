@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -467,9 +468,9 @@ scrollable tiling of windows and per monitor workspaces.  It's inspired by paper
 notebooks and tiling window managers.")
     (license license:gpl3)))
 
-(define-public numix-theme
+(define-public numix-gtk-theme
   (package
-    (name "numix-theme")
+    (name "numix-gtk-theme")
     (version "2.6.7")
     (source (origin
               (method git-fetch)
@@ -482,11 +483,14 @@ notebooks and tiling window managers.")
                 "12mw0kr0kkvg395qlbsvkvaqccr90cmxw5rrsl236zh43kj8grb7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+     '(#:make-flags
+       (list (string-append "INSTALL_DIR="
+                            (assoc-ref %outputs "out")
+                            "/share/themes/Numix"))
+       #:tests? #f
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check))))
+         (delete 'configure))))             ; no configure script
     (native-inputs
      `(("glib:bin" ,glib "bin")             ; for glib-compile-schemas
        ("gnome-shell" ,gnome-shell)
@@ -498,6 +502,9 @@ notebooks and tiling window managers.")
 dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
     (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
+
+(define-public numix-theme
+  (deprecated-package "numix-theme" numix-gtk-theme))
 
 (define-public papirus-icon-theme
   (let ((version "0.0.0") ;; The package does not use semver

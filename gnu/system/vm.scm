@@ -186,12 +186,15 @@ made available under the /xchg CIFS share."
     ;; the initrd.  See example at
     ;; <https://lists.gnu.org/archive/html/guix-devel/2017-10/msg00233.html>.
     (program-file "linux-vm-loader"
-                  ;; When USER-BUILDER succeeds, reboot (indicating a
-                  ;; success), otherwise die, which causes a kernel panic
-                  ;; ("Attempted to kill init!").
-                  #~(if (zero? (system* #$user-builder))
-                        (reboot)
-                        (exit 1))))
+                  ;; Communicate USER-BUILDER's exit status via /xchg so that
+                  ;; the host can distinguish between success, failure, and
+                  ;; kernel panic.
+                  #~(let ((status (system* #$user-builder)))
+                      (call-with-output-file "/xchg/.exit-status"
+                        (lambda (port)
+                          (write status port)))
+                      (sync)
+                      (reboot))))
 
   (let ((initrd (or initrd
                     (base-initrd file-systems

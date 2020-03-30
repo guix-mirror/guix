@@ -241,10 +241,6 @@ APNG patch provides APNG support to libpng.")
 images.  It can further losslessly compress them by as much as 40%.")
    (license license:zlib)))
 
-(define-public pngcrunch
-  ;; This package used to be wrongfully name "pngcrunch".
-  (deprecated-package "pngcrunch" pngcrush))
-
 (define-public pnglite
   (let ((commit "11695c56f7d7db806920bd9229b69f230e6ffb38")
         (revision "1"))
@@ -1327,7 +1323,7 @@ ISO/IEC 15444-1).")
               (commit (string-append "release-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "12bs2rfmmy021087i10vxibdbbvd5vld0vk3h5hymhpz7rgszcmg"))))
+         (base32 "1dqyrq3p8bkgvj4ci50ac342hjnhyz6xxvhiwp7wpi3v3nbj7s02"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

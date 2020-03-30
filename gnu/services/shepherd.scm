@@ -269,7 +269,11 @@ and return the resulting '.go' file."
                          (module-use! env (resolve-interface '(oop goops)))
                          (module-use! env (resolve-interface '(shepherd service)))
                          (compile-file #$file #:output-file #$output
-                                       #:env env))))))
+                                       #:env env)))
+
+                   ;; It's faster to build locally than to download.
+                   #:options '(#:local-build? #t
+                               #:substitutable? #f))))
 
 (define (shepherd-configuration-file services)
   "Return the shepherd configuration file for SERVICES."

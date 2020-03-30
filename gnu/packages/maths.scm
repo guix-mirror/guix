@@ -29,7 +29,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2018 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
@@ -1648,9 +1648,6 @@ script files.")
                   "qscintilla2_qt5"))
                #t))))))))
 
-(define-public qtoctave
-  (deprecated-package "qtoctave" octave))
-
 (define-public opencascade-oce
   (package
     (name "opencascade-oce")
@@ -3124,7 +3121,7 @@ directly in C++, or quick conversion of research code into production
 environments.  It can be used for machine learning, pattern recognition,
 signal processing, bioinformatics, statistics, econometrics, etc.  The library
 provides efficient classes for vectors, matrices and cubes, as well as 150+
-associated functions (eg. contiguous and non-contiguous submatrix views).")
+associated functions (e.g., contiguous and non-contiguous submatrix views).")
     (license license:asl2.0)))
 
 (define-public muparser
@@ -4212,6 +4209,10 @@ as equations, scalars, vectors, and matrices.")
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'enable-bytecode-determinism
+           (lambda _
+             (setenv "PYTHONHASHSEED" "0")
+             #t))
          (add-after 'unpack 'fix-compatability
            ;; Versions after 4.8.3 have immintrin.h IFDEFed for Windows only.
            (lambda _

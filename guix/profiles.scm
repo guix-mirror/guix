@@ -280,29 +280,37 @@ file name."
   (define lookup
     (manifest-entry-lookup manifest))
 
-  (with-monad %store-monad
+  (define candidates
+    (filter-map (lambda (entry)
+                  (let ((other (lookup (manifest-entry-name entry)
+                                       (manifest-entry-output entry))))
+                    (and other (list entry other))))
+                (manifest-transitive-entries manifest)))
+
+  (define lower-pair
+    (match-lambda
+      ((first second)
+       (mlet %store-monad ((first  (lower-manifest-entry first system
+                                                         #:target target))
+                           (second (lower-manifest-entry second system
+                                                         #:target target)))
+         (return (list first second))))))
+
+  ;; Start by lowering CANDIDATES "in parallel".
+  (mlet %store-monad ((lst (mapm/accumulate-builds lower-pair candidates)))
     (foldm %store-monad
-           (lambda (entry result)
-             (match (lookup (manifest-entry-name entry)
-                            (manifest-entry-output entry))
-               ((? manifest-entry? second)        ;potential conflict
-                (mlet %store-monad ((first (lower-manifest-entry entry system
-                                                                 #:target
-                                                                 target))
-                                    (second (lower-manifest-entry second system
-                                                                  #:target
-                                                                  target)))
-                  (if (string=? (manifest-entry-item first)
-                                (manifest-entry-item second))
-                      (return result)
-                      (raise (condition
-                              (&profile-collision-error
-                               (entry first)
-                               (conflict second)))))))
-               (#f                                ;no conflict
-                (return result))))
+           (lambda (entries result)
+             (match entries
+               ((first second)
+                (if (string=? (manifest-entry-item first)
+                              (manifest-entry-item second))
+                    (return result)
+                    (raise (condition
+                            (&profile-collision-error
+                             (entry first)
+                             (conflict second))))))))
            #t
-           (manifest-transitive-entries manifest))))
+           lst)))
 
 (define* (package->manifest-entry package #:optional (output "out")
                                   #:key (parent (delay #f))
@@ -1523,10 +1531,9 @@ are cross-built for TARGET."
                                                          #:target target)))
                        (extras (if (null? (manifest-entries manifest))
                                    (return '())
-                                   (mapm %store-monad
-                                         (lambda (hook)
-                                           (hook manifest))
-                                         hooks))))
+                                   (mapm/accumulate-builds (lambda (hook)
+                                                             (hook manifest))
+                                                           hooks))))
     (define inputs
       (append (filter-map (lambda (drv)
                             (and (derivation? drv)

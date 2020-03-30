@@ -329,9 +329,6 @@ the more advanced player there are new game modes and a wide variety of
 physics settings to tweak as well.")
     (license license:gpl2+)))
 
-(define-public armagetron-advanced
-  (deprecated-package "armagetron-advanced" armagetronad))
-
 (define-public bastet
   (package
     (name "bastet")
@@ -460,9 +457,6 @@ powerful monstrosities, from zombies to giant insects to killer robots and
 things far stranger and deadlier, and against the others like yourself, that
 want what you have.")
       (license license:cc-by-sa3.0))))
-
-(define-public cataclysm-dark-days-ahead
-  (deprecated-package "cataclysm-dark-days-ahead" cataclysm-dda))
 
 (define-public corsix-th
   (package
@@ -1151,9 +1145,6 @@ beginners and advanced players.  In addition to a command-line interface, it
 also features an attractive, 3D representation of the playing board.")
     (license license:gpl3+)))
 
-(define-public gnubackgammon
-  (deprecated-package "gnubackgammon" gnubg))
-
 (define-public gnubik
   (package
     (name "gnubik")
@@ -1703,9 +1694,6 @@ expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
     (license license:gpl3)))
-
-(define-public l-abbaye-des-morts
-  (deprecated-package "l-abbaye-des-morts" abbaye))
 
 (define-public angband
   (package
@@ -2825,9 +2813,6 @@ experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
 
-(define-public the-battle-for-wesnoth
-  (deprecated-package "the-battle-for-wesnoth" wesnoth))
-
 (define-public wesnoth-server
   (package
     (inherit wesnoth)
@@ -2843,9 +2828,6 @@ next campaign.")
     (synopsis "Dedicated @emph{Battle for Wesnoth} server")
     (description "This package contains a dedicated server for @emph{The
 Battle for Wesnoth}.")))
-
-(define-public the-battle-for-wesnoth-server
-  (deprecated-package "the-battle-for-wesnoth-server" wesnoth-server))
 
 (define-public gamine
   (package
@@ -3779,9 +3761,6 @@ in strikes against the evil corporation.")
                    license:cc-by-sa3.0
                    license:cc0
                    license:public-domain))))
-
-(define-public project-starfighter
-  (deprecated-package "project-starfighter" starfighter))
 
 (define-public chromium-bsu
   (package
@@ -4719,9 +4698,6 @@ small robot living in the nano world, repair its maker.")
     ;; for a statement from the author.
     (license license:public-domain)))
 
-(define-public kiki-the-nano-bot
-  (deprecated-package "kiki-the-nano-bot" kiki))
-
 (define-public teeworlds
   (package
     (name "teeworlds")
@@ -4991,9 +4967,6 @@ underwater realm quarrel among themselves or comment on the efforts of your
 fish.  The whole game is accompanied by quiet, comforting music.")
     (license license:gpl2+)))
 
-(define-public fish-fillets-ng
-  (deprecated-package "fish-fillets-ng" fillets-ng))
-
 (define-public crawl
   (package
     (name "crawl")
@@ -5073,9 +5046,6 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
                    license:zlib
                    license:asl2.0))))
 
-(define-public dungeon-crawl-stone-soup
-  (deprecated-package "dungeon-crawl-stone-soup" crawl))
-
 ;; The linter here claims that patch file names should start with the package
 ;; name. But, in this case, the patches are inherited from crawl with the
 ;; "crawl-" prefix instead of "crawl-tiles-".
@@ -5111,9 +5081,6 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
        ("pngcrush" ,pngcrush)
        ("which" ,which)))
     (synopsis "Graphical roguelike dungeon crawler game")))
-
-(define-public dungeon-crawl-stone-soup-tiles
-  (deprecated-package "dungeon-crawl-stone-soup-tiles" crawl-tiles))
 
 (define-public lugaru
   (package
@@ -5517,9 +5484,6 @@ abilities and powers.  With a modern graphical and customisable interface,
 intuitive mouse control, streamlined mechanics and deep, challenging combat,
 Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
     (license license:gpl3+)))
-
-(define-public tales-of-maj-eyal
-  (deprecated-package "tales-of-maj-eyal" tome4))
 
 (define-public quakespasm
   (package
@@ -6986,9 +6950,6 @@ and cooperative.")
     ;; developers.
     (license (list license:gpl2+ license:lgpl2.1+))))
 
-(define-public battle-tanks
-  (deprecated-package "battle-tanks" btanks))
-
 (define-public slingshot
   (package
     (name "slingshot")
@@ -7188,9 +7149,6 @@ Edgar fears the worst: he has been captured by the evil sorcerer who lives in
 a fortress beyond the forbidden swamp.")
     (home-page "https://www.parallelrealities.co.uk/games/edgar/")
     (license license:gpl2+)))
-
-(define-public the-legend-of-edgar
-  (deprecated-package "the-legend-of-edgar" edgar))
 
 (define-public openclonk
   (package

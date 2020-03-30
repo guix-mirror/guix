@@ -1409,7 +1409,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.12")
+    (version "0.9.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -1417,7 +1417,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1amxrl1cqwgncw5437r572frgf6xhss3cfpbgh178i8phlq1q731"))))
+                "0bb48myvgvqcibwm68qhd4852pjr2g19rasf059a799d1hzgfq3l"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1441,7 +1441,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.12")
+    (version "0.9.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -1449,7 +1449,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0hmnmk9vvi43wl6say0dg7j088h7mmwmfdwjhsq89c7i7cpg78da"))))
+                "1h88sakxs0b20k8v2sh14y05fin1zqmhnid6h9mk9c37ixxg58ia"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1474,7 +1474,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.12")
+    (version "0.9.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -1482,7 +1482,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0xzjxiqzcf1ygabrjsy0iachhnpy85rp9519fmj2f568r6ml6hzg"))))
+                "0clsp6s5qfnh0xaxbd35vq2ppi72q9dfayrzlgl73800a8p7gh9m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1507,7 +1507,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.12")
+    (version "0.9.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -1515,7 +1515,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1zz3rz990k819q0rlzllqdwvag0x9k63443lb0mp8lwlczxnza6l"))))
+                "1c1zllph86qswcxddz4vpsj6r9w21hbv4gkba0pyd3q7pbfqr7nz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -5293,3 +5293,93 @@ as JACK standalone applications.")
 automation that comes as an LV2 plugin bundle with a custom UI.")
     (home-page "https://git.zrythm.org/cgit/ZLFO/")
     (license license:agpl3+)))
+
+(define-public vl1-emulator
+  (package
+    (name "vl1-emulator")
+    (version "1.1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linuxmao-org/VL1-emulator.git")
+             (commit (string-append "v" version))
+             ;; bundles a specific commit of the DISTRHO plugin framework
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1npc86vqma8gk1hawa0lii0r2xmnv846plyl1ci3bdswyrdk5chm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no check target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ;no configure target
+    (inputs
+     `(("cairo" ,cairo)
+       ("jack" ,jack-1)
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/linuxmao-org/VL1-emulator")
+    (synopsis "Emulator of Casio VL-Tone VL1")
+    (description "The VL1-Emulator is an emulator of Casio VL-Tone VL1,
+based on source code by PolyValens, offered as an LV2 plugin and a
+standalone JACK application.")
+    ;; Expat or CC0
+    (license (list license:expat license:cc0))))
+
+(define-public regrader
+  (package
+    (inherit vl1-emulator)
+    (name "regrader")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linuxmao-org/regrader.git")
+             (commit (string-append "v" version))
+             ;; bundles a specific commit of the DISTRHO plugin framework
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0gl4d5lf2afqknz22jz7hh7029sc9v1xrz6nbz9dlv42bwc0cvl0"))))
+    (home-page "https://github.com/linuxmao-org/regrader")
+    (synopsis "Delay effect plugin")
+    (description
+     "Regrader is a delay effect where the repeats degrade in resolution.
+This is an unofficial port of the Regrader plugin created by Igorski.  It
+is available as an LV2 plugin and a standalone JACK application.")
+    (license license:expat)))
+
+(define-public fogpad
+  (package
+    (inherit vl1-emulator)
+    (name "fogpad")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/linuxmao-org/fogpad")
+             (commit (string-append "v" version))
+             ;; bundles a specific commit of the DISTRHO plugin framework
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1j1hbya2dsqpf22zkpi4kwz3dram9g1ndxzmgfwpmf3i4jd3csgb"))))
+    (home-page "https://github.com/linuxmao-org/fogpad")
+    (synopsis "Reverb effect plugin")
+    (description
+     "Fogpad is a reverb effect in which the reflections can be frozen,
+filtered, pitch shifted and ultimately disintegrated.  This is an unofficial
+port of the Regrader plugin created by Igorski.  It is available as an LV2
+plugin and a standalone JACK application.")
+    (license license:expat)))

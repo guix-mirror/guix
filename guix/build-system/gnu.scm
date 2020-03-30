@@ -151,8 +151,8 @@ so that they use INPUTS (a thunk) instead of implicit inputs."
         p))
 
   (define (cut? p)
-    (and (eq? (package-build-system p) gnu-build-system)
-         (memq #:implicit-inputs? (package-arguments p))))
+    (or (not (eq? (package-build-system p) gnu-build-system))
+        (memq #:implicit-inputs? (package-arguments p))))
 
   (package-mapping add-explicit-inputs cut?))
 

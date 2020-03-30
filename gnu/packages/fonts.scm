@@ -29,7 +29,8 @@
 ;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
-;;; Copyright © 2020 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1569,7 +1570,7 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -1577,7 +1578,7 @@ This package provides the TrueType fonts.")
         (string-append "https://download.jetbrains.com/fonts/"
                        "JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "0qlp4902i1v6ni04b6gdip8rxw6wpkdk9w7dir1yn9an5mvbkyar"))))
+        (base32 "0zvhwmpdwpm4vywmm6i9a4najz0c7vfi411yikgkd66l5hwd1p6f"))))
     (build-system font-build-system)
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")

@@ -172,8 +172,7 @@ the leaves of a full binary tree.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)
+         (delete 'configure)            ; no configure script
          (add-after 'install 'install-xsession
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -195,6 +194,8 @@ the leaves of a full binary tree.")
          (list "CC=gcc"
                (string-append "PREFIX=''")
                (string-append "DESTDIR=" out)
+               (string-append "FISHCOMPLETIONDIR="
+                              "/share/fish/vendor_completions.d")
                (string-append "BASHCOMPLETIONDIR=" out
                               "/etc/bash_completion.d")))))
     (synopsis "Tiling window manager for X11")

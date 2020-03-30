@@ -183,7 +183,7 @@ Export/import one or more packages from/to the store.\n"))
                                  (alist-delete 'verbosity result)))))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+                   (alist-cons 'dry-run? #t result)))
 
          %standard-build-options))
 

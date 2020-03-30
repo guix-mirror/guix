@@ -92,7 +92,7 @@
                      ("cross-binutils" ,(cross-binutils "xtensa-elf" binutils-2.33))
                      ("cmake" ,cmake-minimal)
                      ("perl" ,perl)))
-    (home-page "http://wireless.kernel.org/en/users/Drivers/ath9k_htc")
+    (home-page "https://wireless.wiki.kernel.org/en/users/Drivers/ath9k_htc")
     (synopsis "Firmware for the Atheros AR7010 and AR9271 USB 802.11n NICs")
     (description
      "This is the firmware for the Qualcomm Atheros AR7010 and AR9271 USB

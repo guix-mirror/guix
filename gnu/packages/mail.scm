@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -144,14 +144,14 @@
 (define-public mailutils
   (package
     (name "mailutils")
-    (version "3.8")
+    (version "3.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mailutils/mailutils-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1wkn9ch664477r4d8jk9153w5msljsbj99907k7zgzpmywbs6ba7"))))
+               "1g1xf2lal04nsnf1iym9n9n0wxjpqbcr9nysxpm98v4pniinqwsz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -166,7 +166,8 @@
              ;; Tests try to invoke 'mda' such that it looks up the
              ;; 'root' user, which does not exist in the build
              ;; environment.
-             (substitute* "mda/tests/testsuite"
+             (substitute* '("mda/mda/tests/testsuite"
+                            "mda/lmtpd/tests/testsuite")
                (("root <")         "nobody <")
                (("spool/root")     "spool/nobody")
                (("root@localhost") "nobody@localhost"))
@@ -1259,6 +1260,10 @@ which can add many functionalities to the base client.")
                (install-file (string-append msmtpq "/msmtp-queue") bin)
                (install-file (string-append msmtpq "/README.msmtpq") doc)
                (install-file "scripts/vim/msmtp.vim" vimfiles)
+               ;; Don't rely on netcat being in the PATH to test for a
+               ;; connection, instead try tp ing debian.org.
+               (substitute* (string-append bin "/msmtpq")
+                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
                #t))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")

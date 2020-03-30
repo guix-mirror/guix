@@ -152,8 +152,6 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   ;; XXX When updating Git, check if the special 'git-source' input to cgit
-   ;; needs to be updated as well.
    (version "2.26.0")
    (source (origin
             (method url-fetch)
@@ -810,7 +808,7 @@ collaboration using typical untrusted file hosts or services.")
   (package
     (name "cgit")
     ;; Update the ‘git-source’ input as well.
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -818,7 +816,7 @@ collaboration using typical untrusted file hosts or services.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0dmjsisigjz5k4gw7gm55qhm3wazzbm4cg7a5dwf0gqg9nacx5rz"))))
+                "193d990ym10qlslk0p8mjwp2j6rhqa7fq0y1iff65lvbyv914pss"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -898,9 +896,9 @@ collaboration using typical untrusted file hosts or services.")
            (method url-fetch)
            ;; cgit is tightly bound to git.  Use GIT_VER from the Makefile,
            ;; which may not match the current (package-version git).
-           (uri "mirror://kernel.org/software/scm/git/git-2.25.0.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.25.1.tar.xz")
            (sha256
-            (base32 "1l58v42aazj0x9276gk8r9mwyl9pgp9w99aakz4xfhzv7wd2jq60"))))
+            (base32 "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)

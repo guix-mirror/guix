@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,22 +166,14 @@ references.  Call REFERENCES to get the list of references."
 (define (references-oracle store input)
   "Return a one-argument procedure that, when passed the output file names of
 INPUT, a derivation input, or their dependencies, returns the list of
-references of that item.  Use either local info or substitute info; build
-INPUT if no information is available."
+references of that item.  Build INPUT if it's not available."
   (define (references* items)
+    ;; Return the references of ITEMS.
     (guard (c ((store-protocol-error? c)
-               ;; As a last resort, build DRV and query the references of the
-               ;; build result.
-
-               ;; Warm up the narinfo cache, otherwise each derivation build
-               ;; will result in one HTTP request to get one narinfo, which is
-               ;; much less efficient than fetching them all upfront.
-               (substitution-oracle store
-                                    (list (derivation-input-derivation input)))
-
+               ;; ITEMS are not in store so build INPUT first.
                (and (build-derivations store (list input))
-                    (map (cut references store <>) items))))
-      (references/substitutes store items)))
+                    (map (cut references/cached store <>) items))))
+      (map (cut references/cached store <>) items)))
 
   (let loop ((items (derivation-input-output-paths input))
              (result vlist-null))

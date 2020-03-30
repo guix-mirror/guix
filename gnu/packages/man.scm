@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -25,6 +25,7 @@
 
 (define-module (gnu packages man)
   #:use-module (guix licenses)
+  #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -259,13 +260,14 @@ in C99.")
     (version "1.6.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/mvertes/txt2man/archive/txt2man-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/mvertes/txt2man")
+              (commit (string-append "txt2man-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "168cj96974n2z0igin6j1ic1m45zyic7nm5ark7frq8j78rrx4zn"))))
+         "1razjpvlcp85hqli77mwr9nmn5jnv3lm1fxbbqjpx1brv3h1lvm5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target

@@ -245,8 +245,8 @@
   nfs-configuration?
   (nfs-utils           nfs-configuration-nfs-utils
                        (default nfs-utils))
-  (nfs-version         nfs-configuration-nfs-version
-                       (default #f)) ; string
+  (nfs-versions        nfs-configuration-nfs-versions
+                       (default '("4.2" "4.1" "4.0")))
   (exports             nfs-configuration-exports
                        (default '()))
   (rpcmountd-port      nfs-configuration-rpcmountd-port
@@ -270,7 +270,7 @@
 (define (nfs-shepherd-services config)
   "Return a list of <shepherd-service> for the NFS daemons with CONFIG."
   (match-record config <nfs-configuration>
-    (nfs-utils nfs-version exports
+    (nfs-utils nfs-versions exports
                rpcmountd-port rpcstatd-port nfsd-port nfsd-threads
                pipefs-directory debug)
     (list (shepherd-service
@@ -323,15 +323,16 @@
            (requirement '(/proc/fs/nfsd rpc.statd networking))
            (start
             #~(lambda _
-                (zero? (system* #$(file-append nfs-utils "/sbin/rpc.nfsd")
-                                #$@(if (member 'nfsd debug)
-                                       '("--debug")
-                                       '())
-                                "--port" #$(number->string nfsd-port)
-                                #$@(if nfs-version
-                                       '("--nfs-version" nfs-version)
-                                       '())
-                                #$(number->string nfsd-threads)))))
+                (zero? (apply system* #$(file-append nfs-utils "/sbin/rpc.nfsd")
+                              (list
+                               #$@(if (member 'nfsd debug)
+                                      '("--debug")
+                                      '())
+                               "--port" #$(number->string nfsd-port)
+                               #$@(map (lambda (version)
+                                         (string-append "--nfs-version=" version))
+                                       nfs-versions)
+                               #$(number->string nfsd-threads))))))
            (stop
             #~(lambda _
                 (zero?

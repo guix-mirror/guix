@@ -778,7 +778,7 @@ must be one of 'package', 'all', or 'transitive'~%")
                    (alist-cons 'manifest arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+                   (alist-cons 'dry-run? #t result)))
          (option '(#\r "root") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'gc-root arg result)))
@@ -920,8 +920,10 @@ build."
   (with-unbound-variable-handling
    (parameterize ((%graft? graft?))
      (append-map (lambda (system)
-                   (append-map (cut compute-derivation <> system)
-                               things-to-build))
+                   (concatenate
+                    (map/accumulate-builds store
+                                           (cut compute-derivation <> system)
+                                           things-to-build)))
                  systems))))
 
 (define (show-build-log store file urls)

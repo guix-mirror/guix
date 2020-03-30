@@ -48,6 +48,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8117,10 +8118,6 @@ alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
 
-;; This package has been renamed by upstream.
-(define-public gnome-tweak-tool
-  (deprecated-package "gnome-tweak-tool" gnome-tweaks))
-
 (define-public gnome-shell-extensions
   (package
     (name "gnome-shell-extensions")
@@ -8842,15 +8839,14 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.2.7")
+    (version "1.2.32")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "08f973788c7ca46d9285eec2ac818edb/"
+       (uri (string-append "https://adishatz.org/lollypop/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "0hvq6m4i62i0m63bg4gzpfb9rv1fk6vq5jl2g3ppcgm4srmfm77j"))))
+        (base32 "1ng9492k8754vlqggbfsyzbmfdx4w17fzc4ad21fr92710na0w5a"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -9851,3 +9847,60 @@ to.")
               license:public-domain
               ;; snowball
               license:bsd-2))))
+
+(define-public parlatype
+  ;; This is one commit away from 2.0, because the latter introduced
+  ;; a regression in ASR.
+  (let ((commit "7d22ead13ef7578f99d24146663cc1bdb7d8c2a9")
+        (revision "0"))
+    (package
+      (name "parlatype")
+      (version (git-version "2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gkarsay/parlatype.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r3k3qczbzi7bs5s1rddhpsnadyr805df40bqkx0srlxgh5mfghf"))))
+      (build-system meson-build-system)
+      (arguments
+       `(#:glib-or-gtk? #t
+         #:tests? #f                    ;require internet access
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-parlatype
+             ;; Add gstreamer plugin provided in this package to system's
+             ;; plugins.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (gst-plugin-path (string-append
+                                        out "/lib/gstreamer-1.0/"
+                                        ":"
+                                        (getenv "GST_PLUGIN_SYSTEM_PATH"))))
+                 (wrap-program (string-append out "/bin/parlatype")
+                   `("GST_PLUGIN_SYSTEM_PATH" ":" = (,gst-plugin-path))))
+               #t)))))
+      (native-inputs
+       `(("appstream-glib" ,appstream-glib)
+         ("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
+         ("gettext" ,gettext-minimal)
+         ("glib" ,glib "bin")           ;for glib-compile-resources
+         ("pkg-config" ,pkg-config)
+         ("yelp-tools" ,yelp-tools)))
+      (inputs
+       `(("gst-plugins-base" ,gst-plugins-base)
+         ("gst-plugins-good" ,gst-plugins-good)
+         ("gstreamer" ,gstreamer)
+         ("gtk+" ,gtk+)
+         ("pocketsphinx" ,pocketsphinx)
+         ("pulseaudio" ,pulseaudio)
+         ("sphinxbase" ,sphinxbase)))
+      (home-page "http://gkarsay.github.io/parlatype/")
+      (synopsis "GNOME audio player for transcription")
+      (description "Parlatype is an audio player for the GNOME desktop
+environment.  Its main purpose is the manual transcription of spoken
+audio files.")
+      (license license:gpl3+))))

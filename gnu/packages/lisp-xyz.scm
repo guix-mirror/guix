@@ -6643,8 +6643,8 @@ which implements a set of utilities.")
   (sbcl-package->ecl-package sbcl-metatilities-base))
 
 (define-public sbcl-cl-containers
-  (let ((commit "810927e19d933bcf38ffeb7a23ce521efc432d45")
-        (revision "1"))
+  (let ((commit "b2980bac9ac87ad32b63b722ce520fa26cb36ee6")
+        (revision "2"))
     (package
       (name "sbcl-cl-containers")
       (version (git-version "0.12.1" revision commit))
@@ -6657,7 +6657,7 @@ which implements a set of utilities.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1s9faxw7svhbjpkhfrz2qxgjm3cvyjb8wpyb4m8dx4i5g7vvprkv"))))
+           "19hmlax19hq0xjaqr8za90vwf06ymxw1m29sj053a309k3hm84gx"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("lift" ,sbcl-lift)))
@@ -11250,3 +11250,28 @@ If features:
 
 (define-public cl-sycamore
   (sbcl-package->cl-source-package sbcl-sycamore))
+
+(define-public sbcl-trivial-package-local-nicknames
+  (package
+    (name "sbcl-trivial-package-local-nicknames")
+    (version "0.2")
+    (home-page "https://github.com/phoe/trivial-package-local-nicknames")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit "16b7ad4c2b120f50da65154191f468ea5598460e")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18qc27xkjzdcqrilpk3pm7djldwq5rm3ggd5h9cr8hqcd54i2fqg"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp compatibility library for package local nicknames")
+    (description
+     "This library is a portable compatibility layer around package local nicknames (PLN).
+This was done so there is a portability library for the PLN API not included
+in DEFPACKAGE.")
+    (license license:unlicense)))
+
+(define-public cl-trivial-package-local-nicknames
+  (sbcl-package->cl-source-package sbcl-trivial-package-local-nicknames))

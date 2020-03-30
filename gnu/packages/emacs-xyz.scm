@@ -43,7 +43,7 @@
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
-;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019, 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
@@ -51,7 +51,7 @@
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
-;;; Copyright © 2019, 2020 Amin Bandali <mab@gnu.org>
+;;; Copyright © 2019, 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
@@ -108,6 +108,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages haskell-apps)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -211,9 +212,6 @@ implementation, Emacs and, ultimately, the schemer, giving them access to live
 metadata.")
     (license license:bsd-3)))
 
-(define-public geiser
-  (deprecated-package "geiser" emacs-geiser))
-
 (define-public emacs-paredit
   (package
     (name "emacs-paredit")
@@ -239,9 +237,6 @@ for those who may want transient periods of unbalanced parentheses, such as
 when typing parentheses directly or commenting out code line by line.")
     (license license:gpl3+)))
 
-(define-public paredit
-  (deprecated-package "paredit" emacs-paredit))
-
 (define-public git-modes
   (package
     (name "emacs-git-modes")
@@ -262,9 +257,6 @@ when typing parentheses directly or commenting out code line by line.")
      "This package provides Emacs major modes for editing various Git
 configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
-
-(define-public git-modes/old-name
-  (deprecated-package "git-modes" git-modes))
 
 (define-public emacs-with-editor
   (package
@@ -395,9 +387,6 @@ cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
       (license license:gpl3+))))
 
-(define-public magit
-  (deprecated-package "magit" emacs-magit))
-
 (define-public emacs-magit-svn
   (let ((commit "9e33ceee32f665db59909e1c00a667ccdd04178f"))
     (package
@@ -423,9 +412,6 @@ operations.")
        "This package is an extension to Magit, the Git Emacs mode, providing
 support for Git-SVN.")
       (license license:gpl3+))))
-
-(define-public magit-svn
-  (deprecated-package "magit-svn" emacs-magit-svn))
 
 (define-public emacs-magit-popup
   (package
@@ -767,9 +753,6 @@ replacement.")
      "This is an Emacs mode for editing, debugging and developing Haskell
 programs.")
     (license license:gpl3+)))
-
-(define-public haskell-mode
-  (deprecated-package "haskell-mode" emacs-haskell-mode))
 
 (define-public emacs-dante
   (let ((commit "38b589417294c7ea44bf65b73b8046d950f9531b")
@@ -1383,10 +1366,6 @@ light user interface.")
     (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
-(define-public emacs-emms-player-mpv
-  ;; A new mpv backend is included in Emms from 5.0.
-  (deprecated-package "emacs-emms-player-mpv" emacs-emms))
-
 (define-public emacs-emms-mode-line-cycle
   (package
     (name "emacs-emms-mode-line-cycle")
@@ -1484,9 +1463,6 @@ an address book for email and snail mail addresses, phone numbers and the
 like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
-
-(define-public bbdb
-  (deprecated-package "bbdb" emacs-bbdb))
 
 (define-public emacs-aggressive-indent
   (package
@@ -3367,27 +3343,30 @@ for Flow files.")
 (define-public emacs-flycheck-grammalecte
   (package
     (name "emacs-flycheck-grammalecte")
-    (version "0.9")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://git.deparis.io/"
-                                  "flycheck-grammalecte/snapshot/"
-                                  "flycheck-grammalecte-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0wjm9xyra870pci4bcrbnc9x66x18mi7iz08rkxa4clxv28xzryb"))))
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://git.deparis.io/"
+                           "flycheck-grammalecte/snapshot/"
+                           "flycheck-grammalecte-" version ".tar.xz"))
+       (sha256
+        (base32 "02wxaw228dia8cps0v02327hrrribfqb4601qggjpi4l4ms1lf8b"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.(el|py)$")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-python
-           ;; Hardcode python3 executable in the Emacs library.
+         (add-after 'unpack 'set-external-executables
+           ;; Hardcode python3 and curl executables in the Emacs library.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
-                                           "/bin/python3")))
+                                           "/bin/python3"))
+                   (curl (string-append (assoc-ref inputs "curl")
+                                        "/bin/curl")))
                (substitute* "flycheck-grammalecte.el"
-                 (("python3") python3))
+                 (("\"python3?") (string-append "\"" python3))
+                 (("\"curl") (string-append "\"" curl)))
                #t)))
          (add-after 'install 'link-to-grammalecte
            ;; The package expects grammalecte to be in a sub-directory.
@@ -3397,14 +3376,15 @@ for Flow files.")
                    (out (assoc-ref outputs "out"))
                    (version ,(version-major+minor (package-version python))))
                (with-directory-excursion
-                 (string-append out "/share/emacs/site-lisp")
+                   (string-append out "/share/emacs/site-lisp")
                  (symlink (string-append grammalecte "/lib/"
                                          "python" version "/site-packages/"
                                          "grammalecte")
                           "grammalecte"))
                #t))))))
     (inputs
-     `(("grammalecte" ,grammalecte)
+     `(("curl" ,curl)
+       ("grammalecte" ,grammalecte)
        ("python" ,python)))
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)))
@@ -10055,9 +10035,6 @@ using ERT.  It assumes a certain test structure setup and can therefore make
 running tests easier.")
     (license license:gpl3+)))
 
-(define-public ert-runner
-  (deprecated-package "ert-runner" emacs-ert-runner))
-
 (define-public emacs-xtest
   (package
     (name "emacs-xtest")
@@ -11420,9 +11397,6 @@ supports multiple backends such as @code{vlc}, @code{mpg123},
 Groovy source files, REPL integration with run-groovy and Grails project
 navigation with the grails mode.")
     (license license:gpl3+)))
-
-(define-public groovy-emacs-modes
-  (deprecated-package "groovy-emacs-modes" emacs-groovy-modes))
 
 (define-public emacs-org-tree-slide
   (let ((commit "036a36eec1cf712d3db155572aed325daa372eb5")
@@ -14040,10 +14014,6 @@ functions.")
 time is being spent during Emacs startup in order to optimize startup time.")
     (license license:gpl3+)))
 
-(define-public emacs-emms-player-simple-mpv
-  ;; A new mpv backend is included in Emms from 5.0.
-  (deprecated-package "emacs-emms-player-simple-mpv" emacs-emms))
-
 (define-public emacs-magit-gerrit
   (let ((version "0.3")
         (revision "1")
@@ -15202,10 +15172,6 @@ and the Zotero research assistant: Insertion of links to Zotero items into an
 Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
 
-(define-public emacs-evil-ediff
-  ;; Evil-Ediff is included in Evil Collection from 20180617.
-  (deprecated-package "emacs-evil-ediff" emacs-evil-collection))
-
 (define-public emacs-evil-magit
   (let ((commit "4b66a1db8285457147a5436f209391016a819ea1")
         (revision "3"))
@@ -15241,10 +15207,6 @@ For some background see @url{https://github.com/magit/evil-magit/issues/1}.
 See the README at @url{https://github.com/justbur/evil-magit} for a table
 describing the key binding changes.")
       (license license:gpl3+))))
-
-(define-public emacs-evil-mu4e
-  ;; Evil-mu4e is included in Evil Collection from 20180617.
-  (deprecated-package "emacs-evil-mu4e" emacs-evil-collection))
 
 (define-public emacs-evil-multiedit
   (package
@@ -15875,10 +15837,6 @@ file.")
 @end itemize")
       (license license:gpl3+))))
 
-(define-public emacs-wgrep-helm
-  ;; `emacs-wgrep-helm' was mistakenly added.
-  (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
-
 (define-public emacs-mu4e-conversation
   (let ((commit "98110bb9c300fc9866dee8e0023355f9f79c9b96")
         (revision "5"))
@@ -16070,6 +16028,32 @@ text in neighboring sections.")
     (description "This package provides a Hydra menu for interacting with the
 Pandoc, the document-conversion tool.")
     (license license:bsd-3)))
+
+(define-public emacs-hlint-refactor-mode
+  (let ((commit "c4307f86aad6d02e32e9b30cb6edc115584c791c")
+        (revision "1"))
+    (package
+      (name "emacs-hlint-refactor-mode")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mpickering/hlint-refactor-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1c71w9s34n0i7mm4njchxn6s3ri1y6mh3akgbg4nq41d42h8iap3"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("apply-refact" ,apply-refact)
+         ("hlint" ,hlint)))
+      (home-page "https://github.com/mpickering/hlint-refactor-mode")
+      (synopsis "Emacs bindings for @code{hlint}'s @code{--refactor} option")
+      (description "This package applies refactoring suggestions from
+@code{hlint}.")
+      (license license:expat))))
 
 (define-public emacs-ccls
   (let ((commit "aab3e31fd716daf59f9794e62d473357263e8cc0")
@@ -16297,10 +16281,10 @@ text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
       (license license:gpl3))))
 
 (define-public emacs-helm-org-contacts
-  (let ((commit "0af703bd9a43032b89fdf5559673151d1ac2fffc"))
+  (let ((commit "e7f11615802df55bb8b679450b5a5ef82a9081f9"))
     (package
       (name "emacs-helm-org-contacts")
-      (version (git-version "20180707" "1" commit))
+      (version (git-version "20200310" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -16310,7 +16294,7 @@ text-tree applications inside GNU Emacs.  It consists of 2 subprojects:
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1cl7cm2ic9pg4vc9cdh84vzjj1x2lpd5ymimiva8h4l17kiphk4s"))))
+           "06a1gbrq3qcfsn0kyv4i24x1xxfrrwqa3kgfj4xa4va88q2vqyb5"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
@@ -21649,9 +21633,11 @@ supports generation of phonetic and numeric passwords.")
          "1vmazjrfcsa9aa9aw8bq5sazdhqvhxyj837dyw5lmh8gk7z0xdaa"))))
     (build-system emacs-build-system)
     (synopsis "Elisp functions for reading and parsing CSV files")
-    (description "@code{csv.el} provides functions for reading and parsing CSV (Comma
-Separated Value) files.  It follows the format as defined in RFC 4180 \"Common
-Format and MIME Type for CSV Files\" (@url{http://tools.ietf.org/html/rfc4180}).")
+    (description
+     "@code{csv.el} provides functions for reading and parsing @acronym{CSV,
+Comma-Separated Values} files.  It follows the format as defined in RFC 4180
+@emph{Common Format and MIME Type for CSV
+Files} (@url{http://tools.ietf.org/html/rfc4180}).")
     (license license:gpl3+)))
 
 (define-public emacs-org-journal

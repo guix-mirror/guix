@@ -60,7 +60,7 @@
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -74,6 +74,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4641,30 +4642,33 @@ as the original project seems to have been abandoned circa 2007.")
   (package-with-python2 python-socksipy-branch))
 
 (define-public python-socksipychain
-  (package
-    (name "python-socksipychain")
-    (version "2.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pagekite/PySocksipyChain.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0idm9a050rd2kbgbz2sk9ib9589kj4xh1xdnggs6xbq2v2y8f6zn"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ; Tests try to access the network.
-    (home-page "http://pagekite.net/wiki/Floss/PySocksipyChain/")
-    (synopsis "Python SOCKS module with chained proxies support")
-    (description
-     "SocksiPyChain is a modified version of the SocksiPy SOCKS module, which
+  (let ((commit "eb5ee8741ce006ac0c5c3e2e83204062c348c155")
+        (revision "1")
+        (version "2.1.1"))
+    (package
+      (name "python-socksipychain")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pagekite/PySocksipyChain.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fpphn6xnpm7qk8a914s4abycsbq9w6qkci07my632v0fylnm5n7"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f))                  ; Tests try to access the network.
+      (home-page "http://pagekite.net/wiki/Floss/PySocksipyChain/")
+      (synopsis "Python SOCKS module with chained proxies support")
+      (description
+       "SocksiPyChain is a modified version of the SocksiPy SOCKS module, which
 adds support for arbitrary chaining of proxy servers and various modes of
 TLS/SSL encryption.  It was developed for use in PageKite, and also includes
 a simple netcat replacement with chaining support.")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public python-pycodestyle
   (package
@@ -11854,12 +11858,6 @@ hardware-accelerated multitouch applications.")
 (define-public python2-kivy
   (package-with-python2 python-kivy))
 
-(define-public python-kivy-next
-  (deprecated-package "python-kivy-next" python-kivy))
-
-(define-public python2-kivy-next
-  (deprecated-package "python2-kivy-next" python2-kivy))
-
 (define-public python-binaryornot
   (package
     (name "python-binaryornot")
@@ -15734,14 +15732,14 @@ and other tools.")
 (define-public python-typing-extensions
   (package
     (name "python-typing-extensions")
-    (version "3.7.2")
+    (version "3.7.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "typing_extensions" version))
        (sha256
         (base32
-         "0wfsv71pvkyf2na938l579jh0v3kzl6g744ijgnahcwd4d9x0b7v"))))
+         "1wj1vcgbnm20aiinmphyxfrbv3qi9xdhvw89ab3qm42y9n4wq7h9"))))
     (build-system python-build-system)
     (home-page
      "https://github.com/python/typing/blob/master/typing_extensions/README.rst")
@@ -18780,4 +18778,56 @@ logging in Python.  It also provides some custom formatters and handlers.")
 allows to start and stop daemons for a quick throw-away usage.  This is typically
 useful when needing these daemons to run integration testing.  It originally
 evolved from its precursor @code{overtest}.")
+    (license license:asl2.0)))
+
+(define-public python-pytest-check-links
+  (package
+    (name "python-pytest-check-links")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; URI uses underscores
+       (uri (pypi-uri "pytest_check_links" version))
+       (sha256
+        (base32
+         "12x3wmrdzm6wgk0vz02hb769h68nr49q47w5q1pj95pc89hsa34v"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-html5lib" ,python-html5lib)
+       ("python-nbconvert" ,python-nbconvert)
+       ("python-nbformat" ,python-nbformat)
+       ("python-pytest" ,python-pytest)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pbr-minimal" ,python-pbr-minimal)))
+    (home-page "https://github.com/minrk/pytest-check-links")
+    (synopsis "Check links in files")
+    (description "This package provides a pytest plugin that checks URLs for
+HTML-containing files.")
+    (license license:bsd-3)))
+
+(define-public python-json5
+  (package
+    (name "python-json5")
+    (version "0.8.5")
+    (source
+     (origin
+       ;; sample.json5 is missing from PyPi source tarball
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dpranke/pyjson5.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nyngj18jlkgvm1177lc3cj47wm4yh3dqigygvcvw7xkyryafsqn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/dpranke/pyjson5")
+    (synopsis
+     "Python implementation of the JSON5 data format")
+    (description
+     "JSON5 extends the JSON data interchange format to make it slightly more
+usable as a configuration language.  This Python package implements parsing and
+dumping of JSON5 data structures.")
     (license license:asl2.0)))

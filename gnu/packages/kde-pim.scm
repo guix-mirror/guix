@@ -1571,7 +1571,7 @@ functionality to help you organize your life.")
 Kontact.  It provides management of events and tasks, alarm notification, web
 export, network transparent handling of data, group scheduling, import and
 export of calendar files and more.  It is able to work together with a wide
-variety of clanedaring services, including NextCloud, Kolab, Google Calendar
+variety of calendaring services, including NextCloud, Kolab, Google Calendar
 and others.  KOrganizer is fully customizable to your needs and is an integral
 part of the Kontact suite, which aims to be a complete solution for organizing
 your personal data.  KOrganizer supports the two dominant standards for storing
