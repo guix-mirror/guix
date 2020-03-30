@@ -4465,12 +4465,14 @@ constructor on object instantiation.")
     (name "java-easymock")
     (version "3.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/easymock/easymock/"
-                                  "archive/easymock-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/easymock/easymock/")
+                     (commit (string-append "easymock-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yzg0kv256ndr57gpav46cyv4a1ns5sj722l50zpxk3j6sk9hnmi"))))
+                "02vybm8hc0i0n9sp2f2iiqn54zwqhq835f76wc6b2m7819z5a8dq"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "easymock.jar"
@@ -4515,7 +4517,7 @@ constructor on object instantiation.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://easymock.org")
+    (home-page "https://easymock.org/")
     (synopsis "Java library providing mock objects for unit tests")
     (description "EasyMock is a Java library that provides an easy way to use
 mock objects in unit testing.")
