@@ -307,8 +307,8 @@ used to apply commands with arbitrarily long arguments.")
              ;; Do not use libcap when cross-compiling since it's not quite
              ;; cross-compilable; and use it only for supported systems.
              ,@(if (and (not (%current-target-system))
-                        (not (member (%current-system)
-                                     (package-supported-systems libcap))))
+                        (member (%current-system)
+                                (package-supported-systems libcap)))
              `(("libcap" ,libcap))  ;capability support in 'ls', etc.
              '())))
    (native-inputs
