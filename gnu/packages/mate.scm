@@ -1058,7 +1058,7 @@ for use with MATE or as a standalone window manager.")
 (define-public mate-user-guide
   (package
     (name "mate-user-guide")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -1066,7 +1066,7 @@ for use with MATE or as a standalone window manager.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0ckn7h7l0qdgdx440dwx1h8i601s22sxlf5a7179hfirk9016j0z"))))
+         "0ddxya84iydvy85dbqls0wmz2rph87wri3rsdhv4rkbhh5g4sd7f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
