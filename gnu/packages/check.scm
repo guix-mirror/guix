@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2509,3 +2510,25 @@ system.  The code under test requires no modification to work with pyfakefs.")
 
 (define-public python2-pyfakefs
   (package-with-python2 python-pyfakefs))
+
+(define-public python-aiounittest
+  (package
+    (name "python-aiounittest")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiounittest" version))
+       (sha256
+        (base32
+         "1q4bhmi80smaa1lknvdna0sx3915naczlfna1fp435nf6cjyrjl1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page
+     "https://github.com/kwarunek/aiounittest")
+    (synopsis "Test asyncio code more easily")
+    (description "Aiounittest is a library that helps write tests using
+asynchronous code in Python (asyncio).")
+    (license license:expat)))
