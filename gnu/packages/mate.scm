@@ -94,7 +94,7 @@ MATE applications.")
 (define-public mate-power-manager
   (package
     (name "mate-power-manager")
-    (version "1.22.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
@@ -102,14 +102,14 @@ MATE applications.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "03c09h41qfz83wmjfvwzkq4xqc54aswmki4h034qcxbgfnyfmk1i"))))
+         "13ar40x5hs4d4h81q8qsy0agbx5wnarry3mbhws54zydcxd7j20a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
        ("yelp-tools" ,yelp-tools)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin") ; glib-gettextize
-       ("libtool" ,libtool)))
+       ("polkit" ,polkit))) ; for ITS rules
     (inputs
      `(("gtk+" ,gtk+)
        ("glib" ,glib)
