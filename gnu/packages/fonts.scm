@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
-;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
@@ -64,9 +64,11 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xorg))
 
 (define-public font-ibm-plex
@@ -1670,3 +1672,43 @@ always uses Farsi digits, and does not include Latin glyphs from Roboto.
            (license:x11-style           ; ...the Bitstream Vera typeface
             "file://LICENSE" "Bitstream Vera License")
            license:asl2.0))))           ; Latin glyphs from Roboto
+
+(define-public font-meera-inimai
+  (package
+    (name "font-meera-inimai")
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/smc/meera-inimai")
+             (commit "0f39cdd7dbf1b6d1bed7df85834d33789dce20a7")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1x5mhrpx24imh0r4l83mkaiszxgwi1q4ppyyvq63h3ddwk20cwdg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("fontforge" ,fontforge)
+       ("harfbuzz" ,harfbuzz "bin")
+       ("python" ,python-minimal)
+       ("python-fonttools" ,python-fonttools)
+       ("python-google-brotli" ,python-google-brotli)))
+    (arguments
+     `(#:make-flags (list "PY=python3"
+                          (string-append "DESTDIR=" %output)
+                          "fontpath=/share/fonts/truetype")
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://gitlab.com/smc/meera-inimai")
+    (synopsis "Meera Inimai Tamil font")
+    (description "Meera Inimai is a Unicode font for the Tamil Script.  Meera
+Inimai is a san-serif typeface.  It is best used as a screen font for body
+text.  It is also useful for body text of printed pamphlets or single page
+designs.  Meera Inimai can be thought of as similar to Helvetica and its
+variation Arial.  Tamil characters are inherently vertically-elliptical.  The
+orthography of Roman glyphs of Meera Inimai are also based on this
+characteristic so that they sit smoothly with the Tamil glyphs.")
+    (license license:silofl1.1)))
