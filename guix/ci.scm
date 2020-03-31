@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +68,7 @@
 (define-json-mapping <evaluation> make-evaluation evaluation?
   json->evaluation
   (id          evaluation-id)                     ;integer
-  (spec        evaluation-spec)                   ;string
+  (spec        evaluation-spec "specification")   ;string
   (complete?   evaluation-complete? "in-progress"
                (match-lambda
                  (0 #t)
