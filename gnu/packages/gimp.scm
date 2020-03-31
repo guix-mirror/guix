@@ -151,6 +151,9 @@ buffers.")
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
+             ;; Disable automatic network request on startup to check for
+             ;; version updates.
+             "--disable-check-update"
              ;; ./configure requests not to annoy upstream with packaging bugs.
              "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases
