@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016, 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -254,17 +254,22 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (inherit gnumach-headers)
     (name "gnumach")
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after 'install 'produce-image
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let* ((out  (assoc-ref outputs "out"))
-                             (boot (string-append out "/boot")))
-                        (invoke "make" "gnumach.gz")
-                        (install-file "gnumach.gz" boot)
-                        #t))))))
+     (substitute-keyword-arguments (package-arguments gnumach-headers)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases %standard-phases
+           (add-after 'install 'produce-image
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out  (assoc-ref outputs "out"))
+                      (boot (string-append out "/boot")))
+                 (invoke "make" "gnumach.gz")
+                 (install-file "gnumach.gz" boot)
+                 #t)))))))
     (native-inputs
      `(("mig" ,mig)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo-4)))
     (supported-systems (cons "i686-linux" %hurd-systems))
     (synopsis "Microkernel of the GNU system")
     (description
