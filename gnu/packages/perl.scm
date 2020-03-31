@@ -7319,6 +7319,40 @@ operations that can be done in parallel where the number of
 processes to be forked off should be limited.")
     (license (package-license perl))))
 
+(define-public perl-params-classify
+  (package
+    (name "perl-params-classify")
+    (version "0.015")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Params-Classify-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "052r198xyrsv8wz21gijdigz2cgnidsa37nvyfzdiz4rv1fc33ir"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-devel-callchecker" ,perl-devel-callchecker)))
+    (home-page "https://metacpan.org/release/Params-Classify")
+    (synopsis "Argument type classification")
+    (description "This module provides various type-testing functions.
+These are intended for functions that care what type of data they are
+operating on.  There are two flavours of function.  Functions of the
+first flavour provide type classification only.  Functions of the
+second flavour also check that an argument is of an expected type.
+The type enforcement functions handle only the simplest requirements
+for arguments of the types handled by the classification functions.
+Enforcement of more complex types may be built using the
+classification functions, or it may be more convenient to use a module
+designed for the more complex job, such as @code{Params::Validate}")
+    (license perl-license)))
+
 (define-public perl-params-util
   (package
     (name "perl-params-util")
