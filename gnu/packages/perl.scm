@@ -1306,6 +1306,34 @@ that original method.  @code{around} is run in place of the original method,
 with a hook to easily call that original method.")
     (license (package-license perl))))
 
+(define-public perl-class-mix
+  (package
+    (name "perl-class-mix")
+    (version "0.006")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Class-Mix-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "02vwzzqn1s24g525arbrjh9s9j0y1inp3wbr972gh51ri51zciw7"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-params-classify" ,perl-params-classify)))
+    (home-page "https://metacpan.org/release/Class-Mix")
+    (synopsis "Dynamic class mixing")
+    (description "The @code{mix_class} function provided by this
+module dynamically generates anonymous classes with specified
+inheritance.  This is useful where an incomplete class requires use of
+a mixin in order to become instantiable.")
+    (license perl-license)))
+
 (define-public perl-class-singleton
   (package
     (name "perl-class-singleton")
