@@ -158,6 +158,14 @@ bind processes, and much more.")
                (substitute* "tests/hwloc/linux-libnuma.c"
                  (("numa_available\\(\\)")
                   "-1"))
+               #t))
+           (add-before 'check 'skip-test-that-fails-on-qemu
+             (lambda _
+               ;; Skip test that fails on emulated hardware due to QEMU bug:
+               ;; <https://bugs.gnu.org/40342>.
+               (substitute* "tests/hwloc/hwloc_get_last_cpu_location.c"
+                 (("hwloc_topology_init" all)
+                  (string-append "exit (77);\n" all)))
                #t))))))))
 
 (define-deprecated hwloc-2.0 hwloc-2)
