@@ -2626,6 +2626,7 @@ shortcut syntax and completion options.")
               (uri (string-append
                     "https://archives.eyrie.org/software/kerberos/"
                     "pam-krb5-" version ".tar.xz"))
+              (patches (search-patches "pam-krb5-CVE-2020-10595.patch"))
               (sha256
                (base32
                 "1qjp8i1s9bz7g6kiqrkzzkxn5pfspa4sy53b6z40fqmdf9przdfb"))))
