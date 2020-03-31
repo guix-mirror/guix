@@ -48,6 +48,7 @@
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
+;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,6 +173,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -10310,3 +10312,119 @@ to conquer opponents by defeating them in war (with troops or machines),
 capturing their buildings with spies, or offering opponents money for their
 kingdom.")
     (license license:gpl2+)))
+
+(define-public neverball
+  ;; Git version is 6-years younger than latest release.
+  (let ((commit "760a25d32a5fb0661b99426d4ddcb9ac9f3d1644")
+        (revision "1"))
+    (package
+      (name "neverball")
+      (version (git-version "1.6.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Neverball/neverball.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0bwh67df3lyf33bv710y25l3frjdd34j9b7gsjadwxviz6r1vpj5"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Octocat seems to be non-free.  Oddly, Debian doesn't strip it.
+             (delete-file-recursively "data/ball/octocat")
+             #t))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("neverball" "bin/")
+           ("neverputt" "bin/")
+           ("mapc" "bin/")
+           ("data" "share/games/neverball/")
+           ("locale" "share/")
+           ("dist/" "share/games/neverball" #:include ("neverball_replay.png"
+                                                       "neverlogos.svg"
+                                                       "svg readme.txt"))
+           ("dist/" "share/applications" #:include ("neverball.desktop"
+                                                    "neverputt.desktop"))
+           ("dist/neverball_16.png"
+            "/share/icons/hicolor/16x16/apps/neverball.png")
+           ("dist/neverball_24.png"
+            "/share/icons/hicolor/24x24/apps/neverball.png")
+           ("dist/neverball_32.png"
+            "/share/icons/hicolor/32x32/apps/neverball.png")
+           ("dist/neverball_48.png"
+            "/share/icons/hicolor/48x48/apps/neverball.png")
+           ("dist/neverball_64.png"
+            "/share/icons/hicolor/64x64/apps/neverball.png")
+           ("dist/neverball_128.png"
+            "/share/icons/hicolor/128x128/apps/neverball.png")
+           ("dist/neverball_256.png"
+            "/share/icons/hicolor/256x256/apps/neverball.png")
+           ("dist/neverball_512.png"
+            "/share/icons/hicolor/512x512/apps/neverball.png")
+           ("dist/neverputt_16.png"
+            "/share/icons/hicolor/16x16/apps/neverputt.png")
+           ("dist/neverputt_24.png"
+            "/share/icons/hicolor/24x24/apps/neverputt.png")
+           ("dist/neverputt_32.png"
+            "/share/icons/hicolor/32x32/apps/neverputt.png")
+           ("dist/neverputt_48.png"
+            "/share/icons/hicolor/48x48/apps/neverputt.png")
+           ("dist/neverputt_64.png"
+            "/share/icons/hicolor/64x64/apps/neverputt.png")
+           ("dist/neverputt_128.png"
+            "/share/icons/hicolor/128x128/apps/neverputt.png")
+           ("dist/neverputt_256.png"
+            "/share/icons/hicolor/256x256/apps/neverputt.png")
+           ("dist/neverputt_512.png"
+            "/share/icons/hicolor/512x512/apps/neverputt.png")
+           ("dist/" "share/man/man1" #:include ("mapc.1"))
+           ("dist/" "share/man/man6" #:include ("neverball.6" "neverputt.6"))
+           ("doc/" "share/doc/neverball")
+           ("README.md" "share/doc/neverball/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (sdl (assoc-ref inputs "sdl")))
+                 (invoke "make" "-j" (number->string (parallel-job-count))
+                         "--environment-overrides"
+                         "CC=gcc" "BUILD=release"
+                         (string-append "DATADIR="
+                                        out
+                                        "/share/games/neverball/data")
+                         (string-append "LOCALEDIR=" out "/share/locale")
+                         (string-append "SDL_CPPFLAGS=-I"
+                                        sdl
+                                        "/include/SDL2/")))
+               #t))
+           (add-after 'install 'fix-some-broken-fonts
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/neverball")
+                   `("LANG" = ("en_US.utf8")))
+                 (wrap-program (string-append out "/bin/neverputt")
+                   `("LANG" = ("en_US.utf8"))))
+               #t)))))
+      (native-inputs
+       `(("gettext" ,gettext-minimal))) ;for msgfmt
+      (inputs
+       `(("libjpeg" ,libjpeg)
+         ("libpng" ,libpng)
+         ("libvorbis" ,libvorbis)
+         ("physfs" ,physfs)
+         ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))))
+      (home-page "https://neverball.org/")
+      (synopsis "3D floor-tilting game")
+      (description
+       "In the grand tradition of Marble Madness and Super Monkey Ball,
+Neverball has you guide a rolling ball through dangerous territory.  Balance
+on narrow bridges, navigate mazes, ride moving platforms, and dodge pushers
+and shovers to get to the goal.  Race against the clock to collect coins to
+earn extra balls.  Also included is Neverputt, which is a 3D miniature golf
+game.")  ;thanks to Debian for description
+      (license license:gpl2+))))
