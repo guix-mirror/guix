@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1398,3 +1399,44 @@ entity management.")
 electronic cash system.  This package provides a command line client and
 a Qt GUI.")
     (license license:expat)))
+
+(define-public beancount
+  (package
+    (name "beancount")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beancount" version))
+       (sha256
+        (base32
+         "0pcfl2rx2ng06i4f9izdpnlnb1k0rdzsckbzzn4cn4ixfzyssm0m"))
+       (patches (search-patches "beancount-disable-googleapis-fonts.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; Says test is missing, not sure why
+       #:phases
+       (modify-phases %standard-phases
+         ;; Not importing the googleapis package for now
+         (add-after 'unpack 'ignore-googleapis
+           (lambda _
+             (substitute* "setup.py"
+               (("'google-api-python-client',") ""))
+             #t)))))
+    (propagated-inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-bottle" ,python-bottle)
+       ("python-chardet" ,python-chardet)
+       ("python-dateutil" ,python-dateutil)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-ply" ,python-ply)
+       ("python-pytest" ,python-pytest)
+       ("python-requests" ,python-requests)))
+    (home-page "http://furius.ca/beancount")
+    (synopsis "Command-line double-entry accounting tool")
+    (description
+     "Beancount is a double-entry bookkeeping computer language that lets you
+define financial transaction records in a text file, read them in memory,
+generate a variety of reports from them, and provides a web interface.")
+    (license license:gpl2)))
