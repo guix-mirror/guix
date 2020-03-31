@@ -1,8 +1,9 @@
-#!@EMACS@ --script
+:;exec emacs --batch --quick --load="$0" --funcall=main "$@"
 ;;; indent-code.el --- Run Emacs to indent a package definition.
 
 ;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -86,29 +87,30 @@
  (with-syntax 1))
 
 
-(pcase command-line-args-left
-  (`(,file-name ,package-name)
-   ;; Indent the definition of PACKAGE-NAME in FILE-NAME.
-   (find-file file-name)
-   (goto-char (point-min))
-   (if (re-search-forward (concat "^(define\\(-public\\) +"
-                                  package-name)
-                          nil t)
-       (let ((indent-tabs-mode nil))
-         (beginning-of-defun)
-         (indent-sexp)
-         (save-buffer)
-         (message "Done!"))
-     (error "Package '%s' not found in '%s'"
-            package-name file-name)))
-  (`(,file-name)
-   ;; Indent all of FILE-NAME.
-   (find-file file-name)
-   (let ((indent-tabs-mode nil))
-     (indent-region (point-min) (point-max))
-     (save-buffer)
-     (message "Done!")))
-  (x
-   (error "Usage: indent-code.el FILE [PACKAGE]")))
+(defun main ()
+  (pcase command-line-args-left
+    (`(,file-name ,package-name)
+     ;; Indent the definition of PACKAGE-NAME in FILE-NAME.
+     (find-file file-name)
+     (goto-char (point-min))
+     (if (re-search-forward (concat "^(define\\(-public\\) +"
+                                    package-name)
+                            nil t)
+         (let ((indent-tabs-mode nil))
+           (beginning-of-defun)
+           (indent-sexp)
+           (save-buffer)
+           (message "Done!"))
+       (error "Package '%s' not found in '%s'"
+              package-name file-name)))
+    (`(,file-name)
+     ;; Indent all of FILE-NAME.
+     (find-file file-name)
+     (let ((indent-tabs-mode nil))
+       (indent-region (point-min) (point-max))
+       (save-buffer)
+       (message "Done!")))
+    (x
+     (error "Usage: indent-code.el FILE [PACKAGE]"))))
 
 ;;; indent-code.el ends here
