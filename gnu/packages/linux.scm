@@ -1216,6 +1216,21 @@ providing the system administrator with some help in common tasks.")
                         (substitute* "tests/ts/column/invalid-multibyte"
                           (("C\\.UTF-8") "en_US.utf8"))
                         #t)))
+                  ;; TODO: Remove the conditional on the next rebuild cycle.
+                  ,@(if (string-prefix? "arm" (%current-system))
+                        '((add-before 'check 'disable-setarch-test
+                            (lambda _
+                              ;; The setarch tests are unreliable in QEMU's
+                              ;; user-mode emulation, which is our primary
+                              ;; method of building ARMv7 packages.
+                              ;; <https://github.com/karelzak/util-linux/issues/601>
+                              (substitute* "tests/ts/misc/setarch"
+                                (("ts_init_subtest.*" all)
+                                 (string-append
+                                  all "\n"
+                                  "ts_skip \"setarch tests are unreliable under QEMU\"")))
+                              #t)))
+                        '())
                   (add-after 'install 'move-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let ((lib    (assoc-ref outputs "lib"))
