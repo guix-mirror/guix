@@ -330,13 +330,6 @@ used to apply commands with arbitrarily long arguments.")
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
-
-      ;; 'cp' and others refer to 'file_chauthor' so they must link directly
-      ;; against libhurduser.
-      ,@(if (hurd-target?)
-            '(#:configure-flags '("LIBS=-lhurduser"))
-            '())
-
       #:phases (modify-phases %standard-phases
                  (add-before 'build 'patch-shell-references
                    (lambda _
