@@ -169,25 +169,6 @@ a focus on simplicity and productivity.")
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
 
-(define-public ruby-2.3
-  (package
-    (inherit ruby)
-    (version "2.3.8")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
-                           (version-major+minor version)
-                           "/ruby-" version ".tar.xz"))
-       (sha256
-        (base32
-         "1zhxbjff08pvbnxvn58krns6q0p6g4977q6ykfn823gxhifn63wi"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
-                   #t))))))
-
 (define-public mruby
   (package
     (name "mruby")
