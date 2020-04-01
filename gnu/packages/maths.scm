@@ -63,6 +63,7 @@
   #:use-module (guix utils)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
@@ -5375,4 +5376,61 @@ functions, unit calculations, and conversions, physical constants, symbolic
 calculations (including integrals and equations), arbitrary precision,
 uncertainity propagation, interval arithmetic, plotting and a user-friendly
 cli.")
+    (license license:gpl2+)))
+
+(define-public qalculate-gtk
+  (package
+    (name "qalculate-gtk")
+    (version "3.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Qalculate/qalculate-gtk/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nsg6dzg5r7rzqr671nvrf1c50rjwpz7bxv5f20i4s7agizgv840"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("file" ,file)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("libqalculate" ,libqalculate)
+       ("libxml2" ,libxml2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "TRUE")
+             #t))
+         (add-before 'check 'add-pot-file
+           ;; the file contains translations and are currently not in use
+           ;; left out on purpose so add it to POTFILES.skip
+           (lambda _
+             (with-output-to-file "po/POTFILES.skip"
+               (lambda _
+                 (format #t "data/shortcuts.ui~%")
+                 #t))
+             #t)))))
+    (home-page "https://qalculate.github.io/")
+    (synopsis "Multi-purpose graphical desktop calculator")
+    (description
+     "Qalculate-gtk is the GTK frontend for libqalculate.  It is a
+multi-purpose GUI desktop calculator.  It provides basic and advanced
+functionality.  Features include customizable functions, unit calculations,
+and conversions, physical constants, symbolic calculations (including
+integrals and equations), arbitrary precision, uncertainity propagation,
+interval arithmetic, plotting.")
     (license license:gpl2+)))
