@@ -20687,8 +20687,8 @@ color.  Designed for 256-color terminals.  Comes in light and dark!")
       (license license:gpl3+))))
 
 (define-public emacs-spacemacs-theme
-  (let ((commit "e088bff4f190495615c29de93079aaa823e2300c")
-        (revision "0"))
+  (let ((commit "f79c40fb241e204539fde97200abae91e828e585")
+        (revision "1"))
     (package
       (name "emacs-spacemacs-theme")
       (version (git-version "0" revision commit)) ;no release yet
@@ -20700,7 +20700,7 @@ color.  Designed for 256-color terminals.  Comes in light and dark!")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "09p5pzy3ibrl8dxmg10v8j16wxdn1fkdqpbi8l9pgfib2azmnvnc"))))
+          (base32 "1l2kkiyrskkpx8f901v0wrzaah1wjg15zdyv88spj3mh3hwd3b6n"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/nashamri/spacemacs-theme")
       (synopsis
