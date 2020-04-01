@@ -3066,18 +3066,20 @@ data.")
 (define-public r-foreach
   (package
     (name "r-foreach")
-    (version "1.4.8")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreach" version))
        (sha256
         (base32
-         "1xwf5l2fw62w80ji3dvgcc6m9m4s6zygkhi84ypb0gv0ppjffg5c"))))
+         "0584nv49x8d8m1cak5drb54sxs3y594gd521kjsdwk4c849sgy8s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
        ("r-iterators" ,r-iterators)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/foreach")
     (synopsis "Foreach looping construct for R")
     (description
