@@ -5310,18 +5310,19 @@ first and second order derivatives.")
 (define-public r-sn
   (package
     (name "r-sn")
-    (version "1.5-5")
+    (version "1.6-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sn" version))
        (sha256
         (base32
-         "0ymyyc0di1g2b11wzljiih05z3rxck48wn74bygg3fiby973z49f"))))
+         "0hp4r0g87jwzkqvxsjqs5jfwwnfv3p9vzb214ffk1xvqixydc5cm"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mnormt" ,r-mnormt)
-       ("r-numderiv" ,r-numderiv)))
+       ("r-numderiv" ,r-numderiv)
+       ("r-quantreg" ,r-quantreg)))
     (home-page "http://azzalini.stat.unipd.it/SN")
     (synopsis "The skew-normal and skew-t distributions")
     (description
