@@ -50,6 +50,7 @@
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1293,10 +1294,11 @@ watch your CPU playing while enjoying a cup of tea!")
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
           (base32 "1liyckjp34j354qnxc1zn9730lh1p2dabrg1hap24z6xnqx0rpng"))))
+    (native-inputs
+      `(("bison" ,bison)
+        ("flex" ,flex)))
     (inputs
       `(("ncurses" ,ncurses)
-        ("bison" ,bison)
-        ("flex" ,flex)
         ("less" ,less)))
     (build-system gnu-build-system)
     (arguments
