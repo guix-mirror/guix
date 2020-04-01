@@ -131,3 +131,35 @@ defined by an ABNF grammar, such as the protocols standardized at IETF.")
     (description "Belcard is a C++ library to manipulate VCard standard format.")
     (home-page "https://gitlab.linphone.org/BC/public/belcard")
     (license license:gpl3+)))
+
+(define-public bcmatroska2
+  (package
+    (name "bcmatroska2")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1a0vlk4fhh189pfzrwbc3xbc5vyx6cnxy642d1h40045jz9y4h15"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))         ; Not required
+    (synopsis "Belledonne Communications Media Container")
+    (description "BcMatroska is a free and open standard multi-media
+container format.  It can hold an unlimited number of video, audio,
+picture, or subtitle tracks in one file. ")
+    (home-page "https://gitlab.linphone.org/BC/public/bcmatroska2")
+    (license
+     (list
+      ;; That license applies for Core C and LibEBML2.
+      ;; https://www.matroska.org/node/47
+      license:bsd-4
+      ;; That license applies for LibMatroska2.
+      ;; https://www.matroska.org/node/47
+      license:lgpl2.1+))))
