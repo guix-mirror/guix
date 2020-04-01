@@ -20,6 +20,8 @@
 (define-module (gnu packages linphone)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -189,4 +191,33 @@ can be executed on many platforms including both ARM and x86 processors.  It
 supports concurrent channels encoding and decoding for multi call application
 such as conferencing.")
     (home-page "https://gitlab.linphone.org/BC/public/belcard")
+    (license license:gpl2+)))
+
+(define-public ortp
+  (package
+    (name "ortp")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "016qg0lmdgmqh2kv19w9qhi4kkiyi5h1xp35g2s65b1j8ccm25d5"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))         ; Not required
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)))
+    (inputs
+     `(("bctoolbox" ,bctoolbox)))
+    (synopsis "Belledonne Communications RTP Library")
+    (description "oRTP is a C library implementing the RTP protocol.  It
+implements the RFC 3550 standard.")
+    (home-page "https://gitlab.linphone.org/BC/public/ortp")
     (license license:gpl2+)))
