@@ -29,6 +29,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,11 +219,11 @@
 
        #:parallel-tests? #f))
     (native-inputs
-     `(("perl" ,perl)))                           ;for 'gylwrap'
-    (inputs
-     `(("dejagnu" ,dejagnu)
-       ("m4" ,m4)
+     `(("perl" ,perl)                           ;for 'gylwrap'
        ("texinfo" ,texinfo)
+       ("dejagnu" ,dejagnu)))
+    (inputs
+     `(("m4" ,m4)
        ("guile" ,guile-2.2)
        ("gsasl" ,gsasl)
        ("gnutls" ,gnutls)
