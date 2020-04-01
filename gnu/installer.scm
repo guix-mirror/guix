@@ -113,8 +113,10 @@ version of this file."
          (setlocale LC_ALL locale))
 
         ;; Restart the documentation viewer so it displays the manual in
-        ;; language that corresponds to LOCALE.
-        (with-error-to-port (%make-void-port "w")
+        ;; language that corresponds to LOCALE.  Make sure that nothing is
+        ;; printed on the console.
+        (parameterize ((shepherd-message-port
+                        (%make-void-port "w")))
           (lambda ()
             (stop-service 'term-tty2)
             (start-service 'term-tty2 (list locale)))))))
