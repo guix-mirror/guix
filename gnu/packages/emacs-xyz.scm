@@ -13842,18 +13842,18 @@ throw a shell history.")
     (version "1.0")
     (source
      (origin
-       (method url-fetch)
-       (uri
-        (string-append "https://github.com/steckerhalter/discover-my-major"
-                       "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://framagit.org/steckerhalter/discover-my-major.git/")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nah41f92rrl2l405kpqr6iaks11jyclgl4z7ilfymbr4ifmsiyl"))))
+         "1wlqyl03hhnflbyay3qlvdzqzvv5rbybcjpfddggda7ias9h0pr4"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-makey" ,emacs-makey)))
-    (home-page "https://github.com/steckerhalter/discover-my-major")
+    (home-page "https://framagit.org/steckerhalter/discover-my-major/")
     (synopsis "Discover key bindings for the current Emacs major mode")
     (description "This package provides allows to discover key bindings and
 their meaning for the current Emacs major-mode.")
