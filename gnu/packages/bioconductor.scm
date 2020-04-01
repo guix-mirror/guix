@@ -5833,14 +5833,14 @@ sequential way to mimic the manual gating strategy.")
 (define-public r-cytoml
   (package
     (name "r-cytoml")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CytoML" version))
        (sha256
         (base32
-         "0m8x18wkvis85cawv7j07pk59w76wnzy93ia99gd24j82z4h97p1"))))
+         "0wgi8rwb4spxzd5xvs5amfr5g82ny2nad57j3nmhnhnj1cpirjxz"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
     (inputs
@@ -5870,6 +5870,8 @@ sequential way to mimic the manual gating strategy.")
        ("r-runit" ,r-runit)
        ("r-xml" ,r-xml)
        ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/RGLab/CytoML")
     (synopsis "GatingML interface for cross platform cytometry data sharing")
     (description
