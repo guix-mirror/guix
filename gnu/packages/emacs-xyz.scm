@@ -154,6 +154,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages scheme)
   #:use-module (gnu packages speech)
@@ -5370,6 +5371,32 @@ to recognize a name like \"RFC 1234\".  This package enhances ffap so
 that it correctly finds RFCs even when a space appears before the
 number.")
     (license license:gpl3+)))
+
+(define-public emacs-feature-mode
+  (let ((version "20190801")
+        (revision "1")
+        (commit "11ae1671629bfedaa553c7b819676d64eb320992"))
+    (package
+      (name "emacs-feature-mode")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/michaelklishin/cucumber.el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0yd4gkxz9xcbgibfgr8apsid3f83nmg5jgqk5nql0linj5gymc28"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^features\\/" "snippets\\/" "^support\\/"
+                          %default-include)))
+      (home-page "https://github.com/michaelklishin/cucumber.el/")
+      (synopsis "Emacs mode for editing Gherkin plain text user stories")
+      (description "Major mode for editing Gherkin (popularized by the
+Cucumber tool) user stories.  Also known by the name @code{cucumber.el}.")
+      (license license:gpl2+))))
 
 (define-public emacs-org-bullets
   (package
