@@ -3668,6 +3668,10 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        (modules '((guix build utils)))
        (snippet
         '(begin
+           ;; Manually apply upstream's a5cef5b09668513af8f898e2402377ebd58a64cc
+           ;; fix.  See <https://issues.guix.gnu.org/issue/40374>.
+           (rename-file "src/effects/icons/color shift.png"
+                        "src/effects/icons/colorshift.png")
            (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
