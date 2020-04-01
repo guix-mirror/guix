@@ -25,6 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -286,6 +287,51 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (description
      "GNU Mach is the microkernel upon which a GNU Hurd system is based.")))
 
+(define (hurd-rc-script)
+  "Return a script to be installed as /libexec/rc in the 'hurd' package.  The
+script takes care of installing the relevant passive translators on the first
+boot, since this cannot be done from GNU/Linux."
+  (define translators
+    '(("/servers/crash-dump-core" ("/hurd/crash" "--dump-core"))
+      ("/servers/crash-kill" ("/hurd/crash" "--kill"))
+      ("/servers/crash-suspend" ("/hurd/crash" "--suspend"))
+      ("/servers/password" ("/hurd/password"))
+      ("/servers/socket/1" ("/hurd/pflocal"))
+      ("/servers/socket/2" ("/hurd/pfinet" "--interface" "eth0"
+                            "--address" "10.0.2.77"
+                            "--netmask" "255.255.255.0"
+                            "--gateway" "10.0.2.2"
+                            "--ipv6" "/servers/socket/16"))))
+
+  (define rc
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 match))
+
+          ;; "@HURD@" is a placeholder.
+          (setenv "PATH" "@HURD@/bin")
+
+          (define (translated? node)
+            ;; Return true if a translator is installed on NODE.
+            (with-output-to-port (%make-void-port "w")
+              (lambda ()
+                (with-error-to-port (%make-void-port "w")
+                  (lambda ()
+                    (zero? (system* "showtrans" "-s" node)))))))
+
+          (for-each (match-lambda
+                      ((node command)
+                       (unless (translated? node)
+                         (mkdir-p (dirname node))
+                         (apply invoke "settrans" "-c" node command))))
+                    '#$translators))))
+
+  ;; FIXME: We want the program to use the cross-compiled Guile when
+  ;; cross-compiling.  But why do we need to be explicit here?
+  (with-parameters ((%current-target-system "i586-pc-gnu"))
+    (program-file "rc" rc)))
+
 (define-public hurd
   (package
     (name "hurd")
@@ -296,11 +342,21 @@ Hurd-minimal package which are needed for both glibc and GCC.")
      `(#:phases
        (modify-phases %standard-phases
          (add-before 'build 'pre-build
-                     (lambda _
-                       ;; Don't change the ownership of any file at this time.
-                       (substitute* '("daemons/Makefile" "utils/Makefile")
-                         (("-o root -m 4755") ""))
-                       #t)))
+           (lambda _
+             ;; Don't change the ownership of any file at this time.
+             (substitute* '("daemons/Makefile" "utils/Makefile")
+               (("-o root -m 4755") ""))
+             #t))
+         (add-after 'install 'install-rc-file
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (file (string-append out "/libexec/rc"))
+                    (rc   (assoc-ref inputs "hurd-rc")))
+               (delete-file file)
+               (copy-file rc file)
+               (substitute* file
+                 (("@HURD@") out))
+               #t))))
        #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               %output "/lib")
                           "--disable-ncursesw"
@@ -308,7 +364,9 @@ Hurd-minimal package which are needed for both glibc and GCC.")
                           "--without-libz"
                           "--without-parted")))
     (build-system gnu-build-system)
-    (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
+    (inputs
+     `(("glibc-hurd-headers" ,glibc/hurd-headers)
+       ("hurd-rc" ,(hurd-rc-script))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
