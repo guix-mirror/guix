@@ -9120,14 +9120,14 @@ analysing multivariate abundance data in community ecology.")
 (define-public r-afex
   (package
     (name "r-afex")
-    (version "0.26-0")
+    (version "0.27-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "afex" version))
        (sha256
         (base32
-         "0h3p1svgk1ap3lj08fi8nzdb3710h99bv150krf1x8wci1a0r1if"))))
+         "0qsmcddy4449qjj3ajmqvdiqdkhkswmz5dqf150wxwq897p3bvf2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
@@ -9135,6 +9135,8 @@ analysing multivariate abundance data in community ecology.")
        ("r-lmertest" ,r-lmertest)
        ("r-pbkrtest" ,r-pbkrtest)
        ("r-reshape2" ,r-reshape2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://afex.singmann.science/")
     (synopsis "Analysis of factorial experiments")
     (description
