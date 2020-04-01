@@ -170,10 +170,7 @@
            (let ((out (assoc-ref outputs "out")))
              (apply system* "make" "package"
                     (string-append "pkgdir=" out) make-flags)
-             ;; copy static library
-             (copy-file (string-append out "/link/libnetpbm.a")
-                        (string-append out "/lib/libnetpbm.a"))
-             ;; remove superfluous folders and files
+             ;; Remove superfluous files.
              (system* "rm" "-r" (string-append out "/link"))
              (system* "rm" "-r" (string-append out "/misc"))
              (with-directory-excursion out
