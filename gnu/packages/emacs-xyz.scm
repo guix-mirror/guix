@@ -1951,53 +1951,51 @@ Maps directly inside Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-graphviz-dot-mode
-  (let ((commit "1574c504d9810f34a85e2ff49b6f7648c2be5f27")
-        (revision "1"))
-    (package
-      (name "emacs-graphviz-dot-mode")
-      (version (string-append "0.4.1-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ppareit/graphviz-dot-mode.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "03l6zkkxhbcxj5i13hzjv6ypmzaw70zqqagh7ix1kdn33kpp37jj"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'make-info
-             (lambda* (#:key inputs #:allow-other-keys)
-               (with-directory-excursion "texinfo"
-                 (substitute* "Makefile"
-                   (("\\/usr\\/bin\\/gzip")
-                    (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
-                 (invoke "make"
-                         "clean"
-                         "info"
-                         (string-append "TEXINFODIR="
-                                        (assoc-ref inputs "texinfo")
-                                        "/bin")))))
-           (add-after 'install 'install-info
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out  (assoc-ref outputs "out"))
-                      (info (string-append out "/share/info")))
-                 (install-file "texinfo/graphviz-dot-mode.info.gz" info)
-                 #t))))))
-      (native-inputs
-       `(("texinfo" ,texinfo)
-         ("gzip" ,gzip)))
-      (home-page "http://ppareit.github.com/graphviz-dot-mode")
-      (synopsis "Major mode for editing Graphviz Dot files")
-      (description
-       "This Emacs packages helps you to create @file{.dot} or @file{.gv}
-files using the dot syntax, and use Graphviz to convert these files to
-diagrams.")
-      (license license:gpl2+))))
+  (package
+    (name "emacs-graphviz-dot-mode")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ppareit/graphviz-dot-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1v1p85wk73nfsvv66qf90flgf9dqhmv15z1r7q4zmc4ifklqn08m"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "texinfo"
+               (substitute* "Makefile"
+                 (("\\/usr\\/bin\\/gzip")
+                  (string-append (assoc-ref inputs "gzip") "/bin/gzip")))
+               (invoke "make"
+                       "clean"
+                       "info"
+                       (string-append "TEXINFODIR="
+                                      (assoc-ref inputs "texinfo")
+                                      "/bin")))))
+         (add-after 'install 'install-info
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (install-file "texinfo/graphviz-dot-mode.info.gz" info)
+               #t))))))
+    (native-inputs
+     `(("gzip" ,gzip)
+       ("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)))
+    (home-page "http://ppareit.github.com/graphviz-dot-mode")
+    (synopsis "Major mode for editing Graphviz DOT files")
+    (description
+     "This Emacs package helps you to create @file{.dot} or @file{.gv} files
+using the DOT syntax, and use Graphviz to convert these files to diagrams.")
+    (license license:gpl2+)))
 
 (define-public emacs-imenu-list
   (package
