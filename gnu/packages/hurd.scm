@@ -264,6 +264,8 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (name "gnumach")
     (arguments
      (substitute-keyword-arguments (package-arguments gnumach-headers)
+       ((#:configure-flags flags ''())
+        `(cons "--enable-kdb" ,flags))            ;enable kernel debugger
        ((#:phases phases '%standard-phases)
         `(modify-phases %standard-phases
            (add-after 'install 'produce-image
