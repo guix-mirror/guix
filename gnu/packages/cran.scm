@@ -4801,14 +4801,14 @@ functions to enforce symmetric scales or add tags to facetted plots.")
 (define-public r-heatmaply
   (package
     (name "r-heatmaply")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "heatmaply" version))
        (sha256
         (base32
-         "0576gml3bcl7r1biigzj1rag2xzz422knbw7arc8d2gsakjj757g"))))
+         "133q8ir45vhfxs2lnd96k97g21ihg2arfhp349kmk339pk32fcxz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
