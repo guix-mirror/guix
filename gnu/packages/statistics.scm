@@ -4122,14 +4122,14 @@ Zurich, including many that are related to graphics.")
 (define-public r-gtools
   (package
     (name "r-gtools")
-    (version "3.8.1")
+    (version "3.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gtools" version))
        (sha256
         (base32
-         "0f5syk1qq6cjq6hwymvkiyhzwa389z94722v881ipbfqkd2q8505"))))
+         "1pnwy412wvhhvnnx8qg6s9hrgcnsfhnfcpf2560ipipk845acfsh"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
