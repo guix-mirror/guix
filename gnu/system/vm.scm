@@ -368,6 +368,7 @@ INPUTS is a list of inputs (as for packages)."
                      (disk-image-size 'guess)
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
+                     (file-system-options '())
                      (extra-directives '())
                      file-system-label
                      file-system-uuid
@@ -382,7 +383,8 @@ INPUTS is a list of inputs (as for packages)."
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
 partition; likewise FILE-SYSTEM-UUID, if true, specifies the UUID of the root
-partition (a UUID object).
+partition (a UUID object).  FILE-SYSTEM-OPTIONS is an optional list of
+command-line options passed to 'mkfs.ext4' (or similar).
 
 The returned image is a full disk image that runs OS-DERIVATION,
 with a GRUB installation that uses GRUB-CONFIGURATION as its configuration
@@ -472,6 +474,7 @@ system that is passed to 'populate-root-file-system'."
                              (uuid #$(and=> file-system-uuid
                                             uuid-bytevector))
                              (file-system #$file-system-type)
+                             (file-system-options '#$file-system-options)
                              (flags '(boot))
                              (initializer initialize)))
                       ;; Append a small EFI System Partition for use with UEFI

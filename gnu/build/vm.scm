@@ -234,6 +234,8 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
   (device      partition-device (default #f))
   (size        partition-size)
   (file-system partition-file-system (default "ext4"))
+  (file-system-options partition-file-system-options ;passed to 'mkfs.FS'
+                       (default '()))
   (label       partition-label (default #f))
   (uuid        partition-uuid (default #f))
   (flags       partition-flags (default '()))
@@ -308,7 +310,7 @@ actual /dev name based on DEVICE."
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
 (define* (create-ext-file-system partition type
-                                 #:key label uuid)
+                                 #:key label uuid (options '()))
   "Create an ext-family file system of TYPE on PARTITION.  If LABEL is true,
 use that as the volume name.  If UUID is true, use it as the partition UUID."
   (format #t "creating ~a partition... ~@[label: ~s~] ~@[uuid: ~s~]\n"
@@ -320,26 +322,29 @@ use that as the volume name.  If UUID is true, use it as the partition UUID."
                  '())
            ,@(if uuid
                  `("-U" ,(uuid->string uuid))
-                 '()))))
+                 '())
+           ,@options)))
 
 (define* (create-fat-file-system partition
-                                 #:key label uuid)
+                                 #:key label uuid (options '()))
   "Create a FAT file system on PARTITION.  The number of File Allocation Tables
 will be determined based on file system size.  If LABEL is true, use that as the
 volume name."
   ;; FIXME: UUID is ignored!
   (format #t "creating FAT partition...\n")
   (apply invoke "mkfs.fat" partition
-         (if label `("-n" ,label) '())))
+         (append (if label `("-n" ,label) '()) options)))
 
 (define* (format-partition partition type
-                           #:key label uuid)
+                           #:key label uuid (options '()))
   "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
-volume name."
+volume name.  Options is a list of command-line options passed to 'mkfs.FS'."
   (cond ((string-prefix? "ext" type)
-         (create-ext-file-system partition type #:label label #:uuid uuid))
+         (create-ext-file-system partition type #:label label #:uuid uuid
+                                 #:options options))
         ((or (string-prefix? "fat" type) (string= "vfat" type))
-         (create-fat-file-system partition #:label label #:uuid uuid))
+         (create-fat-file-system partition #:label label #:uuid uuid
+                                 #:options options))
         (else (error "Unsupported file system."))))
 
 (define (initialize-partition partition)
@@ -349,7 +354,8 @@ it, run its initializer, and unmount it."
    (format-partition (partition-device partition)
                      (partition-file-system partition)
                      #:label (partition-label partition)
-                     #:uuid (partition-uuid partition))
+                     #:uuid (partition-uuid partition)
+                     #:options (partition-file-system-options partition))
    (mkdir-p target)
    (mount (partition-device partition) target
           (partition-file-system partition))
