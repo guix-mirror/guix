@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -67,6 +67,13 @@ directory TARGET."
           (('directory name uid gid mode)
            (loop `(directory ,name ,uid ,gid))
            (chmod (string-append target name) mode))
+          (('file name)
+           (call-with-output-file (string-append target name)
+             (const #t)))
+          (('file name (? string? content))
+           (call-with-output-file (string-append target name)
+             (lambda (port)
+               (display content port))))
           ((new '-> old)
            (let try ()
              (catch 'system-error
@@ -119,11 +126,14 @@ STORE."
 
     (directory "/home" 0 0)))
 
-(define (populate-root-file-system system target)
+(define* (populate-root-file-system system target
+                                    #:key (extras '()))
   "Make the essential non-store files and directories on TARGET.  This
-includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
+includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM.
+EXTRAS is a list of directives appended to the built-in directives to populate
+TARGET."
   (for-each (cut evaluate-populate-directive <> target)
-            (directives (%store-directory)))
+            (append (directives (%store-directory)) extras))
 
   ;; Add system generation 1.
   (let ((generation-1 (string-append target
