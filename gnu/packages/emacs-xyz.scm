@@ -16949,7 +16949,7 @@ files are easily readable and they work nicely with version control systems.")
 (define-public emacs-all-the-icons
   (package
     (name "emacs-all-the-icons")
-    (version "3.2.0")
+    (version "4.0.1")
     (source
      (origin
        (method git-fetch)
@@ -16958,8 +16958,7 @@ files are easily readable and they work nicely with version control systems.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1sdl33117lccznj38021lwcdnpi9nxmym295q6y460y4dm4lx0jn"))))
+        (base32 "0yh7gnv9xfqn8q4rzaa6wpyn9575vyfxy7d3afly2mqsb367fgm5"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.el$" "^data/" "^fonts/")
@@ -16972,10 +16971,11 @@ files are easily readable and they work nicely with version control systems.")
        ("memoize" ,emacs-memoize)))
     (home-page "https://github.com/domtronn/all-the-icons.el")
     (synopsis "Collect icon fonts and propertize them within Emacs")
-    (description "All-the-icons is a utility package to collect various icon
-fonts and propertize them within Emacs.  Icon fonts allow you to propertize
-and format icons the same way you would normal text.  This enables things such
-as better scaling of and anti aliasing of the icons.")
+    (description
+     "All-the-icons is a utility package to collect various icon fonts and
+propertize them within Emacs.  Icon fonts allow you to propertize and format
+icons the same way you would normal text.  This enables things such as better
+scaling of and anti aliasing of the icons.")
     ;; Package is released under Expat license.  Elisp files are licensed
     ;; under GPL3+.  Fonts come with various licenses: Expat for
     ;; "all-the-icons.ttf" and "file-icons.ttf", Apache License 2.0 for
