@@ -649,7 +649,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "12.1.04")
+    (version "13.0.01")
     (source
      (origin
        (method url-fetch)
@@ -659,7 +659,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "1h5dyhg4j8sh4qpbwnsn34igb8mfapz5b3nf4k71hq1c5z3j0mcv"))))
+        (base32 "1svzm3xahb2m8r79ha9gb1z3zlckykx9d87cghswj7dxn9868j4b"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -702,7 +702,7 @@ for use at smaller text sizes")))
      "GNU Unifont is a bitmap font covering essentially all of
 Unicode's Basic Multilingual Plane.  The package also includes
 utilities to ease adding new glyphs to the font.")
-    (home-page "http://unifoundry.com/unifont.html")
+    (home-page "http://unifoundry.com/unifont/index.html")
     (properties '((upstream-name . "unifont")))
     (license license:gpl2+)))
 
