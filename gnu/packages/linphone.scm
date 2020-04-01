@@ -105,3 +105,29 @@ written in C++11.  It parses text inputs formatted according to a language
 defined by an ABNF grammar, such as the protocols standardized at IETF.")
     (home-page "https://gitlab.linphone.org/BC/public/belr")
     (license license:gpl3+)))
+
+(define-public belcard
+  (package
+    (name "belcard")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0iiyrll1shnbb0561pkvdqcmx9b2cdr76xpsbaqdirc3s4xzcl0k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=OFF")))        ; Not required
+    (inputs
+     `(("bctoolbox" ,bctoolbox)
+       ("belr" ,belr)))
+    (synopsis "Belledonne Communications VCard Library")
+    (description "Belcard is a C++ library to manipulate VCard standard format.")
+    (home-page "https://gitlab.linphone.org/BC/public/belcard")
+    (license license:gpl3+)))
