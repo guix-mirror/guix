@@ -7498,14 +7498,14 @@ accessing web references for elements/sets are also available in BiocSet.")
 (define-public r-biocworkflowtools
   (package
     (name "r-biocworkflowtools")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocWorkflowTools" version))
        (sha256
         (base32
-         "1v4bhnpdkmllm7aghms9b7369hkrgz7mn69wbrqg1x42pgkf30ad"))))
+         "0z28s572wg9qxv52dmixxz1xf1z3fyp2j7kzk0k32fp628918wr6"))))
     (properties
      `((upstream-name . "BiocWorkflowTools")))
     (build-system r-build-system)
@@ -7519,6 +7519,8 @@ accessing web references for elements/sets are also available in BiocSet.")
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-stringr" ,r-stringr)
        ("r-usethis" ,r-usethis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/BiocWorkflowTools/")
     (synopsis "Tools to aid the development of Bioconductor Workflow packages")
     (description
