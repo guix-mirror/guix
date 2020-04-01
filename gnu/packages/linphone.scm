@@ -163,3 +163,30 @@ picture, or subtitle tracks in one file. ")
       ;; That license applies for LibMatroska2.
       ;; https://www.matroska.org/node/47
       license:lgpl2.1+))))
+
+(define-public bcg729
+  (package
+    (name "bcg729")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "01y34ky7ykjgfnf8a9f59hg61fqfjiprfrzshdz06w0lz4gvy3qs"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))         ; Not required
+    (synopsis "Belledonne Communications G729 Codec")
+    (description "BcG729 is an implementation of both encoder and decoder of
+the ITU G729 speech codec.  The library written in C 99 is fully portable and
+can be executed on many platforms including both ARM and x86 processors.  It
+supports concurrent channels encoding and decoding for multi call application
+such as conferencing.")
+    (home-page "https://gitlab.linphone.org/BC/public/belcard")
+    (license license:gpl2+)))
