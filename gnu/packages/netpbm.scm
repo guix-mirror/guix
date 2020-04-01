@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,7 +145,7 @@
        (add-before 'check 'setup-check
          (lambda _
            ;; install temporarily into /tmp/netpbm
-           (system* "make" "package")
+           (invoke "make" "package")
            ;; remove test requiring X
            (substitute* "test/all-in-place.test" (("pamx") ""))
            ;; do not worry about non-existing file
@@ -168,11 +168,11 @@
        (replace 'install
          (lambda* (#:key outputs make-flags #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
-             (apply system* "make" "package"
+             (apply invoke "make" "package"
                     (string-append "pkgdir=" out) make-flags)
              ;; Remove superfluous files.
-             (system* "rm" "-r" (string-append out "/link"))
-             (system* "rm" "-r" (string-append out "/misc"))
+             (invoke "rm" "-r" (string-append out "/link"))
+             (invoke "rm" "-r" (string-append out "/misc"))
              (with-directory-excursion out
                (for-each delete-file
                          '("config_template" "pkginfo" "README"
