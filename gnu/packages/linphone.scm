@@ -78,3 +78,30 @@ framework for writing, administering, and running unit tests in C.")
 Communications softwares like belle-sip, mediastreamer2 and linphone.")
     (home-page "https://gitlab.linphone.org/BC/public/bctoolbox")
     (license license:gpl2+)))
+
+(define-public belr
+  (package
+    (name "belr")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1fwv2cg3qy9vdc7dimcda7nqcqc1h2cdd7ikhk7ng7q4ys8m96c1"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=OFF")))        ; Not required
+    (inputs
+     `(("bctoolbox" ,bctoolbox)))
+    (synopsis "Belledonne Communications Language Recognition Library")
+    (description "Belr is Belledonne Communications' language recognition library,
+written in C++11.  It parses text inputs formatted according to a language
+defined by an ABNF grammar, such as the protocols standardized at IETF.")
+    (home-page "https://gitlab.linphone.org/BC/public/belr")
+    (license license:gpl3+)))
