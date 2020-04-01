@@ -114,7 +114,10 @@
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
    (arguments
-    `(#:phases
+    `(#:modules ((guix build gnu-build-system)
+                 (guix build utils)
+                 (ice-9 match))
+      #:phases
       (modify-phases %standard-phases
        (replace 'configure
          (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -174,8 +177,15 @@
              (with-directory-excursion out
                (for-each delete-file-recursively
                          '("config_template" "pkginfo" "README" "VERSION"
-                           "link/" "misc/")))
-             #t))))))
+                           "link/" "misc/"))
+               ;; Install the required ‘libnetpbm.so’ link.
+               ;; See <https://issues.guix.gnu.org/issue/40376>.
+               (with-directory-excursion "lib"
+                 (symlink
+                  (match (find-files "." "^libnetpbm\\.so\\.[^.]*\\.[^.]*$")
+                         ((head _ ...) head))
+                  "libnetpbm.so"))
+               #t)))))))
    (synopsis "Toolkit for manipulation of images")
    (description
     "Netpbm is a toolkit for the manipulation of graphic images, including
