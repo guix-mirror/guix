@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +98,6 @@
        ("gts" ,gts)
        ("gd" ,gd)                                 ; FIXME: Our GD is too old
        ("guile" ,guile-2.0)                       ;Guile bindings
-       ("swig" ,swig)
        ("pango" ,pango)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -108,6 +108,7 @@
        ("libpng" ,libpng)))
     (native-inputs
      `(("bison" ,bison)
+       ("swig" ,swig)
        ("pkg-config" ,pkg-config)))
     (outputs '("out" "doc"))                      ; 5 MiB of html + pdfs
     (home-page "http://www.graphviz.org/")
