@@ -40,8 +40,7 @@
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
