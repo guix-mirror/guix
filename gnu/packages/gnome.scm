@@ -334,7 +334,7 @@ in the GNOME desktop.")
 (define-public gnome-online-miners
   (package
     (name "gnome-online-miners")
-    (version "3.30.0")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -342,7 +342,7 @@ in the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pjamwwzn5wqgihyss357dyl2q70r0bngnqmwsqawchx5f9aja9c"))))
+                "1n2jz9i8a42zwxx5h8j2gdy6q1vyydh4vl00r0al7w8jzdh24p44"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
