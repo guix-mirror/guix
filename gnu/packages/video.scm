@@ -3681,14 +3681,17 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        ("python-requests" ,python-requests)
        ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f                      ;no tests
-       #:modules ((guix build python-build-system)
+     `(#:modules ((guix build python-build-system)
                   (guix build qt-utils)
                   (guix build utils))
        #:imported-modules (,@%python-build-system-modules
                             (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
+                  (replace 'check
+                    (lambda _
+                      (setenv "QT_QPA_PLATFORM" "offscreen")
+                      (invoke "python" "src/tests/query_tests.py")))
                   (add-after 'unpack 'patch-font-location
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((font (assoc-ref inputs "font-ubuntu")))
