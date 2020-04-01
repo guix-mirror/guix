@@ -65,6 +65,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
@@ -1549,18 +1550,16 @@ projects while introducing many more.")
         (sha256
          (base32
           "1fr3jvja8s2gdpx8qyk9r17977flms3qpm8zci62nd9r5wjdvr5i"))))
-    (build-system gnu-build-system)
+    (build-system copy-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags '("CC=gcc")
+     '(#:install-plan
+       '(("mpris.so" "lib/"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; no configure script
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "mpris.so" (string-append out "/lib")))
-             #t)))))
+         (add-before 'install 'build
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             (invoke "make"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
