@@ -598,6 +598,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system.scm				\
   %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
+  %D%/system/hurd.scm				\
   %D%/system/install.scm			\
   %D%/system/keyboard.scm			\
   %D%/system/linux-container.scm		\
