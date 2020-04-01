@@ -171,12 +171,10 @@
              (apply invoke "make" "package"
                     (string-append "pkgdir=" out) make-flags)
              ;; Remove superfluous files.
-             (invoke "rm" "-r" (string-append out "/link"))
-             (invoke "rm" "-r" (string-append out "/misc"))
              (with-directory-excursion out
-               (for-each delete-file
-                         '("config_template" "pkginfo" "README"
-                           "VERSION")))
+               (for-each delete-file-recursively
+                         '("config_template" "pkginfo" "README" "VERSION"
+                           "link/" "misc/")))
              #t))))))
    (synopsis "Toolkit for manipulation of images")
    (description
