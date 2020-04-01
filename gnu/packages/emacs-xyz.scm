@@ -1978,6 +1978,31 @@ files using the dot syntax, and use Graphviz to convert these files to
 diagrams.")
       (license license:gpl2+))))
 
+(define-public emacs-imenu-list
+  (package
+    (name "emacs-imenu-list")
+    (version "0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/bmag/imenu-list")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13xh9bdl3k6ccfq83wjmkpi4269qahv4davki4wq18dr4amrzhlx"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bmag/imenu-list")
+    (synopsis
+     "Automatically tracks the current buffer's imenu entries")
+    (description
+     "This Emacs minor mode creates an automatically updated buffer called
+@code{*Ilist*} that is populated with the current buffer's imenu entries.
+This buffer is typically shown as a sidebar (Emacs vertically splits the
+window).")
+    (license license:gpl3+)))
+
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
