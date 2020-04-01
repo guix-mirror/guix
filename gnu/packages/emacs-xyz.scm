@@ -1824,6 +1824,27 @@ Using emacs-direnv means that programs started from Emacs will use the
 environment set through Direnv.")
     (license license:gpl3+)))
 
+(define-public emacs-elf-mode
+  (package
+    (name "emacs-elf-mode")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/abo-abo/elf-mode")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0cbvjbk2893ag1iy8ggixpirfiyhssm7fii96hb9jqdz874cdl0k"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/elf-mode")
+    (synopsis "Show symbol list when opening a binary file in Emacs")
+    (description "This Emacs package provides a command showing the symbols
+that the binary uses instead of the actual binary contents.")
+    (license license:gpl3+)))
+
 (define-public emacs-ggtags
   (package
     (name "emacs-ggtags")
