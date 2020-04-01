@@ -49,6 +49,7 @@
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1093,6 +1094,46 @@ destroying an ancient book using a special wand.")
     ;; This package includes modified sources of lua (X11), enet (Expat), and
     ;; guichan (BSD-3).  The "Coercri" library is released under the Boost
     ;; license.  The whole package is released under GPLv3+.
+    (license license:gpl3+)))
+
+(define-public gnome-chess
+  (package
+    (name "gnome-chess")
+    (version "3.36.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1a9fgi749gy1f60vbcyrqqkab9vqs42hji70q73k1xx8rv0agmg0"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/Chess")
+    (synopsis "Chess board for GNOME")
+    (description "GNOME Chess provides a 2D board for playing chess games
+against human or computer players.  It supports loading and saving games in
+Portable Game Notation.  To play against a computer, install a chess engine
+such as chess or stockfish.")
     (license license:gpl3+)))
 
 (define-public gnubg
