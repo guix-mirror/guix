@@ -22,7 +22,9 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -220,4 +222,33 @@ such as conferencing.")
     (description "oRTP is a C library implementing the RTP protocol.  It
 implements the RFC 3550 standard.")
     (home-page "https://gitlab.linphone.org/BC/public/ortp")
+    (license license:gpl2+)))
+
+(define-public bzrtp
+  (package
+    (name "bzrtp")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12y0kkh90pixaaxfyx26ca2brhy6nw57fsypp6vh8jk1illv0j5z"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))
+    (inputs
+     `(("bctoolbox" ,bctoolbox)
+       ("sqlite3" ,sqlite)
+       ("xml2" ,libxml2)))
+    (synopsis "Belledonne Communications ZRTP Library")
+    (description "BZRTP is an implementation of ZRTP keys exchange
+protocol, written in C.  It is fully portable and can be executed on many
+platforms including both ARM and x86.")
+    (home-page "https://gitlab.linphone.org/BC/public/bzrtp")
     (license license:gpl2+)))
