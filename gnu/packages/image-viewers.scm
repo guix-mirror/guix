@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
+;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -596,3 +597,60 @@ with tiling window managers.  Features include:
 @end itemize\n")
     (home-page "https://github.com/eXeC64/imv")
     (license license:expat)))
+
+(define-public qiv
+  (package
+    (name "qiv")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://spiegl.de/qiv/download/qiv-"
+                           version ".tgz"))
+       (sha256
+        (base32 "1rlf5h67vhj7n1y7jqkm9k115nfnzpwngj3kzqsi2lg676srclv7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ;; That is required for testing.
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("imlib2" ,imlib2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libtiff" ,libtiff)
+       ("libexif" ,libexif)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'patch-file-start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; patch the file so that qiv runs and exits by itself
+             (substitute* "Makefile"
+               (("./qiv -f ./intro.jpg") "./qiv -f -C -s ./intro.jpg")
+               ;; Fail the build when test fails.
+               (("echo \"-- Test Failed --\"")
+                "(echo \"-- Test Failed --\" ; false)"))
+             ;; There must be a running X server and make install doesn't start one.
+             ;; Therefore we must do it.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))
+       #:tests? #f                      ; there is no check target
+       #:make-flags
+       (list
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (home-page "http://spiegl.de/qiv/")
+    (synopsis "Graphical image viewer for X")
+    (description
+     "Quick Image Viewer is a small and fast GDK/Imlib2 image viewer.
+Features include zoom, maxpect, scale down, fullscreen, slideshow, delete,
+brightness/contrast/gamma correction, pan with keyboard and mouse, flip,
+rotate left/right, jump/forward/backward images, filename filter and use it
+to set X desktop background.")
+    (license license:gpl2)))
