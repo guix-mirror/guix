@@ -3386,6 +3386,30 @@ the speedbar window.")
        "This package provides a macro that writes your namespaces for you.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-leader
+  (package
+    (name "emacs-evil-leader")
+    (version "0.4.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/cofi/evil-leader")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1k2zinchs0jjllp8zkpggckyy63dkyi5yig3p46vh4w45jdzysk5"))))
+    (inputs
+     `(("emacs-evil" ,emacs-evil)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cofi/evil-leader")
+    (synopsis "Implement <leader> feature from Vim")
+    (description
+     "Evil Leader provides the @code{<leader>} feature from Vim that provides
+an easy way to bind keys under a configurable prefix key.")
+    (license license:gpl3+)))
+
 (define-public emacs-evil-textobj-syntax
   (let ((commit "2d9ba8c75c754b409aea7469f46a5cfa52a872f3")
         (version "0")
