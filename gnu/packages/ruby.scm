@@ -134,7 +134,7 @@ a focus on simplicity and productivity.")
 (define-public ruby-2.5
   (package
     (inherit ruby)
-    (version "2.5.7")
+    (version "2.5.8")
     (source
      (origin
        (method url-fetch)
@@ -143,7 +143,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "159zka4sbx1p4ayxqi7a5ybbzxvn3n5mivrz4d1damw9ypl70610"))
+         "0vad5ah1lrdhxsyqr5iqc8c7r7qczpmm76cz8rsf4crimpzv5483"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
