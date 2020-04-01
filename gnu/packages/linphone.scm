@@ -20,6 +20,7 @@
 (define-module (gnu packages linphone)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -50,3 +51,30 @@ with several fixes and patches applied.  It is an unit testing
 framework for writing, administering, and running unit tests in C.")
     (home-page "https://gitlab.linphone.org/BC/public/bcunit")
     (license license:lgpl2.0+)))
+
+(define-public bctoolbox
+  (package
+    (name "bctoolbox")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1a1i70pb4hhnykkwyhhc7fv67q556l8kprny8xzgfqpj1nby2ms6"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=OFF")))        ; Not required
+    (inputs
+     `(("bcunit" ,bcunit)
+       ("mbedtls" ,mbedtls-apache)))
+    (synopsis "Belledonne Communications Tool Box")
+    (description "BcToolBox is an utilities library used by Belledonne
+Communications softwares like belle-sip, mediastreamer2 and linphone.")
+    (home-page "https://gitlab.linphone.org/BC/public/bctoolbox")
+    (license license:gpl2+)))
