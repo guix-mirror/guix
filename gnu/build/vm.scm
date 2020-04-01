@@ -363,14 +363,18 @@ it, run its initializer, and unmount it."
                                      copy-closures?
                                      (register-closures? #t)
                                      system-directory
-                                     (deduplicate? #t))
+                                     (deduplicate? #t)
+                                     (extra-directives '()))
   "Return a procedure to initialize a root partition.
 
 If REGISTER-CLOSURES? is true, register all of CLOSURES in the partition's
 store.  If DEDUPLICATE? is true, then also deduplicate files common to
 CLOSURES and the rest of the store when registering the closures.  If
 COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
-SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
+SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation.
+
+EXTRA-DIRECTIVES is an optional list of directives to populate the root file
+system that is passed to 'populate-root-file-system'."
   (lambda (target)
     (define target-store
       (string-append target (%store-directory)))
@@ -403,7 +407,8 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
 
     ;; Add the non-store directories and files.
     (display "populating...\n")
-    (populate-root-file-system system-directory target)
+    (populate-root-file-system system-directory target
+                               #:extras extra-directives)
 
     ;; 'register-closure' resets timestamps and everything, so no need to do it
     ;; once more in that case.

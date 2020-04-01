@@ -368,6 +368,7 @@ INPUTS is a list of inputs (as for packages)."
                      (disk-image-size 'guess)
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
+                     (extra-directives '())
                      file-system-label
                      file-system-uuid
                      os
@@ -392,7 +393,10 @@ all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image.  By default, REGISTER-CLOSURES? is set to true only if a service of
 type GUIX-SERVICE-TYPE is present in the services definition of the operating
-system."
+system.
+
+EXTRA-DIRECTIVES is an optional list of directives to populate the root file
+system that is passed to 'populate-root-file-system'."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -441,6 +445,7 @@ system."
                                      (((names . _) ...)
                                       names)))
                     (initialize (root-partition-initializer
+                                 #:extra-directives '#$extra-directives
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
