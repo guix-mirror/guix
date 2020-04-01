@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -483,6 +484,10 @@ photographic equipment.")
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxslt" ,libxslt)
        ("libxml2" ,libxml2)
@@ -502,9 +507,6 @@ photographic equipment.")
        ("ilmbase" ,ilmbase)
        ("libsoup" ,libsoup)
        ("python-jsonschema" ,python-jsonschema)
-       ("intltool" ,intltool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
        ("libwebp" ,libwebp)
        ("lensfun" ,lensfun)
        ("librsvg" ,librsvg)
