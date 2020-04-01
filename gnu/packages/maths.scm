@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +80,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
@@ -86,8 +88,10 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages less)
@@ -5320,3 +5324,55 @@ researchers and developers alike to get started on SAT.")
       (home-page
        "http://minisat.se/MiniSat.html")
       (license license:expat))))
+
+(define-public libqalculate
+  (package
+    (name "libqalculate")
+    (version "3.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Qalculate/libqalculate/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("doxygen" ,doxygen)
+       ("file" ,file)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("libxml2" ,libxml2)
+       ("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("gnuplot" ,gnuplot)
+       ("readline" ,readline)
+       ("libiconv" ,libiconv)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "TRUE")
+             #t)))))
+    (home-page "https://qalculate.github.io/")
+    (synopsis "Multi-purpose cli desktop calculator and library")
+    (description
+     "Libqalculate is a multi-purpose cli desktop calculator and library.
+It provides basic and advanced functionality.  Features include customizable
+functions, unit calculations, and conversions, physical constants, symbolic
+calculations (including integrals and equations), arbitrary precision,
+uncertainity propagation, interval arithmetic, plotting and a user-friendly
+cli.")
+    (license license:gpl2+)))
