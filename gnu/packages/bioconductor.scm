@@ -1958,14 +1958,14 @@ experiments.")
 (define-public r-genomicinteractions
   (package
     (name "r-genomicinteractions")
-    (version "1.20.1")
+    (version "1.20.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicInteractions" version))
        (sha256
         (base32
-         "140bp7c8p079xh5wwxmrq3a73pm6mdc9czq5w2gzjml7dgrca38a"))))
+         "0mqb899wah5n7bp2lajhwy2zpqqhi18plza3i3m51rfl9n62smph"))))
     (properties
      `((upstream-name . "GenomicInteractions")))
     (build-system r-build-system)
@@ -1986,6 +1986,8 @@ experiments.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ComputationalRegulatoryGenomicsICL/GenomicInteractions/")
     (synopsis "R package for handling genomic interaction data")
     (description
