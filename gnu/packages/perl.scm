@@ -1826,6 +1826,40 @@ CPAN::Meta object are present.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-crypt-eksblowfish
+  (package
+    (name "perl-crypt-eksblowfish")
+    (version "0.009")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Crypt-Eksblowfish-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0k01aw3qb2s4m1w4dqsc9cycyry1zg3wabdym4vp4421b1ni5irw"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-class-mix" ,perl-class-mix)))
+    (home-page "https://metacpan.org/release/Crypt-Eksblowfish")
+    (synopsis "The Eksblowfish block cipher")
+    (description "Eksblowfish is a variant of the Blowfish cipher,
+modified to make the key setup very expensive.  This doesn't make it
+significantly cryptographically stronger but is intended to hinder
+brute-force attacks.  Eksblowfish is a parameterised (family-keyed)
+cipher.  It takes a cost parameter that controls how expensive the key
+scheduling is.  It also takes a family key, known as the \"salt\".
+Cost and salt parameters together define a cipher family.  Within each
+family, the key determines the encryption function.  This distribution
+also includes an implementation of @code{bcrypt}, the Unix crypt()
+password hashing algorithm based on Eksblowfish.")
+    (license perl-license)))
+
 (define-public perl-crypt-randpasswd
   (package
     (name "perl-crypt-randpasswd")
