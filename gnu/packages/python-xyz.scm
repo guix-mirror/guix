@@ -19043,3 +19043,31 @@ happened, and what caused it.")
     (description
      "This package provides a Python module for parsing and splitting PEM files.")
     (license license:expat)))
+
+(define-public python-txsni
+  ;; We need a few commits on top of 0.1.9 for compatibility with newer
+  ;; Python and OpenSSL.
+  (let ((commit "5014c141a7acef63e20fcf6c36fa07f0cd754ce1")
+        (revision "0"))
+    (package
+      (name "python-txsni")
+      (version (git-version "0.1.9" revision commit))
+      (home-page "https://github.com/glyph/txsni")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url home-page) (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0imfxx4yjj1lbq0n5ad45al3wvv4qv96sivnc1r51i66mxi658z8"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-pyopenssl" ,python-pyopenssl)
+         ("python-service-identity" ,python-service-identity)
+         ("python-twisted" ,python-twisted)))
+      (synopsis "Run TLS servers with Twisted")
+      (description
+       "This package provides an easy-to-use SNI endpoint for use
+with the Twisted web framework.")
+      (license license:expat))))
