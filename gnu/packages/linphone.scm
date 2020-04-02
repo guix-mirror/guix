@@ -20,8 +20,10 @@
 (define-module (gnu packages linphone)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
@@ -251,4 +253,44 @@ implements the RFC 3550 standard.")
 protocol, written in C.  It is fully portable and can be executed on many
 platforms including both ARM and x86.")
     (home-page "https://gitlab.linphone.org/BC/public/bzrtp")
+    (license license:gpl2+)))
+
+(define-public belle-sip
+  (package
+    (name "belle-sip")
+    (version "1.6.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0s55kggmgxap54dkw5856bgk4xg7yvbzialpxnjm0zhpic3hff1z"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; Requires network access
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "src/CMakeLists.txt"
+              ;; ANTLR would use multithreaded DFA generation
+              ;; otherwise--which would not be reproducible.
+              (("-Xmultithreaded ") ""))
+             #t)))))
+    (inputs
+     `(("antlr3" ,antlr3-3.3)
+       ("antlr3c" ,libantlr3c)
+       ("bctoolbox" ,bctoolbox)
+       ("java" ,icedtea)
+       ("zlib" ,zlib)))
+    (synopsis "Belledonne Communications SIP Library")
+    (description "Belle-sip is a modern library implementing SIP transport,
+transaction and dialog layers.  It is written in C, with an object-oriented
+API.  It also comprises a simple HTTP/HTTPS client implementation.")
+    (home-page "https://gitlab.linphone.org/BC/public/belle-sip")
     (license license:gpl2+)))
