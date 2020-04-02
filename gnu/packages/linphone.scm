@@ -24,6 +24,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
@@ -31,6 +32,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages java)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages telephony)
@@ -366,4 +368,50 @@ engine for telephony applications.  This media processing and streaming toolkit
 is responsible for receiving and sending all multimedia streams in Linphone,
 including media capture, encoding and decoding, and rendering.")
     (home-page "https://gitlab.linphone.org/BC/public/mediastreamer2")
+    (license license:gpl2+)))
+
+(define-public liblinphone
+  (package
+    (name "liblinphone")
+    (version "3.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/linphone"
+                       "/linphone-" version ".tar.gz"))
+       (sha256
+        (base32 "0phhkx55xdyg28d4wn8l8q4yvsmdgzmjiw584d4s190sq1azm91x"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))         ; Not required
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("gettext" ,gettext-minimal)
+       ("iconv" ,libiconv)
+       ("python" ,python)
+       ("xml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (inputs
+     `(("bctoolbox" ,bctoolbox)
+       ("belcard" ,belcard)
+       ("bellesip" ,belle-sip)
+       ("bzrtp", bzrtp)
+       ("mediastreamer2" ,mediastreamer2)
+       ("ortp" ,ortp)
+       ("pystache" ,python-pystache)
+       ("six" ,python-six)
+       ("sqlite" ,sqlite)
+       ("udev" ,eudev)))
+    (synopsis "Belledonne Communications Softphone Library")
+    (description "Liblinphone is a high-level SIP library integrating
+all calling and instant messaging features into an unified
+easy-to-use API.  It is the cross-platform VoIP library on which the
+Linphone application is based on, and that anyone can use to add audio
+and video calls or instant messaging capabilities to an application.")
+    (home-page "https://gitlab.linphone.org/BC/public/liblinphone")
     (license license:gpl2+)))
