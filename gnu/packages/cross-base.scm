@@ -80,7 +80,7 @@
   "Return package ORIGINAL with all PATCHES appended to its list of patches."
   (package-with-patch original
                       `(,@(origin-patches (package-source original))
-                        ,@patches))
+                        ,@patches)))
 
 (define (cross-binutils target)
   "Return a cross-Binutils for TARGET."
