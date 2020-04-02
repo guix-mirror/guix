@@ -121,6 +121,25 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public vo-amrwbenc
+  (package
+    (name "vo-amrwbenc")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/opencore-amr/files/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0klx3nkidc6b8aawchpk19n3xlrzgnc046w4gd0rdqphw28v6ljn"))))
+    (build-system gnu-build-system)
+    (synopsis "Adaptive Multi Rate Codec")
+    (description "VO-AMR is a library of VisualOn implementation of
+Adaptive Multi Rate Narrowband and Wideband (AMR-NB and AMR-WB) speech codec.")
+    (home-page "https://sourceforge.net/projects/opencore-amr/")
+    (license license:asl2.0)))
+
 (define-public opencore-amr
   (package
     (name "opencore-amr")
