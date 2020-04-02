@@ -475,6 +475,31 @@ these arguments.  The prototypical use is for the command to call an external
 process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
 
+(define-public emacs-magit-annex
+  (let ((commit "ef5dce6267e9118a5eca82a22bcad0b67826c23a")
+        (revision "1"))
+    (package
+      (name "emacs-magit-annex")
+      (version (git-version "1.7.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/magit/magit-annex.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vzkydgl889cq173zjl89g2vrddb9abc4a8gljiz3b4a7n5b1nrd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("magit" ,emacs-magit)
+         ("transient" ,emacs-transient)))
+      (home-page "https://github.com/magit/magit-annex/")
+      (synopsis "Git-annex support for Magit")
+      (description
+       "Magit-annex adds a few git-annex operations to the Magit interface.")
+      (license license:gpl3+))))
+
 (define-public emacs-minions
   (package
     (name "emacs-minions")
