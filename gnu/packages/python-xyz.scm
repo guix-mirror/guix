@@ -7825,14 +7825,14 @@ primary use case is APIs defined before keyword-only parameters existed.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.4.3")
+    (version "0.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "1z5h38anjzzrxpraa9iq9llffyx2zs8gx0q6dc1g029miwnn50gv"))))
+         "1fnhbi3rmk47l9851gbik0flfr64vs5j0hbqx24cafjap6gprxxf"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
