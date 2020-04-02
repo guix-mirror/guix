@@ -1164,7 +1164,7 @@ separator between subsequent columns."
                         names outputs)
                    (map (lambda (old new)
                           (if (string=? old new)
-                              (G_ "(dependencies changed)")
+                              (G_ "(dependencies or package changed)")
                               (string-append old " " → " " new)))
                         old-version new-version))
               #:initial-indent 3))
