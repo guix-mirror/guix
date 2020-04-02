@@ -5,6 +5,7 @@
 (use-modules (gnu) (gnu system nss))
 (use-service-modules desktop)
 (use-package-modules bootloaders certs ratpoison suckless wm)
+(use-package-modules bootloaders certs ratpoison suckless wm xorg)
 
 (operating-system
   (host-name "antelope")
@@ -43,6 +44,8 @@
   (packages (append (list
                      ;; window managers
                      ratpoison i3-wm i3status dmenu
+                     ;; terminal emulator
+                     xterm
                      ;; for HTTPS access
                      nss-certs)
                     %base-packages))
