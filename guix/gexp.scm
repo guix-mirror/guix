@@ -730,7 +730,7 @@ names and file names suitable for the #:allowed-references argument to
                                                #:target target)))
           (return (derivation->output-path drv))))))
 
-    (mapm %store-monad lower lst)))
+    (mapm/accumulate-builds lower lst)))
 
 (define default-guile-derivation
   ;; Here we break the abstraction by talking to the higher-level layer.
