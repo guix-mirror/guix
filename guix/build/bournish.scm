@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -83,7 +83,21 @@ TERMINAL-WIDTH.  Use COLUMN-GAP spaces between two subsequent columns."
       (newline)
       (loop (map 1+ indexes)))))
 
-(define ls-command-implementation
+(define-syntax define-command-runtime
+  (syntax-rules ()
+    "Define run-time support of a Bournish command.  This macro ensures that
+the implementation is not subject to inlining, which would prevent compiled
+code from referring to it via '@@'."
+    ((_ (command . args) body ...)
+     (define-command-runtime command (lambda args body ...)))
+    ((_ command exp)
+     (begin
+       (define command exp)
+
+       ;; Prevent inlining of COMMAND.
+       (set! command command)))))
+
+(define-command-runtime ls-command-implementation
   ;; Run-time support procedure.
   (case-lambda
     (()
@@ -173,13 +187,13 @@ TERMINAL-WIDTH.  Use COLUMN-GAP spaces between two subsequent columns."
                 (call-with-input-file file lines+chars)))
               (format #t "~a ~a~%" chars file)))
 
-(define (wc-command-implementation . files)
+(define-command-runtime (wc-command-implementation . files)
   (for-each wc-print (filter file-exists?* files)))
 
-(define (wc-l-command-implementation . files)
+(define-command-runtime (wc-l-command-implementation . files)
   (for-each wc-l-print (filter file-exists?* files)))
 
-(define (wc-c-command-implementation . files)
+(define-command-runtime (wc-c-command-implementation . files)
   (for-each wc-c-print (filter file-exists?* files)))
 
 (define (wc-command . args)
