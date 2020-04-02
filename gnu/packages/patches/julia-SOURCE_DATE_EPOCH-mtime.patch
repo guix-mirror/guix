@@ -1,0 +1,28 @@
+--- /dev/null
++++ b/gnu/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch
+@@ -0,0 +1,22 @@
++Fix one of upstream non-determinism, tracked here:
++
++https://github.com/JuliaLang/julia/issues/34115
++https://github.com/JuliaLang/julia/issues/25900
++
++
++Patch by Nicoló Balzarotti <nicolo@nixo.xyz>.
++
++--- a/base/loading.jl
+++++ b/base/loading.jl
++@@ -807,7 +807,10 @@
++         path = normpath(joinpath(dirname(prev), _path))
++     end
++     if _track_dependencies[]
++-        push!(_require_dependencies, (mod, path, mtime(path)))
+++          push!(_require_dependencies,
+++                (mod, path,
+++                 haskey(ENV, "SOURCE_DATE_EPOCH") ?
+++                 parse(Float64, ENV["SOURCE_DATE_EPOCH"]) : mtime(path)))
++     end
++     return path, prev
++ end
+-- 
+2.26.0
+

@@ -29,6 +29,7 @@
 # Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 # Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 # Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+# Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz
 #
 # This file is part of GNU Guix.
 #
@@ -1065,6 +1066,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jfsutils-add-sysmacros.patch		\
   %D%/packages/patches/jfsutils-include-systypes.patch		\
   %D%/packages/patches/jsoncpp-fix-inverted-case.patch		\
+  %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\

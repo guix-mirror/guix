@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages llvm)
@@ -41,20 +43,21 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages wget)
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "26dbe5672c33fc885462c509fe2a9b36f35866fd")
-        (revision "6"))
-    ;; When upgrading Julia, also upgrade this.
-    ;; Get the commit from https://github.com/JuliaLang/julia/blob/v1.1.1/deps/libuv.version
+  (let ((commit "35b1504507a7a4168caae3d78db54d1121b121e1")
+        (revision "1"))
+    ;; When upgrading Julia, also upgrade this.  Get the commit from
+    ;; https://github.com/JuliaLang/julia/blob/v1.3.1/deps/libuv.version
     (package
       (inherit libuv)
       (name "libuv-julia")
-      (version (string-append "1.9.0-" revision "." (string-take commit 8)))
+      (version (git-version "2.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -63,7 +66,7 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "17pn2xmqaramilx897s9grs966i5246gi6sric5alch4g9j4685n"))))
+                  "0dn3v6fdp1z382pqg3nhjzk60l61ky9b65mfgaj29fv2da95rwjs"))))
       (build-system gnu-build-system)
       (arguments
        (substitute-keyword-arguments (package-arguments libuv)
@@ -72,14 +75,37 @@
              (delete 'autogen)))))
       (home-page "https://github.com/JuliaLang/libuv"))))
 
-(define (llvm-patch-url version name)
+(define libunwind-julia
+  ;; The Julia projects requires their patched version.
+  ;; Get from https://github.com/JuliaLang/julia/tree/master/deps/patches
+  (package
+    (inherit libunwind)
+    (name "libunwind-julia")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/libunwind/libunwind-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1y0l08k6ak1mqbfj6accf9s5686kljwgsl4vcqpxzk5n74wpm6a3"))
+       (patches
+        (list
+         (julia-patch "libunwind-prefer-extbl"
+                      "0lr4dafw8qyfh8sw8hhbwkql1dlhqv8px7k81y2l20hhxfgnh2m1")
+         (julia-patch "libunwind-static-arm"
+                      "1jk3bmiw61ypcchqkk1fyg5wh8wpggk574wxyfyaic870zh3lhgq")))))
+    (home-page "https://github.com/JuliaLang/tree/master/deps/")))
+
+(define (julia-patch-url version name)
   (string-append "https://raw.githubusercontent.com/JuliaLang/julia/v" version
                  "/deps/patches/" name))
 
-(define (llvm-patch name sha)
-  (let ((version "1.1.1"))
+(define (julia-patch name sha)
+  (let ((version "1.3.1"))
     (origin (method url-fetch)
-            (uri (llvm-patch-url version name))
+            (uri (julia-patch-url version name))
             (sha256 (base32 sha))
             (file-name name))))
 
@@ -88,51 +114,50 @@
     (inherit llvm-6)
     (name "llvm-julia")
     (source (origin
-              (method url-fetch)
-              (uri "http://releases.llvm.org/6.0.1/llvm-6.0.1.src.tar.xz")
-              (sha256
-               (base32
-                "1qpls3vk85lydi5b4axl0809fv932qgsqgdgrk098567z4jc7mmn"))
+              (inherit (package-source llvm-6))
               ;; Those patches are inside the Julia source repo.
               ;; They are _not_ Julia specific (https://github.com/julialang/julia#llvm)
               ;; but they are required to build Julia.
               ;; Discussion: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=919628
               (patches
-                (list
-                  (llvm-patch "llvm-6.0-D44650.patch"
-                              "1336q4vqayr94wdcnlmcxh90mjdh34dzw9x2cbiqjnx9b1j8fxyb")
-                  (llvm-patch "llvm-6.0-DISABLE_ABI_CHECKS.patch"
-                              "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
-                  (llvm-patch "llvm-6.0-NVPTX-addrspaces.patch"
-                              "1qdi2zmrjsrj0h84zv2vyly2hjcn4f67mfy0s1q353g4v4jkscqc")
-                  (llvm-patch "llvm-6.0.0_D27296-libssp.patch"
-                              "0s5hi2r1j63i8m6ig1346crx2aiv9f7rgb3mg80kw1wx5y7pdpfh")
-                  (llvm-patch "llvm-D27629-AArch64-large_model_6.0.1.patch"
-                              "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
-                  (llvm-patch "llvm-D34078-vectorize-fdiv.patch"
-                              "1696hg84a0jxcnggvqsc2cdp271hf9a44p4qsd078qm1mfawkaay")
-                  (llvm-patch "llvm-D42262-jumpthreading-not-i1.patch"
-                              "1c8w210gwidbnkkw8anp17dk5pnxws2fl3mb2qxh7y9wzfpixgaq")
-                  (llvm-patch "llvm-D44892-Perf-integration.patch"
-                              "0r37jd0ssh2k1pndkfd5blgpg9z90im4vlzprhb0n0wwz45g4b05")
-                  (llvm-patch "llvm-D46460.patch"
-                              "1miqgswdc0qvbaf4571c2xkxyp9ais06b1bcpa83sq22vr4hbsfb")
-                  (llvm-patch "llvm-D49832-SCEVPred.patch"
-                              "0v5c88hgqj6dymv3j86ca5mhpqab5fbnrvjiw1nvnrnya9l4dlbn")
-                  (llvm-patch "llvm-D50010-VNCoercion-ni.patch"
-                              "0iblb3q1xixwrb12jpb89h3ywmqmzdp6aqp416j4ncwakyjhhfkp")
-                  (llvm-patch "llvm-D50167-scev-umin.patch"
-                              "1f2rakcnnyhr7w10k7gqg0k0491pyvx5ijplivw557f714ys3q6v")
-                  (llvm-patch "llvm-OProfile-line-num.patch"
-                              "1jvbbmwyags0xfwamb13qrf3rgcz9i1r03m9lava7swag8xb78c7")
-                  (llvm-patch "llvm-PPC-addrspaces.patch"
-                              "1f23nhsxh2s3jskbgs7da9nwg3s1hrkbk5aahl08x41wi3mny01p")
-                  (llvm-patch "llvm-rL323946-LSRTy.patch"
-                              "10cz3vy1yw0w643z7xx021wa4kymx9fcm3bjg61s6vzdqd6d9fns")
-                  (llvm-patch "llvm-rL326967-aligned-load.patch"
-                              "04jxnv32yj5x17hqhi8g2p8rhgp38gmjzr871w7z8s44pq10v9v4")
-                  (llvm-patch "llvm-rL327898.patch"
-                              "15ah49gbsll23z28kpyahi5vl0fh3fkxcgd1zmxxdcl96s3x8bnq")))))
+                (map (match-lambda
+                       ((name hash)
+                        (julia-patch name hash)))
+                     (list
+                       '("llvm-6.0-D44650"
+                         "1336q4vqayr94wdcnlmcxh90mjdh34dzw9x2cbiqjnx9b1j8fxyb")
+                       '("llvm-6.0-DISABLE_ABI_CHECKS"
+                         "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
+                       '("llvm-6.0-NVPTX-addrspaces"
+                         "1qdi2zmrjsrj0h84zv2vyly2hjcn4f67mfy0s1q353g4v4jkscqc")
+                       '("llvm-6.0.0_D27296-libssp"
+                         "0s5hi2r1j63i8m6ig1346crx2aiv9f7rgb3mg80kw1wx5y7pdpfh")
+                       '("llvm-D27629-AArch64-large_model_6.0.1"
+                         "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
+                       '("llvm-D34078-vectorize-fdiv"
+                         "1696hg84a0jxcnggvqsc2cdp271hf9a44p4qsd078qm1mfawkaay")
+                       '("llvm-D42262-jumpthreading-not-i1"
+                         "1c8w210gwidbnkkw8anp17dk5pnxws2fl3mb2qxh7y9wzfpixgaq")
+                       '("llvm-D44892-Perf-integration"
+                         "0r37jd0ssh2k1pndkfd5blgpg9z90im4vlzprhb0n0wwz45g4b05")
+                       '("llvm-D46460"
+                         "1miqgswdc0qvbaf4571c2xkxyp9ais06b1bcpa83sq22vr4hbsfb")
+                       '("llvm-D49832-SCEVPred"
+                         "0v5c88hgqj6dymv3j86ca5mhpqab5fbnrvjiw1nvnrnya9l4dlbn")
+                       '("llvm-D50010-VNCoercion-ni"
+                         "0iblb3q1xixwrb12jpb89h3ywmqmzdp6aqp416j4ncwakyjhhfkp")
+                       '("llvm-D50167-scev-umin"
+                         "1f2rakcnnyhr7w10k7gqg0k0491pyvx5ijplivw557f714ys3q6v")
+                       '("llvm-OProfile-line-num"
+                         "1jvbbmwyags0xfwamb13qrf3rgcz9i1r03m9lava7swag8xb78c7")
+                       '("llvm-PPC-addrspaces"
+                         "1f23nhsxh2s3jskbgs7da9nwg3s1hrkbk5aahl08x41wi3mny01p")
+                       '("llvm-rL323946-LSRTy"
+                         "10cz3vy1yw0w643z7xx021wa4kymx9fcm3bjg61s6vzdqd6d9fns")
+                       '("llvm-rL326967-aligned-load"
+                         "04jxnv32yj5x17hqhi8g2p8rhgp38gmjzr871w7z8s44pq10v9v4")
+                       '("llvm-rL327898"
+                         "15ah49gbsll23z28kpyahi5vl0fh3fkxcgd1zmxxdcl96s3x8bnq"))))))
     (arguments
      (substitute-keyword-arguments (package-arguments llvm-6)
        ((#:configure-flags flags)
@@ -158,7 +183,7 @@
 (define-public julia
   (package
     (name "julia")
-    (version "1.1.1")
+    (version "1.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -166,7 +191,9 @@
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "0hk983mywimclgnjc41zmlppm5kfdz2aj85ky07p49ilcqxi998f"))))
+                "1nwkmr9j55g1zkxdchnid1h022s0is52vx23niksshgvh793g41x"))
+              (patches
+               (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -188,30 +215,25 @@
          (add-after 'unpack 'prepare-deps
            (lambda* (#:key inputs #:allow-other-keys)
              (mkdir "deps/srccache")
-             (copy-file (assoc-ref inputs "dsfmt")
-                        "deps/srccache/dsfmt-2.2.3.tar.gz")
+             ;; no USE_SYSTEM_{OBJCONV/LIBWHICH} option
              (copy-file (assoc-ref inputs "objconv")
                         "deps/srccache/objconv.zip")
-             (copy-file (assoc-ref inputs "suitesparse")
-                        "deps/srccache/SuiteSparse-4.4.5.tar.gz")
-             (copy-file (string-append (assoc-ref inputs "virtualenv")
-                                       "/bin/virtualenv")
-                        "julia-env")
              (copy-file (assoc-ref inputs "libwhich")
                         (string-append "deps/srccache/libwhich-"
                                        "81e9723c0273d78493dc8c8ed570f68d9ce7e89e"
                                        ".tar.gz"))
-             (copy-file (assoc-ref inputs "rmath")
-                        "deps/srccache/Rmath-julia-0.1.tar.gz")
 
              ;; needed by libwhich
              (setenv "LD_LIBRARY_PATH"
                      (string-join (map (lambda (pkg)
                                          (string-append (assoc-ref inputs pkg)
                                                         "/lib"))
-                                       '("arpack-ng" "fftw" "gmp" "lapack"
-                                         "libgit2" "mpfr" "openblas" "openlibm"
-                                         "openspecfun" "pcre2"))
+                                       '("arpack-ng" "curl" "dsfmt"
+                                         "gmp" "lapack"
+                                         "libssh2" "libgit2"
+                                         "mbedtls" "mpfr"
+                                         "openblas" "openlibm" "pcre2"
+                                         "suitesparse"))
                                   ":"))
              #t))
          ;; FIXME: Building the documentation requires Julia packages that
@@ -233,42 +255,11 @@
            ;; using the output of "/sbin/ldconfig -p".  Since ldconfig is not
            ;; used in Guix, we patch runtime_ccall.cpp to contain a static map.
            (lambda* (#:key inputs #:allow-other-keys)
-             (use-modules (ice-9 match))
-             (substitute* "src/runtime_ccall.cpp"
-               ;; Patch out invocations of '/sbin/ldconfig' to avoid getting
-               ;; error messages about missing '/sbin/ldconfig' on Guix System.
-               (("popen\\(.*ldconfig.*\\);")
-                "NULL;\n")
-
-               ;; Populate 'sonameMap'.
-               (("jl_read_sonames.*;")
-                (string-join
-                  (map (match-lambda
-                         ((input libname soname)
-                          (string-append
-                            "sonameMap[\"" libname "\"] = "
-                            "\"" (assoc-ref inputs input) "/lib/" soname "\";")))
-                       '(("libc"        "libc"           "libc.so.6")
-                         ("pcre2"       "libpcre2-8"     "libpcre2-8.so")
-                         ("mpfr"        "libmpfr"        "libmpfr.so")
-                         ("openblas"    "libblas"        "libopenblas.so")
-                         ("arpack-ng"   "libarpack"      "libarpack.so")
-                         ("lapack"      "liblapack"      "liblapack.so")
-                         ("libgit2"     "libgit2"        "libgit2.so")
-                         ("gmp"         "libgmp"         "libgmp.so")
-                         ("openspecfun" "libopenspecfun" "libopenspecfun.so")
-                         ("fftw"        "libfftw3"       "libfftw3_threads.so")
-                         ("fftwf"       "libfftw3f"      "libfftw3f_threads.so"))))))
              (substitute* "base/math.jl"
                (("const libm = Base.libm_name")
                 (string-append "const libm = \""
                                (assoc-ref inputs "openlibm")
                                "/lib/libopenlibm.so"
-                               "\""))
-               (("const openspecfun = \"libopenspecfun\"")
-                (string-append "const openspecfun = \""
-                               (assoc-ref inputs "openspecfun")
-                               "/lib/libopenspecfun.so"
                                "\"")))
              #t))
          (add-before 'build 'fix-include-and-link-paths
@@ -278,10 +269,10 @@
              ;; collection of build targets and a list of libraries to link
              ;; against.
              (substitute* "src/flisp/Makefile"
-               (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\): \\$\\(OBJS\\) \\$\\(LIBFILES_release\\)")
-                "$(BUILDDIR)/$(EXENAME): $(OBJS) $(LLT_release)")
-               (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\)-debug: \\$\\(DOBJS\\) \\$\\(LIBFILES_debug\\)")
-                "$(BUILDDIR)/$(EXENAME)-debug: $(DOBJS) $(LLT_debug)"))
+               (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\)\\$\\(EXE\\): \\$\\(OBJS\\) \\$\\(LIBFILES_release\\)")
+                "$(BUILDDIR)/$(EXENAME)$(EXE): $(OBJS) $(LLT_release)")
+               (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\)-debug$(EXE): \\$\\(DOBJS\\) \\$\\(LIBFILES_debug\\)")
+                "$(BUILDDIR)/$(EXENAME)-debug\\$\\(EXE\\): $(DOBJS) $(LLT_debug)"))
 
              ;; The REPL must be linked with libuv.
              (substitute* "ui/Makefile"
@@ -300,35 +291,46 @@
              (substitute* "base/client.jl"
                (("/bin/sh") (which "sh")))
              #t))
-         (add-after 'unpack 'hardcode-paths
+         (add-before 'build 'fix-precompile
            (lambda _
-             (substitute* "stdlib/InteractiveUtils/src/InteractiveUtils.jl"
-               (("`which") (string-append "`" (which "which")))
-               (("`wget")  (string-append "`" (which "wget"))))
+             (substitute* "base/loading.jl"
+               (("something(Base.active_project(), \"\")") "\"\""))
              #t))
          (add-before 'check 'disable-broken-tests
            (lambda _
-             (define (touch file-name)
-               (call-with-output-file file-name (const #t)))
-             ;; FIXME: All git tests works except this one. But *THIS* "fix"
-             ;; is not working, so right now I'm disabling all libgit2.jl tests
-             ;; (substitute* "stdlib/LibGit2/test/libgit2.jl"
-             ;; (("!LibGit2.use_http_path(cfg, github_cred)") "true")
-             ;; (("LibGit2.use_http_path(cfg, mygit_cred)") "true"))
-             (map (lambda (test)
-                    (delete-file test)
-                    (touch test))
-                  '("stdlib/Sockets/test/runtests.jl"
-                    "stdlib/Distributed/test/runtests.jl"
-                    ;; FIXME: see above
-                    "stdlib/LibGit2/test/libgit2.jl"))
              (substitute* "test/choosetests.jl"
-               ;; These tests fail, probably because some of the input
-               ;; binaries have been stripped and thus backtraces don't look
-               ;; as expected.
-               (("\"backtrace\",") "")
-               (("\"cmdlineargs\",") ""))
-             #t)))
+               (("tests = testnames")
+                ;; Those failings are not deterministic.  They depends on the
+                ;; running order.  I think it depends on the number of
+                ;; runners, disabling it for now
+                ;; https://github.com/JuliaLang/julia/issues/34330
+                "tests = filter(e->!in(e,[\"backtrace\",\"exceptions\",
+                                          \"stress\",\"precompile\",
+                                          \"client\",\"stacktraces\"]),
+                                       testnames)"))
+             ;; When HOME is not set, julia calls uv_os_homedir, which in
+             ;; turns call getpwuid_r. Add the HOME env variable to the
+             ;; external julia call to fix this
+             (substitute* "test/cmdlineargs.jl"
+               (("\"JULIA_PROJECT\"") "\"HOME\"=>\"/tmp\", \"JULIA_PROJECT\""))
+             ;; Marking the test as broken as it's a known bug:
+             ;; https://github.com/JuliaLang/julia/issues/32377
+             (substitute* "stdlib/REPL/test/replcompletions.jl"
+               (("@test count") "@test_broken count"))
+             #t))
+       (add-after 'install 'make-wrapper
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (bin (string-append out "/bin"))
+                  (program "julia"))
+             (with-directory-excursion bin
+               (wrap-program program
+                             `("JULIA_LOAD_PATH" ":" prefix
+                               ("" "$JULIA_LOAD_PATH")))
+               (wrap-program program
+                             `("JULIA_DEPOT_PATH" ":" prefix
+                               ("" "$JULIA_DEPOT_PATH"))))
+             #t))))
        #:make-flags
        (list
          (string-append "prefix=" (assoc-ref %outputs "out"))
@@ -346,25 +348,20 @@
                  (_ "MARCH=UNSUPPORTED"))
 
          "CONFIG_SHELL=bash"     ;needed to build bundled libraries
-         "USE_SYSTEM_DSFMT=0"    ;not packaged for Guix and upstream has no
-         ;build system for a shared library.
+         ;; list of "USE_SYSTEM_*" is here:
+         ;; https://github.com/JuliaLang/julia/blob/v1.3.1/Make.inc
+         "USE_SYSTEM_DSFMT=1"
+         "USE_SYSTEM_P7ZIP=1"
          "USE_SYSTEM_LAPACK=1"
          "USE_SYSTEM_BLAS=1"
          "USE_BLAS64=0"          ;needed when USE_SYSTEM_BLAS=1
          "LIBBLAS=-lopenblas"
          "LIBBLASNAME=libopenblas"
 
-         "USE_SYSTEM_FFTW=1"
-         "LIBFFTWNAME=libfftw3"
-         "LIBFFTWFNAME=libfftw3f"
-
-         ;; TODO: Suitesparse does not install shared libraries, so we cannot
-         ;; use the suitesparse package.
-         ;; "USE_SYSTEM_SUITESPARSE=1"
-         ;; (string-append "SUITESPARSE_INC=-I "
-         ;;                (assoc-ref %build-inputs "suitesparse")
-         ;;                "/include")
-
+         "USE_SYSTEM_SUITESPARSE=1"
+         (string-append "SUITESPARSE_INC=-I "
+                        (assoc-ref %build-inputs "suitesparse")
+                        "/include")
          "USE_GPL_LIBS=1"        ;proudly
          "USE_SYSTEM_UTF8PROC=1"
          (string-append "UTF8PROC_INC="
@@ -390,11 +387,16 @@
          "USE_SYSTEM_MPFR=1"
          "USE_SYSTEM_ARPACK=1"
          "USE_SYSTEM_LIBGIT2=1"
-         "USE_SYSTEM_ZLIB=1"
-         "USE_SYSTEM_OPENSPECFUN=1")))
+         (string-append "LIBUV="
+                        (assoc-ref %build-inputs "libuv")
+                        "/lib/libuv.so")
+         (string-append "LIBUV_INC="
+                        (assoc-ref %build-inputs "libuv")
+                        "/include")
+         "USE_SYSTEM_ZLIB=1")))
     (inputs
      `(("llvm" ,llvm-julia)
-
+       ("p7zip" ,p7zip)
        ;; The bundled version is 3.3.0 so stick to that version.  With other
        ;; versions, we get test failures in 'linalg/arnoldi' as described in
        ;; <https://bugs.gnu.org/30282>.
@@ -403,12 +405,12 @@
        ("coreutils" ,coreutils) ;for bindings to "mkdir" and the like
        ("lapack" ,lapack)
        ("openblas" ,openblas) ;Julia does not build with Atlas
-       ("libunwind" ,libunwind)
+       ("libunwind" ,libunwind-julia)
        ("openlibm" ,openlibm)
-       ("openspecfun" ,openspecfun)
+       ("mbedtls" ,mbedtls-apache)
+       ("curl" ,curl)
        ("libgit2" ,libgit2)
-       ("fftw" ,fftw)
-       ("fftwf" ,fftwf)
+       ("libssh2" ,libssh2)
        ("fortran" ,gfortran)
        ("libuv" ,libuv-julia)
        ("pcre2" ,pcre2)
@@ -418,31 +420,9 @@
        ("which" ,which)
        ("zlib" ,zlib)
        ("gmp" ,gmp)
-       ("virtualenv" ,python2-virtualenv)
-       ;; FIXME: The following inputs are downloaded from upstream to allow us
-       ;; to use the lightweight Julia release tarball.  Ideally, these inputs
-       ;; would eventually be replaced with proper Guix packages.
-
-       ;; TODO: run "make -f contrib/repackage_system_suitesparse4.make" to copy static lib
-       ;; Find dependency versions here:
-       ;; https://raw.githubusercontent.com/JuliaLang/julia/77a2c1e245c85812dc1c7687540beedecc52758f/deps/Versions.make
-       ("rmath"
-        ,(origin
-           (method git-fetch)
-           (uri (git-reference
-                  (url "https://github.com/JuliaLang/Rmath-julia")
-                  (commit "v0.1")))
-           (file-name "rmath-julia-0.1-checkout")
-           (sha256
-            (base32
-             "1zkpy0cg5zivq40zbhbdgj9128fqzs2j94wkwih8nc6xaj3gp9p6"))))
-       ("suitesparse"
-        ,(origin
-           (method url-fetch)
-           (uri "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.4.5.tar.gz")
-           (sha256
-            (base32
-             "1jcbxb8jx5wlcixzf6n5dca2rcfx6mlcms1k2rl5gp67ay3bix43"))))
+       ("suitesparse" ,suitesparse)
+       ;; Find dependencies versions here:
+       ;; https://raw.githubusercontent.com/JuliaLang/julia/v1.3.0/deps/Versions.make
        ("objconv"
         ,(origin
            (method url-fetch)
@@ -467,15 +447,7 @@
              (sha256
               (base32
                "1p7zg31kpmpbmh1znrk1xrbd074agx13b9q4dcw8n2zrwwdlbz3b")))))
-       ("dsfmt"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append
-                  "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/"
-                  "SFMT/dSFMT-src-2.2.3.tar.gz"))
-           (sha256
-            (base32
-             "03kaqbjbi6viz0n33dk5jlf6ayxqlsq4804n7kwkndiga9s4hd42"))))))
+       ("dsfmt" ,dsfmt)))
     (native-inputs
      `(("openssl" ,openssl)
        ("perl" ,perl)
@@ -485,7 +457,10 @@
     (native-search-paths
       (list (search-path-specification
               (variable "JULIA_LOAD_PATH")
-              (files (list "share/julia/packages/")))))
+              (files (list "share/julia/packages/")))
+            (search-path-specification
+              (variable "JULIA_DEPOT_PATH")
+              (files (list "share/julia/")))))
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
