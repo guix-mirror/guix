@@ -2098,6 +2098,34 @@ statement.  It handles self-referential structures correctly.")
 indentation and newlines plus sub deparsing.")
     (license (package-license perl))))
 
+(define-public perl-data-float
+  (package
+    (name "perl-data-float")
+    (version "0.013")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Data-Float-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "12ji4yf3nc965rqqgfhr96w7irpm6n1g15nivfxvhc49hlym5cg2"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Data-Float")
+    (synopsis "Details of the floating point data type")
+    (description "@code{Data::Float} is about the native floating
+point numerical data type.  A floating point number is one of the
+types of datum that can appear in the numeric part of a Perl scalar.
+This module supplies constants describing the native floating point
+type, classification functions and functions to manipulate floating
+point values at a low level.")
+    (license perl-license)))
+
 (define-public perl-data-optlist
   (package
     (name "perl-data-optlist")
