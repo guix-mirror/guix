@@ -121,6 +121,26 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
 
+(define-public opencore-amr
+  (package
+    (name "opencore-amr")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/opencore-amr/files/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hfk9khz3by0119h3jdwgdfd7jgkdbzxnmh1wssvylgnsnwnq01c"))))
+    (build-system gnu-build-system)
+    (synopsis "Adaptive Multi Rate Codec")
+    (description "OpenCore-AMR is a library of OpenCORE Framework
+implementation of Adaptive Multi Rate Narrowband and Wideband
+(AMR-NB and AMR-WB) speech codec.")
+    (home-page "https://sourceforge.net/projects/opencore-amr/")
+    (license license:asl2.0)))
+
 (define-public alsa-modular-synth
   (package
     (name "alsa-modular-synth")
