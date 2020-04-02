@@ -932,15 +932,23 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
   mate-desktop-configuration?
   (mate-package mate-package (default mate)))
 
+(define (mate-polkit-extension config)
+  "Return the list of packages for CONFIG's MATE package that extend polkit."
+  (let ((mate (mate-package config)))
+    (map (lambda (input)
+           ((package-direct-input-selector input) mate))
+         '("mate-system-monitor"                  ;kill, renice processes
+           "mate-settings-daemon"                 ;date/time settings
+           "mate-power-manager"                   ;modify brightness
+           "mate-control-center"                  ;RandR, display properties FIXME
+           "mate-applets"))))                     ;CPU frequency scaling
+
 (define mate-desktop-service-type
   (service-type
    (name 'mate-desktop)
    (extensions
     (list (service-extension polkit-service-type
-                             (compose list
-                                      (package-direct-input-selector
-                                       "mate-settings-daemon")
-                                      mate-package))
+                             mate-polkit-extension)
           (service-extension profile-service-type
                              (compose list
                                       mate-package))))
