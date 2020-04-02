@@ -612,25 +612,15 @@ on @command{git}, and use any regular Git hosting service.")
                (base32
                 "0qxzv49ip378g1n7hrbifb9c6pys2kj1hnxcafmbb94gj3pgd9kg"))
               (patches (search-patches "libgit2-mtime-0.patch"))
-
-              ;; Remove bundled software.  Keep "http-parser" because it
-              ;; contains patches that are not available in the system version.
               (snippet '(begin
-                          (with-directory-excursion "deps"
-                            (for-each (lambda (dir)
-                                        (delete-file-recursively dir))
-                                      (lset-difference equal?
-                                                       (scandir ".")
-                                                       '("." ".." "http-parser"))))
-                          #t))
-              (modules '((guix build utils)
-                         (srfi srfi-1)
-                         (ice-9 ftw)))))
+                          (delete-file-recursively "deps") #t))
+              (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags '("-DUSE_NTLMCLIENT=OFF" ;TODO: package this
-                           "-DREGEX_BACKEND=pcre2")
+                           "-DREGEX_BACKEND=pcre2"
+                           "-DUSE_HTTP_PARSER=system")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-pcre2-reference
@@ -657,7 +647,8 @@ on @command{git}, and use any regular Git hosting service.")
          (replace 'check
            (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
     (inputs
-     `(("libssh2" ,libssh2)))
+     `(("libssh2" ,libssh2)
+       ("http-parser" ,http-parser)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
