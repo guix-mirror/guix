@@ -504,3 +504,31 @@ mediastreamer2 based on the openh264 library.")
 AMR codec.  It is based on the Skype's SILK implementation.")
     (home-page "https://gitlab.linphone.org/BC/public/mssilk")
     (license license:gpl2+)))
+
+(define-public mswebrtc
+  (package
+    (name "mswebrtc")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/plugins/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1wj28hl9myhshqmn64xg0jf07aw75gmnilb5rff6rcbdxim87mqr"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))
+    (inputs
+     `(("bctoolbox" ,bctoolbox)
+       ("mediastreamer2" ,mediastreamer2)
+       ("ortp" ,ortp)))
+    (synopsis "Media Streamer WebRTC Codec")
+    (description "MSWebRTC is a plugin of MediaStreamer, adding support for
+WebRTC codec.  It includes features from WebRTC, such as, iSAC and AECM.")
+    (home-page "https://gitlab.linphone.org/BC/public/mswebrtc")
+    (license license:gpl2+)))
