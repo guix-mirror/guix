@@ -8887,10 +8887,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
         (base32 "1ng9492k8754vlqggbfsyzbmfdx4w17fzc4ad21fr92710na0w5a"))))
     (build-system meson-build-system)
     (arguments
-     `(#:imported-modules ((guix build python-build-system)
-                           ,@%meson-build-system-modules)
+     `(#:imported-modules
+       (,@%meson-build-system-modules
+        (guix build python-build-system))
+       #:modules
+       ((guix build meson-build-system)
+        ((guix build python-build-system) #:prefix python:)
+        (guix build utils))
        #:glib-or-gtk? #t
-       #:tests? #f ; no test suite
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -8901,9 +8906,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t))
          (add-after 'install 'wrap-python
-           (@@ (guix build python-build-system) wrap))
-         (add-after 'install 'wrap-glib-or-gtk
-           (@@ (guix build glib-or-gtk-build-system) wrap-all-programs)))))
+           (assoc-ref python:%standard-phases 'wrap)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
