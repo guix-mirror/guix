@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
@@ -959,6 +959,19 @@ icons on the MATE desktop.  It works on local and remote file systems.")
         (base32
          "192plsh83m2qz7jgakns2yvhqbj53v7i54iwb0z26i2awy0j9rcd"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'fix-polkit-action
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Make sure the polkit file refers to the right
+                      ;; executable.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute*
+                            '("capplets/display/org.mate.randr.policy.in"
+                              "capplets/display/org.mate.randr.policy")
+                          (("/usr/sbin")
+                           (string-append out "/sbin")))
+                        #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
