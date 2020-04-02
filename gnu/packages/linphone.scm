@@ -477,3 +477,30 @@ and video calls or instant messaging capabilities to an application.")
 mediastreamer2 based on the openh264 library.")
     (home-page "https://gitlab.linphone.org/BC/public/msopenh264")
     (license license:gpl2+)))
+
+(define-public mssilk
+  (package
+    (name "mssilk")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/plugins/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "07ip0vd29d1n98lnqs5wpimcsmpm65yl7g5vk4hbqghcbsjw94lj"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))         ; Not required
+    (inputs
+     `(("mediastreamer2" ,mediastreamer2)
+       ("ortp" ,ortp)))
+    (synopsis "Media Streamer SILK Codec")
+    (description "MSSILK is a plugin of MediaStreamer, adding support for
+AMR codec.  It is based on the Skype's SILK implementation.")
+    (home-page "https://gitlab.linphone.org/BC/public/mssilk")
+    (license license:gpl2+)))
