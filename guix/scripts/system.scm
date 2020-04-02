@@ -825,10 +825,10 @@ static checks."
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
        ;; See <http://bugs.gnu.org/21068>.
-       (drvs      (mapm %store-monad lower-object
-                        (if (memq action '(init reconfigure))
-                            (list sys bootcfg)
-                            (list sys))))
+       (drvs      (mapm/accumulate-builds lower-object
+                                          (if (memq action '(init reconfigure))
+                                              (list sys bootcfg)
+                                              (list sys))))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
                                         drvs))
