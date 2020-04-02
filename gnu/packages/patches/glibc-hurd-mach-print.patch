@@ -1,0 +1,23 @@
+Provide a 'mach_print' symbol in libc.
+
+--- a/sysdeps/mach/hurd/i386/libc.abilist	2020-04-01 19:22:44.710088821 +0200
++++ b/sysdeps/mach/hurd/i386/libc.abilist	2020-04-01 19:22:52.062051161 +0200
+@@ -338,6 +338,7 @@
+ GLIBC_2.2.6 __mach_port_allocate F
+ GLIBC_2.2.6 __mach_port_deallocate F
+ GLIBC_2.2.6 __mach_port_insert_right F
++GLIBC_2.21 __mach_print F
+ GLIBC_2.2.6 __mach_reply_port F
+ GLIBC_2.2.6 __mach_task_self_ D 0x4
+ GLIBC_2.2.6 __mach_thread_self F
+
+--- a/mach/Versions
++++ b/mach/Versions
+@@ -56,6 +56,7 @@
+   }
+   GLIBC_2.21 {
+     __mach_host_self_;
++    mach_print;
+   }
+ 
+   HURD_CTHREADS_0.3 {

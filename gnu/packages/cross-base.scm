@@ -521,7 +521,12 @@ and the cross tool chain."
                                (("/[^ ]+/lib/libc.so.0.3")
                                 (string-append out "/lib/libc.so.0.3"
                                                " libmachuser.so libhurduser.so"))))
-                           #t)))
+                           #t))
+                       (add-after 'unpack 'patch-libc/hurd
+                         (lambda* (#:key inputs #:allow-other-keys)
+                           (let ((patch (assoc-ref inputs
+                                                   "hurd-mach-print.patch")))
+                             (invoke "patch" "-p1" "--force" "-i" patch)))))
                      '())))))
 
         ;; Shadow the native "kernel-headers" because glibc's recipe expects the
@@ -537,7 +542,9 @@ and the cross tool chain."
                          ,@(if (hurd-triplet? target)
                                `(("cross-mig"
                                   ,@(assoc-ref (package-native-inputs xheaders)
-                                               "cross-mig")))
+                                               "cross-mig"))
+                                 ("hurd-mach-print.patch"
+                                  ,@(search-patches "glibc-hurd-mach-print.patch")))
                                '())
                          ,@(package-inputs libc)  ;FIXME: static-bash
                          ,@(package-native-inputs libc))))))
