@@ -5818,6 +5818,20 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches
+               ;; When parsing URLs, treat an empty port (eg
+               ;; `http://hostname:/`) as if it were unspecified.  This patch is
+               ;; applied to Fedora's http-parser and to libgit2's bundled version.
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                         "https://src.fedoraproject.org/rpms/http-parser/raw/"
+                         "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
+                         "f/0001-url-treat-empty-port-as-default.patch"))
+                  (sha256
+                   (base32
+                    "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))))
               (sha256
                (base32
                 "189zi61vczqgmqjd2myjcjbbi5icrk7ccs0kn6nj8hxqiv5j3811"))))
