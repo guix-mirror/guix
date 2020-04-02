@@ -1,0 +1,15 @@
+$NetBSD: patch-src_xpUtil-Add2017LeapSecond.cpp,v 1.1 2019/11/16 17:36:28 ng0 Exp $
+
+Modified by: R Veera Kumar <vkor@vkten.in> 2020-03-28; change to patch -p1
+
+diff -uNr xplanet-1.3.1/src/xpUtil.cpp xplanet-1.3.1.new/src/xpUtil.cpp
+--- xplanet-1.3.1/src/xpUtil.cpp	2016-03-12 08:36:47.000000000 +0530
++++ xplanet-1.3.1.new/src/xpUtil.cpp	2020-03-28 22:19:10.629891166 +0530
+@@ -434,6 +434,7 @@
+     if (jd >= toJulian(2009, 1, 1, 0, 0, 0)) delta_at++; // 34
+     if (jd >= toJulian(2012, 7, 1, 0, 0, 0)) delta_at++; // 35
+     if (jd >= toJulian(2015, 7, 1, 0, 0, 0)) delta_at++; // 36
++    if (jd >= toJulian(2017, 1, 1, 0, 0, 0)) delta_at++; // 37
+ 
+     const double J2000 = toJulian(2000, 1, 1, 12, 0, 0);
+     const double m = m0 + m1 * (jd - J2000) * 86400;

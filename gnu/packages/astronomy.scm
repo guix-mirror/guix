@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
+;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,9 +26,11 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages image)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages pkg-config)
@@ -41,6 +44,8 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
@@ -289,3 +294,53 @@ Mechanics, Astrometry and Astrodynamics library.")
     (license (list license:lgpl2.0+
                    license:gpl2+)))) ; examples/transforms.c & lntest/*.c
 
+(define-public xplanet
+  (package
+    (name "xplanet")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "mirror://sourceforge/xplanet/xplanet/"
+         version "/xplanet-" version ".tar.gz"))
+       (sha256
+        (base32 "1rzc1alph03j67lrr66499zl0wqndiipmj99nqgvh9xzm1qdb023"))
+       (patches
+        (search-patches
+         "xplanet-1.3.1-cxx11-eof.patch"
+         "xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch"
+         "xplanet-1.3.1-libimage_gif.c.patch"
+         "xplanet-1.3.1-xpUtil-Add2017LeapSecond.cpp.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libice" ,libice)
+       ("freetype" ,freetype)
+       ("pango" ,pango)
+       ("giflib" ,giflib)
+       ("libjpeg", libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("netpbm" ,netpbm)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (let ((netpbm (assoc-ref %build-inputs "netpbm")))
+         (append (list
+                  ;; Give correct path for pnm.h header to configure script
+                  (string-append "CPPFLAGS=-I" netpbm "/include/netpbm")
+                  ;; no nasa jpl cspice support
+                  "--without-cspice" )))))
+    (home-page "http://xplanet.sourceforge.net/")
+    (synopsis "Planetary body renderer")
+    (description
+     "Xplanet renders an image of a planet into an X window or file.
+All of the major planets and most satellites can be drawn and different map
+projections are also supported, including azimuthal, hemisphere, Lambert,
+Mercator, Mollweide, Peters, polyconic, orthographic and rectangular.")
+    (license license:gpl2+)))

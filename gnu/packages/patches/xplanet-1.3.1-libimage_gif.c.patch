@@ -1,0 +1,54 @@
+Origin: $NetBSD: patch-src_libimage_gif.c,v 1.4 2019/11/16 17:36:28 ng0 Exp $
+
+Modified by: R Veera Kumar <vkor@vkten.in> 2020-03-28; change to patch -p1
+
+diff -uNr xplanet-1.3.1/src/libimage/gif.c xplanet-1.3.1.new/src/libimage/gif.c
+--- xplanet-1.3.1/src/libimage/gif.c	2013-02-17 01:07:47.000000000 +0530
++++ xplanet-1.3.1.new/src/libimage/gif.c	2020-03-28 22:15:24.444309199 +0530
+@@ -21,7 +21,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-
++#include <stdbool.h>
+ #include <gif_lib.h>
+ 
+ /*
+@@ -178,8 +178,12 @@
+ 	    *BufferP++ = ColorMapEntry->Blue;
+ 	}
+     }
+-    
++
++#if GIFLIB_MAJOR >= 5
++    if (DGifCloseFile(GifFile, NULL) == GIF_ERROR) {
++#else
+     if (DGifCloseFile(GifFile) == GIF_ERROR) {
++#endif
+ 	return(0);
+     }
+ 
+@@ -493,7 +497,11 @@
+ static void QuitGifError(GifFileType *GifFile)
+ {
+     fprintf(stderr, "Error writing GIF file\n");
++#if GIFLIB_MAJOR >= 5
++    if (GifFile != NULL) EGifCloseFile(GifFile, NULL);
++#else
+     if (GifFile != NULL) EGifCloseFile(GifFile);
++#endif
+ }
+ 
+ int 
+@@ -589,7 +597,11 @@
+ 	Ptr += width;
+     }
+ 
++#if GIFLIB_MAJOR >= 5
++    if (EGifCloseFile(GifFile, NULL) == GIF_ERROR)
++#else
+     if (EGifCloseFile(GifFile) == GIF_ERROR)
++#endif
+ 
+     {
+ 	QuitGifError(GifFile);
