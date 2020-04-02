@@ -438,3 +438,42 @@ Linphone application is based on, and that anyone can use to add audio
 and video calls or instant messaging capabilities to an application.")
     (home-page "https://gitlab.linphone.org/BC/public/liblinphone")
     (license license:gpl2+)))
+
+(define-public msopenh264
+  (package
+    (name "msopenh264")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/plugins/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rdxgazm52560g52pp6mp3mwx6j1z3h2zyizzfycp8y8zi92fqm8"))
+       (patches
+        (list
+         ;; For support for OpenH264 version >= 2.
+         (origin
+           (method url-fetch)
+           (uri
+            (string-append "https://gitlab.linphone.org/BC/public/msopenh264/commit/"
+                           "493d147d28c9a0f788ba4e50b47a1ce7b18bf326.diff"))
+           (file-name "msopenh264-openh264.patch")
+           (sha256
+            (base32 "0mmd7nz5n9ian4rcwn200nldmy5j0dpdrna7r32rqnaw82bx3kdb")))))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO")))         ; Not required
+    (inputs
+     `(("mediastreamer2" ,mediastreamer2)
+       ("openh264" ,openh264)
+       ("ortp" ,ortp)))
+    (synopsis "Media Streamer H.264 Codec")
+    (description "MsOpenH264 is an  H.264 encoder/decoder plugin for
+mediastreamer2 based on the openh264 library.")
+    (home-page "https://gitlab.linphone.org/BC/public/msopenh264")
+    (license license:gpl2+)))
