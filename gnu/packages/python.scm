@@ -354,22 +354,11 @@ data types.")
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
-              (patches (append
-                        ;; Disable unaligned accesses in the sha3 module on ARM as
-                        ;; it causes a test failure when building 32-bit Python on a
-                        ;; 64-bit kernel.  See <https://bugs.python.org/issue36515>.
-                        ;; TODO: Remove the conditional on the next rebuild cycle.
-                        (let ((system (or (%current-target-system)
-                                          (%current-system))))
-                          (if (any (cute string-prefix? <> system)
-                                   '("arm" "aarch64"))
-                              (list (search-patch "python-3-arm-alignment.patch"))
-                              '()))
-                        (search-patches
-                         "python-3-fix-tests.patch"
-                         "python-3.8-fix-tests.patch"
-                         "python-3-deterministic-build-info.patch"
-                         "python-3-search-paths.patch")))
+              (patches (search-patches
+                        "python-3-fix-tests.patch"
+                        "python-3.8-fix-tests.patch"
+                        "python-3-deterministic-build-info.patch"
+                        "python-3-search-paths.patch"))
               (sha256
                (base32
                 "1ps5v323cp5czfshqjmbsqw7nvrdpcbk06f62jbzaqik4gfffii6"))
@@ -394,6 +383,7 @@ data types.")
                 " test_socket")))
        ((#:phases phases)
        `(modify-phases ,phases
+
           (add-before 'check 'set-TZDIR
             (lambda* (#:key inputs native-inputs #:allow-other-keys)
               ;; test_email requires the Olson time zone database.
@@ -432,9 +422,33 @@ data types.")
                                           ,file)))
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
-                 #t)))))))
+                 #t)))
+           ;; XXX: Apply patch on ARM platforms only to avoid a full rebuild.
+           ;; Remove this phase in the next rebuild cycle.
+           ,@(let ((system (or (%current-target-system)
+                               (%current-system))))
+               (if (any (cute string-prefix? <> system)
+                        '("arm" "aarch64"))
+                   '((add-after 'unpack 'apply-alignment-patch
+                       (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                        (invoke "patch" "-p1" "--force" "--input"
+                                (assoc-ref (or native-inputs inputs)
+                                           "arm-alignment.patch")))))
+                   '()))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
+
+       ;; Disable unaligned accesses in the sha3 module on ARM as
+       ;; it causes a test failure when building 32-bit Python on a
+       ;; 64-bit kernel.  See <https://bugs.python.org/issue36515>.
+       ;; TODO: make this a regular patch in the next rebuild cycle.
+       ,@(let ((system (or (%current-target-system)
+                           (%current-system))))
+           (if (any (cute string-prefix? <> system)
+                    '("arm" "aarch64"))
+               `(("arm-alignment.patch" ,(search-patch "python-3-arm-alignment.patch")))
+               '()))
+
        ,@(if (%current-target-system)
              `(("python3" ,this-package))
              '())

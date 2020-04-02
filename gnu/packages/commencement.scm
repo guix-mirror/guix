@@ -3182,7 +3182,17 @@ the bootstrap environment."
            ;; Python package won't interfere with this one.
            ((#:make-flags _ ''()) ''())
            ((#:phases phases)
-            `(modify-phases ,phases
+            ;; Remove the 'apply-alignment-patch' phase if present to avoid
+            ;; rebuilding this package.  TODO: for the next rebuild cycle,
+            ;; consider inlining all the arguments instead of inheriting to
+            ;; make it easier to patch Python without risking a full rebuild.
+            ;; Or better yet, change to 'python-on-guile'.
+            `(modify-phases ,@(list (match phases
+                                      (('modify-phases original-phases
+                                         changes ...
+                                         ('add-after unpack apply-alignment-patch _))
+                                       `(modify-phases ,original-phases ,@changes))
+                                      (_ phases)))
                (add-before 'configure 'disable-modules
                  (lambda _
                    (substitute* "setup.py"
