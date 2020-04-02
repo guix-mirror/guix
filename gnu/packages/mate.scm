@@ -352,28 +352,10 @@ configurations (profiles).")
          "01scj5d1xlri9b2id8gm9kfni9nzhdjdf7rag7fvcxwqp7baz3h3"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags (list "--enable-elogind"
+     `(#:configure-flags (list "--with-elogind"
                                "--disable-schemas-compile")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'pre-configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Use elogind instead of systemd.
-             (substitute* "configure"
-               (("libsystemd-login")
-                "libelogind")
-               (("systemd") "elogind"))
-             (substitute* "mate-session/gsm-systemd.c"
-               (("#include <systemd/sd-login.h>")
-                "#include <elogind/sd-login.h>"))
-             ;; Remove uses of the systemd journal.
-             (substitute* "mate-session/main.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             (substitute* "mate-session/gsm-manager.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             (substitute* "mate-session/gsm-autostart-app.c"
-               (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             #t))
          (add-after 'install 'update-xsession-dot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Record the absolute file name of 'mate-session' in the
