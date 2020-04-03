@@ -1126,6 +1126,44 @@ helpers.")
 language.  It aims to be fast.")
     (license license:expat)))
 
+(define-public python-aenum
+  (package
+    (name "python-aenum")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aenum" version))
+       (sha256
+        (base32
+         "1s3008rklv4n1kvmq6xdbdfyrpl0gf1rhqasmd27s5kwyjmlqcx4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (format #t "current working dir ~s~%" (getcwd))
+                      (setenv "PYTHONPATH"
+                              (string-append ".:" (getenv "PYTHONPATH")))
+                      ;; We must run the test suite module directly, as it
+                      ;; fails to define the 'tempdir' variable in scope for
+                      ;; the tests otherwise
+                      ;; (see:https://bitbucket.org/stoneleaf/aenum/\
+                      ;; issues/32/running-tests-with-python-setuppy-test).
+                      (invoke "python3" "aenum/test.py")
+                      ;; This one fails with "NameError: name
+                      ;; 'test_pickle_dump_load' is not defined" (see:
+                      ;; https://bitbucket.org/stoneleaf/aenum/issues/33
+                      ;; /error-running-the-test_v3py-test-suite).
+                      ;; (invoke "python3" "aenum/test_v3.py")
+                      #t)))))
+    (home-page "https://bitbucket.org/stoneleaf/aenum")
+    (synopsis "Advanced enumerations, namedtuples and constants for Python")
+    (description "The aenum library includes an @code{Enum} base class, a
+metaclass-based @code{NamedTuple} implementation and a @code{NamedConstant}
+class.")
+    (license license:bsd-3)))
+
 (define-public python-capturer
   (package
     (name "python-capturer")
