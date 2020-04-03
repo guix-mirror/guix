@@ -2172,12 +2172,6 @@ remotely.")
                (base32
                 "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
     (build-system gnu-build-system)
-    (arguments
-     `(;; Ensure the kernel headers are treated as system headers to suppress
-       ;; harmless -Werror=pedantic warnings.
-       #:make-flags (list (string-append "C_INCLUDE_PATH="
-                                         (assoc-ref %build-inputs "kernel-headers")
-                                         "/include"))))
     (inputs `(("zeromq" ,zeromq)
               ("czmq" ,czmq)
               ("libsodium" ,libsodium)))
