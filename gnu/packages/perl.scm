@@ -1884,6 +1884,36 @@ contained in Appendix A of FIPS Publication 181, \"Standard for Automated
 Password Generator\".")
     (license (package-license perl))))
 
+(define-public perl-crypt-rijndael
+  (package
+    (name "perl-crypt-rijndael")
+    (version "1.14")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/L/LE/LEONT/Crypt-Rijndael-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "03l5nwq97a8q9na4dpd4m3r7vrwpranx225vw8xm40w7zvgw6lb4"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Crypt-Rijndael")
+    (synopsis "Crypt::CBC compliant Rijndael encryption module")
+    (description "This module implements the Rijndael cipher which has
+been selected as the Advanced Encryption Standard.  The keysize for
+Rijndael is 32 bytes.  The blocksize is 16 bytes (128 bits).  The
+supported encryption modes are:
+
+@itemize
+@item @code{MODE_CBC}---Cipher Block Chaining
+@item @code{MODE_CFB}---Cipher feedback
+@item @code{MODE_CTR}---Counter mode
+@item @code{MODE_ECB}---Electronic cookbook mode
+@item @code{MODE_OFB}---Output feedback
+@end itemize")
+    (license gpl3)))
+
 (define-public perl-crypt-rc4
   (package
     (name "perl-crypt-rc4")
