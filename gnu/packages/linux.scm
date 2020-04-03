@@ -4017,12 +4017,6 @@ arrays when needed.")
                           (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
                           "SYSTEMDPATH=lib"
-                          ;; Add the libaio headers to GCCs system header
-                          ;; search path to suppress -Werror=cast-qual on
-                          ;; the included headers.
-                          (string-append "C_INCLUDE_PATH="
-                                         (assoc-ref %build-inputs "libaio")
-                                         "/include")
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
                                          "/lib"))
