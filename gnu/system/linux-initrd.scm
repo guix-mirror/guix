@@ -275,6 +275,7 @@ FILE-SYSTEMS."
                     ("btrfs" => '("btrfs"))
                     ("iso9660" => '("isofs"))
                     ("jfs" => '("jfs"))
+                    ("f2fs" => '("f2fs" "crc32_generic"))
                     (else '())))
 
 (define (file-system-modules file-systems)
