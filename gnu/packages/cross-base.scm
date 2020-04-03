@@ -76,11 +76,13 @@
     (source (origin (inherit (package-source original))
               (patches (list patch))))))
 
-(define (package-with-extra-patches original patches)
+(define (package-with-extra-patches original extra-patches)
   "Return package ORIGINAL with all PATCHES appended to its list of patches."
-  (package-with-patch original
-                      `(,@(origin-patches (package-source original))
-                        ,@patches)))
+  (let ((original-origin (package-source original)))
+    (package (inherit original)
+      (source (origin (inherit original-origin)
+                (patches `(,@extra-patches
+                           ,@(origin-patches original-origin))))))))
 
 (define (cross-binutils target)
   "Return a cross-Binutils for TARGET."
