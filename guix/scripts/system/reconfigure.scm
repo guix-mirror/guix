@@ -100,7 +100,8 @@ atomically, and run OS's activation script."
   "Using EVAL, a monadic procedure taking a single G-Expression as an argument,
 create a new generation of PROFILE pointing to the directory of OS, switch to
 it atomically, and run OS's activation script."
-  (eval #~(primitive-load #$(switch-system-program os profile))))
+  (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+            (primitive-load #$(switch-system-program os profile)))))
 
 
 ;;;
@@ -176,10 +177,11 @@ services as defined by OS."
                                         (map live-service-canonical-name
                                              live-services)))
              (service-files (map shepherd-service-file target-services)))
-        (eval #~(primitive-load #$(upgrade-services-program service-files
-                                                            to-start
-                                                            to-unload
-                                                            to-restart)))))))
+        (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+                  (primitive-load #$(upgrade-services-program service-files
+                                                              to-start
+                                                              to-unload
+                                                              to-restart))))))))
 
 
 ;;;
@@ -252,9 +254,10 @@ additional configurations specified by MENU-ENTRIES can be selected."
          (package (bootloader-package bootloader))
          (device (bootloader-configuration-target configuration))
          (bootcfg-file (bootloader-configuration-file bootloader)))
-    (eval #~(primitive-load #$(install-bootloader-program installer
-                                                          package
-                                                          bootcfg
-                                                          bootcfg-file
-                                                          device
-                                                          target)))))
+    (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+              (primitive-load #$(install-bootloader-program installer
+                                                            package
+                                                            bootcfg
+                                                            bootcfg-file
+                                                            device
+                                                            target))))))
