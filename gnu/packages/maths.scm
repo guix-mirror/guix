@@ -26,7 +26,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
@@ -388,12 +388,35 @@ semiconductors.")
                 "1a460zj9xmbgvcymkdhqh313c4l29mn9cffbi5vf33x3qygk70mp"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; Currently there are numerous tests that fail on "exotic"
-       ;; architectures such as aarch64 and ppc64le.
-       ,@(if (string-prefix? "aarch64-linux"
-                             (or (%current-target-system) (%current-system)))
-           '(#:tests? #f)
-           '())))
+     (let ((system (%current-system)))
+       (cond
+        ((string-prefix? "aarch64" system)
+         ;; Some sparse matrix tests are failing on AArch64:
+         ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00001.html
+         '(#:phases (modify-phases %standard-phases
+                      (add-before 'check 'disable-failing-tests
+                        (lambda _
+                          (substitute* "spmatrix/test.c"
+                            ((".*test_complex.*") "\n"))
+                          #t)))))
+        ((string-prefix? "i686" (%current-system))
+         ;; There are rounding issues with these tests on i686:
+         ;; https://lists.gnu.org/archive/html/bug-gsl/2016-10/msg00000.html
+         ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00000.html
+         '(#:phases (modify-phases %standard-phases
+                      (add-before 'check 'disable-failing-tests
+                        (lambda _
+                          (substitute* "linalg/test.c"
+                            ((".*gsl_test\\(test_LU_decomp.*") "\n")
+                            ((".*gsl_test\\(test_LUc_decomp.*") "\n")
+                            ((".*gsl_test\\(test_cholesky_decomp.*") "\n")
+                            ((".*gsl_test\\(test_COD_lssolve2.*") "\n"))
+                          (substitute* "spmatrix/test.c"
+                            ((".*test_all.*") "\n")
+                            ((".*test_float.*") "\n")
+                            ((".*test_complex.*") "\n"))
+                          #t)))))
+        (else '()))))
     (home-page "https://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
