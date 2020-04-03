@@ -399,12 +399,6 @@ all common programming languages.  Vala bindings are also provided.")
                             "/share/doc/" ,name "-" ,version)
              "--sysconfdir=/etc"
              "--localstatedir=/var")
-       #:make-flags
-       ;; Treat the kernel headers as system headers to silence
-       ;; compiler warnings from those.
-       (list (string-append "C_INCLUDE_PATH="
-                            (assoc-ref %build-inputs "kernel-headers")
-                            "/include"))
        #:phases
        (modify-phases %standard-phases
          (replace 'install
