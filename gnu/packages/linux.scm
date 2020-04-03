@@ -932,6 +932,13 @@ It has been modified to remove all non-free binary blobs.")
                      #:defconfig "defconfig"
                      #:extra-version "arm64-generic"))
 
+(define-public linux-libre-arm64-generic-5.6
+  (make-linux-libre* linux-libre-5.6-version
+                     linux-libre-5.6-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"))
+
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
                      linux-libre-source
