@@ -1247,6 +1247,68 @@ a similar interface as the @code{struct} module from Python, but working on
 bits instead of primitive data types like @code{char}, @code{int}, etc.")
     (license license:expat)))
 
+(define-public python-cantools
+  (package
+    (name "python-cantools")
+    (version "33.1.1")
+    (source
+     (origin
+       ;; We take the sources from the Git repository as the documentation is
+       ;; not included with the PyPI archive.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eerimoq/cantools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aad137yd8b4jkfvlv812qsxmxcgra7g1p4wbxfsjy1cbf8fbq9q"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             ;; See: https://github.com/eerimoq/cantools/issues/190.
+             (substitute* "README.rst"
+               (("https://github.com/eerimoq/cantools/raw/master\
+/docs/monitor.png")
+                "monitor.png"))
+             (with-directory-excursion "docs"
+               (invoke "make" "man" "info"))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info"))
+                    (man1 (string-append out "/share/man/man1")))
+               (format #t "CWD: ~s~%" (getcwd))
+               (install-file "docs/_build/texinfo/cantools.info" info)
+               (install-file "docs/_build/man/cantools.1" man1)
+               #t))))))
+    (native-inputs
+     `(("sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("python-bitstruct" ,python-bitstruct)
+       ("python-can" ,python-can)
+       ("python-diskcache" ,python-diskcache)
+       ("python-textparser" ,python-textparser)))
+    (home-page "https://github.com/eerimoq/cantools")
+    (synopsis "Tools for the Controller Area Network (CAN) bus protocol")
+    (description "This package includes Controller Area Network (CAN) related
+tools that can be used to:
+@itemize
+@item parse DBC, KCD, SYM, ARXML 4 and CDD files
+@item encode and decode CAN messages
+@item multiplex simple and extended signals
+@item diagnose DID encoding and decoding
+@item dump the CAN decoder output
+@item test CAN nodes
+@item generate C source code
+@item monitor the CAN bus
+@end itemize")
+    (license license:expat)))
+
 (define-public python-capturer
   (package
     (name "python-capturer")
