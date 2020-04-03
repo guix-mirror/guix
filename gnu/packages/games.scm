@@ -5413,7 +5413,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
                                              "/include/SDL2:"
-                                             (getenv "CPATH")))
+                                             (or (getenv "CPATH") "")))
                       #t))
                   (delete 'check)
                   ;; premake doesn't provide install target
