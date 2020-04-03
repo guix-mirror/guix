@@ -1108,6 +1108,24 @@ helpers.")
 (define-public python2-humanfriendly
   (package-with-python2 python-humanfriendly))
 
+(define-public python-textparser
+  (package
+    (name "python-textparser")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "textparser" version))
+       (sha256
+        (base32
+         "0w5lyhrsvzs5a9q1l3sjgxgljrvd3ybf796w93kc39wayzvd02gh"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/eerimoq/textparser")
+    (synopsis "Fast text parser for Python")
+    (description "This library provides a text parser written in the Python
+language.  It aims to be fast.")
+    (license license:expat)))
+
 (define-public python-capturer
   (package
     (name "python-capturer")
