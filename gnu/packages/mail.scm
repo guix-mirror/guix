@@ -30,6 +30,7 @@
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +83,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
@@ -1073,6 +1075,38 @@ and search library.")
 
 (define-public python2-notmuch
   (package-with-python2 python-notmuch))
+
+(define-public muchsync
+  (package
+    (name "muchsync")
+    (version "5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.muchsync.org/src/"
+                           "muchsync-" version ".tar.gz"))
+       (sha256
+        (base32 "1k2m44pj5i6vfhp9icdqs42chsp208llanc666p3d9nww8ngq2lb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ghc-pandoc" ,ghc-pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libcrypto" ,openssl)
+       ("notmuch" ,notmuch)
+       ("sqlite" ,sqlite)
+       ("xapian" ,xapian)))
+    (home-page "http://www.muchsync.org/")
+    (synopsis "Synchronize notmuch mail across machines")
+    (description
+     "Muchsync brings Notmuch to all of your computers by synchronizing your
+mail messages and Notmuch tags across machines.  The protocol is heavily
+pipelined to work efficiently over high-latency networks such as mobile
+broadband.  Muchsync supports arbitrary pairwise synchronization among
+replicas.  A version-vector-based algorithm allows it to exchange only the
+minimum information necessary to bring replicas up to date regardless of which
+pairs have previously synchronized.")
+    (license gpl2+)))
 
 (define-public getmail
   (package
