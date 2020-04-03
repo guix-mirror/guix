@@ -42,6 +42,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -4326,6 +4327,31 @@ contrary to ParseTree, it includes all the generic S-exp processing tools.
 Amongst the included tools are @code{Sexp}, @code{SexpProcessor} and
 @code{Environment}")
     (home-page "https://github.com/seattlerb/sexp_processor")
+    (license license:expat)))
+
+(define-public ruby-ruby-parser
+  (package
+    (name "ruby-ruby-parser")
+    (version "3.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_parser" version))
+       (sha256
+        (base32
+         "09qcdyjjw3p7g6cjm5m9swkms1xnv35ndiy7yw24cas16qrhha6c"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("hoe" ,ruby-hoe)
+       ("racc" ,ruby-racc)
+       ("unifdef" ,unifdef)))
+    (propagated-inputs
+     `(("ruby-sexp-processor" ,ruby-sexp-processor)))
+    (home-page "https://github.com/seattlerb/ruby_parser/")
+    (synopsis "Ruby parser written in pure Ruby")
+    (description "The ruby_parser (RP) package provides a Ruby parser written
+in pure Ruby.  It outputs S-expressions which can be manipulated and converted
+back to Ruby via the @code{ruby2ruby} library.")
     (license license:expat)))
 
 (define-public ruby-prawn-manual-builder
