@@ -290,22 +290,6 @@ on service '~a':~%")
         ((not error)                              ;not an error
          #t)))
 
-(define (call-with-service-upgrade-info new-services mproc)
-  "Call MPROC, a monadic procedure in %STORE-MONAD, passing it the list of
-names of services to load (upgrade), and the list of names of services to
-unload."
-  (match (current-services)
-    ((services ...)
-     (let-values (((to-unload to-restart)
-                   (shepherd-service-upgrade services new-services)))
-       (mproc to-restart
-              (map (compose first live-service-provision)
-                   to-unload))))
-    (#f
-     (with-monad %store-monad
-       (warning (G_ "failed to obtain list of shepherd services~%"))
-       (return #f)))))
-
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error
     (lambda ()
@@ -1294,7 +1278,6 @@ argument list and OPTS is the option alist."
           (process-command command args opts))))))
 
 ;;; Local Variables:
-;;; eval: (put 'call-with-service-upgrade-info 'scheme-indent-function 1)
 ;;; eval: (put 'with-store* 'scheme-indent-function 1)
 ;;; End:
 
