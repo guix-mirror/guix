@@ -1208,6 +1208,25 @@ abstractions to different hardware devices, and a suite of utilities for
 sending and receiving messages on a CAN bus.")
     (license license:gpl3+)))
 
+(define-public python-diskcache
+  (package
+    (name "python-diskcache")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "diskcache" version))
+       (sha256
+        (base32
+         "1q2wz5sj16zgyy1zpq516qgbnfwsavk1pl2qks0f4r62z5cmmvmw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                   ;test suite not included in the release
+    (home-page "http://www.grantjenks.com/docs/diskcache/")
+    (synopsis "Disk and file backed cache library")
+    (description "DiskCache is a disk and file backed persistent cache.")
+    (license license:asl2.0)))
+
 (define-public python-capturer
   (package
     (name "python-capturer")
