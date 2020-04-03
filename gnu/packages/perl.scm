@@ -61,7 +61,8 @@
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages textutils))
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages web))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -2047,6 +2048,44 @@ input.")
     (description "This module compares arbitrary data structures to see if
 they are copies of each other.")
     (license (package-license perl))))
+
+(define-public perl-data-entropy
+  (package
+    (name "perl-data-entropy")
+    (version "0.007")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Data-Entropy-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1r176jjzir2zg5kidx85f7vzi6jsw7ci9vd4kvbr9183lfhw8496"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-crypt-rijndael" ,perl-crypt-rijndael)
+       ("perl-data-float" ,perl-data-float)
+       ("perl-http-lite" ,perl-http-lite)
+       ("perl-params-classify" ,perl-params-classify)))
+    (home-page "https://metacpan.org/release/Data-Entropy")
+    (synopsis "Entropy (randomness) management")
+    (description "@code{Data::Entropy} provides modules relating to
+the generation and use of entropy.  The Data::Entropy::Source class
+manages the entropy coming from a particular source.  This class acts
+as a layer over a raw entropy source, which may be a normal I/O handle
+or a special-purpose class.  The Data::Entropy::RawSource::* classes
+provide fundamental sources of entropy.  The sources specially
+supported are an OS-supplied entropy collector, downloads from servers
+on the Internet, and cryptographic fake entropy.  The
+Data::Entropy::Algorithms module contains a collection of fundamental
+algorithms that use entropy.  There are random number generators and
+functions to shuffle arrays.")
+    (license perl-license)))
 
 (define-public perl-data-uniqid
   (package
