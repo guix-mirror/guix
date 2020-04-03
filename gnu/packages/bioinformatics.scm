@@ -11882,7 +11882,8 @@ dependency like SeqAn.")
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
+                                    "/include/eigen3:"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
              #t)))))
     (inputs
      `(("boost" ,boost)
