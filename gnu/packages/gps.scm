@@ -220,14 +220,14 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
 (define-public gpsd
   (package
     (name "gpsd")
-    (version "3.19")
+    (version "3.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download-mirror.savannah.gnu.org"
                            "/releases/gpsd/gpsd-" version ".tar.gz"))
        (sha256
-        (base32 "0faz2mvk82hi7ispxxih07lhpyz5dazs4gcknym9piiabga29p97"))))
+        (base32 "0l2yz0yw9sil82lh2l4swkkldgmhzhv588n5lcavib4f0q2phahp"))))
     (build-system scons-build-system)
     (native-inputs
      `(("bc" ,bc)
@@ -235,6 +235,7 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
     (inputs
      `(("bluez" ,bluez)
        ("dbus" ,dbus)
+       ("gtk+" ,gtk+)
        ("libcap" ,libcap)
        ("libusb" ,libusb)
        ("ncurses" ,ncurses)
