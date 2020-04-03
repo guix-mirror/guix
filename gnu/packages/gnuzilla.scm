@@ -1016,20 +1016,6 @@ from forcing GEXP-PROMISE."
                   (string-append name "\"" null-hash "\"")))
                (generate-all-checksums "third_party/rust"))
              #t))
-         (add-before 'configure 'augment-CPLUS_INCLUDE_PATH
-           (lambda* (#:key build inputs #:allow-other-keys)
-             ;; Here, we add additional entries to CPLUS_INCLUDE_PATH, to work
-             ;; around a problem that otherwise occurs when attempting to
-             ;; build Stylo, which requires Rust and Clang.  Without these
-             ;; additional entries, errors occur during the build indicating
-             ;; that the <cstddef> and "c++config.h" headers cannot be found.
-             ;; Note that the 'build' keyword argument contains the GNU
-             ;; triplet, e.g. "x86_64-unknown-linux-gnu".
-             (let ((gcc (assoc-ref inputs "gcc")))
-               (setenv "CPLUS_INCLUDE_PATH"
-                       (string-append gcc "/include/c++" ":"
-                                      gcc "/include/c++/" build)))
-             #t))
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and
            ;; "CONFIG_SHELL=..."; set environment variables instead
