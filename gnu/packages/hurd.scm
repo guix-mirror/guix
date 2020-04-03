@@ -370,7 +370,13 @@ boot, since this cannot be done from GNU/Linux."
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("mig" ,mig)
+       ("mig" ,(if (%current-target-system)
+                   ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
+                   ;; hence this hack.
+                   (package
+                     (inherit mig)
+                     (arguments `(#:system "i686-linux")))
+                   mig))
        ("perl" ,perl)
        ("texinfo" ,texinfo-4)))
     (supported-systems %hurd-systems)
