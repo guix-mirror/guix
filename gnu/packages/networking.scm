@@ -2442,15 +2442,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'set-environment
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "C_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "curl") "/include:"
-                                    (assoc-ref inputs "libpcap") "/include:"
-                                    (assoc-ref inputs "openssl") "/include:"
-                                    (assoc-ref inputs "zlib") "/include"))
-             #t)))))
+         (delete 'configure))))
     (home-page "https://github.com/ZerBea/hcxtools")
     (synopsis "Capture wlan traffic to hashcat and John the Ripper")
     (description
