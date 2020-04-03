@@ -769,7 +769,8 @@ fonts to gEDA.")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-append (assoc-ref inputs "catch")
-                                      "/include/catch"))
+                                      "/include/catch:"
+                                      (or (getenv "CPLUS_INCLUDE_PATH") "")))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
