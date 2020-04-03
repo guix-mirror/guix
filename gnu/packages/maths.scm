@@ -399,7 +399,7 @@ semiconductors.")
                           (substitute* "spmatrix/test.c"
                             ((".*test_complex.*") "\n"))
                           #t)))))
-        ((string-prefix? "i686" (%current-system))
+        ((string-prefix? "i686" system)
          ;; There are rounding issues with these tests on i686:
          ;; https://lists.gnu.org/archive/html/bug-gsl/2016-10/msg00000.html
          ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00000.html
