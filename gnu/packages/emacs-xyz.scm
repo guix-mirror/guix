@@ -20664,32 +20664,6 @@ Emacs that integrate with major modes like Org-mode.")
       (home-page "https://github.com/hlissner/emacs-doom-themes")
       (license license:expat))))
 
-(define-public emacs-modus-themes
-  (package
-    (name "emacs-modus-themes")
-    (version "0.6.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://gitlab.com/protesilaos/modus-themes.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "15z6qq0b0npp7hscmh04i3mi10bynzdy52fv2b160nji264zvcwa"))))
-    (build-system emacs-build-system)
-    (home-page "https://gitlab.com/protesilaos/modus-themes")
-    (synopsis "Emacs themes designed for colour-contrast accessibility")
-    (description
-     "This is a set of accessible themes for GNU Emacs.  The contrast ratio
-between foreground and background values should always be >= 7:1, which
-conforms with the WCAG AAA accessibility standard.
-
-The Modus themes project consists of two standalone items, one where dark text
-is cast on a light backdrop (Modus Operandi) and another where light text is
-displayed against a dark background (Modus Vivendi).")
-    (license license:gpl3+)))
-
 (define-public emacs-modus-operandi-theme
   (package
     (name "emacs-modus-operandi-theme")
@@ -20731,6 +20705,9 @@ Emacs.  The contrast ratio between foreground and background values should
 always be greater than 7:1, which conforms with the WCAG AAA accessibility
 standard.  This is the highest standard of its kind.")
     (license license:gpl3+)))
+
+(define-public emacs-modus-themes
+  (deprecated-package "emacs-modus-themes" emacs-modus-operandi-theme))
 
 (define-public emacs-punpun-theme
   (let ((commit "2f78125609277b2478abdebd8f9d5ee10a823b65")
