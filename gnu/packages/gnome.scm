@@ -536,7 +536,18 @@ extraction, and lookup for applications on the desktop.")
    (arguments
     '(#:configure-flags '(;; Enable camera support for user selfie.
                           "-Dcheese=auto"
-                          "-Dsystemd=false")))
+                          "-Dsystemd=false")
+      #:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'set-gkbd-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Allow the "Preview" button in the keyboard layout
+                     ;; selection dialog to display the layout.
+                     (let ((libgnomekbd (assoc-ref inputs "libgnomekbd")))
+                       (substitute* "gnome-initial-setup/pages/keyboard/cc-input-chooser.c"
+                         (("\"gkbd-keyboard-display")
+                          (string-append "\"" libgnomekbd
+                                         "/bin/gkbd-keyboard-display")))
+                       #t))))))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
@@ -565,7 +576,8 @@ extraction, and lookup for applications on the desktop.")
       ("pwquality" ,libpwquality)
       ("rest" ,rest)
       ("upower" ,upower)
-      ("webkitgtk" ,webkitgtk)))
+      ("webkitgtk" ,webkitgtk)
+      ("libgnomekbd" ,libgnomekbd)))
    (synopsis "Initial setup wizard for GNOME desktop")
    (description "This package provides a set-up wizard when a
 user logs into GNOME for the first time.  It typically provides a
