@@ -20690,6 +20690,27 @@ is cast on a light backdrop (Modus Operandi) and another where light text is
 displayed against a dark background (Modus Vivendi).")
     (license license:gpl3+)))
 
+(define-public emacs-modus-operandi-theme
+  (package
+    (name "emacs-modus-operandi-theme")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "modus-operandi-theme-" version ".el"))
+       (sha256
+        (base32 "17zvcqplbl3rk39k61v43ganzv06j49rlyickanwll5m1a3iibw2"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/protesilaos/modus-themes")
+    (synopsis "Accessible light theme (WCAG AAA)")
+    (description
+     "Modus operandi is the light version of the Modus accessible themes for
+GNU Emacs.  The contrast ratio between foreground and background values should
+always be greater than 7:1, which conforms with the WCAG AAA accessibility
+standard.  This is the highest standard of its kind.")
+    (license license:gpl3+)))
+
 (define-public emacs-modus-vivendi-theme
   (package
     (name "emacs-modus-vivendi-theme")
