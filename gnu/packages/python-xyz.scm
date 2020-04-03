@@ -1227,6 +1227,26 @@ sending and receiving messages on a CAN bus.")
     (description "DiskCache is a disk and file backed persistent cache.")
     (license license:asl2.0)))
 
+(define-public python-bitstruct
+  (package
+    (name "python-bitstruct")
+    (version "8.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bitstruct" version))
+       (sha256
+        (base32
+         "1fpc1qh1vss05ap29xvhjp200fm0q4pvgcjl0qpryh7ay6xgr5vx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/eerimoq/bitstruct")
+    (synopsis "Python values to and C bit field structs converter")
+    (description "This module performs conversions between Python values and C
+bit field structs represented as Python byte strings.  It is intended to have
+a similar interface as the @code{struct} module from Python, but working on
+bits instead of primitive data types like @code{char}, @code{int}, etc.")
+    (license license:expat)))
+
 (define-public python-capturer
   (package
     (name "python-capturer")
