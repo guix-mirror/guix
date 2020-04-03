@@ -258,7 +258,7 @@ expression in %STORE-MONAD."
       (lambda ()
         (guard (c ((shepherd-error? c)
                    (values (report-shepherd-error c) store)))
-          (values (run-with-store store (begin mbody ...))
+          (values (run-with-store store (mbegin %store-monad mbody ...))
                   store)))
       (lambda (key proc format-string format-args errno . rest)
         (warning (G_ "while talking to shepherd: ~a~%")
@@ -837,7 +837,10 @@ static checks."
                   (info (G_ "bootloader successfully installed on '~a'~%")
                         (bootloader-configuration-target bootloader))))
                (with-shepherd-error-handling
-                  (upgrade-shepherd-services local-eval os))))
+                 (upgrade-shepherd-services local-eval os)
+                 (return (format #t (G_ "\
+To complete the upgrade, run 'herd restart SERVICE' to stop,
+upgrade, and restart each service that was not automatically restarted.\n"))))))
             ((init)
              (newline)
              (format #t (G_ "initializing operating system under '~a'...~%")
