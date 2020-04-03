@@ -1006,6 +1006,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
         (string-append
          "https://download.documentfoundation.org/libreoffice/src/"
          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
+       (patches (search-patches "libreoffice-poppler-compat.patch"))
        (sha256
         (base32
          "06acm41q9nda8r30b13cn9zafsw1gszjdphh6lx90s09d2sf7f23"))))
