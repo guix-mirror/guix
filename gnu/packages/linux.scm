@@ -880,6 +880,13 @@ It has been modified to remove all non-free binary blobs.")
                      #:defconfig "multi_v7_defconfig"
                      #:extra-version "arm-generic"))
 
+(define-public linux-libre-arm-generic-5.6
+  (make-linux-libre* linux-libre-5.6-version
+                     linux-libre-5.6-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"))
+
 (define-public linux-libre-arm-veyron
   (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
 
