@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2020 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
@@ -18753,6 +18753,29 @@ Project, or not such a gitlab instance when your upstream doesn't use any
 dedicated platform.  The tool proposes a unified interface for any format and
 an upload option to send your work back to the platform.")
     (license license:gpl3+)))
+
+(define-public python-titlecase
+  (package
+    (name "python-titlecase")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "titlecase" version))
+       (sha256
+        (base32
+         "0486i99wf8ssa7sgn81fn6fv6i4rhhq6n751bc740b3hzfbpmpl4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/ppannuto/python-titlecase")
+    (synopsis "Capitalize strings similar to book titles")
+    (description
+     "Python-Titlecase is a Python port of John Gruber's titlecase.pl.
+It capitalizes (predominantly English) strings in a way that is similar to
+book titles, using the New York Times Manual of Style to leave certain words
+lowercase.")
+    (license license:expat)))
 
 (define-public python-pypng
   (package
