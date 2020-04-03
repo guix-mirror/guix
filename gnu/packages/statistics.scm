@@ -1989,14 +1989,14 @@ and environmental data in the framework of Euclidean exploratory methods.")
 (define-public r-xml2
   (package
     (name "r-xml2")
-    (version "1.2.5")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xml2" version))
        (sha256
         (base32
-         "0mp61gg8s3zfq10g10vjk0mrcx6d5gm81n4ji8an2my11g61yq94"))))
+         "138v9374xwc7flw8fz8qp8q3w4fch2jviij0g10dg92xn9dsyani"))))
     (build-system r-build-system)
     (inputs
      `(("libxml2" ,libxml2)
@@ -2004,8 +2004,6 @@ and environmental data in the framework of Euclidean exploratory methods.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("r-knitr" ,r-knitr)))
-    (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hadley/xml2")
     (synopsis "Parse XML with R")
     (description
