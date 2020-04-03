@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -70,19 +70,17 @@
         `(cons ,(string-append "--target=" target)
                ,flags))))))
 
-(define (package-with-patch original patch)
-  "Return package ORIGINAL with PATCH applied."
+(define (package-with-patches original patches)
+  "Return package ORIGINAL with PATCHES applied."
   (package (inherit original)
     (source (origin (inherit (package-source original))
-              (patches (list patch))))))
+                    (patches patches)))))
 
-(define (package-with-extra-patches original extra-patches)
+(define (package-with-extra-patches original patches)
   "Return package ORIGINAL with all PATCHES appended to its list of patches."
-  (let ((original-origin (package-source original)))
-    (package (inherit original)
-      (source (origin (inherit original-origin)
-                (patches `(,@extra-patches
-                           ,@(origin-patches original-origin))))))))
+  (package-with-patches original
+                        (append (origin-patches (package-source original))
+                                patches)))
 
 (define (cross-binutils target)
   "Return a cross-Binutils for TARGET."
@@ -106,9 +104,9 @@
 
     ;; For Xtensa, apply Qualcomm's patch.
     (cross (cond ((string-prefix? "xtensa-" target)
-                  (package-with-patch binutils
-                                      (search-patch
-                                       "ath9k-htc-firmware-binutils.patch")))
+                  (package-with-patches binutils
+                                        (search-patches
+                                         "ath9k-htc-firmware-binutils.patch")))
                  ((target-mingw? target)
                   (package-with-extra-patches
                    binutils
