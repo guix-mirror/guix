@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4302,6 +4303,29 @@ across multiple CPU cores.")
     (description
      "This package provides a Ruby parser written in pure Ruby.")
     (home-page "https://github.com/whitequark/parser")
+    (license license:expat)))
+
+(define-public ruby-sexp-processor
+  (package
+    (name "ruby-sexp-processor")
+    (version "4.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sexp_processor" version))
+       (sha256
+        (base32
+         "0d1vks77xnd0m3s94a58f9bkdwlaml5qdkmprx279m2s0pc2gv55"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     ;; TODO: Add ruby-minitest-proveit once available.
+     `(("hoe" ,ruby-hoe)))
+    (synopsis "ParseTree fork which includes generic S-exp processing tools")
+    (description "The sexp_processor package is derived from ParseTree, but
+contrary to ParseTree, it includes all the generic S-exp processing tools.
+Amongst the included tools are @code{Sexp}, @code{SexpProcessor} and
+@code{Environment}")
+    (home-page "https://github.com/seattlerb/sexp_processor")
     (license license:expat)))
 
 (define-public ruby-prawn-manual-builder
