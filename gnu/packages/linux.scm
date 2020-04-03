@@ -4633,6 +4633,38 @@ disks and SD cards.  This package provides the userland utilities.")
       `(("libuuid:static" ,util-linux "static")
         ("libuuid" ,util-linux)))))) ; for include files
 
+(define-public f2fs-fsck/static
+  (package
+    (name "f2fs-fsck-static")
+    (version (package-version f2fs-tools/static))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+         (let* ((f2fs-tools (assoc-ref %build-inputs "f2fs-tools-static"))
+                (fsck "fsck.f2fs")
+                (out (assoc-ref %outputs "out"))
+                (sbin (string-append out "/sbin")))
+           (mkdir-p sbin)
+           (with-directory-excursion sbin
+             (install-file (string-append f2fs-tools "/sbin/" fsck)
+                           ".")
+             (remove-store-references fsck)
+             (chmod fsck #o555))
+           #t))))
+    (inputs
+     `(("f2fs-tools-static" ,f2fs-tools/static)))
+    (home-page (package-home-page f2fs-tools/static))
+    (synopsis "Statically-linked fsck.f2fs command from f2fs-tools")
+    (description "This package provides statically-linked fsck.f2fs command taken
+from the f2fs-tools package. It is meant to be used in initrds.")
+    (license (package-license f2fs-tools/static))))
+
 (define-public freefall
   (package
     (name "freefall")
