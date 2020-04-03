@@ -324,10 +324,15 @@ standard packages used as implicit inputs of the GNU build system."
   ;; Regexp matching license files.
   "^(COPYING.*|LICEN[CS]E.*|[Ll]icen[cs]e.*|Copy[Rr]ight(\\.(txt|md))?)$")
 
+(define %bootstrap-scripts
+  ;; Typical names of Autotools "bootstrap" scripts.
+  '("bootstrap" "bootstrap.sh" "autogen.sh"))
+
 (define* (gnu-build store name input-drvs
                     #:key (guile #f)
                     (outputs '("out"))
                     (search-paths '())
+                    (bootstrap-scripts %bootstrap-scripts)
                     (configure-flags ''())
                     (make-flags ''())
                     (out-of-source? #f)
@@ -401,6 +406,7 @@ packages that must not be referenced."
                                         search-paths)
                   #:phases ,phases
                   #:locale ,locale
+                  #:bootstrap-scripts ,bootstrap-scripts
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
                   #:out-of-source? ,out-of-source?
@@ -486,6 +492,7 @@ is one of `host' or `target'."
                           (search-paths '())
                           (native-search-paths '())
 
+                          (bootstrap-scripts %bootstrap-scripts)
                           (configure-flags ''())
                           (make-flags ''())
                           (out-of-source? #f)
@@ -570,6 +577,7 @@ platform."
                                              native-search-paths)
                     #:phases ,phases
                     #:locale ,locale
+                    #:bootstrap-scripts ,bootstrap-scripts
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
                     #:out-of-source? ,out-of-source?

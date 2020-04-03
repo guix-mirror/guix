@@ -160,11 +160,7 @@ working directory."
             (invoke "tar" "xvf" source))
         (chdir (first-subdirectory ".")))))
 
-(define %bootstrap-scripts
-  ;; Typical names of Autotools "bootstrap" scripts.
-  '("bootstrap" "bootstrap.sh" "autogen.sh"))
-
-(define* (bootstrap #:key (bootstrap-scripts %bootstrap-scripts)
+(define* (bootstrap #:key bootstrap-scripts
                     #:allow-other-keys)
   "If the code uses Autotools and \"configure\" is missing, run
 \"autoreconf\".  Otherwise do nothing."
