@@ -347,6 +347,13 @@ boot, since this cannot be done from GNU/Linux."
              (substitute* '("daemons/Makefile" "utils/Makefile")
                (("-o root -m 4755") ""))
              #t))
+         (add-before 'build 'set-file-names
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("daemons/runttys.c" "daemons/getty.c")
+                 (("/bin/login")
+                  (string-append out "/bin/login")))
+               #t)))
          (add-after 'install 'install-rc-file
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
