@@ -889,6 +889,23 @@ Initiation Protocol (SIP) and a multimedia framework.")
        ("libopusenc" ,libopusenc)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; libtgvoip wants to dlopen libpulse and libasound, so tell it where
+         ;; they are.
+         (add-after 'unpack 'patch-dlopen
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "os/linux/AudioPulse.cpp"
+               (("libpulse\\.so")
+                (string-append (assoc-ref inputs "pulseaudio")
+                              "/lib/libpulse.so")))
+             (substitute* '("os/linux/AudioInputALSA.cpp"
+                            "os/linux/AudioOutputALSA.cpp")
+               (("libasound\\.so")
+                (string-append (assoc-ref inputs "alsa-lib")
+                               "/lib/libasound.so")))
+             #t)))))
     (synopsis "VoIP library for Telegram clients")
     (description "A collection of libraries and header files for implementing
 telephony functionality into custom Telegram clients.")
