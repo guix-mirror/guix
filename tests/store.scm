@@ -412,6 +412,33 @@
       (build-derivations %store (list d2))
       'fail)))
 
+(test-equal "with-build-handler + with-store"
+  'success
+  ;; Check that STORE remains valid when the build handler invokes CONTINUE,
+  ;; even though 'with-build-handler' is outside the dynamic extent of
+  ;; 'with-store'.
+  (with-build-handler (lambda (continue store things mode)
+                        (match things
+                          ((drv)
+                           (and (string-suffix? "thingie.drv" drv)
+                                (not (port-closed?
+                                      (store-connection-socket store)))
+                                (continue #t)))))
+    (with-store store
+      (let* ((b (add-text-to-store store "build" "echo $foo > $out" '()))
+             (s (add-to-store store "bash" #t "sha256"
+                              (search-bootstrap-binary "bash"
+                                                       (%current-system))))
+             (d (derivation store "thingie"
+                            s `("-e" ,b)
+                            #:env-vars `(("foo" . ,(random-text)))
+                            #:sources (list b s))))
+        (build-derivations store (list d))
+
+        ;; Here STORE's socket should still be open.
+        (and (valid-path? store (derivation->output-path d))
+             'success)))))
+
 (test-assert "map/accumulate-builds"
   (let* ((b  (add-text-to-store %store "build" "echo $foo > $out" '()))
          (s  (add-to-store %store "bash" #t "sha256"
