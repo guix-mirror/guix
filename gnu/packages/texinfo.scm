@@ -224,7 +224,7 @@ Texi2HTML.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("texinfo" ,texinfo)))
     (home-page "https://github.com/baszoetekouw/pinfo")

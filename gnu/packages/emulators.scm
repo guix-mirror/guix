@@ -197,7 +197,7 @@
                "-DX11_FOUND=1")))
       (native-inputs
        `(("pkg-config" ,pkg-config)
-         ("gettext" ,gnu-gettext)))
+         ("gettext" ,gettext-minimal)))
       (inputs
        `(("alsa-lib" ,alsa-lib)
          ("ao" ,ao)

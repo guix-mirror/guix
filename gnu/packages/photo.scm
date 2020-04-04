@@ -536,7 +536,7 @@ and enhance them.")
                 "1l925qslp98gg7yzmgps10h6dq0nb60wbfk345anlxsv0g2ifizr"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)

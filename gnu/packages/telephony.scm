@@ -969,7 +969,7 @@ This package provides a library common to all Jami clients.")
        ("libnotify" ,libnotify)
        ("clutter" ,clutter)
        ("clutter-gtk" ,clutter-gtk)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libcanberra" ,libcanberra)
        ("webkitgtk" ,webkitgtk)
        ;; TODO: We must wrap ring-client-gnome to force using the

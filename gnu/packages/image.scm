@@ -1599,7 +1599,7 @@ medical image data, e.g. magnetic resonance image (MRI) and functional MRI
     (build-system scons-build-system)
     (native-inputs
      `(("boost" ,boost)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("expat" ,expat)

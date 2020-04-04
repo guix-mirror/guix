@@ -2036,7 +2036,7 @@ messaging that aren’t available to clients that connect over XMPP.")
        ("libgcrypt" ,libgcrypt)
        ("libwebp" ,libwebp)
        ("glib" ,glib)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("gtk+" ,gtk+-2)
        ("zlib" ,zlib)))
     (arguments

@@ -4666,7 +4666,7 @@ discard bad quality ones.
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("itstool" ,itstool)
        ("qttools" ,qttools)))
