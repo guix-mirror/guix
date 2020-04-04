@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Danjela Lura <danielaluraa@gmail.com>
+;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21054,3 +21055,26 @@ where tcltk is present are supported.")
 with R, controlling a remote R session (the server) from a local one (the
 client).")
     (license license:bsd-2)))
+
+(define-public r-asd
+  (package
+    (name "r-asd")
+    (version "2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "asd" version))
+        (sha256
+          (base32
+            "0p3r4qjam3sl3rpcilb0pgx4xx3ly71xqnvkv31vzjs885lgxz4l"))))
+    (properties `((upstream-name . "asd")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mvtnorm" ,r-mvtnorm)))
+    (home-page "https://cran.r-project.org/web/packages/asd")
+    (synopsis "Simulations for Adaptive Seamless Designs")
+    (description
+     "This package provdes means to run simulations for adaptive seamless
+designs with and without early outcomes for treatment selection and
+subpopulation type designs.")
+    (license license:gpl3)))
