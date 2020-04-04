@@ -6619,10 +6619,10 @@ of Linux application development.")
                (("/usr/bin/dbus-daemon") (which "dbus-daemon")))
              #t)))))
     (inputs
-     `(("dbus" ,dbus)
-       ("libtool" ,libtool)))
+     `(("dbus" ,dbus)))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("libtool" ,libtool)
        ("pkgconfig" ,pkg-config)
        ("automake" ,automake)))
     (home-page "https://01.org/ell")
