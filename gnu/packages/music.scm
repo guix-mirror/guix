@@ -498,16 +498,16 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.0-beta1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/hydrogen-music/hydrogen.git")
-                    (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0nv83l70j5bjz2wd6n3a8cq3bmgrvdvg6g2hjhc1g5h6xnbqsh9x"))))
+    (version "1.0.0-beta2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hydrogen-music/hydrogen.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1s3jrdyjpm92flw9mkkxchnj0wz8nn1y1kifii8ws252iiqjya4a"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
@@ -522,16 +522,18 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
-       ;; ("ladspa" ,ladspa) ; cannot find during configure
+       ;; ("ladspa" ,ladspa) ; require LADSPA_PATH to be set
        ("lash" ,lash)
        ("libarchive" ,libarchive)
+       ("liblo" ,liblo)
        ("libsndfile" ,libsndfile)
-       ("libtar" ,libtar)
        ("lrdf" ,lrdf)
+       ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtxmlpatterns" ,qtxmlpatterns)
        ("zlib" ,zlib)))
