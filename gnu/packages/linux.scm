@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2937,7 +2938,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "26")
+    (version "27")
     (source (origin
               (method url-fetch)
               (uri
@@ -2945,19 +2946,29 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "17dvrls70nr3b3x1wm8pwbqy4r8a5c20m0dhys8mjhsnpg425fsp"))
+                "035wzfzjx4nwidk747p8n085mgkvy531ppn16krrajx2dkqzply1"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("xz" ,xz)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f                      ; FIXME: Investigate test failures
-       #:configure-flags '("--with-xz" "--with-zlib")
+     `(#:configure-flags '("--with-xz" "--with-zlib"
+                           "--disable-test-modules")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-tests
+           (lambda _
+             ;; XXX: These tests need '--sysconfdir=/etc' to pass.
+             (substitute* "Makefile.am"
+               (("testsuite/test-modprobe") "")
+               (("testsuite/test-depmod") "")
+               (("testsuite/test-blacklist") ""))
+             #t))
          (add-after 'install 'install-modprobe&co
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
