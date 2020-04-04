@@ -1933,6 +1933,22 @@ growing set of geoscientific methods.")
          (add-after 'wrap-python 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-qt-program (assoc-ref outputs "out") "qgis")
+             #t))
+         (add-after 'wrap-qt 'wrap-gis
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (saga (string-append (assoc-ref inputs "saga") "/bin"))
+                    (grass-version ,(package-version grass))
+                    (grass-majorminor (string-join
+                                       (list-head
+                                        (string-split grass-version #\.) 2)
+                                       ""))
+                    (grass (string-append (assoc-ref inputs "grass")
+                                          "/grass" grass-majorminor)))
+               (wrap-program (string-append out "/bin/qgis")
+                 `("PATH" ":" prefix (,saga))
+                 `("QGIS_PREFIX_PATH" = (,out))
+                 `("GISBASE" = (,grass))))
              #t)))))
     (inputs
      `(("exiv2" ,exiv2)
