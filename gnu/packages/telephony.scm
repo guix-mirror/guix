@@ -109,6 +109,7 @@
     (outputs '("out" "doc" "static"))   ;doc contains HTML documentation
     (arguments
      `(#:configure-flags '("--enable-doc=yes" "--enable-tests=yes")
+       #:parallel-build? #f ;non-deterministic build failures may occur otherwise
        #:parallel-tests? #f ;fails removing the same the files twice otherwise
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-configure.ac
