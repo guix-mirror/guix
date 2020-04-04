@@ -5156,7 +5156,7 @@ and as an LV2 plugin.")
 (define-public zrythm
   (package
     (name "zrythm")
-    (version "0.7.573")
+    (version "0.8.200")
     (source
       (origin
         (method url-fetch)
@@ -5164,7 +5164,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "075gq478xbzz5ql4fsrgfzhgxi7z26k6034lhlkmm0klfcb8j9mg"))))
+            "13ivxbrd44qnhyh46dcr94dvqxg8cn4bbd8xm77ljw0p9b4ks4zs"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5189,6 +5189,7 @@ and as an LV2 plugin.")
       ("gettext" ,gettext-minimal)
       ("glibc" ,glibc)
       ("gtk+" ,gtk+)
+      ("guile" ,guile-2.2)
       ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)
