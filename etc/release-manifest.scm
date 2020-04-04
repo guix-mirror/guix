@@ -23,6 +23,7 @@
              (guix packages)
              (guix profiles)
              ((gnu ci) #:select (%cross-targets))
+             (guix utils)
              (srfi srfi-1)
              (srfi srfi-26))
 
@@ -67,6 +68,10 @@ TARGET."
                "gawk" "gettext" "gzip" "xz"
                "hello" "guile@2.2" "zlib"))))
 
+(define %packages-to-cross-build-for-mingw
+  ;; Many things don't build for MinGW.  Restrict to what's known to work.
+  (map specification->package '("hello")))
+
 (define %cross-bootstrap-targets
   ;; Cross-compilation triplets for which 'bootstrap-tarballs' must be
   ;; buildable.
@@ -91,8 +96,12 @@ TARGET."
    (append-map (lambda (target)
                  (map (cut package->manifest-entry* <> "x86_64-linux"
                            #:target target)
-                      %packages-to-cross-build))
-               %cross-targets)))
+                      (if (target-mingw? target)
+                          %packages-to-cross-build-for-mingw
+                          %packages-to-cross-build)))
+               ;; XXX: Important bits like libsigsegv and libffi don't support
+               ;; RISCV at the moment, so don't require RISCV support.
+               (delete "riscv64-linux-gnu" %cross-targets))))
 
 (define %cross-bootstrap-manifest
   (manifest
