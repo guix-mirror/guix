@@ -19,6 +19,7 @@
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2030,13 +2031,13 @@ messaging that aren’t available to clients that connect over XMPP.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("which" ,which)))
     (inputs
      `(("pidgin" ,pidgin)
        ("libgcrypt" ,libgcrypt)
        ("libwebp" ,libwebp)
        ("glib" ,glib)
-       ("gettext" ,gettext-minimal)
        ("gtk+" ,gtk+-2)
        ("zlib" ,zlib)))
     (arguments
