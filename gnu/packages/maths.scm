@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2625,8 +2626,9 @@ implemented in ANSI C, and MPI for communications.")
                                "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("flex" ,flex)
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("flex" ,flex)
        ("bison" ,bison)))
     (outputs '("out" "metis"))
     (arguments
