@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@disroot.org>
 ;;; Copyright © 2020 kanichos <kanichos@yandex.ru>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -140,7 +141,6 @@
        ("gconf" ,gconf)
        ("gtk2" ,gtk+-2)
        ("gtk+" ,gtk+)
-       ("gettext" ,gnu-gettext)
        ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
        ("libx11" ,libx11)
@@ -152,6 +152,7 @@
        ("python" ,python)))
     (native-inputs
      `(("glib" ,glib "bin") ; for glib-genmarshal
+       ("gettext" ,gnu-gettext)
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
        ("ucd" ,ucd)
        ("unicode-emoji" ,unicode-emoji)
