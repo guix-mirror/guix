@@ -152,7 +152,7 @@
        ("python" ,python)))
     (native-inputs
      `(("glib" ,glib "bin") ; for glib-genmarshal
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("gobject-introspection" ,gobject-introspection) ; for g-ir-compiler
        ("ucd" ,ucd)
        ("unicode-emoji" ,unicode-emoji)
