@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -368,12 +369,12 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
        ("parted" ,parted)
        ("glib" ,glib)
        ("gtkmm" ,gtkmm)
-       ("libxml2" ,libxml2)
-       ("yelp-tools" ,yelp-tools)))
+       ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
        ("lvm2" ,lvm2) ; for tests
+       ("yelp-tools" ,yelp-tools)
        ("pkg-config" ,pkg-config)))
     (home-page "https://gparted.org/")
     (synopsis "Partition editor to graphically manage disk partitions")
