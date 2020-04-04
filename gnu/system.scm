@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,6 +143,10 @@
             %setuid-programs
             %sudoers-specification
             %base-packages
+            %base-packages-interactive
+            %base-packages-linux
+            %base-packages-networking
+            %base-packages-utils
             %base-firmware))
 
 ;;; Commentary:
@@ -575,48 +580,60 @@ of PROVENANCE-SERVICE-TYPE to its services."
   (list ath9k-htc-firmware
         openfwwf-firmware))
 
+(define %base-packages-utils
+  ;; Default set of  utilities packages.
+ (cons* procps psmisc which
+        (@ (gnu packages admin) shadow) ;for 'passwd'
+
+        ;; XXX: We don't use (canonical-package guile-2.2) here because that
+        ;; would create a collision in the global profile between the GMP
+        ;; variant propagated by 'guile-final' and the GMP variant propagated
+        ;; by 'gnutls', itself propagated by 'guix'.
+        guile-2.2
+
+        ;; The packages below are also in %FINAL-INPUTS, so take them from
+        ;; there to avoid duplication.
+        (map canonical-package
+             (list bash coreutils findutils grep sed
+                   diffutils patch gawk tar gzip bzip2 xz lzip))))
+
+(define %base-packages-linux
+  ;; Default set of linux specific packages.
+  (list pciutils usbutils
+        util-linux+udev
+        ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
+        ;; already depends on it anyway.
+        kmod eudev))
+
+(define %base-packages-interactive
+  ;; Default set of common interactive packages.
+  (list less zile nano
+        man-db
+        info-reader                     ;the standalone Info reader (no Perl)
+        bash-completion
+        kbd
+        ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
+        ;; want the other commands and the man pages (notably because
+        ;; auto-completion in Emacs shell relies on man pages.)
+        sudo
+        guile-readline guile-colorized))
+
+(define %base-packages-networking
+  ;; Default set of networking packages.
+  (list inetutils isc-dhcp
+        iproute
+        ;; wireless-tools is deprecated in favor of iw, but it's still what
+        ;; many people are familiar with, so keep it around.
+        iw wireless-tools))
+
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
-  (cons* procps psmisc which less zile nano
-         pciutils usbutils
-         util-linux+udev
-         inetutils isc-dhcp
-         (@ (gnu packages admin) shadow)          ;for 'passwd'
-
-         ;; wireless-tools is deprecated in favor of iw, but it's still what
-         ;; many people are familiar with, so keep it around.
-         iw wireless-tools
-
-         iproute
-         man-db
-         info-reader                     ;the standalone Info reader (no Perl)
-
-         ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
-         ;; want the other commands and the man pages (notably because
-         ;; auto-completion in Emacs shell relies on man pages.)
-         sudo
-
-         ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
-         ;; already depends on it anyway.
-         kmod eudev
-
-         e2fsprogs kbd
-
-         bash-completion
-
-         ;; XXX: We don't use (canonical-package guile-2.2) here because that
-         ;; would create a collision in the global profile between the GMP
-         ;; variant propagated by 'guile-final' and the GMP variant propagated
-         ;; by 'gnutls', itself propagated by 'guix'.
-         guile-2.2
-         guile-readline guile-colorized
-
-         ;; The packages below are also in %FINAL-INPUTS, so take them from
-         ;; there to avoid duplication.
-         (map canonical-package
-              (list bash coreutils findutils grep sed
-                    diffutils patch gawk tar gzip bzip2 xz lzip))))
+  (append (list e2fsprogs)
+          %base-packages-interactive
+          %base-packages-linux
+          %base-packages-networking
+          %base-packages-utils))
 
 (define %default-issue
   ;; Default contents for /etc/issue.
