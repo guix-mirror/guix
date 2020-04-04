@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,10 +138,10 @@ a flexible and convenient way.")
                   (srfi srfi-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
        ("groff" ,groff)))   ;needed at build time (troff, grops, soelim, etc.)
     (inputs
-     `(("flex" ,flex)
-       ("gdbm" ,gdbm)
+     `(("gdbm" ,gdbm)
        ("groff-minimal" ,groff-minimal)
        ("less" ,less)
        ("libpipeline" ,libpipeline)
