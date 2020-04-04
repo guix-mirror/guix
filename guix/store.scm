@@ -623,16 +623,25 @@ connection.  Use with care."
 (define (call-with-store proc)
   "Call PROC with an open store connection."
   (let ((store (open-connection)))
-    (catch #t
-      (lambda ()
-        (parameterize ((current-store-protocol-version
-                        (store-connection-version store)))
-          (let ((result (proc store)))
-            (close-connection store)
-            result)))
-      (lambda (key . args)
-        (close-connection store)
-        (apply throw key args)))))
+    (define (thunk)
+      (parameterize ((current-store-protocol-version
+                      (store-connection-version store)))
+        (let ((result (proc store)))
+          (close-connection store)
+          result)))
+
+    (cond-expand
+      (guile-3
+       (with-exception-handler (lambda (exception)
+                                 (close-connection store)
+                                 (raise-exception exception))
+         thunk))
+      (else                                       ;Guile 2.2
+       (catch #t
+         thunk
+         (lambda (key . args)
+           (close-connection store)
+           (apply throw key args)))))))
 
 (define-syntax-rule (with-store store exp ...)
   "Bind STORE to an open connection to the store and evaluate EXPs;
