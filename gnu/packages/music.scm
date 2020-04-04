@@ -380,22 +380,28 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public denemo
   (package
     (name "denemo")
-    (version "2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/denemo/denemo-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0hggf8c4xcrjcxd5m00r788r7jg7g8ff54w2idfaqpj5j2ix3299"))))
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/denemo/"
+                           "denemo-" version ".tar.gz"))
+       (sha256
+        (base32 "1blkcl3slbsq9jlhwcf2m9v9g38a0sjfhh9advgi2qr1gxri08by"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           ;; Denemo's documentation says to use this command to run its
-           ;; testsuite.
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require to write $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Replace hard-coded diff file name.
+             (substitute* "tests/integration.c"
+               (("/usr/bin/diff")
+                (string-append (assoc-ref inputs "diffutils") "/bin/diff")))
+             ;; Denemo's documentation says to use this command to run its
+             ;; test suite.
              (invoke "make" "-C" "tests" "check")))
          (add-before 'build 'set-lilypond
            ;; This phase sets the default path for lilypond to its current
@@ -408,24 +414,12 @@ many input formats and provides a customisable Vi-style user interface.")
                   (string-append "g_string_new (\""
                                  lilypond
                                  "\");"))))
-             #t))
-         (add-after 'install 'correct-filename
-           ;; "graft-derivation/shallow" from the (guix grafts) module runs in
-           ;; the C locale, expecting file names to be ASCII encoded. This
-           ;; phase renames a filename with a Unicode character in it to meet
-           ;; the aforementioned condition.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (chdir (string-append
-                       out
-                       "/share/denemo/templates/instruments/woodwind"))
-               (rename-file "Clarinet in B♭.denemo"
-                            "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("diffutils" ,diffutils)
        ("glib:bin" ,glib "bin")         ; for gtester
        ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
