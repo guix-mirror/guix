@@ -32,8 +32,10 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages texinfo)
   #:use-module (guix git-download)
   #:export (hurd-system?
@@ -349,10 +351,63 @@ boot, since this cannot be done from GNU/Linux."
              #t))
          (add-before 'build 'set-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (substitute* '("daemons/runttys.c" "daemons/getty.c")
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bash (assoc-ref inputs "bash-minimal"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (sed  (assoc-ref inputs "sed"))
+                    (grep (assoc-ref inputs "grep"))
+                    (util-linux (assoc-ref inputs "util-linux")))
+               (substitute* '("daemons/runttys.c" "daemons/getty.c" "utils/login.c")
                  (("/bin/login")
-                  (string-append out "/bin/login")))
+                  (string-append out "/bin/login"))
+                 (("/bin/bash") (string-append bash "/bin/bash")))
+               (substitute* '("startup/startup.c" "init/init.c" "config/ttys")
+                 (("/libexec/")
+                  (string-append out "/libexec/")))
+               (substitute* "daemons/console-run.c"
+                 (("/hurd/")
+                  (string-append out "/hurd/")))
+
+               (substitute* '("daemons/runsystem.sh"
+                              "daemons/runsystem.hurd.sh"
+                              "sutils/MAKEDEV.sh")
+                 (("^PATH=.*")
+                  (string-append "PATH=" out "/bin:" out "/sbin:"
+                                 coreutils "/bin:"
+                                 sed "/bin:" grep "/bin:"
+                                 util-linux "/bin\n"))
+                 (("^SHELL=.*")
+                  (string-append "SHELL=" bash "/bin/bash\n"))
+                 (("/sbin/") (string-append out "/sbin/"))
+                 (("/libexec/") (string-append out "/libexec/"))
+                 (("/hurd/") (string-append out "/hurd/")))
+
+               (substitute* "daemons/runsystem.sh"
+                 (("export PATH")
+                  (string-append "export PATH\n"
+                                 "\
+fsysopts / --writable
+
+# MAKEDEV relies on pipes so this needs to be set up.
+settrans -c /servers/socket/1 /hurd/pflocal
+
+(cd /dev; MAKEDEV -D /dev std vcs tty{1,2,3,4,5,6})\n")))
+
+               (substitute* "daemons/runsystem.hurd.sh"
+                 (("export PATH")
+                  "export PATH
+fsysopts / --writable\n"))
+               #t)))
+         (add-after 'patch-shebangs 'patch-libexec-shebangs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; XXX: Since the 'patch-shebangs' phase doesn't traverse
+             ;; /libexec, do it here.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (bash (assoc-ref inputs "bash-minimal"))
+                    (path (list (string-append bash "/bin"))))
+               (for-each (lambda (file)
+                           (patch-shebang file path))
+                         (find-files (string-append out "/libexec")))
                #t)))
          (add-after 'install 'install-rc-file
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -373,7 +428,14 @@ boot, since this cannot be done from GNU/Linux."
     (build-system gnu-build-system)
     (inputs
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
-       ("hurd-rc" ,(hurd-rc-script))))
+       ("hurd-rc" ,(hurd-rc-script))
+
+       ;; Tools for the /libexec/* scripts.
+       ("bash-minimal" ,bash-minimal)
+       ("coreutils" ,coreutils)
+       ("sed" ,sed)
+       ("grep" ,grep)
+       ("util-linux" ,util-linux)))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
