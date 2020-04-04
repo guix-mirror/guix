@@ -6120,7 +6120,7 @@ file links.")
        ("intltool" ,intltool)))
     (inputs
      `(("expat" ,expat)
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl-1.0)))
     (home-page "http://www.webdav.org/cadaver/")
     (synopsis "Command-line WebDAV client")
     (description
