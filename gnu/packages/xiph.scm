@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -285,10 +286,10 @@ meaning that audio is compressed in FLAC without any loss in quality.")
               "0s3vr2nxfxlf1k75iqpp4l78yf4gil3f0v778kvlngbchvaq23n4"))))
    (build-system gnu-build-system)
    (native-inputs `(("doxygen" ,doxygen)
+                    ("bison" ,bison)
                     ("pkg-config" ,pkg-config)))
    ;; FIXME: Add optional input liboggz
-   (inputs `(("bison" ,bison)
-             ("libogg" ,libogg)
+   (inputs `(("libogg" ,libogg)
              ("libpng" ,libpng)
              ("python" ,python-wrapper)
              ("zlib" ,zlib)))
