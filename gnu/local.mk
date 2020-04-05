@@ -31,6 +31,7 @@
 # Copyright © 2020 R Veera Kumar <vkor@vkten.in>
 # Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 # Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+# Copyright © 2020 Felix Gruber <felgru@posteo.net>
 #
 # This file is part of GNU Guix.
 #
@@ -844,6 +845,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/doxygen-test.patch			\
   %D%/packages/patches/dstat-fix-crash-when-specifying-delay.patch	\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
+  %D%/packages/patches/dune-istl-2.7-fix-non-mpi-tests.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/eigen-stabilise-sparseqr-test.patch	\
   %D%/packages/patches/einstein-build.patch			\
