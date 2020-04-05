@@ -291,6 +291,13 @@ without requiring the source code to be rewritten.")
               (sha256
                (base32
                 "12lziar4j27j9whqp2n18427q45y9ghq7gdd8lqhmj1k0lr7vi2k"))))
+    (arguments
+     ;; XXX: JIT-enabled Guile crashes in obscure ways on GNU/Hurd.
+     (if (hurd-target?)
+         (substitute-keyword-arguments (package-arguments guile-2.2)
+           ((#:configure-flags flags ''())
+            `(cons "--disable-jit" ,flags)))
+         (package-arguments guile-2.2)))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
