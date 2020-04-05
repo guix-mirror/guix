@@ -3343,7 +3343,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.18")
+    (version "1.0.19")
     (source
      (origin
        (method url-fetch)
@@ -3352,7 +3352,7 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "041amvpz8cvxykl3pwqldrzxligmmzcg8ncdnxbg32rlqf3q1xh4"))))
+         "1xkha9ss5g5qnfaybi8il0mcvp8knwg9plgh8404vh58d0pna0s9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
