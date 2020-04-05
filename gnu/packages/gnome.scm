@@ -7728,6 +7728,17 @@ associations for GNOME.")
       ("gjs" ,gjs)
       ("gnome-desktop" ,gnome-desktop)
       ("libgweather" ,libgweather)))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'fix-desktop-file
+          ;; FIXME: "gapplication launch org.gnome.Weather" fails for some reason.
+          ;; See https://issues.guix.gnu.org/issue/39324.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (applications (string-append out "/share/applications")))
+              (substitute* (string-append applications "/org.gnome.Weather.desktop")
+                (("Exec=.*") "Exec=gnome-weather\n"))))))))
    (synopsis "Weather monitoring for GNOME desktop")
    (description "GNOME Weather is a small application that allows you to
 monitor the current weather conditions for your city, or anywhere in the
