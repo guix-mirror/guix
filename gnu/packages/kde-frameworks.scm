@@ -2687,6 +2687,7 @@ consumption.")
        ("solid" ,solid)))
     (native-inputs
      `(("dbus" ,dbus)
+       ("qttools" ,qttools)
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(;; TODO:  LibACL , <ftp://oss.sgi.com/projects/xfs/cmd_tars>
@@ -2709,7 +2710,6 @@ consumption.")
        ("libxslt" ,libxslt)
        ("qtbase" ,qtbase)
        ("qtscript" ,qtscript)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)
        ("sonnet" ,sonnet)))
     (arguments
