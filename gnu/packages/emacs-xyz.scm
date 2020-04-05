@@ -5976,33 +5976,30 @@ windows.")
     (license license:gpl3+)))
 
 (define-public emacs-ace-window
-  ;; last release version is from 2015
-  (let ((commit "a5344925e399e1f015721cda6cf5db03c90ab87a")
-        (revision "1"))
-    (package
-      (name "emacs-ace-window")
-      (version (git-version "0.9.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/abo-abo/ace-window.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "18jm8gfgnf6ja9aarws5650lw2zfi3wdwc5j8r5ijn5fcqhfy7rc"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-avy" ,emacs-avy)))
-      (home-page "https://github.com/abo-abo/ace-window")
-      (synopsis "Quickly switch windows in Emacs")
-      (description
-       "@code{ace-window} is meant to replace @code{other-window}.
+  (package
+    (name "emacs-ace-window")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/ace-window.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0f3r40d5yxp2pm2j0nn86s29nqj8py0jxjbj50v4ci3hsd92d8jl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-avy" ,emacs-avy)))
+    (home-page "https://github.com/abo-abo/ace-window")
+    (synopsis "Quickly switch windows in Emacs")
+    (description
+     "@code{ace-window} is meant to replace @code{other-window}.
 In fact, when there are only two windows present, @code{other-window} is
 called.  If there are more, each window will have its first character
 highlighted.  Pressing that character will switch to that window.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-iedit
   ;; Last release version was in 2016.
