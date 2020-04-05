@@ -6908,6 +6908,35 @@ functions to assist in reviewing changes on files.")
 environments (virtualenv) inside Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-highlight-indent-guides
+  (let ((version "0.8.5") ; from package metadata
+        (revision "0")
+        (commit "c2c9de4d01edfb89609c91d4d7f1d81312015a2c"))
+    (package
+      (name "emacs-highlight-indent-guides")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/DarthFennec/highlight-indent-guides.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "10chvqnmdmkx6i9sigqframr85ziyafiz44glwhvhjajfkv42ad2"))))
+      (build-system emacs-build-system)
+      (home-page
+       "https://github.com/DarthFennec/highlight-indent-guides")
+      (synopsis "Minor mode to highlight indentation")
+      (description
+       "This package provides a minor mode to highlight indentation levels via
+font-lock.  Indent widths are dynamically discovered, which means this
+correctly highlights in any mode, regardless of indent width, even in
+languages with non-uniform indentation such as Haskell.  This mode works
+properly around hard tabs and mixed indentation and behaves well in large
+buffers.")
+      (license license:expat))))
+
 (define-public emacs-highlight-indentation
   ;; Last release version is from 2015.
   (let ((commit "d03803f2c06749c430443a3d24e039cbafc9c58f")
