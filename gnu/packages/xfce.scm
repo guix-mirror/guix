@@ -1707,10 +1707,10 @@ interfaces of your choice in the panel.")
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("desktop-file-utils" ,desktop-file-utils)
-       ("gtk+-2" ,gtk+-2)
+     `(("gtk+-2" ,gtk+-2)
        ("exo" ,exo)
        ("libxfce4ui" ,libxfce4ui)
        ("xfce4-panel" ,xfce4-panel)))
