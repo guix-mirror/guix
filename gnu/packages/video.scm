@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3277,7 +3278,6 @@ programmers to access a standard API to open and decompress media files.")
                  #t)))))
     (inputs
      `(("boost" ,boost)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("ffms2" ,ffms2)
        ("fftw" ,fftw)
        ("hunspell" ,hunspell)
@@ -3290,6 +3290,7 @@ programmers to access a standard API to open and decompress media files.")
        ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.aegisub.org/")
     (synopsis "Subtitle engine")
