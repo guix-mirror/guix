@@ -3544,10 +3544,10 @@ documentation tools.")
               (snippet
                '(begin
                   ;; Delete bundled thirds-party jar archives.
-                  ;; TODO: unbundle maven-plugin-api.
-                  (delete-file "lib/asm-4.0.jar")
-                  (delete-file "lib/asm-commons-4.0.jar")
-                  (delete-file "lib/junit-4.8.1.jar")
+                  (delete-file-recursively "lib")
+                  (delete-file "src/test/enumtest.jar")
+                  ;; the CLASSPATH needs this directory, create an empty one
+                  (mkdir-p "lib")
                   #t))))
     (build-system ant-build-system)
     (arguments
@@ -3575,6 +3575,13 @@ documentation tools.")
                                "signature/*.class\"/>"
                                "<include name=\"org/objectweb/asm/"
                                "commons/SignatureRemapper.class\"/>")))
+             #t))
+         (add-before 'build 'remove-maven-dependency
+           (lambda _
+             ;; We do not need to build jarjar as a maven plugin just yet, so
+             ;; remove this file.  Maven requires jarjar (but not that plugin),
+             ;; so removing it improves the bootstrap.
+             (delete-file "src/main/com/tonicsystems/jarjar/JarJarMojo.java")
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
