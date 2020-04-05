@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,15 +94,15 @@
 (define-public libxfce4util
   (package
     (name "libxfce4util")
-    (version "4.14.0")
+    (version "4.15.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/"
+              (uri (string-append "https://archive.xfce.org/src/xfce/libxfce4util/"
                                   (version-major+minor version)
-                                  "/src/" name "-" version ".tar.bz2"))
+                                  "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "093338faqqsrlc8dkmzr7qv411ysxczg1wlg7s3gvhrfk6vpkb9j"))))
+                "1lq9i30jdci4if2daxdcqni0x5jvpnaflgp19za9sks3gm4jma5v"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
