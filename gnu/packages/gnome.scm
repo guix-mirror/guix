@@ -279,12 +279,12 @@ features to enable users to create their discs easily and quickly.")
                                       "/bin/cat")))
              #t)))))
     (native-inputs
-     `(("gettext" ,gettext-minimal)
-       ("pkg-config" ,pkg-config)))
-    (inputs
      `(("coreutils" ,coreutils)
-       ("python" ,python)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
        ("sed" ,sed)))
+    (inputs
+     `(("python" ,python)))
     (synopsis "Module of GNOME C++ bindings")
     (description "The mm-common module provides the build infrastructure
 and utilities shared among the GNOME C++ binding libraries.  Release
