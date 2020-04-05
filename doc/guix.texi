@@ -11916,6 +11916,9 @@ about.  Here are a few example:
 ;; The Catalan layout.
 (keyboard-layout "es" "cat")
 
+;; Arabic layout with "Alt-Shift" to switch to US layout.
+(keyboard-layout "ar,us" #:options '("grp:alt_shift_toggle"))
+
 ;; The Latin American Spanish layout.  In addition, the
 ;; "Caps Lock" key is used as an additional "Ctrl" key,
 ;; and the "Menu" key is used as a "Compose" key to enter
