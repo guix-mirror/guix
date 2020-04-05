@@ -72,6 +72,14 @@ menuentry \"GNU\" {
                                    #+mach #+mach #+hurd
                                    #+libc #+hurd))))))
 
+  (define fstab
+    (plain-file "fstab"
+"# This file was generated from your Guix configuration.  Any changes
+# will be lost upon reboot or reconfiguration.
+
+/dev/hd0s1	/	ext2	defaults
+"))
+
   (define hurd-directives
     `((directory "/servers")
       ,@(map (lambda (server)
@@ -94,13 +102,15 @@ menuentry \"GNU\" {
       ("/hurd" -> ,(file-append (with-parameters ((%current-target-system
                                                    "i586-pc-gnu"))
                                   hurd)
-                                "/hurd"))))
+                                "/hurd"))
+      ("/etc/fstab" -> ,fstab)))
 
   (qemu-image #:file-system-type "ext2"
               #:file-system-options '("-o" "hurd")
               #:device-nodes 'hurd
               #:inputs `(("system" ,hurd-os)
-                         ("grub.cfg" ,grub.cfg))
+                         ("grub.cfg" ,grub.cfg)
+                         ("fstab" , fstab))
               #:copy-inputs? #t
               #:os hurd-os
               #:bootcfg-drv grub.cfg
