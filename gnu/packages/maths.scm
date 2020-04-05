@@ -1586,6 +1586,12 @@ can solve two kinds of problems:
        ("glpk" ,glpk)
        ("glu" ,glu)
        ("graphicsmagick" ,graphicsmagick)
+
+       ;; TODO: libjpeg-turbo is indirectly required through libtiff.  In
+       ;; the next rebuild cycle, add an absolute reference for -ljpeg in
+       ;; libtiff.la instead of having to provide it here.
+       ("libjpeg" ,libjpeg-turbo)
+
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)
        ("libsndfile" ,libsndfile)
@@ -1624,7 +1630,12 @@ can solve two kinds of problems:
      `(#:configure-flags
        (list (string-append "--with-shell="
                             (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))
+                            "/bin/sh")
+
+             ;; XXX: Without this flag, linking octave-cli fails with
+             ;; undefined references to 'logf@GLIBCXX_3.4' et.al. due to
+             ;; not pulling in liboctinterp.la for -lstdc++.
+             "--enable-link-all-dependencies")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'configure-makeinfo
