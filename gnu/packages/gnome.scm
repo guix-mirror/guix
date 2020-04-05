@@ -250,6 +250,49 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public mm-common
+  (package
+    (name "mm-common")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1m4w33da9f4rx2d6kdj3ix3kl0gn16ml82v2mdn4hljr3q29nzdr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "util/mm-common-prepare.in"
+              (("ln") (string-append (assoc-ref inputs "coreutils")
+                                     "/bin/ln"))
+              (("cp") (string-append (assoc-ref inputs "coreutils")
+                                     "/bin/cp"))
+              (("sed") (string-append (assoc-ref inputs "sed")
+                                      "/bin/sed"))
+              (("cat") (string-append (assoc-ref inputs "coreutils")
+                                      "/bin/cat")))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("coreutils" ,coreutils)
+       ("python" ,python)
+       ("sed" ,sed)))
+    (synopsis "Module of GNOME C++ bindings")
+    (description "The mm-common module provides the build infrastructure
+and utilities shared among the GNOME C++ binding libraries.  Release
+archives of mm-common include the Doxygen tag file for the GNU C++
+Library reference documentation.")
+    (home-page "https://gitlab.gnome.org/GNOME/mm-common")
+    (license license:gpl2+)))
+
 (define-public phodav
   (package
    (name "phodav")
