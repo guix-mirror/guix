@@ -3733,10 +3733,21 @@ testing frameworks, mocking libraries and UI validation rules.")
                   #t))))
     (build-system ant-build-system)
     (arguments
-     `(#:tests? #f ; no tests
-       #:jar-name "junit.jar"))
-    (inputs
+     `(#:jar-name "junit.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude (list "**/SimpleTest.java" "**/StackTracesTest.java"
+                            "**/RuleChainTest.java" "**/TestWatchmanTest.java")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t)))))
+    (propagated-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)))
+    (native-inputs
+     `(("java-hamcrest-library" ,java-hamcrest-library)))
     (home-page "https://junit.org/junit4/")
     (synopsis "Test framework for Java")
     (description
