@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2448,7 +2449,8 @@ with su and ssh respectively.")
                 "1s3bmn1ck7xvc7a6gv7ywv9161hdahiiw20aq88s4qkm2s5wyy6v"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
     (inputs
      `(("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
@@ -2458,7 +2460,6 @@ with su and ssh respectively.")
        ("kservice" ,kservice)
        ("kwallet" ,kwallet)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
        ("qtwebkit" ,qtwebkit)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Integration for QtWebKit")
