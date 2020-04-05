@@ -21,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (gnu bootloader grub)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages hurd)
   #:use-module (gnu system vm)
@@ -44,7 +45,7 @@
       (directory-union "gnu+hurd"
                        (cons (with-parameters ((%current-system "i686-linux"))
                                gnumach)
-                             (for-hurd hurd coreutils grep sed)))))
+                             (for-hurd hurd bash coreutils grep sed)))))
 
   (define grub.cfg
     (let ((hurd (with-parameters ((%current-target-system "i586-pc-gnu"))
@@ -122,7 +123,11 @@ menuentry \"GNU\" {
       ("/etc/ttys" -> ,(file-append (with-parameters ((%current-target-system
                                                    "i586-pc-gnu"))
                                   hurd)
-                                "/etc/ttys"))))
+                                "/etc/ttys"))
+      ("/bin/sh" -> ,(file-append (with-parameters ((%current-target-system
+                                                     "i586-pc-gnu"))
+                                    bash)
+                                  "/bin/sh"))))
 
   (qemu-image #:file-system-type "ext2"
               #:file-system-options '("-o" "hurd")
