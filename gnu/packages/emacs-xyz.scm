@@ -1873,6 +1873,29 @@ environment set through Direnv.")
 that the binary uses instead of the actual binary contents.")
     (license license:gpl3+)))
 
+(define-public emacs-form-feed
+  (package
+    (name "emacs-form-feed")
+    (version "0.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wasamasa/form-feed.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "171jna631b2iqcimfsik9c66gii8nc0zdb58m077w00rn7rcxbh2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/wasamasa/form-feed")
+    (synopsis "Display ^L glyphs as horizontal lines")
+    (description
+     "This package provides a minor mode @code{form-feed-mode} to display page
+delimiters which usually appear as ^L glyphs on a single line as horizontal
+lines spanning the entire window.  The minor mode is suitable for inclusion
+into mode hooks and is intended to be used that way.")
+    (license license:gpl3+)))
+
 (define-public emacs-ggtags
   (package
     (name "emacs-ggtags")
