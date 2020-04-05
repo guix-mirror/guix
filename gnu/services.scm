@@ -580,6 +580,10 @@ ACTIVATION-SCRIPT-TYPE."
                   #~(begin
                       (setenv "LINUX_MODULE_DIRECTORY"
                               "/run/booted-system/kernel/lib/modules")
+                      ;; FIXME: Remove this crutch when the patch #40422,
+                      ;; updating to kmod 27 is merged.
+                      (setenv "MODPROBE_OPTIONS"
+                              "-C /etc/modprobe.d")
                       (apply execl #$modprobe
                              (cons #$modprobe (cdr (command-line))))))))
 
