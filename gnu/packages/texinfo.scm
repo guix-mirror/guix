@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,6 +188,18 @@ of the GNU Texinfo implementation) do not intend to make further releases of
 Texi2HTML.")
     ;; Files in /lib under lgpl2.1+ and x11
     (license gpl2+)))
+
+(define-public texi2html-1.82
+  (package
+    (inherit texi2html)
+    (version "1.82")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/texi2html/"
+                           "texi2html-" version ".tar.bz2"))
+       (sha256
+        (base32 "1wdli2szkgm3l0vx8rf6lylw0b0m47dlz9iy004n928nqkzix76n"))))))
 
 (define-public pinfo
   (package
