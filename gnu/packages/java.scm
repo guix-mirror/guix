@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
-;;; Copyright © 2017, 2018, 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2017-2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -4535,9 +4535,6 @@ on the XPP3 API (XML Pull Parser).")))
                (base32
                 "115l5pqblirdkmzi32dxx7gbcm4jy0s14y5wircr6h8jdr9aix00"))))
     (build-system ant-build-system)
-    (propagated-inputs
-     `(("java-aqute-bndlib" ,java-aqute-bndlib)
-       ("java-aqute-libg" ,java-aqute-libg)))
     (arguments
      `(#:build-target "compile"
        ;; The tests require an old version of Janino, which no longer compiles
@@ -4554,6 +4551,12 @@ on the XPP3 API (XML Pull Parser).")))
         "-Dbiz.aQute.bnd.path=dummy-path")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'remove-bnd-dependency
+           (lambda _
+             ;; This file is the only one to require bnd, and is not needed
+             ;; because we don't build a bundle.
+             (delete-file "src/org/objectweb/asm/tools/ModuleInfoBndPlugin.java")
+             #t))
          (add-before 'install 'build-jars
            (lambda* (#:key make-flags #:allow-other-keys)
              ;; We cannot use the "jar" target because it depends on a couple
@@ -4582,13 +4585,7 @@ complex transformations and code analysis tools.")
     (arguments
      (substitute-keyword-arguments (package-arguments java-asm)
        ((#:tests? _) #f)))
-    (native-inputs `())
-    (propagated-inputs
-     `(("java-aqute-bndlib" ,java-aqute-bndlib-bootstrap)
-       ("java-aqute-libg" ,java-aqute-libg-bootstrap)
-       ,@(delete `("java-aqute-bndlib" ,java-aqute-bndlib)
-                 (delete `("java-aqute-libg" ,java-aqute-libg)
-                         (package-inputs java-asm)))))))
+    (native-inputs `())))
 
 (define-public java-cglib
   (package
@@ -7017,15 +7014,6 @@ allowing the end user to plug in the desired logging framework at deployment
 time.")
     (license license:expat)))
 
-(define java-slf4j-api-bootstrap
-  (package
-    (inherit java-slf4j-api)
-    (name "java-slf4j-api-bootstrap")
-    (inputs `())
-    (arguments
-     (substitute-keyword-arguments (package-arguments java-slf4j-api)
-       ((#:tests? _ #f) #f)))))
-
 (define-public java-slf4j-simple
   (package
     (name "java-slf4j-simple")
@@ -8309,20 +8297,6 @@ it manages project dependencies, gives diffs jars, and much more.")
      `(("hamcrest" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))))
 
-(define java-aqute-libg-bootstrap
-  (package
-    (inherit java-aqute-libg)
-    (name "java-aqute-libg-bootstrap")
-    (arguments
-     ;; Disable tests, at this stage of bootstrap we have no test frameworks.
-     (substitute-keyword-arguments (package-arguments java-aqute-libg)
-       ((#:tests? _ #f) #f)))
-    (inputs
-     `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
-       ,@(delete `("slf4j" ,java-slf4j-api)
-                 (package-inputs java-aqute-libg))))
-    (native-inputs '())))
-
 (define-public java-aqute-bndlib
   (package
     (inherit java-aqute-bnd-annotation)
@@ -8345,17 +8319,6 @@ it manages project dependencies, gives diffs jars, and much more.")
        ("java-osgi-namespace-service" ,java-osgi-namespace-service)
        ("promise" ,java-osgi-util-promise)
        ("osgi" ,java-osgi-core)))))
-
-(define java-aqute-bndlib-bootstrap
-  (package
-    (inherit java-aqute-bndlib)
-    (name "java-aqute-bndlib-bootstrap")
-    (inputs
-     `(("slf4j-bootstrap" ,java-slf4j-api-bootstrap)
-       ("java-aqute-libg-bootstrap" ,java-aqute-libg-bootstrap)
-       ,@(delete `("slf4j" ,java-slf4j-api)
-                 (delete `("java-aqute-libg" ,java-aqute-libg)
-                         (package-inputs java-aqute-bndlib)))))))
 
 (define-public java-ops4j-pax-tinybundles
   (package
