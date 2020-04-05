@@ -26,8 +26,11 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
@@ -387,7 +390,22 @@ including media capture, encoding and decoding, and rendering.")
      `(#:tests? #f                      ; No test target
        #:configure-flags
        (list
-        "-DENABLE_STATIC=NO")))         ; Not required
+        (string-append "-DGTK2_GDKCONFIG_INCLUDE_DIR="
+                       (string-append (assoc-ref %build-inputs "gtk2")
+                                      "/lib/gtk-2.0/include"))
+        (string-append "-DGTK2_GLIBCONFIG_INCLUDE_DIR="
+                       (string-append (assoc-ref %build-inputs "glib")
+                                      "/lib/glib-2.0/include"))
+        "-DENABLE_STATIC=NO"            ; Not required
+        "-DENABLE_GTK_UI=YES")          ; For Legacy UI
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "gtk/main.c"
+               (("#include \"liblinphone_gitversion.h\"")
+                ""))
+             #t)))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
@@ -401,12 +419,17 @@ including media capture, encoding and decoding, and rendering.")
        ("belcard" ,belcard)
        ("bellesip" ,belle-sip)
        ("bzrtp", bzrtp)
+       ("glib" ,glib)
+       ("gtk2" ,gtk+-2)
        ("mediastreamer2" ,mediastreamer2)
+       ("notify" ,libnotify)
        ("ortp" ,ortp)
        ("pystache" ,python-pystache)
        ("six" ,python-six)
        ("sqlite" ,sqlite)
        ("udev" ,eudev)))
+    (propagated-inputs
+     `(("murrine" ,murrine)))           ; Required for GTK UI
     (synopsis "Belledonne Communications Softphone Library")
     (description "Liblinphone is a high-level SIP library integrating
 all calling and instant messaging features into an unified
