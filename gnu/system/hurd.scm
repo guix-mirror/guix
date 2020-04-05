@@ -80,6 +80,18 @@ menuentry \"GNU\" {
 /dev/hd0s1	/	ext2	defaults
 "))
 
+  (define passwd
+    (plain-file "passwd"
+"root:x:0:0:root:/root:/bin/sh
+"
+))
+
+  (define shadow
+    (plain-file "shadow"
+"root::0:0:0:0:::
+"
+))
+
   (define hurd-directives
     `((directory "/servers")
       ,@(map (lambda (server)
@@ -104,6 +116,8 @@ menuentry \"GNU\" {
                                   hurd)
                                 "/hurd"))
       ("/etc/fstab" -> ,fstab)
+      ("/etc/passwd" -> ,passwd)
+      ("/etc/shadow" -> ,shadow)
       ;; XXX can we instead, harmlessly set _PATH_TTYS (from glibc) in runttys.c?
       ("/etc/ttys" -> ,(file-append (with-parameters ((%current-target-system
                                                    "i586-pc-gnu"))
@@ -115,7 +129,9 @@ menuentry \"GNU\" {
               #:device-nodes 'hurd
               #:inputs `(("system" ,hurd-os)
                          ("grub.cfg" ,grub.cfg)
-                         ("fstab" , fstab))
+                         ("fstab" ,fstab)
+                         ("passwd" ,passwd)
+                         ("shadow" ,shadow))
               #:copy-inputs? #t
               #:os hurd-os
               #:bootcfg-drv grub.cfg
