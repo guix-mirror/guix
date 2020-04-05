@@ -3356,11 +3356,17 @@ code, used in @code{libtoxcore}.")
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
-       #:make-flags '("INSTALL_ROOT=%output"
-                      "CCFLAGS=-fPIC \
--c -O2 -DNeedFunctionPrototypes=1 -Wall -Wno-comment") ;default options
+       #:make-flags (list (string-append "INSTALL_ROOT=" %output))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'add-fpic-ccflag
+           (lambda _
+             ;; The -fPIC compiler option is needed when building
+             ;; mediastreamer.
+             (substitute* "Makefile"
+               (("^CCFLAGS.*" all)
+                (string-append all "CCFLAGS += -fPIC")))
+             #t))
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
