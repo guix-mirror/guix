@@ -2139,11 +2139,11 @@ backends, including ALSA, OSS, Network and FluidSynth.")
      `(("drumstick" ,drumstick)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xsl" ,docbook-xsl)
+       ("qttools" ,qttools)
        ("pkg-config" ,pkg-config)))
     (home-page "http://vmpk.sourceforge.net")
     (synopsis "Virtual MIDI piano keyboard")
