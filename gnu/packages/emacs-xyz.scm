@@ -3600,7 +3600,7 @@ the current Cargo project.")
 (define-public emacs-elisp-demos
   (package
     (name "emacs-elisp-demos")
-    (version "2019.12.01")
+    (version "2020.02.19")
     (source
      (origin
        (method git-fetch)
@@ -3610,7 +3610,7 @@ the current Cargo project.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "097d8xhvq0770z96wlhiv4gz98cq89pwx5fa42zpfh4p85qj4q9z"))))
+         "0mckgaz92v3y2vlkggx9kd51fd1mahylw39c42l51dyv8wscm7sc"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.el$" "\\.org$")
