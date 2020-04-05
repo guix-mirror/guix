@@ -2559,6 +2559,7 @@ window does not need focus for them to be activated.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
        ("shared-mime-info" ,shared-mime-info)))
     (inputs
      `(("karchive" ,karchive)
@@ -2571,8 +2572,7 @@ window does not need focus for them to be activated.")
        ("kitemviews" ,kitemviews)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)))
+       ("qtsvg" ,qtsvg)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
