@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,6 +93,7 @@
             udev-service
             udev-rule
             file->udev-rule
+            udev-rules-service
 
             login-configuration
             login-configuration?
@@ -2041,6 +2043,26 @@ directory dynamically.  Get extra rules from the packages listed in the
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type
            (udev-configuration (udev udev) (rules rules))))
+
+(define* (udev-rules-service name rules #:key (groups '()))
+  "Return a service that extends udev-service-type with RULES and
+account-service-type with GROUPS as system groups.  This works by creating a
+singleton service type NAME-udev-rules, of which the returned service is an
+instance."
+  (let* ((name (symbol-append name '-udev-rules))
+         (account-extension
+          (const (map (lambda (group)
+                        (user-group (name group) (system? #t)))
+                      groups)))
+         (udev-extension (const (list rules)))
+         (type (service-type
+                (name name)
+                (extensions (list
+                             (service-extension
+                              account-service-type account-extension)
+                             (service-extension
+                              udev-service-type udev-extension))))))
+    (service type #f)))
 
 (define swap-service-type
   (shepherd-service-type

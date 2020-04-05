@@ -12850,8 +12850,12 @@ A directory path where the @command{guix-daemon} will perform builds.
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
-variable.  The procedures @code{udev-rule} and @code{file->udev-rule} from
-@code{(gnu services base)} simplify the creation of such rule files.
+variable.  The procedures @code{udev-rule}, @code{udev-rules-service}
+and @code{file->udev-rule} from @code{(gnu services base)} simplify the
+creation of such rule files.
+
+The @command{herd rules udev} command, as root, returns the name of the
+directory containing all the active udev rules.
 @end deffn
 
 @deffn {Scheme Procedure} udev-rule [@var{file-name} @var{contents}]
@@ -12870,23 +12874,27 @@ upon detecting a USB device with a given product identifier.
                    "ATTR@{product@}==\"Example\", "
                    "RUN+=\"/path/to/script\"")))
 @end lisp
-
-The @command{herd rules udev} command, as root, returns the name of the
-directory containing all the active udev rules.
 @end deffn
 
-Here we show how the default @var{udev-service} can be extended with it.
+@deffn {Scheme Procedure} udev-rules-service [@var{name} @var{rules}] @
+               [#:groups @var{groups}]
+Return a service that extends @code{udev-service-type } with @var{rules}
+and @code{account-service-type} with @var{groups} as system groups.
+This works by creating a singleton service type
+@var{name}@code{-udev-rules}, of which the returned service is an
+instance.
+
+Here we show how it can be used to extend @var{udev-service} with the
+previously defined rule @code{%example-udev-rule}.
 
 @lisp
 (operating-system
  ;; @dots{}
  (services
- (modify-services %desktop-services
-   (udev-service-type config =>
-     (udev-configuration (inherit config)
-      (rules (append (udev-configuration-rules config)
-                     (list %example-udev-rule))))))))
+   (cons* (udev-rules-service 'usb-thing %example-udev-rule)
+          %desktop-services)))
 @end lisp
+@end deffn
 
 @deffn {Scheme Procedure} file->udev-rule [@var{file-name} @var{file}]
 Return a udev file named @var{file-name} containing the rules defined
@@ -12926,7 +12934,7 @@ without root privileges.  It also details how to create the
 the rules defined within the @var{android-udev-rules} package.  To
 create such a group, we must define it both as part of the
 @var{supplementary-groups} of our @var{user-account} declaration, as
-well as in the @var{groups} field of the @var{operating-system} record.
+well as in the @var{groups} of the @var{udev-rules-service} procedure.
 
 @lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
@@ -12940,19 +12948,11 @@ well as in the @var{groups} field of the @var{operating-system} record.
                 (supplementary-groups
                  '("adbusers"   ;for adb
                    "wheel" "netdev" "audio" "video")))))
-
-  (groups (cons (user-group (system? #t) (name "adbusers"))
-                %base-groups))
-
   ;; @dots{}
-
   (services
-   (modify-services %desktop-services
-     (udev-service-type
-      config =>
-      (udev-configuration (inherit config)
-                          (rules (cons android-udev-rules
-                                       (udev-configuration-rules config))))))))
+    (cons (udev-rules-service 'android android-udev-rules
+                              #:groups '("adbusers"))
+          %desktop-services)))
 @end lisp
 
 @defvr {Scheme Variable} urandom-seed-service-type
