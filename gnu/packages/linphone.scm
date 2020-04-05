@@ -19,14 +19,26 @@
 
 (define-module (gnu packages linphone)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages java)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -293,4 +305,65 @@ platforms including both ARM and x86.")
 transaction and dialog layers.  It is written in C, with an object-oriented
 API.  It also comprises a simple HTTP/HTTPS client implementation.")
     (home-page "https://gitlab.linphone.org/BC/public/belle-sip")
+    (license license:gpl2+)))
+
+(define-public mediastreamer2
+  (package
+    (name "mediastreamer2")
+    (version "2.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/"
+                       "mediastreamer/mediastreamer-" version ".tar.gz"))
+       (sha256
+        (base32 "0whpqr69wz0pnzvragkpfblxhd0rds8k06c3mw5a0ag216a1yd9k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:configure-flags
+       (list
+        "-DENABLE_STATIC=NO"            ; Not required
+        "-DENABLE_STRICT=NO"            ; Would otherwise treat warnings as err
+        "-DENABLE_BV16=NO"              ; Not available
+        "-DCMAKE_C_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\""
+        "-DCMAKE_CXX_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\"")))
+    (native-inputs
+     `(("dot" ,graphviz)
+       ("doxygen" ,doxygen)
+       ("python" ,python)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ("bcg729" ,bcg729)
+       ("bcmatroska2" ,bcmatroska2)
+       ("bctoolbox" ,bctoolbox)
+       ("ffmpeg" ,ffmpeg)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("glx" ,mesa-utils)
+       ("gsm" ,gsm)
+       ("opengl" ,mesa)
+       ("opus" ,opus)
+       ("ortp" ,ortp)
+       ("pcap" ,libpcap)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("spandsp" ,spandsp)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("srtp" ,libsrtp)
+       ("theora" ,libtheora)
+       ("turbojpeg" ,libjpeg-turbo)
+       ("v4l" ,v4l-utils)
+       ("vpx" ,libvpx)
+       ("x11" ,libx11)
+       ("xv" ,libxv)
+       ("zrtp", bzrtp)))
+    (synopsis "Belledonne Communications Streaming Engine")
+    (description "Mediastreamer is a powerful and lightweight streaming
+engine for telephony applications.  This media processing and streaming toolkit
+is responsible for receiving and sending all multimedia streams in Linphone,
+including media capture, encoding and decoding, and rendering.")
+    (home-page "https://gitlab.linphone.org/BC/public/mediastreamer2")
     (license license:gpl2+)))
