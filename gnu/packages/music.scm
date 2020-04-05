@@ -904,21 +904,20 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.80")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.linuxaudio.org/lilypond/sources/v"
-                    (version-major+minor version) "/"
-                    name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0lql4q946gna2pl1g409mmmsvn2qvnq2z5cihrkfhk7plcqdny9n"))))
+    (version "2.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://lilypond.org/download/sources/"
+                           "v" (version-major+minor version) "/"
+                           "lilypond-" version ".tar.gz"))
+       (sha256
+        (base32 "0qd6pd4siss016ffmcyw5qc6pr2wihnvrgd4kh1x725w7wr02nar"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; out-test/collated-files.html fails
+     `(#:tests? #f                      ;out-test/collated-files.html fails
        #:out-of-source? #t
-       #:make-flags '("conf=www") ;to generate images for info manuals
+       #:make-flags '("conf=www")       ;to generate images for info manuals
        #:configure-flags
        (list "CONFIGURATION=www"
              (string-append "--with-texgyre-dir="
@@ -936,25 +935,25 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
                (("TEX_FIKPARM=.*") "TEX_FIKPARM=found\n"))
              #t))
          (add-after 'unpack 'fix-path-references
-          (lambda _
-            (substitute* "scm/backend-library.scm"
-              (("\\(search-executable '\\(\"gs\"\\)\\)")
-               (string-append "\"" (which "gs") "\""))
-              (("\"/bin/sh\"")
-               (string-append "\"" (which "sh") "\"")))
-            #t))
+           (lambda _
+             (substitute* "scm/backend-library.scm"
+               (("\\(search-executable '\\(\"gs\"\\)\\)")
+                (string-append "\"" (which "gs") "\""))
+               (("\"/bin/sh\"")
+                (string-append "\"" (which "sh") "\"")))
+             #t))
          (add-before 'configure 'prepare-configuration
-          (lambda _
-            (substitute* "configure"
-              (("SHELL=/bin/sh") "SHELL=sh")
-              ;; When checking the fontforge version do not consider the
-              ;; version string that's part of the directory.
-              (("head -n") "tail -n")
-              ;; Also allow for SOURCE_DATE_EPOCH = 0 in fontforge.
-              (("20110222") "19700101"))
-            (setenv "out" "www")
-            (setenv "conf" "www")
-            #t))
+           (lambda _
+             (substitute* "configure"
+               (("SHELL=/bin/sh") "SHELL=sh")
+               ;; When checking the fontforge version do not consider the
+               ;; version string that's part of the directory.
+               (("head -n") "tail -n")
+               ;; Also allow for SOURCE_DATE_EPOCH = 0 in fontforge.
+               (("20110222") "19700101"))
+             (setenv "out" "www")
+             (setenv "conf" "www")
+             #t))
          (add-after 'install 'install-info
            (lambda _
              (invoke "make"
@@ -978,13 +977,13 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
        ("dblatex" ,dblatex)
        ("gettext" ,gettext-minimal)
        ("imagemagick" ,imagemagick)
-       ("netpbm" ,netpbm) ;for pngtopnm
+       ("netpbm" ,netpbm)               ;for pngtopnm
        ("texlive" ,(texlive-union (list texlive-metapost
                                         texlive-generic-epsf
                                         texlive-latex-lh
                                         texlive-latex-cyrillic)))
        ("texinfo" ,texinfo)
-       ("texi2html" ,texi2html)
+       ("texi2html" ,texi2html-1.82)
        ("rsync" ,rsync)
        ("pkg-config" ,pkg-config)
        ("zip" ,zip)))
