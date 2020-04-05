@@ -676,11 +676,11 @@ ready for production.")
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-schemas, etc.
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
-       ("gtk" ,gtk+-2)
-       ("desktop-file-utils" ,desktop-file-utils)))
+       ("gtk" ,gtk+-2)))
     (home-page "http://gerbv.geda-project.org/")
     (synopsis "Gerber file viewer")
     (description
