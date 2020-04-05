@@ -3242,7 +3242,8 @@ the passwords on KDE work spaces.")
      `(("kconfig" ,kconfig)
        ("kconfigwidgets" ,kconfigwidgets)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
     (inputs
      `(("attica" ,attica)
        ("kauth" ,kauth)
@@ -3256,7 +3257,6 @@ the passwords on KDE work spaces.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
        ("sonnet" ,sonnet)))
     (arguments
      `(#:tests? #f ; FIXME: 1/5 tests fail.
