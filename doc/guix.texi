@@ -76,6 +76,7 @@ Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
+Copyright @copyright{} 2020 Brice Waegeneire@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -25383,6 +25384,42 @@ notifications.
 @end table
 @end deftp
 
+@cindex modprobe
+@cindex kernel module loader
+@subsubsection Kernel Module Loader Service
+
+The kernel module loader service allows one to load loadable kernel
+modules at boot.  This is especially useful for modules that don't
+autoload and need to be manually loaded, as it's the case with
+@code{ddcci}.
+
+@deffn {Scheme Variable} kernel-module-loader-service-type
+The service type for loading loadable kernel modules at boot with
+@command{modprobe}.  Its value must be a list of strings representing
+module names.  For example loading the drivers provided by
+@code{ddcci-driver-linux}, in debugging mode by passing some module
+parameters, can be done as follow:
+
+@lisp
+(use-modules (gnu) (gnu services))
+(use-package-modules linux)
+(use-service-modules linux)
+
+(define ddcci-config
+  (plain-file "ddcci.conf"
+              "options ddcci dyndbg delay=120"))
+
+(operating-system
+  ...
+  (services (cons* (service kernel-module-loader-service-type
+                            '("ddcci" "ddcci_backlight"))
+                   (simple-service 'ddcci-config etc-service-type
+                                   (list `("modprobe.d/ddcci.conf"
+                                           ,ddcci-config)))
+                   %base-services))
+  (kernel-loadable-modules (list ddcci-driver-linux)))
+@end lisp
+@end deffn
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services
