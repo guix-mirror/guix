@@ -4091,15 +4091,14 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "18.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/rosegarden/rosegarden/"
-                    version "/rosegarden-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "15i9fm0vkn3wsgahaxqi1j5zs0wc0j3wdwml0x49084gk2p328vb"))))
+    (version "19.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
+                           version "/rosegarden-" version ".tar.bz2"))
+       (sha256
+        (base32 "1qcaxc6hdzva7kwxxhgl95437fagjbxzv4mihsgpr7y9qk08ppw1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
@@ -4141,9 +4140,9 @@ specification and header.")
                (("COMMAND [$][{]QT_RCC_EXECUTABLE[}]")
                 "COMMAND ${QT_RCC_EXECUTABLE} --format-version 1")
                ;; Extraneous.
-               ;(("qt5_add_resources[(]rg_SOURCES ../data/data.qrc[)]")
-               ; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
-                )
+               ;;(("qt5_add_resources[(]rg_SOURCES ../data/data.qrc[)]")
+               ;; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
+               )
              ;; Make hashtable traversal order predicable.
              (setenv "QT_RCC_TEST" "1") ; important
              #t))
