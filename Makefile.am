@@ -212,6 +212,9 @@ MODULES =					\
   guix/build/emacs-utils.scm			\
   guix/build/java-utils.scm			\
   guix/build/lisp-utils.scm			\
+  guix/build/maven/java.scm			\
+  guix/build/maven/plugin.scm			\
+  guix/build/maven/pom.scm			\
   guix/build/graft.scm				\
   guix/build/bournish.scm			\
   guix/build/qt-utils.scm			\

@@ -39,6 +39,9 @@
 (define %ant-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build ant-build-system)
+    (guix build maven java)
+    (guix build maven plugin)
+    (guix build maven pom)
     (guix build java-utils)
     (guix build syscalls)
     ,@%gnu-build-system-modules))
