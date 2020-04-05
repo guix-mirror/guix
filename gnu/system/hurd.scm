@@ -103,7 +103,12 @@ menuentry \"GNU\" {
                                                    "i586-pc-gnu"))
                                   hurd)
                                 "/hurd"))
-      ("/etc/fstab" -> ,fstab)))
+      ("/etc/fstab" -> ,fstab)
+      ;; XXX can we instead, harmlessly set _PATH_TTYS (from glibc) in runttys.c?
+      ("/etc/ttys" -> ,(file-append (with-parameters ((%current-target-system
+                                                   "i586-pc-gnu"))
+                                  hurd)
+                                "/etc/ttys"))))
 
   (qemu-image #:file-system-type "ext2"
               #:file-system-options '("-o" "hurd")
