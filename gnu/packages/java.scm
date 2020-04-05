@@ -3702,6 +3702,16 @@ declaratively, to be used in other frameworks.  Typical scenarios include
 testing frameworks, mocking libraries and UI validation rules.")
     (license license:bsd-2)))
 
+(define-public java-hamcrest-library
+  (package
+    (inherit java-hamcrest-core)
+    (name "java-hamcrest-library")
+    (arguments
+     (substitute-keyword-arguments (package-arguments java-hamcrest-core)
+      ((#:build-target _) "library")))
+    (propagated-inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)))))
+
 (define-public java-junit
   (package
     (name "java-junit")
