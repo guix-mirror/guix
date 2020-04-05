@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -3356,14 +3356,14 @@ code, used in @code{libtoxcore}.")
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
+       #:make-flags '("INSTALL_ROOT=%output"
+                      "CCFLAGS=-fPIC \
+-c -O2 -DNeedFunctionPrototypes=1 -Wall -Wno-comment") ;default options
        #:phases
        (modify-phases %standard-phases
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
-               (substitute* "Makefile"
-                 (("INSTALL_ROOT\t=")
-                  (string-append "INSTALL_ROOT\t=\t" out)))
                (mkdir-p (string-append out "/inc"))
                (mkdir-p (string-append out "/man"))
                (mkdir-p (string-append out "/man/man1"))
