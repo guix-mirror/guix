@@ -958,10 +958,10 @@ to flat and hierarchical lists.")
                 "11kpq34j37c1gsvj5nxhkc31bw8gw2n7nkqsfx87jw9f4v2vhmr9"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
-    (inputs
-     `(("qtbase" ,qtbase)
+     `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
     (description "KPlotWidget is a QWidget-derived class that provides a virtual
