@@ -19,6 +19,7 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -274,50 +275,55 @@ exception-handling library.")
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.10.11")
+    (version "1.12.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/OGRECave/ogre.git")
-              (commit (string-append "v" version))))
+             (url "https://github.com/OGRECave/ogre.git")
+             (commit (string-append "v" version))
+             (recursive? #t)))          ;for Dear ImGui submodule
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "072rzw9mxymbiypgkrbkk9h10rgly6gczik4dlmssk6xkpqckaqr"))))
+        (base32 "1sx0jsw4kmb4ycf62bgx3ygwv8k1cgjx52y47d7dk07z6gk6wpyj"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Tests/CMakeLists.txt"
-               (("URL(.*)$")
-                (string-append "URL " (assoc-ref inputs "googletest-source"))))
+           ;; CMakeLists.txt forces CMAKE_INSTALL_RPATH value.  As
+           ;; a consequence, we cannot suggest ours in configure flags.  Fix
+           ;; it.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("set\\(CMAKE_INSTALL_RPATH .*") ""))
              #t)))
        #:configure-flags
-       (list "-DOGRE_BUILD_TESTS=TRUE"
-             (string-append "-DCMAKE_INSTALL_RPATH="
-                            (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib/OGRE:"
-                            (assoc-ref %build-inputs "googletest") "/lib")
-             "-DOGRE_INSTALL_DOCS=TRUE"
-             "-DOGRE_INSTALL_SAMPLES=TRUE"
-             "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE")))
+       (let* ((out (assoc-ref %outputs "out"))
+              (runpath
+               (string-join (list (string-append out "/lib")
+                                  (string-append out "/lib/OGRE"))
+                            ";")))
+         (list (string-append "-DCMAKE_INSTALL_RPATH=" runpath)
+               "-DOGRE_BUILD_DEPENDENCIES=OFF"
+               "-DOGRE_BUILD_TESTS=TRUE"
+               "-DOGRE_INSTALL_DOCS=TRUE"
+               "-DOGRE_INSTALL_SAMPLES=TRUE"
+               "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE"))))
     (native-inputs
      `(("boost" ,boost)
        ("doxygen" ,doxygen)
-       ("googletest-source" ,(package-source googletest))
+       ("googletest" ,googletest-1.8)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
        ("freeimage" ,freeimage)
        ("freetype" ,freetype)
        ("glu" ,glu)
-       ("googletest" ,googletest)
-       ("sdl2" ,sdl2)
        ("libxaw" ,libxaw)
        ("libxrandr" ,libxrandr)
+       ("pugixml" ,pugixml)
+       ("sdl2" ,sdl2)
        ("tinyxml" ,tinyxml)
        ("zziplib" ,zziplib)))
     (synopsis "Scene-oriented, flexible 3D engine written in C++")
