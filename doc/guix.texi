@@ -13186,17 +13186,27 @@ their contents in separate files, possibly compressed.  The @code{(gnu
 services admin)} module provides an interface to GNU@tie{}Rot[t]log, a
 log rotation tool (@pxref{Top,,, rottlog, GNU Rot[t]log Manual}).
 
-The example below defines an operating system that provides log rotation
-with the default settings, for commonly encountered log files.
+This service is part of @code{%base-services}, and thus enabled by
+default, with the default settings, for commonly encountered log files.
+The example below shows how to extend it with an additional
+@dfn{rotation}, should you need to do that (usually, services that
+produce log files already take care of that):
 
 @lisp
 (use-modules (guix) (gnu))
-(use-service-modules admin mcron)
-(use-package-modules base idutils)
+(use-service-modules admin)
+
+(define my-log-files
+  ;; Log files that I want to rotate.
+  '("/var/log/something.log" "/var/log/another.log"))
 
 (operating-system
   ;; @dots{}
-  (services (cons (service rottlog-service-type)
+  (services (cons (simple-service 'rotate-my-stuff
+                                  rottlog-service-type
+                                  (list (log-rotation
+                                         (frequency 'daily)
+                                         (files my-log-files))))
                   %base-services)))
 @end lisp
 

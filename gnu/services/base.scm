@@ -2444,6 +2444,8 @@ to handle."
         (service guix-service-type)
         (service nscd-service-type)
 
+        (service rottlog-service-type)
+
         ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
         ;; used, so enable them by default.  The FUSE and ALSA rules are
         ;; less critical, but handy.
