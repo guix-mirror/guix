@@ -3003,8 +3003,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "0e9af8d11246eb08152a9bcbc3d04703963b756c")
-        (revision "11"))
+  (let ((commit "bb2fe926b496dc44f783430ab16f5219bae36e81")
+        (revision "12"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -3016,7 +3016,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0q5x33gc8gi8w7cjphdmhdyfa62b89mcbmj068yd5jxqx8sn4hlw"))))
+                  "0azqrnkcwnh903f3ap8injhld3jicxdjzbbdi56ax46gjahr1rw3"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3047,11 +3047,15 @@ replacement for the @code{urlview} program.")
       (inputs
        `(("guile-debbugs" ,guile-debbugs)
          ("guile-email" ,guile-email)
+         ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-3)
+         ("guile-redis" ,guile-redis)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
+         ("guile-webutils" ,guile-webutils)
          ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)
+         ("mailutils" ,mailutils)
          ("mumimu" ,mumimu)))   ;'mumimu' executable recorded in (mumi config)
       (native-inputs
        `(("autoconf" ,autoconf)

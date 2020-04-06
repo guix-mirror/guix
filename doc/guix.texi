@@ -20686,6 +20686,30 @@ but it also fetches and indexes mail retrieved from Debbugs.
 This is the service type for Mumi.
 @end defvr
 
+@deftp {Data Type} mumi-configuration
+Data type representing the Mumi service configuration.  This type has the
+following fields:
+
+@table @asis
+@item @code{mumi} (default: @code{mumi})
+The Mumi package to use.
+
+@item @code{mailer?} (default: @code{#true})
+Whether to enable or disable the mailer component.
+
+@item @code{mumi-configuration-sender}
+The email address used as the sender for comments.
+
+@item @code{mumi-configuration-smtp}
+A URI to configure the SMTP settings for Mailutils.  This could be
+something like @code{sendmail:///path/to/bin/msmtp} or any other URI
+supported by Mailutils.  @xref{SMTP Mailboxes, SMTP Mailboxes,,
+mailutils, GNU@tie{}Mailutils}.
+
+@end table
+@end deftp
+
+
 @subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
