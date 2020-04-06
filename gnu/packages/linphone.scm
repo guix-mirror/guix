@@ -427,7 +427,8 @@ decoding, and rendering.")
                        (string-append (assoc-ref %build-inputs "glib")
                                       "/lib/glib-2.0/include"))
         "-DENABLE_STATIC=NO"            ; Not required
-        "-DENABLE_GTK_UI=YES")          ; For Legacy UI
+        "-DENABLE_STRICT=NO"
+        "-DENABLE_GTK_UI=YES")          ; for legacy UI
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch
