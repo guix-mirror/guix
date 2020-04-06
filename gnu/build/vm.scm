@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -532,6 +533,24 @@ GRUB configuration and OS-DRV as the stuff in it."
 
                 ;; Set all timestamps to 1.
                 "-volume_date" "all_file_dates" "=1"
+
+                ;; ‘zisofs’ compression reduces the total image size by ~60%.
+                "-zisofs" "level=9:block_size=128k" ; highest compression
+                ;; It's transparent to our Linux-Libre kernel but not to GRUB.
+                ;; Don't compress the kernel, initrd, and other files read by
+                ;; grub.cfg, as well as common already-compressed file names.
+                "-find" "/" "-type" "f"
+                ;; XXX Even after "--" above, and despite documentation claiming
+                ;; otherwise, "-or" is stolen by grub-mkrescue which then chokes
+                ;; on it (as ‘-o …’) and dies.  Don't use "-or".
+                "-not" "-wholename" "/boot/*"
+                "-not" "-wholename" "/System/*"
+                "-not" "-name" "unicode.pf2"
+                "-not" "-name" "bzImage"
+                "-not" "-name" "*.gz"   ; initrd & all man pages
+                "-not" "-name" "*.png"  ; includes grub-image.png
+                "-exec" "set_filter" "--zisofs"
+                "--"
 
                 "-volid" (string-upcase volume-id)
                 (if volume-uuid
