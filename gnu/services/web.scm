@@ -1727,7 +1727,7 @@ WSGIPassAuthorization On
             (requirement '(networking))
             (start #~(make-forkexec-constructor
                       `(#$(file-append mumi "/bin/mumi") "web"
-                        ,@(if mailer? '() '("--disable-mailer")))
+                        ,@(if #$mailer? '() '("--disable-mailer")))
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.log"))
             (stop #~(make-kill-destructor)))
@@ -1746,11 +1746,11 @@ WSGIPassAuthorization On
             (requirement '(networking))
             (start #~(make-forkexec-constructor
                       `(#$(file-append mumi "/bin/mumi") "mailer"
-                        ,@(if sender
-                              (list (string-append "--sender=" sender))
+                        ,@(if #$sender
+                              (list (string-append "--sender=" #$sender))
                               '())
-                        ,@(if smtp
-                              (list (string-append "--smtp=" smtp))
+                        ,@(if #$smtp
+                              (list (string-append "--smtp=" #$smtp))
                               '()))
                       #:user "mumi" #:group "mumi"
                       #:log-file "/var/log/mumi.mailer.log"))
