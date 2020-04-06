@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Caleb Ristvedt <caleb.ristvedt@cune.org>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,16 +228,18 @@ Every store item in REFERENCES must already be registered."
 ;;; High-level interface.
 ;;;
 
-(define (reset-timestamps file)
+(define* (reset-timestamps file #:key preserve-permissions?)
   "Reset the modification time on FILE and on all the files it contains, if
-it's a directory.  While at it, canonicalize file permissions."
+it's a directory.  Canonicalize file permissions unless PRESERVE-PERMISSIONS?
+is true."
   ;; Note: We're resetting to one second after the Epoch like 'guix-daemon'
   ;; has always done.
   (let loop ((file file)
              (type (stat:type (lstat file))))
     (case type
       ((directory)
-       (chmod file #o555)
+       (unless preserve-permissions?
+         (chmod file #o555))
        (utime file 1 1 0 0)
        (let ((parent file))
          (for-each (match-lambda
@@ -254,7 +256,8 @@ it's a directory.  While at it, canonicalize file permissions."
       ((symlink)
        (utime file 1 1 0 0 AT_SYMLINK_NOFOLLOW))
       (else
-       (chmod file (if (executable-file? file) #o555 #o444))
+       (unless preserve-permissions?
+         (chmod file (if (executable-file? file) #o555 #o444)))
        (utime file 1 1 0 0)))))
 
 (define* (register-path path
