@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;;
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -324,8 +325,8 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
                        "mediastreamer/mediastreamer-" version ".tar.gz"))
        (sha256
         (base32 "0whpqr69wz0pnzvragkpfblxhd0rds8k06c3mw5a0ag216a1yd9k"))
-       (patches
-        (list (search-patch "mediastreamer-srtp2.patch")))))
+       (patches (search-patches "mediastreamer2-srtp2.patch"))))
+    (outputs '("out" "doc" "tester"))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -335,7 +336,33 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
         "-DENABLE_STRICT=NO"            ; Would otherwise treat warnings as err
         "-DENABLE_BV16=NO"              ; Not available
         "-DCMAKE_C_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\""
-        "-DCMAKE_CXX_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\"")))
+        "-DCMAKE_CXX_FLAGS=-DMS2_GIT_VERSION=\\\"unknown\\\"")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'separate-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (tester (assoc-ref outputs "tester"))
+                    (tester-name (string-append ,name "_tester")))
+               ;; Copy the tester executable.
+               (mkdir-p (string-append tester "/bin"))
+               (rename-file (string-append out "/bin/" tester-name)
+                            (string-append tester "/bin/" tester-name))
+               ;; Copy the tester data files.
+               (copy-recursively (string-append out "/share/" tester-name)
+                                 (string-append tester "/share/" tester-name))
+               (delete-file-recursively (string-append out "/share/"
+                                                       tester-name))
+               ;; Copy the HTML documentation.
+               (copy-recursively (string-append out "/share/doc/"
+                                                ,name "-" ,version "/html")
+                                 (string-append doc "/share/doc/"
+                                                ,name "-" ,version "/html"))
+               (delete-file-recursively (string-append out "/share/doc/"
+                                                       ,name "-" ,version
+                                                       "/html"))
+               #t))))))
     (native-inputs
      `(("dot" ,graphviz)
        ("doxygen" ,doxygen)
@@ -368,10 +395,11 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
        ("xv" ,libxv)
        ("zrtp", bzrtp)))
     (synopsis "Belledonne Communications Streaming Engine")
-    (description "Mediastreamer is a powerful and lightweight streaming
-engine for telephony applications.  This media processing and streaming toolkit
-is responsible for receiving and sending all multimedia streams in Linphone,
-including media capture, encoding and decoding, and rendering.")
+    (description "Mediastreamer2 is a powerful and lightweight
+streaming engine for telephony applications.  This media processing
+and streaming toolkit is responsible for receiving and sending all
+multimedia streams in Linphone, including media capture, encoding and
+decoding, and rendering.")
     (home-page "https://gitlab.linphone.org/BC/public/mediastreamer2")
     (license license:gpl2+)))
 
