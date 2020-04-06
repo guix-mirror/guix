@@ -1685,6 +1685,17 @@ to display fonts, you have to install fonts with Guix as well.
 Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
 @code{font-gnu-freefont-ttf}.
 
+@cindex @code{fc-cache}
+@cindex font cache
+Once you have installed or removed fonts, or when you notice an
+application that does not find fonts, you may need to install Fontconfig
+and to force an update of its font cache by running:
+
+@example
+guix install fontconfig
+fc-cache -rv
+@end example
+
 To display text written in Chinese languages, Japanese, or Korean in
 graphical applications, consider installing
 @code{font-adobe-source-han-sans} or @code{font-wqy-zenhei}.  The former
@@ -1718,13 +1729,6 @@ xset +fp $(dirname $(readlink -f ~/.guix-profile/share/fonts/truetype/fonts.dir)
 After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
 to make sure your TrueType fonts are listed there.
 
-@cindex @code{fc-cache}
-@cindex font cache
-After installing fonts you may have to refresh the font cache to use
-them in applications.  The same applies when applications installed via
-Guix do not seem to find fonts.  To force rebuilding of the font cache
-run @code{fc-cache -rv}.  The @code{fc-cache} command is provided by
-the @code{fontconfig} package.
 
 @subsection X.509 Certificates
 
