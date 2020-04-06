@@ -5380,3 +5380,45 @@ filtered, pitch shifted and ultimately disintegrated.  This is an unofficial
 port of the Regrader plugin created by Igorski.  It is available as an LV2
 plugin and a standalone JACK application.")
     (license license:expat)))
+
+(define-public tap-lv2
+  (let ((commit "cab6e0dfb2ce20e4ad34b067d1281ec0b193598a")
+        (revision "1"))
+    (package
+      (name "tap-lv2")
+      (version (git-version "0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/moddevices/tap-lv2.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0q480djfqd9g8mzrggc4vl7yclrhdjqx563ghs8mvi2qq8liycw3"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; no check target
+         #:make-flags
+         (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; no configure
+           (replace 'install
+             (lambda _
+               (invoke "make"
+               (string-append "INSTALL_PATH="
+                              (assoc-ref %outputs "out")
+                              "/lib/lv2")
+                       "install"))))))
+      (inputs
+        `(("lv2", lv2)))
+      (native-inputs
+        `(("pkg-config", pkg-config)))
+      (synopsis "Audio plugin collection")
+      (description "TAP (Tom's Audio Processing) plugins is a collection of
+  audio effect plugins originally released as LADSPA plugins.  This package
+  offers an LV2 version ported by moddevices.")
+      (home-page "http://tap-plugins.sourceforge.net/")
+      (license license:gpl2))))
