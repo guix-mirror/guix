@@ -111,6 +111,8 @@
             package-output
             package-grafts
             package-patched-vulnerabilities
+            package-with-patches
+            package-with-extra-patches
             package/inherit
 
             transitive-input-references
@@ -653,6 +655,18 @@ specifies modules in scope when evaluating SNIPPET."
                         #:guile-for-build guile-for-build
                         #:properties `((type . origin)
                                        (patches . ,(length patches)))))))
+
+(define (package-with-patches original patches)
+  "Return package ORIGINAL with PATCHES applied."
+  (package (inherit original)
+           (source (origin (inherit (package-source original))
+                           (patches patches)))))
+
+(define (package-with-extra-patches original patches)
+  "Return package ORIGINAL with all PATCHES appended to its list of patches."
+  (package-with-patches original
+                        (append (origin-patches (package-source original))
+                                patches)))
 
 (define (transitive-inputs inputs)
   "Return the closure of INPUTS when considering the 'propagated-inputs'
