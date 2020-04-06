@@ -323,7 +323,9 @@ API.  It also comprises a simple HTTP/HTTPS client implementation.")
         (string-append "https://www.linphone.org/releases/sources/"
                        "mediastreamer/mediastreamer-" version ".tar.gz"))
        (sha256
-        (base32 "0whpqr69wz0pnzvragkpfblxhd0rds8k06c3mw5a0ag216a1yd9k"))))
+        (base32 "0whpqr69wz0pnzvragkpfblxhd0rds8k06c3mw5a0ag216a1yd9k"))
+       (patches
+        (list (search-patch "mediastreamer-srtp2.patch")))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
