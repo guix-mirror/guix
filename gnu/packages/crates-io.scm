@@ -1476,7 +1476,7 @@ UTF-8.")
 (define-public rust-bumpalo-3
   (package
     (name "rust-bumpalo")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1485,7 +1485,7 @@ UTF-8.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0hpp4wfcn04gnl1ji4a80b85xwknsci81xqyllq174gq9z0rsd8z"))))
+         "11silgpsnfv6ir7j2nh7a69564f92vq20k9ha7zcbynpiav9vbhj"))))
     (build-system cargo-build-system)
     (arguments
      `(#:tests? #f      ; cargo_readme_up_to_date test fails
