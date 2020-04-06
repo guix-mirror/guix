@@ -3324,6 +3324,27 @@ each stack frame.")
     (description "Devel::Symdump provides access to the perl symbol table.")
     (license (package-license perl))))
 
+(define-public perl-digest-crc
+  (package
+    (name "perl-digest-crc")
+    (version "0.22")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/O/OL/OLIMAUL/Digest-CRC-"
+            version ".2.tar.gz"))
+      (sha256
+       (base32
+        "1jvqcyrbi11cj3vlfc9sq2g6rv9caizyjkjqsksvmxn6zgvm0aqi"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Digest-CRC")
+    (synopsis "Generic CRC functions")
+    (description "The @code{Digest::CRC} module calculates CRC sums of
+all sorts.  It contains wrapper functions with the correct parameters
+for CRC-CCITT, CRC-16 and CRC-32.")
+    (license public-domain)))
+
 (define-public perl-digest-hmac
   (package
     (name "perl-digest-hmac")
