@@ -195,6 +195,14 @@ info --version")
                      (pk 'services services)
                      '(root #$@(operating-system-shepherd-service-names os)))))
 
+          (test-equal "/var/log/messages is not world-readable"
+            #o640                                ;<https://bugs.gnu.org/40405>
+            (begin
+              (wait-for-file "/var/log/messages" marionette
+                             #:read 'get-u8)
+              (marionette-eval '(stat:perms (lstat "/var/log/messages"))
+                               marionette)))
+
           (test-assert "homes"
             (let ((homes
                    '#$(map user-account-home-directory

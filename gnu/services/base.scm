@@ -1436,10 +1436,17 @@ Service Switch}, for an example."
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
       (requirement '(user-processes))
-      (start #~(make-forkexec-constructor
-                (list #$(syslog-configuration-syslogd config)
-                      "--rcfile" #$(syslog-configuration-config-file config))
-                #:pid-file "/var/run/syslog.pid"))
+      (start #~(let ((spawn (make-forkexec-constructor
+                             (list #$(syslog-configuration-syslogd config)
+                                   "--rcfile"
+                                   #$(syslog-configuration-config-file config))
+                             #:pid-file "/var/run/syslog.pid")))
+                 (lambda ()
+                   ;; Set the umask such that file permissions are #o640.
+                   (let ((mask (umask #o137))
+                         (pid  (spawn)))
+                     (umask mask)
+                     pid))))
       (stop #~(make-kill-destructor))))))
 
 ;; Snippet adapted from the GNU inetutils manual.
