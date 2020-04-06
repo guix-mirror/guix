@@ -8013,6 +8013,37 @@ and @code{deserialize_regexp}.")
 safely on things that may not be objects.")
     (license (package-license perl))))
 
+(define-public perl-scalar-string
+  (package
+    (name "perl-scalar-string")
+    (version "0.003")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Scalar-String-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0llbsqk7rsg9p7l1f4yk6iv7wij91gvavprsqhnb04w7nz4ifjpm"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Scalar-String")
+    (synopsis "String aspects of scalars")
+    (description "@code{Scalar::String} is about the string part of
+plain Perl scalars.  A scalar has a string value, which is notionally
+a sequence of Unicode codepoints but may be internally encoded in
+either ISO-8859-1 or UTF-8.  In places, more so in older versions of
+Perl, the internal encoding shows through.  To fully understand Perl
+strings it is necessary to understand these implementation details.
+This module provides functions to classify a string by encoding and to
+encode a string in a desired way.  The module is implemented in XS,
+with a pure Perl backup version for systems that cannot handle XS.")
+    (license perl-license)))
+
 (define-public perl-scope-guard
   (package
     (name "perl-scope-guard")
