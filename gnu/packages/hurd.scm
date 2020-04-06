@@ -409,6 +409,16 @@ fsysopts / --writable\n"))
                            (patch-shebang file path))
                          (find-files (string-append out "/libexec")))
                #t)))
+         (add-after 'install 'install-goodies
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install additional goodies.
+             ;; TODO: Build & install *.msgids for rpctrace.
+             (let ((out (assoc-ref outputs "out")))
+               ;; Install the fancy UTF-8 motd.
+               (mkdir-p (string-append out "/etc"))
+               (copy-file "console/motd.UTF8"
+                          (string-append out "/etc/motd"))
+               #t)))
          (add-after 'install 'install-rc-file
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
