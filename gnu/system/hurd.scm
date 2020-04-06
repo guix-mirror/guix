@@ -108,17 +108,32 @@ menuentry \"GNU\" {
       ("/servers/socket/local" -> "1")
       ("/servers/socket/inet" -> "2")
       ("/servers/socket/inet6" -> "16")
-      (file "/etc/resolv.conf"
-            "nameserver 10.0.2.3\n")
       (directory "/boot")
       ("/boot/grub.cfg" -> ,grub.cfg)  ;XXX: not strictly needed
       ("/hurd" -> ,(file-append (with-parameters ((%current-target-system
                                                    "i586-pc-gnu"))
                                   hurd)
                                 "/hurd"))
+
+      ;; TODO: Create those during activation, eventually.
+      (directory "/root")
       ("/etc/fstab" -> ,fstab)
       ("/etc/passwd" -> ,passwd)
       ("/etc/shadow" -> ,shadow)
+      (file "/etc/hostname" "guixygnu")
+      (file "/etc/resolv.conf"
+            "nameserver 10.0.2.3\n")
+
+      ("/etc/motd" -> ,(file-append (with-parameters ((%current-target-system
+                                                       "i586-pc-gnu"))
+                                      hurd)
+                                    "/etc/motd"))
+      ("/etc/login" -> ,(file-append (with-parameters ((%current-target-system
+                                                       "i586-pc-gnu"))
+                                      hurd)
+                                     "/etc/login"))
+
+
       ;; XXX can we instead, harmlessly set _PATH_TTYS (from glibc) in runttys.c?
       ("/etc/ttys" -> ,(file-append (with-parameters ((%current-target-system
                                                    "i586-pc-gnu"))
