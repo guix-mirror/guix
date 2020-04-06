@@ -33,6 +33,7 @@
   #:use-module (guix records)
   #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 popen)
@@ -419,7 +420,16 @@ system that is passed to 'populate-root-file-system'."
     ;; 'register-closure' resets timestamps and everything, so no need to do it
     ;; once more in that case.
     (unless register-closures?
-      (reset-timestamps target))))
+      ;; 'reset-timestamps' also resets file permissions; do that everywhere
+      ;; except on /dev so that /dev/null remains writable, etc.
+      (for-each (lambda (directory)
+                  (reset-timestamps (string-append target "/" directory)))
+                (scandir target
+                         (match-lambda
+                           ((or "." ".." "dev") #f)
+                           (_ #t))))
+      (reset-timestamps (string-append target "/dev")
+                        #:preserve-permissions? #t))))
 
 (define (register-bootcfg-root target bootcfg)
   "On file system TARGET, register BOOTCFG as a GC root."
