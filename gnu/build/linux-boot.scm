@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
@@ -223,7 +223,7 @@ one specific hardware device. These we have to create."
               (call-with-input-file devname-name
                                     read-static-device-nodes))))
 
-(define* (make-essential-device-nodes #:key (root "/"))
+(define* (make-essential-device-nodes #:optional (root "/"))
   "Make essential device nodes under ROOT/dev."
   ;; The hand-made devtmpfs/udev!
 

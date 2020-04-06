@@ -392,7 +392,7 @@ system that is passed to 'populate-root-file-system'."
                       target))
 
     ;; Populate /dev.
-    (make-essential-device-nodes #:root target)
+    (make-essential-device-nodes target)
 
     ;; Optionally, register the inputs in the image's store.
     (when register-closures?
