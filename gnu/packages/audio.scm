@@ -3405,7 +3405,7 @@ code, used in @code{libtoxcore}.")
              ;; mediastreamer.
              (substitute* "Makefile"
                (("^CCFLAGS.*" all)
-                (string-append all "CCFLAGS += -fPIC")))
+                (string-append all "CCFLAGS += -fPIC\n")))
              #t))
          (add-before 'install 'pre-install
            (lambda _
