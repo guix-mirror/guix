@@ -2105,21 +2105,16 @@ by rclone usable with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.8")
+    (version "2.10")
     (source
      (origin
        (method url-fetch)
-       ;; Older downloads are moved to another URL.
-       (uri (list
-             (string-append
-              "https://www.fossil-scm.org/index.html/uv/download/"
-              "fossil-src-" version ".tar.gz")
-             (string-append
+       (uri (string-append
               "https://www.fossil-scm.org/index.html/uv/"
-              "fossil-src-" version ".tar.gz")))
+              "fossil-src-" version ".tar.gz"))
        (sha256
         (base32
-         "0pbinf8d2kj1j7niblhzjd2l2khg6r2pn2xvig6gavz27p3vwcka"))
+         "041bs4fgk52fw58p7s084pxk9d9vs5v2f2pjbznqawz75inpg8yq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
