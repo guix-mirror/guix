@@ -10,6 +10,14 @@
 (channel-news
  (version 0)
 
+ (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
+        (title (en "Rottlog service added to @code{%base-services}"))
+        (body (en "An instance of @code{rottlog-service-type}, the system
+service responsible for log rotation, has been added to @code{%base-services}.
+If your operating system configuration for Guix System is explicitly adding
+@code{rottlog-service-type} to the services, you should now remove it.  See
+the ``Log Rotation'' section of the manual for more information.")))
+
  (entry (commit "e3e1a7ba08af2d58c47264c543617e499c239444")
         (title (en "@command{guix pull} now supports SSH authenticated
 repositories")
