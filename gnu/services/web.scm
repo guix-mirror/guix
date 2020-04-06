@@ -1691,8 +1691,8 @@ WSGIPassAuthorization On
   mumi-configuration?
   (mumi    mumi-configuration-mumi (default mumi))
   (mailer? mumi-configuration-mailer? (default #t))
-  (sender  mumi-configuration-sender)
-  (smtp    mumi-configuration-smtp))
+  (sender  mumi-configuration-sender (default #f))
+  (smtp    mumi-configuration-smtp (default #f)))
 
 (define %mumi-activation
   (with-imported-modules '((guix build utils))
