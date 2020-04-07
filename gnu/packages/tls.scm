@@ -331,6 +331,8 @@ required structures.")
 		    (setenv "CROSS_COMPILE" (string-append target "-"))
 		    (setenv "CONFIGURE_TARGET_ARCH"
 			    (cond
+			     ((string-prefix? "i586" target)
+			      "hurd-x86")
 			     ((string-prefix? "i686" target)
 			      "linux-x86")
 			     ((string-prefix? "x86_64" target)
