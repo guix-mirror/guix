@@ -3003,8 +3003,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "ab53797fbd5ecb3c076cc7bdfdbb284840abc15f")
-        (revision "14"))
+  (let ((commit "c85015dac8110bd7a4c37375b9eb05ebeadedf74")
+        (revision "15"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -3016,7 +3016,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "13hy4k0swh7afr57rnxr6vnqw5llwd1jqg90fz7710s4v4z51q2v"))))
+                  "05nma73kqnva6ci92aq8jb3718ry5dz3sd64ibpxn5w77z5kpwr7"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
