@@ -2087,6 +2087,33 @@ algorithms that use entropy.  There are random number generators and
 functions to shuffle arrays.")
     (license perl-license)))
 
+(define-public perl-data-integer
+  (package
+    (name "perl-data-integer")
+    (version "0.006")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Data-Integer-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0m53zxhx9sn49yqh7azlpyy9m65g54v8cd2ha98y77337gg7xdv3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Data-Integer")
+    (synopsis "Details of the native integer data type")
+    (description "This module is about the native integer numerical
+data type.  A native integer is one of the types of datum that can
+appear in the numeric part of a Perl scalar.  This module supplies
+constants describing the native integer type.  Both signed and
+unsigned representations are handled.")
+    (license perl-license)))
+
 (define-public perl-data-uniqid
   (package
     (name "perl-data-uniqid")
