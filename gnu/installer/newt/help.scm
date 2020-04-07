@@ -36,6 +36,7 @@
            #:listbox-items items
            #:listbox-item->text car
            #:sort-listbox-items? #f
+           #:listbox-height 6
            #:button-text (G_ "Continue"))))
     (match result
       ((_ . proc)
