@@ -526,12 +526,21 @@ specification.  These are the main features:
               (method url-fetch)
               (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                   version ".tar.gz"))
+              (patches (search-patches "guile-json-cross.patch"))
               (sha256
                (base32
                 "14m6b6g2maw0mkvfm4x63rqb54vgbpn1gcqs715ijw4bikfzlqfz"))))
-    (native-inputs `(("pkg-config" ,pkg-config)
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("pkg-config" ,pkg-config)
                      ("guile" ,guile-3.0)))
-    (inputs `(("guile" ,guile-3.0)))))
+    (inputs `(("guile" ,guile-3.0)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'remove-configure
+                    (lambda _
+                      (delete-file "configure")
+                      #t)))))))
 
 (define-public guile2.2-json
   (package-for-guile-2.2 guile-json-3))

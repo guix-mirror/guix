@@ -1,0 +1,54 @@
+Patch accepted upstream.
+
+From 9bbe0d78391c6dbe0316aa56a105d1966fddc9f0 Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Wed, 4 Mar 2020 11:17:02 +0100
+Subject: [PATCH] build: Support cross building.
+
+* configure.ac: Add AC_CANONICAL_HOST to get host.
+* Makefile.am (.scm.go): Set it as target.
+* json/Makefile.am (.scm.go): Likewise.
+---
+ Makefile.am      | 2 +-
+ configure.ac     | 1 +
+ json/Makefile.am | 2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 996f18b..1823a3f 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -42,7 +42,7 @@ nobase_nodist_obj_DATA = $(GOBJECTS)
+ GUILE_WARNINGS = -Wunbound-variable -Warity-mismatch -Wformat
+ SUFFIXES = .scm .go
+ .scm.go:
+-	$(top_builddir)/env $(GUILD) compile $(GUILE_WARNINGS) -o "$@" "$<"
++	$(top_builddir)/env $(GUILD) compile --target="$(host)" $(GUILE_WARNINGS) -o "$@" "$<"
+ 
+ SOURCES = json.scm
+ 
+diff --git a/configure.ac b/configure.ac
+index fbc1aff..937dcf7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -25,6 +25,7 @@ AC_CONFIG_SRCDIR(json.scm)
+ AC_CONFIG_AUX_DIR([build-aux])
+ AM_INIT_AUTOMAKE([color-tests -Wall -Wno-portability])
+ AM_SILENT_RULES([yes])
++AC_CANONICAL_HOST
+ 
+ dnl We require pkg.m4 (from pkg-config) and guile.m4.
+ dnl Make sure they are available.
+diff --git a/json/Makefile.am b/json/Makefile.am
+index adf5972..103b867 100644
+--- a/json/Makefile.am
++++ b/json/Makefile.am
+@@ -36,4 +36,4 @@ CLEANFILES = $(GOBJECTS)
+ GUILE_WARNINGS = -Wunbound-variable -Warity-mismatch -Wformat
+ SUFFIXES = .scm .go
+ .scm.go:
+-	$(top_builddir)/env $(GUILD) compile $(GUILE_WARNINGS) -o "$@" "$<"
++	$(top_builddir)/env $(GUILD) compile --target="$(host)" $(GUILE_WARNINGS) -o "$@" "$<"
+-- 
+2.26.0
+
