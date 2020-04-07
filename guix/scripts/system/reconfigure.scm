@@ -211,6 +211,7 @@ BOOTLOADER-PACKAGE."
                         (guix store)
                         (guix utils)
                         (ice-9 binary-ports)
+                        (ice-9 match)
                         (srfi srfi-34)
                         (srfi srfi-35))
 
@@ -235,7 +236,11 @@ BOOTLOADER-PACKAGE."
                    (#$installer #$bootloader-package #$device #$target))
                  (lambda args
                    (delete-file new-gc-root)
-                   (apply throw args))))
+                   (match args
+                     (('%exception exception)     ;Guile 3 SRFI-34 or similar
+                      (raise-exception exception))
+                     ((key . args)
+                      (apply throw key args))))))
              ;; We are sure that the installation of the bootloader
              ;; succeeded, so we can replace the old GC root by the new
              ;; GC root now.
