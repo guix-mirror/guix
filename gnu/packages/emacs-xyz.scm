@@ -5375,6 +5375,32 @@ extensions for @code{ivy-mode} and @code{company-mode} that make use of the
 library.")
       (license license:gpl3+))))
 
+(define-public emacs-selectrum
+  (package
+    (name "emacs-selectrum")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/selectrum.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "105zl102dwbzvk50xh6b824nq6p24kxhky18ghdnk5yi5sv620lm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/raxod502/selectrum/")
+    (synopsis "Incremental narrowing in Emacs")
+    (description "Selectrum is a solution for incremental narrowing in
+Emacs, replacing Helm, Ivy, and IDO.  Its design philosophy is based
+on choosing the right abstractions and prioritizing consistency and
+predictability over special-cased improvements for particular cases.
+As such, Selectrum follows existing Emacs conventions where they exist
+and are reasonable, and it declines to implement features which have
+marginal benefit compared to the additional complexity of a new
+interface.")
+    (license license:expat)))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
