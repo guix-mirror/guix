@@ -2186,6 +2186,34 @@ Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
     (license license:bsd-3)))
 
+(define-public go-github-com-calmh-murmur3
+  (let ((commit "74e9af8f47ac56901c490d45546ca167b60c7066")
+        (revision "0"))
+    (package
+      (name "go-github-com-calmh-murmur3")
+      (version (git-version "1.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/calmh/murmur3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k8345ivx228qdbkl8bisd2wxwsinkb44ghba6r09538fr3fbr5w"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/calmh/murmur3"))
+      (home-page "https://github.com/calmh/murmur3")
+      (synopsis "Native MurmurHash3 Go implementation")
+      (description "Native Go implementation of Austin Appleby's third
+MurmurHash revision (aka MurmurHash3).
+
+Reference algorithm has been slightly hacked as to support the streaming mode
+required by Go's standard Hash interface.")
+      (license license:bsd-3))))
+
 (define-public go-github-com-multiformats-go-multihash
   (let ((commit "97cdb562a04c6ef66d8ed40cd62f8fbcddd396d6")
         (revision "0"))
@@ -3463,9 +3491,19 @@ efficient space usage.")
                 "0ygan8pgcay7wx3cs3ja8rdqj7nly7v3and97ddcc66020jxchzg"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "github.com/willf/bloom"))
+     '(#:import-path "github.com/willf/bloom"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-import-path
+           (lambda _
+             ;; See 'go.mod' in the source distribution of Syncthing 1.4.1 for
+             ;; more information.
+             ;; <https://github.com/spaolacci/murmur3/issues/29>
+             (substitute* "src/github.com/willf/bloom/bloom.go"
+               (("spaolacci") "calmh"))
+             #t)))))
     (propagated-inputs
-     `(("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
+     `(("go-github-com-calmh-murmur3" ,go-github-com-calmh-murmur3)
        ("go-github-com-willf-bitset" ,go-github-com-willf-bitset)))
     (synopsis "Bloom filters in Go")
     (description "This package provides a Go implementation of bloom filters,
