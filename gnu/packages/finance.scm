@@ -1432,8 +1432,9 @@ a Qt GUI.")
        ("python-lxml" ,python-lxml)
        ("python-magic" ,python-magic)
        ("python-ply" ,python-ply)
-       ("python-pytest" ,python-pytest)
        ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "http://furius.ca/beancount")
     (synopsis "Command-line double-entry accounting tool")
     (description
