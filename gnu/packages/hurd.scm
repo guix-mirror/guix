@@ -292,6 +292,17 @@ Hurd-minimal package which are needed for both glibc and GCC.")
     (description
      "GNU Mach is the microkernel upon which a GNU Hurd system is based.")))
 
+(define unifont
+  ;; GNU Unifont, <http://gnu.org/s/unifont>.
+  ;; Used the the VGA driver of the Hurd's console client.
+  (origin
+    (method url-fetch)
+    (uri
+     "http://unifoundry.com/pub/unifont-7.0.06/font-builds/unifont-7.0.06.bdf.gz")
+    (sha256
+     (base32
+      "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
+
 (define (hurd-rc-script)
   "Return a script to be installed as /libexec/rc in the 'hurd' package.  The
 script takes care of installing the relevant passive translators on the first
@@ -413,14 +424,23 @@ fsysopts / --writable\n"))
                          (find-files (string-append out "/libexec")))
                #t)))
          (add-after 'install 'install-goodies
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              ;; Install additional goodies.
              ;; TODO: Build & install *.msgids for rpctrace.
-             (let ((out (assoc-ref outputs "out")))
+             (let* ((out (assoc-ref outputs "out"))
+                    (datadir (string-append out "/share/hurd")))
                ;; Install the fancy UTF-8 motd.
                (mkdir-p (string-append out "/etc"))
                (copy-file "console/motd.UTF8"
                           (string-append out "/etc/motd"))
+
+               ;; Install the BDF font for use by the console client.
+               (copy-file (assoc-ref inputs "unifont")
+                          "unifont.gz")
+               (invoke "gunzip" "unifont.gz")
+               (mkdir-p datadir)
+               (copy-file "unifont"
+                          (string-append datadir "/vga-system.bdf"))
                #t)))
          (add-after 'install 'install-rc-file
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -445,6 +465,7 @@ fsysopts / --writable\n"))
 
        ("libgcrypt" ,libgcrypt)                  ;for /hurd/random
        ("libdaemon" ,libdaemon)                  ;for /bin/console --daemonize
+       ("unifont" ,unifont)
 
        ;; Tools for the /libexec/* scripts.
        ("bash-minimal" ,bash-minimal)
