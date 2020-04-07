@@ -5347,33 +5347,29 @@ them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
 (define-public emacs-prescient
-  ;; XXX: emacs-ivy introduced a commit that disables sorting for counsel-M-x
-  ;; by default, so we use a non-release version ahead by one commit
-  (let ((commit "95056580ed743da92b05aaf86f943ee05600c28d")
-        (revision "1"))
-    (package
-      (name "emacs-prescient")
-      (version (git-version "3.3" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/raxod502/prescient.el/")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "06qxs8p66jr4gg9m1gd27v5may32f3n28la56cv4f4prinqyyfj7"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-company" ,emacs-company)
-         ("emacs-ivy" ,emacs-ivy)))
-      (home-page "https://github.com/raxod502/prescient.el/")
-      (synopsis "Library that sorts and filters lists of candidates")
-      (description
-       "This package provides a library for sorting and filtering, as well as
-extensions for @code{ivy-mode} and @code{company-mode} that make use of the
-library.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-prescient")
+    (version "4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/prescient.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rf5cz262hjpck7vpxg15bccdrwrmlhiyxc20liwcjb2ig36nis3"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-selectrum" ,emacs-selectrum)))
+    (home-page "https://github.com/raxod502/prescient.el/")
+    (synopsis "Emacs library for sorting and filtering candidates")
+    (description
+     "Prescient is a library for sorting and filtering, as well as extensions
+for Ivy and Company that make use of the library.")
+    (license license:expat)))
 
 (define-public emacs-selectrum
   (package
