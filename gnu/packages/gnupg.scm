@@ -148,7 +148,10 @@ Daemon and possibly more in the future.")
      ;; the 'gpg-error-config' it runs is the native one---i.e., the wrong one.
      `(#:configure-flags
        (list (string-append "--with-gpg-error-prefix="
-                            (assoc-ref %build-inputs "libgpg-error-host")))))
+                            (assoc-ref %build-inputs "libgpg-error-host"))
+             ;; When cross-compiling, _gcry_mpih_lshift etc are undefined
+             ,@(if (%current-target-system) '("--disable-asm")
+                   '()))))
     (outputs '("out" "debug"))
     (home-page "https://gnupg.org/")
     (synopsis "Cryptographic function library")
