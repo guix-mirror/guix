@@ -33,8 +33,10 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages libdaemon)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages texinfo)
@@ -442,6 +444,8 @@ fsysopts / --writable\n"))
        ("hurd-rc" ,(hurd-rc-script))
 
        ("libgcrypt" ,libgcrypt)                  ;for /hurd/random
+       ("libdaemon" ,libdaemon)                  ;for /bin/console --daemonize
+
        ;; Tools for the /libexec/* scripts.
        ("bash-minimal" ,bash-minimal)
        ("coreutils" ,coreutils)
@@ -452,6 +456,7 @@ fsysopts / --writable\n"))
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libgcrypt" ,libgcrypt)                   ;for 'libgcrypt-config'
+       ("pkg-config" ,pkg-config)
        ("mig" ,(if (%current-target-system)
                    ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
                    ;; hence this hack.
