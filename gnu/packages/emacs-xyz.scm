@@ -1513,6 +1513,29 @@ always indented.  It reindents after every change, making it more reliable
 than @code{electric-indent-mode}.")
     (license license:gpl2+)))
 
+(define-public emacs-ctrlf
+  (package
+    (name "emacs-ctrlf")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/ctrlf.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10gnhafas54zj3z9173h1g7b519ac4i26afclmw3w1pk6qyyb03z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/raxod502/ctrlf/")
+    (synopsis "Single-buffer text search in Emacs")
+    (description "CTRLF (pronounced @emph{control F}) is an intuitive and
+efficient solution for single-buffer text search in Emacs, replacing packages
+such as Isearch, Swiper, and helm-swoop.  It takes inspiration from the
+widely-adopted and battle-tested @samp{Ctrl+F} interfaces in programs such as
+web browsers, but follows the flow and keybindings of Isearch.")
+    (license license:expat)))
+
 (define-public emacs-dhall-mode
   ;; There is no proper release.  The base version is extracted from the
   ;; "Version" keyword in the main file.
