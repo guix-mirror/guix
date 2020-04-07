@@ -10,6 +10,7 @@
 ;;; Copyright © 2019, 2020 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Sergey Trofimov <sarg@sarg.org.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,8 +31,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
   #:use-module (guix build-system android-ndk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module ((guix licenses) #:prefix license:)
@@ -41,6 +43,7 @@
   #:use-module (gnu packages docker)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
@@ -971,6 +974,36 @@ these same tools to create your own additional or alternative repository for
 publishing, or to assist in creating, testing and submitting metadata to the
 main repository.")
     (license license:agpl3+)))
+
+(define-public fdroidcl
+  (package
+    (name "fdroidcl")
+    (version "0.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/mvdan/fdroidcl")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1rxcdyy2j34z0ql9d62w7ivsch9xihjnpb1z9kgy9q46vl8zhhy0"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "mvdan.cc/fdroidcl"
+       #:tests? #f  ; TODO: Inputs missing.
+       #:install-source? #f))
+    (inputs
+     `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
+    ;(native-inputs
+    ; `(("go-github-com-rogpeppe-go-internal-testscript"
+    ;    ,go-github-com-rogpeppe-go-internal-testscript)))
+    (synopsis "F-Droid desktop client")
+    (description
+     "While the Android client integrates with the system with regular update
+checks and notifications, this is a simple command line client that talks to
+connected devices via ADB.")
+    (home-page "https://github.com/mvdan/fdroidcl")
+    (license license:bsd-3)))
 
 (define-public enjarify
   (package
