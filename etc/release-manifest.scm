@@ -64,10 +64,11 @@ TARGET."
   ;; Packages that must be cross-buildable from x86_64-linux.
   ;; FIXME: Add (@ (gnu packages gcc) gcc) when <https://bugs.gnu.org/40463>
   ;; is fixed.
-  (map specification->package
-       '("coreutils" "grep" "sed" "findutils" "diffutils" "patch"
-         "gawk" "gettext" "gzip" "xz"
-         "hello" "guile@2.2" "zlib")))
+  (append (list (@ (gnu packages guile) guile-2.2/fixed))
+          (map specification->package
+               '("coreutils" "grep" "sed" "findutils" "diffutils" "patch"
+                 "gawk" "gettext" "gzip" "xz"
+                 "hello" "zlib"))))
 
 (define %packages-to-cross-build-for-mingw
   ;; Many things don't build for MinGW.  Restrict to what's known to work.
