@@ -9177,6 +9177,31 @@ above over the network.")
 in Org buffers and displays matching entries.")
     (license license:gpl3+)))
 
+(define-public emacs-dired-git-info
+  ;; Upstream has no proper release.  The base version is extracted from the
+  ;; "Version" keyword in the main file.
+  (let ((commit "91d57e3a4c5104c66a3abc18e281ee55e8979176")
+        (revision "0"))
+    (package
+      (name "emacs-dired-git-info")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/clemera/dired-git-info")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dr4iv95s4barxxj56znqkl9z0lg5jw731jmjr01s6vn8ar69gik"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/clemera/dired-git-info/")
+      (synopsis "Show git info in Emacs Dired")
+      (description "This Emacs package provides a minor mode which shows git
+information inside the Dired buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-dired-toggle-sudo
   (package
     (name "emacs-dired-toggle-sudo")
