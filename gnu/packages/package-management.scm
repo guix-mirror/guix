@@ -57,6 +57,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
@@ -150,7 +151,8 @@
                             ;; To avoid problems with the length of shebangs,
                             ;; choose a fixed-width and short directory name
                             ;; for tests.
-                            "ac_cv_guix_test_root=/tmp/guix-tests")
+                            "ac_cv_guix_test_root=/tmp/guix-tests"
+                            ,@(if (hurd-target?) '("--with-courage") '()))
          #:parallel-tests? #f         ;work around <http://bugs.gnu.org/21097>
 
          #:modules ((guix build gnu-build-system)
