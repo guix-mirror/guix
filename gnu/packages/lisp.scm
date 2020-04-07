@@ -365,14 +365,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.2")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "07pyzdjnhcpqwvr3rrk4i18maqdywbq1qj93fnpx1h4b7dp08r28"))))
+        (base32 "001gckyw8hl842nk7nwf5kcspzkc1g8dycpwylzh5chl6893ym5m"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
