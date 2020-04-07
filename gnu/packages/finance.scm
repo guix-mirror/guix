@@ -1457,6 +1457,8 @@ generate a variety of reports from them, and provides a web interface.")
            (lambda _
              (chdir "editors/emacs")
              #t)))))
+    (inputs '())
+    (native-inputs '())
     (synopsis "Emacs mode for beancount")
     (description
       "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))
