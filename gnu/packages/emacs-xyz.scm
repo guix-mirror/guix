@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2015, 2016, 2018, 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
@@ -107,7 +107,6 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
   #:use-module (gnu packages emacs)
-  #:use-module (gnu packages finance)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
@@ -22302,21 +22301,3 @@ conventions.")
       (description "Haskell-Snippets is a collection of YASnippet Haskell
 snippets for Emacs.")
       (license license:expat))))
-
-;; The beancount source ships with elisp in a subdirectory
-(define-public emacs-beancount
-  (package
-    (inherit beancount)
-    (name "emacs-beancount")
-    (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #f ;no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'chdir-emacs
-           (lambda _
-             (chdir "editors/emacs")
-             #t)))))
-    (synopsis "Emacs mode for beancount")
-    (description
-      "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))

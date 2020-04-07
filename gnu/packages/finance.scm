@@ -40,6 +40,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
@@ -1440,3 +1441,21 @@ a Qt GUI.")
 define financial transaction records in a text file, read them in memory,
 generate a variety of reports from them, and provides a web interface.")
     (license license:gpl2)))
+
+;; The beancount source ships with elisp in a subdirectory
+(define-public emacs-beancount
+  (package
+    (inherit beancount)
+    (name "emacs-beancount")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'chdir-emacs
+           (lambda _
+             (chdir "editors/emacs")
+             #t)))))
+    (synopsis "Emacs mode for beancount")
+    (description
+      "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))
