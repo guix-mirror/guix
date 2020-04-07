@@ -1424,7 +1424,7 @@ a Qt GUI.")
              (substitute* "setup.py"
                (("'google-api-python-client',") ""))
              #t)))))
-    (propagated-inputs
+    (inputs
      `(("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-bottle" ,python-bottle)
        ("python-chardet" ,python-chardet)
