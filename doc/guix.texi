@@ -12779,9 +12779,24 @@ List of extra command-line options for @command{guix-daemon}.
 File where @command{guix-daemon}'s standard output and standard error
 are written.
 
+@cindex HTTP proxy, for @code{guix-daemon}
+@cindex proxy, for @code{guix-daemon} HTTP access
 @item @code{http-proxy} (default: @code{#f})
-The HTTP proxy used for downloading fixed-output derivations and
-substitutes.
+The URL of the HTTP and HTTPS proxy used for downloading fixed-output
+derivations and substitutes.
+
+It is also possible to change the daemon's proxy at run time through the
+@code{set-http-proxy} action, which restarts it:
+
+@example
+herd set-http-proxy guix-daemon http://localhost:8118
+@end example
+
+To clear the proxy settings, run:
+
+@example
+herd set-http-proxy guix-daemon
+@end example
 
 @item @code{tmpdir} (default: @code{#f})
 A directory path where the @command{guix-daemon} will perform builds.

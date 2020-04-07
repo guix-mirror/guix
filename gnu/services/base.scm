@@ -1640,6 +1640,30 @@ archive' public keys, with GUIX."
 (define %default-guix-configuration
   (guix-configuration))
 
+(define shepherd-set-http-proxy-action
+  ;; Shepherd action to change the HTTP(S) proxy.
+  (shepherd-action
+   (name 'set-http-proxy)
+   (documentation
+    "Change the HTTP(S) proxy used by 'guix-daemon' and restart it.")
+   (procedure #~(lambda* (_ #:optional proxy)
+                  (let ((environment (environ)))
+                    ;; A bit of a hack: communicate PROXY to the 'start'
+                    ;; method via environment variables.
+                    (if proxy
+                        (begin
+                          (format #t "changing HTTP/HTTPS \
+proxy of 'guix-daemon' to ~s...~%"
+                                  proxy)
+                          (setenv "http_proxy" proxy))
+                        (begin
+                          (format #t "clearing HTTP/HTTPS \
+proxy of 'guix-daemon'...~%")
+                          (unsetenv "http_proxy")))
+                    (action 'guix-daemon 'restart)
+                    (environ environment)
+                    #t)))))
+
 (define (guix-shepherd-service config)
   "Return a <shepherd-service> for the Guix daemon service with CONFIG."
   (match-record config <guix-configuration>
@@ -1651,47 +1675,58 @@ archive' public keys, with GUIX."
            (documentation "Run the Guix daemon.")
            (provision '(guix-daemon))
            (requirement '(user-processes))
+           (actions (list shepherd-set-http-proxy-action))
            (modules '((srfi srfi-1)))
            (start
-            #~(make-forkexec-constructor
-               (cons* #$(file-append guix "/bin/guix-daemon")
-                      "--build-users-group" #$build-group
-                      "--max-silent-time" #$(number->string max-silent-time)
-                      "--timeout" #$(number->string timeout)
-                      "--log-compression" #$(symbol->string log-compression)
-                      #$@(if use-substitutes?
-                             '()
-                             '("--no-substitutes"))
-                      "--substitute-urls" #$(string-join substitute-urls)
-                      #$@extra-options
+            #~(lambda _
+                (define proxy
+                  ;; HTTP/HTTPS proxy.  The 'http_proxy' variable is set by
+                  ;; the 'set-http-proxy' action.
+                  (or (getenv "http_proxy") #$http-proxy))
 
-                      ;; Add CHROOT-DIRECTORIES and all their dependencies (if
-                      ;; these are store items) to the chroot.
-                      (append-map (lambda (file)
-                                    (append-map (lambda (directory)
-                                                  (list "--chroot-directory"
-                                                        directory))
-                                                (call-with-input-file file
-                                                  read)))
-                                  '#$(map references-file chroot-directories)))
+                (fork+exec-command
+                 (cons* #$(file-append guix "/bin/guix-daemon")
+                        "--build-users-group" #$build-group
+                        "--max-silent-time" #$(number->string max-silent-time)
+                        "--timeout" #$(number->string timeout)
+                        "--log-compression" #$(symbol->string log-compression)
+                        #$@(if use-substitutes?
+                               '()
+                               '("--no-substitutes"))
+                        "--substitute-urls" #$(string-join substitute-urls)
+                        #$@extra-options
 
-               #:environment-variables
-               (list #$@(if http-proxy
-                            (list (string-append "http_proxy=" http-proxy))
-                            '())
-                     #$@(if tmpdir
-                            (list (string-append "TMPDIR=" tmpdir))
-                            '())
+                        ;; Add CHROOT-DIRECTORIES and all their dependencies
+                        ;; (if these are store items) to the chroot.
+                        (append-map (lambda (file)
+                                      (append-map (lambda (directory)
+                                                    (list "--chroot-directory"
+                                                          directory))
+                                                  (call-with-input-file file
+                                                    read)))
+                                    '#$(map references-file
+                                            chroot-directories)))
 
-                     ;; Make sure we run in a UTF-8 locale so that 'guix
-                     ;; offload' correctly restores nars that contain UTF-8
-                     ;; file names such as 'nss-certs'.  See
-                     ;; <https://bugs.gnu.org/32942>.
-                     (string-append "GUIX_LOCPATH="
-                                    #$glibc-utf8-locales "/lib/locale")
-                     "LC_ALL=en_US.utf8")
+                 #:environment-variables
+                 (append (list #$@(if tmpdir
+                                      (list (string-append "TMPDIR=" tmpdir))
+                                      '())
 
-               #:log-file #$log-file))
+                               ;; Make sure we run in a UTF-8 locale so that
+                               ;; 'guix offload' correctly restores nars that
+                               ;; contain UTF-8 file names such as
+                               ;; 'nss-certs'.  See
+                               ;; <https://bugs.gnu.org/32942>.
+                               (string-append "GUIX_LOCPATH="
+                                              #$glibc-utf8-locales
+                                              "/lib/locale")
+                               "LC_ALL=en_US.utf8")
+                         (if proxy
+                             (list (string-append "http_proxy=" proxy)
+                                   (string-append "https_proxy=" proxy))
+                             '()))
+
+                 #:log-file #$log-file)))
            (stop #~(make-kill-destructor))))))
 
 (define (guix-accounts config)

@@ -459,6 +459,21 @@ info --version")
             (marionette-eval '(readlink "/var/guix/gcroots/profiles")
                              marionette))
 
+          (test-equal "guix-daemon set-http-proxy action"
+            '(#t)                                 ;one value, #t
+            (marionette-eval '(with-shepherd-action 'guix-daemon
+                                  ('set-http-proxy "http://localhost:8118")
+                                  result
+                                result)
+                             marionette))
+
+          (test-equal "guix-daemon set-http-proxy action, clear"
+            '(#t)                                 ;one value, #t
+            (marionette-eval '(with-shepherd-action 'guix-daemon
+                                  ('set-http-proxy)
+                                  result
+                                result)
+                             marionette))
 
           (test-assert "screendump"
             (begin
