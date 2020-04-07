@@ -364,6 +364,37 @@ of general interest as follows:
 @end itemize")
     (license (package-license perl))))
 
+(define-public perl-authen-dechpwd
+  (package
+    (name "perl-authen-dechpwd")
+    (version "2.007")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Authen-DecHpwd-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0xzind7zr2prjq3zbs2j18snfpshd4xrd7igv4kp67xl0axr6fpl"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (propagated-inputs
+     `(("perl-data-integer" ,perl-data-integer)
+       ("perl-digest-crc" ,perl-digest-crc)
+       ("perl-scalar-string" ,perl-scalar-string)))
+    (home-page "https://metacpan.org/release/Authen-DecHpwd")
+    (synopsis "DEC VMS password hashing")
+    (description "@code{Authen::DecHpwd} implements the
+SYS$HASH_PASSWORD password hashing function from VMS (also known as
+LGI$HPWD) and some associated VMS username and password handling
+functions.  The password hashing function is implemented in XS with a
+pure Perl backup version for systems that cannot handle XS.")
+    (license gpl2+)))
+
 (define-public perl-autovivification
   (package
     (name "perl-autovivification")
