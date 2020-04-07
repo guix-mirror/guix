@@ -9201,6 +9201,28 @@ in Org buffers and displays matching entries.")
 @code{sudo} privileges.")
     (license license:wtfpl2)))
 
+(define-public emacs-diredfl
+  (package
+    (name "emacs-diredfl")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/purcell/diredfl")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zb2lz7rp58zqvpniqcsmqabi7nqg2d8bfd0hgmq68bn2hd25b5z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/diredfl/")
+    (synopsis "Extra Emacs font lock rules for a more colourful Dired")
+    (description "This library enables additional font locking in Dired mode.
+This is adapted from the extra font lock rules provided by Drew Adams' Dired+
+package.")
+    (license license:gpl3+)))
+
 (define-public emacs-memoize
   (package
     (name "emacs-memoize")
