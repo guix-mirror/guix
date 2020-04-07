@@ -31,6 +31,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
@@ -440,6 +441,7 @@ fsysopts / --writable\n"))
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
        ("hurd-rc" ,(hurd-rc-script))
 
+       ("libgcrypt" ,libgcrypt)                  ;for /hurd/random
        ;; Tools for the /libexec/* scripts.
        ("bash-minimal" ,bash-minimal)
        ("coreutils" ,coreutils)
@@ -449,6 +451,7 @@ fsysopts / --writable\n"))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("libgcrypt" ,libgcrypt)                   ;for 'libgcrypt-config'
        ("mig" ,(if (%current-target-system)
                    ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
                    ;; hence this hack.
