@@ -58,8 +58,8 @@
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/JuliaLang/libuv.git")
-                      (commit commit)))
+                       (url "https://github.com/JuliaLang/libuv.git")
+                       (commit commit)))
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
@@ -74,14 +74,14 @@
 
 (define (llvm-patch-url version name)
   (string-append "https://raw.githubusercontent.com/JuliaLang/julia/v" version
-		 "/deps/patches/" name))
+                 "/deps/patches/" name))
 
 (define (llvm-patch name sha)
   (let ((version "1.1.1"))
     (origin (method url-fetch)
-	    (uri (llvm-patch-url version name))
-	    (sha256 (base32 sha))
-	    (file-name name))))
+            (uri (llvm-patch-url version name))
+            (sha256 (base32 sha))
+            (file-name name))))
 
 (define llvm-julia
   (package
@@ -98,62 +98,62 @@
               ;; but they are required to build Julia.
               ;; Discussion: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=919628
               (patches
-               (list
-	        (llvm-patch "llvm-6.0-D44650.patch"
-			    "1336q4vqayr94wdcnlmcxh90mjdh34dzw9x2cbiqjnx9b1j8fxyb")
-	        (llvm-patch "llvm-6.0-DISABLE_ABI_CHECKS.patch"
-			    "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
-	        (llvm-patch "llvm-6.0-NVPTX-addrspaces.patch"
-			    "1qdi2zmrjsrj0h84zv2vyly2hjcn4f67mfy0s1q353g4v4jkscqc")
-	        (llvm-patch "llvm-6.0.0_D27296-libssp.patch"
-			    "0s5hi2r1j63i8m6ig1346crx2aiv9f7rgb3mg80kw1wx5y7pdpfh")
-	        (llvm-patch "llvm-D27629-AArch64-large_model_6.0.1.patch"
-			    "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
-	        (llvm-patch "llvm-D34078-vectorize-fdiv.patch"
-			    "1696hg84a0jxcnggvqsc2cdp271hf9a44p4qsd078qm1mfawkaay")
-	        (llvm-patch "llvm-D42262-jumpthreading-not-i1.patch"
-			    "1c8w210gwidbnkkw8anp17dk5pnxws2fl3mb2qxh7y9wzfpixgaq")
-	        (llvm-patch "llvm-D44892-Perf-integration.patch"
-			    "0r37jd0ssh2k1pndkfd5blgpg9z90im4vlzprhb0n0wwz45g4b05")
-	        (llvm-patch "llvm-D46460.patch"
-			    "1miqgswdc0qvbaf4571c2xkxyp9ais06b1bcpa83sq22vr4hbsfb")
-	        (llvm-patch "llvm-D49832-SCEVPred.patch"
-			    "0v5c88hgqj6dymv3j86ca5mhpqab5fbnrvjiw1nvnrnya9l4dlbn")
-	        (llvm-patch "llvm-D50010-VNCoercion-ni.patch"
-			    "0iblb3q1xixwrb12jpb89h3ywmqmzdp6aqp416j4ncwakyjhhfkp")
-	        (llvm-patch "llvm-D50167-scev-umin.patch"
-			    "1f2rakcnnyhr7w10k7gqg0k0491pyvx5ijplivw557f714ys3q6v")
-	        (llvm-patch "llvm-OProfile-line-num.patch"
-			    "1jvbbmwyags0xfwamb13qrf3rgcz9i1r03m9lava7swag8xb78c7")
-	        (llvm-patch "llvm-PPC-addrspaces.patch"
-			    "1f23nhsxh2s3jskbgs7da9nwg3s1hrkbk5aahl08x41wi3mny01p")
-	        (llvm-patch "llvm-rL323946-LSRTy.patch"
-			    "10cz3vy1yw0w643z7xx021wa4kymx9fcm3bjg61s6vzdqd6d9fns")
-	        (llvm-patch "llvm-rL326967-aligned-load.patch"
-			    "04jxnv32yj5x17hqhi8g2p8rhgp38gmjzr871w7z8s44pq10v9v4")
-	        (llvm-patch "llvm-rL327898.patch"
-			    "15ah49gbsll23z28kpyahi5vl0fh3fkxcgd1zmxxdcl96s3x8bnq")))))
+                (list
+                  (llvm-patch "llvm-6.0-D44650.patch"
+                              "1336q4vqayr94wdcnlmcxh90mjdh34dzw9x2cbiqjnx9b1j8fxyb")
+                  (llvm-patch "llvm-6.0-DISABLE_ABI_CHECKS.patch"
+                              "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
+                  (llvm-patch "llvm-6.0-NVPTX-addrspaces.patch"
+                              "1qdi2zmrjsrj0h84zv2vyly2hjcn4f67mfy0s1q353g4v4jkscqc")
+                  (llvm-patch "llvm-6.0.0_D27296-libssp.patch"
+                              "0s5hi2r1j63i8m6ig1346crx2aiv9f7rgb3mg80kw1wx5y7pdpfh")
+                  (llvm-patch "llvm-D27629-AArch64-large_model_6.0.1.patch"
+                              "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
+                  (llvm-patch "llvm-D34078-vectorize-fdiv.patch"
+                              "1696hg84a0jxcnggvqsc2cdp271hf9a44p4qsd078qm1mfawkaay")
+                  (llvm-patch "llvm-D42262-jumpthreading-not-i1.patch"
+                              "1c8w210gwidbnkkw8anp17dk5pnxws2fl3mb2qxh7y9wzfpixgaq")
+                  (llvm-patch "llvm-D44892-Perf-integration.patch"
+                              "0r37jd0ssh2k1pndkfd5blgpg9z90im4vlzprhb0n0wwz45g4b05")
+                  (llvm-patch "llvm-D46460.patch"
+                              "1miqgswdc0qvbaf4571c2xkxyp9ais06b1bcpa83sq22vr4hbsfb")
+                  (llvm-patch "llvm-D49832-SCEVPred.patch"
+                              "0v5c88hgqj6dymv3j86ca5mhpqab5fbnrvjiw1nvnrnya9l4dlbn")
+                  (llvm-patch "llvm-D50010-VNCoercion-ni.patch"
+                              "0iblb3q1xixwrb12jpb89h3ywmqmzdp6aqp416j4ncwakyjhhfkp")
+                  (llvm-patch "llvm-D50167-scev-umin.patch"
+                              "1f2rakcnnyhr7w10k7gqg0k0491pyvx5ijplivw557f714ys3q6v")
+                  (llvm-patch "llvm-OProfile-line-num.patch"
+                              "1jvbbmwyags0xfwamb13qrf3rgcz9i1r03m9lava7swag8xb78c7")
+                  (llvm-patch "llvm-PPC-addrspaces.patch"
+                              "1f23nhsxh2s3jskbgs7da9nwg3s1hrkbk5aahl08x41wi3mny01p")
+                  (llvm-patch "llvm-rL323946-LSRTy.patch"
+                              "10cz3vy1yw0w643z7xx021wa4kymx9fcm3bjg61s6vzdqd6d9fns")
+                  (llvm-patch "llvm-rL326967-aligned-load.patch"
+                              "04jxnv32yj5x17hqhi8g2p8rhgp38gmjzr871w7z8s44pq10v9v4")
+                  (llvm-patch "llvm-rL327898.patch"
+                              "15ah49gbsll23z28kpyahi5vl0fh3fkxcgd1zmxxdcl96s3x8bnq")))))
     (arguments
      (substitute-keyword-arguments (package-arguments llvm-6)
        ((#:configure-flags flags)
         `(list ;; Taken from NixOS. Only way I could get libLLVM-6.0.so
-	  "-DCMAKE_BUILD_TYPE=Release"
+           "-DCMAKE_BUILD_TYPE=Release"
 
-          ;; Build a native compiler and the NVPTX backend (NVIDIA) since
-          ;; Julia insists on it, nothing more.  This reduces build times and
-          ;; disk usage.
-          ,(string-append "-DLLVM_TARGETS_TO_BUILD=" (system->llvm-target))
-          "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=NVPTX"
+           ;; Build a native compiler and the NVPTX backend (NVIDIA) since
+           ;; Julia insists on it, nothing more.  This reduces build times and
+           ;; disk usage.
+           ,(string-append "-DLLVM_TARGETS_TO_BUILD=" (system->llvm-target))
+           "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=NVPTX"
 
-	  "-DLLVM_INSTALL_UTILS=ON"
-	  "-DLLVM_BUILD_TESTS=ON"
-	  "-DLLVM_ENABLE_FFI=ON"
-	  "-DLLVM_ENABLE_RTTI=ON"
-          ;; "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"
-          ;; "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
-	  ;; "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
-	  "-DLLVM_ENABLE_DUMP=ON"
-	  "-DLLVM_LINK_LLVM_DYLIB=ON"))))))
+           "-DLLVM_INSTALL_UTILS=ON"
+           "-DLLVM_BUILD_TESTS=ON"
+           "-DLLVM_ENABLE_FFI=ON"
+           "-DLLVM_ENABLE_RTTI=ON"
+           ;; "-DLLVM_HOST_TRIPLE=${stdenv.hostPlatform.config}"
+           ;; "-DLLVM_DEFAULT_TARGET_TRIPLE=${stdenv.hostPlatform.config}"
+           ;; "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
+           "-DLLVM_ENABLE_DUMP=ON"
+           "-DLLVM_LINK_LLVM_DYLIB=ON"))))))
 
 (define-public julia
   (package
@@ -204,16 +204,16 @@
              (copy-file (assoc-ref inputs "rmath")
                         "deps/srccache/Rmath-julia-0.1.tar.gz")
 
-	     ;; needed by libwhich
-	     (setenv "LD_LIBRARY_PATH"
-		     (string-join (map (lambda (pkg)
+             ;; needed by libwhich
+             (setenv "LD_LIBRARY_PATH"
+                     (string-join (map (lambda (pkg)
                                          (string-append (assoc-ref inputs pkg)
                                                         "/lib"))
                                        '("arpack-ng" "fftw" "gmp" "lapack"
-			                 "libgit2" "mpfr" "openblas" "openlibm"
-			                 "openspecfun" "pcre2"))
+                                         "libgit2" "mpfr" "openblas" "openlibm"
+                                         "openspecfun" "pcre2"))
                                   ":"))
-	     #t))
+             #t))
          ;; FIXME: Building the documentation requires Julia packages that
          ;; would be downloaded from the Internet.  We should build them in a
          ;; separate build phase.
@@ -229,77 +229,77 @@
            ;; Some tests require a home directory to be set.
            (lambda _ (setenv "HOME" "/tmp") #t))
          (add-after 'unpack 'hardcode-soname-map
-          ;; ./src/runtime_ccall.cpp creates a map from library names to paths
-          ;; using the output of "/sbin/ldconfig -p".  Since ldconfig is not
-          ;; used in Guix, we patch runtime_ccall.cpp to contain a static map.
-          (lambda* (#:key inputs #:allow-other-keys)
-            (use-modules (ice-9 match))
-            (substitute* "src/runtime_ccall.cpp"
-              ;; Patch out invocations of '/sbin/ldconfig' to avoid getting
-              ;; error messages about missing '/sbin/ldconfig' on Guix System.
-              (("popen\\(.*ldconfig.*\\);")
-               "NULL;\n")
+           ;; ./src/runtime_ccall.cpp creates a map from library names to paths
+           ;; using the output of "/sbin/ldconfig -p".  Since ldconfig is not
+           ;; used in Guix, we patch runtime_ccall.cpp to contain a static map.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (use-modules (ice-9 match))
+             (substitute* "src/runtime_ccall.cpp"
+               ;; Patch out invocations of '/sbin/ldconfig' to avoid getting
+               ;; error messages about missing '/sbin/ldconfig' on Guix System.
+               (("popen\\(.*ldconfig.*\\);")
+                "NULL;\n")
 
-              ;; Populate 'sonameMap'.
-              (("jl_read_sonames.*;")
-               (string-join
-                (map (match-lambda
-                       ((input libname soname)
-                        (string-append
-                         "sonameMap[\"" libname "\"] = "
-                         "\"" (assoc-ref inputs input) "/lib/" soname "\";")))
-                     '(("libc"        "libc"           "libc.so.6")
-                       ("pcre2"       "libpcre2-8"     "libpcre2-8.so")
-                       ("mpfr"        "libmpfr"        "libmpfr.so")
-                       ("openblas"    "libblas"        "libopenblas.so")
-                       ("arpack-ng"   "libarpack"      "libarpack.so")
-                       ("lapack"      "liblapack"      "liblapack.so")
-                       ("libgit2"     "libgit2"        "libgit2.so")
-                       ("gmp"         "libgmp"         "libgmp.so")
-                       ("openspecfun" "libopenspecfun" "libopenspecfun.so")
-                       ("fftw"        "libfftw3"       "libfftw3_threads.so")
-                       ("fftwf"       "libfftw3f"      "libfftw3f_threads.so"))))))
-            (substitute* "base/math.jl"
-              (("const libm = Base.libm_name")
-               (string-append "const libm = \""
-                              (assoc-ref inputs "openlibm")
-                              "/lib/libopenlibm.so"
-                              "\""))
-              (("const openspecfun = \"libopenspecfun\"")
-               (string-append "const openspecfun = \""
-                              (assoc-ref inputs "openspecfun")
-                              "/lib/libopenspecfun.so"
-                              "\"")))
-            #t))
+               ;; Populate 'sonameMap'.
+               (("jl_read_sonames.*;")
+                (string-join
+                  (map (match-lambda
+                         ((input libname soname)
+                          (string-append
+                            "sonameMap[\"" libname "\"] = "
+                            "\"" (assoc-ref inputs input) "/lib/" soname "\";")))
+                       '(("libc"        "libc"           "libc.so.6")
+                         ("pcre2"       "libpcre2-8"     "libpcre2-8.so")
+                         ("mpfr"        "libmpfr"        "libmpfr.so")
+                         ("openblas"    "libblas"        "libopenblas.so")
+                         ("arpack-ng"   "libarpack"      "libarpack.so")
+                         ("lapack"      "liblapack"      "liblapack.so")
+                         ("libgit2"     "libgit2"        "libgit2.so")
+                         ("gmp"         "libgmp"         "libgmp.so")
+                         ("openspecfun" "libopenspecfun" "libopenspecfun.so")
+                         ("fftw"        "libfftw3"       "libfftw3_threads.so")
+                         ("fftwf"       "libfftw3f"      "libfftw3f_threads.so"))))))
+             (substitute* "base/math.jl"
+               (("const libm = Base.libm_name")
+                (string-append "const libm = \""
+                               (assoc-ref inputs "openlibm")
+                               "/lib/libopenlibm.so"
+                               "\""))
+               (("const openspecfun = \"libopenspecfun\"")
+                (string-append "const openspecfun = \""
+                               (assoc-ref inputs "openspecfun")
+                               "/lib/libopenspecfun.so"
+                               "\"")))
+             #t))
          (add-before 'build 'fix-include-and-link-paths
-          (lambda* (#:key inputs #:allow-other-keys)
-            ;; LIBUTF8PROC is a linker flag, not a build target.  It is
-            ;; included in the LIBFILES_* variable which is used as a
-            ;; collection of build targets and a list of libraries to link
-            ;; against.
-            (substitute* "src/flisp/Makefile"
-              (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\): \\$\\(OBJS\\) \\$\\(LIBFILES_release\\)")
-               "$(BUILDDIR)/$(EXENAME): $(OBJS) $(LLT_release)")
-              (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\)-debug: \\$\\(DOBJS\\) \\$\\(LIBFILES_debug\\)")
-               "$(BUILDDIR)/$(EXENAME)-debug: $(DOBJS) $(LLT_debug)"))
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; LIBUTF8PROC is a linker flag, not a build target.  It is
+             ;; included in the LIBFILES_* variable which is used as a
+             ;; collection of build targets and a list of libraries to link
+             ;; against.
+             (substitute* "src/flisp/Makefile"
+               (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\): \\$\\(OBJS\\) \\$\\(LIBFILES_release\\)")
+                "$(BUILDDIR)/$(EXENAME): $(OBJS) $(LLT_release)")
+               (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\)-debug: \\$\\(DOBJS\\) \\$\\(LIBFILES_debug\\)")
+                "$(BUILDDIR)/$(EXENAME)-debug: $(DOBJS) $(LLT_debug)"))
 
-            ;; The REPL must be linked with libuv.
-            (substitute* "ui/Makefile"
-              (("JLDFLAGS \\+= ")
-               (string-append "JLDFLAGS += "
-                              (assoc-ref %build-inputs "libuv")
-                              "/lib/libuv.so ")))
+             ;; The REPL must be linked with libuv.
+             (substitute* "ui/Makefile"
+               (("JLDFLAGS \\+= ")
+                (string-append "JLDFLAGS += "
+                               (assoc-ref %build-inputs "libuv")
+                               "/lib/libuv.so ")))
 
-            (substitute* "base/Makefile"
-              (("\\$\\(build_includedir\\)/uv/errno.h")
-               (string-append (assoc-ref inputs "libuv")
-                              "/include/uv/errno.h")))
-            #t))
+             (substitute* "base/Makefile"
+               (("\\$\\(build_includedir\\)/uv/errno.h")
+                (string-append (assoc-ref inputs "libuv")
+                               "/include/uv/errno.h")))
+             #t))
          (add-before 'build 'replace-default-shell
-          (lambda _
-            (substitute* "base/client.jl"
-              (("/bin/sh") (which "sh")))
-            #t))
+           (lambda _
+             (substitute* "base/client.jl"
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-after 'unpack 'hardcode-paths
            (lambda _
              (substitute* "stdlib/InteractiveUtils/src/InteractiveUtils.jl"
@@ -310,88 +310,88 @@
            (lambda _
              (define (touch file-name)
                (call-with-output-file file-name (const #t)))
-	     ;; FIXME: All git tests works except this one. But *THIS* "fix"
+             ;; FIXME: All git tests works except this one. But *THIS* "fix"
              ;; is not working, so right now I'm disabling all libgit2.jl tests
-	     ;; (substitute* "stdlib/LibGit2/test/libgit2.jl"
-	     ;; (("!LibGit2.use_http_path(cfg, github_cred)") "true")
-	     ;; (("LibGit2.use_http_path(cfg, mygit_cred)") "true"))
+             ;; (substitute* "stdlib/LibGit2/test/libgit2.jl"
+             ;; (("!LibGit2.use_http_path(cfg, github_cred)") "true")
+             ;; (("LibGit2.use_http_path(cfg, mygit_cred)") "true"))
              (map (lambda (test)
                     (delete-file test)
                     (touch test))
-	          '("stdlib/Sockets/test/runtests.jl"
-		    "stdlib/Distributed/test/runtests.jl"
+                  '("stdlib/Sockets/test/runtests.jl"
+                    "stdlib/Distributed/test/runtests.jl"
                     ;; FIXME: see above
-		    "stdlib/LibGit2/test/libgit2.jl"))
-	     (substitute* "test/choosetests.jl"
-	       ;; These tests fail, probably because some of the input
-	       ;; binaries have been stripped and thus backtraces don't look
-	       ;; as expected.
-	       (("\"backtrace\",") "")
-	       (("\"cmdlineargs\",") ""))
-	     #t)))
+                    "stdlib/LibGit2/test/libgit2.jl"))
+             (substitute* "test/choosetests.jl"
+               ;; These tests fail, probably because some of the input
+               ;; binaries have been stripped and thus backtraces don't look
+               ;; as expected.
+               (("\"backtrace\",") "")
+               (("\"cmdlineargs\",") ""))
+             #t)))
        #:make-flags
        (list
-        (string-append "prefix=" (assoc-ref %outputs "out"))
-        (string-append "PREFIX=" (assoc-ref %outputs "out"))
+         (string-append "prefix=" (assoc-ref %outputs "out"))
+         (string-append "PREFIX=" (assoc-ref %outputs "out"))
 
-        ;; Passing the MARCH flag is necessary to build binary substitutes for
-        ;; the supported architectures.
-        ,(match (or (%current-target-system)
-                    (%current-system))
-           ("x86_64-linux" "MARCH=x86-64")
-           ("i686-linux" "MARCH=pentium4")
-           ("aarch64-linux" "MARCH=armv8-a")
-           ;; Prevent errors when querying this package on unsupported
-           ;; platforms, e.g. when running "guix package --search="
-           (_ "MARCH=UNSUPPORTED"))
+         ;; Passing the MARCH flag is necessary to build binary substitutes for
+         ;; the supported architectures.
+         ,(match (or (%current-target-system)
+                     (%current-system))
+                 ("x86_64-linux" "MARCH=x86-64")
+                 ("i686-linux" "MARCH=pentium4")
+                 ("aarch64-linux" "MARCH=armv8-a")
+                 ;; Prevent errors when querying this package on unsupported
+                 ;; platforms, e.g. when running "guix package --search="
+                 (_ "MARCH=UNSUPPORTED"))
 
-        "CONFIG_SHELL=bash"     ;needed to build bundled libraries
-        "USE_SYSTEM_DSFMT=0"    ;not packaged for Guix and upstream has no
-                                ;build system for a shared library.
-        "USE_SYSTEM_LAPACK=1"
-        "USE_SYSTEM_BLAS=1"
-        "USE_BLAS64=0"          ;needed when USE_SYSTEM_BLAS=1
-        "LIBBLAS=-lopenblas"
-        "LIBBLASNAME=libopenblas"
+         "CONFIG_SHELL=bash"     ;needed to build bundled libraries
+         "USE_SYSTEM_DSFMT=0"    ;not packaged for Guix and upstream has no
+         ;build system for a shared library.
+         "USE_SYSTEM_LAPACK=1"
+         "USE_SYSTEM_BLAS=1"
+         "USE_BLAS64=0"          ;needed when USE_SYSTEM_BLAS=1
+         "LIBBLAS=-lopenblas"
+         "LIBBLASNAME=libopenblas"
 
-        "USE_SYSTEM_FFTW=1"
-        "LIBFFTWNAME=libfftw3"
-        "LIBFFTWFNAME=libfftw3f"
+         "USE_SYSTEM_FFTW=1"
+         "LIBFFTWNAME=libfftw3"
+         "LIBFFTWFNAME=libfftw3f"
 
-        ;; TODO: Suitesparse does not install shared libraries, so we cannot
-        ;; use the suitesparse package.
-        ;; "USE_SYSTEM_SUITESPARSE=1"
-        ;; (string-append "SUITESPARSE_INC=-I "
-        ;;                (assoc-ref %build-inputs "suitesparse")
-        ;;                "/include")
+         ;; TODO: Suitesparse does not install shared libraries, so we cannot
+         ;; use the suitesparse package.
+         ;; "USE_SYSTEM_SUITESPARSE=1"
+         ;; (string-append "SUITESPARSE_INC=-I "
+         ;;                (assoc-ref %build-inputs "suitesparse")
+         ;;                "/include")
 
-        "USE_GPL_LIBS=1"        ;proudly
-        "USE_SYSTEM_UTF8PROC=1"
-        (string-append "UTF8PROC_INC="
-                       (assoc-ref %build-inputs "utf8proc")
-                       "/include")
-        "USE_SYSTEM_LLVM=1"
-	"LLVM_VER=6.0.1"
+         "USE_GPL_LIBS=1"        ;proudly
+         "USE_SYSTEM_UTF8PROC=1"
+         (string-append "UTF8PROC_INC="
+                        (assoc-ref %build-inputs "utf8proc")
+                        "/include")
+         "USE_SYSTEM_LLVM=1"
+         "LLVM_VER=6.0.1"
 
-	"USE_LLVM_SHLIB=1"
-	"USE_SYSTEM_LIBUNWIND=1"
-	"USE_SYSTEM_LIBUV=1"
-	(string-append "LIBUV="
-		       (assoc-ref %build-inputs "libuv")
-		       "/lib/libuv.so")
-	(string-append "LIBUV_INC="
-		       (assoc-ref %build-inputs "libuv")
-		       "/include")
-	"USE_SYSTEM_PATCHELF=1"
-	"USE_SYSTEM_PCRE=1"
-	"USE_SYSTEM_OPENLIBM=1"
+         "USE_LLVM_SHLIB=1"
+         "USE_SYSTEM_LIBUNWIND=1"
+         "USE_SYSTEM_LIBUV=1"
+         (string-append "LIBUV="
+                        (assoc-ref %build-inputs "libuv")
+                        "/lib/libuv.so")
+         (string-append "LIBUV_INC="
+                        (assoc-ref %build-inputs "libuv")
+                        "/include")
+         "USE_SYSTEM_PATCHELF=1"
+         "USE_SYSTEM_PCRE=1"
+         "USE_SYSTEM_OPENLIBM=1"
 
-	"USE_SYSTEM_GMP=1"
-	"USE_SYSTEM_MPFR=1"
-	"USE_SYSTEM_ARPACK=1"
-	"USE_SYSTEM_LIBGIT2=1"
-	"USE_SYSTEM_ZLIB=1"
-	"USE_SYSTEM_OPENSPECFUN=1")))
+         "USE_SYSTEM_GMP=1"
+         "USE_SYSTEM_MPFR=1"
+         "USE_SYSTEM_ARPACK=1"
+         "USE_SYSTEM_LIBGIT2=1"
+         "USE_SYSTEM_ZLIB=1"
+         "USE_SYSTEM_OPENSPECFUN=1")))
     (inputs
      `(("llvm" ,llvm-julia)
 
@@ -427,15 +427,15 @@
        ;; Find dependency versions here:
        ;; https://raw.githubusercontent.com/JuliaLang/julia/77a2c1e245c85812dc1c7687540beedecc52758f/deps/Versions.make
        ("rmath"
-	,(origin
-	   (method git-fetch)
-	   (uri (git-reference
-                 (url "https://github.com/JuliaLang/Rmath-julia")
-                 (commit "v0.1")))
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                  (url "https://github.com/JuliaLang/Rmath-julia")
+                  (commit "v0.1")))
            (file-name "rmath-julia-0.1-checkout")
-	   (sha256
-	    (base32
-	     "1zkpy0cg5zivq40zbhbdgj9128fqzs2j94wkwih8nc6xaj3gp9p6"))))
+           (sha256
+            (base32
+             "1zkpy0cg5zivq40zbhbdgj9128fqzs2j94wkwih8nc6xaj3gp9p6"))))
        ("suitesparse"
         ,(origin
            (method url-fetch)
@@ -453,26 +453,26 @@
             (base32
              "0wp6ld9vk11f4nnkn56627zmlv9k5vafi99qa3yyn1pgcd61zcfs"))))
        ("libwhich"
-	,(let ((commit "81e9723c0273d78493dc8c8ed570f68d9ce7e89e"))
+        ,(let ((commit "81e9723c0273d78493dc8c8ed570f68d9ce7e89e"))
            (origin
              ;; Note: We use a /tarball URL, but that's because Julia's build
              ;; system checks the hash of that tarball; thus we can't use
              ;; 'git-fetch'.
-	     (method url-fetch)
-	     (uri (string-append
-                   "https://api.github.com/repos/vtjnash/libwhich/tarball/"
-                   commit))
+             (method url-fetch)
+             (uri (string-append
+                    "https://api.github.com/repos/vtjnash/libwhich/tarball/"
+                    commit))
              (file-name (string-append "libwhich-" (string-take commit 7)
                                        ".tar.gz"))
-	     (sha256
-	      (base32
-	       "1p7zg31kpmpbmh1znrk1xrbd074agx13b9q4dcw8n2zrwwdlbz3b")))))
+             (sha256
+              (base32
+               "1p7zg31kpmpbmh1znrk1xrbd074agx13b9q4dcw8n2zrwwdlbz3b")))))
        ("dsfmt"
         ,(origin
            (method url-fetch)
            (uri (string-append
-                 "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/"
-                 "SFMT/dSFMT-src-2.2.3.tar.gz"))
+                  "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/"
+                  "SFMT/dSFMT-src-2.2.3.tar.gz"))
            (sha256
             (base32
              "03kaqbjbi6viz0n33dk5jlf6ayxqlsq4804n7kwkndiga9s4hd42"))))))
@@ -483,9 +483,9 @@
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))
     (native-search-paths
-     (list (search-path-specification
-            (variable "JULIA_LOAD_PATH")
-            (files (list "share/julia/packages/")))))
+      (list (search-path-specification
+              (variable "JULIA_LOAD_PATH")
+              (files (list "share/julia/packages/")))))
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
