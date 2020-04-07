@@ -24,6 +24,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:autoload (system base target) (target-most-positive-fixnum)
   #:export (define-record-type*
             this-record
 
@@ -360,7 +361,9 @@ inherited."
         (((field get properties ...) ...)
          (string-hash (object->string
                        (syntax->datum #'((field properties ...) ...)))
-                      most-positive-fixnum))))
+                      (cond-expand
+                        (guile-3 (target-most-positive-fixnum))
+                        (else most-positive-fixnum))))))
 
     (syntax-case s ()
       ((_ type syntactic-ctor ctor pred
