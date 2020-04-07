@@ -371,6 +371,8 @@ it, run its initializer, and unmount it."
                                      (register-closures? #t)
                                      system-directory
                                      (deduplicate? #t)
+                                     (make-device-nodes
+                                      make-essential-device-nodes)
                                      (extra-directives '()))
   "Return a procedure to initialize a root partition.
 
@@ -392,7 +394,7 @@ system that is passed to 'populate-root-file-system'."
                       target))
 
     ;; Populate /dev.
-    (make-essential-device-nodes target)
+    (make-device-nodes target)
 
     ;; Optionally, register the inputs in the image's store.
     (when register-closures?
