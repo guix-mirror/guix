@@ -23,6 +23,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu system vm)
   #:export (cross-hurd-image))
@@ -34,18 +36,20 @@
 ;;;
 ;;; Code:
 
+(define %base-packages/hurd
+  (list hurd bash coreutils file findutils grep sed guile-3.0))
+
 (define* (cross-hurd-image #:key (hurd hurd) (gnumach gnumach))
   "Return a cross-built GNU/Hurd image."
+
+  (define (for-hurd p)
+    (with-parameters ((%current-target-system "i586-pc-gnu")) p))
+
   (define hurd-os
-    (let-syntax ((for-hurd (syntax-rules ()
-                             ((_ things ...)
-                              (list (with-parameters ((%current-target-system
-                                                       "i586-pc-gnu"))
-                                      things) ...)))))
-      (directory-union "gnu+hurd"
-                       (cons (with-parameters ((%current-system "i686-linux"))
-                               gnumach)
-                             (for-hurd hurd bash coreutils grep sed)))))
+    (directory-union "gnu+hurd"
+                     (cons (with-parameters ((%current-system "i686-linux"))
+                             gnumach)
+                           (map for-hurd %base-packages/hurd))))
 
   (define grub.cfg
     (let ((hurd (with-parameters ((%current-target-system "i586-pc-gnu"))
@@ -73,9 +77,20 @@ menuentry \"GNU\" {
                                    #+mach #+mach #+hurd
                                    #+libc #+hurd))))))
 
+  (define profile
+    (let ((packages (map for-hurd %base-packages/hurd)))
+      (computed-file
+       "profile"
+       #~(call-with-output-file #$output
+           (lambda (port)
+             (format port "
+PATH=~a/bin:~a/sbin:~a/hurd
+"
+                     #+hurd-os #+hurd-os  #+hurd-os))))))
+
   (define fstab
     (plain-file "fstab"
-"# This file was generated from your Guix configuration.  Any changes
+                "# This file was generated from your Guix configuration.  Any changes
 # will be lost upon reboot or reconfiguration.
 
 /dev/hd0s1	/	ext2	defaults
@@ -83,15 +98,13 @@ menuentry \"GNU\" {
 
   (define passwd
     (plain-file "passwd"
-"root:x:0:0:root:/root:/bin/sh
-"
-))
+                "root:x:0:0:root:/root:/bin/sh
+"))
 
   (define shadow
     (plain-file "shadow"
-"root::0:0:0:0:::
-"
-))
+                "root::0:0:0:0:::
+"))
 
   (define hurd-directives
     `((directory "/servers")
@@ -109,7 +122,7 @@ menuentry \"GNU\" {
       ("/servers/socket/inet" -> "2")
       ("/servers/socket/inet6" -> "16")
       (directory "/boot")
-      ("/boot/grub.cfg" -> ,grub.cfg)  ;XXX: not strictly needed
+      ("/boot/grub.cfg" -> ,grub.cfg)   ;XXX: not strictly needed
       ("/hurd" -> ,(file-append (with-parameters ((%current-target-system
                                                    "i586-pc-gnu"))
                                   hurd)
@@ -117,6 +130,7 @@ menuentry \"GNU\" {
 
       ;; TODO: Create those during activation, eventually.
       (directory "/root")
+      ("/root/.profile" -> ,profile)
       ("/etc/fstab" -> ,fstab)
       ("/etc/passwd" -> ,passwd)
       ("/etc/shadow" -> ,shadow)
@@ -129,16 +143,16 @@ menuentry \"GNU\" {
                                       hurd)
                                     "/etc/motd"))
       ("/etc/login" -> ,(file-append (with-parameters ((%current-target-system
-                                                       "i586-pc-gnu"))
-                                      hurd)
+                                                        "i586-pc-gnu"))
+                                       hurd)
                                      "/etc/login"))
 
 
       ;; XXX can we instead, harmlessly set _PATH_TTYS (from glibc) in runttys.c?
       ("/etc/ttys" -> ,(file-append (with-parameters ((%current-target-system
-                                                   "i586-pc-gnu"))
-                                  hurd)
-                                "/etc/ttys"))
+                                                       "i586-pc-gnu"))
+                                      hurd)
+                                    "/etc/ttys"))
       ("/bin/sh" -> ,(file-append (with-parameters ((%current-target-system
                                                      "i586-pc-gnu"))
                                     bash)
@@ -151,6 +165,7 @@ menuentry \"GNU\" {
                          ("grub.cfg" ,grub.cfg)
                          ("fstab" ,fstab)
                          ("passwd" ,passwd)
+                         ("profile" ,profile)
                          ("shadow" ,shadow))
               #:copy-inputs? #t
               #:os hurd-os
