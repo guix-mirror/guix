@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,6 +110,12 @@ menuentry \"GNU\" {
   (define passwd
     (plain-file "passwd"
                 "root:x:0:0:root:/root:/bin/sh
+guixbuilder:x:1:1:guixbuilder:/var/empty:/bin/no-sh
+"))
+
+  (define group
+    (plain-file "group"
+                "guixbuild:x:1:guixbuilder
 "))
 
   (define shadow
@@ -163,6 +170,7 @@ fi\n"))
       ("/run/current-system/profile" -> ,system-profile)
       ("/etc/profile" -> ,etc-profile)
       ("/etc/fstab" -> ,fstab)
+      ("/etc/group" -> ,group)
       ("/etc/passwd" -> ,passwd)
       ("/etc/shadow" -> ,shadow)
       (file "/etc/hostname" "guixygnu")
@@ -203,6 +211,7 @@ fi\n"))
                          ("grub.cfg" ,grub.cfg)
                          ("fstab" ,fstab)
                          ("passwd" ,passwd)
+                         ("group" ,group)
                          ("etc-profile" ,etc-profile)
                          ("shadow" ,shadow))
               #:copy-inputs? #t
