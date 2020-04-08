@@ -27,6 +27,7 @@
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages file)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
   #:use-module (gnu system vm)
   #:export (cross-hurd-image))
@@ -49,7 +50,8 @@
                       #:target target))
 
 (define %base-packages/hurd
-  (list hurd bash coreutils file findutils grep sed guile-3.0
+  (list hurd bash coreutils file findutils grep sed
+        guile-3.0 guile-colorized guile-readline
         net-base inetutils))
 
 (define* (cross-hurd-image #:key (hurd hurd) (gnumach gnumach))
@@ -150,6 +152,11 @@ fi\n"))
 
       ;; TODO: Create those during activation, eventually.
       (directory "/root")
+      (file "/root/.guile"
+            ,(object->string
+              '(begin
+                 (use-modules (ice-9 readline) (ice-9 colorized))
+                 (activate-readline) (activate-colorized))))
       (directory "/run")
       (directory "/run/current-system")
       ("/run/current-system/profile" -> ,system-profile)
