@@ -311,28 +311,19 @@ and a game metadata scraper.")
       (home-page "https://emulationstation.org")
       (license license:expat))))
 
-;; Note: higan v107 has been released, but as explained by the dialog that
-;; appears after starting the new version, it's an experimental release. The
-;; author recommends v106 for general use.
-;;
-;; When updating to v107 (or probably beyond), sdl will have to be replaced
-;; with sdl2, and libxrandr will need to be added to inputs. The patch
-;; `higan-remove-march-native-flag.patch' will not be necessary, since the flag
-;; is now being added only for `platform=local', which is not the default.
 (define-public higan
   (package
     (name "higan")
-    (version "106")
+    (version "110")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/byuu/higan/")
-              (commit (string-append "v" version))))
+             (url "https://github.com/higan-emu/higan.git")
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mxivf8124vz4hl0b0xa1yqv0z9m3i12v9psmbpqkprrbq0wbgn1"))
-       (patches (search-patches "higan-remove-march-native-flag.patch"))))
+        (base32 "11rvm53c3p2f6zk8xbyv2j51xp8zmqnch7zravhj3fk590qrjrr2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -342,11 +333,12 @@ and a game metadata scraper.")
        ("eudev" ,eudev)
        ("gtk+" ,gtk+-2)
        ("gtksourceview-2" ,gtksourceview-2)
+       ("libxrandr" ,libxrandr)
        ("libxv" ,libxv)
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
-       ("sdl" ,sdl)))
+       ("sdl2" ,sdl2)))
     (arguments
      '(#:phases
        (let ((build-phase (assoc-ref %standard-phases 'build))
@@ -405,7 +397,7 @@ and a game metadata scraper.")
              (string-append "prefix=" (assoc-ref %outputs "out")))
        ;; There is no test suite.
        #:tests? #f))
-    (home-page "https://byuu.org/higan")
+    (home-page "https://github.com/higan-emu/higan/")
     (synopsis "Nintendo multi-system emulator")
     (description
      "higan (formerly bsnes) is an emulator for multiple Nintendo video game
@@ -413,10 +405,7 @@ consoles, including the Nintendo Entertainment System (NES/Famicom), Super
 Nintendo Entertainment System (SNES/Super Famicom), Game Boy, Game Boy
 Color (GBC), and Game Boy Advance (GBA).  It also supports the subsystems
 Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
-    ;; As noted in these files among more:
-    ;; - icarus/icarus.cpp
-    ;; - higan/emulator/emulator.hpp
-    (license license:gpl3)))
+    (license license:gpl3+)))
 
 (define-public mgba
   (package
