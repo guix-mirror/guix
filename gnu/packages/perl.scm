@@ -1892,6 +1892,30 @@ also includes an implementation of @code{bcrypt}, the Unix crypt()
 password hashing algorithm based on Eksblowfish.")
     (license perl-license)))
 
+(define-public perl-crypt-passwdmd5
+  (package
+    (name "perl-crypt-passwdmd5")
+    (version "1.40")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/R/RS/RSAVAGE/Crypt-PasswdMD5-"
+            version ".tgz"))
+      (sha256
+       (base32
+        "0j0r74f18nk63phddzqbf7wqma2ci4p4bxvrwrxsy0aklbp6lzdp"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "https://metacpan.org/release/Crypt-PasswdMD5")
+    (synopsis "Interoperable MD5-based crypt() functions")
+    (description "@code{Crypt::PasswdMD5} provides various
+crypt()-compatible interfaces to the MD5-based crypt() function found
+in various *nixes.  It is based on the implementation found on FreeBSD
+2.2.[56]-RELEASE.")
+    (license perl-license)))
+
 (define-public perl-crypt-randpasswd
   (package
     (name "perl-crypt-randpasswd")
