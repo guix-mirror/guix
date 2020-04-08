@@ -18,6 +18,7 @@
 
 (define-module (gnu system hurd)
   #:use-module (guix gexp)
+  #:use-module (guix profiles)
   #:use-module (guix utils)
   #:use-module (gnu bootloader grub)
   #:use-module (gnu packages base)
@@ -36,24 +37,39 @@
 ;;;
 ;;; Code:
 
+;; XXX: Surely this belongs in (guix profiles), but perhaps we need high-level
+;; <profile> objects so one can specify hooks, etc.?
+(define-gexp-compiler (compile-manifest (manifest
+                                         (@@ (guix profiles) <manifest>))
+                                        system target)
+  "Lower MANIFEST as a profile."
+  (profile-derivation manifest
+                      #:system system
+                      #:target target))
+
 (define %base-packages/hurd
   (list hurd bash coreutils file findutils grep sed guile-3.0))
 
 (define* (cross-hurd-image #:key (hurd hurd) (gnumach gnumach))
   "Return a cross-built GNU/Hurd image."
 
-  (define (for-hurd p)
-    (with-parameters ((%current-target-system "i586-pc-gnu")) p))
+  (define (cross-built thing)
+    (with-parameters ((%current-target-system "i586-pc-gnu"))
+      thing))
 
-  (define hurd-os
-    (directory-union "gnu+hurd"
-                     (cons (with-parameters ((%current-system "i686-linux"))
-                             gnumach)
-                           (map for-hurd %base-packages/hurd))))
+  (define (cross-built-entry entry)
+    (manifest-entry
+      (inherit entry)
+      (item (cross-built (manifest-entry-item entry)))
+      (dependencies (map cross-built-entry
+                         (manifest-entry-dependencies entry)))))
+
+  (define system-profile
+    (map-manifest-entries cross-built-entry
+                          (packages->manifest %base-packages/hurd)))
 
   (define grub.cfg
-    (let ((hurd (with-parameters ((%current-target-system "i586-pc-gnu"))
-                  hurd))
+    (let ((hurd (cross-built hurd))
           (mach (with-parameters ((%current-system "i686-linux"))
                   gnumach))
           (libc (cross-libc "i586-pc-gnu")))
@@ -77,17 +93,6 @@ menuentry \"GNU\" {
                                    #+mach #+mach #+hurd
                                    #+libc #+hurd))))))
 
-  (define profile
-    (let ((packages (map for-hurd %base-packages/hurd)))
-      (computed-file
-       "profile"
-       #~(call-with-output-file #$output
-           (lambda (port)
-             (format port "
-PATH=~a/bin:~a/sbin:~a/hurd
-"
-                     #+hurd-os #+hurd-os  #+hurd-os))))))
-
   (define fstab
     (plain-file "fstab"
                 "# This file was generated from your Guix configuration.  Any changes
@@ -105,6 +110,19 @@ PATH=~a/bin:~a/sbin:~a/hurd
     (plain-file "shadow"
                 "root::0:0:0:0:::
 "))
+
+  (define etc-profile
+    (plain-file "profile"
+                "\
+export PS1='\\u@\\h\\$ '
+
+GUIX_PROFILE=\"/run/current-system/profile\"
+. \"$GUIX_PROFILE/etc/profile\"
+
+GUIX_PROFILE=\"$HOME/.guix-profile\"
+if [ -f \"$GUIX_PROFILE/etc/profile\" ]; then
+  . \"$GUIX_PROFILE/etc/profile\"
+fi\n"))
 
   (define hurd-directives
     `((directory "/servers")
@@ -130,7 +148,10 @@ PATH=~a/bin:~a/sbin:~a/hurd
 
       ;; TODO: Create those during activation, eventually.
       (directory "/root")
-      ("/root/.profile" -> ,profile)
+      (directory "/run")
+      (directory "/run/current-system")
+      ("/run/current-system/profile" -> ,system-profile)
+      ("/etc/profile" -> ,etc-profile)
       ("/etc/fstab" -> ,fstab)
       ("/etc/passwd" -> ,passwd)
       ("/etc/shadow" -> ,shadow)
@@ -161,14 +182,14 @@ PATH=~a/bin:~a/sbin:~a/hurd
   (qemu-image #:file-system-type "ext2"
               #:file-system-options '("-o" "hurd")
               #:device-nodes 'hurd
-              #:inputs `(("system" ,hurd-os)
+              #:inputs `(("system" ,system-profile)
                          ("grub.cfg" ,grub.cfg)
                          ("fstab" ,fstab)
                          ("passwd" ,passwd)
-                         ("profile" ,profile)
+                         ("etc-profile" ,etc-profile)
                          ("shadow" ,shadow))
               #:copy-inputs? #t
-              #:os hurd-os
+              #:os system-profile
               #:bootcfg-drv grub.cfg
               #:bootloader grub-bootloader
               #:register-closures? #f
