@@ -37,6 +37,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
@@ -259,7 +260,8 @@ $(prefix)/etc/init.d\n")))
                         (setenv "SHELL" (which "sh"))
                         #t))
                     (add-after 'install 'wrap-program
-                      (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
+                      (lambda* (#:key inputs native-inputs outputs target
+                                #:allow-other-keys)
                         ;; Make sure the 'guix' command finds GnuTLS,
                         ;; Guile-JSON, and Guile-Git automatically.
                         (let* ((out    (assoc-ref outputs "out"))
@@ -301,6 +303,11 @@ $(prefix)/etc/init.d\n")))
                             `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,gopath))
                             `("GUIX_LOCPATH" ":" suffix (,locpath)))
 
+                          (when target
+                            ;; XXX Touching wrap-program rebuilds world
+                            (let ((bash (assoc-ref inputs "bash")))
+                              (substitute* (string-append out "/bin/guix")
+                                (("^#!.*/bash") (string-append "#! " bash "/bin/bash")))))
                           #t))))))
       (native-inputs `(("pkg-config" ,pkg-config)
 
@@ -346,7 +353,8 @@ $(prefix)/etc/init.d\n")))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
                '())
          ,@(if (%current-target-system)
-               `(("xz" ,xz))
+               `(("bash" ,bash-minimal)
+                 ("xz" ,xz))
                '())
 
          ;; Tests also rely on these bootstrap executables.
