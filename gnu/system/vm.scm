@@ -158,7 +158,9 @@
                                              (references-graphs #f)
                                              (memory-size 256)
                                              (disk-image-format "qcow2")
-                                             (disk-image-size 'guess))
+                                             (disk-image-size 'guess)
+
+                                             (substitutable? #t))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
 derivation).  The virtual machine runs with MEMORY-SIZE MiB of memory.  In the
 virtual machine, EXP has access to FILE-SYSTEMS, which, by default, includes a
@@ -175,7 +177,10 @@ based on the size of the closure of REFERENCES-GRAPHS.
 
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
-made available under the /xchg CIFS share."
+made available under the /xchg CIFS share.
+
+SUBSTITUTABLE? determines whether the returned derivation should be marked as
+substitutable."
   (define user-builder
     (program-file "builder-in-linux-vm" exp))
 
@@ -257,7 +262,8 @@ made available under the /xchg CIFS share."
                       #:target target
                       #:env-vars env-vars
                       #:guile-for-build guile-for-build
-                      #:references-graphs references-graphs)))
+                      #:references-graphs references-graphs
+                      #:substitutable? substitutable?)))
 
 (define (has-guix-service-type? os)
   "Return true if OS contains a service of the type GUIX-SERVICE-TYPE."
@@ -367,7 +373,8 @@ INPUTS is a list of inputs (as for packages)."
                      bootloader
                      (register-closures? (has-guix-service-type? os))
                      (inputs '())
-                     copy-inputs?)
+                     copy-inputs?
+                     (substitutable? #t))
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
@@ -495,7 +502,8 @@ system."
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
    #:disk-image-format disk-image-format
-   #:references-graphs inputs))
+   #:references-graphs inputs
+   #:substitutable? substitutable?))
 
 (define* (system-docker-image os
                               #:key
@@ -650,11 +658,15 @@ TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
                             (name "disk-image")
                             (file-system-type "ext4")
                             (disk-image-size (* 900 (expt 2 20)))
-                            (volatile? #t))
+                            (volatile? #t)
+                            (substitutable? #t))
   "Return the derivation of a disk image of DISK-IMAGE-SIZE bytes of the
 system described by OS.  Said image can be copied on a USB stick as is.  When
 VOLATILE? is true, the root file system is made volatile; this is useful
-to USB sticks meant to be read-only."
+to USB sticks meant to be read-only.
+
+SUBSTITUTABLE? determines whether the returned derivation should be marked as
+substitutable."
   (define normalize-label
     ;; ISO labels are all-caps (case-insensitive), but since
     ;; 'find-partition-by-label' is case-sensitive, make it all-caps here.
@@ -736,7 +748,8 @@ to USB sticks meant to be read-only."
                     #:file-system-uuid uuid
                     #:copy-inputs? #t
                     #:inputs `(("system" ,os)
-                               ("bootcfg" ,bootcfg))))))
+                               ("bootcfg" ,bootcfg))
+                    #:substitutable? substitutable?))))
 
 (define* (system-qemu-image os
                             #:key
