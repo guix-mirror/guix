@@ -2203,6 +2203,18 @@ ping -c 3 gnu.org
 Setting up network access is almost always a requirement because the
 image does not contain all the software and tools that may be needed.
 
+@cindex proxy, during system installation
+If you need HTTP and HTTPS access to go through a proxy, run the
+following command:
+
+@example
+herd set-http-proxy guix-daemon @var{URL}
+@end example
+
+@noindent
+where @var{URL} is the proxy URL, for example
+@code{http://example.org:8118}.
+
 @cindex installing over SSH
 If you want to, you can continue the installation remotely by starting
 an SSH server:
