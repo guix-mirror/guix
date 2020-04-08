@@ -49,7 +49,15 @@
      (if (%current-target-system)
          ;; The 'setpgrp' test cannot provide an answer when cross-compiling,
          ;; so provide the right one for glibc.
-         `(#:configure-flags (list "ac_cv_func_setpgrp_void=yes"))
+         `(#:configure-flags (list "ac_cv_func_setpgrp_void=yes"
+
+                                   ;; TODO: Move this globally on the next
+                                   ;; rebuild cycle.
+                                   ;; Set a valid localstatedir for the
+                                   ;; benefit of the default
+                                   ;; 'daemon_pid_file_proc', used by the
+                                   ;; Hurd's console client.
+                                   "--localstatedir=/var"))
          '()))
 
     ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18639>.
