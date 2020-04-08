@@ -21,7 +21,7 @@
   #:use-module (gnu installer utils)
   #:use-module (gnu installer newt ethernet)
   #:use-module (gnu installer newt final)
-  #:use-module (gnu installer newt help)
+  #:use-module (gnu installer newt parameters)
   #:use-module (gnu installer newt hostname)
   #:use-module (gnu installer newt keymap)
   #:use-module (gnu installer newt locale)
@@ -47,7 +47,7 @@
   (clear-screen)
   (set-screen-size!)
   (push-help-line
-   (format #f (G_ "Press <F1> for help."))))
+   (format #f (G_ "Press <F1> for installation parameters."))))
 
 (define (exit)
   (newt-finish)
@@ -112,11 +112,11 @@ problem. The backtrace is displayed below. Please report it by email to \
 (define (services-page)
   (run-services-page))
 
-(define (help-menu menu-proc)
+(define (parameters-menu menu-proc)
   (newt-set-help-callback menu-proc))
 
-(define (help-page keyboard-layout-selection)
-  (run-help-page keyboard-layout-selection))
+(define (parameters-page keyboard-layout-selection)
+  (run-parameters-page keyboard-layout-selection))
 
 (define newt-installer
   (installer
@@ -135,5 +135,5 @@ problem. The backtrace is displayed below. Please report it by email to \
    (partition-page partition-page)
    (services-page services-page)
    (welcome-page welcome-page)
-   (help-menu help-menu)
-   (help-page help-page)))
+   (parameters-menu parameters-menu)
+   (parameters-page parameters-page)))

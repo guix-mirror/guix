@@ -198,11 +198,11 @@ selected keymap."
         (timezone-data #~(string-append #$tzdata
                                         "/share/zoneinfo/zone.tab")))
     #~(lambda (current-installer)
-        ((installer-help-menu current-installer)
+        ((installer-parameters-menu current-installer)
          (lambda ()
-           ((installer-help-page current-installer)
+           ((installer-parameters-page current-installer)
             (lambda _
-              (#$(compute-keymap-step 'help)
+              (#$(compute-keymap-step 'param)
                current-installer)))))
         (list
          ;; Ask the user to choose a locale among those supported by

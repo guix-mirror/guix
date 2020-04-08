@@ -39,21 +39,21 @@
      #:title title
      #:info-text
      (case context
-       ((help) (G_ "Please choose your keyboard layout. \
+       ((param) (G_ "Please choose your keyboard layout. \
 It will only be used during the installation process."))
        (else (G_ "Please choose your keyboard layout. \
 It will be used during the install process, and for the installed system. \
-You can switch to different layout at any time from the help menu.")))
+You can switch to different layout at any time from the parameters menu.")))
      #:listbox-items layouts
      #:listbox-item->text layout->text
      #:sort-listbox-items? #f
      #:button-text
      (case context
-       ((help) (G_ "Continue"))
+       ((param) (G_ "Continue"))
        (else (G_ "Exit")))
      #:button-callback-procedure
      (case context
-       ((help) (const #t))
+       ((param) (const #t))
        (else
         (lambda _
           (raise

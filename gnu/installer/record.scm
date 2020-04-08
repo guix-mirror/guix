@@ -38,8 +38,8 @@
             installer-partition-page
             installer-services-page
             installer-welcome-page
-            installer-help-menu
-            installer-help-page))
+            installer-parameters-menu
+            installer-parameters-page))
 
 
 ;;;
@@ -85,6 +85,6 @@
   ;; procedure (logo) -> void
   (welcome-page installer-welcome-page)
   ;; procedure (menu-proc) -> void
-  (help-menu installer-help-menu)
+  (parameters-menu installer-parameters-menu)
   ;; procedure (keyboard-layout-selection) -> void
-  (help-page installer-help-page))
+  (parameters-page installer-parameters-page))

@@ -16,7 +16,7 @@ gnu/installer/locale.scm
 gnu/installer/newt.scm
 gnu/installer/newt/ethernet.scm
 gnu/installer/newt/final.scm
-gnu/installer/newt/help.scm
+gnu/installer/newt/parameters.scm
 gnu/installer/newt/hostname.scm
 gnu/installer/newt/keymap.scm
 gnu/installer/newt/locale.scm

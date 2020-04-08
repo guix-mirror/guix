@@ -672,7 +672,7 @@ INSTALLER_MODULES =                             \
 						\
   %D%/installer/newt/ethernet.scm		\
   %D%/installer/newt/final.scm  		\
-  %D%/installer/newt/help.scm			\
+  %D%/installer/newt/parameters.scm		\
   %D%/installer/newt/hostname.scm		\
   %D%/installer/newt/keymap.scm			\
   %D%/installer/newt/locale.scm			\
