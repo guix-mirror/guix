@@ -2659,10 +2659,20 @@ memory usage and transliteration quality.")
                      (find-files "." "\\.pyc$"))
            #t))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Mimic upstream commit 3a20892442b34c7 to get
+                      ;; rid of dependency on pytest-runner < 5.0.
+                      ;; Remove substitution for PyJWT > 1.7.1.
+                      (substitute* "setup.py"
+                        ((".*pytest-runner.*")
+                         ""))
+                      (invoke "pytest" "-vv"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-cov" ,python-pytest-cov)))
     (home-page "https://github.com/progrium/pyjwt")
     (synopsis "JSON Web Token implementation in Python")
     (description
