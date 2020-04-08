@@ -21,6 +21,7 @@
   #:use-module (guix profiles)
   #:use-module (guix utils)
   #:use-module (gnu bootloader grub)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cross-base)
@@ -48,7 +49,8 @@
                       #:target target))
 
 (define %base-packages/hurd
-  (list hurd bash coreutils file findutils grep sed guile-3.0))
+  (list hurd bash coreutils file findutils grep sed guile-3.0
+        net-base inetutils))
 
 (define* (cross-hurd-image #:key (hurd hurd) (gnumach gnumach))
   "Return a cross-built GNU/Hurd image."
@@ -158,7 +160,14 @@ fi\n"))
       (file "/etc/hostname" "guixygnu")
       (file "/etc/resolv.conf"
             "nameserver 10.0.2.3\n")
-
+      ("/etc/services" -> ,(file-append (with-parameters ((%current-target-system
+                                                           "i586-pc-gnu"))
+                                          net-base)
+                                        "/etc/services"))
+      ("/etc/protocols" -> ,(file-append (with-parameters ((%current-target-system
+                                                            "i586-pc-gnu"))
+                                           net-base)
+                                         "/etc/protocols"))
       ("/etc/motd" -> ,(file-append (with-parameters ((%current-target-system
                                                        "i586-pc-gnu"))
                                       hurd)
