@@ -110,6 +110,8 @@ most common applications of GD involve website development.")
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl-extutils-pkgconfig" ,perl-extutils-pkgconfig)))
     (arguments
      `(#:make-maker-flags
        (list (string-append "--lib_jpeg_path="
