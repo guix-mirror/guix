@@ -1799,6 +1799,14 @@ message.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'patch-ninja-version-check
+             (lambda _
+               ;; The build system assumes the system Ninja is too old because
+               ;; it only checks for versions 1.7 through 1.9.  We have 1.10.
+               (substitute* "configure.pri"
+                 (("1\\.\\[7-9\\]\\.\\*")
+                  "1.([7-9]|1[0-9]).*"))
+               #t))
            (add-before 'configure 'substitute-source
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
