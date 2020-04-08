@@ -2668,11 +2668,11 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "f3bf0dbd803d7805b6ae8303253507ad13922293"))
+  (let ((commit "d459ca1d3d09e7624e662bc4cfc3596850796fc6"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "19" commit))
+      (version (git-version "v0.4.1" "28" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2681,7 +2681,7 @@ in C using Gtk+-3 and WebKitGtk.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ivy28km1p7nlrf63xx3hvrpxf5ld5amk1wcan3k7sqv1kq9mqdb"))))
+                  "1ps15w8cxj9kc18gmvys9jv9xa1qqa7m43ismv34l3cmhddrn0sr"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
