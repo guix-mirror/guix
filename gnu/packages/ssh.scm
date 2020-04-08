@@ -404,10 +404,10 @@ authentication scheme.")
     (home-page "https://mosh.org/")
     (synopsis "Remote shell tolerant to intermittent connectivity")
     (description
-     "Remote terminal application that allows roaming, supports intermittent
-connectivity, and provides intelligent local echo and line editing of user
-keystrokes.  Mosh is a replacement for SSH.  It's more robust and responsive,
-especially over Wi-Fi, cellular, and long-distance links.")
+     "Mosh is a remote terminal application that allows client roaming, supports
+intermittent connectivity, and provides intelligent local echo and line editing
+of user keystrokes.  It's a replacement for SSH that's more robust and
+responsive, especially over Wi-Fi, cellular, and long-distance links.")
     (license license:gpl3+)))
 
 (define-public et
