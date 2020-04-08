@@ -1966,6 +1966,29 @@ supported encryption modes are:
     (description "A pure Perl implementation of the RC4 algorithm.")
     (license (package-license perl))))
 
+(define-public perl-crypt-unixcrypt_xs
+  (package
+    (name "perl-crypt-unixcrypt_xs")
+    (version "0.11")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/B/BO/BORISZ/Crypt-UnixCrypt_XS-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1ajg3x6kwxy4x9p3nw1j36qjxpjvdpi9wkca5gfd86y9q8939sv2"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Crypt-UnixCrypt_XS")
+    (synopsis "XS interface for a portable traditional crypt function")
+    (description "@code{Crypt::UnixCrypt_XS} implements the DES-based
+Unix @code{crypt} function.  For those who need to construct
+non-standard variants of @code{crypt}, the various building blocks
+used in @code{crypt} are also supplied separately.")
+    ;; Files in the 'fcrypt' directory are covered by a BSD licence.
+    (license (list perl-license bsd-3))))
+
 (define-public perl-cwd-guard
   (package
     (name "perl-cwd-guard")
