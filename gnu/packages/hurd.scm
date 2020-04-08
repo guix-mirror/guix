@@ -341,7 +341,12 @@ boot, since this cannot be done from GNU/Linux."
                        (unless (translated? node)
                          (mkdir-p (dirname node))
                          (apply invoke "settrans" "-c" node command))))
-                    '#$translators))))
+                    '#$translators)
+
+          ;; Start the oh-so-fancy console client.
+          (mkdir-p "/var/run")                    ;for the PID file
+          (invoke "console" "--daemonize" "-c" "/dev/vcs"
+                  "-d" "vga" "-d" "pc_kbd" "-d" "generic_speaker"))))
 
   ;; FIXME: We want the program to use the cross-compiled Guile when
   ;; cross-compiling.  But why do we need to be explicit here?
