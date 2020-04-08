@@ -15,6 +15,7 @@
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -230,7 +231,16 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))))
+        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Adjust for ABI change in LibFFI 3.3.  See:
+           ;; https://gitlab.com/embeddable-common-lisp/ecl/-/issues/302
+           ;; https://gitlab.com/embeddable-common-lisp/ecl/-/merge_requests/171
+           (substitute* "src/c/ffi.d"
+             (("FFI_SYSV") "FFI_UNIX64"))
+           #t))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs `(("cl-asdf" ,cl-asdf)
