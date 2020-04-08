@@ -437,7 +437,7 @@ responsive, especially over Wi-Fi, cellular, and long-distance links.")
 without interrupting the session.  Unlike SSH sessions, ET sessions will
 survive even network outages and IP changes.  ET uses a custom protocol over
 TCP, not the SSH protocol.")
-    (home-page "https://mistertea.github.io/EternalTCP/")
+    (home-page "https://eternalterminal.dev/")
     (license license:asl2.0)))
 
 (define-public dropbear
