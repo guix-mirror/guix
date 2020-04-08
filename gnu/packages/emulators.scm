@@ -398,13 +398,17 @@ and a game metadata scraper.")
        ;; There is no test suite.
        #:tests? #f))
     (home-page "https://github.com/higan-emu/higan/")
-    (synopsis "Nintendo multi-system emulator")
+    (synopsis "Multi-system emulator")
     (description
-     "higan (formerly bsnes) is an emulator for multiple Nintendo video game
-consoles, including the Nintendo Entertainment System (NES/Famicom), Super
-Nintendo Entertainment System (SNES/Super Famicom), Game Boy, Game Boy
-Color (GBC), and Game Boy Advance (GBA).  It also supports the subsystems
-Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
+     "higan is a multi-system emulator with an uncompromising focus on
+accuracy and code readability.
+
+It currently emulates the following systems: Famicom, Famicom Disk System,
+Super Famicom, Super Game Boy, Game Boy, Game Boy Color, Game Boy Advance,
+Game Boy Player, SG-1000, SC-3000, Master System, Game Gear, Mega Drive, Mega
+CD, PC Engine, SuperGrafx, MSX, MSX2, ColecoVision, Neo Geo Pocket, Neo Geo
+Pocket Color, WonderSwan, WonderSwan Color, SwanCrystal, Pocket Challenge
+V2.")
     (license license:gpl3+)))
 
 (define-public mgba
