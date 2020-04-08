@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1073,6 +1074,31 @@ result back.")
     (description
      "This package provides a py.test plugin that aborts hanging tests after a
 timeout has been exceeded.")
+    (license license:expat)))
+
+(define-public python-pytest-forked
+  (package
+    (name "python-pytest-forked")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-forked" version))
+       (sha256
+        (base32
+         "000i4q7my2fq4l49n8idx2c812dql97qv6qpm2vhrrn9v6g6j18q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page
+     "https://github.com/pytest-dev/pytest-forked")
+    (synopsis
+     "Run tests in isolated forked subprocesses")
+    (description
+     "Pytest plugin which will run each test in a subprocess and will report if
+a test crashed the process.")
     (license license:expat)))
 
 (define-public python-scripttest
@@ -2590,3 +2616,25 @@ system.  The code under test requires no modification to work with pyfakefs.")
      (arguments
       `(#:python ,python-2
         #:tests? #f)))))
+
+(define-public python-aiounittest
+  (package
+    (name "python-aiounittest")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiounittest" version))
+       (sha256
+        (base32
+         "1q4bhmi80smaa1lknvdna0sx3915naczlfna1fp435nf6cjyrjl1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page
+     "https://github.com/kwarunek/aiounittest")
+    (synopsis "Test asyncio code more easily")
+    (description "Aiounittest is a library that helps write tests using
+asynchronous code in Python (asyncio).")
+    (license license:expat)))

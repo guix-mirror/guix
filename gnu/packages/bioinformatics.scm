@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7580,13 +7581,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.22.0")
+    (version "1.22.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "07zljs2mfi8rf31g903f43v2f7767xbnflfrx9qjnmgf7bm039x0"))))
+                "0phadr67yb4l25x41a9wg4pjy1wbxlk14jhidhz6g5n4z6x45qbm"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -7596,6 +7597,8 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
        ("r-iranges" ,r-iranges)
        ("r-rcurl" ,r-rcurl)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/GenomeInfoDb")
     (synopsis "Utilities for manipulating chromosome identifiers")
     (description
@@ -7808,13 +7811,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.42.0")
+    (version "2.42.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0difh4dsccjzhpfkvajy2adh98ym9164gd6clnsnic6qr6sk86ss"))))
+                "0676s8aq9xj2pdrfk28kf5j69fmssn900k4vxrp11ghwjr8z24h7"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -7827,6 +7830,8 @@ annotation data packages using SQLite data storage.")
        ("r-rappdirs" ,r-rappdirs)
        ("r-stringr" ,r-stringr)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biomaRt")
     (synopsis "Interface to BioMart databases")
     (description
@@ -13549,17 +13554,27 @@ allowing the insertion of arbitrary types into the tree.")
 (define-public python-intervaltree
   (package
     (name "python-intervaltree")
-    (version "2.1.0")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "intervaltree" version))
        (sha256
         (base32
-         "02w191m9zxkcjqr1kv2slxvhymwhj3jnsyy3a28b837pi15q19dc"))))
+         "0wz234g6irlm4hivs2qzmnywk0ss06ckagwh15nflkyb3p462kyb"))))
     (build-system python-build-system)
-    ;; FIXME: error when collecting tests
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; pytest seems to have a check to make sure the user is testing
+         ;; their checked-out code and not an installed, potentially
+         ;; out-of-date copy. This is harmless here, since we just installed
+         ;; the package, so we disable the check to avoid skipping tests
+         ;; entirely.
+         (add-before 'check 'import-mismatch-error-workaround
+           (lambda _
+             (setenv "PY_IGNORE_IMPORTMISMATCH" "1")
+             #t)))))
     (propagated-inputs
      `(("python-sortedcontainers" ,python-sortedcontainers)))
     (native-inputs

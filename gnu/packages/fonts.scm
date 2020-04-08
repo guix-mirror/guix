@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -559,17 +560,16 @@ fonts.")
 (define-public font-rachana
   (package
     (name "font-rachana")
-    (version "7.0")
+    (version "7.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/smc/rachana/repository/archive.tar.gz?ref=Version"
-             version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/smc/fonts/rachana")
+             (commit (string-append "Version" version))))
        (sha256
-        (base32
-         "0jc091gshna6p1dd6lf507jxkgk6rsja835fc9dm71mcplq53bm1"))))
+        (base32 "0r100pvk56y1s38nbv24d78s8nd7dkblgasbn8s887dzj6dps23d"))
+       (file-name (git-file-name name version))))
     (build-system font-build-system)
     (home-page "https://smc.org.in")
     (synopsis "Malayalam font")
@@ -650,7 +650,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "12.1.04")
+    (version "13.0.01")
     (source
      (origin
        (method url-fetch)
@@ -660,7 +660,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "1h5dyhg4j8sh4qpbwnsn34igb8mfapz5b3nf4k71hq1c5z3j0mcv"))))
+        (base32 "1svzm3xahb2m8r79ha9gb1z3zlckykx9d87cghswj7dxn9868j4b"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -703,7 +703,7 @@ for use at smaller text sizes")))
      "GNU Unifont is a bitmap font covering essentially all of
 Unicode's Basic Multilingual Plane.  The package also includes
 utilities to ease adding new glyphs to the font.")
-    (home-page "http://unifoundry.com/unifont.html")
+    (home-page "http://unifoundry.com/unifont/index.html")
     (properties '((upstream-name . "unifont")))
     (license license:gpl2+)))
 
@@ -1177,6 +1177,50 @@ programming.  Iosevka is completely generated from its source code.")
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
         (base32 "1rkmgi08kknc1fg54zpa6w92m3b3v7pc8cpwygz22kgd2h0mdrr8"))))))
+
+(define-public font-iosevka-term
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-term")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/02-iosevka-term-" version ".zip"))
+       (sha256
+        (base32
+         "1mxlb3qf64nykjd0x4gjfvib3k5kyv9ssv9iyzxxgk2z80bydz00"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*"))
+             #t)))))))
+
+(define-public font-iosevka-term-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-term-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/06-iosevka-term-slab-" version ".zip"))
+       (sha256
+        (base32
+         "1gc16hih157qy6vpa8f88psq0fnksiigi3msqazc75zsm3z4kzqj"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*"))
+             #t)))))))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")

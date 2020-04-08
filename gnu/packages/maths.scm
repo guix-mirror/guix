@@ -35,6 +35,9 @@
 ;;; Copyright © 2019 Robert Smith <robertsmith@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Felix Gruber <felgru@posteo.net>
+;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +65,7 @@
   #:use-module (guix utils)
   #:use-module ((guix build utils) #:select (alist-replace))
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system ruby)
@@ -79,6 +83,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
@@ -86,8 +91,10 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages less)
@@ -374,6 +381,81 @@ universal constants, atomic numbers, and constants related to
 semiconductors.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/dionysus/")))
+
+(define-public dsfmt
+  (package
+    (name "dsfmt")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+         (string-append
+           "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/"
+           "dSFMT-src-" version ".tar.gz"))
+       (sha256
+        (base32
+         "03kaqbjbi6viz0n33dk5jlf6ayxqlsq4804n7kwkndiga9s4hd42"))
+       (modules '((guix build utils)))
+       ;; Don't distribute html documentation with bundled jquery.
+       (snippet
+        '(begin
+           (delete-file-recursively "html") #t))
+       ;; Add patches borrowed from Julia.
+       (patches
+         (list
+           (origin
+             (method url-fetch)
+             (uri (string-append
+                    "https://raw.githubusercontent.com/JuliaLang/julia/"
+                    "v1.3.0/deps/patches/dSFMT.c.patch"))
+             (sha256 (base32
+                      "09mhv11bms8jsmkmdqvlcgljwhzw3b6n9nncpi2b6dla9798hw2y"))
+             (file-name "dSFMT.c.patch"))
+           (origin
+             (method url-fetch)
+             (uri (string-append
+                    "https://raw.githubusercontent.com/JuliaLang/julia/"
+                    "v1.3.0/deps/patches/dSFMT.h.patch"))
+             (sha256 (base32
+                      "1py5rd0yxic335lzka23f6x2dhncrpizpyrk57gi2f28c0p98y5n"))
+             (file-name "dSFMT.h.patch"))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'build
+           ;; Upstream Makefile does not build a shared library. Borrow from Julia
+           ;; https://github.com/JuliaLang/julia/blob/v1.3.0/deps/dsfmt.mk
+           (lambda _
+             (invoke
+               "gcc" "-DNDEBUG" "-DDSFMT_MEXP=19937"
+               "-fPIC" "-DDSFMT_DO_NOT_USE_OLD_NAMES"
+               "-O3" "-finline-functions" "-fomit-frame-pointer"
+               "-fno-strict-aliasing" "--param" "max-inline-insns-single=1800"
+               "-Wmissing-prototypes" "-Wall" "-std=c99" "-shared" "dSFMT.c"
+               "-o" "libdSFMT.so")))
+         (replace 'install              ; no "install" target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (inc (string-append out "/include"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (install-file "libdSFMT.so" lib)
+               (install-file "dSFMT.h" inc)
+               (install-file "LICENSE.txt" doc)
+               #t))))))
+    (synopsis "Double precision SIMD-oriented Fast Mersenne Twister")
+    (description
+     "The dSMFT package speeds up Fast Mersenne Twister generation by avoiding
+the expensive conversion of integer to double (floating point).  dSFMT directly
+generates double precision floating point pseudorandom numbers which have the
+IEEE Standard for Binary Floating-Point Arithmetic (ANSI/IEEE Std 754-1985)
+format.  dSFMT is only available on the CPUs which use IEEE 754 format double
+precision floating point numbers.")
+    (home-page "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/SFMT/")
+    (license license:bsd-3)))
 
 (define-public gsl
   (package
@@ -2653,8 +2735,9 @@ implemented in ANSI C, and MPI for communications.")
                                "scotch-integer-declarations.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("flex" ,flex)
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("flex" ,flex)
        ("bison" ,bison)))
     (outputs '("out" "metis"))
     (arguments
@@ -5353,3 +5436,112 @@ researchers and developers alike to get started on SAT.")
       (home-page
        "http://minisat.se/MiniSat.html")
       (license license:expat))))
+
+(define-public libqalculate
+  (package
+    (name "libqalculate")
+    (version "3.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Qalculate/libqalculate/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("doxygen" ,doxygen)
+       ("file" ,file)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("libxml2" ,libxml2)
+       ("curl" ,curl)
+       ("icu4c" ,icu4c)
+       ("gnuplot" ,gnuplot)
+       ("readline" ,readline)
+       ("libiconv" ,libiconv)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "TRUE")
+             #t)))))
+    (home-page "https://qalculate.github.io/")
+    (synopsis "Multi-purpose cli desktop calculator and library")
+    (description
+     "Libqalculate is a multi-purpose cli desktop calculator and library.
+It provides basic and advanced functionality.  Features include customizable
+functions, unit calculations, and conversions, physical constants, symbolic
+calculations (including integrals and equations), arbitrary precision,
+uncertainity propagation, interval arithmetic, plotting and a user-friendly
+cli.")
+    (license license:gpl2+)))
+
+(define-public qalculate-gtk
+  (package
+    (name "qalculate-gtk")
+    (version "3.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Qalculate/qalculate-gtk/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0nsg6dzg5r7rzqr671nvrf1c50rjwpz7bxv5f20i4s7agizgv840"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("file" ,file)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("libqalculate" ,libqalculate)
+       ("libxml2" ,libxml2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "TRUE")
+             #t))
+         (add-before 'check 'add-pot-file
+           ;; the file contains translations and are currently not in use
+           ;; left out on purpose so add it to POTFILES.skip
+           (lambda _
+             (with-output-to-file "po/POTFILES.skip"
+               (lambda _
+                 (format #t "data/shortcuts.ui~%")
+                 #t))
+             #t)))))
+    (home-page "https://qalculate.github.io/")
+    (synopsis "Multi-purpose graphical desktop calculator")
+    (description
+     "Qalculate-gtk is the GTK frontend for libqalculate.  It is a
+multi-purpose GUI desktop calculator.  It provides basic and advanced
+functionality.  Features include customizable functions, unit calculations,
+and conversions, physical constants, symbolic calculations (including
+integrals and equations), arbitrary precision, uncertainity propagation,
+interval arithmetic, plotting.")
+    (license license:gpl2+)))

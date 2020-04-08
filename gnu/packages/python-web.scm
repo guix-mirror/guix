@@ -90,10 +90,23 @@
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))))
+         "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))
+       (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
+
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;missing pytest-timeout
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; disable brotli tests, because we’re not providing that optional library
+             (substitute* "tests/test_http_parser.py"
+               (("    async def test_feed_eof_no_err_brotli")
+                "    @pytest.mark.xfail\n    async def test_feed_eof_no_err_brotli"))
+             ;; make sure the timestamp of this file is > 1990, because a few
+             ;; tests like test_static_file_if_modified_since_past_date depend on it
+             (invoke "touch" "-d" "2020-01-01" "tests/data.unknown_mime_type")
+             #t)))))
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
        ("python-async-timeout" ,python-async-timeout)
@@ -102,6 +115,15 @@
        ("python-idna-ssl" ,python-idna-ssl)
        ("python-multidict" ,python-multidict)
        ("python-yarl" ,python-yarl)))
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-xdit" ,python-pytest-xdist)
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-forked" ,python-pytest-forked)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("gunicorn" ,gunicorn-bootstrap)
+       ("python-freezegun" ,python-freezegun)
+       ("python-async-generator" ,python-async-generator)))
     (home-page "https://github.com/aio-libs/aiohttp/")
     (synopsis "Async HTTP client/server framework (asyncio)")
     (description "@code{aiohttp} is an asynchronous HTTP client/server
@@ -3390,14 +3412,14 @@ hard or impossible to fix in cssselect.")
 (define-public gunicorn
   (package
     (name "gunicorn")
-    (version "20.0.0")
+    (version "20.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gunicorn" version))
        (sha256
         (base32
-         "0l1zm8a0vz8ws3lkn8q9a0f93ipdzyvlf2zlwdj5xyadh6jdwsgg"))))
+         "09n6fc019bgrvph1s5h1lwhn2avcsprw6ncd203qhra3i8mvn10r"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (arguments
@@ -3413,11 +3435,6 @@ hard or impossible to fix in cssselect.")
            (lambda _
              (setenv "PYTHONPATH"
                      (string-append ".:" (getenv "PYTHONPATH")))
-             ;; Remove test modules failing due to libc not found due to
-             ;; section '.dynamic' not found in libc.so
-             (delete-file "tests/test_arbiter.py")
-             (delete-file "tests/test_config.py")
-             (delete-file "tests/test_sock.py")
              (invoke "pytest")))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
@@ -3451,6 +3468,16 @@ Unicorn project.  The Gunicorn server is broadly compatible with
 various web frameworks, simply implemented, light on server resources,
 and fairly speedy.")
   (license license:expat)))
+
+;; break cyclic dependency for python-aiohttp, which depends on gunicorn for
+;; its tests
+(define-public gunicorn-bootstrap
+  (package
+    (inherit gunicorn)
+    (name "gunicorn")
+	(arguments `(#:tests? #f))
+	(properties '((hidden? . #t)))
+    (native-inputs `())))
 
 (define-public python-translation-finder
   (package

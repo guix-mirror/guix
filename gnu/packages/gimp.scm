@@ -152,10 +152,16 @@ buffers.")
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
+
              ;; Prevent the build system from running 'gtk-update-icon-cache'
              ;; which is not needed during the build because Guix runs it at
              ;; profile creation time.
              "ac_cv_path_GTK_UPDATE_ICON_CACHE=true"
+
+             ;; Disable automatic network request on startup to check for
+             ;; version updates.
+             "--disable-check-update"
+
              ;; ./configure requests not to annoy upstream with packaging bugs.
              "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases

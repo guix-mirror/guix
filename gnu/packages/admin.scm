@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1291,9 +1292,10 @@ system administrator.")
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
        #:tests? #f))
+    (native-inputs
+     `(("groff" ,groff)))
     (inputs
-     `(("groff" ,groff)
-       ("linux-pam" ,linux-pam)
+     `(("linux-pam" ,linux-pam)
        ("zlib" ,zlib)
        ("coreutils" ,coreutils)))
     (home-page "https://www.sudo.ws/")
@@ -2647,6 +2649,7 @@ shortcut syntax and completion options.")
               (uri (string-append
                     "https://archives.eyrie.org/software/kerberos/"
                     "pam-krb5-" version ".tar.xz"))
+              (patches (search-patches "pam-krb5-CVE-2020-10595.patch"))
               (sha256
                (base32
                 "1qjp8i1s9bz7g6kiqrkzzkxn5pfspa4sy53b6z40fqmdf9przdfb"))))

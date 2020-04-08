@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2021,6 +2022,42 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
     (home-page "https://jgmenu.github.io/")
     (license license:gpl2)))
 
+(define-public xwallpaper
+  (package
+    (name "xwallpaper")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stoeckmann/xwallpaper")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "175fzifvia58vah2x7509drvfn3xfv5d9szgh9x1w1a1w8rcs2hx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libxpm" ,libxpm)
+       ("pixman" ,pixman)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)))
+    (home-page "https://github.com/stoeckmann/xwallpaper")
+    (synopsis "Wallpaper setting utility for X")
+    (description
+     "The xwallpaper utility allows you to set image files as your X
+wallpaper. JPEG, PNG, and XPM file formats are supported.
+
+The wallpaper is also advertised to programs which support semi-transparent
+backgrounds.")
+    (license license:isc)))
+
 (define-public xwrits
   (package
     (name "xwrits")
@@ -2171,17 +2208,17 @@ tools to complement clipnotify.")
     (license license:public-domain)))
 
 (define-public clipmenu
-  (let ((commit "a495bcc7a4ab125182a661c5808364f66938a87c")
+  (let ((commit "bcbe7b144598db4a103f14e8408c4b7327d6d5e1")
         (revision "1"))
     (package
       (name "clipmenu")
-      (version (string-append "5.6.0-"
+      (version (string-append "6.0.1-"
                               revision "." (string-take commit 7)))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cdown/clipnotify.git")
+               (url "https://github.com/cdown/clipmenu.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256

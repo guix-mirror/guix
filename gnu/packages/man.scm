@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -137,10 +138,10 @@ a flexible and convenient way.")
                   (srfi srfi-1))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("flex" ,flex)
        ("groff" ,groff)))   ;needed at build time (troff, grops, soelim, etc.)
     (inputs
-     `(("flex" ,flex)
-       ("gdbm" ,gdbm)
+     `(("gdbm" ,gdbm)
        ("groff-minimal" ,groff-minimal)
        ("less" ,less)
        ("libpipeline" ,libpipeline)
@@ -230,7 +231,7 @@ automatically.")
 (define-public scdoc
   (package
    (name "scdoc")
-   (version "1.9.4")
+   (version "1.10.1")
    (source
     (origin
      (method url-fetch)
@@ -239,7 +240,7 @@ automatically.")
      (file-name (string-append name "-" version ".tar.gz"))
      (sha256
       (base32
-       "00zc3rzj97gscby31djlqyczvqpyhrl66i44czwzmmn7rc5j03m1"))))
+       "13x7g1r56bshvfmlvapvz35ywnbgsh337kywb5kcv8nc6b3j3q40"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags

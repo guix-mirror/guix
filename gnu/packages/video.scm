@@ -38,6 +38,7 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
@@ -1538,7 +1540,7 @@ projects while introducing many more.")
 (define-public mpv-mpris
   (package
     (name "mpv-mpris")
-    (version "0.2")
+    (version "0.4")
     (source
       (origin
         (method git-fetch)
@@ -1548,19 +1550,17 @@ projects while introducing many more.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "06hq3j1jjlaaz9ss5l7illxz8vm5bng86jl24kawglwkqayhdnjx"))))
-    (build-system gnu-build-system)
+          "1fr3jvja8s2gdpx8qyk9r17977flms3qpm8zci62nd9r5wjdvr5i"))))
+    (build-system copy-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags '("CC=gcc")
+     '(#:install-plan
+       '(("mpris.so" "lib/"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; no configure script
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "mpris.so" (string-append out "/lib")))
-             #t)))))
+         (add-before 'install 'build
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             (invoke "make"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -3278,7 +3278,6 @@ programmers to access a standard API to open and decompress media files.")
                  #t)))))
     (inputs
      `(("boost" ,boost)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("ffms2" ,ffms2)
        ("fftw" ,fftw)
        ("hunspell" ,hunspell)
@@ -3291,6 +3290,7 @@ programmers to access a standard API to open and decompress media files.")
        ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.aegisub.org/")
     (synopsis "Subtitle engine")
@@ -3656,7 +3656,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 (define-public openshot
   (package
     (name "openshot")
-    (version "2.4.4")
+    (version "2.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3665,10 +3665,11 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mg63v36h7l8kv2sgf6x8c1n3ygddkqqwlciz7ccxpbm4x1idqba"))
+                "0qc5i0ay6j2wab1whl41sjb71cj02pg6y79drf7asrprq8b2rmfq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
+           ;; TODO: Unbundle jquery and others from src/timeline/media
            (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
@@ -3681,14 +3682,17 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        ("python-requests" ,python-requests)
        ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f                      ;no tests
-       #:modules ((guix build python-build-system)
+     `(#:modules ((guix build python-build-system)
                   (guix build qt-utils)
                   (guix build utils))
        #:imported-modules (,@%python-build-system-modules
                             (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
+                  (replace 'check
+                    (lambda _
+                      (setenv "QT_QPA_PLATFORM" "offscreen")
+                      (invoke "python" "src/tests/query_tests.py")))
                   (add-after 'unpack 'patch-font-location
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((font (assoc-ref inputs "font-ubuntu")))
@@ -3707,7 +3711,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (let ((out (assoc-ref outputs "out")))
                         (wrap-qt-program out "openshot-qt"))
                       #t)))))
-    (home-page "https://openshot.org")
+    (home-page "https://www.openshot.org/")
     (synopsis "Video editor")
     (description "OpenShot takes your videos, photos, and music files and
 helps you create the film you have always dreamed of.  Easily add sub-titles,

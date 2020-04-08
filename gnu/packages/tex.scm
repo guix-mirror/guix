@@ -12,6 +12,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5987,8 +5988,8 @@ other things it comes with full Unicode support.")
                "1xbkv8ll889933gyi2a5hj7hhh216k04gn8fwz5lfv5iz8s34gbq"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
-    (inputs `(("texinfo" ,texinfo)
-              ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+    (native-inputs `(("texinfo" ,texinfo)))
+    (inputs `(("python" ,python-2) ; incompatible with Python 3 (print syntax)
               ("which" ,which)))
     (home-page "https://launchpad.net/rubber")
     (synopsis "Wrapper for LaTeX and friends")

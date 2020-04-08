@@ -28,6 +28,8 @@
 # Copyright © 2019 Amin Bandali <bandali@gnu.org>
 # Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 # Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+# Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+# Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz
 #
 # This file is part of GNU Guix.
 #
@@ -319,6 +321,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libusb.scm			\
   %D%/packages/libunwind.scm			\
   %D%/packages/lighting.scm                     \
+  %D%/packages/linphone.scm			\
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
   %D%/packages/lisp.scm				\
@@ -343,6 +346,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/marst.scm			\
   %D%/packages/mate.scm             \
   %D%/packages/maths.scm			\
+  %D%/packages/matrix.scm			\
   %D%/packages/maven.scm			\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
@@ -658,6 +662,7 @@ INSTALLER_MODULES =                             \
   %D%/installer/locale.scm			\
   %D%/installer/newt.scm			\
   %D%/installer/parted.scm			\
+  %D%/installer/proxy.scm			\
   %D%/installer/record.scm		        \
   %D%/installer/services.scm			\
   %D%/installer/steps.scm			\
@@ -668,6 +673,7 @@ INSTALLER_MODULES =                             \
 						\
   %D%/installer/newt/ethernet.scm		\
   %D%/installer/newt/final.scm  		\
+  %D%/installer/newt/parameters.scm		\
   %D%/installer/newt/hostname.scm		\
   %D%/installer/newt/keymap.scm			\
   %D%/installer/newt/locale.scm			\
@@ -761,6 +767,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
+  %D%/packages/patches/beancount-disable-googleapis-fonts.patch	\
   %D%/packages/patches/beets-werkzeug-compat.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
@@ -768,10 +775,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/bidiv-update-fribidi.patch		\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
+  %D%/packages/patches/binutils-mingw-w64-specify-timestamp.patch \
+  %D%/packages/patches/binutils-mingw-w64-reproducible-import-libraries.patch \
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/bluez-CVE-2020-0556.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
+  %D%/packages/patches/calibre-msgpack-compat.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-bs4.patch		\
   %D%/packages/patches/calibre-remove-test-sqlite.patch		\
@@ -1035,7 +1045,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
-  %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
@@ -1070,6 +1079,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jfsutils-add-sysmacros.patch		\
   %D%/packages/patches/jfsutils-include-systypes.patch		\
   %D%/packages/patches/jsoncpp-fix-inverted-case.patch		\
+  %D%/packages/patches/julia-SOURCE_DATE_EPOCH-mtime.patch	\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
   %D%/packages/patches/libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch	\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
@@ -1201,12 +1211,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/libmemcached-build-with-gcc7.patch	\
+  %D%/packages/patches/mediastreamer2-srtp2.patch		\
   %D%/packages/patches/mesa-skip-disk-cache-test.patch		\
   %D%/packages/patches/mescc-tools-boot.patch			\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
+  %D%/packages/patches/mingw-w64-dlltool-temp-prefix.patch	\
+  %D%/packages/patches/mingw-w64-reproducible-gendef.patch	\
   %D%/packages/patches/minisat-friend-declaration.patch		\
   %D%/packages/patches/minisat-install.patch			\
   %D%/packages/patches/mit-krb5-hurd.patch			\
@@ -1282,6 +1295,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
+  %D%/packages/patches/pam-krb5-CVE-2020-10595.patch		\
   %D%/packages/patches/pam-mount-luks2-support.patch		\
   %D%/packages/patches/pango-skip-libthai-test.patch		\
   %D%/packages/patches/pciutils-hurd-configure.patch		\
@@ -1351,6 +1365,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-3-fix-tests.patch			\
   %D%/packages/patches/python-3.8-fix-tests.patch		\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
+  %D%/packages/patches/python-aiohttp-3.6.2-no-warning-fail.patch	\
   %D%/packages/patches/python-alembic-exceptions-cause.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
@@ -1404,7 +1419,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
   %D%/packages/patches/reposurgeon-add-missing-docbook-files.patch	\
-  %D%/packages/patches/reprotest-support-guix.patch		\
   %D%/packages/patches/ri-li-modernize_cpp.patch		\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpcbind-CVE-2017-8779.patch		\
@@ -1429,7 +1443,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/scotch-integer-declarations.patch	\
   %D%/packages/patches/screen-hurd-path-max.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
-  %D%/packages/patches/sdl2-mesa-compat.patch			\
   %D%/packages/patches/seahorse-gkr-use-0-on-empty-flags.patch	\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
@@ -1544,6 +1557,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/xmoto-utf8.patch				\
   %D%/packages/patches/xmoto-remove-glext.patch			\
   %D%/packages/patches/xmoto-reproducible.patch			\
+  %D%/packages/patches/xplanet-1.3.1-cxx11-eof.patch		\
+  %D%/packages/patches/xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch	\
+  %D%/packages/patches/xplanet-1.3.1-libimage_gif.c.patch	\
+  %D%/packages/patches/xplanet-1.3.1-xpUtil-Add2017LeapSecond.cpp.patch	\
   %D%/packages/patches/xsane-fix-memory-leak.patch		\
   %D%/packages/patches/xsane-fix-pdf-floats.patch		\
   %D%/packages/patches/xsane-fix-snprintf-buffer-length.patch	\

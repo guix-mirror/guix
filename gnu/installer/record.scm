@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +37,9 @@
             installer-user-page
             installer-partition-page
             installer-services-page
-            installer-welcome-page))
+            installer-welcome-page
+            installer-parameters-menu
+            installer-parameters-page))
 
 
 ;;;
@@ -61,7 +63,7 @@
   (exit-error installer-exit-error)
   ;; procedure void -> void
   (final-page installer-final-page)
-  ;; procedure (layouts) -> (list layout variant)
+  ;; procedure (layouts context) -> (list layout variant)
   (keymap-page installer-keymap-page)
   ;; procedure: (#:key supported-locales iso639-languages iso3166-territories)
   ;; -> glibc-locale
@@ -81,4 +83,8 @@
   ;; procedure void -> void
   (services-page installer-services-page)
   ;; procedure (logo) -> void
-  (welcome-page installer-welcome-page))
+  (welcome-page installer-welcome-page)
+  ;; procedure (menu-proc) -> void
+  (parameters-menu installer-parameters-menu)
+  ;; procedure (keyboard-layout-selection) -> void
+  (parameters-page installer-parameters-page))

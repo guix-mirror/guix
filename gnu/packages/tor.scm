@@ -7,6 +7,7 @@
 ;;; Copyright © 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -141,8 +142,9 @@ rejects UDP traffic from the application you're using.")
     (inputs
      `(("w3m" ,w3m)
        ("pcre" ,pcre)
-       ("zlib" ,zlib)
-       ("autoconf" ,autoconf)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (home-page "https://www.privoxy.org")
     (synopsis "Web proxy with advanced filtering capabilities for enhancing privacy")

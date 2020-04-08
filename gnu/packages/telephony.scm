@@ -16,6 +16,9 @@
 ;;; Copyright © 2019 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +37,9 @@
 
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages aidc)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages audio)
@@ -43,6 +48,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
   #:use-module (gnu packages protobuf)
@@ -52,10 +58,12 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -82,6 +90,97 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system qt))
+
+(define-public spandsp
+  (package
+    (name "spandsp")
+    (version "0.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        ;; The original upstream has been down since the end of March 2020.
+        (string-append "https://web.archive.org/web/20180626203108/"
+                       "https://www.soft-switch.org/downloads/" name "/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rclrkyspzk575v8fslzjpgp4y2s4x7xk3r55ycvpi4agv33l1fc"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc" "static"))   ;doc contains HTML documentation
+    (arguments
+     `(#:configure-flags '("--enable-doc=yes" "--enable-tests=yes")
+       #:parallel-build? #f ;non-deterministic build failures may occur otherwise
+       #:parallel-tests? #f ;fails removing the same the files twice otherwise
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-configure.ac
+                    (lambda _
+                      ;; spandsp looks at hard coded locations of the FHS to
+                      ;; find libxml2.
+                      (substitute* "configure.ac"
+                        (("AC_MSG_CHECKING\\(for libxml/xmlmemory\\.h.*" all)
+                         (string-append all
+                                        "PKG_CHECK_MODULES(XML2, libxml-2.0)\n"
+                                        "CPPFLAGS+=\" $XML2_CFLAGS\"\n")))
+                      ;; Force a regeneration of the autotools build system.
+                      (delete-file "autogen.sh")
+                      (delete-file "configure")
+                      #t))
+                  (add-after 'unpack 'do-not-install-data-files
+                    ;; The .tiff images produced for tests are not
+                    ;; reproducible and it is not desirable to have those
+                    ;; distributed.
+                    (lambda _
+                      (substitute* '("test-data/itu/fax/Makefile.am"
+                                     "test-data/etsi/fax/Makefile.am")
+                        (("nobase_data_DATA")
+                         "noinst_DATA"))
+                      #t))
+                  (add-after 'install 'install-doc
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((doc (string-append (assoc-ref outputs "doc")
+                                                "/share/doc/" ,name "-" ,version)))
+                        (copy-recursively "doc/t38_manual" doc)
+                        #t)))
+                  (add-after 'install 'move-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (static (assoc-ref outputs "static")))
+                        (mkdir-p (string-append static "/lib"))
+                        (with-directory-excursion out
+                          (for-each (lambda (file)
+                                      (rename-file file
+                                                   (string-append static "/"
+                                                                  file)))
+                                    (find-files "lib" "\\.a$")))
+                        #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ;; For the tests
+       ("fftw" ,fftw)
+       ("libpcap" ,libpcap)
+       ("libsndfile" ,libsndfile)
+       ("libtiff" ,libtiff)
+       ("netpbm" ,netpbm)
+       ("sox" ,sox)
+       ;; For the documentation
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("docbook-xsl" ,docbook-xsl)
+       ("doxygen" ,doxygen)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (synopsis "DSP library for telephony")
+    (description "SpanDSP is a library of DSP functions for telephony, in the
+8000 sample per second world of E1s, T1s, and higher order PCM channels.  It
+contains low level functions, such as basic filters.  It also contains higher
+level functions, such as cadenced supervisory tone detection, and a complete
+software FAX machine.")
+    (home-page "https://web.archive.org/web/20180626203108/\
+https://www.soft-switch.org/index.html")
+    (license (list license:lgpl2.1+  ;for the library
+                   license:gpl2+)))) ;for the test suites and support programs
 
 (define-public commoncpp
   (package
@@ -281,52 +380,6 @@ Protocol (@dfn{SRTP}), the Universal Security Transform (@dfn{UST}), and a
 supporting cryptographic kernel.")
     (home-page "https://github.com/cisco/libsrtp")
     (license license:bsd-3)))
-
-(define-public bctoolbox
-  (package
-    (name "bctoolbox")
-    (version "0.2.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://savannah/linphone/bctoolbox/bctoolbox-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "14ivv6bh6qywys6yyb34scy9w78d636xl1f7cyxm3gwx2qv71lx5"))))
-    (build-system gnu-build-system)
-    (arguments '(#:make-flags '("CFLAGS=-fPIC")))
-    (native-inputs
-     `(("cunit" ,cunit)))
-    (inputs
-     `(("mbedtls" ,mbedtls-apache)))
-    (home-page "https://www.linphone.org")
-    (synopsis "Utilities library for linphone software")
-    (description "BCtoolbox is a utilities library used by Belledonne
-Communications software like linphone.")
-    (license license:gpl2+)))
-
-(define-public ortp
-  (package
-    (name "ortp")
-    (version "0.27.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.savannah.nongnu.org/"
-                                  "releases/linphone/ortp/sources/ortp-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1by0dqdqrj5avzcvjws30g8v5sa61wj12x00sxw0kn1smcrshqgb"))))
-    (build-system gnu-build-system)
-    (inputs
-     `(("bctoolbox" ,bctoolbox)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://linphone.org/")
-    (synopsis "Implementation of the Real-time transport protocol")
-    (description "oRTP is a library implementing the Real-time transport
-protocol (RFC 3550).")
-    (license license:lgpl2.1+)))
 
 (define-public libiax2
   (let ((commit "0e5980f1d78ce462e2d1ed6bc39ff35c8341f201"))
@@ -916,11 +969,11 @@ This package provides a library common to all Jami clients.")
        ("libnotify" ,libnotify)
        ("clutter" ,clutter)
        ("clutter-gtk" ,clutter-gtk)
-       ("gettext" ,gnu-gettext)
        ("libcanberra" ,libcanberra)
        ("webkitgtk" ,webkitgtk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("doxygen" ,doxygen)))
     (propagated-inputs

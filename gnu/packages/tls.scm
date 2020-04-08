@@ -165,6 +165,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
+    (replacement gnutls-3.6.13)
     (version "3.6.12")
     (source (origin
              (method url-fetch)
@@ -250,10 +251,23 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define-public gnutls/guile-2.0
-  ;; GnuTLS for Guile 2.0.
+(define gnutls-3.6.13
   (package
     (inherit gnutls)
+    (version "3.6.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-3.6.13.tar.xz"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
+              (sha256
+               (base32
+                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))))
+
+(define-public gnutls/guile-2.0
+  ;; GnuTLS for Guile 2.0.
+  (package/inherit gnutls
     (name "guile2.0-gnutls")
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
@@ -263,8 +277,7 @@ required structures.")
   ;; Authentication of Named Entities.  This is required for GNS functionality
   ;; by GNUnet and gnURL.  This is done in an extra package definition
   ;; to have the choice between GnuTLS with Dane and without Dane.
-  (package
-    (inherit gnutls)
+  (package/inherit gnutls
     (name "gnutls-dane")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))

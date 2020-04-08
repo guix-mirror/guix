@@ -259,7 +259,7 @@ runtime")
 (define-public rgbds
   (package
     (name "rgbds")
-    (version "0.3.10")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -268,7 +268,7 @@ runtime")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0752fbffxgxyf3jw2iij88l05dqhppgcxy7dvk82hp4wdg4cflpq"))))
+                "15680964nlsa83nqgxk7knxajn98lddz2hg6jnn8ffmnms5wdam7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

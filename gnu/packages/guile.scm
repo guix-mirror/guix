@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -419,40 +419,50 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 (define-deprecated-guile3.0-package guile3.0-readline)
 
 (define-public guile-for-guile-emacs
-  (package (inherit guile-2.2)
-    (name "guile-for-guile-emacs")
-    (version "20150510.d8d9a8d")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.hcoop.net/git/bpt/guile.git")
-                    (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
-    (arguments
-     `(;; Tests aren't passing for now.
-       ;; Obviously we should re-enable this!
-       #:tests? #f
-       ,@(package-arguments guile-2.2)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("flex" ,flex)
-       ("texinfo" ,texinfo)
-       ("gettext" ,gettext-minimal)
-       ,@(package-native-inputs guile-2.2)))
-    ;; Same as in guile-2.0
-    (native-search-paths
-     (list (search-path-specification
-            (variable "GUILE_LOAD_PATH")
-            (files '("share/guile/site/2.0")))
-           (search-path-specification
-            (variable "GUILE_LOAD_COMPILED_PATH")
-            (files '("lib/guile/2.0/site-ccache"
-                     "share/guile/site/2.0")))))))
+  (let ((commit "15ca78482ac0dd2e3eb36dcb31765d8652d7106d")
+        (revision "1"))
+    (package (inherit guile-2.2)
+      (name "guile-for-guile-emacs")
+      (version (git-version "2.1.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.savannah.gnu.org/guile.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1l7ik4q4zk7vq4m3gnwizc0b64b1mdr31hxqlzxs94xaf2lvi7s2"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments guile-2.2)
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (replace 'bootstrap
+               (lambda _
+                 ;; Disable broken tests.
+                 ;; TODO: Fix them!
+                 (substitute* "test-suite/tests/gc.test"
+                   (("\\(pass-if \"after-gc-hook gets called\"" m)
+                    (string-append "#;" m)))
+                 (substitute* "test-suite/tests/version.test"
+                   (("\\(pass-if \"version reporting works\"" m)
+                    (string-append "#;" m)))
+                 ;; Warning: Unwind-only `out-of-memory' exception; skipping pre-unwind handler.
+                 ;; FAIL: test-out-of-memory
+                 (substitute* "test-suite/standalone/Makefile.am"
+                   (("(check_SCRIPTS|TESTS) \\+= test-out-of-memory") ""))
+                 
+                 (patch-shebang "build-aux/git-version-gen")
+                 (invoke "sh" "autogen.sh")
+                 #t))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("flex" ,flex)
+         ("texinfo" ,texinfo)
+         ("gettext" ,gettext-minimal)
+         ,@(package-native-inputs guile-2.2))))))
 
 
 ;;;

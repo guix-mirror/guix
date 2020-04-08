@@ -349,6 +349,15 @@ to '%package-module-path'."
       (((predicate . guile) rest ...)
        (if (predicate source) (guile) (loop rest))))))
 
+(define (with-trivial-build-handler mvalue)
+  "Run MVALUE, a monadic value, with a \"trivial\" build handler installed
+that unconditionally resumes the continuation."
+  (lambda (store)
+    (with-build-handler (lambda (continue . _)
+                          (continue #t))
+      (values (run-with-store store mvalue)
+              store))))
+
 (define* (build-from-source name source
                             #:key core verbose? commit
                             (dependencies '()))
@@ -381,8 +390,14 @@ package modules under SOURCE using CORE, an instance of Guix."
         (mbegin %store-monad
           (mwhen guile
             (set-guile-for-build guile))
-          (build source #:verbose? verbose? #:version commit
-                 #:pull-version %pull-version)))
+
+          ;; BUILD is usually quite costly.  Install a "trivial" build handler
+          ;; so we don't bounce an outer build-accumulator handler that could
+          ;; cause us to redo half of the BUILD computation several times just
+          ;; to realize it gives the same result.
+          (with-trivial-build-handler
+           (build source #:verbose? verbose? #:version commit
+                  #:pull-version %pull-version))))
 
       ;; Build a set of modules that extend Guix using the standard method.
       (standard-module-derivation name source core dependencies)))

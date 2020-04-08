@@ -1128,4 +1128,5 @@ to your package list.")))
                                         gc-root))
                       (return (format #t "~a~%"
                                       (derivation->output-path drv))))))
+                #:target target
                 #:system (assoc-ref opts 'system)))))))))

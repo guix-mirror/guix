@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,13 +64,13 @@
                     (lambda _
                       ;; Test '71: append + dooffs + env' fails if $V is not 2.
                       (invoke "make" "check" "V=2"))))))
+    (native-inputs `(("groff" ,groff)))
     (inputs
      `(("m4" ,m4)                                 ;used at run time
        ("pcre" ,pcre)
        ("python" ,python-2)
        ("guile" ,guile-2.2)
        ("gsasl" ,gsasl)
-       ("groff" ,groff)
        ("readline" ,readline)
        ("zlib" ,zlib)
        ("wordnet" ,wordnet)

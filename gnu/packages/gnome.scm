@@ -49,6 +49,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -249,6 +250,49 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public mm-common
+  (package
+    (name "mm-common")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1m4w33da9f4rx2d6kdj3ix3kl0gn16ml82v2mdn4hljr3q29nzdr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "util/mm-common-prepare.in"
+              (("ln") (string-append (assoc-ref inputs "coreutils")
+                                     "/bin/ln"))
+              (("cp") (string-append (assoc-ref inputs "coreutils")
+                                     "/bin/cp"))
+              (("sed") (string-append (assoc-ref inputs "sed")
+                                      "/bin/sed"))
+              (("cat") (string-append (assoc-ref inputs "coreutils")
+                                      "/bin/cat")))
+             #t)))))
+    (native-inputs
+     `(("coreutils" ,coreutils)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("sed" ,sed)))
+    (inputs
+     `(("python" ,python)))
+    (synopsis "Module of GNOME C++ bindings")
+    (description "The mm-common module provides the build infrastructure
+and utilities shared among the GNOME C++ binding libraries.  Release
+archives of mm-common include the Doxygen tag file for the GNU C++
+Library reference documentation.")
+    (home-page "https://gitlab.gnome.org/GNOME/mm-common")
+    (license license:gpl2+)))
+
 (define-public phodav
   (package
    (name "phodav")
@@ -334,7 +378,7 @@ in the GNOME desktop.")
 (define-public gnome-online-miners
   (package
     (name "gnome-online-miners")
-    (version "3.30.0")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -342,7 +386,7 @@ in the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pjamwwzn5wqgihyss357dyl2q70r0bngnqmwsqawchx5f9aja9c"))))
+                "1n2jz9i8a42zwxx5h8j2gdy6q1vyydh4vl00r0al7w8jzdh24p44"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -536,7 +580,18 @@ extraction, and lookup for applications on the desktop.")
    (arguments
     '(#:configure-flags '(;; Enable camera support for user selfie.
                           "-Dcheese=auto"
-                          "-Dsystemd=false")))
+                          "-Dsystemd=false")
+      #:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'set-gkbd-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Allow the "Preview" button in the keyboard layout
+                     ;; selection dialog to display the layout.
+                     (let ((libgnomekbd (assoc-ref inputs "libgnomekbd")))
+                       (substitute* "gnome-initial-setup/pages/keyboard/cc-input-chooser.c"
+                         (("\"gkbd-keyboard-display")
+                          (string-append "\"" libgnomekbd
+                                         "/bin/gkbd-keyboard-display")))
+                       #t))))))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
@@ -565,7 +620,8 @@ extraction, and lookup for applications on the desktop.")
       ("pwquality" ,libpwquality)
       ("rest" ,rest)
       ("upower" ,upower)
-      ("webkitgtk" ,webkitgtk)))
+      ("webkitgtk" ,webkitgtk)
+      ("libgnomekbd" ,libgnomekbd)))
    (synopsis "Initial setup wizard for GNOME desktop")
    (description "This package provides a set-up wizard when a
 user logs into GNOME for the first time.  It typically provides a
@@ -5037,7 +5093,7 @@ supports image conversion, rotation, and slideshows.")
     (synopsis "Extensions for the Eye of GNOME image viewer")
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("eog" ,eog)
        ("glib" ,glib)
@@ -6042,7 +6098,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.32.1")
+    (version "3.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6050,7 +6106,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08g9kdj8fzcgp76z2zsj9m7wfjks9z6xfrfrbfmcr69k40mapfx8"))))
+                "0bigfi225g1prnxpb9lcc1i7mdcrkplwb05vilc43jik12cn53qw"))))
     (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -7608,7 +7664,7 @@ software that do not provide their own configuration interface.")
          (let* ((out (assoc-ref %outputs "out"))
                 (apps (string-append out "/share/applications")))
            (mkdir-p apps)
-           (call-with-output-file (string-append apps "/defaults.list")
+           (call-with-output-file (string-append apps "/gnome-mimeapps.list")
              (lambda (port)
                (format port "[Default Applications]\n")
                (format port "inode/directory=org.gnome.Nautilus.desktop\n")
@@ -7680,6 +7736,17 @@ associations for GNOME.")
       ("gjs" ,gjs)
       ("gnome-desktop" ,gnome-desktop)
       ("libgweather" ,libgweather)))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'fix-desktop-file
+          ;; FIXME: "gapplication launch org.gnome.Weather" fails for some reason.
+          ;; See https://issues.guix.gnu.org/issue/39324.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (applications (string-append out "/share/applications")))
+              (substitute* (string-append applications "/org.gnome.Weather.desktop")
+                (("Exec=.*") "Exec=gnome-weather\n"))))))))
    (synopsis "Weather monitoring for GNOME desktop")
    (description "GNOME Weather is a small application that allows you to
 monitor the current weather conditions for your city, or anywhere in the
@@ -8849,10 +8916,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
         (base32 "1ng9492k8754vlqggbfsyzbmfdx4w17fzc4ad21fr92710na0w5a"))))
     (build-system meson-build-system)
     (arguments
-     `(#:imported-modules ((guix build python-build-system)
-                           ,@%meson-build-system-modules)
+     `(#:imported-modules
+       (,@%meson-build-system-modules
+        (guix build python-build-system))
+       #:modules
+       ((guix build meson-build-system)
+        ((guix build python-build-system) #:prefix python:)
+        (guix build utils))
        #:glib-or-gtk? #t
-       #:tests? #f ; no test suite
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -8863,9 +8935,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t))
          (add-after 'install 'wrap-python
-           (@@ (guix build python-build-system) wrap))
-         (add-after 'install 'wrap-glib-or-gtk
-           (@@ (guix build glib-or-gtk-build-system) wrap-all-programs)))))
+           (assoc-ref python:%standard-phases 'wrap)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
@@ -9121,7 +9191,7 @@ configurable file renaming. ")
               ("libxscrnsaver" ,libxscrnsaver)))
     (native-inputs `(("boost" ,boost)
                      ("pkg-config" ,pkg-config)
-                     ("gettext" ,gnu-gettext)
+                     ("gettext" ,gettext-minimal)
                      ("autoconf" ,autoconf)
                      ("autoconf-archive" , autoconf-archive)
                      ("automake" ,automake)
@@ -9818,7 +9888,7 @@ join_paths\\('build-aux', 'post_install.py'\\)\\)")
      `(("appstream-glib" ,appstream-glib)
        ("cmake-minimal" ,cmake-minimal)
        ("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
@@ -9904,3 +9974,33 @@ to.")
 environment.  Its main purpose is the manual transcription of spoken
 audio files.")
       (license license:gpl3+))))
+
+(define-public jsonrpc-glib
+  (package
+    (name "jsonrpc-glib")
+    (version "3.34.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                   name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0j05x4xv2cp3cbmp30m68z8g4rdw7b030ip4wszyfj9ya15v5kni"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("json-glib" ,json-glib)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)))
+    (home-page "https://gitlab.gnome.org/GNOME/jsonrpc-glib")
+    (synopsis "JSON-RPC library for GLib")
+    (description "Jsonrpc-GLib is a library to communicate with JSON-RPC based
+peers in either a synchronous or asynchronous fashion.  It also allows
+communicating using the GVariant serialization format instead of JSON when
+both peers support it.  You might want that when communicating on a single
+host to avoid parser overhead and memory-allocator fragmentation.")
+    (license license:lgpl2.1+)))

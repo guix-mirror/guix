@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -322,7 +322,8 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
   "Return as a monadic value the derivation of the 'system' directory
 containing the given entries."
   (mlet %store-monad ((entries    mentries)
-                      (extensions (sequence %store-monad mextensions)))
+                      (extensions (mapm/accumulate-builds identity
+                                                          mextensions)))
     (lower-object
      (file-union "system"
                  (append entries (concatenate extensions))))))
@@ -579,6 +580,10 @@ ACTIVATION-SCRIPT-TYPE."
                   #~(begin
                       (setenv "LINUX_MODULE_DIRECTORY"
                               "/run/booted-system/kernel/lib/modules")
+                      ;; FIXME: Remove this crutch when the patch #40422,
+                      ;; updating to kmod 27 is merged.
+                      (setenv "MODPROBE_OPTIONS"
+                              "-C /etc/modprobe.d")
                       (apply execl #$modprobe
                              (cons #$modprobe (cdr (command-line))))))))
 

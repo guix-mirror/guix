@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -235,6 +237,34 @@ datetime module, available in Python 2.3+.")
 
 (define-public python2-parsedatetime
   (package-with-python2 python-parsedatetime))
+
+(define-public python-ciso8601
+  (package
+    (name "python-ciso8601")
+    (version "2.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       ;; The PyPi distribution doesn't include the tests.
+       (uri (git-reference
+             (url "https://github.com/closeio/ciso8601.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0g1aiyc1ayh0rnibyy416m5mmck38ksgdm3jsy0z3rxgmgb24951"))))
+    (build-system python-build-system)
+    ;; Pytz should only be required for Python 2, but the test suite fails
+    ;; without it.
+    (native-inputs
+     `(("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/closeio/ciso8601")
+    (synopsis
+     "Fast ISO8601 date time parser")
+    (description
+     "The package ciso8601 converts ISO 8601 or RFC 3339 date time strings into
+Python datetime objects.")
+    (license expat)))
 
 (define-public python-tzlocal
   (package

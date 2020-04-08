@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -228,6 +229,18 @@ Texi2HTML.")
     ;; Files in /lib under lgpl2.1+ and x11
     (license gpl2+)))
 
+(define-public texi2html-1.82
+  (package
+    (inherit texi2html)
+    (version "1.82")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/texi2html/"
+                           "texi2html-" version ".tar.bz2"))
+       (sha256
+        (base32 "1wdli2szkgm3l0vx8rf6lylw0b0m47dlz9iy004n928nqkzix76n"))))))
+
 (define-public pinfo
   (package
     (name "pinfo")
@@ -264,7 +277,7 @@ Texi2HTML.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("texinfo" ,texinfo)))
     (home-page "https://github.com/baszoetekouw/pinfo")

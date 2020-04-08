@@ -228,7 +228,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.11.2")
+    (version "2.11.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -236,7 +236,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0fck8ssmirl8fy7s4mspgrxjs5sag76xbshqlqzkcl3kqyrk4raa"))))
+                "1jd65h2psrmba2dx7rkf5qidf9ka0cwbsg20pd18k45ggr30l467"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-union
@@ -270,7 +270,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.11pl2")
+   (version "0.0.11pl3")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -278,7 +278,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0wqsf05wgkqvmmsx7jinvzdqav6rl56sr8haibgs31nzz4x9xz9g"))))
+                "0yymbrgyjw500hqgmkj5m4nmscd7c9rs9w2c96lxgrcyab8krhrm"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))

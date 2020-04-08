@@ -258,7 +258,7 @@ expression in %STORE-MONAD."
       (lambda ()
         (guard (c ((shepherd-error? c)
                    (values (report-shepherd-error c) store)))
-          (values (run-with-store store (begin mbody ...))
+          (values (run-with-store store (mbegin %store-monad mbody ...))
                   store)))
       (lambda (key proc format-string format-args errno . rest)
         (warning (G_ "while talking to shepherd: ~a~%")
@@ -289,22 +289,6 @@ on service '~a':~%")
          (report-error (G_ "shepherd error~%")))
         ((not error)                              ;not an error
          #t)))
-
-(define (call-with-service-upgrade-info new-services mproc)
-  "Call MPROC, a monadic procedure in %STORE-MONAD, passing it the list of
-names of services to load (upgrade), and the list of names of services to
-unload."
-  (match (current-services)
-    ((services ...)
-     (let-values (((to-unload to-restart)
-                   (shepherd-service-upgrade services new-services)))
-       (mproc to-restart
-              (map (compose first live-service-provision)
-                   to-unload))))
-    (#f
-     (with-monad %store-monad
-       (warning (G_ "failed to obtain list of shepherd services~%"))
-       (return #f)))))
 
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error
@@ -825,10 +809,10 @@ static checks."
        ;; For 'init' and 'reconfigure', always build BOOTCFG, even if
        ;; --no-bootloader is passed, because we then use it as a GC root.
        ;; See <http://bugs.gnu.org/21068>.
-       (drvs      (mapm %store-monad lower-object
-                        (if (memq action '(init reconfigure))
-                            (list sys bootcfg)
-                            (list sys))))
+       (drvs      (mapm/accumulate-builds lower-object
+                                          (if (memq action '(init reconfigure))
+                                              (list sys bootcfg)
+                                              (list sys))))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
                                         drvs))
@@ -853,7 +837,10 @@ static checks."
                   (info (G_ "bootloader successfully installed on '~a'~%")
                         (bootloader-configuration-target bootloader))))
                (with-shepherd-error-handling
-                  (upgrade-shepherd-services local-eval os))))
+                 (upgrade-shepherd-services local-eval os)
+                 (return (format #t (G_ "\
+To complete the upgrade, run 'herd restart SERVICE' to stop,
+upgrade, and restart each service that was not automatically restarted.\n"))))))
             ((init)
              (newline)
              (format #t (G_ "initializing operating system under '~a'...~%")
@@ -1294,7 +1281,6 @@ argument list and OPTS is the option alist."
           (process-command command args opts))))))
 
 ;;; Local Variables:
-;;; eval: (put 'call-with-service-upgrade-info 'scheme-indent-function 1)
 ;;; eval: (put 'with-store* 'scheme-indent-function 1)
 ;;; End:
 

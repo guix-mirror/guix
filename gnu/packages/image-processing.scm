@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2018 Lprndn <guix@lprndn.info>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -798,11 +799,11 @@ combine the information contained in both.")
        ("vtk" ,vtk-6)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
-       ("qttools" ,qttools)
        ("vxl" ,vxl-1)
        ("zlib" ,zlib)))
     (native-inputs
      `(("googletest" ,googletest)
+       ("qttools" ,qttools)
        ("pkg-config" ,pkg-config)
        ("c3d-src"
         ,(let* ((commit "f521358db26e00002c911cc47bf463b043942ad3")

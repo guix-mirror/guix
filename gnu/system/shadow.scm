@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -215,6 +216,10 @@ for a colorful Guile experience.\\n\\n\"))))\n"))
                                    ((target source)
                                     (copy-recursively source target)))
                                  '#$skeletons)
+                       ;; Make nanorc respect XDG_CONFIG_HOME.
+                       (when (file-exists? ".nanorc")
+                         (mkdir-p ".config/nano")
+                         (rename-file ".nanorc" ".config/nano/nanorc"))
                        #t))))
 
 (define (assert-valid-users/groups users groups)

@@ -345,7 +345,7 @@ shader compilation.")
      (native-inputs
       `(("autoconf" ,autoconf)
         ("automake" ,automake)
-        ("gettext" ,gnu-gettext)
+        ("gettext" ,gettext-minimal)
         ("libtool" ,libtool)
         ("pkg-config" ,pkg-config)))
      (inputs

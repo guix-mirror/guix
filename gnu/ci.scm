@@ -132,7 +132,6 @@ SYSTEM."
 
 (define %cross-targets
   '("mips64el-linux-gnu"
-    "mips64el-linux-gnuabi64"
     "arm-linux-gnueabihf"
     "aarch64-linux-gnu"
     "powerpc-linux-gnu"

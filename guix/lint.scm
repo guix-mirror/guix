@@ -308,6 +308,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "intltool"
             "itstool"
             "libtool"
+            "m4"
             "qttools"
             "yasm" "nasm" "fasm"
             "python-coverage" "python2-coverage"

@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,13 +228,13 @@ plans and designs.")
        ("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.0)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
        ("pcb" ,pcb)
        ("python" ,python-2))) ; for xorn
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("perl" ,perl))) ; for tests
     (home-page "http://geda-project.org/")
     (synopsis "Schematic capture, netlister, symbols, symbol checker, and utils")
@@ -266,8 +267,9 @@ utilities.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("libtool" ,libtool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("texinfo" ,texinfo)
        ("groff" ,groff)
        ("which" ,which)
@@ -276,7 +278,6 @@ utilities.")
      `(("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.2)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
        ("pcb" ,pcb)))
@@ -385,13 +386,13 @@ features.")))
        ("gd" ,gd)
        ("gtk" ,gtk+-2)
        ("gtkglext" ,gtkglext)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("tk" ,tk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("bison" ,bison)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("flex" ,flex)
        ;; For tests
        ("imagemagick" ,imagemagick)
@@ -675,11 +676,11 @@ ready for production.")
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-schemas, etc.
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
-       ("gtk" ,gtk+-2)
-       ("desktop-file-utils" ,desktop-file-utils)))
+       ("gtk" ,gtk+-2)))
     (home-page "http://gerbv.geda-project.org/")
     (synopsis "Gerber file viewer")
     (description
@@ -856,7 +857,7 @@ language.")
     (native-inputs
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("kicad-i18l" ,kicad-i18l)
        ("pkg-config" ,pkg-config)
        ("swig" ,swig)
@@ -903,7 +904,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
          (delete 'build)
          (delete 'check))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (home-page "https://kicad-pcb.org/")
     (synopsis "KiCad GUI translations")
     (description "This package contains the po files that are used for the GUI

@@ -182,7 +182,9 @@
            "welcometext=" welcome-text "\n"
            "port=" (number->string port) "\n"
            (if server-password (list "serverpassword=" server-password "\n") '())
-           (if max-user-bandwidth (list "bandwidth=" (number->string max-user-bandwidth)) '())
+           (if max-user-bandwidth (list "bandwidth="
+                                        (number->string max-user-bandwidth) "\n")
+               '())
            "users=" (number->string max-users) "\n"
            "uname=" user "\n"
            "database=" database-file "\n"

@@ -48,6 +48,9 @@
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
+;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,6 +175,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -1093,6 +1097,46 @@ destroying an ancient book using a special wand.")
     ;; license.  The whole package is released under GPLv3+.
     (license license:gpl3+)))
 
+(define-public gnome-chess
+  (package
+    (name "gnome-chess")
+    (version "3.36.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1a9fgi749gy1f60vbcyrqqkab9vqs42hji70q73k1xx8rv0agmg0"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/Chess")
+    (synopsis "Chess board for GNOME")
+    (description "GNOME Chess provides a 2D board for playing chess games
+against human or computer players.  It supports loading and saving games in
+Portable Game Notation.  To play against a computer, install a chess engine
+such as chess or stockfish.")
+    (license license:gpl3+)))
+
 (define-public gnubg
   (package
     (name "gnubg")
@@ -1250,10 +1294,11 @@ watch your CPU playing while enjoying a cup of tea!")
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
           (base32 "1liyckjp34j354qnxc1zn9730lh1p2dabrg1hap24z6xnqx0rpng"))))
+    (native-inputs
+      `(("bison" ,bison)
+        ("flex" ,flex)))
     (inputs
       `(("ncurses" ,ncurses)
-        ("bison" ,bison)
-        ("flex" ,flex)
         ("less" ,less)))
     (build-system gnu-build-system)
     (arguments
@@ -6634,7 +6679,7 @@ GameController.")
              #t)))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")             ;for glib-compile-resources
        ("itstool" ,itstool)
        ("libxml2" ,libxml2)             ;for xmllint
@@ -7139,7 +7184,7 @@ where the player draws runes in real time to effect the desired spell.")
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gnu-gettext" ,gnu-gettext)
+       ("gnu-gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("which" ,which)))
     (synopsis "2d action platformer game")
@@ -10291,3 +10336,119 @@ to conquer opponents by defeating them in war (with troops or machines),
 capturing their buildings with spies, or offering opponents money for their
 kingdom.")
     (license license:gpl2+)))
+
+(define-public neverball
+  ;; Git version is 6-years younger than latest release.
+  (let ((commit "760a25d32a5fb0661b99426d4ddcb9ac9f3d1644")
+        (revision "1"))
+    (package
+      (name "neverball")
+      (version (git-version "1.6.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Neverball/neverball.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0bwh67df3lyf33bv710y25l3frjdd34j9b7gsjadwxviz6r1vpj5"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Octocat seems to be non-free.  Oddly, Debian doesn't strip it.
+             (delete-file-recursively "data/ball/octocat")
+             #t))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("neverball" "bin/")
+           ("neverputt" "bin/")
+           ("mapc" "bin/")
+           ("data" "share/games/neverball/")
+           ("locale" "share/")
+           ("dist/" "share/games/neverball" #:include ("neverball_replay.png"
+                                                       "neverlogos.svg"
+                                                       "svg readme.txt"))
+           ("dist/" "share/applications" #:include ("neverball.desktop"
+                                                    "neverputt.desktop"))
+           ("dist/neverball_16.png"
+            "/share/icons/hicolor/16x16/apps/neverball.png")
+           ("dist/neverball_24.png"
+            "/share/icons/hicolor/24x24/apps/neverball.png")
+           ("dist/neverball_32.png"
+            "/share/icons/hicolor/32x32/apps/neverball.png")
+           ("dist/neverball_48.png"
+            "/share/icons/hicolor/48x48/apps/neverball.png")
+           ("dist/neverball_64.png"
+            "/share/icons/hicolor/64x64/apps/neverball.png")
+           ("dist/neverball_128.png"
+            "/share/icons/hicolor/128x128/apps/neverball.png")
+           ("dist/neverball_256.png"
+            "/share/icons/hicolor/256x256/apps/neverball.png")
+           ("dist/neverball_512.png"
+            "/share/icons/hicolor/512x512/apps/neverball.png")
+           ("dist/neverputt_16.png"
+            "/share/icons/hicolor/16x16/apps/neverputt.png")
+           ("dist/neverputt_24.png"
+            "/share/icons/hicolor/24x24/apps/neverputt.png")
+           ("dist/neverputt_32.png"
+            "/share/icons/hicolor/32x32/apps/neverputt.png")
+           ("dist/neverputt_48.png"
+            "/share/icons/hicolor/48x48/apps/neverputt.png")
+           ("dist/neverputt_64.png"
+            "/share/icons/hicolor/64x64/apps/neverputt.png")
+           ("dist/neverputt_128.png"
+            "/share/icons/hicolor/128x128/apps/neverputt.png")
+           ("dist/neverputt_256.png"
+            "/share/icons/hicolor/256x256/apps/neverputt.png")
+           ("dist/neverputt_512.png"
+            "/share/icons/hicolor/512x512/apps/neverputt.png")
+           ("dist/" "share/man/man1" #:include ("mapc.1"))
+           ("dist/" "share/man/man6" #:include ("neverball.6" "neverputt.6"))
+           ("doc/" "share/doc/neverball")
+           ("README.md" "share/doc/neverball/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (sdl (assoc-ref inputs "sdl")))
+                 (invoke "make" "-j" (number->string (parallel-job-count))
+                         "--environment-overrides"
+                         "CC=gcc" "BUILD=release"
+                         (string-append "DATADIR="
+                                        out
+                                        "/share/games/neverball/data")
+                         (string-append "LOCALEDIR=" out "/share/locale")
+                         (string-append "SDL_CPPFLAGS=-I"
+                                        sdl
+                                        "/include/SDL2/")))
+               #t))
+           (add-after 'install 'fix-some-broken-fonts
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/neverball")
+                   `("LANG" = ("en_US.utf8")))
+                 (wrap-program (string-append out "/bin/neverputt")
+                   `("LANG" = ("en_US.utf8"))))
+               #t)))))
+      (native-inputs
+       `(("gettext" ,gettext-minimal))) ;for msgfmt
+      (inputs
+       `(("libjpeg" ,libjpeg-turbo)
+         ("libpng" ,libpng)
+         ("libvorbis" ,libvorbis)
+         ("physfs" ,physfs)
+         ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))))
+      (home-page "https://neverball.org/")
+      (synopsis "3D floor-tilting game")
+      (description
+       "In the grand tradition of Marble Madness and Super Monkey Ball,
+Neverball has you guide a rolling ball through dangerous territory.  Balance
+on narrow bridges, navigate mazes, ride moving platforms, and dodge pushers
+and shovers to get to the goal.  Race against the clock to collect coins to
+earn extra balls.  Also included is Neverputt, which is a 3D miniature golf
+game.")  ;thanks to Debian for description
+      (license license:gpl2+))))

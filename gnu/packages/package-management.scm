@@ -1100,7 +1100,7 @@ the boot loader configuration.")
                                         (assoc-ref %build-inputs "bubblewrap")
                                         "/bin/bwrap"))))
    (native-inputs `(("bison" ,bison)
-                    ("gettext" ,gnu-gettext)
+                    ("gettext" ,gettext-minimal)
                     ("glib:bin" ,glib "bin") ; for glib-mkenums + gdbus-codegen
                     ("gobject-introspection" ,gobject-introspection)
                     ("libcap" ,libcap)

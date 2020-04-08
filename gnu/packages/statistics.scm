@@ -548,13 +548,13 @@ estimation) corresponding to the book: Wand, M.P. and Jones, M.C. (1995)
 (define-public r-lattice
   (package
     (name "r-lattice")
-    (version "0.20-40")
+    (version "0.20-41")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lattice" version))
               (sha256
                (base32
-                "1w53sfzdy9zsifv44dqf9pl46fk14lnx3fha1k1p660h51lyv56m"))))
+                "1dapkmh4jlb9sxfrpvapvlfhczl4s8p3r20bn47gcgdk1izmbjjl"))))
     (build-system r-build-system)
     (home-page "http://lattice.r-forge.r-project.org/")
     (synopsis "High-level data visualization system")
@@ -1624,22 +1624,28 @@ like tidy evaluation.")
 (define-public r-tibble
   (package
     (name "r-tibble")
-    (version "2.1.3")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tibble" version))
        (sha256
         (base32
-         "06jfayiip8j8ibdhw3fvxn4n8aqbqhwanrszpzlsf92xdfgfm34s"))))
+         "0s84h8ls5qwixbs1n5safr3xqmg3p0llzdrd9sp4vs2572mwzqzi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-fansi" ,r-fansi)
+       ("r-lifecycle" ,r-lifecycle)
+       ("r-magrittr" ,r-magrittr)
        ("r-pkgconfig" ,r-pkgconfig)
        ("r-pillar" ,r-pillar)
-       ("r-rlang" ,r-rlang)))
+       ("r-rlang" ,r-rlang)
+       ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/tibble")
     (synopsis "Simple data frames")
     (description
@@ -1983,14 +1989,14 @@ and environmental data in the framework of Euclidean exploratory methods.")
 (define-public r-xml2
   (package
     (name "r-xml2")
-    (version "1.2.5")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xml2" version))
        (sha256
         (base32
-         "0mp61gg8s3zfq10g10vjk0mrcx6d5gm81n4ji8an2my11g61yq94"))))
+         "138v9374xwc7flw8fz8qp8q3w4fch2jviij0g10dg92xn9dsyani"))))
     (build-system r-build-system)
     (inputs
      `(("libxml2" ,libxml2)
@@ -1998,8 +2004,6 @@ and environmental data in the framework of Euclidean exploratory methods.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("r-knitr" ,r-knitr)))
-    (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/hadley/xml2")
     (synopsis "Parse XML with R")
     (description
@@ -3060,18 +3064,20 @@ data.")
 (define-public r-foreach
   (package
     (name "r-foreach")
-    (version "1.4.8")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreach" version))
        (sha256
         (base32
-         "1xwf5l2fw62w80ji3dvgcc6m9m4s6zygkhi84ypb0gv0ppjffg5c"))))
+         "0584nv49x8d8m1cak5drb54sxs3y594gd521kjsdwk4c849sgy8s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
        ("r-iterators" ,r-iterators)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/foreach")
     (synopsis "Foreach looping construct for R")
     (description
@@ -4114,14 +4120,14 @@ Zurich, including many that are related to graphics.")
 (define-public r-gtools
   (package
     (name "r-gtools")
-    (version "3.8.1")
+    (version "3.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gtools" version))
        (sha256
         (base32
-         "0f5syk1qq6cjq6hwymvkiyhzwa389z94722v881ipbfqkd2q8505"))))
+         "1pnwy412wvhhvnnx8qg6s9hrgcnsfhnfcpf2560ipipk845acfsh"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -5076,13 +5082,13 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.54")
+    (version "5.55")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
-        (base32 "19nh79qrkb75q348nk148l8wqjwnq5jgq29wpzqym5cfv1kjqfvh"))))
+        (base32 "1zjc8p95kb0ypxa6nxp0lkdq8armkjmmhf8484m25n5f14a59qfb"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -5302,18 +5308,19 @@ first and second order derivatives.")
 (define-public r-sn
   (package
     (name "r-sn")
-    (version "1.5-5")
+    (version "1.6-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sn" version))
        (sha256
         (base32
-         "0ymyyc0di1g2b11wzljiih05z3rxck48wn74bygg3fiby973z49f"))))
+         "0snri2k8qslb7478c5jz4a5xxmmb1ipmp8x1jizi8mhj2cjic1w0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mnormt" ,r-mnormt)
-       ("r-numderiv" ,r-numderiv)))
+       ("r-numderiv" ,r-numderiv)
+       ("r-quantreg" ,r-quantreg)))
     (home-page "http://azzalini.stat.unipd.it/SN")
     (synopsis "The skew-normal and skew-t distributions")
     (description

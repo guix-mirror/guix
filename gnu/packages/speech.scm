@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -226,12 +226,20 @@ stable and well documented interface.")
                "08xwnpw9cnaix1n1i7gvpq5hrfrqc2z1snjhjapfam506hrc77g4"))))
     (build-system gnu-build-system)
     (arguments
-      `(#:tests? #f ; No test suite.
-        #:make-flags
-         (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
-        #:phases
-        (modify-phases %standard-phases
-          (delete 'configure)))) ; No ./configure script.
+     `(#:tests? #f                      ; no test suite
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'respect-LDFLAGS
+           (lambda _
+             (substitute* "Makefile"
+               ((" -o sonic " match)
+                (string-append " $(LDFLAGS)" match)))
+             #t))
+         (delete 'configure))))        ; no ./configure script
     (synopsis "Speed up or slow down speech")
     (description "Sonic implements a simple algorithm for speeding up or slowing
 down speech.  However, it's optimized for speed ups of over 2X, unlike previous

@@ -87,6 +87,9 @@
             manifest-entry-search-paths
             manifest-entry-parent
             manifest-entry-properties
+            lower-manifest-entry
+
+            manifest-entry=?
 
             manifest-pattern
             manifest-pattern?
@@ -216,6 +219,33 @@
   (output       manifest-pattern-output           ; string | #f
                 (default "out")))
 
+(define (list=? = lst1 lst2)
+  "Return true if LST1 and LST2 have the same length and their elements are
+pairwise equal per =."
+  (match lst1
+    (()
+     (null? lst2))
+    ((head1 . tail1)
+     (match lst2
+       ((head2 . tail2)
+        (and (= head1 head2) (list=? = tail1 tail2)))
+       (()
+        #f)))))
+
+(define (manifest-entry=? entry1 entry2)
+  "Return true if ENTRY1 is equivalent to ENTRY2, ignoring their 'properties'
+field."
+  (match entry1
+    (($ <manifest-entry> name1 version1 output1 item1 dependencies1 paths1)
+     (match entry2
+       (($ <manifest-entry> name2 version2 output2 item2 dependencies2 paths2)
+        (and (string=? name1 name2)
+             (string=? version1 version2)
+             (string=? output1 output2)
+             (equal? item1 item2)      ;XXX: could be <package> vs. store item
+             (equal? paths1 paths2)
+             (list=? manifest-entry=? dependencies1 dependencies2)))))))
+
 (define (manifest-transitive-entries manifest)
   "Return the entries of MANIFEST along with their propagated inputs,
 recursively."
@@ -263,16 +293,24 @@ procedure takes two arguments: the entry name and output."
 (define* (lower-manifest-entry entry system #:key target)
   "Lower ENTRY for SYSTEM and TARGET such that its 'item' field is a store
 file name."
+  (define (recurse entry)
+    (mapm/accumulate-builds (lambda (entry)
+                              (lower-manifest-entry entry system
+                                                    #:target target))
+                            (manifest-entry-dependencies entry)))
+
   (let ((item (manifest-entry-item entry)))
     (if (string? item)
         (with-monad %store-monad
           (return entry))
         (mlet %store-monad ((drv (lower-object item system
                                                #:target target))
+                            (dependencies (recurse entry))
                             (output -> (manifest-entry-output entry)))
           (return (manifest-entry
                     (inherit entry)
-                    (item (derivation->output-path drv output))))))))
+                    (item (derivation->output-path drv output))
+                    (dependencies dependencies)))))))
 
 (define* (check-for-collisions manifest system #:key target)
   "Check whether the entries of MANIFEST conflict with one another; raise a
@@ -1382,26 +1420,38 @@ the entries in MANIFEST."
         #~(begin
             (use-modules (guix man-db)
                          (guix build utils)
+                         (ice-9 threads)
                          (srfi srfi-1)
                          (srfi srfi-19))
+
+            (define (print-string msg)
+              (display msg)
+              (force-output))
+
+            (define-syntax-rule (print fmt args ...)
+              ;; Build up the string and display it at once.
+              (print-string (format #f fmt args ...)))
+
+            (define (compute-entry directory count total)
+              (print "\r[~3d/~3d] building list of man-db entries..."
+                     count total)
+              (let ((man (string-append directory "/share/man")))
+                (if (directory-exists? man)
+                    (mandb-entries man)
+                    '())))
 
             (define (compute-entries)
               ;; This is the most expensive part (I/O and CPU, due to
               ;; decompression), so report progress as we traverse INPUTS.
-              (let* ((inputs '#$(manifest-inputs manifest))
-                     (total  (length inputs)))
-                (append-map (lambda (directory count)
-                              (format #t "\r[~3d/~3d] building list of \
-man-db entries..."
-                                      count total)
-                              (force-output)
-                              (let ((man (string-append directory
-                                                        "/share/man")))
-                                (if (directory-exists? man)
-                                    (mandb-entries man)
-                                    '())))
-                            inputs
-                            (iota total 1))))
+              ;; Cap at 4 threads because we don't see any speedup beyond that
+              ;; on an SSD laptop.
+              (let* ((inputs  '#$(manifest-inputs manifest))
+                     (total   (length inputs))
+                     (threads (min (parallel-job-count) 4)))
+                (concatenate
+                 (n-par-map threads compute-entry inputs
+                            (iota total 1)
+                            (make-list total total)))))
 
             (define man-directory
               (string-append #$output "/share/man"))

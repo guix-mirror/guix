@@ -241,7 +241,11 @@ the 'share/X11/xkb/symbols/' directory of 'xkeyboard-config'."
                   "-i" #+(keyboard-layout->console-keymap layout)
                   "-o" #$output))))
 
-  (computed-file (string-append "grub-keymap." (keyboard-layout-name layout))
+  (computed-file (string-append "grub-keymap."
+                                (string-map (match-lambda
+                                              (#\, #\-)
+                                              (chr chr))
+                                            (keyboard-layout-name layout)))
                  builder))
 
 (define (grub-setup-io config)

@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -380,22 +381,28 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public denemo
   (package
     (name "denemo")
-    (version "2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/denemo/denemo-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0hggf8c4xcrjcxd5m00r788r7jg7g8ff54w2idfaqpj5j2ix3299"))))
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/denemo/"
+                           "denemo-" version ".tar.gz"))
+       (sha256
+        (base32 "1blkcl3slbsq9jlhwcf2m9v9g38a0sjfhh9advgi2qr1gxri08by"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           ;; Denemo's documentation says to use this command to run its
-           ;; testsuite.
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require to write $HOME.
+             (setenv "HOME" (getcwd))
+             ;; Replace hard-coded diff file name.
+             (substitute* "tests/integration.c"
+               (("/usr/bin/diff")
+                (string-append (assoc-ref inputs "diffutils") "/bin/diff")))
+             ;; Denemo's documentation says to use this command to run its
+             ;; test suite.
              (invoke "make" "-C" "tests" "check")))
          (add-before 'build 'set-lilypond
            ;; This phase sets the default path for lilypond to its current
@@ -408,24 +415,12 @@ many input formats and provides a customisable Vi-style user interface.")
                   (string-append "g_string_new (\""
                                  lilypond
                                  "\");"))))
-             #t))
-         (add-after 'install 'correct-filename
-           ;; "graft-derivation/shallow" from the (guix grafts) module runs in
-           ;; the C locale, expecting file names to be ASCII encoded. This
-           ;; phase renames a filename with a Unicode character in it to meet
-           ;; the aforementioned condition.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out")))
-               (chdir (string-append
-                       out
-                       "/share/denemo/templates/instruments/woodwind"))
-               (rename-file "Clarinet in B♭.denemo"
-                            "Clarinet in Bb.denemo"))
              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("diffutils" ,diffutils)
        ("glib:bin" ,glib "bin")         ; for gtester
        ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -504,16 +499,16 @@ settings (aliasing, linear interpolation and cubic interpolation).")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "1.0.0-beta1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/hydrogen-music/hydrogen.git")
-                    (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0nv83l70j5bjz2wd6n3a8cq3bmgrvdvg6g2hjhc1g5h6xnbqsh9x"))))
+    (version "1.0.0-beta2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hydrogen-music/hydrogen.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1s3jrdyjpm92flw9mkkxchnj0wz8nn1y1kifii8ws252iiqjya4a"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "tests"
@@ -528,16 +523,18 @@ settings (aliasing, linear interpolation and cubic interpolation).")
              #t)))))
     (native-inputs
      `(("cppunit" ,cppunit)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("qtlinguist" ,qttools)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
-       ;; ("ladspa" ,ladspa) ; cannot find during configure
+       ;; ("ladspa" ,ladspa) ; require LADSPA_PATH to be set
        ("lash" ,lash)
        ("libarchive" ,libarchive)
+       ("liblo" ,liblo)
        ("libsndfile" ,libsndfile)
-       ("libtar" ,libtar)
        ("lrdf" ,lrdf)
+       ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
        ("qtxmlpatterns" ,qtxmlpatterns)
        ("zlib" ,zlib)))
@@ -908,21 +905,20 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.80")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://download.linuxaudio.org/lilypond/sources/v"
-                    (version-major+minor version) "/"
-                    name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0lql4q946gna2pl1g409mmmsvn2qvnq2z5cihrkfhk7plcqdny9n"))))
+    (version "2.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://lilypond.org/download/sources/"
+                           "v" (version-major+minor version) "/"
+                           "lilypond-" version ".tar.gz"))
+       (sha256
+        (base32 "0qd6pd4siss016ffmcyw5qc6pr2wihnvrgd4kh1x725w7wr02nar"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; out-test/collated-files.html fails
+     `(#:tests? #f                      ;out-test/collated-files.html fails
        #:out-of-source? #t
-       #:make-flags '("conf=www") ;to generate images for info manuals
+       #:make-flags '("conf=www")       ;to generate images for info manuals
        #:configure-flags
        (list "CONFIGURATION=www"
              (string-append "--with-texgyre-dir="
@@ -940,25 +936,25 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
                (("TEX_FIKPARM=.*") "TEX_FIKPARM=found\n"))
              #t))
          (add-after 'unpack 'fix-path-references
-          (lambda _
-            (substitute* "scm/backend-library.scm"
-              (("\\(search-executable '\\(\"gs\"\\)\\)")
-               (string-append "\"" (which "gs") "\""))
-              (("\"/bin/sh\"")
-               (string-append "\"" (which "sh") "\"")))
-            #t))
+           (lambda _
+             (substitute* "scm/backend-library.scm"
+               (("\\(search-executable '\\(\"gs\"\\)\\)")
+                (string-append "\"" (which "gs") "\""))
+               (("\"/bin/sh\"")
+                (string-append "\"" (which "sh") "\"")))
+             #t))
          (add-before 'configure 'prepare-configuration
-          (lambda _
-            (substitute* "configure"
-              (("SHELL=/bin/sh") "SHELL=sh")
-              ;; When checking the fontforge version do not consider the
-              ;; version string that's part of the directory.
-              (("head -n") "tail -n")
-              ;; Also allow for SOURCE_DATE_EPOCH = 0 in fontforge.
-              (("20110222") "19700101"))
-            (setenv "out" "www")
-            (setenv "conf" "www")
-            #t))
+           (lambda _
+             (substitute* "configure"
+               (("SHELL=/bin/sh") "SHELL=sh")
+               ;; When checking the fontforge version do not consider the
+               ;; version string that's part of the directory.
+               (("head -n") "tail -n")
+               ;; Also allow for SOURCE_DATE_EPOCH = 0 in fontforge.
+               (("20110222") "19700101"))
+             (setenv "out" "www")
+             (setenv "conf" "www")
+             #t))
          (add-after 'install 'install-info
            (lambda _
              (invoke "make"
@@ -982,13 +978,13 @@ Sega Master System/Mark III, Sega Genesis/Mega Drive, BBC Micro
        ("dblatex" ,dblatex)
        ("gettext" ,gettext-minimal)
        ("imagemagick" ,imagemagick)
-       ("netpbm" ,netpbm) ;for pngtopnm
+       ("netpbm" ,netpbm)               ;for pngtopnm
        ("texlive" ,(texlive-union (list texlive-metapost
                                         texlive-generic-epsf
                                         texlive-latex-lh
                                         texlive-latex-cyrillic)))
        ("texinfo" ,texinfo)
-       ("texi2html" ,texi2html)
+       ("texi2html" ,texi2html-1.82)
        ("rsync" ,rsync)
        ("pkg-config" ,pkg-config)
        ("zip" ,zip)))
@@ -1427,10 +1423,10 @@ users to select LV2 plugins and run them with jalv.")
        ("alsa-lib" ,alsa-lib)
        ("non-session-manager" ,non-session-manager)
        ("liblo" ,liblo)
-       ("qtbase" ,qtbase)
-       ("qttools" ,qttools)))
+       ("qtbase" ,qtbase)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (home-page "https://synthv1.sourceforge.io")
     (synopsis "Polyphonic subtractive synthesizer")
     (description
@@ -2037,25 +2033,26 @@ using a system-independent interface.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "3.0.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/wbsoft/frescobaldi/releases/download/v"
-                    version "/frescobaldi-" version ".tar.gz"))
-              (sha256
-               (base32
-                "15cqhbjbjikr7ljgiq56bz2gxrr38j8p0f78p2vhyzydaviy9a2z"))))
+    (version "3.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/wbsoft/frescobaldi/releases/download/v"
+             version "/frescobaldi-" version ".tar.gz"))
+       (sha256
+        (base32 "0kfwvgygx2ds01w8g7vzykfrajglmr2brchk9d67ahzijpgvfkj5"))))
     (build-system python-build-system)
-    (arguments `(#:tests? #f)) ; no tests included
+    (arguments
+     `(#:tests? #f))                    ;no tests included
     (inputs
      `(("lilypond" ,lilypond)
-       ("portmidi" ,portmidi)
-       ("python-pyqt" ,python-pyqt)
-       ("python-ly" ,python-ly)
-       ("python-pyportmidi" ,python-pyportmidi)
        ("poppler" ,poppler)
+       ("portmidi" ,portmidi)
+       ("python-ly" ,python-ly)
        ("python-poppler-qt5" ,python-poppler-qt5)
+       ("python-pyportmidi" ,python-pyportmidi)
+       ("python-pyqt" ,python-pyqt)
        ("python-sip" ,python-sip)))
     (home-page "http://www.frescobaldi.org/")
     (synopsis "LilyPond sheet music text editor")
@@ -2142,11 +2139,11 @@ backends, including ALSA, OSS, Network and FluidSynth.")
      `(("drumstick" ,drumstick)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xsl" ,docbook-xsl)
+       ("qttools" ,qttools)
        ("pkg-config" ,pkg-config)))
     (home-page "http://vmpk.sourceforge.net")
     (synopsis "Virtual MIDI piano keyboard")
@@ -4096,15 +4093,14 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "18.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/rosegarden/rosegarden/"
-                    version "/rosegarden-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "15i9fm0vkn3wsgahaxqi1j5zs0wc0j3wdwml0x49084gk2p328vb"))))
+    (version "19.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
+                           version "/rosegarden-" version ".tar.bz2"))
+       (sha256
+        (base32 "1qcaxc6hdzva7kwxxhgl95437fagjbxzv4mihsgpr7y9qk08ppw1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
@@ -4146,9 +4142,9 @@ specification and header.")
                (("COMMAND [$][{]QT_RCC_EXECUTABLE[}]")
                 "COMMAND ${QT_RCC_EXECUTABLE} --format-version 1")
                ;; Extraneous.
-               ;(("qt5_add_resources[(]rg_SOURCES ../data/data.qrc[)]")
-               ; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
-                )
+               ;;(("qt5_add_resources[(]rg_SOURCES ../data/data.qrc[)]")
+               ;; "qt5_add_resources(rg_SOURCES ../data/data.qrc OPTIONS --format-version 1)")
+               )
              ;; Make hashtable traversal order predicable.
              (setenv "QT_RCC_TEST" "1") ; important
              #t))
@@ -4666,7 +4662,7 @@ discard bad quality ones.
        ("qtmultimedia" ,qtmultimedia)
        ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("itstool" ,itstool)
        ("qttools" ,qttools)))
@@ -4970,7 +4966,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
 (define-public geonkick
   (package
     (name "geonkick")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
        (method git-fetch)
@@ -4980,7 +4976,7 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17mwxnmxszdm2wjbigciwh8qx0487q9qhf4sl92y6nqdb0dlghnl"))))
+         "1a59wnm4035kjhs66hihlkiv45p3ffb2yaj1awvyyi5f0lds5zvh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
@@ -5161,7 +5157,7 @@ and as an LV2 plugin.")
 (define-public zrythm
   (package
     (name "zrythm")
-    (version "0.7.573")
+    (version "0.8.200")
     (source
       (origin
         (method url-fetch)
@@ -5169,7 +5165,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "075gq478xbzz5ql4fsrgfzhgxi7z26k6034lhlkmm0klfcb8j9mg"))))
+            "13ivxbrd44qnhyh46dcr94dvqxg8cn4bbd8xm77ljw0p9b4ks4zs"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5194,6 +5190,7 @@ and as an LV2 plugin.")
       ("gettext" ,gettext-minimal)
       ("glibc" ,glibc)
       ("gtk+" ,gtk+)
+      ("guile" ,guile-2.2)
       ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
       ("libsndfile" ,libsndfile)
@@ -5383,3 +5380,45 @@ filtered, pitch shifted and ultimately disintegrated.  This is an unofficial
 port of the Regrader plugin created by Igorski.  It is available as an LV2
 plugin and a standalone JACK application.")
     (license license:expat)))
+
+(define-public tap-lv2
+  (let ((commit "cab6e0dfb2ce20e4ad34b067d1281ec0b193598a")
+        (revision "1"))
+    (package
+      (name "tap-lv2")
+      (version (git-version "0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/moddevices/tap-lv2.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "0q480djfqd9g8mzrggc4vl7yclrhdjqx563ghs8mvi2qq8liycw3"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; no check target
+         #:make-flags
+         (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; no configure
+           (replace 'install
+             (lambda _
+               (invoke "make"
+               (string-append "INSTALL_PATH="
+                              (assoc-ref %outputs "out")
+                              "/lib/lv2")
+                       "install"))))))
+      (inputs
+        `(("lv2", lv2)))
+      (native-inputs
+        `(("pkg-config", pkg-config)))
+      (synopsis "Audio plugin collection")
+      (description "TAP (Tom's Audio Processing) plugins is a collection of
+  audio effect plugins originally released as LADSPA plugins.  This package
+  offers an LV2 version ported by moddevices.")
+      (home-page "http://tap-plugins.sourceforge.net/")
+      (license license:gpl2))))

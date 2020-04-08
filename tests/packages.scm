@@ -109,6 +109,41 @@
                      (manifest-transaction)))))
     (manifest-transaction-null? tx)))
 
+(test-assert "transaction-upgrade-entry, zero upgrades, equivalent package"
+  (let* ((old (dummy-package "foo" (version "1")))
+         (drv (package-derivation %store old))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list old)))
+                    (transaction-upgrade-entry
+                     %store
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (derivation->output-path drv)))
+                     (manifest-transaction)))))
+    (manifest-transaction-null? tx)))
+
+(test-assert "transaction-upgrade-entry, zero upgrades, propagated inputs"
+  ;; Properly detect equivalent packages even when they have propagated
+  ;; inputs.  See <https://bugs.gnu.org/35872>.
+  (let* ((dep (dummy-package "dep" (version "2")))
+         (old (dummy-package "foo" (version "1")
+                             (propagated-inputs `(("dep" ,dep)))))
+         (drv (package-derivation %store old))
+         (tx  (mock ((gnu packages) find-best-packages-by-name
+                     (const (list old)))
+                    (transaction-upgrade-entry
+                     %store
+                     (manifest-entry
+                       (inherit (package->manifest-entry old))
+                       (item (derivation->output-path drv))
+                       (dependencies
+                        (list (manifest-entry
+                                (inherit (package->manifest-entry dep))
+                                (item (derivation->output-path
+                                       (package-derivation %store dep)))))))
+                     (manifest-transaction)))))
+    (manifest-transaction-null? tx)))
+
 (test-assert "transaction-upgrade-entry, one upgrade"
   (let* ((old (dummy-package "foo" (version "1")))
          (new (dummy-package "foo" (version "2")))
@@ -147,6 +182,30 @@
             (and (string=? (manifest-pattern-name pattern) "foo")
                  (string=? (manifest-pattern-version pattern) "1")
                  (string=? (manifest-pattern-output pattern) "out")))))))
+
+(test-assert "transaction-upgrade-entry, grafts"
+  ;; Ensure that, when grafts are enabled, 'transaction-upgrade-entry' doesn't
+  ;; try to build stuff.
+  (with-build-handler (const 'failed!)
+    (parameterize ((%graft? #t))
+      (let* ((old (dummy-package "foo" (version "1")))
+             (bar (dummy-package "bar" (version "0")
+                                 (replacement old)))
+             (new (dummy-package "foo" (version "1")
+                                 (inputs `(("bar" ,bar)))))
+             (tx  (mock ((gnu packages) find-best-packages-by-name
+                         (const (list new)))
+                        (transaction-upgrade-entry
+                         %store
+                         (manifest-entry
+                           (inherit (package->manifest-entry old))
+                           (item (string-append (%store-prefix) "/"
+                                                (make-string 32 #\e) "-foo-1")))
+                         (manifest-transaction)))))
+        (and (match (manifest-transaction-install tx)
+               ((($ <manifest-entry> "foo" "1" "out" item))
+                (eq? item new)))
+             (null? (manifest-transaction-remove tx)))))))
 
 (test-assert "package-field-location"
   (let ()

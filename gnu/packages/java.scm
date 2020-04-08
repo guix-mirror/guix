@@ -12,6 +12,8 @@
 ;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,6 +107,44 @@
 ;; second stage JDK with which we can build the OpenJDK with the Icedtea 1.x
 ;; build framework.  We then build the more recent JDKs Icedtea 2.x and
 ;; Icedtea 3.x.
+
+(define-public libantlr3c
+  (package
+    (name "libantlr3c")
+    (version "3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.antlr3.org/download/C/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lpbnb4dq4azmsvlhp6khq1gy42kyqyjv8gww74g5lm2y6blm4fa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-debuginfo" "--disable-static")
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key build target native-inputs inputs outputs
+                              (configure-flags '()) out-of-source? system
+                              #:allow-other-keys)
+                      (let ((configure (assoc-ref %standard-phases 'configure))
+                            (enable-64bit? (member system '("aarch64-linux"
+                                                            "x86_64-linux"
+                                                            "mips64el-linux"))))
+                        (configure #:build build #:target target
+                                   #:native-inputs native-inputs
+                                   #:inputs inputs #:outputs outputs
+                                   #:configure-flags `(,(if enable-64bit?
+                                                            "--enable-64bit"
+                                                            '())
+                                                       ,@configure-flags)
+                                   #:out-of-source? out-of-source?)))))))
+    (synopsis "ANTLR C Library")
+    (description "LIBANTLR3C provides run-time C libraries for ANTLR3 (ANother
+Tool for Language Recognition v3).")
+    (home-page "https://www.antlr3.org/")
+    (license license:bsd-3)))
 
 (define jikes
   (package
@@ -7167,7 +7207,7 @@ tree walking, and translation.")
     (inputs
      `(("junit" ,java-junit)))))
 
-(define antlr3-3.3
+(define-public antlr3-3.3
   (package
     (inherit antlr3)
     (name "antlr3")

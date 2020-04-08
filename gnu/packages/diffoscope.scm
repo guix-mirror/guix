@@ -68,7 +68,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "137"))
+  (let ((version "138"))
     (package
       (name "diffoscope")
       (version version)
@@ -80,7 +80,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "11llnh2h2mx3xygj4482ld1rnjnhszk4828pmcbi75kanxfrqzq6"))))
+                  "1lsxwyqaaxmin8h06l0352f0kh0l9brbqfn0zv8hmb64bp5r20nr"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -228,7 +228,7 @@ install.")
 (define-public reprotest
   (package
     (name "reprotest")
-    (version "0.7.13")
+    (version "0.7.14")
     (source
      (origin
        (method git-fetch)
@@ -236,10 +236,9 @@ install.")
              (url "https://salsa.debian.org/reproducible-builds/reprotest.git")
              (commit version)))
        (file-name (git-file-name name version))
-       (patches (search-patches "reprotest-support-guix.patch"))
        (sha256
         (base32
-         "0jj9sqxbdpypnc0y8md352wwzh1by6nyhmx5fwqnvrbznrng332f"))))
+         "12d07xq5zx5dfbsgakm6zcn7hgf0h9f5kvfjqkiyak4ix5aa6xkf"))))
     (inputs
      `(("python-debian" ,python-debian)
        ("python-distro" ,python-distro)

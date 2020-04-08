@@ -115,28 +115,36 @@ joystick, and graphics hardware.")
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.10")
+    (version "2.0.12")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "https://libsdl.org/release/SDL2-"
                              version ".tar.gz"))
-             (patches (search-patches "sdl2-mesa-compat.patch"))
              (sha256
               (base32
-               "0mqxp6w5jhbq6y1j690g9r3gpzwjxh4czaglw8x05l7hl49nqrdl"))))
+               "0qy8wbqvfkb5ps8kxgaaf2zzpkjqbsw712hlp74znbn0jpv6i4il"))))
     (arguments
      (substitute-keyword-arguments (package-arguments sdl)
        ((#:configure-flags flags)
         `(append '("--disable-wayland-shared" "--enable-video-kmsdrm"
                    "--disable-kmsdrm-shared")
-                 ,flags))))
+                 ,flags))
+       ((#:make-flags flags ''())
+        `(cons*
+          ;; SDL dlopens libudev, so make sure it is in rpath. This overrides
+          ;; the LDFLAG set in sdl’s configure-flags, which isn’t necessary
+          ;; as sdl2 includes Mesa by default.
+          (string-append "LDFLAGS=-Wl,-rpath,"
+                         (assoc-ref %build-inputs "eudev") "/lib")
+          ,flags))))
     (inputs
      ;; SDL2 needs to be built with ibus support otherwise some systems
      ;; experience a bug where input events are doubled.
      ;;
      ;; For more information, see: https://dev.solus-project.com/T1721
      (append `(("dbus" ,dbus)
+               ("eudev" ,eudev) ; for discovering input devices
                ("fcitx" ,fcitx) ; helps with CJK input
                ("glib" ,glib)
                ("ibus" ,ibus)

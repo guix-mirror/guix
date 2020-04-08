@@ -76,6 +76,7 @@ Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
+Copyright @copyright{} 2020 Brice Waegeneire@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1684,6 +1685,17 @@ to display fonts, you have to install fonts with Guix as well.
 Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
 @code{font-gnu-freefont-ttf}.
 
+@cindex @code{fc-cache}
+@cindex font cache
+Once you have installed or removed fonts, or when you notice an
+application that does not find fonts, you may need to install Fontconfig
+and to force an update of its font cache by running:
+
+@example
+guix install fontconfig
+fc-cache -rv
+@end example
+
 To display text written in Chinese languages, Japanese, or Korean in
 graphical applications, consider installing
 @code{font-adobe-source-han-sans} or @code{font-wqy-zenhei}.  The former
@@ -1717,13 +1729,6 @@ xset +fp $(dirname $(readlink -f ~/.guix-profile/share/fonts/truetype/fonts.dir)
 After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
 to make sure your TrueType fonts are listed there.
 
-@cindex @code{fc-cache}
-@cindex font cache
-After installing fonts you may have to refresh the font cache to use
-them in applications.  The same applies when applications installed via
-Guix do not seem to find fonts.  To force rebuilding of the font cache
-run @code{fc-cache -rv}.  The @code{fc-cache} command is provided by
-the @code{fontconfig} package.
 
 @subsection X.509 Certificates
 
@@ -11915,6 +11920,9 @@ about.  Here are a few example:
 ;; The Catalan layout.
 (keyboard-layout "es" "cat")
 
+;; Arabic layout with "Alt-Shift" to switch to US layout.
+(keyboard-layout "ar,us" #:options '("grp:alt_shift_toggle"))
+
 ;; The Latin American Spanish layout.  In addition, the
 ;; "Caps Lock" key is used as an additional "Ctrl" key,
 ;; and the "Menu" key is used as a "Compose" key to enter
@@ -12771,9 +12779,24 @@ List of extra command-line options for @command{guix-daemon}.
 File where @command{guix-daemon}'s standard output and standard error
 are written.
 
+@cindex HTTP proxy, for @code{guix-daemon}
+@cindex proxy, for @code{guix-daemon} HTTP access
 @item @code{http-proxy} (default: @code{#f})
-The HTTP proxy used for downloading fixed-output derivations and
-substitutes.
+The URL of the HTTP and HTTPS proxy used for downloading fixed-output
+derivations and substitutes.
+
+It is also possible to change the daemon's proxy at run time through the
+@code{set-http-proxy} action, which restarts it:
+
+@example
+herd set-http-proxy guix-daemon http://localhost:8118
+@end example
+
+To clear the proxy settings, run:
+
+@example
+herd set-http-proxy guix-daemon
+@end example
 
 @item @code{tmpdir} (default: @code{#f})
 A directory path where the @command{guix-daemon} will perform builds.
@@ -13178,17 +13201,27 @@ their contents in separate files, possibly compressed.  The @code{(gnu
 services admin)} module provides an interface to GNU@tie{}Rot[t]log, a
 log rotation tool (@pxref{Top,,, rottlog, GNU Rot[t]log Manual}).
 
-The example below defines an operating system that provides log rotation
-with the default settings, for commonly encountered log files.
+This service is part of @code{%base-services}, and thus enabled by
+default, with the default settings, for commonly encountered log files.
+The example below shows how to extend it with an additional
+@dfn{rotation}, should you need to do that (usually, services that
+produce log files already take care of that):
 
 @lisp
 (use-modules (guix) (gnu))
-(use-service-modules admin mcron)
-(use-package-modules base idutils)
+(use-service-modules admin)
+
+(define my-log-files
+  ;; Log files that I want to rotate.
+  '("/var/log/something.log" "/var/log/another.log"))
 
 (operating-system
   ;; @dots{}
-  (services (cons (service rottlog-service-type)
+  (services (cons (simple-service 'rotate-my-stuff
+                                  rottlog-service-type
+                                  (list (log-rotation
+                                         (frequency 'daily)
+                                         (files my-log-files))))
                   %base-services)))
 @end lisp
 
@@ -20682,6 +20715,30 @@ but it also fetches and indexes mail retrieved from Debbugs.
 This is the service type for Mumi.
 @end defvr
 
+@deftp {Data Type} mumi-configuration
+Data type representing the Mumi service configuration.  This type has the
+following fields:
+
+@table @asis
+@item @code{mumi} (default: @code{mumi})
+The Mumi package to use.
+
+@item @code{mailer?} (default: @code{#true})
+Whether to enable or disable the mailer component.
+
+@item @code{mumi-configuration-sender}
+The email address used as the sender for comments.
+
+@item @code{mumi-configuration-smtp}
+A URI to configure the SMTP settings for Mailutils.  This could be
+something like @code{sendmail:///path/to/bin/msmtp} or any other URI
+supported by Mailutils.  @xref{SMTP Mailboxes, SMTP Mailboxes,,
+mailutils, GNU@tie{}Mailutils}.
+
+@end table
+@end deftp
+
+
 @subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
@@ -25383,6 +25440,42 @@ notifications.
 @end table
 @end deftp
 
+@cindex modprobe
+@cindex kernel module loader
+@subsubsection Kernel Module Loader Service
+
+The kernel module loader service allows one to load loadable kernel
+modules at boot.  This is especially useful for modules that don't
+autoload and need to be manually loaded, as it's the case with
+@code{ddcci}.
+
+@deffn {Scheme Variable} kernel-module-loader-service-type
+The service type for loading loadable kernel modules at boot with
+@command{modprobe}.  Its value must be a list of strings representing
+module names.  For example loading the drivers provided by
+@code{ddcci-driver-linux}, in debugging mode by passing some module
+parameters, can be done as follow:
+
+@lisp
+(use-modules (gnu) (gnu services))
+(use-package-modules linux)
+(use-service-modules linux)
+
+(define ddcci-config
+  (plain-file "ddcci.conf"
+              "options ddcci dyndbg delay=120"))
+
+(operating-system
+  ...
+  (services (cons* (service kernel-module-loader-service-type
+                            '("ddcci" "ddcci_backlight"))
+                   (simple-service 'ddcci-config etc-service-type
+                                   (list `("modprobe.d/ddcci.conf"
+                                           ,ddcci-config)))
+                   %base-services))
+  (kernel-loadable-modules (list ddcci-driver-linux)))
+@end lisp
+@end deffn
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services

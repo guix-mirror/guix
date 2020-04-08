@@ -104,6 +104,7 @@
              (delete-file "resources/calibre-portable.sh")
              #t))
         (patches (search-patches "calibre-no-updates-dialog.patch"
+                                 "calibre-msgpack-compat.patch"
                                  "calibre-remove-test-bs4.patch" ; TODO: fix test.
                                  "calibre-remove-test-sqlite.patch" ; TODO: fix test.
                                  "calibre-remove-test-unrar.patch"))))

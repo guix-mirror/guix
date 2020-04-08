@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -957,10 +958,10 @@ to flat and hierarchical lists.")
                 "11kpq34j37c1gsvj5nxhkc31bw8gw2n7nkqsfx87jw9f4v2vhmr9"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
-    (inputs
-     `(("qtbase" ,qtbase)
+     `(("extra-cmake-modules" ,extra-cmake-modules)
        ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Data plotting library")
     (description "KPlotWidget is a QWidget-derived class that provides a virtual
@@ -2448,7 +2449,8 @@ with su and ssh respectively.")
                 "1s3bmn1ck7xvc7a6gv7ywv9161hdahiiw20aq88s4qkm2s5wyy6v"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
     (inputs
      `(("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
@@ -2458,7 +2460,6 @@ with su and ssh respectively.")
        ("kservice" ,kservice)
        ("kwallet" ,kwallet)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
        ("qtwebkit" ,qtwebkit)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE Integration for QtWebKit")
@@ -2558,6 +2559,7 @@ window does not need focus for them to be activated.")
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
        ("shared-mime-info" ,shared-mime-info)))
     (inputs
      `(("karchive" ,karchive)
@@ -2570,8 +2572,7 @@ window does not need focus for them to be activated.")
        ("kitemviews" ,kitemviews)
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)
-       ("qttools" ,qttools)))
+       ("qtsvg" ,qtsvg)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2686,6 +2687,7 @@ consumption.")
        ("solid" ,solid)))
     (native-inputs
      `(("dbus" ,dbus)
+       ("qttools" ,qttools)
        ("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
      `(;; TODO:  LibACL , <ftp://oss.sgi.com/projects/xfs/cmd_tars>
@@ -2708,7 +2710,6 @@ consumption.")
        ("libxslt" ,libxslt)
        ("qtbase" ,qtbase)
        ("qtscript" ,qtscript)
-       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)
        ("sonnet" ,sonnet)))
     (arguments
@@ -3241,7 +3242,8 @@ the passwords on KDE work spaces.")
      `(("kconfig" ,kconfig)
        ("kconfigwidgets" ,kconfigwidgets)))
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
     (inputs
      `(("attica" ,attica)
        ("kauth" ,kauth)
@@ -3255,7 +3257,6 @@ the passwords on KDE work spaces.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("qtbase" ,qtbase)
-       ("qttools" ,qttools)
        ("sonnet" ,sonnet)))
     (arguments
      `(#:tests? #f ; FIXME: 1/5 tests fail.

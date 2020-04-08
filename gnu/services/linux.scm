@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
   #:use-module (gnu packages linux)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (earlyoom-configuration
             earlyoom-configuration?
@@ -37,7 +40,9 @@
             earlyoom-configuration-ignore-positive-oom-score-adj?
             earlyoom-configuration-show-debug-messages?
             earlyoom-configuration-send-notification-command
-            earlyoom-service-type))
+            earlyoom-service-type
+
+            kernel-module-loader-service-type))
 
 
 ;;;
@@ -123,3 +128,53 @@ representation."
     (list (service-extension shepherd-root-service-type
                              (compose list earlyoom-shepherd-service))))
    (description "Run @command{earlyoom}, the Early OOM daemon.")))
+
+
+;;;
+;;; Kernel module loader.
+;;;
+
+(define kernel-module-loader-shepherd-service
+  (match-lambda
+    ((and (? list? kernel-modules) ((? string?) ...))
+     (list
+      (shepherd-service
+       (documentation "Load kernel modules.")
+       (provision '(kernel-module-loader))
+       (requirement '(file-systems))
+       (respawn? #f)
+       (one-shot? #t)
+       (modules `((srfi srfi-1)
+                  (srfi srfi-34)
+                  (srfi srfi-35)
+                  (rnrs io ports)
+                  ,@%default-modules))
+       (start
+        #~(lambda _
+            (cond
+             ((null? '#$kernel-modules) #t)
+             ((file-exists? "/proc/sys/kernel/modprobe")
+              (let ((modprobe (call-with-input-file
+                               "/proc/sys/kernel/modprobe" get-line)))
+                (guard (c ((message-condition? c)
+                           (format (current-error-port) "~a~%"
+                                   (condition-message c))
+                           #f))
+                  (every (lambda (module)
+                         (invoke/quiet modprobe "--" module))
+                         '#$kernel-modules))))
+             (else
+               (format (current-error-port) "error: ~a~%"
+                       "Kernel is missing loadable module support.")
+               #f)))))))))
+
+(define kernel-module-loader-service-type
+  (service-type
+   (name 'kernel-module-loader)
+   (description "Load kernel modules.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             kernel-module-loader-shepherd-service)))
+   (compose concatenate)
+   (extend append)
+   (default-value '())))

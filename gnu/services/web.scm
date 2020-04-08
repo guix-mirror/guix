@@ -262,6 +262,14 @@
             patchwork-virtualhost
             patchwork-service-type
 
+            <mumi-configuration>
+            mumi-configuration
+            mumi-configuration?
+            mumi-configuration-mumi
+            mumi-configuration-mailer?
+            mumi-configuration-sender
+            mumi-configuration-smtp
+
             mumi-service-type))
 
 ;;; Commentary:
@@ -1678,6 +1686,14 @@ WSGIPassAuthorization On
 ;;; Mumi.
 ;;;
 
+(define-record-type* <mumi-configuration>
+  mumi-configuration make-mumi-configuration
+  mumi-configuration?
+  (mumi    mumi-configuration-mumi (default mumi))
+  (mailer? mumi-configuration-mailer? (default #t))
+  (sender  mumi-configuration-sender (default #f))
+  (smtp    mumi-configuration-smtp (default #f)))
+
 (define %mumi-activation
   (with-imported-modules '((guix build utils))
     #~(begin
@@ -1702,25 +1718,43 @@ WSGIPassAuthorization On
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
-(define (mumi-shepherd-services mumi)
-  (list (shepherd-service
-         (provision '(mumi))
-         (documentation "Mumi bug-tracking web interface.")
-         (requirement '(networking))
-         (start #~(make-forkexec-constructor
-                   '(#$(file-append mumi "/bin/mumi"))
-                   #:user "mumi" #:group "mumi"
-                   #:log-file "/var/log/mumi.log"))
-         (stop #~(make-kill-destructor)))
-        (shepherd-service
-         (provision '(mumi-worker))
-         (documentation "Mumi bug-tracking web interface.")
-         (requirement '(networking))
-         (start #~(make-forkexec-constructor
-                   '(#$(file-append mumi "/bin/mumi") "--worker")
-                   #:user "mumi" #:group "mumi"
-                   #:log-file "/var/log/mumi.worker.log"))
-         (stop #~(make-kill-destructor)))))
+(define (mumi-shepherd-services config)
+  (match config
+    (($ <mumi-configuration> mumi mailer? sender smtp)
+     (list (shepherd-service
+            (provision '(mumi))
+            (documentation "Mumi bug-tracking web interface.")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      `(#$(file-append mumi "/bin/mumi") "web"
+                        ,@(if #$mailer? '() '("--disable-mailer")))
+                      #:user "mumi" #:group "mumi"
+                      #:log-file "/var/log/mumi.log"))
+            (stop #~(make-kill-destructor)))
+           (shepherd-service
+            (provision '(mumi-worker))
+            (documentation "Mumi bug-tracking web interface database worker.")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      '(#$(file-append mumi "/bin/mumi") "worker")
+                      #:user "mumi" #:group "mumi"
+                      #:log-file "/var/log/mumi.worker.log"))
+            (stop #~(make-kill-destructor)))
+           (shepherd-service
+            (provision '(mumi-mailer))
+            (documentation "Mumi bug-tracking web interface mailer.")
+            (requirement '(networking))
+            (start #~(make-forkexec-constructor
+                      `(#$(file-append mumi "/bin/mumi") "mailer"
+                        ,@(if #$sender
+                              (list (string-append "--sender=" #$sender))
+                              '())
+                        ,@(if #$smtp
+                              (list (string-append "--smtp=" #$smtp))
+                              '()))
+                      #:user "mumi" #:group "mumi"
+                      #:log-file "/var/log/mumi.mailer.log"))
+            (stop #~(make-kill-destructor)))))))
 
 (define mumi-service-type
   (service-type
@@ -1734,4 +1768,5 @@ WSGIPassAuthorization On
                              mumi-shepherd-services)))
    (description
     "Run Mumi, a Web interface to the Debbugs bug-tracking server.")
-   (default-value mumi)))
+   (default-value
+     (mumi-configuration))))

@@ -75,6 +75,7 @@
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1107,6 +1108,207 @@ helpers.")
 
 (define-public python2-humanfriendly
   (package-with-python2 python-humanfriendly))
+
+(define-public python-textparser
+  (package
+    (name "python-textparser")
+    (version "0.23.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "textparser" version))
+       (sha256
+        (base32
+         "0w5lyhrsvzs5a9q1l3sjgxgljrvd3ybf796w93kc39wayzvd02gh"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/eerimoq/textparser")
+    (synopsis "Fast text parser for Python")
+    (description "This library provides a text parser written in the Python
+language.  It aims to be fast.")
+    (license license:expat)))
+
+(define-public python-aenum
+  (package
+    (name "python-aenum")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aenum" version))
+       (sha256
+        (base32
+         "1s3008rklv4n1kvmq6xdbdfyrpl0gf1rhqasmd27s5kwyjmlqcx4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (format #t "current working dir ~s~%" (getcwd))
+                      (setenv "PYTHONPATH"
+                              (string-append ".:" (getenv "PYTHONPATH")))
+                      ;; We must run the test suite module directly, as it
+                      ;; fails to define the 'tempdir' variable in scope for
+                      ;; the tests otherwise
+                      ;; (see:https://bitbucket.org/stoneleaf/aenum/\
+                      ;; issues/32/running-tests-with-python-setuppy-test).
+                      (invoke "python3" "aenum/test.py")
+                      ;; This one fails with "NameError: name
+                      ;; 'test_pickle_dump_load' is not defined" (see:
+                      ;; https://bitbucket.org/stoneleaf/aenum/issues/33
+                      ;; /error-running-the-test_v3py-test-suite).
+                      ;; (invoke "python3" "aenum/test_v3.py")
+                      #t)))))
+    (home-page "https://bitbucket.org/stoneleaf/aenum")
+    (synopsis "Advanced enumerations, namedtuples and constants for Python")
+    (description "The aenum library includes an @code{Enum} base class, a
+metaclass-based @code{NamedTuple} implementation and a @code{NamedConstant}
+class.")
+    (license license:bsd-3)))
+
+(define-public python-can
+  (package
+    (name "python-can")
+    (version "3.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-can" version))
+       (sha256
+        (base32
+         "0bkbxi45sckzir6s0j3h01pkfn4vkz3ymih2zjp7zw77wz0vbvsz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-broken-tests
+                    ;; The tests try to run two scripts it expects should be
+                    ;; in PATH, but they aren't at this time (see:
+                    ;; https://github.com/hardbyte/python-can/issues/805).
+                    (lambda _
+                      (substitute* "test/test_scripts.py"
+                        (("\"can_logger\\.py --help\"") "")
+                        (("\"can_player\\.py --help\"") ""))
+                      #t)))))
+    (propagated-inputs
+     `(("python-aenum" ,python-aenum)
+       ("python-wrapt" ,python-wrapt)))
+    (native-inputs
+     `(("python-codecov" ,python-codecov)
+       ("python-future" ,python-future)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-pyserial" ,python-pyserial)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-timeout" ,python-pytest-timeout)))
+    (home-page "https://github.com/hardbyte/python-can")
+    (synopsis "Controller Area Network (CAN) interface module for Python")
+    (description "This package defines the @code{can} module, which provides
+controller area network (CAN) support for Python developers; providing common
+abstractions to different hardware devices, and a suite of utilities for
+sending and receiving messages on a CAN bus.")
+    (license license:gpl3+)))
+
+(define-public python-diskcache
+  (package
+    (name "python-diskcache")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "diskcache" version))
+       (sha256
+        (base32
+         "1q2wz5sj16zgyy1zpq516qgbnfwsavk1pl2qks0f4r62z5cmmvmw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                   ;test suite not included in the release
+    (home-page "http://www.grantjenks.com/docs/diskcache/")
+    (synopsis "Disk and file backed cache library")
+    (description "DiskCache is a disk and file backed persistent cache.")
+    (license license:asl2.0)))
+
+(define-public python-bitstruct
+  (package
+    (name "python-bitstruct")
+    (version "8.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bitstruct" version))
+       (sha256
+        (base32
+         "1fpc1qh1vss05ap29xvhjp200fm0q4pvgcjl0qpryh7ay6xgr5vx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/eerimoq/bitstruct")
+    (synopsis "Python values to and C bit field structs converter")
+    (description "This module performs conversions between Python values and C
+bit field structs represented as Python byte strings.  It is intended to have
+a similar interface as the @code{struct} module from Python, but working on
+bits instead of primitive data types like @code{char}, @code{int}, etc.")
+    (license license:expat)))
+
+(define-public python-cantools
+  (package
+    (name "python-cantools")
+    (version "33.1.1")
+    (source
+     (origin
+       ;; We take the sources from the Git repository as the documentation is
+       ;; not included with the PyPI archive.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/eerimoq/cantools.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aad137yd8b4jkfvlv812qsxmxcgra7g1p4wbxfsjy1cbf8fbq9q"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             ;; See: https://github.com/eerimoq/cantools/issues/190.
+             (substitute* "README.rst"
+               (("https://github.com/eerimoq/cantools/raw/master\
+/docs/monitor.png")
+                "monitor.png"))
+             (with-directory-excursion "docs"
+               (invoke "make" "man" "info"))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info"))
+                    (man1 (string-append out "/share/man/man1")))
+               (format #t "CWD: ~s~%" (getcwd))
+               (install-file "docs/_build/texinfo/cantools.info" info)
+               (install-file "docs/_build/man/cantools.1" man1)
+               #t))))))
+    (native-inputs
+     `(("sphinx" ,python-sphinx)
+       ("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("python-bitstruct" ,python-bitstruct)
+       ("python-can" ,python-can)
+       ("python-diskcache" ,python-diskcache)
+       ("python-textparser" ,python-textparser)))
+    (home-page "https://github.com/eerimoq/cantools")
+    (synopsis "Tools for the Controller Area Network (CAN) bus protocol")
+    (description "This package includes Controller Area Network (CAN) related
+tools that can be used to:
+@itemize
+@item parse DBC, KCD, SYM, ARXML 4 and CDD files
+@item encode and decode CAN messages
+@item multiplex simple and extended signals
+@item diagnose DID encoding and decoding
+@item dump the CAN decoder output
+@item test CAN nodes
+@item generate C source code
+@item monitor the CAN bus
+@end itemize")
+    (license license:expat)))
 
 (define-public python-capturer
   (package
@@ -2594,14 +2796,14 @@ environments and back.")
 (define-public python-pyyaml
   (package
     (name "python-pyyaml")
-    (version "5.3")
+    (version "5.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyYAML" version))
        (sha256
         (base32
-         "058nd4p8f25wwzy2aiwh18wcrdm6663cqbfdkgjp8y9cp7ampx79"))))
+         "0pb4zvkfxfijkpgd1b86xjsqql97ssf1knbd1v53wkg1qm9cgsmq"))))
     (build-system python-build-system)
     (inputs
      `(("libyaml" ,libyaml)))
@@ -5714,6 +5916,112 @@ away.")
 (define-public python2-ipython-genutils
   (package-with-python2 python-ipython-genutils))
 
+(define-public python-ipyparallel
+  (package
+    (name "python-ipyparallel")
+    (version "6.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ipyparallel" version))
+        (sha256
+         (base32
+          "0rf0dbpxf5z82bw8lsjj45r3wdd4wc74anz4wiiaf2rbjqlb1ivn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; RuntimeError: IO Loop failed to start
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'prepare-for-tests
+           (lambda _
+             (setenv "HOME" (getcwd))
+             #t)))))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-decorator" ,python-decorator)
+       ("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-ipython-genutils" ,python-ipython-genutils)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-tornado" ,python-tornado)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-testpath" ,python-testpath)))
+    (home-page "https://ipython.org/")
+    (synopsis "Interactive Parallel Computing with IPython")
+    (description
+     "@code{ipyparallel} is a Python package and collection of CLI scripts for
+controlling clusters for Jupyter.  @code{ipyparallel} contains the following
+CLI scripts:
+@enumerate
+@item ipcluster - start/stop a cluster
+@item ipcontroller - start a scheduler
+@item ipengine - start an engine
+@end enumerate")
+    (license license:bsd-3)))
+
+(define-public python2-ipyparallel
+  (let ((ipyparallel (package-with-python2 python-ipyparallel)))
+    (package
+      (inherit ipyparallel)
+      (propagated-inputs
+       `(("python2-futures" ,python2-futures)
+         ,@(package-propagated-inputs ipyparallel))))))
+
+(define-public python-ipython-cluster-helper
+  (package
+    (name "python-ipython-cluster-helper")
+    (version "0.6.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ipython-cluster-helper" version))
+        (sha256
+         (base32
+          "1l6mlwxlkxpbvawfwk6qffich7ahg9hq2bxfissgz6144p3k4arj"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (substitute* "requirements.txt"
+                   (("ipython.*") "ipython\n"))
+                 #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f      ; Test suite can't find IPython.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (if tests?
+               (begin
+                 (setenv "HOME" (getcwd))
+                 (add-installed-pythonpath inputs outputs)
+                 (invoke "python" "example/example.py" "--local"))
+               #t))))))
+    (propagated-inputs
+     `(("python-ipyparallel" ,python-ipyparallel)
+       ("python-ipython" ,python-ipython)
+       ("python-netifaces" ,python-netifaces)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/roryk/ipython-cluster-helper")
+    (synopsis
+     "Simplify IPython cluster start up and use for multiple schedulers")
+    (description
+     "@code{ipython-cluster-helper} creates a throwaway parallel IPython
+profile, launches a cluster and returns a view.  On program exit it shuts the
+cluster down and deletes the throwaway profile.")
+    (license license:expat)))
+
+(define-public python2-ipython-cluster-helper
+  (package-with-python2 python-ipython-cluster-helper))
+
 (define-public python-traitlets
   (package
     (name "python-traitlets")
@@ -7862,14 +8170,14 @@ primary use case is APIs defined before keyword-only parameters existed.")
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
-    (version "0.4.3")
+    (version "0.4.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyasn1" version))
        (sha256
         (base32
-         "1z5h38anjzzrxpraa9iq9llffyx2zs8gx0q6dc1g029miwnn50gv"))))
+         "1fnhbi3rmk47l9851gbik0flfr64vs5j0hbqx24cafjap6gprxxf"))))
     (build-system python-build-system)
     (home-page "http://pyasn1.sourceforge.net/")
     (synopsis "ASN.1 types and codecs")
@@ -18830,4 +19138,420 @@ HTML-containing files.")
      "JSON5 extends the JSON data interchange format to make it slightly more
 usable as a configuration language.  This Python package implements parsing and
 dumping of JSON5 data structures.")
+    (license license:asl2.0)))
+
+(define-public python-frozendict
+  (package
+    (name "python-frozendict")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "frozendict" version))
+       (sha256
+        (base32 "0ibf1wipidz57giy53dh7mh68f2hz38x8f4wdq88mvxj5pr7jhbp"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/slezica/python-frozendict")
+    (synopsis "Simple immutable mapping for Python")
+    (description
+     "@dfn{frozendict} is an immutable wrapper around dictionaries that
+implements the complete mapping interface.  It can be used as a drop-in
+replacement for dictionaries where immutability is desired.")
+    (license license:expat)))
+
+(define-public python-unpaddedbase64
+  (package
+    (name "python-unpaddedbase64")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/matrix-org/python-unpaddedbase64.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0if3fjfxga0bwdq47v77fs9hrcqpmwdxry2i2a7pdqsp95258nxd"))))
+    (build-system python-build-system)
+    (home-page "https://pypi.org/project/unpaddedbase64/")
+    (synopsis "Encode and decode Base64 without “=” padding")
+    (description
+     "RFC 4648 specifies that Base64 should be padded to a multiple of 4 bytes
+using “=” characters.  However this conveys no benefit so many protocols
+choose to use Base64 without the “=” padding.")
+    (license license:asl2.0)))
+
+(define-public python-canonicaljson
+  (package
+    (name "python-canonicaljson")
+    (version "1.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "canonicaljson" version))
+       (sha256
+        (base32 "09cpacc8yvcc74i63pdmlfaahh77dnvbyw9zf29wml2zzwqfbg25"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-frozendict" ,python-frozendict)
+       ("python-simplejson" ,python-simplejson)))
+    (home-page "https://github.com/matrix-org/python-canonicaljson")
+    (synopsis "Canonical JSON")
+    (description
+     "Deterministically encode JSON.
+
+@itemize
+@item Encodes objects and arrays as RFC 7159 JSON.
+@item Sorts object keys so that you get the same result each time.
+@item Has no insignificant whitespace to make the output as small as possible.
+@item Escapes only the characters that must be escaped, U+0000 to
+ U+0019 / U+0022 / U+0056, to keep the output as small as possible.
+@item Uses the shortest escape sequence for each escaped character.
+@item Encodes the JSON as UTF-8.
+@item Can encode frozendict immutable dictionaries.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python-signedjson
+  (package
+    (name "python-signedjson")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "signedjson" version))
+       (sha256
+        (base32 "0280f8zyycsmd7iy65bs438flm7m8ffs1kcxfbvhi8hbazkqc19m"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-canonicaljson" ,python-canonicaljson)
+       ("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-pynacl" ,python-pynacl)
+       ("python-typing-extensions" ,python-typing-extensions)
+       ("python-unpaddedbase64" ,python-unpaddedbase64)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/matrix-org/python-signedjson")
+    (synopsis "Sign JSON objects with ED25519 signatures")
+    (description
+     "Sign JSON objects with ED25519 signatures.
+
+@itemize
+@item More than one entity can sign the same object.
+@item Each entity can sign the object with more than one key making it easier to
+rotate keys
+@item ED25519 can be replaced with a different algorithm.
+@item Unprotected data can be added to the object under the @dfn{\"unsigned\"}
+key.
+@end itemize")
+    (license license:asl2.0)))
+
+(define-public python-daemonize
+  (package
+    (name "python-daemonize")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "daemonize" version))
+       (sha256
+        (base32 "1hwbl3gf9fdds9sc14zgjyjisjvxidrvqc11xlbb0b6jz17nw0nx"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/thesharp/daemonize")
+    (synopsis "Library for writing system daemons in Python")
+    (description "Daemonize is a library for writing system daemons in Python.")
+    (license license:expat)))
+
+(define-public python-pymacaroons
+  (package
+    (name "python-pymacaroons")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pymacaroons" version))
+       (sha256
+        (base32 "1f0357a6g1h96sk6wy030xmc1p4rd80a999qvxd28v7nlm1blsqy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-pynacl" ,python-pynacl)))
+    (home-page "https://github.com/ecordell/pymacaroons")
+    (synopsis "Python Macaroon Library")
+    (description
+     "Macaroons, like cookies, are a form of bearer credential.  Unlike opaque
+tokens, macaroons embed caveats that define specific authorization
+requirements for the target service, the service that issued the root macaroon
+and which is capable of verifying the integrity of macaroons it receives.
+
+Macaroons allow for delegation and attenuation of authorization.  They are
+simple and fast to verify, and decouple authorization policy from the
+enforcement of that policy.")
+    (license license:expat)))
+
+(define-public python-prometheus-client
+  (package
+    (name "python-prometheus-client")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prometheus_client" version))
+       (sha256
+        (base32 "1ni2yv4ixwz32nz39ckia76lvggi7m19y5f702w5qczbnfi29kbi"))))
+    (build-system python-build-system)
+    (arguments
+     ;; TODO: No tests in the PyPI distribution.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/prometheus/client_python")
+    (synopsis "Prometheus instrumentation library")
+    (description
+     "This is the official Python client for the Prometheus monitoring server.")
+    (license license:asl2.0)))
+
+(define-public python-ldap3
+  (package
+    (name "python-ldap3")
+    (version "2.7")
+    (home-page "https://github.com/cannatag/ldap3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xw9fkqld21xsvdpaqir8ccc2l805xnn9gxahsnl70xzp3mwl0xv"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f ;TODO: Tests need a real LDAP server to run
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (when tests?
+                        (invoke "nosetests" "-s" "test"))
+                      #t)))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-gssapi" ,python-gssapi)
+       ("python-pyasn1" ,python-pyasn1)))
+    (synopsis "Python LDAP client")
+    (description
+     "LDAP3 is a strictly RFC 4510 conforming LDAP V3 pure Python client
+library.")
+    (license license:lgpl3+)))
+
+(define-public python-boltons
+  (package
+    (name "python-boltons")
+    (version "20.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "boltons" version))
+       (sha256
+        (base32
+         "0lrr40qqj3ch8xarvyzbnbjs79pz5aywklllq53l347h1b8xnkg4"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mahmoud/boltons")
+    (synopsis "Extensions to the Python standard library")
+    (description
+     "Boltons is a set of over 230 pure-Python utilities in the same spirit
+as — and yet conspicuously missing from — the standard library, including:
+
+@itemize
+@item Atomic file saving, bolted on with fileutils
+@item A highly-optimized OrderedMultiDict, in dictutils
+@item Two types of PriorityQueue, in queueutils
+@item Chunked and windowed iteration, in iterutils
+@item Recursive data structure iteration and merging, with iterutils.remap
+@item Exponential backoff functionality, including jitter, through
+iterutils.backoff
+@item A full-featured TracebackInfo type, for representing stack traces, in
+tbutils
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public python-eliot
+  (package
+    (name "python-eliot")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "eliot" version))
+       (sha256
+        (base32 "0wabv7hk63l12881f4zw02mmj06583qsx2im0yywdjlj8f56vqdn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-journald-support
+           (lambda _
+             (for-each delete-file
+                     '("eliot/tests/test_journald.py"
+                       "eliot/journald.py"))
+             #t))
+         (add-after 'remove-journald-support 'remove-eliot-prettyprint-tests
+           ;; remove command-line tool's tests. TODO eliot-prettyprint should
+           ;; be installed and these tests should pass.
+           (lambda _
+             (delete-file "eliot/tests/test_prettyprint.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-boltons" ,python-boltons)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-six" ,python-six)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-black" ,python-black)
+       ("python-coverage" ,python-coverage)
+       ("python-dask" ,python-dask)
+       ("python-flake8" ,python-flake8)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-testtools" ,python-testtools)
+       ("python-twine" ,python-twine)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://github.com/itamarst/eliot/")
+    (synopsis "Eliot: the logging system that tells you why it happened")
+    (description
+     "@dfn{eliot} is a Python logging system that outputs causal chains of
+actions: actions can spawn other actions, and eventually they either succeed
+or fail. The resulting logs tell you the story of what your software did: what
+happened, and what caused it.")
+    (license license:asl2.0)))
+
+(define-public python-pem
+  (package
+    (name "python-pem")
+    (version "20.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pem" version))
+       (sha256
+        (base32
+         "1xh88ss279fprxnzd10dczmqwjhppbyvljm33zrg2mgybwd66qr7"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-coverage" ,python-coverage)
+       ("python-pretend" ,python-pretend)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytest" ,python-pytest)
+       ("python-sphinx" ,python-sphinx)
+       ("python-twisted" ,python-twisted)))
+    (home-page "https://pem.readthedocs.io/")
+    (synopsis "Easy PEM file parsing in Python")
+    (description
+     "This package provides a Python module for parsing and splitting PEM files.")
+    (license license:expat)))
+
+(define-public python-txsni
+  ;; We need a few commits on top of 0.1.9 for compatibility with newer
+  ;; Python and OpenSSL.
+  (let ((commit "5014c141a7acef63e20fcf6c36fa07f0cd754ce1")
+        (revision "0"))
+    (package
+      (name "python-txsni")
+      (version (git-version "0.1.9" revision commit))
+      (home-page "https://github.com/glyph/txsni")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url home-page) (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0imfxx4yjj1lbq0n5ad45al3wvv4qv96sivnc1r51i66mxi658z8"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-pyopenssl" ,python-pyopenssl)
+         ("python-service-identity" ,python-service-identity)
+         ("python-twisted" ,python-twisted)))
+      (synopsis "Run TLS servers with Twisted")
+      (description
+       "This package provides an easy-to-use SNI endpoint for use
+with the Twisted web framework.")
+      (license license:expat))))
+
+(define-public python-txacme
+  (package
+    (name "python-txacme")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "txacme" version))
+       (sha256
+        (base32 "1cplx4llq7i508w6fgwjdv9di7rsz9k9irfmzdfbiz6q6a0ykf1d"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-acme" ,python-acme)
+       ("python-attrs" ,python-attrs)
+       ("python-eliot" ,python-eliot)
+       ("python-josepy" ,python-josepy)
+       ("python-pem" ,python-pem)
+       ("python-treq" ,python-treq)
+       ("python-twisted" ,python-twisted)
+       ("python-txsni" ,python-txsni)))
+    (native-inputs
+     `(("python-fixtures" ,python-fixtures)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-mock" ,python-mock)
+       ("python-service-identity"
+        ,python-service-identity)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testscenarios" ,python-testscenarios)
+       ("python-testtools" ,python-testtools)))
+    (home-page "https://github.com/twisted/txacme")
+    (synopsis "Twisted implexmentation of the ACME protocol")
+    (description
+     "ACME is Automatic Certificate Management Environment, a protocol that
+allows clients and certificate authorities to automate verification and
+certificate issuance.  The ACME protocol is used by the free Let's Encrypt
+Certificate Authority.
+
+txacme is an implementation of the protocol for Twisted, the event-driven
+networking engine for Python.")
+    (license license:expat)))
+
+(define-public python-pysaml2
+  (package
+    (name "python-pysaml2")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pysaml2" version))
+       (sha256
+        (base32
+         "1h8cmxh9cvxhrdfmkh92wg6zpxmhi2fixq1cy4hxismmaar7bsny"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-dateutil" ,python-dateutil)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-pytz" ,python-pytz)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://idpy.org")
+    (synopsis "Python implementation of SAML Version 2 Standard")
+    (description
+     "PySAML2 is a pure python implementation of SAML Version 2 Standard.
+It contains all necessary pieces for building a SAML2 service provider or
+an identity provider.  The distribution contains examples of both.
+
+This package was originally written to work in a WSGI environment, but
+there are extensions that allow you to use it with other frameworks.")
     (license license:asl2.0)))

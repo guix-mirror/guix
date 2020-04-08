@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2205,6 +2206,41 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public python2-peewee
   (package-with-python2 python-peewee))
 
+(define-public python-tortoise-orm
+  (package
+    (name "python-tortoise-orm")
+    (version "0.16.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tortoise-orm" version))
+       (sha256
+        (base32
+         "01hbvfyxs2qd1mjc96aipwsdxxhydw8ww686r4gsf87bl6f98dvz"))))
+    (build-system python-build-system)
+    ;; Disable tests for now. They pull in a lot of dependencies.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("python-ciso8601" ,python-ciso8601)
+       ("python-asynctest" ,python-asynctest)
+       ("python-nose2" ,python-nose2)))
+    (propagated-inputs
+     `(("python-aiosqlite" ,python-aiosqlite)
+       ("python-pypika" ,python-pypika)
+       ("python-typing-extensions"
+        ,python-typing-extensions)))
+    (home-page
+     "https://github.com/tortoise/tortoise-orm")
+    (synopsis
+     "Easy async ORM for python, built with relations in mind")
+    (description
+     "Tortoise ORM is an easy-to-use asyncio ORM (Object Relational Mapper)
+inspired by Django.  Tortoise ORM was build with relations in mind and
+admiration for the excellent and popular Django ORM.  It’s engraved in its
+design that you are working not with just tables, you work with relational
+data.")
+    (license license:asl2.0)))
+
 (define-public sqlcipher
   (package
     (name "sqlcipher")
@@ -2716,6 +2752,29 @@ translate the complete SQLite API into Python.")
 (define-public python2-apsw
   (package-with-python2 python-apsw))
 
+(define-public python-aiosqlite
+  (package
+    (name "python-aiosqlite")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiosqlite" version))
+       (sha256
+        (base32
+         "1f3zdldp9zgrw6qz5fsp3wa5zw73cjf139pj4vf24ryv895320jg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-aiounittest" ,python-aiounittest)))
+    (home-page "https://github.com/jreese/aiosqlite")
+    (synopsis
+     "Asyncio bridge for sqlite3")
+    (description
+     "The package aiosqlite replicates the standard sqlite3 module, but with
+async versions of all the standard connection and cursor methods, and context
+managers for automatically closing connections.")
+    (license license:expat)))
+
 (define-public python2-neo4j-driver
   (package
     (name "python2-neo4j-driver")
@@ -3023,6 +3082,27 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 
 (define-public python2-sql
   (package-with-python2 python-sql))
+
+(define-public python-pypika
+  (package
+    (name "python-pypika")
+    (version "0.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyPika" version))
+       (sha256
+        (base32
+         "0qzn5vygirg52dlizm6ayzdc5llq8p2krrx0kymr236lrz89wqp8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-parameterized" ,python-parameterized)))
+    (home-page "https://github.com/kayak/pypika")
+    (synopsis "SQL query builder API for Python")
+    (description
+     "PyPika is a python SQL query builder that exposes the full richness of
+the SQL language using a syntax that reflects the resulting query.")
+    (license license:asl2.0)))
 
 (define-public mongo-tools
   (package

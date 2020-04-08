@@ -621,37 +621,26 @@ on @command{git}, and use any regular Git hosting service.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.99.0")
+    (version "1.0.0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/libgit2/libgit2.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://github.com/libgit2/libgit2/"
+                                  "releases/download/v" version
+                                  "/libgit2-" version ".tar.gz"))
               (sha256
                (base32
-                "0qxzv49ip378g1n7hrbifb9c6pys2kj1hnxcafmbb94gj3pgd9kg"))
+                "1d09ni0v3vammk8zqmmwks92fh3wwnsxpyrh4s5wwdb3gxma27va"))
               (patches (search-patches "libgit2-mtime-0.patch"))
-
-              ;; Remove bundled software.  Keep "http-parser" because it
-              ;; contains patches that are not available in the system version.
               (snippet '(begin
-                          (with-directory-excursion "deps"
-                            (for-each (lambda (dir)
-                                        (delete-file-recursively dir))
-                                      (lset-difference equal?
-                                                       (scandir ".")
-                                                       '("." ".." "http-parser"))))
-                          #t))
-              (modules '((guix build utils)
-                         (srfi srfi-1)
-                         (ice-9 ftw)))))
+                          (delete-file-recursively "deps") #t))
+              (modules '((guix build utils)))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
      `(#:configure-flags
        (list "-DUSE_NTLMCLIENT=OFF" ;TODO: package this
              "-DREGEX_BACKEND=pcre2"
+             "-DUSE_HTTP_PARSER=system"
              ,@(if (%current-target-system)
                    `((string-append
                       "-DPKG_CONFIG_EXECUTABLE="
@@ -660,14 +649,6 @@ on @command{git}, and use any regular Git hosting service.")
                    '()))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-pcre2-reference
-           (lambda _
-             ;; Use PCRE2 with 8-bit character support, as there is no "libpcre2.pc".
-             ;; See <https://github.com/libgit2/libgit2/issues/5438>.
-             (substitute* "src/CMakeLists.txt"
-               (("\"libpcre2\"")
-                "\"libpcre2-8\""))
-             #t))
          (add-after 'unpack 'fix-hardcoded-paths
            (lambda _
              (substitute* "tests/repo/init.c"
@@ -675,10 +656,6 @@ on @command{git}, and use any regular Git hosting service.")
              (substitute* "tests/clar/fs.h"
                (("/bin/cp") (which "cp"))
                (("/bin/rm") (which "rm")))
-             #t))
-         (add-after 'unpack 'make-git-checkout-writable
-           (lambda _
-             (for-each make-file-writable (find-files "."))
              #t))
          ;; Run checks more verbosely, unless we are cross-compiling.
          (replace 'check
@@ -688,7 +665,8 @@ on @command{git}, and use any regular Git hosting service.")
                  ;; Tests may be disabled if cross-compiling.
                  (format #t "Test suite not run.~%")))))))
     (inputs
-     `(("libssh2" ,libssh2)))
+     `(("libssh2" ,libssh2)
+       ("http-parser" ,http-parser)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
@@ -697,7 +675,7 @@ on @command{git}, and use any regular Git hosting service.")
      `(("openssl" ,openssl)
        ("pcre2" ,pcre2)
        ("zlib" ,zlib)))
-    (home-page "https://libgit2.github.com/")
+    (home-page "https://libgit2.org/")
     (synopsis "Library providing Git core methods")
     (description
      "Libgit2 is a portable, pure C implementation of the Git core methods
@@ -2159,21 +2137,16 @@ by rclone usable with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.8")
+    (version "2.10")
     (source
      (origin
        (method url-fetch)
-       ;; Older downloads are moved to another URL.
-       (uri (list
-             (string-append
-              "https://www.fossil-scm.org/index.html/uv/download/"
-              "fossil-src-" version ".tar.gz")
-             (string-append
+       (uri (string-append
               "https://www.fossil-scm.org/index.html/uv/"
-              "fossil-src-" version ".tar.gz")))
+              "fossil-src-" version ".tar.gz"))
        (sha256
         (base32
-         "0pbinf8d2kj1j7niblhzjd2l2khg6r2pn2xvig6gavz27p3vwcka"))
+         "041bs4fgk52fw58p7s084pxk9d9vs5v2f2pjbznqawz75inpg8yq"))
        (modules '((guix build utils)))
        (snippet
         '(begin

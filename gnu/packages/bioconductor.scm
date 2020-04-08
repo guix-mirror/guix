@@ -1958,14 +1958,14 @@ experiments.")
 (define-public r-genomicinteractions
   (package
     (name "r-genomicinteractions")
-    (version "1.20.1")
+    (version "1.20.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicInteractions" version))
        (sha256
         (base32
-         "140bp7c8p079xh5wwxmrq3a73pm6mdc9czq5w2gzjml7dgrca38a"))))
+         "0mqb899wah5n7bp2lajhwy2zpqqhi18plza3i3m51rfl9n62smph"))))
     (properties
      `((upstream-name . "GenomicInteractions")))
     (build-system r-build-system)
@@ -1986,6 +1986,8 @@ experiments.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ComputationalRegulatoryGenomicsICL/GenomicInteractions/")
     (synopsis "R package for handling genomic interaction data")
     (description
@@ -4077,14 +4079,14 @@ footprints.")
 (define-public r-gofuncr
   (package
     (name "r-gofuncr")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GOfuncR" version))
        (sha256
         (base32
-         "0hmi13pz923fm95asys615rih63b1i2nvynfczr1zcsc9fzn4h35"))))
+         "1wk7ja6f5il8jx8v05ijzcs9pijp3b953h566ya66xp7dz5jg9rb"))))
     (properties `((upstream-name . "GOfuncR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4095,6 +4097,8 @@ footprints.")
        ("r-mapplots" ,r-mapplots)
        ("r-rcpp" ,r-rcpp)
        ("r-vioplot" ,r-vioplot)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/GOfuncR/")
     (synopsis "Gene ontology enrichment using FUNC")
     (description
@@ -5829,14 +5833,14 @@ sequential way to mimic the manual gating strategy.")
 (define-public r-cytoml
   (package
     (name "r-cytoml")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CytoML" version))
        (sha256
         (base32
-         "0m8x18wkvis85cawv7j07pk59w76wnzy93ia99gd24j82z4h97p1"))))
+         "0wgi8rwb4spxzd5xvs5amfr5g82ny2nad57j3nmhnhnj1cpirjxz"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
     (inputs
@@ -5866,6 +5870,8 @@ sequential way to mimic the manual gating strategy.")
        ("r-runit" ,r-runit)
        ("r-xml" ,r-xml)
        ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/RGLab/CytoML")
     (synopsis "GatingML interface for cross platform cytometry data sharing")
     (description
@@ -5906,14 +5912,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.10.8")
+    (version "6.10.9")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "0307vhx9ck24rxqbvq15815ssxcc226sl2la060n204b51wi9jaa"))))
+         "0b457yg8mwqlrn5l344w8qcj8v2ghlj1wdx1ysxbncqvqx7nvgig"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5930,6 +5936,8 @@ self-organizing map clustering and minimal spanning trees.")
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-reshape2" ,r-reshape2)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://www.mixOmics.org")
     (synopsis "Multivariate methods for exploration of biological datasets")
     (description
@@ -7490,14 +7498,14 @@ accessing web references for elements/sets are also available in BiocSet.")
 (define-public r-biocworkflowtools
   (package
     (name "r-biocworkflowtools")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocWorkflowTools" version))
        (sha256
         (base32
-         "1v4bhnpdkmllm7aghms9b7369hkrgz7mn69wbrqg1x42pgkf30ad"))))
+         "0z28s572wg9qxv52dmixxz1xf1z3fyp2j7kzk0k32fp628918wr6"))))
     (properties
      `((upstream-name . "BiocWorkflowTools")))
     (build-system r-build-system)
@@ -7511,6 +7519,8 @@ accessing web references for elements/sets are also available in BiocSet.")
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-stringr" ,r-stringr)
        ("r-usethis" ,r-usethis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/BiocWorkflowTools/")
     (synopsis "Tools to aid the development of Bioconductor Workflow packages")
     (description

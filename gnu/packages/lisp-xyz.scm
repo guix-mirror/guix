@@ -18,6 +18,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -618,6 +619,43 @@ from other CLXes around the net.")
 
 (define-public ecl-clx
   (sbcl-package->ecl-package sbcl-clx))
+
+(define-public sbcl-clx-truetype
+  (let ((commit "c6e10a918d46632324d5863a8ed067a83fc26de8")
+        (revision "1"))
+    (package
+      (name "sbcl-clx-truetype")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/l04m33/clx-truetype")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "079hyp92cjkdfn6bhkxsrwnibiqbz4y4af6nl31lzw6nm91j5j37"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (substitute* "package.lisp"
+               ((":export") ":export\n   :+font-cache-filename+"))
+             #t))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("clx" ,sbcl-clx)
+         ("zpb-ttf" ,sbcl-zpb-ttf)
+         ("cl-vectors" ,sbcl-cl-vectors)
+         ("cl-paths-ttf" ,sbcl-cl-paths-ttf)
+         ("cl-fad" ,sbcl-cl-fad)
+         ("cl-store" ,sbcl-cl-store)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/l04m33/clx-truetype")
+      (synopsis "Antialiased TrueType font rendering using CLX and XRender")
+      (description "CLX-TrueType is pure common lisp solution for
+antialiased TrueType font rendering using CLX and XRender extension.")
+      (license license:expat))))
 
 (define-public sbcl-cl-ppcre-unicode
   (package (inherit sbcl-cl-ppcre)
@@ -6643,8 +6681,8 @@ which implements a set of utilities.")
   (sbcl-package->ecl-package sbcl-metatilities-base))
 
 (define-public sbcl-cl-containers
-  (let ((commit "b2980bac9ac87ad32b63b722ce520fa26cb36ee6")
-        (revision "2"))
+  (let ((commit "3d1df53c22403121bffb5d553cf7acb1503850e7")
+        (revision "3"))
     (package
       (name "sbcl-cl-containers")
       (version (git-version "0.12.1" revision commit))
@@ -6657,7 +6695,7 @@ which implements a set of utilities.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "19hmlax19hq0xjaqr8za90vwf06ymxw1m29sj053a309k3hm84gx"))))
+           "18s6jfq11n8nv9k4biz32pm1s7y9zl054ry1gmdbcf39nisy377y"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("lift" ,sbcl-lift)))
@@ -7204,8 +7242,8 @@ implementation specific equivalent.")
   (sbcl-package->ecl-package sbcl-trivial-macroexpand-all))
 
 (define-public sbcl-serapeum
-  (let ((commit "65837f8a0d65b36369ec8d000fff5c29a395b5fe")
-        (revision "0"))
+  (let ((commit "64f0c4a161bbbda7c275012ca1415b4293b9e169")
+        (revision "1"))
     (package
       (name "sbcl-serapeum")
       (version (git-version "0.0.0" revision commit))
@@ -7219,7 +7257,7 @@ implementation specific equivalent.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0clwf81r2lvk1rbfvk91s9zmbkas9imf57ilqclw12mxaxlfsnbw"))))
+           "0djnj0py8hdjnk5j6shjq2kbmyxqd5sw79cilcfmpfz4dzjdgkx9"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
