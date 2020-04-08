@@ -3894,7 +3894,13 @@ provides additional functionality on the produced Mallard documents.")
              (setenv "CFLAGS" "-O0")
 
              (invoke "python" "runtests.py" "-vv"
-                     "-j" (number->string (parallel-job-count))))))))
+                     "-j" (number->string (parallel-job-count))
+                     ;; XXX: On 32-bit architectures, running the parallel tests
+                     ;; fails on many-core systems, see
+                     ;; <https://github.com/cython/cython/issues/2807>.
+                     ,@(if (not (target-64bit?))
+                           '("-x" "run.parallel")
+                           '())))))))
     (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
@@ -3914,18 +3920,6 @@ writing C extensions for Python as easy as Python itself.")
        (substitute-keyword-arguments (package-arguments base)
          ((#:phases phases)
           `(modify-phases ,phases
-             ;; XXX: On i686-linux, running the parallel tests fails on many-core
-             ;; systems, see <https://github.com/cython/cython/issues/2807>.
-             ;; TODO: Move this logic to the regular check phase in a future
-             ;; rebuild cycle.
-             ,@(if (string-prefix? "i686" (%current-system))
-                   '((replace 'check
-                       (lambda _
-                         (setenv "CFLAGS" "-O0")
-                         (invoke "python" "runtests.py" "-vv"
-                                 "-j" (number->string (parallel-job-count))
-                                 "-x" "run.parallel"))))
-                   '())
              (add-before 'check 'adjust-test_embed
                (lambda _
                  (substitute* "runtests.py"
