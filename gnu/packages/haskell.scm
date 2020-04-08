@@ -178,11 +178,8 @@ top of CLISP.")
 
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (guix build rpath)
                   (srfi srfi-26)
                   (srfi srfi-1))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
        #:configure-flags
        (list
         (string-append "--with-gmp-libraries="
@@ -209,7 +206,7 @@ top of CLISP.")
             (with-directory-excursion ".."
               (copy-file (assoc-ref inputs "ghc-testsuite")
                          "ghc-testsuite.tar.xz")
-              (system* "tar" "xvf" "ghc-testsuite.tar.xz"))
+              (invoke "tar" "xvf" "ghc-testsuite.tar.xz"))
             (substitute*
                 (list "testsuite/timeout/Makefile"
                       "testsuite/timeout/timeout.py"
@@ -228,7 +225,7 @@ top of CLISP.")
              (with-directory-excursion ghc-bootstrap-path
                (copy-file (assoc-ref inputs "ghc-binary")
                           "ghc-bin.tar.xz")
-               (zero? (system* "tar" "xvf" "ghc-bin.tar.xz"))))
+               (invoke "tar" "xvf" "ghc-bin.tar.xz")))
            (alist-cons-before
             'install-bin 'configure-bin
             (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -260,7 +257,7 @@ top of CLISP.")
                   (setenv "LD_LIBRARY_PATH" gmp-lib)
                   ;; The binaries have "/lib64/ld-linux-x86-64.so.2" hardcoded.
                   (for-each
-                   (cut system* "patchelf" "--set-interpreter" ld-so <>)
+                   (cut invoke "patchelf" "--set-interpreter" ld-so <>)
                    binaries)
                   ;; The binaries include a reference to libtinfo.so.5 which
                   ;; is a subset of libncurses.so.5.  We create a symlink in a
@@ -279,7 +276,7 @@ top of CLISP.")
                   (setenv "PATH"
                           (string-append (getenv "PATH") ":"
                                          ghc-bootstrap-prefix "/bin"))
-                  (system*
+                  (invoke
                    (string-append (getcwd) "/configure")
                    (string-append "--prefix=" ghc-bootstrap-prefix)
                    (string-append "--with-gmp-libraries=" gmp-lib)
@@ -289,7 +286,7 @@ top of CLISP.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (with-directory-excursion
                    (string-append ghc-bootstrap-path "/ghc-7.8.4")
-                 (zero? (system* "make" "install"))))
+                 (invoke "make" "install")))
              %standard-phases)))))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
