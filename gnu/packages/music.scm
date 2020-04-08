@@ -5480,3 +5480,26 @@ plugin and a standalone JACK application.")
 It is provided as an LV2 plugin and as a standalone Jack application.")
     (home-page "https://pdesaulniers.github.io/wolf-shaper/")
     (license license:gpl3)))
+
+(define-public wolf-spectrum
+  (package
+    (inherit wolf-shaper)
+    (name "wolf-spectrum")
+    (version "1.0.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/pdesaulniers/wolf-spectrum")
+               (commit (string-append "v" version))
+               ;; Bundles a specific commit of the DISTRHO plugin framework.
+               (recursive? #t)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "17db1jlj7vb1xyvkdhhrsvdbwb7jqw6i4168cdvlj3yvn2ra8gpm"))))
+    (synopsis "2D spectrogram plugin")
+    (description "Wolf Spectrum is a real-time 2D spectrogram plugin.
+It is provided as an LV2 plugin and as a standalone Jack application.")
+    (home-page "https://github.com/pdesaulniers/wolf-spectrum")
+    (license license:gpl3)))
