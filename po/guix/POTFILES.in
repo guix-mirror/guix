@@ -31,6 +31,7 @@ gnu/installer/newt/utils.scm
 gnu/installer/newt/welcome.scm
 gnu/installer/newt/wifi.scm
 gnu/installer/parted.scm
+gnu/installer/proxy.scm
 gnu/installer/record.scm
 gnu/installer/services.scm
 gnu/installer/steps.scm

@@ -662,6 +662,7 @@ INSTALLER_MODULES =                             \
   %D%/installer/locale.scm			\
   %D%/installer/newt.scm			\
   %D%/installer/parted.scm			\
+  %D%/installer/proxy.scm			\
   %D%/installer/record.scm		        \
   %D%/installer/services.scm			\
   %D%/installer/steps.scm			\
