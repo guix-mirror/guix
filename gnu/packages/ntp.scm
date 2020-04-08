@@ -169,7 +169,7 @@ computers over a network.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://openbsd/OpenNTPD/" name "-" version ".tar.gz"))
+                    "mirror://openbsd/OpenNTPD/openntpd-" version ".tar.gz"))
               (sha256
                (base32
                 "0fn12i4kzsi0zkr4qp3dp9bycmirnfapajqvdfx02zhr4hanj0kv"))))
