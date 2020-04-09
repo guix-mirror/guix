@@ -29,6 +29,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
@@ -337,3 +338,48 @@ environment.")
 to access different radio hardware.")
     (home-page "https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR")
     (license license:gpl3+)))
+
+(define-public libosmo-dsp
+  (package
+    (name "libosmo-dsp")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.osmocom.org/libosmo-dsp")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00plihnpym1gkfpflah8il9463qxzm9kx2f07jyvbkszpj8viq5g"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash-minimal" ,bash-minimal)
+       ("doxygen" ,doxygen)
+       ("git" ,git-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("texlive" ,(texlive-union (list texlive-amsfonts
+                                        texlive-latex-amsmath
+                                        ;; TODO: Add newunicodechar.
+                                        texlive-latex-graphics)))))
+    (inputs
+     `(("fftwf" ,fftwf)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "git-version-gen"
+               (("/bin/sh")
+                (string-append (assoc-ref inputs "bash")
+                               "/bin/bash")))
+             #t)))))
+    (synopsis "DSP primitives for SDR")
+    (description
+     "This a C-language library for common DSP (Digital Signal Processing)
+primitives for SDR (Software Defined Radio).")
+    (home-page "https://osmocom.org/projects/libosmo-dsp")
+    (license license:gpl2+)))
