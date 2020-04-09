@@ -669,6 +669,7 @@ GUIX_FOR_BINARY_TARBALL = guile3.0-guix
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
+	  --fallback							\
 	  -s "$*" --localstatedir --profile-name=current-guix		\
 	  $(GUIX_FOR_BINARY_TARBALL)` ;					\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
@@ -775,7 +776,7 @@ release: dist
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
 	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
 	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
-	      -v1 --no-grafts
+	      -v1 --no-grafts --fallback
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
@@ -789,12 +790,12 @@ release: dist
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
 	$(top_builddir)/pre-inst-env guix build guix			\
 	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
-	      -v1 --no-grafts
+	      -v1 --no-grafts --fallback
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
 	    --file-system-type=iso9660							\
-            --system=$$system								\
+            --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced Guix installation image for $$system" >&2 ;	\
@@ -807,7 +808,7 @@ release: dist
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
-	    --system=$$system								\
+	    --system=$$system --fallback						\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced Guix VM image for $$system" >&2 ;			\
