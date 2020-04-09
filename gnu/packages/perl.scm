@@ -1859,6 +1859,31 @@ CPAN::Meta object are present.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-crypt-cbc
+  (package
+    (name "perl-crypt-cbc")
+    (version "2.33")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/L/LD/LDS/Crypt-CBC-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0ig698lmpjz7fslnznxm0609lvlnvf4f3s370082nzycnqhxww3a"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-crypt-rijndael" ,perl-crypt-rijndael)))
+    (home-page "https://metacpan.org/release/Crypt-CBC")
+    (synopsis "Encrypt Data with Cipher Block Chaining Mode")
+    (description "@code{Crypt::CBC} is a Perl-only implementation of
+the cryptographic Cipher Block Chaining (CBC) mode.  In combination
+with a block cipher such as @code{Crypt::Rijndael} you can encrypt and
+decrypt messages of arbitrarily long length.  The encrypted messages
+are compatible with the encryption format used by SSLeay.")
+    (license perl-license)))
+
 (define-public perl-crypt-eksblowfish
   (package
     (name "perl-crypt-eksblowfish")
