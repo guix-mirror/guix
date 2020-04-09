@@ -19500,3 +19500,24 @@ an identity provider.  The distribution contains examples of both.
 This package was originally written to work in a WSGI environment, but
 there are extensions that allow you to use it with other frameworks.")
     (license license:asl2.0)))
+
+(define-public python-click-plugins
+  (package
+    (name "python-click-plugins")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "click-plugins" version))
+       (sha256
+        (base32 "0jr6bxj67vg988vkm6nz8jj98v9lg46bn49lkhak3n598jbrkas6"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Extension for Click to register external CLI commands")
+    (description "This package provides n extension module for Click to
+register external CLI commands via setuptools entry-points.")
+    (home-page "https://github.com/click-contrib/click-plugins")
+    (license license:bsd-3)))
