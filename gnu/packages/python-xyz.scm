@@ -17113,26 +17113,35 @@ pure-Python.")
 (define-public python-cloudpickle
   (package
     (name "python-cloudpickle")
-    (version "0.6.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cloudpickle" version))
        (sha256
         (base32
-         "1wdw89mlm7fqa3fm3ymskx05jrys66n8m1z1a8s0mss0799ahsgi"))))
+         "0lx7gy9clp427qwcm7b23zdsldpr03gy3vxxhyi8fpbhwz859brq"))))
     (build-system python-build-system)
-    ;; FIXME: there are 5 errors in 122 tests:
-    ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.CloudPickleTest)
-    ;; ERROR: test_function_pickle_compat_0_4_1 (tests.cloudpickle_test.CloudPickleTest)
-    ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.Protocol2CloudPickleTest)
-    ;; ERROR: test_function_pickle_compat_0_4_1 (tests.cloudpickle_test.Protocol2CloudPickleTest)
-    ;; ERROR: test_temp_file (tests.cloudpickle_file_test.CloudPickleFileTests)
-    ;; TypeError: cannot serialize '_io.BufferedRandom' object
-    (arguments '(#:tests? #f))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'do-not-override-PYTHONPATH
+                    (lambda _
+                      ;; Append to PYTHONPATH instead of overriding it so
+                      ;; that dependencies from Guix can be found.
+                      (substitute* "tests/testutils.py"
+                        (("env\\['PYTHONPATH'\\] = pythonpath")
+                         "env['PYTHONPATH'] += os.pathsep + pythonpath"))
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "pytest" "-s" "-vv")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
+     `(;; For tests.
+       ("python-psutil" ,python-psutil)
+       ("python-pytest" ,python-pytest)
        ("python-tornado" ,python-tornado)))
     (home-page "https://github.com/cloudpipe/cloudpickle")
     (synopsis "Extended pickling support for Python objects")
@@ -17142,10 +17151,19 @@ supported by the default pickle module from the Python standard library.  It
 is especially useful for cluster computing where Python expressions are
 shipped over the network to execute on remote hosts, possibly close to the
 data.")
+    (properties `((python2-variant . ,(delay python2-cloudpickle))))
     (license license:bsd-3)))
 
 (define-public python2-cloudpickle
-  (package-with-python2 python-cloudpickle))
+  (let ((base (package-with-python2 (strip-python2-variant python-cloudpickle))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python-mock" ,python2-mock)
+         ,@(package-native-inputs base)))
+      (propagated-inputs
+       `(("python-futures" ,python2-futures)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-locket
   (package
