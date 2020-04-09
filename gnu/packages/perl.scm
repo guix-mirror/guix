@@ -52,6 +52,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages less)
@@ -1890,6 +1891,33 @@ Cost and salt parameters together define a cipher family.  Within each
 family, the key determines the encryption function.  This distribution
 also includes an implementation of @code{bcrypt}, the Unix crypt()
 password hashing algorithm based on Eksblowfish.")
+    (license perl-license)))
+
+(define-public perl-crypt-mysql
+  (package
+    (name "perl-crypt-mysql")
+    (version "0.04")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/I/IK/IKEBE/Crypt-MySQL-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1qyx6ha13r0rh80ldv5wy2bq2pa74igwh8817xlapsfgxymdzswk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-dbd-mysql" ,perl-dbd-mysql)))
+    (propagated-inputs
+     `(("perl-digest-sha1" ,perl-digest-sha1)))
+    (home-page "https://metacpan.org/release/Crypt-MySQL")
+    (synopsis "Emulate the MySQL PASSWORD() function")
+    (description "@code{Crypt::MySQL} emulates the MySQL PASSWORD()
+function.  The module does not depend on an interface to the MySQL
+database server.  This enables the comparison of encrypted passwords
+without the need for a real MySQL environment.")
     (license perl-license)))
 
 (define-public perl-crypt-passwdmd5
