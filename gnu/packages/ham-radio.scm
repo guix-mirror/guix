@@ -423,3 +423,41 @@ to the fix block above.
 @end itemize")
     (home-page "https://git.osmocom.org/gr-iqbal/")
     (license license:gpl3+)))
+
+(define-public gqrx
+  (package
+    (name "gqrx")
+    (version "2.12.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/csete/gqrx.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00alf3q6y313xpx6p7v43vqsphd2x4am4q362lw21bcy9wc4jidw"))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("gmp" ,gmp)
+       ("gnuradio" ,gnuradio)
+       ("gnuradio-iqbalance" ,gnuradio-iqbalance)
+       ("gnuradio-osmosdr" ,gnuradio-osmosdr)
+       ("jack" ,jack-1)
+       ("log4cpp" ,log4cpp)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:tests? #f)) ; No tests
+    (synopsis "Software defined radio receiver")
+    (description "Gqrx is a software defined radio (SDR) receiver implemented
+using GNU Radio and the Qt GUI toolkit.")
+    (home-page "https://gqrx.dk/")
+    (license license:gpl3+)))
