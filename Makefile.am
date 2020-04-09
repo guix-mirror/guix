@@ -775,7 +775,7 @@ release: dist
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
 	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
 	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
-	      -v1 --no-grafts -K
+	      -v1 --no-grafts
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
@@ -789,7 +789,7 @@ release: dist
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
 	$(top_builddir)/pre-inst-env guix build guix			\
 	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
-	      -v1 --no-grafts -K
+	      -v1 --no-grafts
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
