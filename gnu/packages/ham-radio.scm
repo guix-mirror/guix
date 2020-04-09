@@ -58,7 +58,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system qt))
 
 (define-public rtl-sdr
   (package
@@ -299,4 +300,40 @@ to implement software radios.  It can be used with external RF hardware to
 create software-defined radios, or without hardware in a simulation-like
 environment.")
     (home-page "https://www.gnuradio.org")
+    (license license:gpl3+)))
+
+(define-public gnuradio-osmosdr
+  (package
+    (name "gnuradio-osmosdr")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.osmocom.org/gr-osmosdr")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rdx7fa0xiq0qmgrrbby7z1bblmqhl9qh9jqpsznzxkx91f17ypd"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("git" ,git-minimal)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-mako" ,python-mako)
+       ("python-six" ,python-six)
+       ("swig" ,swig)))
+    (inputs
+     `(("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("gmp" ,gmp)
+       ("gnuradio" ,gnuradio)
+       ("log4cpp" ,log4cpp)
+       ;; TODO: Add more drivers.
+       ("rtl-sdr" ,rtl-sdr)))
+    (synopsis "GNU Radio block for interfacing with various radio hardware")
+    (description "This is a block for GNU Radio allowing to use a common API
+to access different radio hardware.")
+    (home-page "https://osmocom.org/projects/gr-osmosdr/wiki/GrOsmoSDR")
     (license license:gpl3+)))
