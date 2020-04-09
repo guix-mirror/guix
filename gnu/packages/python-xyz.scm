@@ -18766,7 +18766,7 @@ an upload option to send your work back to the platform.")
         (base32
          "0486i99wf8ssa7sgn81fn6fv6i4rhhq6n751bc740b3hzfbpmpl4"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (native-inputs
      `(("python-nose" ,python-nose)))
     (home-page "https://github.com/ppannuto/python-titlecase")
     (synopsis "Capitalize strings similar to book titles")
