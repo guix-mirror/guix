@@ -104,14 +104,21 @@ different layout at any time from the parameters menu.")))
       (append (sort main layout<?)
               (sort others layout<?)))))
 
+(define (add-empty-variant variants)
+  "Prepend #f to VARIANTS so the user has the option to select no variant.
+The resulting layout may be different from all other variants (e.g. for
+Azerbaijani)."
+  (cons #f variants))
+
 (define (sort-variants variants)
   "Sort VARIANTS list by putting the international variant ahead and return it."
   (call-with-values
       (lambda ()
         (partition
          (lambda (variant)
-           (let ((name (x11-keymap-variant-name variant)))
-             (string=? name "altgr-intl")))
+           (and variant
+                (let ((name (x11-keymap-variant-name variant)))
+                  (string=? name "altgr-intl"))))
          variants))
     (cut append <> <>)))
 
@@ -180,10 +187,14 @@ options."
            ;; Return #f if the layout does not have any variant.
            (and (not (null? variants))
                 (run-variant-page
-                 (sort-variants variants)
+                 (sort-variants (add-empty-variant variants))
                  (lambda (variant)
-                   (gettext (x11-keymap-variant-description variant)
-                            "xkeyboard-config"))))))))))
+                   (if variant
+                       (gettext (x11-keymap-variant-description variant)
+                                "xkeyboard-config")
+                       ;; Text to opt for no variant at all:
+                       (gettext (x11-keymap-layout-description layout)
+                                "xkeyboard-config")))))))))))
 
   (define (format-result result)
     (let ((layout (x11-keymap-layout-name
