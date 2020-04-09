@@ -981,7 +981,16 @@ to rebuild the original object tree.
 
 Because only safe literals are encoded, it is safe to send serpent data to
 other machines, such as over the network.")
+    (properties `((python2-variant . ,(delay python2-serpent))))
     (license license:expat)))
+
+(define-public python2-serpent
+  (let ((base (package-with-python2 (strip-python2-variant python-serpent))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python-enum34" ,python2-enum34)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-setuptools
   (package
