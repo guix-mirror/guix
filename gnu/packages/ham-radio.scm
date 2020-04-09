@@ -1,6 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Charlie Ritter <chewzerita@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,17 +25,37 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sdr)
+  #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages tex)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -176,3 +199,104 @@ with the rtl_fm tool, or any other @dfn{software-defined radio} (SDR) via
 csdr, for example.  It can also decode raw ASCII bitstream, the hex format
 used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
     (license license:expat)))
+
+(define-public gnuradio
+  (package
+    (name "gnuradio")
+    (version "3.8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gnuradio.org/releases/gnuradio/"
+                           "gnuradio-" version ".tar.xz"))
+       (sha256
+        (base32 "0aw55gf5549b0fz2qdi7vplcmaf92bj34h40s34b2ycnqasv900r"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("git" ,git-minimal)
+       ("ghostscript" ,ghostscript)
+       ("orc" ,orc)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-cheetah" ,python-cheetah)
+       ("python-mako" ,python-mako)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-scipy" ,python-scipy)
+       ("python-sphinx" ,python-sphinx)
+       ("swig" ,swig)
+       ("texlive" ,(texlive-union (list texlive-amsfonts
+                                        texlive-latex-amsmath
+                                        ;; TODO: Add newunicodechar.
+                                        texlive-latex-graphics)))
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("cairo" ,cairo)
+       ("codec2" ,codec2)
+       ("cppzmq" ,cppzmq)
+       ("fftwf" ,fftwf)
+       ("gmp" ,gmp)
+       ("gsl" ,gsl)
+       ("gsm" ,gsm)
+       ("gtk+" ,gtk+)
+       ("jack" ,jack-1)
+       ("log4cpp" ,log4cpp)
+       ("pango" ,pango)
+       ("portaudio" ,portaudio)
+       ("python-click" ,python-click)
+       ("python-click-plugins" ,python-click-plugins)
+       ("python-lxml" ,python-lxml)
+       ("python-numpy" ,python-numpy)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyqt" ,python-pyqt)
+       ("python-pyyaml" ,python-pyyaml)
+       ("qtbase" ,qtbase)
+       ("qwt" ,qwt)
+       ("zeromq" ,zeromq)))
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  ((guix build python-build-system) #:prefix python:)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((qwt (assoc-ref inputs "qwt")))
+               (substitute* "cmake/Modules/FindQwt.cmake"
+                 (("/usr/include")
+                  (string-append qwt "/include"))
+                 (("/usr/lib")
+                  (string-append qwt "/lib"))
+                 (("qwt6-\\$\\{QWT_QT_VERSION\\}")
+                  "qwt")))
+             (substitute* "cmake/Modules/GrPython.cmake"
+               (("dist-packages")
+                "site-packages"))
+             (substitute* '("gr-vocoder/swig/vocoder_swig.i"
+                            "gr-vocoder/include/gnuradio/vocoder/codec2.h"
+                            "gr-vocoder/include/gnuradio/vocoder/freedv_api.h")
+               (("<codec2/")
+                "<"))
+             #t))
+         (add-before 'check 'set-test-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "HOME" "/tmp")
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
+             #t))
+         (add-after 'install 'wrap-python
+           (assoc-ref python:%standard-phases 'wrap)))))
+    (synopsis "Toolkit for software-defined radios")
+    (description
+     "GNU Radio is a development toolkit that provides signal processing blocks
+to implement software radios.  It can be used with external RF hardware to
+create software-defined radios, or without hardware in a simulation-like
+environment.")
+    (home-page "https://www.gnuradio.org")
+    (license license:gpl3+)))
