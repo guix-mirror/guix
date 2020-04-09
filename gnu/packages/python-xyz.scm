@@ -6773,14 +6773,14 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public python-datrie
   (package
     (name "python-datrie")
-    (version "0.8")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "datrie" version))
        (sha256
         (base32
-         "0338r8xgmpy78556jhms0h6qkvyjr10p8bpgdvcpqzm9lrmxmmdx"))))
+         "0pbn32flkrpjiwfcknmj6398qa81ba783kbcvwan3kym73v0hnsj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
