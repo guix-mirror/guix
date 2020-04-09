@@ -383,3 +383,43 @@ to access different radio hardware.")
 primitives for SDR (Software Defined Radio).")
     (home-page "https://osmocom.org/projects/libosmo-dsp")
     (license license:gpl2+)))
+
+(define-public gnuradio-iqbalance
+  (package
+    (name "gnuradio-iqbalance")
+    (version "0.38.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.osmocom.org/gr-iqbal")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ksagwz05p3b0702q7ljq7013xmp0ijp30my9z6s3p7ja8dj42s3"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)
+       ("swig" ,swig)))
+    (inputs
+     `(("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("gmp" ,gmp)
+       ("gnuradio" ,gnuradio)
+       ("libosmo-dsp" ,libosmo-dsp)
+       ("log4cpp" ,log4cpp)))
+    (synopsis "GNU Radio block to correct IQ imbalance")
+    (description
+     "This is a GNU Radio block to correct IQ imbalance in quadrature
+receivers.  It's composed of two main block:
+@itemize
+@item Fix: Given a phase and amplitude error, it will correct a complex signal.
+@item Optimize: Attempts to auto-detect the phase and amplitude error to feed
+to the fix block above.
+@end itemize")
+    (home-page "https://git.osmocom.org/gr-iqbal/")
+    (license license:gpl3+)))
