@@ -17274,13 +17274,13 @@ decisions with any given backend.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "2.9.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32 "1w1hqr8vyx6ygwflj2737dcy0mmgvrc0s602gnny8pzlcbs9m76b"))))
+        (base32 "031j0j26s0675v0isyps2dphm03330n7dy8ifdy70jgvf78d119q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
