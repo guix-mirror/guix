@@ -345,14 +345,12 @@ SDL.")
              "SDL_Pango-" version  ".tar.gz"))
        (sha256
         (base32 "197baw1dsg0p4pljs5k0fshbyki00r4l49m1drlpqw6ggawx6xbz"))
-       (patches
-        (search-patches
-         "sdl-pango-api_additions.patch"
-         "sdl-pango-blit_overflow.patch"
-         "sdl-pango-fillrect_crash.patch"
-         "sdl-pango-fix-explicit-SDLPango_CopyFTBitmapTo.patch"
-         "sdl-pango-matrix_declarations.patch"
-         "sdl-pango-sans-serif.patch"))))
+       (patches (search-patches "sdl-pango-api_additions.patch"
+                                "sdl-pango-blit_overflow.patch"
+                                "sdl-pango-fillrect_crash.patch"
+                                "sdl-pango-header-guard.patch"
+                                "sdl-pango-matrix_declarations.patch"
+                                "sdl-pango-sans-serif.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--disable-static")
