@@ -283,7 +283,8 @@ substitutable."
                         bootloader
                         (register-closures? (has-guix-service-type? os))
                         (inputs '())
-                        (grub-mkrescue-environment '()))
+                        (grub-mkrescue-environment '())
+                        (substitutable? #t))
   "Return a bootable, stand-alone iso9660 image.
 
 INPUTS is a list of inputs (as for packages)."
@@ -354,6 +355,7 @@ INPUTS is a list of inputs (as for packages)."
    #:make-disk-image? #f
    #:single-file-output? #t
    #:references-graphs inputs
+   #:substitutable? substitutable?
 
    ;; Xorriso seems to be quite memory-hungry, so increase the VM's RAM size.
    #:memory-size 512))
@@ -735,7 +737,8 @@ substitutable."
                        #:inputs `(("system" ,os)
                                   ("bootcfg" ,bootcfg))
                        #:grub-mkrescue-environment
-                       '(("MKRESCUE_SED_MODE" . "mbr_hfs")))
+                       '(("MKRESCUE_SED_MODE" . "mbr_hfs"))
+                       #:substitutable? substitutable?)
         (qemu-image #:name name
                     #:os os
                     #:bootcfg-drv bootcfg
