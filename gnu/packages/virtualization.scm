@@ -1083,7 +1083,7 @@ virtual machines.")
 (define-public bubblewrap
   (package
     (name "bubblewrap")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/containers/bubblewrap/"
@@ -1091,7 +1091,7 @@ virtual machines.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "08r0f4c3fjkb4zjrb4kkax1zfcgcgic702vb62sjjw5xfhppvzp5"))))
+                "00ycgi6q2yngh06bnz50wkvar6r2jnjf3j158grhi9k13jdrpimr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
