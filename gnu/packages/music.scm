@@ -1162,6 +1162,28 @@ complete studio.")
 with a selectable pattern matrix size.")
     (license license:gpl3+)))
 
+(define-public bchoppr
+  (package
+    (inherit bsequencer)
+    (name "bchoppr")
+    (version "1.4.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sjaehn/BChoppr.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1ympx0kyn3mkb23xgd44rlrf4qnngnlkmikz9syhayklgax7ijgm"))))
+    (synopsis "Audio stream-chopping LV2 plugin")
+    (description "B.Choppr cuts the audio input stream into a repeated
+sequence of up to 16 chops.  Each chop can be leveled up or down (gating).
+B.Choppr is the successor of B.Slizr.")
+    (home-page "https://github.com/sjaehn/BChoppr")
+    (license license:gpl3+)))
+
 (define-public solfege
   (package
     (name "solfege")
