@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -175,6 +175,16 @@ which allows users to view a desktop computing environment.")
                (substitute* "tests/Makefile"
                  (("test-session\\$\\(EXEEXT\\) ") ""))
                #t))
+           (add-after 'install 'patch-la-files
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (libjpeg (assoc-ref inputs "libjpeg")))
+                 ;; Add an absolute reference for libjpeg in the .la files
+                 ;; so it does not have to be propagated.
+                 (substitute* (find-files (string-append out "/lib") "\\.la$")
+                   (("-ljpeg")
+                    (string-append "-L" libjpeg "/lib -ljpeg")))
+                 #t)))
            (add-after
             'install 'wrap-spicy
             (lambda* (#:key inputs outputs #:allow-other-keys)
