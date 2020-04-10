@@ -1753,18 +1753,42 @@ Python 3.3+.")
   ;; spaces in indentation" with Python 3.
   (package
     (name "python2-dogtail")
-    (version "0.9.9")
+    (version "0.9.11")
     (source (origin
              (method url-fetch)
-             (uri (pypi-uri "dogtail" version))
+             (uri
+              (string-append
+               "https://gitlab.com/dogtail/dogtail/-/raw/released/"
+               "dogtail-" version ".tar.gz"))
              (sha256
               (base32
-               "0p5wfssvzr9w0bvhllzbbd8fnp4cca2qxcpcsc33dchrmh5n552x"))))
+               "0sr38z7b2n12bvfd4xw4b5dnnhkn5zl3h0ymmnnzavcihfqia6l0"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2
-                 #:tests? #f))                    ; invalid command "test"
-    ;; Currently no offical homepage.
-    (home-page "https://pypi.org/project/dogtail/")
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f                      ; TODO Launching dbus for the tests
+                                        ; fails
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               (invoke "dbus-run-session" "--" "nosetests" "-v" "tests/"))
+             #t)))))
+    (propagated-inputs
+     `(("python-pygobject" ,python2-pygobject)
+       ("python-pycairo" ,python2-pycairo)
+       ("python-pyatspi" ,python2-pyatspi)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)
+       ("gtk+" ,gtk+)
+       ("xvfb" ,xorg-server)
+       ("dbus" ,dbus)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://gitlab.com/dogtail/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
