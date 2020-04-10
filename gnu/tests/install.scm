@@ -1125,6 +1125,8 @@ build (current-guix) and then store a couple of full system images.")
                                #:os installation-os-for-gui-tests
                                #:install-size install-size
                                #:target-size target-size
+                               #:installation-disk-image-file-system-type
+                               "iso9660"
                                #:gui-test
                                (lambda (marionette)
                                  (gui-test-program
