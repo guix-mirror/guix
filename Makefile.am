@@ -705,6 +705,16 @@ gen-AUTHORS:
 	    "$(top_srcdir)" "$(distdir)/AUTHORS";		\
 	fi
 
+# Like 'dist', but regenerate 'configure' so we get an up-to-date
+# 'PACKAGE_VERSION' string.  (In Gnulib, 'GNUmakefile' has a special trick to
+# do that whenever a 'dist' target is used.)
+dist-with-updated-version:
+	@echo "Running './bootstrap' for new version string..."
+	$(top_srcdir)/bootstrap
+	$(MAKE) $(AM_MAKEFLAGS) $(top_srcdir)/.version dist
+
+.PHONY: dist-with-updated-version
+
 
 #
 # Release management.
@@ -760,7 +770,7 @@ system_flags = $(foreach system,$(1),-s $(system))
 #
 # XXX: Depend on 'dist' rather than 'distcheck' to work around the Gettext
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
-release: dist
+release: dist-with-updated-version
 	cd po; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
