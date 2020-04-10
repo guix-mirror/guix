@@ -1884,6 +1884,30 @@ decrypt messages of arbitrarily long length.  The encrypted messages
 are compatible with the encryption format used by SSLeay.")
     (license perl-license)))
 
+(define-public perl-crypt-des
+  (package
+    (name "perl-crypt-des")
+    (version "2.07")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/D/DP/DPARIS/Crypt-DES-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1rypxlhpd1jc0c327aghgl9y6ls47drmpvn0a40b4k3vhfsypc9d"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-crypt-cbc" ,perl-crypt-cbc)))
+    (home-page "https://metacpan.org/release/Crypt-DES")
+    (synopsis "DES encryption module")
+    (description "@code{Crypt::DES} is an XS-based implementation of
+the DES cryptography algorithm.  The module implements the
+@code{Crypt::CBC} interface which has blocksize, keysize, encrypt and
+decrypt functions.")
+    (license bsd-3)))
+
 (define-public perl-crypt-eksblowfish
   (package
     (name "perl-crypt-eksblowfish")
