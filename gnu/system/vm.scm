@@ -941,6 +941,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
             '())
 
      "-no-reboot"
+     "-nic" "user,model=virtio-net-pci"
      "-object" "rng-random,filename=/dev/urandom,id=guixsd-vm-rng"
      "-device" "virtio-rng-pci,rng=guixsd-vm-rng"
 
