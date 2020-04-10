@@ -686,7 +686,7 @@ patch could not be found."
 
      ;; Check whether we're reaching tar's maximum file name length.
      (let ((prefix (string-length (%distro-directory)))
-           (margin (string-length "guix-0.13.0-10-123456789/"))
+           (margin (string-length "guix-2.0.0rc3-10000-1234567890/"))
            (max    99))
        (filter-map (match-lambda
                      ((? string? patch)
