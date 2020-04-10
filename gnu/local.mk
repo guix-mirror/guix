@@ -569,6 +569,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/getmail.scm				\
   %D%/services/guix.scm			\
   %D%/services/kerberos.scm			\
+  %D%/services/linux.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
   %D%/services/mail.scm				\
