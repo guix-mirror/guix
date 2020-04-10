@@ -6081,7 +6081,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.7.1")
+    (version "5.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6089,7 +6089,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1gqivy4pxasy7phyznixsagylf9f70bk33b0knpfzzlks6cc6zzj"))))
+               (base32 "002aqbgsksrgzqridwdlkrjincaxh0dkvwlrbb8d2f3kwk7lj4fq"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
