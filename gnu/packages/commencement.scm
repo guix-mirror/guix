@@ -2999,29 +2999,45 @@ exec " gcc "/bin/" program
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile))))
 
-(define linux-libre-headers-boot0
-  (mlambda ()
-    "Return Linux-Libre header files for the bootstrap environment."
-    ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
-    ;; between (gnu packages linux) and this module.  Additionally, memoize
-    ;; the result to play well with further memoization and code that relies
-    ;; on pointer identity; see <https://bugs.gnu.org/30155>.
-    (package
-      (inherit linux-libre-headers)
-      (arguments
-       `(#:guile ,%bootstrap-guile
-         #:implicit-inputs? #f
-         ,@(package-arguments linux-libre-headers)))
-      (native-inputs
-       `(("perl" ,perl-boot0)
+(define-syntax define/system-dependent
+  (lambda (s)
+    "Bind IDENTIFIER to EXP, where the value of EXP is known to depend on
+'%current-system'.  The definition ensures that (1) EXP is \"thunked\" so that
+it sees the right value of '%current-system', and (2) that its result is
+memoized as a function of '%current-system'."
+    (syntax-case s ()
+      ((_ identifier exp)
+       (with-syntax ((memoized (datum->syntax #'identifier
+                                              (symbol-append
+                                               (syntax->datum #'identifier)
+                                               '/memoized))))
+         #'(begin
+             (define memoized
+               (mlambda (system) exp))
+             (define-syntax identifier
+               (identifier-syntax (memoized (%current-system))))))))))
 
-         ;; Flex and Bison are required since version 4.16.
-         ("flex" ,flex-boot0)
-         ("bison" ,bison-boot0)
+(define/system-dependent linux-libre-headers-boot0
+  ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
+  ;; between (gnu packages linux) and this module.  Additionally, memoize
+  ;; the result to play well with further memoization and code that relies
+  ;; on pointer identity; see <https://bugs.gnu.org/30155>.
+  (package
+    (inherit linux-libre-headers)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       ,@(package-arguments linux-libre-headers)))
+    (native-inputs
+     `(("perl" ,perl-boot0)
 
-         ;; Rsync is required since version 5.3.
-         ("rsync" ,rsync-boot0)
-         ,@(%boot0-inputs))))))
+       ;; Flex and Bison are required since version 4.16.
+       ("flex" ,flex-boot0)
+       ("bison" ,bison-boot0)
+
+       ;; Rsync is required since version 5.3.
+       ("rsync" ,rsync-boot0)
+       ,@(%boot0-inputs)))))
 
 (define with-boot0
   (package-with-explicit-inputs %boot0-inputs
@@ -3083,23 +3099,22 @@ exec " gcc "/bin/" program
                                (inputs '()))))
     (with-boot0 (package-with-bootstrap-guile hurd-minimal))))
 
-(define hurd-core-headers-boot0
-  (mlambda ()
-    "Return the Hurd and Mach headers as well as initial Hurd libraries for
-the bootstrap environment."
-    (package (inherit (package-with-bootstrap-guile hurd-core-headers))
-             (arguments `(#:guile ,%bootstrap-guile
-                          ,@(package-arguments hurd-core-headers)))
-             (inputs
-              `(("gnumach-headers" ,gnumach-headers-boot0)
-                ("hurd-headers" ,hurd-headers-boot0)
-                ("hurd-minimal" ,hurd-minimal-boot0)
-                ,@(%boot0-inputs))))))
+(define/system-dependent hurd-core-headers-boot0
+  ;; Return the Hurd and Mach headers as well as initial Hurd libraries for
+  ;; the bootstrap environment.
+  (package (inherit (package-with-bootstrap-guile hurd-core-headers))
+           (arguments `(#:guile ,%bootstrap-guile
+                        ,@(package-arguments hurd-core-headers)))
+           (inputs
+            `(("gnumach-headers" ,gnumach-headers-boot0)
+              ("hurd-headers" ,hurd-headers-boot0)
+              ("hurd-minimal" ,hurd-minimal-boot0)
+              ,@(%boot0-inputs)))))
 
 (define* (kernel-headers-boot0 #:optional (system (%current-system)))
   (match system
-    ("i586-gnu" (hurd-core-headers-boot0))
-    (_ (linux-libre-headers-boot0))))
+    ("i586-gnu" hurd-core-headers-boot0)
+    (_ linux-libre-headers-boot0)))
 
 (define texinfo-boot0
   ;; Texinfo used to build libc's manual.
@@ -3205,21 +3220,23 @@ the bootstrap environment."
                (delete 'set-TZDIR)))
            ((#:tests? _ #f) #f))))))
 
-(define ld-wrapper-boot0
-  (mlambda ()
-    ;; We need this so binaries on Hurd will have libmachuser and libhurduser
-    ;; in their RUNPATH, otherwise validate-runpath will fail.
-    (make-ld-wrapper "ld-wrapper-boot0"
-                     #:target boot-triplet
-                     #:binutils binutils-boot0
-                     #:guile %bootstrap-guile
-                     #:bash (car (assoc-ref (%boot0-inputs) "bash"))
-                     #:guile-for-build %bootstrap-guile)))
+(define/system-dependent ld-wrapper-boot0
+  ;; The first 'ld' wrapper, defined with 'define/system-dependent' because
+  ;; its calls '%boot0-inputs', whose result depends on (%current-system)
+  ;;
+  ;; We need this so binaries on Hurd will have libmachuser and libhurduser
+  ;; in their RUNPATH, otherwise validate-runpath will fail.
+  (make-ld-wrapper "ld-wrapper-boot0"
+                   #:target boot-triplet
+                   #:binutils binutils-boot0
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref (%boot0-inputs) "bash"))
+                   #:guile-for-build %bootstrap-guile))
 
 (define (%boot1-inputs)
   ;; 2nd stage inputs.
   `(("gcc" ,gcc-boot0)
-    ("ld-wrapper-cross" ,(ld-wrapper-boot0))
+    ("ld-wrapper-cross" ,ld-wrapper-boot0)
     ("binutils-cross" ,binutils-boot0)
     ,@(alist-delete "binutils" (%boot0-inputs))))
 
@@ -3345,20 +3362,19 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ("bash" ,bash)))
     (inputs '())))
 
-(define gcc-boot0-intermediate-wrapped
-  (mlambda ()
-    ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
-    ;; non-cross names.
-    (cross-gcc-wrapper gcc-boot0 binutils-boot0
-                       glibc-final-with-bootstrap-bash
-                       (car (assoc-ref (%boot1-inputs) "bash")))))
+(define/system-dependent gcc-boot0-intermediate-wrapped
+  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+  ;; non-cross names.
+  (cross-gcc-wrapper gcc-boot0 binutils-boot0
+                     glibc-final-with-bootstrap-bash
+                     (car (assoc-ref (%boot1-inputs) "bash"))))
 
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
   (package
     (inherit static-bash)
     (source (bootstrap-origin (package-source static-bash)))
-    (inputs `(("gcc" ,(gcc-boot0-intermediate-wrapped))
+    (inputs `(("gcc" ,gcc-boot0-intermediate-wrapped)
               ("libc" ,glibc-final-with-bootstrap-bash)
               ("libc:static" ,glibc-final-with-bootstrap-bash "static")
               ,@(fold alist-delete (%boot1-inputs)
@@ -3446,18 +3462,17 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ,@(package-outputs glibc-final-with-bootstrap-bash))
       ,@(package-arguments glibc-final-with-bootstrap-bash)))))
 
-(define gcc-boot0-wrapped
-  (mlambda ()
-    ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
-    ;; non-cross names.
-    (cross-gcc-wrapper gcc-boot0 binutils-boot0 glibc-final
-                       (car (assoc-ref (%boot1-inputs) "bash")))))
+(define/system-dependent gcc-boot0-wrapped
+  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+  ;; non-cross names.
+  (cross-gcc-wrapper gcc-boot0 binutils-boot0 glibc-final
+                     (car (assoc-ref (%boot1-inputs) "bash"))))
 
 (define (%boot2-inputs)
   ;; 3rd stage inputs.
   `(("libc" ,glibc-final)
     ("libc:static" ,glibc-final "static")
-    ("gcc" ,(gcc-boot0-wrapped))
+    ("gcc" ,gcc-boot0-wrapped)
     ,@(fold alist-delete (%boot1-inputs) '("libc" "gcc" "linux-libre-headers"))))
 
 (define binutils-final
@@ -3511,14 +3526,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ,@(package-arguments zlib)))
     (inputs (%boot2-inputs))))
 
-(define ld-wrapper-boot3
-  (mlambda ()
-    ;; A linker wrapper that uses the bootstrap Guile.
-    (make-ld-wrapper "ld-wrapper-boot3"
-                     #:binutils binutils-final
-                     #:guile %bootstrap-guile
-                     #:bash (car (assoc-ref (%boot2-inputs) "bash"))
-                     #:guile-for-build %bootstrap-guile)))
+(define/system-dependent ld-wrapper-boot3
+  ;; A linker wrapper that uses the bootstrap Guile.
+  (make-ld-wrapper "ld-wrapper-boot3"
+                   #:binutils binutils-final
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref (%boot2-inputs) "bash"))
+                   #:guile-for-build %bootstrap-guile))
 
 (define gcc-final
   ;; The final GCC.
@@ -3594,7 +3608,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
-              ("ld-wrapper" ,(ld-wrapper-boot3))
+              ("ld-wrapper" ,ld-wrapper-boot3)
               ("binutils" ,binutils-final)
               ("libstdc++" ,libstdc++)
               ("zlib" ,zlib-final)
@@ -3603,7 +3617,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define (%boot3-inputs)
   ;; 4th stage inputs.
   `(("gcc" ,gcc-final)
-    ("ld-wrapper" ,(ld-wrapper-boot3))
+    ("ld-wrapper" ,ld-wrapper-boot3)
     ,@(alist-delete "gcc" (%boot2-inputs))))
 
 (define bash-final
