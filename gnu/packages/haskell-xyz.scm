@@ -9745,7 +9745,7 @@ Haskell library @code{regex-base}.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page "https://github.com/ChrisKuklewicz/regex-tdfa")
+    (home-page "https://github.com/haskell-hvr/regex-tdfa")
     (synopsis "POSIX extended regular expressions in Haskell.")
     (description
      "Regex-tdfa is a pure Haskell regular expression library implementing POSIX
