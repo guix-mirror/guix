@@ -1748,11 +1748,9 @@ Python 3.3+.")
 (define-public python2-pyicu
   (package-with-python2 python-pyicu))
 
-(define-public python2-dogtail
-  ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
-  ;; spaces in indentation" with Python 3.
+(define-public python-dogtail
   (package
-    (name "python2-dogtail")
+    (name "python-dogtail")
     (version "0.9.11")
     (source (origin
              (method url-fetch)
@@ -1765,8 +1763,7 @@ Python 3.3+.")
                "0sr38z7b2n12bvfd4xw4b5dnnhkn5zl3h0ymmnnzavcihfqia6l0"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f                      ; TODO Launching dbus for the tests
+     `(#:tests? #f                      ; TODO Launching dbus for the tests
                                         ; fails
        #:phases
        (modify-phases %standard-phases
@@ -1778,11 +1775,11 @@ Python 3.3+.")
                (invoke "dbus-run-session" "--" "nosetests" "-v" "tests/"))
              #t)))))
     (propagated-inputs
-     `(("python-pygobject" ,python2-pygobject)
-       ("python-pycairo" ,python2-pycairo)
-       ("python-pyatspi" ,python2-pyatspi)))
+     `(("python-pygobject" ,python-pygobject)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pyatspi" ,python-pyatspi)))
     (native-inputs
-     `(("python-nose" ,python2-nose)
+     `(("python-nose" ,python-nose)
        ("gtk+" ,gtk+)
        ("xvfb" ,xorg-server)
        ("dbus" ,dbus)
@@ -1796,6 +1793,9 @@ It uses Accessibility (a11y) technologies to communicate with desktop
 applications. dogtail scripts are written in Python and executed like any
 other Python program.")
     (license license:gpl2+)))
+
+(define-public python2-dogtail
+  (package-with-python2 python-dogtail))
 
 (define-public python-empy
   (package
