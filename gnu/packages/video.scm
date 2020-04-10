@@ -3249,6 +3249,7 @@ programmers to access a standard API to open and decompress media files.")
                (base32
                 "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))
               (patches (search-patches "aegisub-icu59-include-unistr.patch"
+                                       "aegisub-make43.patch"
                                        "aegisub-boost68.patch"))))
     (build-system gnu-build-system)
     (arguments
