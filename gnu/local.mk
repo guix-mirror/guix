@@ -726,7 +726,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-boost68.patch                    \
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/akonadi-paths.patch		\
-  %D%/packages/patches/akonadi-Revert-Make-installation-properly-relo.patch \
+  %D%/packages/patches/akonadi-not-relocatable.patch		\
   %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\

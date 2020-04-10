@@ -53,7 +53,7 @@
        (patches (search-patches
                  "akonadi-paths.patch"
                  "akonadi-timestamps.patch"
-                 "akonadi-Revert-Make-installation-properly-relo.patch"))))
+                 "akonadi-not-relocatable.patch"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
