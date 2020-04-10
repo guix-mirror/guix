@@ -180,49 +180,63 @@
 $(prefix)/etc/init.d\n")))
 
                         (invoke "sh" "bootstrap")))
+                    (add-before 'build 'use-host-compressors
+                      (lambda* (#:key inputs target #:allow-other-keys)
+                        (when target
+                          ;; Use host compressors.
+                          (let ((bzip2 (assoc-ref inputs "bzip2"))
+                                (gzip (assoc-ref inputs "gzip"))
+                                (xz (assoc-ref inputs "xz")))
+                            (substitute* "guix/config.scm"
+                              (("\"[^\"]*/bin/bzip2")
+                               (string-append "\"" bzip2 "/bin/bzip2"))
+                              (("\"[^\"]*/bin/gzip") gzip
+                               (string-append "\"" gzip "/bin/gzip"))
+                              (("\"[^\"]*/bin//xz")
+                               (string-append "\"" xz "/bin/xz")))))
+                        #t))
                     (add-before 'check 'copy-bootstrap-guile
                       (lambda* (#:key system target inputs #:allow-other-keys)
+                        ;; Copy the bootstrap guile tarball in the store
+                        ;; used by the test suite.
+                        (define (intern file recursive?)
+                          ;; Note: don't use 'guix download' here because we
+                          ;; need to set the 'recursive?' argument.
+                          (define base
+                            (strip-store-file-name file))
+
+                          (define code
+                            `(begin
+                               (use-modules (guix))
+                               (with-store store
+                                 (let* ((item (add-to-store store ,base
+                                                            ,recursive?
+                                                            "sha256" ,file))
+                                        (root (string-append "/tmp/gc-root-"
+                                                             (basename item))))
+                                   ;; Register a root so that the GC tests
+                                   ;; don't delete those.
+                                   (symlink item root)
+                                   (add-indirect-root store root)))))
+
+                          (invoke "./test-env" "guile" "-c"
+                                  (object->string code)))
+
                         (unless target
-                          (begin
-                            ;; Copy the bootstrap guile tarball in the store
-                            ;; used by the test suite.
-                            (define (intern file recursive?)
-                              ;; Note: don't use 'guix download' here because we
-                              ;; need to set the 'recursive?' argument.
-                              (define base
-                                (strip-store-file-name file))
+                          (intern (assoc-ref inputs "boot-guile") #f)
 
-                              (define code
-                                `(begin
-                                   (use-modules (guix))
-                                   (with-store store
-                                     (let* ((item (add-to-store store ,base
-                                                                ,recursive?
-                                                                "sha256" ,file))
-                                            (root (string-append "/tmp/gc-root-"
-                                                                 (basename item))))
-                                       ;; Register a root so that the GC tests
-                                       ;; don't delete those.
-                                       (symlink item root)
-                                       (add-indirect-root store root)))))
+                          ;; On x86_64 some tests need the i686 Guile.
+                          ,@(if (and (not (%current-target-system))
+                                     (string=? (%current-system)
+                                               "x86_64-linux"))
+                                '((intern (assoc-ref inputs "boot-guile/i686") #f))
+                                '())
 
-                              (invoke "./test-env" "guile" "-c"
-                                      (object->string code)))
-
-                            (intern (assoc-ref inputs "boot-guile") #f)
-
-                            ;; On x86_64 some tests need the i686 Guile.
-                            ,@(if (and (not (%current-target-system))
-                                       (string=? (%current-system)
-                                                 "x86_64-linux"))
-                                  '((intern (assoc-ref inputs "boot-guile/i686") #f))
-                                  '())
-
-                            ;; Copy the bootstrap executables.
-                            (for-each (lambda (input)
-                                        (intern (assoc-ref inputs input) #t))
-                                      '("bootstrap/bash" "bootstrap/mkdir"
-                                        "bootstrap/tar" "bootstrap/xz"))))
+                          ;; Copy the bootstrap executables.
+                          (for-each (lambda (input)
+                                      (intern (assoc-ref inputs input) #t))
+                                    '("bootstrap/bash" "bootstrap/mkdir"
+                                      "bootstrap/tar" "bootstrap/xz")))
                         #t))
                     (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
@@ -330,6 +344,9 @@ $(prefix)/etc/init.d\n")))
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
+               '())
+         ,@(if (%current-target-system)
+               `(("xz" ,xz))
                '())
 
          ;; Tests also rely on these bootstrap executables.
