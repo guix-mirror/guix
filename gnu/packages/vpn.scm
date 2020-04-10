@@ -243,17 +243,17 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "8.05")
+   (version "8.08")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256
-             (base32 "14i9q727c2zc9xhzp1a9hz3gzb5lwgsslbhircm84dnbs192jp1k"))))
+             (base32 "1s3rjdazx1n5izpcgz05p1sirm7kf4z3gh26dq2h2j5xmgmk0jxp"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("libxml2" ,libxml2)
-      ("gnutls" ,gnutls)
+      ("gnutls" ,gnutls-3.6.13)
       ("zlib" ,zlib)))
    (inputs
     `(("vpnc-scripts" ,vpnc-scripts)))

@@ -245,7 +245,7 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define gnutls-3.6.13
+(define-public gnutls-3.6.13
   (package
     (inherit gnutls)
     (version "3.6.A")
