@@ -774,6 +774,20 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         ,@(if (string-prefix? "arm" (%current-system))
+               ;; XXX: Because of the GCC 5 input, we need to hide GCC 7 from
+               ;; CPLUS_INCLUDE_PATH so that its headers do not shadow GCC 5.
+               '((add-after 'set-paths 'hide-default-gcc
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((gcc (assoc-ref inputs "gcc")))
+                       (setenv "CPLUS_INCLUDE_PATH"
+                               (string-join
+                                (delete (string-append gcc "/include/c++")
+                                        (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                      #\:))
+                                ":"))
+                       #t))))
+               '())
          (add-after 'unpack 'fix-pcre-detection
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
@@ -906,7 +920,7 @@ Language.")
      `(("bison" ,bison)
        ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
        ,@(if (string-prefix? "armhf" (%current-system))
-             `(("gcc", gcc-5))
+             `(("gcc@5", gcc-5))
              '())
        ("perl" ,perl)))
     (inputs
