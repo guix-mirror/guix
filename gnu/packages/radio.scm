@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
@@ -20,7 +21,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages ham-radio)
+(define-module (gnu packages radio)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -50,7 +51,6 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
-  #:use-module (gnu packages sdr)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tex)
@@ -62,6 +62,36 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
+
+(define-public liquid-dsp
+  (package
+    (name "liquid-dsp")
+    (version "1.3.2")
+    (source
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/jgaeddert/liquid-dsp.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32 "1n6dbg13q8ga5qhg1yiszwly4jj0rxqr6f1xwm9waaly5z493xsd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("fftwf" ,fftwf)))
+    (home-page "https://liquidsdr.org")
+    (synopsis "Signal processing library for software-defined radios")
+    (description
+     "Liquid DSP is a @dfn{digital signal processing} (DSP) library designed
+specifically for software-defined radios on embedded platforms.  The aim is to
+provide a lightweight DSP library that does not rely on a myriad of external
+dependencies or proprietary and otherwise cumbersome frameworks.  All signal
+processing elements are designed to be flexible, scalable, and dynamic,
+including filters, filter design, oscillators, modems, synchronizers, complex
+mathematical operations, and much more.")
+    (license license:expat)))
 
 (define-public rtl-sdr
   (package

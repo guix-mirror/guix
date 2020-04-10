@@ -256,7 +256,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/haskell-crypto.scm		\
   %D%/packages/haskell-web.scm			\
   %D%/packages/haskell-xyz.scm			\
-  %D%/packages/ham-radio.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
@@ -435,6 +434,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/toys.scm				\
   %D%/packages/tryton.scm			\
   %D%/packages/qt.scm				\
+  %D%/packages/radio.scm			\
   %D%/packages/ragel.scm			\
   %D%/packages/rails.scm			\
   %D%/packages/ratpoison.scm			\
@@ -463,7 +463,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/scsi.scm				\
   %D%/packages/sdcc.scm				\
   %D%/packages/sdl.scm				\
-  %D%/packages/sdr.scm				\
   %D%/packages/search.scm			\
   %D%/packages/security-token.scm		\
   %D%/packages/selinux.scm			\
