@@ -230,7 +230,7 @@ standard Go idioms.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://eradman.com/ephemeralpg/code/ephemeralpg-"
+             "https://eradman.com/ephemeralpg/code/ephemeralpg-"
              version ".tar.gz"))
        (sha256
         (base32 "1dpfxsd8a52psx3zlfbqkw53m35w28qwyb87a8anz143x6gnkkr4"))))
@@ -274,7 +274,7 @@ standard Go idioms.")
        ("util-linux" ,util-linux)))
     (native-inputs
      `(("ruby" ,ruby)))
-    (home-page "http://eradman.com/ephemeralpg/")
+    (home-page "https://eradman.com/ephemeralpg/")
     (synopsis "Run temporary PostgreSQL databases")
     (description
      "@code{pg_tmp} creates temporary PostgreSQL databases, suitable for tasks
