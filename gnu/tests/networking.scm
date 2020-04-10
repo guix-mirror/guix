@@ -205,7 +205,8 @@ port 7, and a dict service on port 2628."
           ;; Make sure the bridge is created.
           (test-assert "br0 exists"
             (marionette-eval
-             '(zero? (system* "ovs-vsctl" "br-exists" "br0"))
+             '(zero? (system* #$(file-append openvswitch "/bin/ovs-vsctl")
+                              "br-exists" "br0"))
              marionette))
 
           ;; Make sure eth0 is connected to the bridge.
