@@ -37,6 +37,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages java)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages telephony)
@@ -49,6 +50,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system gnu))
 
 (define-public bcunit
@@ -468,6 +470,50 @@ easy-to-use API.  It is the cross-platform VoIP library on which the
 Linphone application is based on, and that anyone can use to add audio
 and video calls or instant messaging capabilities to an application.")
     (home-page "https://gitlab.linphone.org/BC/public/liblinphone")
+    (license license:gpl2+)))
+
+(define-public linphoneqt
+  (package
+    (name "linphoneqt")
+    (version "4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.linphone.org/releases/sources/" name
+                       "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1g2zrr9li0g1hgs6vys06vr98h5dx36z22hx7a6ry231536c002a"))))
+    (build-system qt-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test target
+       #:phases
+       ;; For replacing undeclared variable.
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "src/app/AppController.cpp"
+               (("LINPHONE_QT_GIT_VERSION")
+                "\"4.1.1\""))
+             #t)))))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("bctoolbox" ,bctoolbox)
+       ("belcard" ,belcard)
+       ("bellesip" ,belle-sip)
+       ("linphone" ,liblinphone)
+       ("mediastreamer2" ,mediastreamer2)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)))
+    (synopsis "Belledonne Communications Softphone Application")
+    (description "Linphone is a softphone for voice and video over IP calling
+and instant messaging.  It is fully SIP-based, for all calling, presence
+and IM features.")
+    (home-page "https://gitlab.linphone.org/BC/public/linphone-desktop")
     (license license:gpl2+)))
 
 (define-public msopenh264
