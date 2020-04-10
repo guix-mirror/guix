@@ -1905,14 +1905,13 @@ multi-dimensional data.")
 (define-public r-powerlaw
   (package
     (name "r-powerlaw")
-    (version "0.70.2")
+    (version "0.70.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "poweRlaw" version))
        (sha256
-        (base32
-         "1asr6ikr7hmj78jyg8r1gwvcjg14addkxdiz92nh06lv71a183r4"))))
+        (base32 "19zah9mx93az5lh9vicn3c8q1xb12g0w46dh5p901fbyimc32vwk"))))
     (properties `((upstream-name . "poweRlaw")))
     (build-system r-build-system)
     (propagated-inputs
