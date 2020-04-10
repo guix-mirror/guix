@@ -162,6 +162,7 @@
        ("fftw" ,fftw)
        ("libpcap" ,libpcap)
        ("libsndfile" ,libsndfile)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("netpbm" ,netpbm)
        ("sox" ,sox)
