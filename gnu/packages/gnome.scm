@@ -8860,6 +8860,14 @@ accessibility infrastructure.")
     (license license:lgpl2.0)
     (properties '((upstream-name . "pyatspi")))))
 
+(define-public python2-pyatspi
+  (package
+    (inherit python-pyatspi)
+    (name "python2-pyatspi")
+    (inputs
+     `(("python" ,python-2)
+       ("python-pygobject" ,python2-pygobject)))))
+
 (define-public orca
   (package
     (name "orca")
