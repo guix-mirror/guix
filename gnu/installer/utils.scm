@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -93,7 +93,8 @@ COMMAND exited successfully, #f otherwise."
           (setenv "LC_ALL" locale)
           (setenv "LANGUAGE"
                   (string-take locale
-                               (string-index locale #\_))))))
+                               (or (string-index locale #\_)
+                                   (string-length locale)))))))
 
   (guard (c ((invoke-error? c)
              (newline)
