@@ -58,6 +58,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system qt))
@@ -260,9 +261,12 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("zeromq" ,zeromq)))
     (arguments
      `(#:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
                   ((guix build python-build-system) #:prefix python:)
-                  (guix build utils))
+                  (guix build utils)
+                  (ice-9 match))
        #:imported-modules (,@%cmake-build-system-modules
+                           (guix build glib-or-gtk-build-system)
                            (guix build python-build-system))
        #:phases
        (modify-phases %standard-phases
@@ -293,7 +297,24 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
              (setenv "DISPLAY" ":1")
              #t))
          (add-after 'install 'wrap-python
-           (assoc-ref python:%standard-phases 'wrap)))))
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'wrap-python 'wrap-glib-or-gtk
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
+         (add-after 'wrap-glib-or-gtk 'wrap-with-GI_TYPELIB_PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (paths (map (match-lambda
+                                 ((output . directory)
+                                  (let ((girepodir (string-append
+                                                    directory
+                                                    "/lib/girepository-1.0")))
+                                    (if (file-exists? girepodir)
+                                        girepodir
+                                        #f))))
+                               inputs)))
+               (wrap-program (string-append out "/bin/gnuradio-companion")
+                 `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
+             #t)))))
     (synopsis "Toolkit for software-defined radios")
     (description
      "GNU Radio is a development toolkit that provides signal processing blocks
