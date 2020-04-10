@@ -2,6 +2,7 @@
 ;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,9 +171,9 @@ been performed at build time."
 (define apply-keymap
   ;; Apply the specified keymap. Use the default keyboard model.
   #~(match-lambda
-      ((layout variant)
+      ((layout variant options)
        (kmscon-update-keymap (default-keyboard-model)
-                             layout variant))))
+                             layout variant options))))
 
 (define* (compute-keymap-step context)
   "Return a gexp that runs the keymap-page of INSTALLER and install the
@@ -235,12 +236,13 @@ selected keymap."
 
          ;; The installer runs in a kmscon virtual terminal where loadkeys
          ;; won't work. kmscon uses libxkbcommon as a backend for keyboard
-         ;; input. It is possible to update kmscon current keymap by sending it
-         ;; a keyboard model, layout and variant, in a somehow similar way as
-         ;; what is done with setxkbmap utility.
+         ;; input. It is possible to update kmscon current keymap by sending
+         ;; it a keyboard model, layout, variant and options, in a somehow
+         ;; similar way as what is done with setxkbmap utility.
          ;;
          ;; So ask for a keyboard model, layout and variant to update the
-         ;; current kmscon keymap.
+         ;; current kmscon keymap.  For non-Latin layouts, we add an
+         ;; appropriate second layout and toggle via Alt+Shift.
          (installer-step
           (id 'keymap)
           (description (G_ "Keyboard mapping selection"))

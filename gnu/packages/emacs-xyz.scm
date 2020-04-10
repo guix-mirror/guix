@@ -5976,33 +5976,30 @@ windows.")
     (license license:gpl3+)))
 
 (define-public emacs-ace-window
-  ;; last release version is from 2015
-  (let ((commit "a5344925e399e1f015721cda6cf5db03c90ab87a")
-        (revision "1"))
-    (package
-      (name "emacs-ace-window")
-      (version (git-version "0.9.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/abo-abo/ace-window.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "18jm8gfgnf6ja9aarws5650lw2zfi3wdwc5j8r5ijn5fcqhfy7rc"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-avy" ,emacs-avy)))
-      (home-page "https://github.com/abo-abo/ace-window")
-      (synopsis "Quickly switch windows in Emacs")
-      (description
-       "@code{ace-window} is meant to replace @code{other-window}.
+  (package
+    (name "emacs-ace-window")
+    (version "0.10.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/ace-window.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0f3r40d5yxp2pm2j0nn86s29nqj8py0jxjbj50v4ci3hsd92d8jl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-avy" ,emacs-avy)))
+    (home-page "https://github.com/abo-abo/ace-window")
+    (synopsis "Quickly switch windows in Emacs")
+    (description
+     "@code{ace-window} is meant to replace @code{other-window}.
 In fact, when there are only two windows present, @code{other-window} is
 called.  If there are more, each window will have its first character
 highlighted.  Pressing that character will switch to that window.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-iedit
   ;; Last release version was in 2016.
@@ -8406,24 +8403,23 @@ distribution, primarily targeting Clojure users")
 (define-public emacs-orgalist
   (package
     (name "emacs-orgalist")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "orgalist-" version ".el"))
        (sha256
-        (base32
-         "0zbqkk540rax32s8szp5zgz3a02zw88fc1dmjmyw6h3ls04m91kl"))))
+        (base32 "1hwm7j0hbv2pg9w885ky1c9qga3grcfq8v216jv2ivkw8xzavysd"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/orgalist.html")
     (synopsis "Manage Org-like lists in non-Org buffers")
-    (description "Write Org mode's plain lists in non-Org buffers.  More
-specifically, Orgalist supports the syntax of Org mode for numbered,
-unnumbered, description items, checkboxes, and counter cookies.
+    (description "Orgalist writes and manages Org mode's plain lists in
+non-Org buffers.  More specifically, it supports the syntax of Org mode for
+numbered, unnumbered, description items, checkboxes, and counter cookies.
 
-The library also implements radio lists, i.e., lists written in Org
-syntax later translated into the host format, e.g., LaTeX or HTML.")
+The library also implements radio lists, i.e., lists written in Org syntax
+later translated into the host format, e.g., LaTeX or HTML.")
     (license license:gpl3+)))
 
 (define-public emacs-writegood-mode
@@ -9178,6 +9174,31 @@ above over the network.")
 in Org buffers and displays matching entries.")
     (license license:gpl3+)))
 
+(define-public emacs-dired-git-info
+  ;; Upstream has no proper release.  The base version is extracted from the
+  ;; "Version" keyword in the main file.
+  (let ((commit "91d57e3a4c5104c66a3abc18e281ee55e8979176")
+        (revision "0"))
+    (package
+      (name "emacs-dired-git-info")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/clemera/dired-git-info")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dr4iv95s4barxxj56znqkl9z0lg5jw731jmjr01s6vn8ar69gik"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/clemera/dired-git-info/")
+      (synopsis "Show git info in Emacs Dired")
+      (description "This Emacs package provides a minor mode which shows git
+information inside the Dired buffer.")
+      (license license:gpl3+))))
+
 (define-public emacs-dired-toggle-sudo
   (package
     (name "emacs-dired-toggle-sudo")
@@ -9201,6 +9222,28 @@ in Org buffers and displays matching entries.")
     (description "This package allows for the use of @code{dired} with
 @code{sudo} privileges.")
     (license license:wtfpl2)))
+
+(define-public emacs-diredfl
+  (package
+    (name "emacs-diredfl")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/purcell/diredfl")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1zb2lz7rp58zqvpniqcsmqabi7nqg2d8bfd0hgmq68bn2hd25b5z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/diredfl/")
+    (synopsis "Extra Emacs font lock rules for a more colourful Dired")
+    (description "This library enables additional font locking in Dired mode.
+This is adapted from the extra font lock rules provided by Drew Adams' Dired+
+package.")
+    (license license:gpl3+)))
 
 (define-public emacs-memoize
   (package

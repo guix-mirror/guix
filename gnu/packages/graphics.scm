@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,6 +87,61 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public fox
+  (package
+    (name "fox")
+    (version "1.6.57")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://fox-toolkit.org/ftp/fox-" version ".tar.gz"))
+       (sha256
+        (base32 "08w98m6wjadraw1pi13igzagly4b2nfa57kdqdnkjfhgkvg1bvv5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "configure"
+               (("-I/usr/include/freetype2")
+                (string-append "-I"
+                               (string-append
+                                (assoc-ref %build-inputs "freetype")
+                                "/include/freetype2"))))
+             #t)))))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (inputs
+     `(("bzip2" ,lbzip2)
+       ("freetype" ,freetype)
+       ("gl" ,mesa)
+       ("glu" ,glu)
+       ("jpeg" ,libjpeg-turbo)
+       ("png" ,libpng)
+       ("tiff" ,libtiff)
+       ("x11" ,libx11)
+       ("xcursor" ,libxcursor)
+       ("xext" ,libxext)
+       ("xfixes" ,libxfixes)
+       ("xft" ,libxft)
+       ("xinput" ,libxi)
+       ("xrandr" ,libxrandr)
+       ("xrender" ,libxrender)
+       ("xshm" ,libxshmfence)
+       ("zlib" ,zlib)))
+    (synopsis "Widget Toolkit for building GUI")
+    (description"FOX (Free Objects for X) is a C++ based Toolkit for developing
+Graphical User Interfaces easily and effectively.   It offers a wide, and
+growing, collection of Controls, and provides state of the art facilities such
+as drag and drop, selection, as well as OpenGL widgets for 3D graphical
+manipulation.  FOX also implements icons, images, and user-convenience features
+such as status line help, and tooltips.  Tooltips may even be used for 3D
+objects!")
+    (home-page "http://www.fox-toolkit.org")
+    (license license:lgpl2.1+)))
 
 (define-public blender
   (package

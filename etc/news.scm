@@ -11,12 +11,18 @@
  (version 0)
 
  (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
-        (title (en "Rottlog service added to @code{%base-services}"))
+        (title (en "Rottlog service added to @code{%base-services}")
+               (de "Rottlog-Dienst ist nun Teil der @code{%base-services}"))
         (body (en "An instance of @code{rottlog-service-type}, the system
 service responsible for log rotation, has been added to @code{%base-services}.
 If your operating system configuration for Guix System is explicitly adding
 @code{rottlog-service-type} to the services, you should now remove it.  See
-the ``Log Rotation'' section of the manual for more information.")))
+the ``Log Rotation'' section of the manual for more information.")
+              (de "Eine Instanz des @code{rottlog-service-type} für
+Log-Rotation wurde zu den @code{%base-services} hinzugefügt.  Wenn der
+Systemdienst bereits in Ihrer Konfiguration für Guix System ausdrücklich
+genannt wurde, sollten Sie ihn jetzt daraus entfernen.  Siehe den Abschnitt
+„Log-Rotation“ im Handbuch für weitere Informationen.")))
 
  (entry (commit "b6bee63bed4f013064c0d902e7c8b83ed7514ade")
         (title (en "@code{guile} package now refers to version 3.0"))

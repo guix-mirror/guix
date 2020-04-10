@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,7 @@
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages linphone)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
   #:use-module (gnu packages webkit)
@@ -4199,3 +4201,37 @@ minimum.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs ztoolkit)))
     (synopsis "ZToolkit with SVG support")))
+
+(define-public codec2
+  (package
+    (name "codec2")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/drowe67/codec2.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jpvr7bra8srz8jvnlbmhf8andbaavq5v01qjnp2f61za93rzwba"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bc" ,bc)
+       ("octave" ,octave)
+       ("valgrind" ,valgrind)))
+    (arguments
+     `(#:tests? #f ; TODO: Fix tests (paths, graphic toolkit, octave modules).
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-test-environment
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (synopsis "Speech codec")
+    (description
+     "Codec 2 is a speech codec designed for communications quality speech
+between 700 and 3200 bit/s.  The main application is low bandwidth HF/VHF
+digital radio.")
+    (home-page "https://www.rowetel.com/?page_id=452")
+    (license license:lgpl2.1)))

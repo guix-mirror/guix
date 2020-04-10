@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1400,6 +1401,44 @@ entity management.")
 electronic cash system.  This package provides a command line client and
 a Qt GUI.")
     (license license:expat)))
+
+(define-public fulcrum
+  (package
+    (name "fulcrum")
+    (version "1.0.5b")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/FloweeTheHub/fulcrum/-/archive/v"
+                           version "/fulcrum-v" version ".tar.gz"))
+       (sha256
+        (base32 "1c1hkik8avill8ha33g76rk4b03j5ac8wiml69q4jav7a63ywgfy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Call qmake instead of configure to create a Makefile.
+         (replace 'configure
+           (lambda _
+             (invoke
+              "qmake"
+              (string-append "PREFIX=" %output)
+              "features="))))))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("python" ,python)
+       ("qtbase" ,qtbase)
+       ("rocksdb" ,rocksdb)
+       ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/FloweeTheHub/fulcrum/")
+    (synopsis "Fast and nimble SPV server for Bitcoin Cash")
+    (description
+     "Flowee Fulcrum is a server that is the back-end for @acronym{SPV,
+Simplified Payment Verification} wallets, it provides the full API for those
+walets in a fast and small server.  The full data is stored in a full node,
+like Flowee the Hub, which Fulcrum connects to over RPC.")
+    (license license:gpl3+)))
 
 (define-public beancount
   (package

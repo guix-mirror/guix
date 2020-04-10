@@ -398,61 +398,61 @@ canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
 (define-public cataclysm-dda
-  (let ((commit "9c732a5de48928691ab863d3ab275ca7b0e522fc"))
-    (package
-      (name "cataclysm-dda")
-      (version "0.D")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "00zzhx1mh1qjq668cga5nbrxp2qk6b82j5ak65skhgnlr6ii4ysc"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
-                            "LOCALIZE=1" "LANGUAGES=all")
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'build 'build-tiles
-             (lambda* (#:key make-flags outputs #:allow-other-keys)
-               ;; Change prefix directory and enable tile graphics and sound.
-               (apply invoke "make" "TILES=1" "SOUND=1"
-                      (string-append "PREFIX="
-                                     (assoc-ref outputs "tiles"))
-                      (cdr make-flags))))
-           (add-after 'install 'install-tiles
-             (lambda* (#:key make-flags outputs #:allow-other-keys)
-               (apply invoke "make" "install" "TILES=1" "SOUND=1"
-                      (string-append "PREFIX="
-                                     (assoc-ref outputs "tiles"))
-                      (cdr make-flags)))))
-         ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
-         ;;       input in order to support tests.
-         #:tests? #f))
-      (outputs '("out"
-                 "tiles")) ; For tile graphics and sound support.
-      (native-inputs
-       `(("gettext" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("freetype" ,freetype)
-         ("libogg" ,libogg)
-         ("libvorbis" ,libvorbis)
-         ("ncurses" ,ncurses)
-         ("sdl2" ,sdl2)
-         ("sdl2-image" ,sdl2-image)
-         ("sdl2-ttf" ,sdl2-ttf)
-         ("sdl2-mixer" ,sdl2-mixer)))
-      (home-page "https://cataclysmdda.org/")
-      (synopsis "Survival horror roguelike video game")
-      (description
-       "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
+  (package
+    (name "cataclysm-dda")
+    (version "0.E")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
+             (commit version)))
+       (sha256
+        (base32 "0pbi0fw37zimzdklfj58s1ql0wlqq7dy6idkcsib3hn910ajaxan"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
+             "LOCALIZE=1" "LANGUAGES=all")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             ;; Change prefix directory and enable tile graphics and sound.
+             (apply invoke "make" "TILES=1" "SOUND=1"
+                    (string-append "PREFIX="
+                                   (assoc-ref outputs "tiles"))
+                    (cdr make-flags))))
+         (add-after 'install 'install-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (apply invoke "make" "install" "TILES=1" "SOUND=1"
+                    (string-append "PREFIX="
+                                   (assoc-ref outputs "tiles"))
+                    (cdr make-flags)))))
+       ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
+       ;;       input in order to support tests.
+       #:tests? #f))
+    (outputs '("out"
+               "tiles"))                ;for tile graphics and sound support
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("ncurses" ,ncurses)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://cataclysmdda.org/")
+    (synopsis "Survival horror roguelike video game")
+    (description
+     "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
 in a post-apocalyptic world.  Struggle to survive in a harsh, persistent,
 procedurally generated world.  Scavenge the remnants of a dead civilization
 for food, equipment, or, if you are lucky, a vehicle with a full tank of gas
@@ -460,7 +460,7 @@ to get you out of Dodge.  Fight to defeat or escape from a wide variety of
 powerful monstrosities, from zombies to giant insects to killer robots and
 things far stranger and deadlier, and against the others like yourself, that
 want what you have.")
-      (license license:cc-by-sa3.0))))
+    (license license:cc-by-sa3.0)))
 
 (define-public corsix-th
   (package
@@ -6066,7 +6066,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.7.1")
+    (version "5.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6074,7 +6074,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1gqivy4pxasy7phyznixsagylf9f70bk33b0knpfzzlks6cc6zzj"))))
+               (base32 "002aqbgsksrgzqridwdlkrjincaxh0dkvwlrbb8d2f3kwk7lj4fq"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)

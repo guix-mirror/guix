@@ -369,18 +369,18 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.2")
+(define-public linux-libre-5.6-version "5.6.3")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "1fdmcx5fk9wq9yx6vvnw76nvdysbvm83cik1dj1d67lw6bc92k9d")))
+        (hash (base32 "1ajh1iw3bplm6ckcycg45wfmmqkvfiqmh6i3m1895dfapfd6h4qx")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.30")
+(define-public linux-libre-5.4-version "5.4.31")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1vwx6j87pkfyq68chng1hy0c85hpc2byabiv1pcikrmw07vpip8i")))
+        (hash (base32 "1svf4wf4j1vqhdpgx63ry4c99fc54d9nfi4d1xm7z209z3w86451")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
@@ -4391,7 +4391,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.4.1")
+    (version "5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -4399,7 +4399,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0scxg9p6z0wss92gmv5a8yxdmr8x449kb5v3bfnvs26n92r7zq7k"))))
+                "0srg276yccfmqz0skmmga3vbqx4wiqsk1l6h86n6ryhxa9viqcm1"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"

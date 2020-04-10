@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,10 +47,12 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
@@ -70,6 +73,7 @@
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
@@ -858,3 +862,49 @@ written in Go.  It is heavily inspired by ranger with some missing and
 extra features.  Some of the missing features are deliberately omitted
 since they are better handled by external tools.")
     (license license:expat)))
+
+(define-public xfe
+  (package
+    (name "xfe")
+    (version "1.43.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/xfe/files/xfe/"
+                       version
+                       "/xfe-" version ".tar.gz"))
+       (sha256
+        (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fox" ,fox)
+       ("freetype" ,freetype)
+       ("x11" ,libx11)
+       ("xcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ("xft" ,libxft)
+       ("xrandr" ,libxrandr)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-xferc-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (xferc   (string-append out "/share/xfe/xferc")))
+               (substitute* "src/XFileExplorer.cpp"
+                 (("/usr/share/xfe/xferc") xferc))
+               #t))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BASH_COMPLETION_DIR=" out
+                              "/share/bash-completion/completions")))))
+    (synopsis "File Manager for X-Based Graphical Systems")
+    (description"XFE (X File Explorer) is a file manager for X.  It is based on
+the popular but discontinued, X Win Commander.  It aims to be the file manager
+of choice for all light thinking Unix addicts!")
+    (home-page "http://roland65.free.fr/xfe/")
+    (license license:gpl2+)))

@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016, 2020 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
@@ -982,7 +982,16 @@ to rebuild the original object tree.
 
 Because only safe literals are encoded, it is safe to send serpent data to
 other machines, such as over the network.")
+    (properties `((python2-variant . ,(delay python2-serpent))))
     (license license:expat)))
+
+(define-public python2-serpent
+  (let ((base (package-with-python2 (strip-python2-variant python-serpent))))
+    (package
+      (inherit base)
+      (propagated-inputs
+       `(("python-enum34" ,python2-enum34)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-setuptools
   (package
@@ -6805,14 +6814,14 @@ of the structure, dynamics, and functions of complex networks.")
 (define-public python-datrie
   (package
     (name "python-datrie")
-    (version "0.8")
+    (version "0.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "datrie" version))
        (sha256
         (base32
-         "0338r8xgmpy78556jhms0h6qkvyjr10p8bpgdvcpqzm9lrmxmmdx"))))
+         "0pbn32flkrpjiwfcknmj6398qa81ba783kbcvwan3kym73v0hnsj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
@@ -17222,26 +17231,35 @@ pure-Python.")
 (define-public python-cloudpickle
   (package
     (name "python-cloudpickle")
-    (version "0.6.1")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cloudpickle" version))
        (sha256
         (base32
-         "1wdw89mlm7fqa3fm3ymskx05jrys66n8m1z1a8s0mss0799ahsgi"))))
+         "0lx7gy9clp427qwcm7b23zdsldpr03gy3vxxhyi8fpbhwz859brq"))))
     (build-system python-build-system)
-    ;; FIXME: there are 5 errors in 122 tests:
-    ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.CloudPickleTest)
-    ;; ERROR: test_function_pickle_compat_0_4_1 (tests.cloudpickle_test.CloudPickleTest)
-    ;; ERROR: test_function_pickle_compat_0_4_0 (tests.cloudpickle_test.Protocol2CloudPickleTest)
-    ;; ERROR: test_function_pickle_compat_0_4_1 (tests.cloudpickle_test.Protocol2CloudPickleTest)
-    ;; ERROR: test_temp_file (tests.cloudpickle_file_test.CloudPickleFileTests)
-    ;; TypeError: cannot serialize '_io.BufferedRandom' object
-    (arguments '(#:tests? #f))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'do-not-override-PYTHONPATH
+                    (lambda _
+                      ;; Append to PYTHONPATH instead of overriding it so
+                      ;; that dependencies from Guix can be found.
+                      (substitute* "tests/testutils.py"
+                        (("env\\['PYTHONPATH'\\] = pythonpath")
+                         "env['PYTHONPATH'] += os.pathsep + pythonpath"))
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "pytest" "-s" "-vv")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-mock" ,python-mock)
+     `(;; For tests.
+       ("python-psutil" ,python-psutil)
+       ("python-pytest" ,python-pytest)
        ("python-tornado" ,python-tornado)))
     (home-page "https://github.com/cloudpipe/cloudpickle")
     (synopsis "Extended pickling support for Python objects")
@@ -17251,10 +17269,19 @@ supported by the default pickle module from the Python standard library.  It
 is especially useful for cluster computing where Python expressions are
 shipped over the network to execute on remote hosts, possibly close to the
 data.")
+    (properties `((python2-variant . ,(delay python2-cloudpickle))))
     (license license:bsd-3)))
 
 (define-public python2-cloudpickle
-  (package-with-python2 python-cloudpickle))
+  (let ((base (package-with-python2 (strip-python2-variant python-cloudpickle))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python-mock" ,python2-mock)
+         ,@(package-native-inputs base)))
+      (propagated-inputs
+       `(("python-futures" ,python2-futures)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-locket
   (package
@@ -17365,13 +17392,13 @@ decisions with any given backend.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "2.9.0")
+    (version "2.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32 "1w1hqr8vyx6ygwflj2737dcy0mmgvrc0s602gnny8pzlcbs9m76b"))))
+        (base32 "031j0j26s0675v0isyps2dphm03330n7dy8ifdy70jgvf78d119q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -18836,6 +18863,29 @@ dedicated platform.  The tool proposes a unified interface for any format and
 an upload option to send your work back to the platform.")
     (license license:gpl3+)))
 
+(define-public python-titlecase
+  (package
+    (name "python-titlecase")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "titlecase" version))
+       (sha256
+        (base32
+         "0486i99wf8ssa7sgn81fn6fv6i4rhhq6n751bc740b3hzfbpmpl4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/ppannuto/python-titlecase")
+    (synopsis "Capitalize strings similar to book titles")
+    (description
+     "Python-Titlecase is a Python port of John Gruber's titlecase.pl.
+It capitalizes (predominantly English) strings in a way that is similar to
+book titles, using the New York Times Manual of Style to leave certain words
+lowercase.")
+    (license license:expat)))
+
 (define-public python-pypng
   (package
     (name "python-pypng")
@@ -19559,3 +19609,24 @@ an identity provider.  The distribution contains examples of both.
 This package was originally written to work in a WSGI environment, but
 there are extensions that allow you to use it with other frameworks.")
     (license license:asl2.0)))
+
+(define-public python-click-plugins
+  (package
+    (name "python-click-plugins")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "click-plugins" version))
+       (sha256
+        (base32 "0jr6bxj67vg988vkm6nz8jj98v9lg46bn49lkhak3n598jbrkas6"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Extension for Click to register external CLI commands")
+    (description "This package provides n extension module for Click to
+register external CLI commands via setuptools entry-points.")
+    (home-page "https://github.com/click-contrib/click-plugins")
+    (license license:bsd-3)))

@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -66,6 +66,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages image)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages video)
   #:use-module (gnu packages wget)
   #:use-module (gnu packages xiph))
@@ -156,6 +157,7 @@ libcdio.")
   (package
     (name "xorriso")
     (version "1.5.2")
+    (outputs '("out" "gui"))
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
@@ -172,10 +174,26 @@ libcdio.")
              (let* ((out (assoc-ref outputs "out"))
                     (out-bin (string-append out "/bin")))
                (install-file "frontend/grub-mkrescue-sed.sh" out-bin)
+               #t)))
+         (add-after 'install 'move-gui-to-separate-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gui (assoc-ref outputs "gui")))
+               (for-each
+                 (lambda (file)
+                   (mkdir-p (string-append gui (dirname file)))
+                   (rename-file (string-append out file)
+                                (string-append gui file)))
+                 (list "/bin/xorriso-tcltk"
+                       "/share/info/xorriso-tcltk.info"
+                       "/share/man/man1/xorriso-tcltk.1"))
+               (wrap-program (string-append gui "/bin/xorriso-tcltk")
+                 `("PATH" ":" prefix (,(string-append out "/bin"))))
                #t))))))
     (inputs
      `(("acl" ,acl)
        ("readline" ,readline)
+       ("tk" ,tk)
        ("zlib" ,zlib)))
     (home-page "https://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 file systems")

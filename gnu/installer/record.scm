@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@
   (exit-error installer-exit-error)
   ;; procedure void -> void
   (final-page installer-final-page)
-  ;; procedure (layouts context) -> (list layout variant)
+  ;; procedure (layouts context) -> (list layout variant options)
   (keymap-page installer-keymap-page)
   ;; procedure: (#:key supported-locales iso639-languages iso3166-territories)
   ;; -> glibc-locale

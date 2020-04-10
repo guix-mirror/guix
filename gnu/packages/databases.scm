@@ -225,15 +225,15 @@ standard Go idioms.")
 (define-public ephemeralpg
   (package
     (name "ephemeralpg")
-    (version "2.8")
+    (version "2.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://eradman.com/ephemeralpg/code/ephemeralpg-"
+             "https://eradman.com/ephemeralpg/code/ephemeralpg-"
              version ".tar.gz"))
        (sha256
-        (base32 "1dpfxsd8a52psx3zlfbqkw53m35w28qwyb87a8anz143x6gnkkr4"))))
+        (base32 "1ghp3kya4lxvfwz3c022cx9vqf55jbf9sjw60bxjcb5sszklyc89"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -243,20 +243,7 @@ standard Go idioms.")
          (delete 'configure)
          (replace 'check
            (lambda* (#:key inputs #:allow-other-keys)
-             ;; The intention for one test is to test without PostgreSQL on
-             ;; the $PATH, so replace the test $PATH with just the util-linux
-             ;; bin, which contains getopt. It will hopefully be possible to
-             ;; remove this for releases after 2.8.
-             (substitute* "test.rb"
-               (("/bin:/usr/bin")
-                (string-append (assoc-ref inputs "util-linux")
-                               "/bin")))
-             ;; Set the LC_ALL=C as some tests use sort, and the locale
-             ;; affects the order. It will hopefully be possible to remove
-             ;; this for releases after 2.8.
-             (setenv "LC_ALL" "C")
-             (invoke "ruby" "test.rb")
-             #t))
+             (invoke "ruby" "test.rb")))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -266,15 +253,16 @@ standard Go idioms.")
                                     "/bin")
                     ,(string-append (assoc-ref inputs "postgresql")
                                     "/bin")
-                    ;; For getsocket
+                    ;; For getsocket.
                     ,(string-append out "/bin")))))
              #t)))))
     (inputs
      `(("postgresql" ,postgresql)
        ("util-linux" ,util-linux)))
     (native-inputs
-     `(("ruby" ,ruby)))
-    (home-page "http://eradman.com/ephemeralpg/")
+     `(("ruby" ,ruby)
+       ("which" ,which)))
+    (home-page "https://eradman.com/ephemeralpg/")
     (synopsis "Run temporary PostgreSQL databases")
     (description
      "@code{pg_tmp} creates temporary PostgreSQL databases, suitable for tasks

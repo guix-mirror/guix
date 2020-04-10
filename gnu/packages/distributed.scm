@@ -44,7 +44,7 @@
 (define-public boinc-client
   (package
     (name "boinc-client")
-    (version "7.16.5")
+    (version "7.16.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -55,7 +55,7 @@
               (file-name (git-file-name "boinc" version))
               (sha256
                (base32
-                "107rpw9qd5x4pyxm9jd1lqxva5nxwb01dm5h61d6msv2vgiy0r8n"))))
+                "00xpzxxnki9hsf2vg9p67dk9ilw9ychpgm09fp3c41zyylb33ml5"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-server")))
     (inputs `(("openssl" ,openssl)

@@ -746,7 +746,7 @@ too slow and you'll get wound up in the scroll and crushed.")
        ("ghc-diff" ,ghc-diff)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
-    (home-page "https://github.com/koalaman/shellcheck")
+    (home-page "https://www.shellcheck.net/")
     (synopsis "Static analysis for shell scripts")
     (description "@code{shellcheck} provides static analysis for
 @command{bash} and @command{sh} shell scripts.

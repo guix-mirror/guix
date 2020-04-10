@@ -102,9 +102,8 @@
                  ((target-mingw? target)
                   (package-with-extra-patches
                    binutils
-                   (search-patches
-                    "binutils-mingw-w64-specify-timestamp.patch"
-                    "binutils-mingw-w64-reproducible-import-libraries.patch")))
+                   (search-patches "binutils-mingw-w64-timestamp.patch"
+                                   "binutils-mingw-w64-deterministic.patch")))
                  (else binutils))
            target)))
 

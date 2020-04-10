@@ -72,7 +72,7 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.9.3")
+    (version "0.9.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -80,7 +80,7 @@
                      (commit (string-append "libssh-" version))))
               (sha256
                (base32
-                "175i3xybg69d5lb078334v6dd3njm743kww8f67ix9w33969rmzf"))
+                "0qr4vi3k1wv69c95d9j26fiv78pzyksaq8ccd76b8nxar5z1fbj6"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
@@ -415,10 +415,10 @@ authentication scheme.")
     (home-page "https://mosh.org/")
     (synopsis "Remote shell tolerant to intermittent connectivity")
     (description
-     "Remote terminal application that allows roaming, supports intermittent
-connectivity, and provides intelligent local echo and line editing of user
-keystrokes.  Mosh is a replacement for SSH.  It's more robust and responsive,
-especially over Wi-Fi, cellular, and long-distance links.")
+     "Mosh is a remote terminal application that allows client roaming, supports
+intermittent connectivity, and provides intelligent local echo and line editing
+of user keystrokes.  It's a replacement for SSH that's more robust and
+responsive, especially over Wi-Fi, cellular, and long-distance links.")
     (license license:gpl3+)))
 
 (define-public et
@@ -448,7 +448,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
 without interrupting the session.  Unlike SSH sessions, ET sessions will
 survive even network outages and IP changes.  ET uses a custom protocol over
 TCP, not the SSH protocol.")
-    (home-page "https://mistertea.github.io/EternalTCP/")
+    (home-page "https://eternalterminal.dev/")
     (license license:asl2.0)))
 
 (define-public dropbear

@@ -9,7 +9,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -652,8 +652,8 @@ of index files."
            "user nginx nginx;\n"
            "pid " run-directory "/pid;\n"
            "error_log " log-directory "/error.log info;\n"
-           (map emit-global-directive global-directives)
            (map emit-load-module modules)
+           (map emit-global-directive global-directives)
            "http {\n"
            "    client_body_temp_path " run-directory "/client_body_temp;\n"
            "    proxy_temp_path " run-directory "/proxy_temp;\n"

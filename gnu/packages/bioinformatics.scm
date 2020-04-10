@@ -13173,7 +13173,7 @@ version does count multisplits.")
                 ((or (string-prefix? "armhf" system)
                      (string-prefix? "aarch64" system))
                  "arm_neon=1")
-                (_ "sse2only=1"))))
+                (else "sse2only=1"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

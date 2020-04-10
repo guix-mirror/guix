@@ -232,7 +232,9 @@ packages defined in installation-os."
                                  os (list target))
                                 #:disk-image-size install-size
                                 #:file-system-type
-                                installation-disk-image-file-system-type)))
+                                installation-disk-image-file-system-type
+                                ;; Don't provide substitutes; too big.
+                                #:substitutable? #f)))
     (define install
       (with-imported-modules '((guix build utils)
                                (gnu build marionette))
@@ -296,7 +298,8 @@ packages defined in installation-os."
               (exit #$(and gui-test
                            (gui-test #~marionette)))))))
 
-    (gexp->derivation "installation" install)))
+    (gexp->derivation "installation" install
+                      #:substitutable? #f)))      ;too big
 
 (define* (qemu-command/writable-image image #:key (memory-size 256))
   "Return as a monadic value the command to run QEMU on a writable copy of
@@ -1122,6 +1125,8 @@ build (current-guix) and then store a couple of full system images.")
                                #:os installation-os-for-gui-tests
                                #:install-size install-size
                                #:target-size target-size
+                               #:installation-disk-image-file-system-type
+                               "iso9660"
                                #:gui-test
                                (lambda (marionette)
                                  (gui-test-program

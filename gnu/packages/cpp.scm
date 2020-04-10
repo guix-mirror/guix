@@ -47,18 +47,18 @@
 (define-public libzen
   (package
     (name "libzen")
-    (version "0.4.37")
+    (version "0.4.38")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
               ;; Consider an alternate source or report upstream if this
               ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
-                                  name "/" version "/"
-                                  name "_" version ".tar.bz2"))
+                                  "libzen/" version "/"
+                                  "libzen_" version ".tar.bz2"))
               (sha256
                (base32
-                "1dkqbgabzpa6bd7dkqrvd35sdxrhr6qxalb88f3dw0afk65xqb0k"))))
+                "1nkygc17sndznpcf71fdrhwpm8z9a3hc9csqlafwswh49axhfkjr"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -66,7 +66,7 @@
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       ;; build scripts not in root of archive
+       ;; The build scripts are not at the root of the archive.
        (modify-phases %standard-phases
          (add-after 'unpack 'pre-configure
            (lambda _

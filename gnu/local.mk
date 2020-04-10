@@ -569,6 +569,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/getmail.scm				\
   %D%/services/guix.scm			\
   %D%/services/kerberos.scm			\
+  %D%/services/linux.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
   %D%/services/mail.scm				\
@@ -726,7 +727,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegisub-make43.patch			\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/akonadi-paths.patch		\
-  %D%/packages/patches/akonadi-Revert-Make-installation-properly-relo.patch \
+  %D%/packages/patches/akonadi-not-relocatable.patch		\
   %D%/packages/patches/akonadi-timestamps.patch		\
   %D%/packages/patches/allegro-mesa-18.2.5-and-later.patch	\
   %D%/packages/patches/amule-crypto-6.patch			\
@@ -776,8 +777,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/bidiv-update-fribidi.patch		\
   %D%/packages/patches/binutils-boot-2.20.1a.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
-  %D%/packages/patches/binutils-mingw-w64-specify-timestamp.patch \
-  %D%/packages/patches/binutils-mingw-w64-reproducible-import-libraries.patch \
+  %D%/packages/patches/binutils-mingw-w64-timestamp.patch	\
+  %D%/packages/patches/binutils-mingw-w64-deterministic.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/bluez-CVE-2020-0556.patch		\
@@ -1303,7 +1304,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sdl-pango-api_additions.patch		\
   %D%/packages/patches/sdl-pango-blit_overflow.patch		\
   %D%/packages/patches/sdl-pango-fillrect_crash.patch		\
-  %D%/packages/patches/sdl-pango-fix-explicit-SDLPango_CopyFTBitmapTo.patch	\
+  %D%/packages/patches/sdl-pango-header-guard.patch		\
   %D%/packages/patches/sdl-pango-matrix_declarations.patch	\
   %D%/packages/patches/sdl-pango-sans-serif.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\

@@ -1,14 +1,5 @@
-From 360d44d67e7be46108bec982ff2e79b89f04a9a3 Mon Sep 17 00:00:00 2001
-From: Mathieu Othacehe <m.othacehe@gmail.com>
-Date: Thu, 15 Nov 2018 14:34:40 +0900
-Subject: [PATCH] add runtime keymap switch support.
-
----
- src/pty.c                  | 23 ++++++++++-
- src/uterm_input.c          |  2 +
- src/uterm_input_internal.h |  5 +++
- src/uterm_input_uxkb.c     | 83 ++++++++++++++++++++++++++++++++++++++
- 4 files changed, 111 insertions(+), 2 deletions(-)
+By Mathieu Othacehe <m.othacehe@gmail.com>.
+Modified by Florian Pelz <pelzflorian@pelzflorian.de>.
 
 diff --git a/src/pty.c b/src/pty.c
 index 1443f4a..f64cb5b 100644
@@ -124,7 +115,7 @@ index 04e6cc9..ec44459 100644
  		     uint16_t key_state,
  		     uint16_t code);
 diff --git a/src/uterm_input_uxkb.c b/src/uterm_input_uxkb.c
-index 925c755..4760972 100644
+index 925c755..5d5c22e 100644
 --- a/src/uterm_input_uxkb.c
 +++ b/src/uterm_input_uxkb.c
 @@ -31,6 +31,9 @@
@@ -137,7 +128,7 @@ index 925c755..4760972 100644
  #include <xkbcommon/xkbcommon.h>
  #include "shl_hook.h"
  #include "shl_llog.h"
-@@ -178,6 +181,86 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
+@@ -178,6 +181,87 @@ static void timer_event(struct ev_timer *timer, uint64_t num, void *data)
  	shl_hook_call(dev->input->hook, dev->input, &dev->repeat_event);
  }
  
@@ -145,11 +136,11 @@ index 925c755..4760972 100644
 +{
 +	struct uterm_input_dev *dev = data;
 +	char in;
-+	char keymap[3][255];
++	char keymap[4][255];
 +	int pos = 0;
 +	int curr_keymap = 0;
 +	int ret;
-+	char *model, *layout, *variant;
++	char *model, *layout, *variant, *options;
 +
 +	if (!(mask & EV_READABLE))
 +		return;
@@ -159,6 +150,7 @@ index 925c755..4760972 100644
 +	model = keymap[0];
 +	layout = keymap[1];
 +	variant = keymap[2];
++	options = keymap[3];
 +
 +	do {
 +	  ret = read(dev->rupdate_fd, &in, sizeof(in));
@@ -175,7 +167,7 @@ index 925c755..4760972 100644
 +
 +	llog_info(dev->input, "HANDLER CALLED %s|%s|%s\n",
 +		  model, layout, variant);
-+	uxkb_desc_init(dev->input, model, layout, variant, NULL, NULL);
++	uxkb_desc_init(dev->input, model, layout, variant, options, NULL);
 +
 +	dev->state = xkb_state_new(dev->input->keymap);
 +	if (!dev->state) {
@@ -224,6 +216,3 @@ index 925c755..4760972 100644
  int uxkb_dev_init(struct uterm_input_dev *dev)
  {
  	int ret;
--- 
-2.17.1
-
