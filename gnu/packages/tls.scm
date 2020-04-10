@@ -260,10 +260,16 @@ required structures.")
               (uri (string-append "mirror://gnupg/gnutls/v"
                                   (version-major+minor version)
                                   "/gnutls-3.6.13.tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"
+                                       "gnutls-cross.patch"))
               (sha256
                (base32
-                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))))
+                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))
+    (native-inputs
+     `(,@(if (%current-target-system)             ;for cross-build
+             `(("guile" ,guile-3.0))              ;to create .go files
+             '())
+       ,@(package-native-inputs gnutls)))))
 
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
