@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -988,6 +988,16 @@ precious backup space.
                (base32
                 "0dm2y76z7pg17kfv6ahmh4mf2r3pg7mlwd69lvmjwssnd9vs1nn5"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'extend-test-time-outs
+           ;; The defaults are far too low for busy boxes & spinning storage.
+           (lambda _
+             (substitute* (find-files "utest" "\\.c$")
+               (("(tcase_set_timeout\\(tc_core,)[ 0-9]*(\\);.*)$" _ prefix suffix)
+                (string-append prefix " 3600" suffix "\n")))
+             #t)))))
     (inputs
      `(("librsync" ,librsync)
        ("openssl" ,openssl)
