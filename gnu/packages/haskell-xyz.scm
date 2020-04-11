@@ -7137,6 +7137,42 @@ With it, you can determine the type of a file by examining its contents rather
 than its name.")
     (license license:bsd-3)))
 
+(define-public ghc-managed
+  (package
+    (name "ghc-managed")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/managed/managed-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1kbrw99yh5x5blykmx2n88mplbbi4ss1ij5j17b7asw6q0ihm9zi"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/managed")
+    (synopsis "Monad for managed values")
+    (description
+     "In Haskell you very often acquire values using the with... idiom using
+functions of type (a -> IO r) -> IO r.  This idiom forms a Monad, which is a
+special case of the ContT monad (from transformers) or the Codensity
+monad (from kan-extensions).  The main purpose behind this package is to
+provide a restricted form of these monads specialized to this unusually common
+case.
+
+The reason this package defines a specialized version of these types
+is to:
+
+@itemize
+@item be more beginner-friendly,
+@item simplify inferred types and error messages, and:
+@item provide some additional type class instances that would otherwise be
+orphan instances
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public ghc-markdown-unlit
   (package
     (name "ghc-markdown-unlit")
