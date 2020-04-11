@@ -9533,6 +9533,30 @@ clashes, @code{Text}-based, extensible.")
      `(("ghc-quickckeck-instances" , ghc-quickcheck-instances)
        ,@(package-inputs ghc-prettyprinter)))))
 
+(define-public ghc-prettyprinter-ansi-terminal
+  (package
+    (name "ghc-prettyprinter-ansi-terminal")
+    (version "1.1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/prettyprinter-ansi-terminal/"
+             "prettyprinter-ansi-terminal-" version ".tar.gz"))
+       (sha256
+        (base32 "0ha6vz707qzb5ky7kdsnw2zgphg2dnxrpbrxy8gaw119vwhb9q6k"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-prettyprinter" ,ghc-prettyprinter-1.6)))
+    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/quchen/prettyprinter")
+    (synopsis
+     "ANSI terminal backend for the prettyprinter package")
+    (description "ANSI terminal backend for the prettyprinter package.")
+    (license license:bsd-2)))
+
 (define-public ghc-pretty-hex
   (package
     (name "ghc-pretty-hex")
