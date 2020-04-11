@@ -74,10 +74,9 @@
     ;; These should be inputs but moar.h can't find them when building rakudo
     (propagated-inputs
      `(("libatomic-ops" ,libatomic-ops)
+       ("libffi" ,libffi)
        ("libtommath" ,libtommath-1.0)
        ("libuv" ,libuv)))
-    (inputs
-     `(("libffi" ,libffi)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (synopsis "VM for NQP And Rakudo Perl 6")
