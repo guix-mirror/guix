@@ -5105,11 +5105,17 @@ high-level way.  This library provides such operators.")
                (let ((python (assoc-ref inputs "python")))
                  (setenv "BB_PYTHON3_INCLUDE_DIR"
                          (string-append python "/include/python"
-                                        (python-version python)
-                                        "m"))
+                                        (python-version python)))
                  (setenv "BB_PYTHON3_DYLIB"
                          (string-append python "/lib/libpython3.so"))
-                 #t))))))
+                 #t)))
+           (add-after 'unpack 'adjust-for-python-3.8
+             (lambda _
+               ;; This method is no longer part of the public API.
+               (substitute* "ffi-interface.lisp"
+                 ((".*PyEval_ReInitThreads.*")
+                  ""))
+               #t)))))
       (native-inputs
        `(("sbcl-cl-fad" ,sbcl-cl-fad)
          ("sbcl-lift" ,sbcl-lift)
