@@ -280,7 +280,8 @@ making them easy to handle and incorporate into other protocols.")
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycrypto" version))
-      (patches (search-patches "python-pycrypto-CVE-2013-7459.patch"))
+      (patches (search-patches "python-pycrypto-CVE-2013-7459.patch"
+                               "python-pycrypto-time-clock.patch"))
       (sha256
        (base32
         "0g0ayql5b9mkjam8hym6zyg6bv77lbh66rv1fyvgqb17kfc1xkpj"))))

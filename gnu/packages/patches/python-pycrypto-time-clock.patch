@@ -1,0 +1,23 @@
+Drop use of the deprecated time.clock which was removed in Python 3.8.
+
+Adapted from upstream pull request:
+
+https://github.com/dlitz/pycrypto/pull/296
+
+diff --git a/lib/Crypto/Random/_UserFriendlyRNG.py b/lib/Crypto/Random/_UserFriendlyRNG.py
+--- a/lib/Crypto/Random/_UserFriendlyRNG.py
++++ b/lib/Crypto/Random/_UserFriendlyRNG.py
+@@ -73,8 +73,11 @@ class _EntropyCollector(object):
+         t = time.time()
+         self._time_es.feed(struct.pack("@I", int(2**30 * (t - floor(t)))))
+ 
+-        # Add the fractional part of time.clock()
+-        t = time.clock()
++        # Add the fractional part of time.process_time()
++        try:
++           t = time.process_time()
++        except AttributeError:
++           t = time.clock()
+         self._clock_es.feed(struct.pack("@I", int(2**30 * (t - floor(t)))))
+ 
+ 
