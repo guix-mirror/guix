@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
@@ -270,7 +270,7 @@ inverse fourier transform.")
 (define-public libmypaint
   (package
     (name "libmypaint")
-    (version "1.3.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mypaint/libmypaint/"
@@ -278,7 +278,7 @@ inverse fourier transform.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0wd6jk69vmhsq1mdw96v0fh7b28n3glkr5ca466zcq7agzaxj1va"))))
+                "0aqcv4fyscpfhknxgfpq0v84aj2nzigqvpi4zgv2zkl41h51by5f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
