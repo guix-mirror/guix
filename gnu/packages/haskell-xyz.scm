@@ -11145,6 +11145,32 @@ core of @url{https://hackage.haskell.org/package/generics-sop,
 generics-sop}.")
     (license license:bsd-3)))
 
+(define-public ghc-special-values
+  (package
+    (name "ghc-special-values")
+    (version "0.1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/special-values/"
+             "special-values-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kkdw2c4d2hha99v9f89ahmifjxp7fxmxyfwq9a8xk6s0h9xs51w"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-scientific" ,ghc-scientific)
+       ("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-nats" ,ghc-nats)))
+    (home-page
+     "https://github.com/minad/special-values#readme")
+    (synopsis "Typeclass providing special values")
+    (description
+     "Special values are provided by a SpecialValues typeclass.  Those can be
+used for example by QuickCheck, see quickcheck-special."  )
+    (license license:expat)))
+
 (define-public ghc-split
   (package
     (name "ghc-split")
