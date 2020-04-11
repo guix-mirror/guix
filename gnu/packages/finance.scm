@@ -1049,13 +1049,13 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.56.0")
+    (version "0.57.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32 "1h8d8cnr6k5sw4cqy8r82zy4ldzpvn4nlk2221lz2haqq7xm4s5z"))))
+        (base32 "0rw2c7r9gcqhymp82gbk1ky45zqbypsi2q5x4vdwjc6g00kh7h6l"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests fail with: "ModuleNotFoundError: No module named
