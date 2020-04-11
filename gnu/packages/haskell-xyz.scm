@@ -1535,6 +1535,54 @@ constructor which can be parameterised by a string-like type like:
 the resulting type will be insensitive to cases.")
     (license license:bsd-3)))
 
+(define-public ghc-cborg
+  (package
+    (name "ghc-cborg")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/cborg/cborg-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1rdnvy0w17s70ikmbyrnwax5rvqh19l95sh8i7ipgxi23z1r0bp1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-half" ,ghc-half)
+       ("ghc-primitive" ,ghc-primitive)))
+    (native-inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "http://hackage.haskell.org/package/cborg")
+    (synopsis "Concise Binary Object Representation")
+    (description
+     "This package (formerly binary-serialise-cbor) provides an
+efficient implementation of the Concise Binary Object
+Representation (CBOR), as specified by RFC 7049 at
+https://tools.ietf.org/html/rfc7049.
+
+If you are looking for a library for serialisation of Haskell values, have a
+look at the @url{https://hackage.haskell.org/package/serialise} package, which
+is built upon this library.
+
+An implementation of the standard bijection between CBOR and JSON is provided
+by the @url{https://hackage.haskell.org/package/cborg-json} package.
+
+Also see @code{https://hackage.haskell.org/package/cbor-tool} for a convenient
+command-line utility for working with CBOR data.")
+    (license license:bsd-3)))
+
 (define-public ghc-cereal
   (package
     (name "ghc-cereal")
