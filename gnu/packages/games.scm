@@ -3716,6 +3716,69 @@ fullscreen, use F5 or Alt+Enter.")
     ;; Code mainly BSD-2, some parts under Boost 1.0. All assets are WTFPL2.
     (license (list license:bsd-2 license:boost1.0 license:wtfpl2))))
 
+(define-public tennix
+  (package
+    (name "tennix")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://repo.or.cz/tennix.git")
+             (commit (string-append "tennix-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02cj4lrdrisal5s9pnbf2smx7qz9czczjzndfkhfx0qy67b957sk"))
+       ;; Remove non-free images.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     '("data/loc_training_camp.png"
+                       "data/loc_austrian_open.png"
+                       "data/loc_olympic_green_tennis.png"))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-include
+           (lambda _
+             (substitute* '("src/graphics.h" "src/sound.h")
+               (("#include \"(SDL_(image|ttf|mixer)\\.h)\"" _ header)
+                (string-append "#include \"SDL/" header "\"")))
+             (substitute* '("src/tennix.h" "src/network.h" "src/SDL_rotozoom.h")
+               (("#include <SDL.h>") "#include <SDL/SDL.h>")
+               (("#include <SDL_net.h>") "#include <SDL/SDL_net.h>"))
+             #t))
+         (add-after 'unpack 'locate-install
+           ;; Build process cannot expand "$(INSTALL)" in Makefile.
+           (lambda _
+             (substitute* "makefile"
+               (("^CONFIGURE_OUTPUT :=.*" all)
+                (string-append "INSTALL := install -c\n" all)))
+             #t))
+         (replace 'configure
+           ;; The "configure" script is picky about the arguments it
+           ;; gets.  Call it ourselves.
+           (lambda _
+             (invoke "./configure" "--prefix" (assoc-ref %outputs "out")))))))
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf sdl-net)))))
+    (home-page "http://icculus.org/tennix/")
+    (synopsis "Play tennis against the computer or a friend")
+    (description "Tennix is a 2D tennis game.  You can play against the
+computer or against another player using the keyboard.  The game runs
+in-window at 640x480 resolution or fullscreen.")
+    ;; Project is licensed under GPL2+ terms.  It includes images
+    ;; released under Public Domain terms, and SDL_rotozoom, released
+    ;; under LGPL2.1 terms.
+    (license (list license:gpl2+ license:public-domain license:lgpl2.1))))
+
 (define-public warzone2100
   (package
     (name "warzone2100")
@@ -3772,7 +3835,7 @@ fullscreen, use F5 or Alt+Enter.")
 modes. An extensive tech tree with over 400 different technologies, combined
 with the unit design system, allows for a wide variety of possible units and
 tactics.")
-    ; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
+                                        ; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
     (license (list license:bsd-3
                    license:cc0
                    license:cc-by-sa3.0
