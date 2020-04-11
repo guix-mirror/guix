@@ -4,6 +4,7 @@
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xorg) ; libpciaccess
   #:use-module (guix git-download)
   #:export (hurd-system?
             hurd-target?
@@ -362,6 +364,19 @@ boot, since this cannot be done from GNU/Linux."
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-dde
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("libbpf ")
+                "libbpf libmachdev libmachdevdde libddekit"))
+             (for-each make-file-writable (find-files "."))
+             (let ((dde (or (assoc-ref inputs "dde-sources")
+                            (assoc-ref native-inputs "dde-sources"))))
+               (for-each (lambda (dir)
+                           (copy-recursively
+                            (string-append dde "/" dir ) dir))
+                         '("libmachdev" "libmachdevdde" "libddekit")))
+             #t))
          (add-before 'build 'pre-build
            (lambda _
              ;; Don't change the ownership of any file at this time.
@@ -471,6 +486,7 @@ fsysopts / --writable\n"))
        ("libgcrypt" ,libgcrypt)                  ;for /hurd/random
        ("libdaemon" ,libdaemon)                  ;for /bin/console --daemonize
        ("unifont" ,unifont)
+       ("libpciaccess" ,libpciaccess)
 
        ;; Tools for the /libexec/* scripts.
        ("bash-minimal" ,bash-minimal)
@@ -491,7 +507,20 @@ fsysopts / --writable\n"))
                      (arguments `(#:system "i686-linux")))
                    mig))
        ("perl" ,perl)
-       ("texinfo" ,texinfo-4)))
+       ("texinfo" ,texinfo-4)
+       ("dde-sources"
+        ;; This is the current tip of the dde branch
+        ,(let ((commit "ac1c7eb7a8b24b7469bed5365be38a968d59a136"))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://git.savannah.gnu.org/git/hurd/incubator.git")
+                   (commit commit)))
+             (sha256
+              (base32
+               "1vryinbg75xpydfrv9dbgfnds6knlh8l8bk2rxp32y9dc58z0692"))
+             (file-name (string-append "dde-checkout-"
+                                       (string-take commit 7))))))))
     (supported-systems %hurd-systems)
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "The kernel servers for the GNU operating system")
