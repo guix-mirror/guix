@@ -337,13 +337,14 @@ MyPaint.")
     (version "2.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/bootchk/resynthesizer/archive/v"
-			   version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/bootchk/resynthesizer")
+              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0l3404w6rqny7h3djskxf149gzx6x4qhndgbh3403c9lbh4pi1kr"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1jwc8bhhm21xhrgw56nzbma6fwg59gc8anlmyns7jdiw83y0zx3j"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `( ;; Turn off tests to avoid:
@@ -351,11 +352,11 @@ MyPaint.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-	 (add-after 'unpack 'set-env
-	   (lambda _
-	     (setenv "CONFIG_SHELL" (which "sh"))
-	     #t))
-	 (add-after 'configure 'set-prefix
+         (add-after 'unpack 'set-env
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             #t))
+         (add-after 'configure 'set-prefix
            ;; Install plugin under $prefix, not under GIMP's libdir.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((target (string-append (assoc-ref outputs "out")
@@ -364,8 +365,8 @@ MyPaint.")
                                             (package-version gimp))
                                           ".0")))
                (substitute* (list "src/resynthesizer/Makefile"
-				  "src/resynthesizer-gui/Makefile")
-		 (("GIMP_LIBDIR = .*")
+                                  "src/resynthesizer-gui/Makefile")
+                 (("GIMP_LIBDIR = .*")
                   (string-append "GIMP_LIBDIR = " target "\n")))
                (mkdir-p target)
                #t))))))
