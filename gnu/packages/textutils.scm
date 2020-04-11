@@ -13,7 +13,7 @@
 ;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -612,15 +612,15 @@ in a portable way.")
 (define-public dbacl
   (package
     (name "dbacl")
-    (version "1.14")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.lbreyer.com/gpl/"
+       (uri (string-append "mirror://sourceforge/dbacl/dbacl/" version "/"
                            "dbacl-" version ".tar.gz"))
        (sha256
-        (base32
-         "0224g6x71hyvy7jikfxmgcwww1r5lvk0jx36cva319cb9nmrbrq7"))))
+        (base32 "1gas0112wqjvwn9qg3hxnawk7h3prr0w9b2h68f3p1ifd1kzn3gz"))
+       (patches (search-patches "dbacl-include-locale.h.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -648,10 +648,6 @@ in a portable way.")
            (lambda _
              (delete-file "src/tests/dbacl-jap.shin")
              #t))
-         (add-after 'delete-sample6-and-japanese 'autoreconf
-           (lambda _
-             (invoke "autoreconf" "-vif")
-             #t))
          (add-after 'unpack 'fix-test-files
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -661,7 +657,11 @@ in a portable way.")
                   "#PATH=/bin:/usr/bin")
                  (("diff") (string-append (which "diff")))
                  (("tr") (string-append (which "tr"))))
-               #t))))))
+               #t)))
+         (replace 'bootstrap
+           (lambda _
+             (invoke "autoreconf" "-vif")
+             #t)))))
     (inputs
      `(("ncurses" ,ncurses)
        ("perl" ,perl)

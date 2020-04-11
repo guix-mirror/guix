@@ -1774,13 +1774,13 @@ minimum of WSGI.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask" version))
               (sha256
                (base32
-                "0ljdjgyjn7vh8ic1n1dc2l1cl421i6pr3kx5sz2w5irhyfbg3y8k"))))
+                "0q3h295izcil7lswkzfnyg3k5gq4hpmqmpl6i7s5m1n9szi1myjf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2672,7 +2672,7 @@ for Flask programs that are using @code{python-alembic}.")
 (define-public python-genshi
   (package
     (name "python-genshi")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method git-fetch)
@@ -2681,7 +2681,7 @@ for Flask programs that are using @code{python-alembic}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06rch30x10l105k5b6rahd839lkhmgrzn6691wbci0cb2fzps32w"))))
+        (base32 "04bw7nd4wyn8ixnhik57hny2xpjjpn80k5hp6691inix5gc6rxaf"))))
     (build-system python-build-system)
     (home-page "https://genshi.edgewall.org/")
     (synopsis "Toolkit for generation of output for the web")

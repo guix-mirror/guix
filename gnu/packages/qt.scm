@@ -2049,7 +2049,10 @@ contain over 620 classes.")
        ("qtwebengine" ,qtwebengine)))
     (arguments
      `(#:modules ((srfi srfi-1)
+                  ((guix build python-build-system) #:select (python-version))
                   ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -2059,13 +2062,8 @@ contain over 620 classes.")
                     (pyqt-sipdir (string-append
                                   (assoc-ref inputs "python-pyqt") "/share/sip"))
                     (python (assoc-ref inputs "python"))
-                    (python-version
-                     (last (string-split python #\-)))
-                    (python-major+minor
-                     (string-join
-                      (take (string-split python-version #\.) 2) "."))
                     (lib (string-append out "/lib/python"
-                                        python-major+minor
+                                        (python-version python)
                                         "/site-packages/PyQt5"))
                     (stubs (string-append lib "/PyQt5")))
 
@@ -2084,7 +2082,9 @@ contain over 620 classes.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((__init__.py (string-append
                                   (assoc-ref outputs "out")
-                                  "/lib/python3.7/site-packages/PyQt5/__init__.py")))
+                                  "/lib/python"
+                                  (python-version (assoc-ref inputs "python"))
+                                  "/site-packages/PyQt5/__init__.py")))
                (with-output-to-file __init__.py
                  (lambda _ (display "
 from pkgutil import extend_path

@@ -11752,14 +11752,14 @@ until the object is actually required, and caches the result of said call.")
 (define-public python-dnspython
   (package
   (name "python-dnspython")
-  (version "1.15.0")
+  (version "1.16.0")
   (source (origin
             (method url-fetch)
             (uri (string-append "http://www.dnspython.org/kits/"
                                 version "/dnspython-" version ".tar.gz"))
             (sha256
              (base32
-              "0jr4v2pd90i6l1xxbss2m05psbjaxvyvvvpq44wycijpfgjqln8i"))))
+              "1yaw7irazy42n0kdhlk7wyg8ki34rxcnc5xbc1wfwy245b0wbxab"))))
   (build-system python-build-system)
   (arguments '(#:tests? #f)) ; XXX: requires internet access
   (home-page "http://www.dnspython.org")

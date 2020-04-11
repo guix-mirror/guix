@@ -1,0 +1,36 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Sat, 11 Apr 2020 03:02:04 +0200
+Subject: [PATCH] gnu: dbacl: Include <locale.h> in dbacl.h.
+
+Copied verbatim[0] from Debian.
+
+[0]: https://sources.debian.org/data/main/d/dbacl/1.14.1-2/debian/patches/05-locale-h.patch
+
+Description: Add missing <locale.h> include in dbacl.h
+Author: Fabian Wolff <fabi.wolff@arcor.de>
+Bug-Debian: https://bugs.debian.org/916182
+Last-Update: 2019-08-25
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- a/src/dbacl.h
++++ b/src/dbacl.h
+@@ -21,6 +21,8 @@
+ #ifndef DBACL_H
+ #define DBACL_H
+ 
++#include <locale.h>
++
+ #ifdef HAVE_CONFIG_H
+ #undef HAVE_CONFIG_H
+ #include "config.h"
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -28,7 +28,7 @@
+ # stuff_SOURCES = stuff.c stuff.h fram.c stuff-lexer.l stuff-parser.y stuff-parser.h probs.c util.c util.h $(PUBDOM)
+ # stuff_LDADD = @LEXLIB@
+ 
+-AM_CFLAGS = -funsigned-char -std=c99 -Wall -pedantic $(CFLAGSIEEE) -O3
++AM_CFLAGS = -funsigned-char -std=c99 -D_XOPEN_SOURCE=700 -Wall -pedantic $(CFLAGSIEEE) -O3
+ AM_YFLAGS = -d
+ 
+ CLEANFILES = mailcross mailtoe mailfoot 
