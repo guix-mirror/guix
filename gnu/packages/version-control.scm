@@ -1934,7 +1934,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
 (define-public tig
   (package
     (name "tig")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1942,7 +1942,7 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
                     version "/tig-" version ".tar.gz"))
               (sha256
                (base32
-                "1x5famvvs93ih7sr11x7m33dksb1k7zs1s3c4zkyf0cjmxkpqlzz"))))
+                "0r4y9hyvpkplaxrzslws3asz652d83qh3bjwvmp8assga8s5s3ah"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -1956,8 +1956,8 @@ from Subversion to any supported Distributed Version Control System (DVCS).")
          (add-after 'install 'install-doc
            (lambda _
              (invoke "make" "install-doc"))))
-       #:tests? #f)) ; tests require access to /dev/tty
-    ;; #:test-target "test"))
+       #:test-target "test"
+       #:tests? #f))                    ; tests require access to /dev/tty
     (home-page "https://jonas.github.io/tig/")
     (synopsis "Ncurses-based text user interface for Git")
     (description
