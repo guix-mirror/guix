@@ -9370,6 +9370,33 @@ complex generic values into an interactive Html page, for easier
 examination.")
     (license license:expat)))
 
+(define-public ghc-pretty-simple
+  (package
+    (name "ghc-pretty-simple")
+    (version "2.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/pretty-simple/"
+             "pretty-simple-" version ".tar.gz"))
+       (sha256
+        (base32 "0wsi9235ihm15s145lxi7325vv2k4bhighc5m88kn1lk0pl81aqq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-glob" ,ghc-glob)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-aeson" ,ghc-aeson)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)))
+    (home-page "https://github.com/cdepillabout/pretty-simple")
+    (synopsis "Pretty printer for data types with a 'Show' instance")
+    (description
+     "Pretty-simple is a pretty printer for Haskell data types that have a
+Show instance.")
+    (license license:bsd-3)))
+
 (define-public ghc-primitive
   (package
     (name "ghc-primitive")
