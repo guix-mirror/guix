@@ -5076,8 +5076,8 @@ high-level way.  This library provides such operators.")
   (sbcl-package->ecl-package sbcl-cl-quickcheck))
 
 (define-public sbcl-burgled-batteries3
-  (let ((commit "9c0f6667e1a71ddf77e21793a0bea524710fef6e")
-        (revision "1"))
+  (let ((commit "f65f454d13bb6c40e17e9ec62e41eb5069e09760")
+        (revision "2"))
     (package
       (name "sbcl-burgled-batteries3")
       (version (git-version "0.0.0" revision commit))
@@ -5090,26 +5090,26 @@ high-level way.  This library provides such operators.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0b726kz2xxcg5l930gz035rsdvhxrzmp05iwfwympnb4z4ammicb"))))
+           "1nzn7jawrfajyzwfnzrg2cmn9xxadcqh4szbpg0jggkhdkdzz4wa"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       '(#:tests? #f
+       `(#:tests? #f
+         #:modules (((guix build python-build-system) #:select (python-version))
+                    ,@%asdf-build-system-modules)
+         #:imported-modules ((guix build python-build-system)
+                             ,@%asdf-build-system-modules)
          #:phases
-         (modify-phases %standard-phases
+         (modify-phases (@ (guix build asdf-build-system) %standard-phases)
            (add-after 'unpack 'set-*cpython-include-dir*-var
              (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "grovel-include-dir.lisp"
-                 (("\\(defparameter \\*cpython-include-dir\\* \\(detect-python\\)\\)")
-                  (string-append
-                   "(defparameter *cpython-include-dir* \""
-                   (assoc-ref inputs "python")
-                   "/include/python3.7m"
-                   "\")")))
-               (substitute* "ffi-interface.lisp"
-                 (("\\*cpython-lib\\*")
-                  (format #f "'(\"~a/lib/libpython3.so\")"
-                          (assoc-ref inputs "python"))))
-               #t)))))
+               (let ((python (assoc-ref inputs "python")))
+                 (setenv "BB_PYTHON3_INCLUDE_DIR"
+                         (string-append python "/include/python"
+                                        (python-version python)
+                                        "m"))
+                 (setenv "BB_PYTHON3_DYLIB"
+                         (string-append python "/lib/libpython3.so"))
+                 #t))))))
       (native-inputs
        `(("python" ,python)
          ("sbcl-cl-fad" ,sbcl-cl-fad)
@@ -5126,7 +5126,6 @@ high-level way.  This library provides such operators.")
        "This package provides a shim between Python3 (specifically, the
 CPython implementation of Python) and Common Lisp.")
       (home-page "https://github.com/snmsts/burgled-batteries3")
-      ;; MIT
       (license license:expat))))
 
 (define-public cl-burgled-batteries3
