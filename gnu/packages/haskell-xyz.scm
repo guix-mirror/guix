@@ -4481,6 +4481,46 @@ specific Windows, Mac, and Linux file system event notification.")
 deriving mechanism in Haskell to arbitrary classes.")
     (license license:bsd-3)))
 
+(define-public ghc-generic-random
+  (package
+    (name "ghc-generic-random")
+    (version "1.2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/generic-random/"
+             "generic-random-" version ".tar.gz"))
+       (sha256
+        (base32 "130lmblycxnpqbsl7vf6a90zccibnvcb5zaclfajcn3by39007lv"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("ghc-inspection-testing" ,ghc-inspection-testing)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1d0hx41r7yq2a86ydnfh2fv540ah8cz05l071s2z4wxcjw0ymyn4")))
+    (home-page
+     "https://github.com/lysxia/generic-random")
+    (synopsis
+     "Generic random generators for QuickCheck")
+    (description
+     "Derive instances of @code{Arbitrary} for QuickCheck, with various options
+to customize implementations.
+
+Automating the arbitrary boilerplate also ensures that when a type changes to
+have more or fewer constructors, then the generator either fixes itself to
+generate that new case (when using the uniform distribution) or causes a
+compilation error so you remember to fix it (when using an explicit
+distribution).
+
+This package also offers a simple (optional) strategy to ensure termination
+for recursive types: make @code{Test.QuickCheck.Gen}'s size parameter decrease
+at every recursive call; when it reaches zero, sample directly from a
+trivially terminating generator given explicitly (@code{genericArbitraryRec}
+and @code{withBaseCase}) or implicitly (@code{genericArbitrary'}).")
+    (license license:expat)))
+
 (define-public ghc-generics-sop
   (package
     (name "ghc-generics-sop")
