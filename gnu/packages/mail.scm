@@ -24,7 +24,7 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -89,6 +89,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
@@ -1435,6 +1436,11 @@ facilities for checking incoming mail.")
     (inputs
      `(("bzip2" ,bzip2)
        ("libsodium" ,libsodium)         ; extra password algorithms
+       ;; FIXME: The 'test-backtrace' tests fail on arm when using glibc's
+       ;; backtrace_symbol() function so fallback to using libunwind.
+       ,@(if (target-arm?)
+          `(("libunwind" ,libunwind))
+          '())
        ("linux-pam" ,linux-pam)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
