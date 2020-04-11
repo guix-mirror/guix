@@ -10804,6 +10804,56 @@ semigroup.")
        ("ghc-hashable" ,ghc-hashable-bootstrap)))
     (properties '((hidden? #t)))))
 
+(define-public ghc-serialise
+  (package
+    (name "ghc-serialise")
+    (version "0.2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/serialise/serialise-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19ary6ivzk8z7wcxhm860qmh7pwqj0qjqzav1h42y85l608zqgh4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cborg" ,ghc-cborg)
+       ("ghc-half" ,ghc-half)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1rknhad1i8bpknsnphmcmb6dnb48c2p2c13ia2qqch3hkhsvfpr6")))
+    (home-page "https://github.com/well-typed/cborg")
+    (synopsis "Binary serialisation library for Haskell values")
+    (description
+     "This package (formerly binary-serialise-cbor) provides pure,
+efficient serialization of Haskell values directly into ByteStrings for
+storage or transmission purposes.  By providing a set of type class instances,
+you can also serialise any custom data type you have as well.
+
+The underlying binary format used is the 'Concise Binary Object
+Representation', or CBOR, specified in RFC 7049.  As a result, serialised
+Haskell values have implicit structure outside of the Haskell program itself,
+meaning they can be inspected or analyzed without custom tools.
+
+An implementation of the standard bijection between CBOR and JSON is
+provided by the https://hackage.haskell.org/package/cborg-json
+package.  Also see https://hackage.haskell.org/package/cbor-tool for a
+convenient command-line utility for working with CBOR data.")
+    (license license:bsd-3)))
+
 (define-public ghc-setenv
   (package
     (name "ghc-setenv")
