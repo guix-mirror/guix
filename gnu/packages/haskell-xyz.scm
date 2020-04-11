@@ -19,7 +19,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
-;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019,2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
@@ -2722,6 +2722,28 @@ package.")
     (synopsis "Default instances for types in old-locale")
     (description "Provides Default instances for types from the old-locale
   package.")
+    (license license:bsd-3)))
+
+(define-public ghc-data-fix
+  (package
+    (name "ghc-data-fix")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/data-fix/"
+             "data-fix-" version ".tar.gz"))
+       (sha256
+        (base32 "14hk6hq5hdb3l5bhmzhw086jpzlvp9qbw9dzw30wlz5jbh2ihmvy"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/spell-music/data-fix")
+    (synopsis "Fixpoint data types")
+    (description
+     "Fixpoint types and recursion schemes.  If you define your AST as
+fixpoint type, you get fold and unfold operations for free.
+
+Thanks for contribution to: Matej Kollar, Herbert Valerio Riedel")
     (license license:bsd-3)))
 
 (define-public ghc-data-hash
