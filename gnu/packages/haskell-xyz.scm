@@ -11218,6 +11218,37 @@ internal state).")
     (native-inputs '())
     (properties '((hidden? #t)))))
 
+(define-public ghc-spoon
+  (package
+    (name "ghc-spoon")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/spoon/spoon-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m41k0mfy6fpfrv2ym4m5jsjaj9xdfl2iqpppd3c4d0fffv51cxr"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "09s5jjcsg4g4qxchq9g2l4i9d5zh3rixpkbiysqcgl69kj8mwv74")))
+    (home-page
+     "http://hackage.haskell.org/package/spoon")
+    (synopsis
+     "Catch errors thrown from pure computations")
+    (description
+     "Takes an error-throwing expression and puts it back in the Maybe it
+belongs in.
+
+Note that this suffers from the
+@url{https://ghc.haskell.org/trac/ghc/ticket/5902}.  Buyer beware.")
+    (license license:bsd-3)))
+
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
