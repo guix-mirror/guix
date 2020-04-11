@@ -824,6 +824,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/date-output-pkg-config-files.patch	\
   %D%/packages/patches/darkice-workaround-fpermissive-error.patch	\
+  %D%/packages/patches/dbacl-include-locale.h.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
