@@ -204,7 +204,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public exo
   (package
     (name "exo")
-    (version "0.12.10")
+    (version "0.12.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -212,7 +212,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
                                   "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "1b3w4pf9gkcp13h63nf93k95hkw0ij7v5y7wjklqd1qifm8xd3w4"))))
+                "1dp5s64g6572h9zvx9js7qc72s728qsd9y7hl7hg6rwaq0cjb2gc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -222,7 +222,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
      `(("gtk+-3" ,gtk+)
        ("libxfce4util" ,libxfce4util)))
     (inputs
-     `(;; FIXME Refered to in exo-1.pc but conflict with gtk+-3
+     `(;; FIXME Referred to in exo-1.pc but conflict with gtk+-3.
        ("gtk+-2" ,gtk+-2)
        ("libxfce4ui" ,libxfce4ui)
        ("perl-uri" ,perl-uri)))
