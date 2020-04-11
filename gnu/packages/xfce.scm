@@ -1160,7 +1160,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-screensaver
   (package
     (name "xfce4-screensaver")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1170,7 +1170,7 @@ A plugin for the Xfce panel is also available.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "11p48yyjgy6crwfbyvm16yg0rkzn90ssd2wygzmwvwrx3wkzyhsp"))))
+                "0mqxbyq9np6jzky8y35dlxxmk78q2w0jvwg9kh7a4ib7vmw1qvsq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
