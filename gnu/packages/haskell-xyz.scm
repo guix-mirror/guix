@@ -6660,6 +6660,42 @@ of getters, folds, isomorphisms, traversals, setters and lenses and their
 indexed variants.")
     (license license:bsd-3)))
 
+(define-public ghc-lens-family-core
+  (package
+    (name "ghc-lens-family-core")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/lens-family-core/lens-family-core-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "009rf10pj1cb50v44cc1pq7qvfrmkkk9dikahs9qmvbvgl3mykwi"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/lens-family-core")
+    (synopsis "Haskell 98 Lens Families")
+    (description
+     "This package provides first class functional references.  In addition to
+the usual operations of getting, setting and composition, plus integration
+with the state monad, lens families provide some unique features:
+
+@itemize
+@item Polymorphic updating
+@item Traversals
+@item Cast projection functions to read-only lenses
+@item Cast @code{toList} functions to read-only traversals
+@item Cast semantic editor combinators to modify-only traversals
+@end itemize
+
+For optimal first-class support use the lens-family package with rank 2/rank N
+polymorphism.  @code{Lens.Family.Clone} allows for first-class support of
+lenses and traversals for those who require Haskell 98.")
+    (license license:bsd-3)))
+
 (define-public ghc-libffi
   (package
     (name "ghc-libffi")
