@@ -1583,6 +1583,34 @@ Also see @code{https://hackage.haskell.org/package/cbor-tool} for a convenient
 command-line utility for working with CBOR data.")
     (license license:bsd-3)))
 
+(define-public ghc-cborg-json
+  (package
+    (name "ghc-cborg-json")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/cborg-json/cborg-json-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "0ysilz7rrjk94sqr3a61s98hr9qfi1xg13bskmlpc6mpgi2s4s5b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-cborg" ,ghc-cborg)))
+    (home-page "https://github.com/well-typed/cborg")
+    (synopsis "A library for encoding JSON as CBOR")
+    (description
+     "This package implements the bijection between JSON and CBOR
+defined in the CBOR specification, RFC 7049.")
+    (license license:bsd-3)))
+
 (define-public ghc-cereal
   (package
     (name "ghc-cereal")
