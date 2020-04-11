@@ -567,6 +567,21 @@ will destroy the permissions on the original file.  This library preserves
 permissions while atomically writing to a file.")
     (license license:expat)))
 
+(define-public ghc-atomic-write-0.2.0.7
+  (package
+    (inherit ghc-atomic-write)
+    (version "0.2.0.7")
+    (source
+     (origin
+       (inherit (package-source ghc-atomic-write))
+       (uri (string-append
+             "https://hackage.haskell.org/package/atomic-write/atomic-write-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "03cn3ii74h0w3g4h78xsx9v2sn58r3qsr2dbdwq340xwhiwcgxdm"))))))
+
 (define-public ghc-attoparsec
   (package
     (name "ghc-attoparsec")
