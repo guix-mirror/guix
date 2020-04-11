@@ -238,7 +238,7 @@ development.")
 (define-public garcon
   (package
     (name "garcon")
-    (version "0.6.4")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -246,17 +246,17 @@ development.")
                                   "garcon-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bbngb4bn1m325j7y40gky36kn2nlsvqs6xp0wy76x3s0d9lfpnp"))))
+                "08r4dfvdvl178cjajm7ww16lwb7jsfqh3yz614mn84c0a0dvdhw2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("gtk+-2" ,gtk+-2))); required by garcon-gtk2-1.pc
+     `(("gtk+-2" ,gtk+-2)))             ; required by garcon-gtk2-1.pc
     (propagated-inputs
      `(("gtk+-3" ,gtk+)                 ; required by garcon-gtk3-1.pc
-       ("libxfce4ui" ,libxfce4ui))) ; required by garcon-gtk3-1.pc
+       ("libxfce4ui" ,libxfce4ui)))     ; required by garcon-gtk3-1.pc
     (home-page "https://www.xfce.org/")
     (synopsis "Implementation of the freedesktop.org menu specification")
     (description
