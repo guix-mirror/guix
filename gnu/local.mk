@@ -157,6 +157,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/debian.scm			\
   %D%/packages/debug.scm			\
   %D%/packages/dejagnu.scm			\
+  %D%/packages/dhall.scm			\
   %D%/packages/dico.scm				\
   %D%/packages/dictionaries.scm			\
   %D%/packages/diffoscope.scm			\
@@ -862,6 +863,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/desmume-gcc6-fixes.patch			\
   %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
+  %D%/packages/patches/dhall-remove-network-tests.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
