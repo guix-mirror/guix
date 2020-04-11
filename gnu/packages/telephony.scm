@@ -162,7 +162,7 @@
        ("fftw" ,fftw)
        ("libpcap" ,libpcap)
        ("libsndfile" ,libsndfile)
-       ("libjpeg" ,libjpeg-turbo)
+       ("libjpeg" ,libjpeg-turbo)      ;XXX: should be propagated from libtiff
        ("libtiff" ,libtiff)
        ("netpbm" ,netpbm)
        ("sox" ,sox)
