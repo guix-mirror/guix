@@ -9456,6 +9456,35 @@ provides the pretty printing class and instances for the Prelude
 types.")
     (license license:bsd-3)))
 
+(define-public ghc-prettyprinter
+  (package
+    (name "ghc-prettyprinter")
+    (version "1.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/prettyprinter/prettyprinter-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "1p9c3q55hba4c0zyxc624g5df7wgsclpsmd8wqpdnmib882q9d1v"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-pgp-wordlist" ,ghc-pgp-wordlist)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/quchen/prettyprinter")
+    (synopsis
+     "Modern, easy to use, well-documented, extensible pretty-printer")
+    (description
+     "A prettyprinter/text rendering engine.  Easy to use, well-documented,
+ANSI terminal backend exists, HTML backend is trivial to implement, no name
+clashes, @code{Text}-based, extensible.")
+    (license license:bsd-2)))
+
 (define-public ghc-pretty-hex
   (package
     (name "ghc-pretty-hex")
