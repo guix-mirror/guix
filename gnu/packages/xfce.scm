@@ -418,19 +418,20 @@ matching them against regular expressions.")
 (define-public xfce4-pulseaudio-plugin
   (package
     (name "xfce4-pulseaudio-plugin")
-    (version "0.4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0851b0vs5xmy3cq899khcghmkqwvh9rnzwavi17msrsq4jyaxs2a"))))
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
+                           "xfce4-pulseaudio-plugin/"
+                           (version-major+minor version) "/"
+                           "xfce4-pulseaudio-plugin-" version ".tar.bz2"))
+       (sha256
+        (base32 "0nv1lbkshfzar87f6xq1ib120pjja24r7135rbc42wqkw8vq4las"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       ;; For dbus/dbus-glib.h in pulseaudio-config.h
+       ;; For dbus/dbus-glib.h in pulseaudio-config.h.
        (modify-phases %standard-phases
          (add-after 'set-paths 'augment-cflags
            (lambda* (#:key inputs #:allow-other-keys)
