@@ -563,15 +563,15 @@ your system in categories, so you can quickly find and launch them.")
 (define-public xfce4-session
   (package
     (name "xfce4-session")
-    (version "4.14.0")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-session/" (version-major+minor version) "/"
+                                  "xfce4-session-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gq4a8yiw58hb4d5dhvprxvzamqfg8qblmiqcw0b97mn9svnvyql"))
+                "1bwpylcn7x9i301yz45wvkzah9bncv9b44nf4hh9ln4i1jka9qzv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -602,7 +602,7 @@ your system in categories, so you can quickly find and launch them.")
     (synopsis "Xfce session manager")
     (description
      "Session manager for Xfce, it will restore your session on startup and
-allows you to shutdown the computer from Xfce.")
+allows you to shut down the computer from Xfce.")
     (license gpl2+)))
 
 (define-public xfce4-settings
