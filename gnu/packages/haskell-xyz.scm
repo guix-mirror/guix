@@ -4521,6 +4521,20 @@ trivially terminating generator given explicitly (@code{genericArbitraryRec}
 and @code{withBaseCase}) or implicitly (@code{genericArbitrary'}).")
     (license license:expat)))
 
+(define-public ghc-generic-random-1.3.0.1
+  (package
+    (inherit ghc-generic-random)
+    (version "1.3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/generic-random/"
+             "generic-random-" version ".tar.gz"))
+       (sha256
+        (base32 "0d9w7xcmsb31b95fr9d5jwbsajcl1yi4347dlbw4bybil2vjwd7k"))))
+    (arguments '())))
+
 (define-public ghc-generics-sop
   (package
     (name "ghc-generics-sop")
