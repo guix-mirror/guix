@@ -9516,6 +9516,23 @@ ANSI terminal backend exists, HTML backend is trivial to implement, no name
 clashes, @code{Text}-based, extensible.")
     (license license:bsd-2)))
 
+(define-public ghc-prettyprinter-1.6
+  (package
+    (inherit ghc-prettyprinter)
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/prettyprinter/prettyprinter-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "10fphxh8lvdaw7i8jyllwmj87w02db92mf99zfw5vddp9mv6b5rz"))))
+    (inputs
+     `(("ghc-quickckeck-instances" , ghc-quickcheck-instances)
+       ,@(package-inputs ghc-prettyprinter)))))
+
 (define-public ghc-pretty-hex
   (package
     (name "ghc-pretty-hex")
