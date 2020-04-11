@@ -6776,7 +6776,8 @@ libxml2.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12ypdz9i24hwbl1d1wnnxb8zlvfa4f49n9ac5cl9d6h8qp4b0gb4"))))
+                "12ypdz9i24hwbl1d1wnnxb8zlvfa4f49n9ac5cl9d6h8qp4b0gb4"))
+              (patches (search-patches "gdm-default-session.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
