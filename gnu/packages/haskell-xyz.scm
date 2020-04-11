@@ -9161,6 +9161,45 @@ the persistent interface, not for users of the persistent suite of database
 libraries.")
     (license license:expat)))
 
+(define-public ghc-pgp-wordlist
+  (package
+    (name "ghc-pgp-wordlist")
+    (version "0.1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/pgp-wordlist/pgp-wordlist-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15g6qh0fb7kjj3l0w8cama7cxgnhnhybw760md9yy7cqfq15cfzg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/quchen/pgp-wordlist")
+    (synopsis
+     "Translate between binary data and a human-readable collection of words")
+    (description
+     "The PGP Word List consists of two phonetic alphabets, each with one word
+per possible byte value.  A string of bytes is translated with these
+alphabets, alternating between them at each byte.
+
+The PGP words corresponding to the bytes 5B 1D CA 6E are \"erase breakaway
+spellbind headwaters\", for example.
+
+For further information, see
+@url{http://en.wikipedia.org/wiki/PGP_word_list}.")
+    (license license:bsd-3)))
+
 (define-public ghc-pipes
   (package
     (name "ghc-pipes")
