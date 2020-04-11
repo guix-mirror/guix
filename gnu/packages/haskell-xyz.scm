@@ -8373,6 +8373,29 @@ replay capababilities, implementing fast parser monads, designing monadic
 DSLs, etc.")
     (license license:bsd-3)))
 
+(define-public ghc-optional-args
+  (package
+    (name "ghc-optional-args")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/optional-args/optional-args-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1r5hhn6xvc01grggxdyy48daibwzi0aikgidq0ahpa6bfynm8d1f"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/optional-args")
+    (synopsis "Optional function arguments")
+    (description
+     "This library provides a type for specifying @code{Optional} function
+arguments.")
+    (license license:bsd-3)))
+
 (define-public ghc-options
   (package
     (name "ghc-options")
