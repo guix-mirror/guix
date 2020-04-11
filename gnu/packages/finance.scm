@@ -1440,6 +1440,71 @@ walets in a fast and small server.  The full data is stored in a full node,
 like Flowee the Hub, which Fulcrum connects to over RPC.")
     (license license:gpl3+)))
 
+(define-public flowee
+  (package
+    (name "flowee")
+    (version "2020.03.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/FloweeTheHub/thehub/-/archive/"
+                            version "/thehub-" version ".tar.gz"))
+       (sha256
+         (base32 "1ajd5axv9zyhh6njrvamm11zn52j1q4j3mwn2nfv7cjd4lhnhlsr"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-Dbuild_tests=ON" "-Denable_gui=OFF")
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'make-qt-deterministic
+            (lambda _
+              ;; Make Qt deterministic.
+              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+          (add-before 'configure 'disable-black-box
+            ;; the black-box testing runs full hubs and lets them interact.
+            ;; this is more fragile and a slow machine, or low memory machine, may
+            ;; make the tests timeout and fail.  We just disable them here.
+            (lambda _
+              (substitute* "testing/CMakeLists.txt"
+                (("test_api") ""))
+              #t))
+          (add-after 'configure 'set-build-info
+            ;; Their genbuild.sh to generate a build.h fails in guix (no .git dir) .
+            ;; Its purpose is to write the tag name in the build.h file. We do that
+            ;; here instead.
+            (lambda _
+              (with-output-to-file "include/build.h"
+                (lambda _
+                  (display
+                    (string-append "#define BUILD_DESC " "\"", version "\""))))))
+          (add-before 'check 'set-home
+            (lambda _
+              (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
+              #t))
+          (replace 'check
+            (lambda _
+              (invoke "make" "check" "-C" "testing"))))))
+    (inputs
+     `(("boost" ,boost)
+       ("gmp" ,gmp)
+       ("libevent" ,libevent)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("util-linux" ,util-linux)))       ; provides the hexdump command for tests
+    (home-page "https://flowee.org")
+    (synopsis "Flowee infrastructure tools and services")
+    (description
+     "Flowee packages all tier-1 applications and services from the Flowee group.
+This includes components like The Hub and Indexer which and various others
+that allows you to run services and through them access the Bitcoin Cash networks.")
+    (license license:gpl3+)))
+
+
 (define-public beancount
   (package
     (name "beancount")
