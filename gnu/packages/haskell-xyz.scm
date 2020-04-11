@@ -12933,6 +12933,69 @@ generating functions similar to those in @code{Data.List} for tuples of
 statically known size.")
     (license license:bsd-3)))
 
+(define-public ghc-turtle
+  (package
+    (name "ghc-turtle")
+    (version "1.5.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/turtle/turtle-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0yckgsc2a4g5x867gni80ldp226bsnhncfbil4ql6v2zwm4r8p7f"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-async" ,ghc-async)
+       ("ghc-clock" ,ghc-clock)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-foldl" ,ghc-foldl)
+       ("ghc-hostname" ,ghc-hostname)
+       ("ghc-managed" ,ghc-managed)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-system-fileio" ,ghc-system-fileio)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-optional-args" ,ghc-optional-args)
+       ("ghc-unix-compat" ,ghc-unix-compat)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-fail" ,ghc-fail)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "02q1rv7zx31xz9wnmcqwd4w3iw7623p07iyi21zr0cqlignic5pg")))
+    (home-page
+     "http://hackage.haskell.org/package/turtle")
+    (synopsis "Shell programming, Haskell-style")
+    (description
+     "Turtle is a reimplementation of the Unix command line environment in
+Haskell so that you can use Haskell as both a shell and a scripting
+language.  Features include:
+
+@itemize
+@item Batteries included: Command an extended suite of predefined utilities.
+@item Interoperability: You can still run external shell commands.
+@item Portability: Works on Windows, OS X, and Linux.
+@item Exception safety: Safely acquire and release resources.
+@item Streaming: Transform or fold command output in constant space.
+@item Patterns: Use typed regular expressions that can parse structured values.
+@item Formatting: Type-safe printf-style text formatting.
+@item Modern: Supports text and system-filepath.
+@end itemize
+
+Read \"Turtle.Tutorial\" for a detailed tutorial or \"Turtle.Prelude\" for a
+quick-start guide.  Turtle is designed to be beginner-friendly, but as a
+result lacks certain features, like tracing commands.  If you feel comfortable
+using turtle then you should also check out the Shelly library which provides
+similar functionality.")
+    (license license:bsd-3)))
+
 (define-public ghc-typed-process
   (package
     (name "ghc-typed-process")
