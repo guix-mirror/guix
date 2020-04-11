@@ -35,7 +35,7 @@
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "2.2.2")
+   (version "2.3.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
@@ -43,7 +43,7 @@
                                 "/cryptsetup-" version ".tar.xz"))
             (sha256
              (base32
-              "0ija889kfhg4n2fshpq9yh2b1jl2ipvd7sfafh08g75ba6ayrw1a"))))
+              "1lp7kwakm3ssp8ww1y33plvfmpas5krf14pdz91p1kx2b7as9awj"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
