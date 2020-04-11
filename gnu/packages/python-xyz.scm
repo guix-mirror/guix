@@ -11047,13 +11047,13 @@ graphviz.")
 (define-public python-gevent
   (package
     (name "python-gevent")
-    (version "1.4.0")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "gevent" version))
               (sha256
                (base32
-                "1lchr4akw2jkm5v4kz7bdm4wv3knkfhbfn9vkkz4s5yrkcxzmdqy"))
+                "0aac3d4vhv5n4rsb6cqzq0d1xx9immqz4fmpddw35yxkwdc450dj"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -11079,14 +11079,16 @@ graphviz.")
                                 (find-files "src/greentest" "\\.py$"))
                       #t))
                   (add-before 'build 'do-not-use-bundled-sources
-                    (lambda* (#:key inputs #:allow-other-keys)
+                    (lambda _
                       (setenv "GEVENTSETUP_EMBED" "0")
 
                       ;; Prevent building bundled libev.
                       (substitute* "setup.py"
                         (("run_make=_BUILDING")
                          "run_make=False"))
-
+                      #t))
+                  (add-before 'build 'add-greenlet-on-C_INCLUDE_PATH
+                    (lambda* (#:key inputs #:allow-other-keys)
                       (let ((greenlet (string-append
                                        (assoc-ref inputs "python-greenlet")
                                        "/include")))
@@ -11137,9 +11139,6 @@ graphviz.")
                                "test_thread.py"
                                "test_threading.py"
                                "test__threading_2.py"
-                               ;; FIXME: test_patch_twice_warning_events fails for
-                               ;; no apparent reason.  Needs more investigation!
-                               "test__monkey.py"
                                ;; These tests rely on KeyboardInterrupts which do not
                                ;; work inside the build container for some reason
                                ;; (lack of controlling terminal?).
@@ -11147,12 +11146,15 @@ graphviz.")
                                "test__issues461_471.py"
                                ;; TODO: Patch out the tests that use getprotobyname, etc
                                ;; instead of disabling all the tests from these files.
+                               "test__resolver_dnspython.py"
+                               "test__doctests.py"
                                "test__all__.py"
                                "test___config.py"
                                "test__execmodules.py")))
                         (call-with-output-file "skipped_tests.txt"
                           (lambda (port)
-                            (display (string-join disabled-tests "\n") port)))
+                            (format port "~a~%"
+                                    (string-join disabled-tests "\n"))))
                         #t)))
                   (replace 'check
                     (lambda _
