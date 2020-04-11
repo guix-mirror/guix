@@ -10295,6 +10295,24 @@ inspired by libtre.")
 normal mtl transformers.")
     (license license:expat)))
 
+(define-public ghc-repline-0.3
+  (package
+    (inherit ghc-repline)
+    (version "0.3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/repline/repline-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0niihfyggg2qisadg7w49cr5k5qyyynia93iip0ng2bbmzwi88g8"))))
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-haskeline" ,ghc-haskeline-0.8)))))
+
 (define-public ghc-rerebase
   (package
     (name "ghc-rerebase")
