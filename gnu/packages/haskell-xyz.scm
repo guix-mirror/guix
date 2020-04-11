@@ -3342,6 +3342,30 @@ It is modeled after doctest for Python, see
 @uref{https://docs.python.org/library/doctest.html, the Doctest website}.")
     (license license:expat)))
 
+(define-public ghc-dotgen
+  (package
+    (name "ghc-dotgen")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/dotgen/dotgen-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "148q93qsmqgr5pzdwvpjqfd6bdm1pwzcp2rblfwswx2x8c5f43fg"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/ku-fpg/dotgen")
+    (synopsis
+     "Simple interface for building .dot graph files")
+    (description
+     "This package provides a simple interface for building .dot graph
+files, for input into the dot and graphviz tools.  It includes a
+monadic interface for building graphs.")
+    (license license:bsd-3)))
+
 (define-public ghc-double-conversion
   (package
     (name "ghc-double-conversion")
