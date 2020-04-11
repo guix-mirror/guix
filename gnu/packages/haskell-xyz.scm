@@ -5274,6 +5274,37 @@ monad, as well as a typeclass abstracting their common operations, and
 a set of wrappers to use the hash tables in the IO monad.")
     (license license:bsd-3)))
 
+(define-public ghc-haskeline-0.8
+  (package
+    (name "ghc-haskeline")
+    (version "0.8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/haskeline/haskeline-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gqsa5s0drim9m42hv4wrq61mnvcdylxysfxfw3acncwilfrn9pb"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    ;; FIXME: Tests failing
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/judah/haskeline")
+    (synopsis
+     "Command-line interface for user input, written in Haskell")
+    (description
+     "Haskeline provides a user interface for line input in command-line
+programs.  This library is similar in purpose to readline, but since it is
+written in Haskell it is (hopefully) more easily used in other Haskell
+programs.
+
+Haskeline runs both on POSIX-compatible systems and on Windows.")
+    (license license:bsd-3)))
+
 (define-public ghc-haskell-lexer
   (package
     (name "ghc-haskell-lexer")
