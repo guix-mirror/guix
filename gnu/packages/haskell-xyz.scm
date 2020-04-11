@@ -12029,6 +12029,44 @@ instances for strict and lazy text types for versions older than 1.2.1 of the
 text package.")
     (license license:bsd-2)))
 
+(define-public ghc-text-manipulate
+  (package
+    (name "ghc-text-manipulate")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/text-manipulate"
+             "/text-manipulate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0bwxyjj3ll45srxhsp2ihikgqglvjc6m02ixr8xpvyqwkcfwgsg0"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page
+     "https://github.com/brendanhay/text-manipulate")
+    (synopsis
+     "Case conversion, word boundary manipulation, and textual subjugation")
+    (description
+     "Manipulate identifiers and structurally non-complex pieces of text by
+delimiting word boundaries via a combination of whitespace,
+control-characters, and case-sensitivity.
+
+Has support for common idioms like casing of programmatic variable names,
+taking, dropping, and splitting by word, and modifying the first character of
+a piece of text.
+
+Caution: this library makes heavy use of the text library's internal loop
+optimisation framework.  Since internal modules are not guaranteed to have a
+stable API there is potential for build breakage when the text dependency is
+upgraded.  Consider yourself warned!")
+    (license license:mpl2.0)))
+
 (define-public ghc-text-metrics
   (package
     (name "ghc-text-metrics")
