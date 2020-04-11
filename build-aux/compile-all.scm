@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,6 +79,14 @@ to 'make'."
                        (current-processor-count))))
                 (loop tail)))))))))
 
+(define (parallel-job-count*)
+  ;; XXX: Work around memory requirements not sustainable on i686 above '-j4'
+  ;; or so: <https://bugs.gnu.org/40522>.
+  (let ((count (parallel-job-count)))
+    (if (string-prefix? "i686" %host-type)
+        (min count 4)
+        count)))
+
 (define (% completed total)
   "Return the completion percentage of COMPLETED over TOTAL as an integer."
   (inexact->exact (round (* 100. (/ completed total)))))
@@ -95,7 +103,7 @@ to 'make'."
      (lambda ()
        (compile-files srcdir (getcwd)
                       (filter file-needs-compilation? files)
-                      #:workers (parallel-job-count)
+                      #:workers (parallel-job-count*)
                       #:host host
                       #:report-load (lambda (file total completed)
                                       (when file
