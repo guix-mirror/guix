@@ -13880,7 +13880,7 @@ redirection on the fly, which appears to be very useful for teaching purposes,
 as the student can keep a copy of the produced output to keep all that they
 did during the course.  The package comes with a vignette describing how to
 write HTML reports for statistical analysis.  Finally, a driver for Sweave
-allows to parse HTML flat files containing R code and to automatically write
+parses HTML flat files containing R code and to automatically write
 the corresponding outputs (tables and graphs).")
     (license license:gpl2+)))
 
