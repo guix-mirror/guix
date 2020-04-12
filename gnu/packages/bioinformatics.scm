@@ -8401,7 +8401,7 @@ system.  It is used to analyze experimental crosses for identifying
 genes contributing to variation in quantitative traits (so-called
 quantitative trait loci, QTLs).
 
-Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
+Using a hidden Markov model, R/qtl estimates genetic maps, to
 identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
