@@ -183,7 +183,7 @@ buffers.")
        ("gexiv2" ,gexiv2)
        ("gtk+" ,gtk+-2)
        ("libmypaint" ,libmypaint)
-       ("mypaint-brushes" ,mypaint-brushes)
+       ("mypaint-brushes" ,mypaint-brushes-1.3)
        ("exif" ,libexif)                ; optional, EXIF + XMP support
        ("lcms" ,lcms)                   ; optional, color management
        ("librsvg" ,librsvg)             ; optional, SVG support
@@ -298,34 +298,42 @@ brushstrokes which is used by MyPaint and GIMP.")
 (define-public mypaint-brushes
   (package
     (name "mypaint-brushes")
-    (version "1.3.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Jehan/mypaint-brushes.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1iz89z6v2mp8j1lrf942k561s8311i3s34ap36wh4rybb2lq15m0"))))
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mypaint/mypaint-brushes.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kcqz13vzpy24dhmrx9hbs6s7hqb8y305vciznm15h277sabpmw9"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'relax-dependency-version
-           (lambda _
-             (substitute* "autogen.sh"
-               (("automake-1.13") "automake")
-               (("aclocal-1.13") "aclocal"))
-             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (synopsis "Default brushes for MyPaint")
     (description "This package provides the default set of brushes for
 MyPaint.")
-    (home-page "https://github.com/Jehan/mypaint-brushes")
-    (license license:cc0)))
+    (home-page "https://github.com/mypaint/mypaint-brushes/")
+    ;; Scripts are distributed under GPL2+ terms, brushes are provided as
+    ;; public domain or under CC0 terms.
+    (license (list license:gpl2+ license:cc0 license:public-domain))))
+
+(define-public mypaint-brushes-1.3
+  (package
+    (inherit mypaint-brushes)
+    (name "mypaint-brushes")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mypaint/mypaint-brushes.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c95l1vfz7sbrdlzrbz7h1p6s1k113kyjfd9wfnxlm0p6562cz3j"))))))
 
 (define-public gimp-resynthesizer
   ;; GIMP does not respect any plugin search path environment variable, so after
