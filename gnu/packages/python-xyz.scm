@@ -19236,28 +19236,6 @@ simple and fast to verify, and decouple authorization policy from the
 enforcement of that policy.")
     (license license:expat)))
 
-(define-public python-prometheus-client
-  (package
-    (name "python-prometheus-client")
-    (version "0.7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "prometheus_client" version))
-       (sha256
-        (base32 "1ni2yv4ixwz32nz39ckia76lvggi7m19y5f702w5qczbnfi29kbi"))))
-    (build-system python-build-system)
-    (arguments
-     ;; TODO: No tests in the PyPI distribution.
-     `(#:tests? #f))
-    (propagated-inputs
-     `(("python-twisted" ,python-twisted)))
-    (home-page "https://github.com/prometheus/client_python")
-    (synopsis "Prometheus instrumentation library")
-    (description
-     "This is the official Python client for the Prometheus monitoring server.")
-    (license license:asl2.0)))
-
 (define-public python-ldap3
   (package
     (name "python-ldap3")
