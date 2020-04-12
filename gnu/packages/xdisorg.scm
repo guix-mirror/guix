@@ -602,7 +602,7 @@ System style license, and has no special dependencies.")
     (home-page "http://tomas.styblo.name/wmctrl/")
     (synopsis "Command-line tool to control X window managers")
     (description
-     "Wmctrl allows to interact with an X window manager that is compatible
+     "Wmctrl interacts with an X window manager that is compatible
 with the EWMH/NetWM specification.  It can query the window manager for
 information, and request for certain window management actions (resize and
 move windows, switch between desktops, etc.).")
