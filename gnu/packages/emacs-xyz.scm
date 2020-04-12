@@ -13437,7 +13437,7 @@ navigate and display hierarchy structures.")
       (home-page "https://github.com/flexibeast/pulseaudio-control")
       (synopsis "Control @code{pulseaudio} from Emacs")
       (description
-       "This package allows to control @code{pulseaudio} from Emacs.")
+       "This package allows controlling @code{pulseaudio} from Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-datetime
