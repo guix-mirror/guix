@@ -5452,7 +5452,7 @@ researchers and developers alike to get started on SAT.")
 It provides basic and advanced functionality.  Features include customizable
 functions, unit calculations, and conversions, physical constants, symbolic
 calculations (including integrals and equations), arbitrary precision,
-uncertainity propagation, interval arithmetic, plotting and a user-friendly
+uncertainty propagation, interval arithmetic, plotting and a user-friendly
 cli.")
     (license license:gpl2+)))
 
