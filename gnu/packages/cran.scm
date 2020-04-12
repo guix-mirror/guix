@@ -15863,7 +15863,7 @@ be used further by e.g. graphic devices.")
      "This package provides several layout algorithms to visualize networks
 which are not part of the igraph library.  Most are based on the concept of
 stress majorization by Gansner et al. (2004)
-<doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms allow to
+<doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms
 emphasize hidden group structures in networks or focus on specific nodes.")
     (license license:expat)))
 
