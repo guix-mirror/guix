@@ -12335,6 +12335,8 @@ and can be consulted and modified.")
     (license license:gpl3+)))
 
 (define-public emacs-psc-ide
+  ;; There is no proper release.  The base version is extracted from the
+  ;; "Version" keyword in the main file.
   (let ((commit "7fc2b841be25f5bc5e1eb7d0634436181c38b3fe")
         (revision "1"))
     (package
