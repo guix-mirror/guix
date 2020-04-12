@@ -1095,7 +1095,7 @@ and retrieving certificates from LDAP servers.")
     (description "KMail supports multiple accounts, mail filtering and email
 encryption.  The program let you configure your workflow and it has good
 integration into KDE (Plasma Desktop) but is also useable with other Desktop
-Envionments.
+Environments.
 
 KMail is the email component of Kontact, the integrated personal information
 manager from KDE.")
