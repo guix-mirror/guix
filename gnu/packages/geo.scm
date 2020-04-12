@@ -1153,8 +1153,8 @@ persisted.
                (copy-file "JMapViewer.jar" (string-append dir "JMapViewer.jar"))))))))
     (home-page "https://wiki.openstreetmap.org/wiki/JMapViewer")
     (synopsis "OSM map integration in Java")
-    (description "JMapViewer is a Java component which allows to easily
-integrate an OSM map view into your Java application.  It is maintained as
+    (description "JMapViewer is a Java component which easily
+integrates an OSM map view into your Java application.  It is maintained as
 an independent project by the JOSM team.")
     (license license:gpl2)))
 
