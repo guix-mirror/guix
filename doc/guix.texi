@@ -20919,7 +20919,7 @@ The time in seconds after which a process with no requests is killed.
 @end deftp
 
 
-@deffn {Scheme Procedure} nginx-php-fpm-location @
+@deffn {Scheme Procedure} nginx-php-location @
        [#:nginx-package nginx] @
        [socket (string-append "/var/run/php" @
                               (version-major (package-version php)) @
