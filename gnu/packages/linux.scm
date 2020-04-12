@@ -1053,6 +1053,40 @@ and frame injection.  It provides a @code{88XXau} kernel module that supports
 RTL8812AU, RTL8821AU, and RTL8814AU chips.")
       (license license:gpl2+))))
 
+(define-public rtl8821ce-linux-module
+  (let ((commit "69765eb288a8dfad3b055b906760b53e02ab1dea")
+        (revision "0"))
+    (package
+      (name "rtl8821ce-linux-module")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tomaspinho/rtl8821ce.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "17jiw25k74kv5lnvgycvj2g1n06hbrpjz6p4znk4a62g136rhn4s"))))
+      (build-system linux-module-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda* (#:key (make-flags '()) inputs #:allow-other-keys)
+               (setenv "CC" "gcc")
+               (invoke "make"
+                       (string-append "KSRC="
+                                      (assoc-ref inputs "linux-module-builder")
+                                      "/lib/modules/build")))))
+         #:tests? #f))
+      (home-page "https://github.com/tomaspinho/rtl8821ce")
+      (synopsis "Linux driver for Realtek RTL8821CE wireless network adapters")
+      (description "This is Realtek's RTL8821CE Linux driver for wireless
+network adapters.")
+      (license license:gpl2))))
+
 (define-public vhba-module
   (package
     (name "vhba-module")
