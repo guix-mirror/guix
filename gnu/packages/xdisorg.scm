@@ -1731,7 +1731,7 @@ commandline).")
        `(#:tests? #f))
       (synopsis "Use external screen locker on events")
       (description "@code{xss-lock} listens to X signals to fire up a
-user-defined screensaver.  In effect this allows to automatically lock the
+user-defined screensaver.  In effect this automatically locks the
 screen when closing a laptop lid or after a period of user inactivity (as set
 with @code{xset s TIMEOUT}).  The notifier command, if specified, is executed
 first.  Additionally, xss-lock uses the inhibition logic to lock the screen
