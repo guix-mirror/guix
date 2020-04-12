@@ -99,7 +99,7 @@ framework for writing, administering, and running unit tests in C.")
        ("mbedtls" ,mbedtls-apache)))
     (synopsis "Belledonne Communications Tool Box")
     (description "BcToolBox is an utilities library used by Belledonne
-Communications softwares like belle-sip, mediastreamer2 and linphone.")
+Communications software like belle-sip, mediastreamer2 and linphone.")
     (home-page "https://gitlab.linphone.org/BC/public/bctoolbox")
     (license license:gpl2+)))
 
