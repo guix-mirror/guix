@@ -635,7 +635,7 @@ move windows, switch between desktops, etc.).")
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
-     "Scrot allows to save a screenshot of a full screen, a window or a part
+     "Scrot saves a screenshot of a full screen, a window or a part
 of the screen selected by mouse.")
     ;; This license removes a clause about X Consortium from the original
     ;; X11 license.
