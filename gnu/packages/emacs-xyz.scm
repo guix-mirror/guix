@@ -17563,7 +17563,7 @@ targets the Emacs based IDEs (CIDER, ESS, Geiser, Robe, SLIME etc.)")
     (home-page "https://github.com/jorgenschaefer/emacs-buttercup")
     (synopsis "Behavior driven emacs lisp testing framework")
     (description "Buttercup is a behavior-driven development framework for
-testing Emacs Lisp code.  It allows to group related tests so they can share
+testing Emacs Lisp code.  It groups related tests so they can share
 common set-up and tear-down code, and allows the programmer to \"spy\" on
 functions to ensure they are called with the right arguments during testing.")
     (license license:gpl3+)))
