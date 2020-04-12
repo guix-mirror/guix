@@ -359,7 +359,7 @@ control.")
       (propagated-inputs
        `(("glib" ,glib)))
       (synopsis "Hide app icon from GNOME's panel")
-      (description "This extension allows to hide the icon and/or title of the
+      (description "This extension hides the icon and/or title of the
 currently focused application in the top panel of the GNOME shell.")
       (home-page
        "https://github.com/michael-rapp/gnome-shell-extension-hide-app-icon/")
