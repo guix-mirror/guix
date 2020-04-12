@@ -3217,7 +3217,15 @@ memoized as a function of '%current-system'."
                      ;; built, since it requires Linux headers.
                      (("'linux', ") ""))
                    #t))
-               (delete 'set-TZDIR)))
+               (delete 'set-TZDIR)
+               ,@(if (hurd-system?)
+                     `((add-before 'build 'fix-regen
+                         (lambda* (#:key inputs #:allow-other-keys)
+                           (let ((libc (assoc-ref inputs "libc")))
+                             (substitute* "Lib/plat-generic/regen"
+                               (("/usr/include/") (string-append libc "/include/")))
+                             #t))))
+                     '())))
            ((#:tests? _ #f) #f))))))
 
 (define/system-dependent ld-wrapper-boot0
