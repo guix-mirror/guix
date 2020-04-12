@@ -846,8 +846,8 @@ winner of the 2015 Password Hashing Competition.")
        ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/languitar/pass-git-helper")
     (synopsis "Git credential helper interfacing with pass")
-    (description "pass-git-helper is a git credential helper which allows to
-use pass, the standard unix password manager, as the credential backend for
+    (description "pass-git-helper is a git credential helper which
+uses pass, the standard unix password manager, as the credential backend for
 your git repositories.  This is achieved by explicitly defining mappings
 between hosts and entries in the password store.")
     (license license:lgpl3+)))
