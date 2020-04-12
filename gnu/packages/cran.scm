@@ -11532,7 +11532,7 @@ JASA, 94:496-509.")
     (home-page "https://cran.r-project.org/web/packages/etm")
     (synopsis "Empirical transition matrix")
     (description
-     "The @dfn{empirical transition matrix} (etm) package permits to estimate
+     "The @dfn{empirical transition matrix} (etm) package estimates
 the matrix of transition probabilities for any time-inhomogeneous multistate
 model with finite state space using the Aalen-Johansen estimator.")
     (license license:expat)))
