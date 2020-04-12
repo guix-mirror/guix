@@ -5502,7 +5502,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (synopsis "IEEE 754 binary representation for floats in Common Lisp")
-      (description "This is a Common Lisp library that allows to convert
+      (description "This is a Common Lisp library that converts
 floating point values to IEEE 754 binary representation.")
       (license license:bsd-3))))
 
