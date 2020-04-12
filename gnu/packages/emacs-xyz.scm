@@ -12594,7 +12594,7 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
       (home-page "https://github.com/emacscollective/closql")
       (synopsis "Store EIEIO objects using EmacSQL")
       (description
-       "This package allows to store uniform EIEIO objects in an EmacSQL
+       "This package stores uniform EIEIO objects in an EmacSQL
 database.  SQLite is used as backend.  This library imposes some restrictions
 on what kind of objects can be stored; it isn't intended to store arbitrary
 objects.  All objects have to share a common superclass and subclasses cannot
