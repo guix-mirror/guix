@@ -623,7 +623,7 @@ functions for accessing calendar data using the kcalcore API.")
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (home-page "https://cgit.kde.org/kdav.git")
     (synopsis "DAV protocol implementation with KJobs")
-    (description "This is a DAV protocol implemention with KJobs.  Calendars
+    (description "This is a DAV protocol implementation with KJobs.  Calendars
 and todos are supported, using either GroupDAV or CalDAV, and contacts are
 supported using GroupDAV or CardDAV.")
     (license ;; GPL for programs, LGPL for libraries
