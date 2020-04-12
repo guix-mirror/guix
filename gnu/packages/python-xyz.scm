@@ -2822,8 +2822,7 @@ environments and back.")
      "PyYAML is a YAML parser and emitter for Python.  PyYAML features a
 complete YAML 1.1 parser, Unicode support, pickle support, capable extension
 API, and sensible error messages.  PyYAML supports standard YAML tags and
-provides Python-specific tags that allow to represent an arbitrary Python
-object.")
+provides Python-specific tags that represent an arbitrary Python object.")
     (license license:expat)))
 
 (define-public python2-pyyaml
