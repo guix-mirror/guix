@@ -305,7 +305,7 @@ the two.")
     (synopsis "Asynchronous resolver library by the OpenBSD project")
     (description
      "libasr is a free, simple and portable asynchronous resolver library.
-It allows to run DNS queries and perform hostname resolutions in a fully
+It runs DNS queries and performs hostname resolution in a fully
 asynchronous fashion.")
     (license (list license:isc
                    license:bsd-2 ; last part of getrrsetbyname_async.c
