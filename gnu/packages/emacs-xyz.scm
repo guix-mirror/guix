@@ -14156,7 +14156,7 @@ throw a shell history.")
      `(("emacs-makey" ,emacs-makey)))
     (home-page "https://framagit.org/steckerhalter/discover-my-major/")
     (synopsis "Discover key bindings for the current Emacs major mode")
-    (description "This package provides allows to discover key bindings and
+    (description "This package discovers key bindings and
 their meaning for the current Emacs major-mode.")
     (license license:gpl3+)))
 
