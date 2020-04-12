@@ -6912,7 +6912,7 @@ maximizes flexibility (at the expense of conciseness).")
      `(("ert-runner" ,emacs-ert-runner)))
     (home-page "https://github.com/technomancy/find-file-in-project")
     (synopsis "File/directory finder for Emacs")
-    (description "@code{find-file-in-project} allows to find files or
+    (description "@code{find-file-in-project} finds files or
 directories quickly in the current project.  The project root is detected
 automatically when Git, Subversion or Mercurial are used.  It also provides
 functions to assist in reviewing changes on files.")
