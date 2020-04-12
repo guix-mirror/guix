@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1022,29 +1023,27 @@ quoting, commenting, and escaping.")
       (license asl2.0))))
 
 (define-public go-github-com-audriusbutkevicius-pfilter
-  (let ((commit "c55ef6137fc6f075801eac099cc2687ede0f101d")
-        (revision "3"))
-    (package
-      (name "go-github-com-audriusbutkevicius-pfilter")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/AudriusButkevicius/pfilter.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-           (base32
-            "0xzhwyd0w21bhvzl5pinn22hp0y6h44rh3s2ppql69rafc6zd3c6"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/AudriusButkevicius/pfilter"))
-      (synopsis "Filter packets into multiple virtual connections")
-      (description "Pfilter is a Go package for filtering packets into multiple
+  (package
+    (name "go-github-com-audriusbutkevicius-pfilter")
+    (version "0.0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/AudriusButkevicius/pfilter.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0xzhwyd0w21bhvzl5pinn22hp0y6h44rh3s2ppql69rafc6zd3c6"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/AudriusButkevicius/pfilter"))
+    (synopsis "Filter packets into multiple virtual connections")
+    (description "Pfilter is a Go package for filtering packets into multiple
 virtual connections from a single physical connection.")
-      (home-page "https://github.com/AudriusButkevicius/pfilter")
-      (license expat))))
+    (home-page "https://github.com/AudriusButkevicius/pfilter")
+    (license expat)))
 
 (define-public go-github-com-ccding-go-stun
   (let ((commit "be486d185f3dfcb2dbf8429332da50a0da7f95a6")
