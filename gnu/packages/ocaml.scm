@@ -1534,7 +1534,7 @@ manipulate such data.")
          (delete 'configure))))
     (home-page "http://erratique.ch/software/mtime")
     (synopsis "Monotonic wall-clock time for OCaml")
-    (description "Access monotonic wall-clock time.  It allows to measure time
+    (description "Access monotonic wall-clock time.  It measures time
 spans without being subject to operating system calendar time adjustments.")
     (license license:isc)))
 
