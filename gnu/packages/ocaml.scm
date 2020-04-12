@@ -1179,7 +1179,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
     (home-page "https://github.com/c-cube/qcheck")
     (synopsis "QuickCheck inspired property-based testing for OCaml")
     (description "QuickCheck inspired property-based testing for OCaml. This
-module allows to check invariants (properties of some types) over randomly
+module checks invariants (properties of some types) over randomly
 generated instances of the type. It provides combinators for generating
 instances and printing them.")
     (license license:lgpl3+)))
