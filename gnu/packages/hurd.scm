@@ -319,7 +319,7 @@ boot, since this cannot be done from GNU/Linux."
       ("/servers/password" ("/hurd/password"))
       ("/servers/socket/1" ("/hurd/pflocal"))
       ("/servers/socket/2" ("/hurd/pfinet" "--interface" "eth0"
-                            "--address" "10.0.2.77"
+                            "--address" "10.0.2.15" ;the default QEMU guest IP
                             "--netmask" "255.255.255.0"
                             "--gateway" "10.0.2.2"
                             "--ipv6" "/servers/socket/16"))))
