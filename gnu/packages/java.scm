@@ -11644,7 +11644,7 @@ the application using Java to Lisp integration APIs.")
     (description "JSON Processing (JSON-P) is a Java API to process (e.g.
 parse, generate, transform and query) JSON messages.  It produces and
 consumes JSON text in a streaming fashion (similar to StAX API for XML)
-and allows to build a Java object model for JSON text using API classes
+and allows building a Java object model for JSON text using API classes
 (similar to DOM API for XML).")
     ;; either gpl2 only with classpath exception, or epl2.0.
     (license (list license:gpl2
