@@ -285,7 +285,7 @@ and max_workers parameter.")
     (string "3:remote 4:event")
     "Logging filters.
 
-A filter allows to select a different logging level for a given category
+A filter allows selecting a different logging level for a given category
 of logs
 The format for a filter is one of:
 @itemize
