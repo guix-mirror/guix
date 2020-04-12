@@ -2785,8 +2785,8 @@ advantage of the library is the ability to concisely define command line
 options once and then use this definition for parsing and extraction of
 command line arguments, as well as printing description of command line
 options (you get --help for free).  This way you don't need to repeat
-yourself.  Also, @command{unix-opts} doesn't depend on anything and allows to
-precisely control behavior of the parser via Common Lisp restarts.")
+yourself.  Also, @command{unix-opts} doesn't depend on anything and
+precisely controls the behavior of the parser via Common Lisp restarts.")
     (license license:expat)))
 
 (define-public cl-unix-opts
