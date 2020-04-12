@@ -1565,7 +1565,7 @@ configuration language. It features:
 @itemize
 @item Syntax highlighting
 @item Multiline support for String
-@item Basic indendation, commenting
+@item Basic indentation, commenting
 @item Automatic formatting on save using dhall-format.
 @item Error highlighting.
 @end itemize")
