@@ -5257,7 +5257,7 @@ to Applied regression, Second Edition, Sage, 2011.")
     (home-page "https://github.com/kforner/rcpp_progress")
     (synopsis "Interruptible progress bar for C++ in R packages")
     (description
-     "This package allows to display a progress bar in the R console for long running
+     "This package displays a progress bar in the R console for long running
 computations taking place in C++ code, and support for interrupting those computations
 even in multithreaded code, typically using OpenMP.")
     (license license:gpl3+)))
