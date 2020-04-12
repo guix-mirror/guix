@@ -67,6 +67,7 @@
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
+;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22421,3 +22422,33 @@ conventions.")
       (description "Haskell-Snippets is a collection of YASnippet Haskell
 snippets for Emacs.")
       (license license:expat))))
+
+(define-public emacs-org-roam
+  (package
+    (name "emacs-org-roam")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jethrokuan/org-roam.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08pfa63k194dpk0y2gfa0nzn5lig81q0l9axkq5j4ibj6ifaap4a"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-emacsql-sqlite" ,emacs-emacsql)
+       ("emacs-f" ,emacs-f)
+       ("emacs-org-ref" ,emacs-org-ref)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/jethrokuan/org-roam/")
+    (synopsis "Non-hierarchical note-taking with Org mode")
+    (description "Emacs Org Roam is a solution for taking non-hierarchical
+notes with Org mode.  Notes are captured without hierarchy and are connected
+by tags.  Notes can be found and created quickly.  Org Roam should also work
+as a plug-and-play solution for anyone already using Org mode for their
+personal wiki.")
+    (license license:gpl3+)))
