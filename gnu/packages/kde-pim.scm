@@ -670,7 +670,7 @@ supported using GroupDAV or CardDAV.")
        ("qtbase" ,qtbase)))
     (home-page "https://cgit.kde.org/kdepim-apps-libs.git")
     (synopsis "KDE PIM mail related libraries and data files")
-    (description "This packages provides mail related libraries and data files
+    (description "This package provides mail related libraries and data files
 for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
