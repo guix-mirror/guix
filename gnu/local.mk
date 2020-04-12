@@ -582,6 +582,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/games.scm			\
   %D%/services/getmail.scm				\
   %D%/services/guix.scm			\
+  %D%/services/hurd.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/linux.scm			\
   %D%/services/lirc.scm				\

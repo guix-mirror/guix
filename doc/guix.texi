@@ -319,7 +319,9 @@ Services
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
 * PAM Mount Service::           Service to mount volumes when logging in.
+* Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
+* Hurd Services::               Services specific to a Hurd System.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -12599,6 +12601,7 @@ declaration.
 * PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
+* Hurd Services::               Services specific for a Hurd System.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -26036,6 +26039,25 @@ parameters, can be done as follow:
   (kernel-loadable-modules (list ddcci-driver-linux)))
 @end lisp
 @end deffn
+
+@node Hurd Services
+@subsection Hurd Services
+
+@defvr {Scheme Variable} hurd-console-service-type
+This service starts the fancy @code{VGA} console client on the Hurd.
+
+The service's value is a @code{hurd-console-configuration} record.
+@end defvr
+
+@deftp {Data Type} hurd-console-configuration
+This is the data type representing the configuration for the
+hurd-console-service.
+
+@table @asis
+@item @code{hurd} (default: @var{hurd})
+The Hurd package to use.
+@end table
+@end deftp
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services
