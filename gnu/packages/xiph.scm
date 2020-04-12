@@ -74,7 +74,7 @@
     '(#:configure-flags '("--disable-static")))
    (synopsis "Library for manipulating the ogg multimedia format")
    (description
-    "The libogg library allows to manipulate the ogg multimedia container
+    "The libogg library manipulates the ogg multimedia container
 format, which encapsulates raw compressed data and allows the interleaving of
 audio and video data.  In addition to encapsulation and interleaving of
 multiple data streams, ogg provides packet framing, error detection, and
