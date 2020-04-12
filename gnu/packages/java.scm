@@ -7420,7 +7420,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
     (home-page "https://github.com/barteo/microemu")
     (synopsis "J2ME CLDC emulator")
     (description "Microemulator is a Java 2 Micro Edition (J2ME) CLDC/MIDP
-Emulator.  It allows to demonstrate MIDlet based applications in web browser
+Emulator.  It demonstrates MIDlet based applications in web browser
 applet and can be run as a standalone java application.")
     (license (list license:asl2.0
                    ;; or altenatively:
