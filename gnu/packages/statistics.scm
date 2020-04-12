@@ -1505,7 +1505,7 @@ understand the language at a deeper level.")
     (home-page "https://github.com/hadley/memoise")
     (synopsis "Memoise functions for R")
     (description
-     "This R package allows to cache the results of a function so that when
+     "This R package caches the results of a function so that when
 you call it again with the same arguments it returns the pre-computed value.")
     (license license:expat)))
 
