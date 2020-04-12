@@ -40,6 +40,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -48,13 +49,15 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages scheme)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public dash
   (package
@@ -95,7 +98,7 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
 (define-public fish
   (package
     (name "fish")
-    (version "3.0.2")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
@@ -103,38 +106,53 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                            "releases/download/" version "/"
                            "fish-" version ".tar.gz"))
        (sha256
-        (base32 "03j3jl9jzlnhq4p86zj8wqsh5sx45j1d1fvfa80ks1cfdg68qwhl"))))
-    (build-system gnu-build-system)
+        (base32 "0s2356mlx7fp9kgqgw91lm5ds2i9iq9hq071fbqmcp3875l1xnz5"))))
+    (build-system cmake-build-system)
     (inputs
      `(("fish-foreign-env" ,fish-foreign-env)
-       ("groff" ,groff)                 ; for 'fish --help'
        ("ncurses" ,ncurses)
        ("pcre2" ,pcre2)      ; don't use the bundled PCRE2
        ("python" ,python)))  ; for fish_config and manpage completions
     (native-inputs
-     `(("doxygen" ,doxygen)))
+     `(("doxygen" ,doxygen)
+       ; for 'fish --help'
+       ("groff" ,groff)))
     (arguments
-     '(#:tests? #f                      ; no check target
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-source
-           (lambda _
-             (substitute* '("build_tools/build_commands_hdr.sh"
-                            "build_tools/build_user_doc.sh")
-               (("/usr/bin/env") "env"))
-             #t))
-         ;; Embed absolute paths.
-         (add-before 'install 'embed-absolute-paths
-           (lambda _
-             (substitute* '("share/functions/__fish_config_interactive.fish"
-                            "share/functions/fish_config.fish"
-                            "share/functions/fish_update_completions.fish")
-               (("python3") (which "python3")))
-             (substitute* "share/functions/__fish_print_help.fish"
-               (("nroff") (which "nroff")))
-             #t))
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref inputs "coreutils"))
+                   (bash (assoc-ref inputs "bash")))
+               ;; These try to open a terminal
+               (delete-file "tests/checks/interactive.fish")
+               (delete-file "tests/checks/login-interactive.fish")
+               ;; These contain absolute path references
+               (substitute* "src/fish_tests.cpp"
+                 (("/bin/echo" echo) (string-append coreutils echo))
+                 (("/bin/ca" ca) (string-append coreutils ca))
+                 (("\"(/bin/c)\"" _ c) (string-append "\"" coreutils c "\""))
+                 (("/bin/ls_not_a_path" ls-not-a-path)
+                  (string-append coreutils ls-not-a-path))
+                 (("/bin/ls" ls) (string-append coreutils ls))
+                 (("(/bin/)\"" _ bin) (string-append coreutils bin "\""))
+                 (("/bin -" bin) (string-append coreutils bin))
+                 (((string-append
+                    "do_test\\(is_potential_path\\("
+                    "L\"/usr\", wds, vars, PATH_REQUIRE_DIR\\)\\);"))
+                  ""))
+               (substitute*
+                   (append (find-files "tests" ".*\\.(in|out|err)$")
+                           (find-files "tests/checks" ".*\\.fish"))
+                 (("/bin/pwd" pwd) (string-append coreutils pwd))
+                 (("/bin/echo" echo) (string-append coreutils echo))
+                 (("/bin/sh" sh) (string-append bash sh))
+                 (("/bin/ls" ls) (string-append coreutils ls)))
+               (substitute* (find-files "tests" ".*\\.(in|out|err)$")
+                 (("/usr/bin") (string-append coreutils "/bin")))
+               #t)))
          ;; Source /etc/fish/config.fish from $__fish_sysconf_dir/config.fish.
-         (add-before 'install 'patch-fish-config
+         (add-after 'patch-tests 'patch-fish-config
            (lambda _
              (let ((port (open-file "etc/config.fish" "a")))
                (display (string-append
@@ -147,6 +165,12 @@ direct descendant of NetBSD's Almquist Shell (@command{ash}).")
                         port)
                (close-port port))
              #t))
+         ;; Embed absolute paths.
+         (add-before 'install 'embed-absolute-paths
+           (lambda _
+               (substitute* "share/functions/__fish_print_help.fish"
+                 (("nroff") (which "nroff")))
+               #t))
          ;; Enable completions, functions and configurations in user's and
          ;; system's guix profiles by adding them to __extra_* variables.
          (add-before 'install 'patch-fish-extra-paths
