@@ -7897,16 +7897,28 @@ Lua programming language}.")
   (package
     (name "emacs-ebuild-mode")
     (version "1.50")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dev.gentoo.org/~ulm/emacs/ebuild-mode"
-                    "-" version ".tar.xz"))
-              (file-name (string-append name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0bgi98vx6ahxijw69kfdiy3rkjdg7yi6k3bkjyasak5920m6fj1d"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://dev.gentoo.org/~ulm/emacs/"
+             "ebuild-mode-" version ".tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0bgi98vx6ahxijw69kfdiy3rkjdg7yi6k3bkjyasak5920m6fj1d"))))
     (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "ebuild-mode.info")
+             (install-file "ebuild-mode.info"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/info"))
+             #t)))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "https://devmanual.gentoo.org")
     (synopsis "Major modes for Gentoo package files")
     (description
