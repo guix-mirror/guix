@@ -44,6 +44,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages xorg) ; libpciaccess
   #:use-module (guix git-download)
   #:export (hurd-system?
@@ -393,6 +394,30 @@ boot, since this cannot be done from GNU/Linux."
                             (string-append dde "/" dir ) dir))
                          '("libmachdev" "libmachdevdde" "libddekit")))
              #t))
+         (add-after 'unpack 'find-tirpc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each (lambda (var)
+                         (setenv var
+                                 (string-append (assoc-ref inputs "libtirpc")
+                                                "/include/tirpc:"
+                                                (or (getenv var) ""))))
+                       '("CROSS_C_INCLUDE_PATH" "C_INCLUDE_PATH"
+                         "CROSS_CPATH" "CPATH"))
+             #t))
+         (add-after 'unpack 'fix-rpc-headers
+           (lambda _
+             (substitute* "nfs/mount.c"
+               (("#undef (TRUE|FALSE)") "")
+               (("#include <rpc/pmap_prot.h>" m)
+                (string-append  "#include <rpc/xdr.h>\n" m)))
+             (substitute* '("nfsd/cache.c")
+               (("#undef (TRUE|FALSE)") ""))
+             (substitute* '("nfsd/loop.c"
+                            "nfsd/main.c"
+                            "nfsd/ops.c")
+               (("#include <rpc/pmap_prot.h>" m)
+                (string-append "#include <rpc/types.h>\n#include <rpc/xdr.h>\n" m)))
+             #t))
          (add-before 'build 'pre-build
            (lambda _
              ;; Don't change the ownership of any file at this time.
@@ -496,7 +521,11 @@ fsysopts / --writable\n"))
                           "--disable-ncursesw"
                           "--without-libbz2"
                           "--without-libz"
-                          "--without-parted")))
+                          "--without-parted"
+                          ;; This is needed to pass the configure check for
+                          ;; clnt_create
+                          "ac_func_search_save_LIBS=-ltirpc"
+                          "ac_cv_search_clnt_create=false")))
     (build-system gnu-build-system)
     (inputs
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
@@ -506,6 +535,9 @@ fsysopts / --writable\n"))
        ("libdaemon" ,libdaemon)                  ;for /bin/console --daemonize
        ("unifont" ,unifont)
        ("libpciaccess" ,libpciaccess)
+
+       ;; For NFS support
+       ("libtirpc" ,libtirpc/hurd)
 
        ;; Tools for the /libexec/* scripts.
        ("bash-minimal" ,bash-minimal)
