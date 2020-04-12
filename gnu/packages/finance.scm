@@ -394,7 +394,7 @@ sends VAT declarations to Germany's fiscal authorities.
 
 Currently it is *not* possible to send returns that are due annually
 (especially the income tax return) since the fiscal authority doesn't
-allow to do that off the ERiC library (which is proprietary however).
+allow doing that off the ERiC library (which is proprietary however).
 It's not clear at the moment whether one day it will be possible to
 do so.")
     (license license:agpl3+)))
