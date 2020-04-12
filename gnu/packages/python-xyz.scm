@@ -12658,7 +12658,7 @@ by system tools such as ps and top).
 
 Changing the title is mostly useful in multi-process systems, for
 example when a master process is forked: changing the children's title
-allows to identify the task each process is busy with.  The technique
+allows identifying the task each process is busy with.  The technique
 is used by PostgreSQL and the OpenSSH Server for example.")
   (license license:bsd-3)
   (properties `((python2-variant . ,(delay python2-setproctitle))))))
