@@ -13403,7 +13403,7 @@ navigate and display hierarchy structures.")
     (home-page "https://github.com/ahungry/md4rd")
     (synopsis "Emacs Mode for Reddit")
     (description
-     "This package allows to read Reddit from within Emacs interactively.")
+     "This package allows reading Reddit from within Emacs interactively.")
     (license license:gpl3+)))
 
 (define-public emacs-pulseaudio-control
