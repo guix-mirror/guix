@@ -8488,6 +8488,17 @@ passive voice.")
        (sha256
         (base32 "0jwpgfzjvf1hd3mx582pw86hysdryaqzp69hk6azi9kmq4bzk87d"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (info-dir (string-append share "/info"))
+                    (doc-dir (string-append share "/doc/" ,name "-" ,version)))
+               (install-file "org" info-dir)
+               (install-file "orgcard.pdf" doc-dir))
+             #t)))))
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
