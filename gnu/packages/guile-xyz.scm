@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2016, 2019 Eraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
@@ -2142,14 +2142,14 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00kv7fgllzjpis0g1m9csycp4f6l11774m09dqy255cvmim2g743"))))
+                "1521w3h33bhdlg6qc66sq4dwv3qsx8r8x6srq4ca6kaahy6dszw8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
