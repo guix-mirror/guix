@@ -13960,7 +13960,7 @@ key again.")
       (build-system emacs-build-system)
       (home-page "https://github.com/dimitri/mbsync-el")
       (synopsis "Interface to mbsync for Emacs")
-      (description "This package allows to call the @code{mbsync} from
+      (description "This package calls @code{mbsync} from
 within Emacs.")
       (license license:gpl3+))))
 
