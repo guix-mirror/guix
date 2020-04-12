@@ -8532,7 +8532,7 @@ of other R packages who wish to make use of HTSlib.")
     (home-page "https://bioconductor.org/packages/bamsignals")
     (synopsis "Extract read count signals from bam files")
     (description
-     "This package allows to efficiently obtain count vectors from indexed bam
+     "This package efficiently obtains count vectors from indexed bam
 files.  It counts the number of nucleotide sequence reads in given genomic
 ranges and it computes reads profiles and coverage profiles.  It also handles
 paired-end data.")
