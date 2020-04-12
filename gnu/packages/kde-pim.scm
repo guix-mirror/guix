@@ -1346,7 +1346,7 @@ using a Qt/KMime C++ API.")
      `(#:tests? #f)) ;; TODO many test fail for quite different reasons
     (home-page "https://cgit.kde.org/messagelib.git")
     (synopsis "KDE PIM messaging libraries")
-    (description "This packages provides several libraries for messages,
+    (description "This package provides several libraries for messages,
 e.g. a message list, a mime tree parse, a template parser and the
 kwebengineviewer.")
     (license ;; GPL for programs, LGPL for libraries
