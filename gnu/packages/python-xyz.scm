@@ -3552,7 +3552,7 @@ receive files via the SCP1 protocol, as implemented by the OpenSSH
     ;; Note: As of version 1.7 the documentation is not worth building.
     (home-page "https://github.com/jaraco/rst.linker")
     (synopsis "Sphinx plugin to add links and timestamps")
-    (description "rst.linker allows to automatically replace text by a
+    (description "rst.linker automatically replaces text by a
 reStructuredText external reference or timestamps.  It's primary purpose is to
 augment the changelog, but it can be used for other documents, too.")
     (license license:expat)))
