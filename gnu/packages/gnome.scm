@@ -9678,7 +9678,7 @@ repository and commit your work.")
     (description
      "Gamin is a file and directory monitoring system defined to be a subset
 of the FAM (File Alteration Monitor) system.  This is a service provided by a
-library which allows to detect when a file or a directory has been modified.")
+library which detects when a file or a directory has been modified.")
     (license license:gpl2+)))
 
 (define-public gnome-mahjongg
