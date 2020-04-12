@@ -1771,8 +1771,8 @@ the output produced by running shell commands.")
        ("ruby-nenv" ,ruby-nenv)))
     (native-inputs
      `(("bundler" ,bundler)))
-    (synopsis "Wrapper libray for notification libraries")
-    (description "Notiffany is a Ruby wrapper libray for notification
+    (synopsis "Wrapper library for notification libraries")
+    (description "Notiffany is a Ruby wrapper library for notification
 libraries such as Libnotify.")
     (home-page "https://github.com/guard/notiffany")
     (license license:expat)))
