@@ -3501,8 +3501,8 @@ phenotype of interest.")
     (synopsis "Fast gene set enrichment analysis")
     (description
      "The package implements an algorithm for fast gene set enrichment
-analysis.  Using the fast algorithm allows to make more permutations and get
-more fine grained p-values, which allows to use accurate stantard approaches
+analysis.  Using the fast algorithm makes more permutations and gets
+more fine grained p-values, which allows using accurate standard approaches
 to multiple hypothesis correction.")
     (license license:expat)))
 
