@@ -19028,7 +19028,7 @@ logging in Python.  It also provides some custom formatters and handlers.")
     (home-page "https://github.com/jd/pifpaf")
     (synopsis "Tools and fixtures to manage daemons for testing in Python")
     (description "Pifpaf is a suite of fixtures and a command-line tool that
-allows to start and stop daemons for a quick throw-away usage.  This is typically
+starts and stops daemons for a quick throw-away usage.  This is typically
 useful when needing these daemons to run integration testing.  It originally
 evolved from its precursor @code{overtest}.")
     (license license:asl2.0)))
