@@ -2266,7 +2266,7 @@ radix-64 representation.  It is specified in RFC 4648.")
      `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://forge.ocamlcore.org/projects/ocamlify")
     (synopsis "Include files in OCaml code")
-    (description "OCamlify allows to create OCaml source code by including
+    (description "OCamlify creates OCaml source code by including
 whole files into OCaml string or string list.  The code generated can be
 compiled as a standard OCaml file.  It allows embedding external resources as
 OCaml code.")
