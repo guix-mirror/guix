@@ -22368,7 +22368,7 @@ conversion program}, a Japanese input method on Emacs.")
     (home-page "https://github.com/clemera/objed")
     (synopsis "Navigate and edit text objects")
     (description
-      "@code{emacs-objed} allows to navigate and edit text objects.  It
+      "@code{emacs-objed} allows navigating and editing text objects.  It
 enables modal editing and composition of commands, too.  It combines ideas of
 other Editors like Vim or Kakoune and tries to align them with regular Emacs
 conventions.")
