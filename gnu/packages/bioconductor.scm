@@ -4271,7 +4271,7 @@ investigation using RNA-seq data.")
     (home-page "https://bioconductor.org/packages/AUCell/")
     (synopsis "Analysis of gene set activity in single-cell RNA-seq data")
     (description
-     "AUCell allows to identify cells with active gene sets (e.g. signatures,
+     "AUCell identifies cells with active gene sets (e.g. signatures,
 gene modules, etc) in single-cell RNA-seq data.  AUCell uses the @dfn{Area
 Under the Curve} (AUC) to calculate whether a critical subset of the input
 gene set is enriched within the expressed genes for each cell.  The
