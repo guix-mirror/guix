@@ -4416,7 +4416,7 @@ on the XPP3 API (XML Pull Parser).")))
     (description "ASM is an all purpose Java bytecode manipulation and
 analysis framework.  It can be used to modify existing classes or dynamically
 generate classes, directly in binary form.  The provided common
-transformations and analysis algorithms allow to easily assemble custom
+transformations and analysis algorithms allow easily assembling custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
 
