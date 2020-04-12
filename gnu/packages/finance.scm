@@ -390,7 +390,7 @@ This package provides the Emacs mode.")
     (synopsis "Free Elster client, for sending Germany VAT declarations")
     (description
      "Geierlein is a free Elster client, i.e. an application that
-allows to send VAT declarations to Germany's fiscal authorities.
+sends VAT declarations to Germany's fiscal authorities.
 
 Currently it is *not* possible to send returns that are due annually
 (especially the income tax return) since the fiscal authority doesn't
