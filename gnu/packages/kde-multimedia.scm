@@ -191,7 +191,7 @@ This package is part of the KDE multimedia module.")
     (home-page "https://kde.org/applications/multimedia/org.kde.elisa")
     (synopsis "Powerful music player for Plasma 5")
     (description "Elisa is a simple music player aiming to provide a nice
-experience for its users.  Elisa allows to browse music by album, artist or
+experience for its users.  Elisa browses music by album, artist or
 all tracks.  The music is indexed using either a private indexer or an indexer
 using Baloo.  The private one can be configured to scan music on chosen paths.
 The Baloo one is much faster because Baloo is providing all needed data from
