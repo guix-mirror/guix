@@ -12487,8 +12487,8 @@ match and total match information in the mode-line in various search modes.")
   (home-page "https://github.com/skeeto/elisp-finalize")
   (synopsis "Finalizers for Emacs Lisp")
   (description
-    "This package will allows to immediately run a callback (a finalizer)
-after its registered lisp object has been garbage collected.  This allows for
+    "This package runs a callback (a finalizer)
+after its registered lisp object has been garbage collected.  This allows
 extra resources, such as buffers and processes, to be cleaned up after the
 object has been freed.")
   (license license:unlicense)))
