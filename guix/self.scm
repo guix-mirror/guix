@@ -489,6 +489,13 @@ TRANSLATIONS, an alist of msgid and msgstr."
 
   (computed-file "guix-manual" build))
 
+(define-syntax-rule (prevent-inlining! identifier ...)
+  (begin (set! identifier identifier) ...))
+
+;; XXX: These procedures are actually used by 'doc/build.scm'.  Protect them
+;; from inlining on Guile 3.
+(prevent-inlining! file-append* translate-texi-manuals info-manual)
+
 (define* (guile-module-union things #:key (name "guix-module-union"))
   "Return the union of the subset of THINGS (packages, computed files, etc.)
 that provide Guile modules."
