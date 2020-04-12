@@ -2019,7 +2019,7 @@ written in the Go programming language.")
     (build-system emacs-build-system)
     (home-page "https://github.com/jd/google-maps.el")
     (synopsis "Access Google Maps from Emacs")
-    (description "The @code{google-maps} package allows to display Google
+    (description "The @code{google-maps} package displays Google
 Maps directly inside Emacs.")
     (license license:gpl3+)))
 
