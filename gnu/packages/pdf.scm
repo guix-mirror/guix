@@ -162,7 +162,7 @@ where Flyer Composer steps in, creating a PDF which holds your flyer four
 times.  If you have a second page, Flyer Composer can arrange it the same way
 - even if the second page is in a separate PDF file.
 
-This package contains only the commnd line tool.  If you like to use the gui,
+This package contains only the command line tool.  If you like to use the gui,
 please install the @code{flyer-composer-gui} package.")))
 
 (define-public poppler
