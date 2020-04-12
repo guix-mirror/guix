@@ -142,7 +142,6 @@ representation."
        (documentation "Load kernel modules.")
        (provision '(kernel-module-loader))
        (requirement '(file-systems))
-       (respawn? #f)
        (one-shot? #t)
        (modules `((srfi srfi-1)
                   (srfi srfi-34)
