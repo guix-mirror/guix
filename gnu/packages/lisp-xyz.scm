@@ -6416,7 +6416,7 @@ power of CXML is available when necessary.")
          ("cl-xmlspam" ,sbcl-cl-xmlspam)
          ("ironclad" ,sbcl-ironclad)))
       (synopsis "D-Bus client library for Common Lisp")
-      (description "This is a Common Lisp library that allows to publish D-Bus
+      (description "This is a Common Lisp library that publishes D-Bus
 objects as well as send and notify other objects connected to a bus.")
       (license license:bsd-2))))
 
