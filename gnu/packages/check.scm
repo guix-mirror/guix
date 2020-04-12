@@ -1894,8 +1894,8 @@ possible to write plugins to add your own checks.")
     (synopsis
      "Simple extension to have parametrized unit tests")
     (description
-     "This package allows to create parametrized unit-tests that work with the standard
-unittest package.  A parametrized test case is automatically converted to multiple test
+     "This package creates parameterized unit-tests that work with the standard
+unittest package.  A parameterized test case is automatically converted to multiple test
 cases.  Since they are TestCase subclasses, they work with other test suites that
 recognize TestCases.")
     (license license:bsd-2)))
