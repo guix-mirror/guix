@@ -6426,7 +6426,7 @@ parametric mixture model.  The protein binding sites (clusters) are then
 resolved at high resolution and cluster statistics are estimated using a
 rigorous Bayesian framework.  Post-processing of the results, data export for
 UCSC genome browser visualization and motif search analysis are provided.  In
-addition, the package allows to integrate RNA-Seq data to estimate the False
+addition, the package integrates RNA-Seq data to estimate the False
 Discovery Rate of cluster detection.  Key functions support parallel multicore
 computing.  While wavClusteR was designed for PAR-CLIP data analysis, it can
 be applied to the analysis of other NGS data obtained from experimental
