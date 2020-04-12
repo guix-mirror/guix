@@ -1671,8 +1671,8 @@ encoding names are iconv-compatible.")
     (home-page "https://github.com/coldfix/udiskie")
     (synopsis "Automounter for removable media")
     (description
-     "The @command{udiskie} program is a udisks2 front-end that allows to
-manage removable media such as CDs or flash drives from userspace.
+     "The @command{udiskie} program is a udisks2 front-end that
+manages removable media such as CDs or flash drives from userspace.
 
 Its features include:
 
