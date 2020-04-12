@@ -4985,7 +4985,7 @@ cubes.")
        ("pkg-config" ,pkg-config)))
     (home-page "http://numerik.mi.fu-berlin.de/dune-subgrid/index.php")
     (synopsis "Distributed and Unified Numerics Environment")
-    (description "The dune-subgrid module allows to mark elements of
+    (description "The dune-subgrid module marks elements of
 another hierarchical dune grid.  The set of marked elements can then be
 accessed as a hierarchical dune grid in its own right.  Dune-Subgrid
 provides the full grid interface including adaptive mesh refinement.")
