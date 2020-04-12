@@ -908,7 +908,7 @@ The basic features of Geany are:
      `(("ncurses" ,ncurses)))
     (home-page "http://www.moria.de/~michael/fe/")
     (synopsis "Small folding editor")
-    (description "Fe is a small folding editor.  It allows to fold
+    (description "Fe is a small folding editor.  It folds
 arbitrary text regions; it is not bound to syntactic units.
 
 Fe has no configuration or extension language and requires no setup.
