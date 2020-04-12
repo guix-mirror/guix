@@ -7484,29 +7484,27 @@ for search-based navigation of buffers.")
     (license license:gpl2+)))
 
 (define-public emacs-helm-ag
-  (let ((commit "2fc02c4ead29bf0db06fd70740cc7c364cb650ac")
-        (revision "1"))
-    (package
-      (name "emacs-helm-ag")
-      (version (git-version "0.58" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/syohex/emacs-helm-ag.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1gnn0byywbld6afcq1vp92cjvy4wlag9d1wgymnqn86c3b1bcf21"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (home-page "https://github.com/syohex/emacs-helm-ag")
-      (synopsis "Helm interface to the Silver Searcher")
-      (description
-       "This package provides a frontend for grepping tools like ag and ack,
+  (package
+    (name "emacs-helm-ag")
+    (version "0.59")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-helm-ag.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vsz2b5qw4qahlf74059z4p1grinhfz28f0psw4c3qf4jasv3b9j"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/syohex/emacs-helm-ag")
+    (synopsis "Helm interface to the Silver Searcher")
+    (description
+     "This package provides a frontend for grepping tools like ag and ack,
 as well as features for editing search results.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
