@@ -8815,7 +8815,7 @@ make data-binding work.")
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://hdrhistogram.github.io/HdrHistogram")
     (synopsis "High dynamic range histogram")
-    (description "Hdrhistogram allows to create histograms that support
+    (description "Hdrhistogram creates histograms that support
 recording and analyzing sampled data value counts across a configurable integer
 value range with configurable value precision within the range.  Value precision
 is expressed as the number of significant digits in the value recording, and
