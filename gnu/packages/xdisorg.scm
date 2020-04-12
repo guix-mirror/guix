@@ -1055,7 +1055,7 @@ within a single process.")
     (home-page "https://github.com/alols/xcape")
     (synopsis "Use a modifier key in X.org as another key")
     (description
-     "This utility for X.org allows to use modifier key as another key when
+     "This utility for X.org uses a modifier key as another key when
 pressed and released on its own.  The default behaviour is to generate the
 Escape key when Left Control is pressed and released on its own.")
     (license license:gpl3+)))
