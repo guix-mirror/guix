@@ -452,7 +452,7 @@ a full-featured client for BitTorrent.")
      `(#:tests? #f)) ;; 2/7 tests fail (due to network issues?)
     (home-page "https://cgit.kde.org/libgravatar.git")
     (synopsis "Online avatar lookup library")
-    (description "This library allows to retrieve avatar images based on a
+    (description "This library retrieves avatar images based on a
 hash from a person's email address, as well as local caching to avoid
 unnecessary network operations.")
     (license ;; GPL for programs, LGPL for libraries
