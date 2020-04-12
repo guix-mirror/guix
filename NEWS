@@ -39,7 +39,10 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** ‘guix archive’ has a new ‘-t’ option to list archive contents
 *** ‘guix describe’ and similar commands emit terminal hyperlinks
 *** ‘guix build’ now attempts to substitute missing .drv files
+*** ‘guix package’ etc. now lock the profile they operate on
+*** ‘guix pull’ honors /etc/guix/channels.scm when it exists
 *** New ‘guix show’ command, synonymous with ‘guix package --show’
+*** The ‘--manifest’ option can be repeated to combine manifests
 *** Some commands previously lacking ‘--load-path’ now support it
 ** Distribution
 *** The set of pre-built bootstrap “binary seeds” has been halved
@@ -47,14 +50,27 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** Graphical installer allows users to choose an HTTP/HTTPS proxy
 *** Graphical installer allows users to edit the system configuration
 *** rottlog service is now part of ‘%base-services’
+*** ‘%base-services’ now includes /usr/bin/env as a “special file”
 *** ‘herd set-http-proxy guix-daemon URL’ can be used to set a proxy
-*** New services: provenance, XXX
+*** ‘qemu-binfmt’ service now supports riscv32 and riscv64
+*** File system UUIDs and labels are now supported for JFS
+*** New services
+
+auditd, fontconfig-file-system, getmail, gnome-keyring, kernel-module-loader,
+knot-resolver, mumi, nfs, nftables, nix, pagekite, pam-mount, patchwork,
+polkit-wheel, provenance, pulseaudio, sane, singularity, usb-modeswitch
+
 *** XXX new packages
 *** XXX package updates
 ** Programming interfaces
+*** New build systems
+
+copy-build-system, julia-build-system, node-build-system, qt-build-system
+
 *** New ‘with-build-handler’ and ‘map/accumulate-builds’ in (guix store)
 *** (guix gexp) has a new ‘with-parameters’ form
 *** New (guix remote) module for remote evaluation of gexps
+*** New ‘eval/container’ procedure in (gnu system linux-container)
 *** (guix inferior) now reifies exceptions as ‘&inferior-exception’
 *** (guix cve) uses the new NIST-provided JSON files instead of XML
 *** New (guix json) module to map JSON objects to Scheme records
