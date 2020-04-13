@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -129,14 +129,14 @@ in between these sequences may be different in both content and length.")
 (define-public liburcu
   (package
     (name "liburcu")
-    (version "0.11.1")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lttng.org/files/urcu/"
                                   "userspace-rcu-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l1kxgzch4m8fxiz2hc8fwg56hrvzzspp7n0svnl7i7iycdrgfcj"))))
+                "15wzk3nyy6gh6i7xhksxzs8fjar1g4ddz51iahk1v7lq0vjip6s0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ; for tests
