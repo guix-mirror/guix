@@ -373,17 +373,26 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                   (('*ENTITY* _ ...) #t)
                   (_ #f)))
 
+              (define (worthy-entry? lst)
+                ;; Attempt to match:
+                ;;   Scheme Variable: <strong>x</strong>
+                ;; but not:
+                ;;   <code>cups-configuration</code> parameter: …
+                (let loop ((lst lst))
+                  (match lst
+                    (((? string-or-entity?) rest ...)
+                     (loop rest))
+                    ((('strong _ ...) _ ...)
+                     #t)
+                    (_ #f))))
+
               (let ((shtml (call-with-input-file file html->shtml)))
                 (let loop ((shtml shtml)
                            (vhash vhash))
                   (match shtml
-                    ;; Attempt to match:
-                    ;;  <dt>Scheme Variable: <strong>x</strong></dt>
-                    ;; but not:
-                    ;;  <dt><code>cups-configuration</code> parameter: …</dt>
-                    (('dt ('@ ('id id))
-                          (? string-or-entity?) ... ('strong _ ...) _ ...)
-                     (if (string-prefix? "index-" id)
+                    (('dt ('@ ('id id)) rest ...)
+                     (if (and (string-prefix? "index-" id)
+                              (worthy-entry? rest))
                          (vhash-cons (anchor-id->key id)
                                      (string-append (basename file)
                                                     "#" id)
