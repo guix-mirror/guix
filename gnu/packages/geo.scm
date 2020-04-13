@@ -1985,7 +1985,7 @@ growing set of geoscientific methods.")
        ("qtwebkit" ,qtwebkit)
        ("qwt" ,qwt)
        ("saga" ,saga)
-       ("sqlite" ,sqlite-with-column-metadata)))
+       ("sqlite" ,sqlite)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
