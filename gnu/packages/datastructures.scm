@@ -181,7 +181,7 @@ queues, stacks, and doubly-linked lists.")
            ;; There is no top-level Makefile to do this for us.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
                     (include (string-append out "/include")))
                ;; Don't install HTML files: they're just the below .txt files
                ;; dolled up, can be stale, and regeneration requires asciidoc.
