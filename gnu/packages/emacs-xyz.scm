@@ -14161,12 +14161,12 @@ their meaning for the current Emacs major-mode.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ref
-  (let ((commit "8c9b5d7efb9f0c1ad5186b8203bdd017f4249129")
-        (revision "1"))
+  ;; No release since June 2017.
+  (let ((commit "5bb9be2232db72b04754d7e4c02a3976ad422f6f")
+        (revision "2"))
     (package
       (name "emacs-org-ref")
-      (version (string-append "1.1.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "1.1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14175,29 +14175,40 @@ their meaning for the current Emacs major-mode.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1rxz0bjdsayk0slv23i07d9xhj2m7s4hsc81wc2d1cs52dkr5zmz"))))
+          (base32 "15gcvbfj19kyv4nxa632b261dwhb26m99plq230qhv9ssfwfgxbx"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
          ("emacs-helm" ,emacs-helm)
          ("emacs-helm-bibtex" ,emacs-helm-bibtex)
-         ("emacs-ivy" ,emacs-ivy)
+         ("emacs-htmlize" ,emacs-htmlize)
          ("emacs-hydra" ,emacs-hydra)
+         ("emacs-ivy" ,emacs-ivy)
          ("emacs-key-chord" ,emacs-key-chord)
-         ("emacs-s" ,emacs-s)
-         ("emacs-f" ,emacs-f)
-         ("emacs-pdf-tools" ,emacs-pdf-tools)))
+         ("emacs-pdf-tools" ,emacs-pdf-tools)
+         ("emacs-s" ,emacs-s)))
       (home-page "https://github.com/jkitchin/org-ref")
-      (synopsis "Citations, cross-references and bibliographies in org-mode")
+      (synopsis "Citations, cross-references and bibliographies in Org mode")
       (description
-       "Lisp code to setup bibliography, cite, ref and label org-mode links.
-Also sets up reftex and helm for org-mode citations.  The links are
-clickable and do things that are useful.
+       "Org Ref is an Emacs library that provides rich support for citations,
+labels and cross-references in Org mode.
 
-The default setup uses helm-bibtex.
+The basic idea of Org Ref is that it defines a convenient interface to insert
+citations from a reference database (e.g., from BibTeX files), and a set of
+functional Org links for citations, cross-references and labels that export
+properly to LaTeX, and that provide clickable functionality to the user.  Org
+Ref interfaces with Helm BibTeX to facilitate citation entry, and it can also
+use RefTeX.
 
-You should really read org-ref.org in this package for details.")
+It also provides a fairly large number of utilities for finding bad citations,
+extracting BibTeX entries from citations in an Org file, and functions to
+create and modify BibTeX entries from a variety of sources, most notably from
+a DOI.
+
+Org Ref is especially suitable for Org documents destined for LaTeX export and
+scientific publication.  Org Ref is also useful for research documents and
+notes.")
       (license license:gpl3+))))
 
 ;; This project is unmaintained.  Please use emacs-org-re-reveal instead.
