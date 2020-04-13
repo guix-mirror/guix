@@ -115,7 +115,7 @@ and time-efficient for good hash functions.")
                (base32
                 "1igqy0j7jrklb8fdlrm6ald4cyl1fda5ipfl8crzyl6bax2ajk3f"))))
     (build-system gnu-build-system)
-    (home-page "http://ssdeep.sourceforge.net")
+    (home-page "https://ssdeep-project.github.io")
     (synopsis "Context-triggered piecewise hashing algorithm")
     (description "ssdeep computes and matches context triggered piecewise
 hashes (CTPH), also called fuzzy checksums.  It can identify similar files
