@@ -1505,16 +1505,16 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.45.5")
+    (version "1.45.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/kernel/people/tytso/"
-                   name "/v" version "/"
-                   name "-" version ".tar.xz"))
+                   "e2fsprogs/v" version "/"
+                   "e2fsprogs-" version ".tar.xz"))
              (sha256
               (base32
-               "1pmf8inp736l587rqq7qsd8bv0mmg5cwrivxg5p5awqgv70crypr"))))
+               "0mj2yizwygs7xww8jfy5mxjn8ww4pvc0b1hg1p2vsnirailsx9zz"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
