@@ -152,7 +152,7 @@ queues, stacks, and doubly-linked lists.")
 (define-public uthash
   (package
     (name "uthash")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -161,8 +161,7 @@ queues, stacks, and doubly-linked lists.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0kslz8k6lssh7fl7ayzwlj62p0asxs3dq03357ls5ywjad238gqg"))))
+        (base32 "0k80bjbb6ss5wpmfmfji6xbyjm990hg9kcshwwnhdnh73vxkcd1m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
