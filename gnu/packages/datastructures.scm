@@ -115,6 +115,9 @@ and time-efficient for good hash functions.")
        (sha256
         (base32 "04qkjc6kksxkv7xbnk32rwmf3a8czdv2vvrdzfs0kw06h73snbpz"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
     (home-page "https://ssdeep-project.github.io")
     (synopsis "Context-triggered piecewise hashing algorithm")
     (description "ssdeep computes and matches context triggered piecewise
