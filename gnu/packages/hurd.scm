@@ -5,6 +5,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,6 +414,9 @@ boot, since this cannot be done from GNU/Linux."
                (substitute* '("startup/startup.c" "init/init.c" "config/ttys")
                  (("/libexec/")
                   (string-append out "/libexec/")))
+               (substitute* '("utils/uptime.sh")
+                 (("/bin/w")
+                  (string-append out "/bin/w")))
                (substitute* "daemons/console-run.c"
                  (("/hurd/")
                   (string-append out "/hurd/")))
