@@ -58,6 +58,7 @@
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
@@ -197,6 +199,14 @@
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
              #t))
+          ,@(if (hurd-system?)
+                `((add-before 'build 'patch-regen-for-hurd
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((libc (assoc-ref inputs "libc")))
+                        (substitute* "Lib/plat-generic/regen"
+                          (("/usr/include/") (string-append libc "/include/")))
+                        #t))))
+                '())
           (add-before 'configure 'do-not-record-configure-flags
             (lambda* (#:key configure-flags #:allow-other-keys)
               ;; Remove configure flags from the installed '_sysconfigdata.py'
@@ -383,7 +393,9 @@ data types.")
                 " test_socket")))
        ((#:phases phases)
        `(modify-phases ,phases
-
+          ,@(if (hurd-system?)
+                `((delete 'patch-regen-for-hurd)) ;regen was removed after 3.5.9
+                '())
           (add-before 'check 'set-TZDIR
             (lambda* (#:key inputs native-inputs #:allow-other-keys)
               ;; test_email requires the Olson time zone database.
