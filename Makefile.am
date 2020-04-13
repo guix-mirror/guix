@@ -7,7 +7,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017 Leo Famulari <leo@famulari.name>
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-# Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2017, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 # Copyright © 2018 Nikita <nikita@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
@@ -348,6 +348,7 @@ AUX_FILES =						\
 EXAMPLES =					\
   gnu/system/examples/asus-c201.tmpl		\
   gnu/system/examples/bare-bones.tmpl		\
+  gnu/system/examples/bare-hurd.tmpl		\
   gnu/system/examples/beaglebone-black.tmpl	\
   gnu/system/examples/desktop.tmpl		\
   gnu/system/examples/lightweight-desktop.tmpl	\
