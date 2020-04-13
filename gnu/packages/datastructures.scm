@@ -105,15 +105,15 @@ and time-efficient for good hash functions.")
 (define-public ssdeep
   (package
     (name "ssdeep")
-    (version "2.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ssdeep/"
-                                  name "-" version "/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1igqy0j7jrklb8fdlrm6ald4cyl1fda5ipfl8crzyl6bax2ajk3f"))))
+    (version "2.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ssdeep-project/ssdeep/"
+                           "releases/download/release-" version "/"
+                           "ssdeep-" version ".tar.gz"))
+       (sha256
+        (base32 "04qkjc6kksxkv7xbnk32rwmf3a8czdv2vvrdzfs0kw06h73snbpz"))))
     (build-system gnu-build-system)
     (home-page "https://ssdeep-project.github.io")
     (synopsis "Context-triggered piecewise hashing algorithm")
