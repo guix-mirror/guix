@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
@@ -53,6 +53,7 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -11312,3 +11313,42 @@ in DEFPACKAGE.")
 
 (define-public cl-trivial-package-local-nicknames
   (sbcl-package->cl-source-package sbcl-trivial-package-local-nicknames))
+
+(define-public sbcl-enchant
+  (let ((commit "6af162a7bf10541cbcfcfa6513894900329713fa"))
+    (package
+      (name "sbcl-enchant")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/tlikonen/cl-enchant")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19yh5ihirzi1d8xqy1cjqipzd6ly3245cfxa5s9xx496rryz0s01"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("enchant" ,enchant)
+         ("cffi" ,sbcl-cffi)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "load-enchant.lisp"
+                 (("libenchant")
+                  (string-append
+                   (assoc-ref inputs "enchant") "/lib/libenchant-2"))))))))
+      (synopsis "Common Lisp interface for the Enchant spell-checker library")
+      (description
+       "Enchant is a Common Lisp interface for the Enchant spell-checker
+library.  The Enchant library is a generic spell-checker library which uses
+other spell-checkers transparently as back-end.  The library supports the
+multiple checkers, including Aspell and Hunspell.")
+      (license license:public-domain))))
+
+(define-public cl-enchant
+  (sbcl-package->cl-source-package sbcl-enchant))
