@@ -75,6 +75,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19498,3 +19499,27 @@ there are extensions that allow you to use it with other frameworks.")
 register external CLI commands via setuptools entry-points.")
     (home-page "https://github.com/click-contrib/click-plugins")
     (license license:bsd-3)))
+
+(define-public python-diceware
+  (package
+    (name "python-diceware")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "diceware" version))
+       (sha256
+        (base32
+         "0klb0ysybzlh2wihvir82hgq62v0jjmlcqklwajyms7c0p529yby"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/ulif/diceware/")
+    (synopsis "Generates memorable passphrases")
+    (description "This package generates passphrases by concatenating words
+randomly picked from wordlists.  It supports several sources of
+randomness (including real life dice) and different wordlists (including
+cryptographically signed ones).")
+    (license license:gpl3+)))
