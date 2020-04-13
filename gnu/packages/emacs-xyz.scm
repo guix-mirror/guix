@@ -22452,3 +22452,29 @@ by tags.  Notes can be found and created quickly.  Org Roam should also work
 as a plug-and-play solution for anyone already using Org mode for their
 personal wiki.")
     (license license:gpl3+)))
+
+(define-public emacs-uml-mode
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "4c37ac1c4424b2313cd8f16ba48a98a4cc214200")
+        (revision "1"))
+    (package
+      (name "emacs-uml-mode")
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ianxm/emacs-uml.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "145i4srnfvd1vyibri2a1l6p9mbjvkkwlrpi41134pbarqffcnka"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/ianxm/emacs-uml")
+      (synopsis "Minor mode for editing ASCII UML sequence diagrams")
+      (description "Emacs UML mode is a minor mode that makes it easy to build
+ASCII UML sequence diagrams in Emacs, which can be embedded in source code,
+comments or emails.")
+      (license license:gpl3+))))
+
