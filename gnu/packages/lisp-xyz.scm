@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
@@ -53,6 +53,7 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -2785,8 +2786,8 @@ advantage of the library is the ability to concisely define command line
 options once and then use this definition for parsing and extraction of
 command line arguments, as well as printing description of command line
 options (you get --help for free).  This way you don't need to repeat
-yourself.  Also, @command{unix-opts} doesn't depend on anything and allows to
-precisely control behavior of the parser via Common Lisp restarts.")
+yourself.  Also, @command{unix-opts} doesn't depend on anything and
+precisely controls the behavior of the parser via Common Lisp restarts.")
     (license license:expat)))
 
 (define-public cl-unix-opts
@@ -3046,10 +3047,10 @@ is a library for creating graphical user interfaces.")
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "4832c99c31e0eb1fcce3779d119343ae8a423952"))
+  (let ((commit "d97115ca601838dfa60ea7afbb88641d7a526dba"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "1" commit))
+      (version (git-version "2.4" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -3059,7 +3060,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "0sn7m181wfg1q49q45dlsry8c38x7pziqcs0frnymk6yvgndybxd"))))
+           "0sdb2l2h5xv5c1m2mfq31i9yl6zjf512fvwwzlvk9nvisyhc4xi3"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -5508,7 +5509,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (synopsis "IEEE 754 binary representation for floats in Common Lisp")
-      (description "This is a Common Lisp library that allows to convert
+      (description "This is a Common Lisp library that converts
 floating point values to IEEE 754 binary representation.")
       (license license:bsd-3))))
 
@@ -6422,7 +6423,7 @@ power of CXML is available when necessary.")
          ("cl-xmlspam" ,sbcl-cl-xmlspam)
          ("ironclad" ,sbcl-ironclad)))
       (synopsis "D-Bus client library for Common Lisp")
-      (description "This is a Common Lisp library that allows to publish D-Bus
+      (description "This is a Common Lisp library that publishes D-Bus
 objects as well as send and notify other objects connected to a bus.")
       (license license:bsd-2))))
 
@@ -11318,3 +11319,42 @@ in DEFPACKAGE.")
 
 (define-public cl-trivial-package-local-nicknames
   (sbcl-package->cl-source-package sbcl-trivial-package-local-nicknames))
+
+(define-public sbcl-enchant
+  (let ((commit "6af162a7bf10541cbcfcfa6513894900329713fa"))
+    (package
+      (name "sbcl-enchant")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/tlikonen/cl-enchant")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19yh5ihirzi1d8xqy1cjqipzd6ly3245cfxa5s9xx496rryz0s01"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("enchant" ,enchant)
+         ("cffi" ,sbcl-cffi)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "load-enchant.lisp"
+                 (("libenchant")
+                  (string-append
+                   (assoc-ref inputs "enchant") "/lib/libenchant-2"))))))))
+      (synopsis "Common Lisp interface for the Enchant spell-checker library")
+      (description
+       "Enchant is a Common Lisp interface for the Enchant spell-checker
+library.  The Enchant library is a generic spell-checker library which uses
+other spell-checkers transparently as back-end.  The library supports the
+multiple checkers, including Aspell and Hunspell.")
+      (license license:public-domain))))
+
+(define-public cl-enchant
+  (sbcl-package->cl-source-package sbcl-enchant))

@@ -135,8 +135,11 @@
     "third_party/dawn" ;ASL2.0
     "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/devtools-frontend" ;BSD-3
+    "third_party/devtools-frontend/src/front_end/third_party/fabricjs" ;Expat
+    "third_party/devtools-frontend/src/front_end/third_party/wasmparser" ;ASL2.0
     "third_party/devtools-frontend/src/third_party/axe-core" ;MPL2.0
     "third_party/devtools-frontend/src/third_party/pyjson5" ;ASL2.0
+    "third_party/devtools-frontend/src/third_party/typescript" ;ASL2.0
     "third_party/dom_distiller_js" ;BSD-3
     "third_party/emoji-segmenter" ;ASL2.0
     "third_party/flatbuffers" ;ASL2.0
@@ -196,7 +199,6 @@
     "third_party/qcms" ;Expat
     "third_party/rnnoise" ;BSD-3
     "third_party/s2cellid" ;ASL2.0
-    "third_party/sfntly" ;ASL2.0
     "third_party/skia" ;BSD-3
     "third_party/skia/include/third_party/skcms" ;BSD-3
     "third_party/skia/third_party/skcms" ;BSD-3
@@ -206,7 +208,6 @@
     "third_party/spirv-headers" ;ASL2.0
     "third_party/SPIRV-Tools" ;ASL2.0
     "third_party/sqlite" ;Public domain
-    "third_party/ungoogled" ;BSD-3
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
     "third_party/wayland/wayland_scanner_wrapper.py" ;BSD-3
@@ -247,9 +248,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "80.0.3987.163")
-(define %ungoogled-revision "516e2d990a50a4bbeb8c583e56333c2935e2af95")
-(define %debian-revision "debian/80.0.3987.116-1")
+(define %chromium-version "81.0.4044.92")
+(define %ungoogled-revision "b484ad4c0bdb696c86d941798ae6b0e2bd0db35d")
+(define %debian-revision "debian/81.0.4044.92-1")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
@@ -263,7 +264,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "0ikk4cgz3jgjhyncsvlqvlc03y7jywjpa6v34fwsjxs88flyzpdn"))))
+      "0i0szd749ihb08rxnsmsbxq75b6x952wpk94jwc0ncv6gb83zkx2"))))
 
 (define %ungoogled-origin
   (origin
@@ -274,7 +275,7 @@ from forcing GEXP-PROMISE."
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "0nm55qq4ahw9haf5g7hmzic4mr2xjgpay7lxps7xjp7s1pda4g0q"))))
+      "071a33idn2zcix6z8skn7y85mhb9w5s0bh0fvrjm269y7cmjrh3l"))))
 
 (define %debian-origin
   (origin
@@ -288,7 +289,7 @@ from forcing GEXP-PROMISE."
                                 (_ (string-take %debian-revision 7)))))
     (sha256
      (base32
-      "1cc5sp566dd8f2grgr770xwbxgxf58dk1w7q3s8pmv4js5h3pwq8"))))
+      "0srgbcqga3l75bfkv3bnmjk416189nazsximvzdx2k5n8v5k4p3m"))))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -319,8 +320,7 @@ from forcing GEXP-PROMISE."
                   (list #+(canonical-package patch)
                         #+(canonical-package xz)
                         #+(canonical-package tar)
-                        #+python-2
-                        #+python))
+                        #+python-wrapper))
 
                  (copy-recursively #+ungoogled-source "/tmp/ungoogled")
 
@@ -338,11 +338,11 @@ from forcing GEXP-PROMISE."
 
                    (format #t "Ungooglifying...~%")
                    (force-output)
-                   (invoke "python3" "utils/prune_binaries.py" chromium-dir
+                   (invoke "python" "utils/prune_binaries.py" chromium-dir
                            "pruning.list")
-                   (invoke "python3" "utils/patches.py" "apply"
+                   (invoke "python" "utils/patches.py" "apply"
                            chromium-dir "patches")
-                   (invoke "python3" "utils/domain_substitution.py" "apply" "-r"
+                   (invoke "python" "utils/domain_substitution.py" "apply" "-r"
                            "domain_regex.list" "-f" "domain_substitution.list"
                            "-c" "/tmp/domainscache.tar.gz" chromium-dir)
 
@@ -390,13 +390,13 @@ from forcing GEXP-PROMISE."
 
                      (format #t "Pruning third party files...~%")
                      (force-output)
-                     (apply invoke "python"
+                     (apply invoke (string-append #+python-2 "/bin/python")
                             "build/linux/unbundle/remove_bundled_libraries.py"
                             "--do-remove" preserved-files)
 
                      (format #t "Replacing GN files...~%")
                      (force-output)
-                     (invoke "python3" "build/linux/unbundle/replace_gn_files.py"
+                     (invoke "python" "build/linux/unbundle/replace_gn_files.py"
                              "--system-libraries" "ffmpeg" "flac" "fontconfig"
                              "freetype" "harfbuzz-ng" "icu" "libdrm" "libevent"
                              "libjpeg" "libpng" "libvpx" "libwebp" "libxml"
@@ -450,7 +450,6 @@ from forcing GEXP-PROMISE."
        ;; directory for an exhaustive list of supported flags.
        ;; (Note: The 'configure' phase will do that for you.)
        (list "is_debug=false"
-             "is_cfi=false"
              "use_gold=false"
              "use_lld=false"
              "clang_use_chrome_plugins=false"
@@ -636,8 +635,13 @@ from forcing GEXP-PROMISE."
              (setenv "AR" "ar") (setenv "NM" "nm")
              (setenv "CC" "clang") (setenv "CXX" "clang++")
 
-             ;; Do not optimize away null pointer safety checks.
-             (setenv "CXXFLAGS" "-fno-delete-null-pointer-checks")
+             (setenv "CXXFLAGS"
+                     (string-join
+                      '(;; Do not optimize away null pointer safety checks.
+                        "-fno-delete-null-pointer-checks"
+                        ;; Disable warnings about unknown warnings that require
+                        ;; Clang plugins or newer versions.
+                        "-Wno-unknown-warning-option")))
 
              ;; TODO: pre-compile instead. Avoids a race condition.
              (setenv "PYTHONDONTWRITEBYTECODE" "1")
@@ -782,7 +786,7 @@ from forcing GEXP-PROMISE."
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c)
+       ("icu4c" ,icu4c-66.1)
        ("jsoncpp" ,jsoncpp)
        ("lcms" ,lcms)
        ("libevent" ,libevent)

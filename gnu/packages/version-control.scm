@@ -684,6 +684,24 @@ write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license license:gpl2)))
 
+(define-public libgit2-0.28
+  (package
+    (inherit libgit2)
+    (version "0.28.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/libgit2/libgit2/releases/"
+                            "download/v" version
+                            "/libgit2-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0hjgpqjjmkciw1i8jqkx9q2vhdc4fc99qajhrj2bq8ziwsp6hyrb"))
+        (patches (search-patches "libgit2-mtime-0.patch"))
+        (modules '((guix build utils)))
+        (snippet '(begin
+                    (delete-file-recursively "deps") #t))))))
+
 (define-public git-crypt
   (package
     (name "git-crypt")

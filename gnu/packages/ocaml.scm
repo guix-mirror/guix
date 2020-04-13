@@ -1179,7 +1179,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
     (home-page "https://github.com/c-cube/qcheck")
     (synopsis "QuickCheck inspired property-based testing for OCaml")
     (description "QuickCheck inspired property-based testing for OCaml. This
-module allows to check invariants (properties of some types) over randomly
+module checks invariants (properties of some types) over randomly
 generated instances of the type. It provides combinators for generating
 instances and printing them.")
     (license license:lgpl3+)))
@@ -1534,7 +1534,7 @@ manipulate such data.")
          (delete 'configure))))
     (home-page "http://erratique.ch/software/mtime")
     (synopsis "Monotonic wall-clock time for OCaml")
-    (description "Access monotonic wall-clock time.  It allows to measure time
+    (description "Access monotonic wall-clock time.  It measures time
 spans without being subject to operating system calendar time adjustments.")
     (license license:isc)))
 
@@ -2266,7 +2266,7 @@ radix-64 representation.  It is specified in RFC 4648.")
      `(("ocamlbuild" ,ocamlbuild)))
     (home-page "https://forge.ocamlcore.org/projects/ocamlify")
     (synopsis "Include files in OCaml code")
-    (description "OCamlify allows to create OCaml source code by including
+    (description "OCamlify creates OCaml source code by including
 whole files into OCaml string or string list.  The code generated can be
 compiled as a standard OCaml file.  It allows embedding external resources as
 OCaml code.")

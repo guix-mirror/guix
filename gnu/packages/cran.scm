@@ -11532,7 +11532,7 @@ JASA, 94:496-509.")
     (home-page "https://cran.r-project.org/web/packages/etm")
     (synopsis "Empirical transition matrix")
     (description
-     "The @dfn{empirical transition matrix} (etm) package permits to estimate
+     "The @dfn{empirical transition matrix} (etm) package estimates
 the matrix of transition probabilities for any time-inhomogeneous multistate
 model with finite state space using the Aalen-Johansen estimator.")
     (license license:expat)))
@@ -13880,7 +13880,7 @@ redirection on the fly, which appears to be very useful for teaching purposes,
 as the student can keep a copy of the produced output to keep all that they
 did during the course.  The package comes with a vignette describing how to
 write HTML reports for statistical analysis.  Finally, a driver for Sweave
-allows to parse HTML flat files containing R code and to automatically write
+parses HTML flat files containing R code and to automatically write
 the corresponding outputs (tables and graphs).")
     (license license:gpl2+)))
 
@@ -15863,7 +15863,7 @@ be used further by e.g. graphic devices.")
      "This package provides several layout algorithms to visualize networks
 which are not part of the igraph library.  Most are based on the concept of
 stress majorization by Gansner et al. (2004)
-<doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms allow to
+<doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms
 emphasize hidden group structures in networks or focus on specific nodes.")
     (license license:expat)))
 

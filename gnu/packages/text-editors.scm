@@ -9,6 +9,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,12 +31,14 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages aspell)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
@@ -49,6 +52,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -61,6 +65,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -186,6 +191,97 @@ competitive (as in keystroke count) with Vim.")
 interface similar to many user-friendly editors.  JOE has some of the key
 bindings and many of the powerful features of GNU Emacs.")
     (license license:gpl3+)))
+
+(define-public jucipp
+  (package
+    (name "jucipp")
+    (version "1.5.1")
+    (home-page "https://gitlab.com/cppit/jucipp")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))
+                                  ;; Two submodules are required which are
+                                  ;; developed alongside JuCi++ and difficult
+                                  ;; to package separately.
+                                  (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0v7fmsya2zn1xx59bkv4cbyinmcnv52hm4j40nbfwalcks631xrr"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_TESTING=ON"
+
+                           ;; These arguments are here to facilitate an "in-source"
+                           ;; build using "./build" instead of the default "../build".
+                           ;; The test suite expects that to be the case.
+                           "..")
+       #:out-of-source? #f
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'enter-build-directory
+                    (lambda _
+                      (mkdir "build")
+                      (chdir "build")
+                      #t))
+
+                  ;; This phase is necessary to fix a test failure, see
+                  ;; <https://gitlab.com/cppit/jucipp/-/issues/423>.
+                  (add-after 'unpack 'add-reference-to-clang-internal-header
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "src/compile_commands.cc"
+                        ((".*-I/usr/lib/clang.*" all)
+                         (string-append "arguments.emplace_back(\"-I"
+                                        (assoc-ref inputs "libclang")
+                                        "/lib/clang/"
+                                        ,@(list (package-version clang))
+                                        "/include\");\n"
+                                        all)))
+                      #t))
+                  (add-after 'unpack 'patch-tiny-process-library
+                    (lambda _
+                      (with-directory-excursion "lib/tiny-process-library"
+                        (substitute* '("process_unix.cpp"
+                                       "tests/io_test.cpp")
+                          (("/bin/sh") (which "sh"))))
+                      #t))
+                  (add-after 'unpack 'disable-git-test
+                    (lambda _
+                      (substitute* "tests/CMakeLists.txt"
+                        ;; Disable the git test, as it requires the full checkout.
+                        (("add_test\\(git_test.*\\)") ""))
+                      #t))
+                  (add-before 'check 'pre-check
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; Tests do not expect HOME to be empty.
+                      (setenv "HOME" "/etc")
+
+                      ;; Most tests require an X server.
+                      (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                            (display ":1"))
+                        (setenv "DISPLAY" display)
+                        (system (string-append xorg-server "/bin/Xvfb "
+                                               display " &")))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("aspell" ,aspell)
+       ("boost" ,boost)
+       ("gtkmm" ,gtkmm)
+       ("gtksourceviewmm" ,gtksourceviewmm)
+       ("libclang" ,clang)
+       ("libgit2" ,libgit2)))
+    (synopsis "Lightweight C++ IDE")
+    (description
+     "juCi++ is a small @dfn{IDE} (Integrated Development Environment)
+designed especially towards libclang with speed, stability, and ease of use
+in mind.
+
+It supports autocompletion, on-the-fly warnings and errors, syntax
+highlighting, and integrates with Git as well as the CMake and Meson build
+systems.")
+    (license license:expat)))
 
 (define-public leafpad
   (package
@@ -812,7 +908,7 @@ The basic features of Geany are:
      `(("ncurses" ,ncurses)))
     (home-page "http://www.moria.de/~michael/fe/")
     (synopsis "Small folding editor")
-    (description "Fe is a small folding editor.  It allows to fold
+    (description "Fe is a small folding editor.  It folds
 arbitrary text regions; it is not bound to syntactic units.
 
 Fe has no configuration or extension language and requires no setup.

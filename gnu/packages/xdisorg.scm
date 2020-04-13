@@ -604,7 +604,7 @@ System style license, and has no special dependencies.")
     (home-page "http://tomas.styblo.name/wmctrl/")
     (synopsis "Command-line tool to control X window managers")
     (description
-     "Wmctrl allows to interact with an X window manager that is compatible
+     "Wmctrl interacts with an X window manager that is compatible
 with the EWMH/NetWM specification.  It can query the window manager for
 information, and request for certain window management actions (resize and
 move windows, switch between desktops, etc.).")
@@ -637,7 +637,7 @@ move windows, switch between desktops, etc.).")
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
-     "Scrot allows to save a screenshot of a full screen, a window or a part
+     "Scrot saves a screenshot of a full screen, a window or a part
 of the screen selected by mouse.")
     ;; This license removes a clause about X Consortium from the original
     ;; X11 license.
@@ -1057,7 +1057,7 @@ within a single process.")
     (home-page "https://github.com/alols/xcape")
     (synopsis "Use a modifier key in X.org as another key")
     (description
-     "This utility for X.org allows to use modifier key as another key when
+     "This utility for X.org uses a modifier key as another key when
 pressed and released on its own.  The default behaviour is to generate the
 Escape key when Left Control is pressed and released on its own.")
     (license license:gpl3+)))
@@ -1733,7 +1733,7 @@ commandline).")
        `(#:tests? #f))
       (synopsis "Use external screen locker on events")
       (description "@code{xss-lock} listens to X signals to fire up a
-user-defined screensaver.  In effect this allows to automatically lock the
+user-defined screensaver.  In effect this automatically locks the
 screen when closing a laptop lid or after a period of user inactivity (as set
 with @code{xset s TIMEOUT}).  The notifier command, if specified, is executed
 first.  Additionally, xss-lock uses the inhibition logic to lock the screen

@@ -343,7 +343,7 @@ sometimes even without using a single syscall.")
     (build-system perl-build-system)
     (home-page "https://metacpan.org/pod/Attribute::Util")
     (synopsis "Assorted general utility attributes")
-    (description "This packages provides various utility functions.  When used
+    (description "This package provides various utility functions.  When used
 without argument, this module provides four universally accessible attributes
 of general interest as follows:
 @itemize

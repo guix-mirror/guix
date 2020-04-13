@@ -5018,7 +5018,7 @@ cubes.")
        ("pkg-config" ,pkg-config)))
     (home-page "http://numerik.mi.fu-berlin.de/dune-subgrid/index.php")
     (synopsis "Distributed and Unified Numerics Environment")
-    (description "The dune-subgrid module allows to mark elements of
+    (description "The dune-subgrid module marks elements of
 another hierarchical dune grid.  The set of marked elements can then be
 accessed as a hierarchical dune grid in its own right.  Dune-Subgrid
 provides the full grid interface including adaptive mesh refinement.")
@@ -5485,7 +5485,7 @@ researchers and developers alike to get started on SAT.")
 It provides basic and advanced functionality.  Features include customizable
 functions, unit calculations, and conversions, physical constants, symbolic
 calculations (including integrals and equations), arbitrary precision,
-uncertainity propagation, interval arithmetic, plotting and a user-friendly
+uncertainty propagation, interval arithmetic, plotting and a user-friendly
 cli.")
     (license license:gpl2+)))
 

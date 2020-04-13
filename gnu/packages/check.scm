@@ -582,14 +582,14 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.7.1")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
         (base32
-         "1vapry9lyfb2mlpgk2wh9079hzxzq5120bsczncxxay663mdp53a"))))
+         "0g1q6n7fkanjv7i1djzw62f46xf573jvza7afabh3baqjqxy7rpd"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1952,8 +1952,8 @@ possible to write plugins to add your own checks.")
     (synopsis
      "Simple extension to have parametrized unit tests")
     (description
-     "This package allows to create parametrized unit-tests that work with the standard
-unittest package.  A parametrized test case is automatically converted to multiple test
+     "This package creates parameterized unit-tests that work with the standard
+unittest package.  A parameterized test case is automatically converted to multiple test
 cases.  Since they are TestCase subclasses, they work with other test suites that
 recognize TestCases.")
     (license license:bsd-2)))

@@ -4422,7 +4422,7 @@ on the XPP3 API (XML Pull Parser).")))
     (description "ASM is an all purpose Java bytecode manipulation and
 analysis framework.  It can be used to modify existing classes or dynamically
 generate classes, directly in binary form.  The provided common
-transformations and analysis algorithms allow to easily assemble custom
+transformations and analysis algorithms allow easily assembling custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
 
@@ -7426,7 +7426,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
     (home-page "https://github.com/barteo/microemu")
     (synopsis "J2ME CLDC emulator")
     (description "Microemulator is a Java 2 Micro Edition (J2ME) CLDC/MIDP
-Emulator.  It allows to demonstrate MIDlet based applications in web browser
+Emulator.  It demonstrates MIDlet based applications in web browser
 applet and can be run as a standalone java application.")
     (license (list license:asl2.0
                    ;; or altenatively:
@@ -8821,7 +8821,7 @@ make data-binding work.")
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://hdrhistogram.github.io/HdrHistogram")
     (synopsis "High dynamic range histogram")
-    (description "Hdrhistogram allows to create histograms that support
+    (description "Hdrhistogram creates histograms that support
 recording and analyzing sampled data value counts across a configurable integer
 value range with configurable value precision within the range.  Value precision
 is expressed as the number of significant digits in the value recording, and
@@ -11651,7 +11651,7 @@ the application using Java to Lisp integration APIs.")
     (description "JSON Processing (JSON-P) is a Java API to process (e.g.
 parse, generate, transform and query) JSON messages.  It produces and
 consumes JSON text in a streaming fashion (similar to StAX API for XML)
-and allows to build a Java object model for JSON text using API classes
+and allows building a Java object model for JSON text using API classes
 (similar to DOM API for XML).")
     ;; either gpl2 only with classpath exception, or epl2.0.
     (license (list license:gpl2

@@ -3501,8 +3501,8 @@ phenotype of interest.")
     (synopsis "Fast gene set enrichment analysis")
     (description
      "The package implements an algorithm for fast gene set enrichment
-analysis.  Using the fast algorithm allows to make more permutations and get
-more fine grained p-values, which allows to use accurate stantard approaches
+analysis.  Using the fast algorithm makes more permutations and gets
+more fine grained p-values, which allows using accurate standard approaches
 to multiple hypothesis correction.")
     (license license:expat)))
 
@@ -4271,7 +4271,7 @@ investigation using RNA-seq data.")
     (home-page "https://bioconductor.org/packages/AUCell/")
     (synopsis "Analysis of gene set activity in single-cell RNA-seq data")
     (description
-     "AUCell allows to identify cells with active gene sets (e.g. signatures,
+     "AUCell identifies cells with active gene sets (e.g. signatures,
 gene modules, etc) in single-cell RNA-seq data.  AUCell uses the @dfn{Area
 Under the Curve} (AUC) to calculate whether a critical subset of the input
 gene set is enriched within the expressed genes for each cell.  The
@@ -6426,7 +6426,7 @@ parametric mixture model.  The protein binding sites (clusters) are then
 resolved at high resolution and cluster statistics are estimated using a
 rigorous Bayesian framework.  Post-processing of the results, data export for
 UCSC genome browser visualization and motif search analysis are provided.  In
-addition, the package allows to integrate RNA-Seq data to estimate the False
+addition, the package integrates RNA-Seq data to estimate the False
 Discovery Rate of cluster detection.  Key functions support parallel multicore
 computing.  While wavClusteR was designed for PAR-CLIP data analysis, it can
 be applied to the analysis of other NGS data obtained from experimental

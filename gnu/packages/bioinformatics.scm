@@ -8401,7 +8401,7 @@ system.  It is used to analyze experimental crosses for identifying
 genes contributing to variation in quantitative traits (so-called
 quantitative trait loci, QTLs).
 
-Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
+Using a hidden Markov model, R/qtl estimates genetic maps, to
 identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
@@ -8532,7 +8532,7 @@ of other R packages who wish to make use of HTSlib.")
     (home-page "https://bioconductor.org/packages/bamsignals")
     (synopsis "Extract read count signals from bam files")
     (description
-     "This package allows to efficiently obtain count vectors from indexed bam
+     "This package efficiently obtains count vectors from indexed bam
 files.  It counts the number of nucleotide sequence reads in given genomic
 ranges and it computes reads profiles and coverage profiles.  It also handles
 paired-end data.")

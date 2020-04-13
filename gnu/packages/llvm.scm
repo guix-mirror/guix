@@ -883,7 +883,7 @@ SOURCE-FILES found in SOURCE-PACKAGE."
                   (string-append clang "/bin/clang-format"))))
              #t)))))
     (synopsis "Format code using clang-format")
-    (description "This package allows to filter code through @code{clang-format}
+    (description "This package filters code through @code{clang-format}
 to fix its formatting.  @code{clang-format} is a tool that formats
 C/C++/Obj-C code according to a set of style options, see
 @url{https://clang.llvm.org/docs/ClangFormatStyleOptions.html}.")))

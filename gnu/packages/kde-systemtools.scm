@@ -83,7 +83,7 @@
     (description "Dolphin is a file manager for KDE focusing on usability.
 The main features of Dolphin are:
 @itemize
-@item Navigation bar for URLs, which allows to navigate quickly
+@item Navigation bar for URLs, which navigates quickly
       through the file hierarchy.
 @item View properties are remembered for each folder.
 @item Split of views is supported.

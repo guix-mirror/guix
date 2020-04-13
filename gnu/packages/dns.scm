@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.80")
+    (version "2.81")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -83,17 +84,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; The SIOCGSTAMP ioctl is defined in <linux/sockios.h> instead
-                  ;; of <asm/sockios.h> starting with linux-libre-headers 5.2.
-                  ;; Remove this for dnsmasq versions > 2.80.
-                  (substitute* "src/dnsmasq.h"
-                    (("#if defined\\(HAVE_LINUX_NETWORK\\)" all)
-                     (string-append all "\n#include <linux/sockios.h>")))
-                  #t))))
+                "1yzq6anwgr5rlnwydpszb51cyhp2vjq29b24ck19flbwac1sk73l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -315,7 +306,7 @@ the two.")
     (synopsis "Asynchronous resolver library by the OpenBSD project")
     (description
      "libasr is a free, simple and portable asynchronous resolver library.
-It allows to run DNS queries and perform hostname resolutions in a fully
+It runs DNS queries and performs hostname resolution in a fully
 asynchronous fashion.")
     (license (list license:isc
                    license:bsd-2 ; last part of getrrsetbyname_async.c

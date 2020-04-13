@@ -135,7 +135,7 @@ where Flyer Composer steps in, creating a PDF which holds your flyer four
 times.  If you have a second page, Flyer Composer can arrange it the same way
 - even if the second page is in a separate PDF file.
 
-This package contains both the commnd line tool and the gui too.")
+This package contains both the command line tool and the gui too.")
     (license license:agpl3+)))
 
 (define-public flyer-composer-cli
@@ -162,7 +162,7 @@ where Flyer Composer steps in, creating a PDF which holds your flyer four
 times.  If you have a second page, Flyer Composer can arrange it the same way
 - even if the second page is in a separate PDF file.
 
-This package contains only the commnd line tool.  If you like to use the gui,
+This package contains only the command line tool.  If you like to use the gui,
 please install the @code{flyer-composer-gui} package.")))
 
 (define-public poppler
@@ -885,7 +885,7 @@ Xournal++ features:
 @item Fill shape functionality
 @item PDF Export (with and without paper style)
 @item PNG Export (with and without transparent background)
-@item Allow to map different tools / colors etc. to stylus buttons /
+@item Map different tools / colors etc. to stylus buttons /
 mouse buttons
 @item Sidebar with Page Previews with advanced page sorting, PDF
 Bookmarks and Layers (can be individually hidden, editing layer can be

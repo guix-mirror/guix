@@ -409,7 +409,7 @@
        ("openlibm" ,openlibm)
        ("mbedtls" ,mbedtls-apache)
        ("curl" ,curl)
-       ("libgit2" ,libgit2)
+       ("libgit2" ,libgit2-0.28)
        ("libssh2" ,libssh2)
        ("fortran" ,gfortran)
        ("libuv" ,libuv-julia)

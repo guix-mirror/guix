@@ -2961,20 +2961,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.9.3")
+    (version "1.10.0")
     (source
      (origin (method url-fetch)
-             (uri (string-append "https://proxy.binaries.openttd.org/openttd-releases/"
+             (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "0ijq72kgx997ggw40i5f4a3nf7y2g72z37l47i18yjvgbdzy320r"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; The DOS port contains proprietary software.
-              '(begin
-                 (delete-file-recursively "os/dos")
-                 #t))))
+               "0lz2y2rjc23k0d97y65cqhy2splw9cmrbvhgz0iqps8xkan1m8hv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; no "check" target
@@ -3024,15 +3018,15 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://binaries.openttd.org/extra/opengfx/"
+       (uri (string-append "https://cdn.openttd.org/opengfx-releases/"
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "009fa1bdin1bk0ynzhzc30hzkmmwzmwkk6j591ax3f6w75l28n49"))))
+         "0qxc6gl2gxcrn1np88dnjgbaaakkkx96b13rcmy1spryc8c09hyr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -3062,6 +3056,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                      ("gimp" ,gimp)
                      ("grfcodec" ,grfcodec)
                      ("nml" ,nml)
+                     ("which" ,which)
                      ("python" ,python-2)))
     (home-page "http://dev.openttdcoop.org/projects/opengfx")
     (synopsis "Base graphics set for OpenTTD")

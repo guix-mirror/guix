@@ -570,8 +570,8 @@ optimizing, and searching weighted finite-state transducers (FSTs).")
     (synopsis "Machine learning toolbox")
     (description
      "The Shogun Machine learning toolbox provides a wide range of unified and
-efficient Machine Learning (ML) methods.  The toolbox seamlessly allows to
-combine multiple data representations, algorithm classes, and general purpose
+efficient Machine Learning (ML) methods.  The toolbox seamlessly
+combines multiple data representations, algorithm classes, and general purpose
 tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))

@@ -1273,7 +1273,7 @@ Browsers and other web clients can use it to avoid privacy-leaking
 highlighting parts of the domain in a user interface, and sorting domain lists
 by site.
 
-Libpsl has built-in PSL data for fast access, allows to load PSL data from
+Libpsl has built-in PSL data for fast access, allowing to load PSL data from
 files, checks if a given domain is a public suffix, provides immediate cookie
 domain verification, finds the longest public part of a given domain, finds
 the shortest private part of a given domain, works with international

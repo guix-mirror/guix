@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -199,7 +199,7 @@ display manager which supports different greeters.")
 (define-public lightdm-gtk-greeter
   (package
     (name "lightdm-gtk-greeter")
-    (version "2.0.2")
+    (version "2.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -208,7 +208,7 @@ display manager which supports different greeters.")
                     "/+download/lightdm-gtk-greeter-" version ".tar.gz"))
               (sha256
                (base32
-                "1436sdm83xqhxyr1rzqxhsl8if2xmidlvb341xcv6dv83lyxkrlf"))))
+                "1g7wc3d3vqfa7mrdhx1w9ywydgjbffla6rbrxq9k3sc62br97qms"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("exo" ,exo)

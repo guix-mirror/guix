@@ -2832,8 +2832,7 @@ environments and back.")
      "PyYAML is a YAML parser and emitter for Python.  PyYAML features a
 complete YAML 1.1 parser, Unicode support, pickle support, capable extension
 API, and sensible error messages.  PyYAML supports standard YAML tags and
-provides Python-specific tags that allow to represent an arbitrary Python
-object.")
+provides Python-specific tags that represent an arbitrary Python object.")
     (license license:expat)))
 
 (define-public python2-pyyaml
@@ -3562,7 +3561,7 @@ receive files via the SCP1 protocol, as implemented by the OpenSSH
     ;; Note: As of version 1.7 the documentation is not worth building.
     (home-page "https://github.com/jaraco/rst.linker")
     (synopsis "Sphinx plugin to add links and timestamps")
-    (description "rst.linker allows to automatically replace text by a
+    (description "rst.linker automatically replaces text by a
 reStructuredText external reference or timestamps.  It's primary purpose is to
 augment the changelog, but it can be used for other documents, too.")
     (license license:expat)))
@@ -12738,7 +12737,7 @@ by system tools such as ps and top).
 
 Changing the title is mostly useful in multi-process systems, for
 example when a master process is forked: changing the children's title
-allows to identify the task each process is busy with.  The technique
+allows identifying the task each process is busy with.  The technique
 is used by PostgreSQL and the OpenSSH Server for example.")
   (license license:bsd-3)
   (properties `((python2-variant . ,(delay python2-setproctitle))))))
@@ -19141,7 +19140,7 @@ logging in Python.  It also provides some custom formatters and handlers.")
     (home-page "https://github.com/jd/pifpaf")
     (synopsis "Tools and fixtures to manage daemons for testing in Python")
     (description "Pifpaf is a suite of fixtures and a command-line tool that
-allows to start and stop daemons for a quick throw-away usage.  This is typically
+starts and stops daemons for a quick throw-away usage.  This is typically
 useful when needing these daemons to run integration testing.  It originally
 evolved from its precursor @code{overtest}.")
     (license license:asl2.0)))
@@ -19348,28 +19347,6 @@ Macaroons allow for delegation and attenuation of authorization.  They are
 simple and fast to verify, and decouple authorization policy from the
 enforcement of that policy.")
     (license license:expat)))
-
-(define-public python-prometheus-client
-  (package
-    (name "python-prometheus-client")
-    (version "0.7.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "prometheus_client" version))
-       (sha256
-        (base32 "1ni2yv4ixwz32nz39ckia76lvggi7m19y5f702w5qczbnfi29kbi"))))
-    (build-system python-build-system)
-    (arguments
-     ;; TODO: No tests in the PyPI distribution.
-     `(#:tests? #f))
-    (propagated-inputs
-     `(("python-twisted" ,python-twisted)))
-    (home-page "https://github.com/prometheus/client_python")
-    (synopsis "Prometheus instrumentation library")
-    (description
-     "This is the official Python client for the Prometheus monitoring server.")
-    (license license:asl2.0)))
 
 (define-public python-ldap3
   (package

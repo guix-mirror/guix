@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -328,7 +328,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "5.3")
+    (version "5.6")
     (source
      (origin
        (method git-fetch)
@@ -337,7 +337,7 @@ integrate Windows applications into your desktop.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mvhrvshyrj7lgjgka735z6j8idwd6j58bpg5nz1slgmlh1llrs6"))))
+        (base32 "1i9yiwbyxl0vshc4gbgnhp53m1ray8pkiii876gbiaf93k1irk0d"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -387,7 +387,7 @@ integrate Windows applications into your desktop.")
                "/wine-" version ".tar.xz")))
        (file-name (string-append name "-" version ".tar.xz"))
        (sha256
-        (base32 "1pkzj3656ad0vmc7ciwfzn45lb2kxwbyymfwnqaa105dicicf6wv"))))
+        (base32 "1rh0pk8mbi3bb0di13swzxn7nwnrbfsfizdv472vv3ymf5z8l6ah"))))
     (inputs `(("autoconf" ,autoconf)    ; for autoreconf
               ("ffmpeg" ,ffmpeg)
               ("gtk+" ,gtk+)

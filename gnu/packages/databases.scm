@@ -225,7 +225,7 @@ standard Go idioms.")
 (define-public ephemeralpg
   (package
     (name "ephemeralpg")
-    (version "2.9")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
@@ -233,17 +233,14 @@ standard Go idioms.")
              "https://eradman.com/ephemeralpg/code/ephemeralpg-"
              version ".tar.gz"))
        (sha256
-        (base32 "1ghp3kya4lxvfwz3c022cx9vqf55jbf9sjw60bxjcb5sszklyc89"))))
+        (base32 "1j0g7g114ma7y7sadbng5p1ss1zsm9zpicm77qspym6565733vvh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (invoke "ruby" "test.rb")))
+         (delete 'configure)            ; no configure script
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -255,11 +252,13 @@ standard Go idioms.")
                                     "/bin")
                     ;; For getsocket.
                     ,(string-append out "/bin")))))
-             #t)))))
+             #t)))
+       #:test-target "test"))
     (inputs
      `(("postgresql" ,postgresql)
        ("util-linux" ,util-linux)))
     (native-inputs
+     ;; For tests.
      `(("ruby" ,ruby)
        ("which" ,which)))
     (home-page "https://eradman.com/ephemeralpg/")

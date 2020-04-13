@@ -1505,7 +1505,7 @@ understand the language at a deeper level.")
     (home-page "https://github.com/hadley/memoise")
     (synopsis "Memoise functions for R")
     (description
-     "This R package allows to cache the results of a function so that when
+     "This R package caches the results of a function so that when
 you call it again with the same arguments it returns the pre-computed value.")
     (license license:expat)))
 
@@ -4781,7 +4781,7 @@ can be efficiently implemented directly in the R language.")
     (home-page "http://robustbase.r-forge.r-project.org/")
     (synopsis "Basic robust statistics")
     (description
-     "This package allows to analyze data with robust methods such as
+     "This package analyzes data with robust methods such as
 regression methodology including model selections and multivariate statistics.")
     (license license:gpl2+)))
 
@@ -5257,7 +5257,7 @@ to Applied regression, Second Edition, Sage, 2011.")
     (home-page "https://github.com/kforner/rcpp_progress")
     (synopsis "Interruptible progress bar for C++ in R packages")
     (description
-     "This package allows to display a progress bar in the R console for long running
+     "This package displays a progress bar in the R console for long running
 computations taking place in C++ code, and support for interrupting those computations
 even in multithreaded code, typically using OpenMP.")
     (license license:gpl3+)))

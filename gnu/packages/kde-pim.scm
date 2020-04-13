@@ -623,7 +623,7 @@ functions for accessing calendar data using the kcalcore API.")
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (home-page "https://cgit.kde.org/kdav.git")
     (synopsis "DAV protocol implementation with KJobs")
-    (description "This is a DAV protocol implemention with KJobs.  Calendars
+    (description "This is a DAV protocol implementation with KJobs.  Calendars
 and todos are supported, using either GroupDAV or CalDAV, and contacts are
 supported using GroupDAV or CardDAV.")
     (license ;; GPL for programs, LGPL for libraries
@@ -670,7 +670,7 @@ supported using GroupDAV or CardDAV.")
        ("qtbase" ,qtbase)))
     (home-page "https://cgit.kde.org/kdepim-apps-libs.git")
     (synopsis "KDE PIM mail related libraries and data files")
-    (description "This packages provides mail related libraries and data files
+    (description "This package provides mail related libraries and data files
 for KDE PIM.")
     (license ;; GPL for programs, LGPL for libraries
      (list license:gpl2+ license:lgpl2.0+))))
@@ -1095,7 +1095,7 @@ and retrieving certificates from LDAP servers.")
     (description "KMail supports multiple accounts, mail filtering and email
 encryption.  The program let you configure your workflow and it has good
 integration into KDE (Plasma Desktop) but is also useable with other Desktop
-Envionments.
+Environments.
 
 KMail is the email component of Kontact, the integrated personal information
 manager from KDE.")
@@ -1346,7 +1346,7 @@ using a Qt/KMime C++ API.")
      `(#:tests? #f)) ;; TODO many test fail for quite different reasons
     (home-page "https://cgit.kde.org/messagelib.git")
     (synopsis "KDE PIM messaging libraries")
-    (description "This packages provides several libraries for messages,
+    (description "This package provides several libraries for messages,
 e.g. a message list, a mime tree parse, a template parser and the
 kwebengineviewer.")
     (license ;; GPL for programs, LGPL for libraries

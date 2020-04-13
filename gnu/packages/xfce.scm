@@ -204,7 +204,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public exo
   (package
     (name "exo")
-    (version "0.12.10")
+    (version "0.12.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -212,7 +212,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
                                   "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "1b3w4pf9gkcp13h63nf93k95hkw0ij7v5y7wjklqd1qifm8xd3w4"))))
+                "1dp5s64g6572h9zvx9js7qc72s728qsd9y7hl7hg6rwaq0cjb2gc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -222,7 +222,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
      `(("gtk+-3" ,gtk+)
        ("libxfce4util" ,libxfce4util)))
     (inputs
-     `(;; FIXME Refered to in exo-1.pc but conflict with gtk+-3
+     `(;; FIXME Referred to in exo-1.pc but conflict with gtk+-3.
        ("gtk+-2" ,gtk+-2)
        ("libxfce4ui" ,libxfce4ui)
        ("perl-uri" ,perl-uri)))
@@ -238,7 +238,7 @@ development.")
 (define-public garcon
   (package
     (name "garcon")
-    (version "0.6.4")
+    (version "0.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -246,17 +246,17 @@ development.")
                                   "garcon-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bbngb4bn1m325j7y40gky36kn2nlsvqs6xp0wy76x3s0d9lfpnp"))))
+                "08r4dfvdvl178cjajm7ww16lwb7jsfqh3yz614mn84c0a0dvdhw2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("gtk+-2" ,gtk+-2))); required by garcon-gtk2-1.pc
+     `(("gtk+-2" ,gtk+-2)))             ; required by garcon-gtk2-1.pc
     (propagated-inputs
      `(("gtk+-3" ,gtk+)                 ; required by garcon-gtk3-1.pc
-       ("libxfce4ui" ,libxfce4ui))) ; required by garcon-gtk3-1.pc
+       ("libxfce4ui" ,libxfce4ui)))     ; required by garcon-gtk3-1.pc
     (home-page "https://www.xfce.org/")
     (synopsis "Implementation of the freedesktop.org menu specification")
     (description
@@ -387,7 +387,7 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-clipman-plugin
   (package
     (name "xfce4-clipman-plugin")
-    (version "1.4.4")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -395,7 +395,7 @@ applications menu, workspace switcher and more.")
                                   "xfce4-clipman-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1819kjn7gs30zhhj2ppfw4zjpcgj9amw1vvppjsavsff1xflrq88"))))
+                "1d6fxdzy9b511hqcyj7825fx67q6zqk6cln4g3x9d498jrvk3s5k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -418,19 +418,20 @@ matching them against regular expressions.")
 (define-public xfce4-pulseaudio-plugin
   (package
     (name "xfce4-pulseaudio-plugin")
-    (version "0.4.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0851b0vs5xmy3cq899khcghmkqwvh9rnzwavi17msrsq4jyaxs2a"))))
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
+                           "xfce4-pulseaudio-plugin/"
+                           (version-major+minor version) "/"
+                           "xfce4-pulseaudio-plugin-" version ".tar.bz2"))
+       (sha256
+        (base32 "0nv1lbkshfzar87f6xq1ib120pjja24r7135rbc42wqkw8vq4las"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       ;; For dbus/dbus-glib.h in pulseaudio-config.h
+       ;; For dbus/dbus-glib.h in pulseaudio-config.h.
        (modify-phases %standard-phases
          (add-after 'set-paths 'augment-cflags
            (lambda* (#:key inputs #:allow-other-keys)
@@ -464,7 +465,7 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.3.4")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
@@ -472,7 +473,7 @@ keys for controlling the audio volume.")
                            "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
                            "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
        (sha256
-        (base32 "03jpcbdpkgg825g7mr630wxynachymsrnyhz32mkl0jsd4sxxlw4"))))
+        (base32 "1w2zvqr0g6miliv3nb0shljfawwc1brdn2fyz4kvfg7b3klyxyir"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -563,15 +564,15 @@ your system in categories, so you can quickly find and launch them.")
 (define-public xfce4-session
   (package
     (name "xfce4-session")
-    (version "4.14.0")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-session/" (version-major+minor version) "/"
+                                  "xfce4-session-" version ".tar.bz2"))
               (sha256
                (base32
-                "0gq4a8yiw58hb4d5dhvprxvzamqfg8qblmiqcw0b97mn9svnvyql"))
+                "1bwpylcn7x9i301yz45wvkzah9bncv9b44nf4hh9ln4i1jka9qzv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -602,7 +603,7 @@ your system in categories, so you can quickly find and launch them.")
     (synopsis "Xfce session manager")
     (description
      "Session manager for Xfce, it will restore your session on startup and
-allows you to shutdown the computer from Xfce.")
+allows you to shut down the computer from Xfce.")
     (license gpl2+)))
 
 (define-public xfce4-settings
@@ -1160,7 +1161,7 @@ A plugin for the Xfce panel is also available.")
 (define-public xfce4-screensaver
   (package
     (name "xfce4-screensaver")
-    (version "0.1.9")
+    (version "0.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
@@ -1170,7 +1171,7 @@ A plugin for the Xfce panel is also available.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "11p48yyjgy6crwfbyvm16yg0rkzn90ssd2wygzmwvwrx3wkzyhsp"))))
+                "0mqxbyq9np6jzky8y35dlxxmk78q2w0jvwg9kh7a4ib7vmw1qvsq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

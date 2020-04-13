@@ -1565,7 +1565,7 @@ configuration language. It features:
 @itemize
 @item Syntax highlighting
 @item Multiline support for String
-@item Basic indendation, commenting
+@item Basic indentation, commenting
 @item Automatic formatting on save using dhall-format.
 @item Error highlighting.
 @end itemize")
@@ -2019,7 +2019,7 @@ written in the Go programming language.")
     (build-system emacs-build-system)
     (home-page "https://github.com/jd/google-maps.el")
     (synopsis "Access Google Maps from Emacs")
-    (description "The @code{google-maps} package allows to display Google
+    (description "The @code{google-maps} package displays Google
 Maps directly inside Emacs.")
     (license license:gpl3+)))
 
@@ -6912,7 +6912,7 @@ maximizes flexibility (at the expense of conciseness).")
      `(("ert-runner" ,emacs-ert-runner)))
     (home-page "https://github.com/technomancy/find-file-in-project")
     (synopsis "File/directory finder for Emacs")
-    (description "@code{find-file-in-project} allows to find files or
+    (description "@code{find-file-in-project} finds files or
 directories quickly in the current project.  The project root is detected
 automatically when Git, Subversion or Mercurial are used.  It also provides
 functions to assist in reviewing changes on files.")
@@ -7896,17 +7896,29 @@ Lua programming language}.")
 (define-public emacs-ebuild-mode
   (package
     (name "emacs-ebuild-mode")
-    (version "1.37")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dev.gentoo.org/~ulm/emacs/ebuild-mode"
-                    "-" version ".tar.xz"))
-              (file-name (string-append name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "07dzrdjjczkxdfdgi60h4jjkvzi4p0k9rij2wpfp8s03ay3qldpp"))))
+    (version "1.50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://dev.gentoo.org/~ulm/emacs/"
+             "ebuild-mode-" version ".tar.xz"))
+       (file-name (string-append name "-" version ".tar.xz"))
+       (sha256
+        (base32 "0bgi98vx6ahxijw69kfdiy3rkjdg7yi6k3bkjyasak5920m6fj1d"))))
     (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "ebuild-mode.info")
+             (install-file "ebuild-mode.info"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/info"))
+             #t)))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (home-page "https://devmanual.gentoo.org")
     (synopsis "Major modes for Gentoo package files")
     (description
@@ -8476,6 +8488,17 @@ passive voice.")
        (sha256
         (base32 "0jwpgfzjvf1hd3mx582pw86hysdryaqzp69hk6azi9kmq4bzk87d"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (info-dir (string-append share "/info"))
+                    (doc-dir (string-append share "/doc/" ,name "-" ,version)))
+               (install-file "org" info-dir)
+               (install-file "orgcard.pdf" doc-dir))
+             #t)))))
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
     (description "Org is an Emacs mode for keeping notes, maintaining TODO
@@ -12331,6 +12354,49 @@ keychains.  The keychain entries are displayed in a directory-like structure
 and can be consulted and modified.")
     (license license:gpl3+)))
 
+(define-public emacs-psc-ide
+  ;; There is no proper release.  The base version is extracted from the
+  ;; "Version" keyword in the main file.
+  (let ((commit "7fc2b841be25f5bc5e1eb7d0634436181c38b3fe")
+        (revision "1"))
+    (package
+      (name "emacs-psc-ide")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/purescript-emacs/psc-ide-emacs")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r0fymyai30jimm34z1cmav4wgij8ci6s1d9y7qigygfbbfrdsmj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-let-alist" ,emacs-let-alist)
+         ("emacs-s" ,emacs-s)
+         ("emacs-seq" ,emacs-seq)))
+      (home-page "https://github.com/purescript-emacs/psc-ide-emacs")
+      (synopsis "Emacs integration for PureScript's psc-ide tool")
+      (description
+       "This package provices Emacs integration for @code{psc-ide}, an IDE
+protocol for PureScript programming language.  It features:
+
+@itemize
+@item Completions
+@item Type at point
+@item Go to definition
+@item Automatic imports
+@item Case split
+@item Build system integration, and
+@item Flycheck support
+@end itemize")
+      (license license:gpl3+))))
+
 (define-public emacs-evil-anzu
   (package
     (name "emacs-evil-anzu")
@@ -12418,8 +12484,8 @@ match and total match information in the mode-line in various search modes.")
   (home-page "https://github.com/skeeto/elisp-finalize")
   (synopsis "Finalizers for Emacs Lisp")
   (description
-    "This package will allows to immediately run a callback (a finalizer)
-after its registered lisp object has been garbage collected.  This allows for
+    "This package runs a callback (a finalizer)
+after its registered lisp object has been garbage collected.  This allows
 extra resources, such as buffers and processes, to be cleaned up after the
 object has been freed.")
   (license license:unlicense)))
@@ -12525,7 +12591,7 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
       (home-page "https://github.com/emacscollective/closql")
       (synopsis "Store EIEIO objects using EmacSQL")
       (description
-       "This package allows to store uniform EIEIO objects in an EmacSQL
+       "This package stores uniform EIEIO objects in an EmacSQL
 database.  SQLite is used as backend.  This library imposes some restrictions
 on what kind of objects can be stored; it isn't intended to store arbitrary
 objects.  All objects have to share a common superclass and subclasses cannot
@@ -13334,7 +13400,7 @@ navigate and display hierarchy structures.")
     (home-page "https://github.com/ahungry/md4rd")
     (synopsis "Emacs Mode for Reddit")
     (description
-     "This package allows to read Reddit from within Emacs interactively.")
+     "This package allows reading Reddit from within Emacs interactively.")
     (license license:gpl3+)))
 
 (define-public emacs-pulseaudio-control
@@ -13368,7 +13434,7 @@ navigate and display hierarchy structures.")
       (home-page "https://github.com/flexibeast/pulseaudio-control")
       (synopsis "Control @code{pulseaudio} from Emacs")
       (description
-       "This package allows to control @code{pulseaudio} from Emacs.")
+       "This package allows controlling @code{pulseaudio} from Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-datetime
@@ -13891,7 +13957,7 @@ key again.")
       (build-system emacs-build-system)
       (home-page "https://github.com/dimitri/mbsync-el")
       (synopsis "Interface to mbsync for Emacs")
-      (description "This package allows to call the @code{mbsync} from
+      (description "This package calls @code{mbsync} from
 within Emacs.")
       (license license:gpl3+))))
 
@@ -14087,7 +14153,7 @@ throw a shell history.")
      `(("emacs-makey" ,emacs-makey)))
     (home-page "https://framagit.org/steckerhalter/discover-my-major/")
     (synopsis "Discover key bindings for the current Emacs major mode")
-    (description "This package provides allows to discover key bindings and
+    (description "This package discovers key bindings and
 their meaning for the current Emacs major-mode.")
     (license license:gpl3+)))
 
@@ -17494,7 +17560,7 @@ targets the Emacs based IDEs (CIDER, ESS, Geiser, Robe, SLIME etc.)")
     (home-page "https://github.com/jorgenschaefer/emacs-buttercup")
     (synopsis "Behavior driven emacs lisp testing framework")
     (description "Buttercup is a behavior-driven development framework for
-testing Emacs Lisp code.  It allows to group related tests so they can share
+testing Emacs Lisp code.  It groups related tests so they can share
 common set-up and tear-down code, and allows the programmer to \"spy\" on
 functions to ensure they are called with the right arguments during testing.")
     (license license:gpl3+)))
@@ -22299,7 +22365,7 @@ conversion program}, a Japanese input method on Emacs.")
     (home-page "https://github.com/clemera/objed")
     (synopsis "Navigate and edit text objects")
     (description
-      "@code{emacs-objed} allows to navigate and edit text objects.  It
+      "@code{emacs-objed} allows navigating and editing text objects.  It
 enables modal editing and composition of commands, too.  It combines ideas of
 other Editors like Vim or Kakoune and tries to align them with regular Emacs
 conventions.")

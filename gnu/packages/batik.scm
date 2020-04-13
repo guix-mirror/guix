@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -198,7 +199,7 @@ SAC is an interface for CSS parsers.")
 (define-public java-xmlgraphics-commons
   (package
     (name "java-xmlgraphics-commons")
-    (version "2.3")
+    (version "2.4")
     (source
       (origin
         (method url-fetch)
@@ -206,8 +207,7 @@ SAC is an interface for CSS parsers.")
               "mirror://apache/xmlgraphics/commons/source/xmlgraphics-commons-"
               version "-src.tar.gz"))
         (sha256
-         (base32
-          "0a432a4ca3vgnbada5cy9mlmfzmq6hi4i176drfxrp17q2d43w23"))
+         (base32 "0zdkngb896cr35jq1v859j2kpqyn6a87k6a893h394hgvnz7yi3v"))
         (modules '((guix build utils)))
         (snippet
          `(begin

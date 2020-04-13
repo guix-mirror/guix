@@ -170,14 +170,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.7.1")
+    (version "2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0haw0c35mf4r47j24issc9caq0da3fy7gjfq3454fm3ap3n2yxcx"))))
+                "1301lrb3xnm9dcw3av82rkqjzqxxwwhrq0p6i37h6fxdxnas4gjm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -193,7 +193,7 @@ SILC and ICB protocols via plugins.")
        ("zlib" ,zlib)
 
        ;; Scripting language plug-ins.
-       ("guile" ,guile-2.2)
+       ("guile" ,guile-3.0)
        ("lua" ,lua-5.1)
        ("perl" ,perl)
        ("python" ,python)

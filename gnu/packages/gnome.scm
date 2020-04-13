@@ -9162,7 +9162,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.37")
+    (version "1.10.42")
     (source
      (origin
        (method git-fetch)
@@ -9173,7 +9173,7 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01cxy7606hx9wgxl550l4p2xa9hsy0rk7swsp58hyi842z2z0y13"))))
+        (base32 "03i9kk8r1wgrfkkbwikx8wxaw4r4kn62vismr2zdq5g34fkkjh95"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; The only tests are maintainer tests (in po/), which fail.
@@ -9640,7 +9640,7 @@ repository and commit your work.")
     (description
      "Gamin is a file and directory monitoring system defined to be a subset
 of the FAM (File Alteration Monitor) system.  This is a service provided by a
-library which allows to detect when a file or a directory has been modified.")
+library which detects when a file or a directory has been modified.")
     (license license:gpl2+)))
 
 (define-public gnome-mahjongg
