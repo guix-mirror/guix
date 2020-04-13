@@ -114,24 +114,6 @@ C/C++ part.")
                  #t)))))))
     (native-inputs '())))
 
-(define-public icu4c-66.1
-  (package
-    (inherit icu4c)
-    (version "66.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/unicode-org/icu/releases/download/release-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
-                    "/icu4c-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
-                    "-src.tgz"))
-              (patch-flags '("-p2"))
-              (patches (search-patches "icu4c-CVE-2020-10531.patch"))
-              (sha256
-               (base32
-                "0bharwzc9nzkbrcf405z2nb3h7q0711z450arz0mjmdrk8hg58sj"))))))
-
 (define-public java-icu4j
   (package
     (name "java-icu4j")
