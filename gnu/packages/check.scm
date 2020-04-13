@@ -581,14 +581,14 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.7.1")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
         (base32
-         "1vapry9lyfb2mlpgk2wh9079hzxzq5120bsczncxxay663mdp53a"))))
+         "0g1q6n7fkanjv7i1djzw62f46xf573jvza7afabh3baqjqxy7rpd"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
