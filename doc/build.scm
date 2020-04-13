@@ -221,6 +221,7 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                          (syntax-highlight lexers)
                          (guix build utils)
                          (srfi srfi-1)
+                         (srfi srfi-26)
                          (ice-9 match)
                          (ice-9 threads)
                          (ice-9 vlist))
@@ -358,9 +359,14 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
             (define (anchor-id->key id)
               ;; Convert ID, an anchor ID such as
               ;; "index-pam_002dlimits_002dservice" to the corresponding key,
-              ;; "pam-limits-service" in this example.
-              (underscore-decode
-               (string-drop id (string-length "index-"))))
+              ;; "pam-limits-service" in this example.  Drop the suffix of
+              ;; duplicate anchor IDs like "operating_002dsystem-1".
+              (let ((id (if (any (cut string-suffix? <> id)
+                                 '("-1" "-2" "-3" "-4" "-5"))
+                            (string-drop-right id 2)
+                            id)))
+                (underscore-decode
+                 (string-drop id (string-length "index-")))))
 
             (define* (collect-anchors file #:optional (vhash vlist-null))
               ;; Collect the anchors that appear in FILE, a makeinfo-generated
