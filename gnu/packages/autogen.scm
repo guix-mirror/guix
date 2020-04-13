@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,10 @@
        ;; “Something went wrong bootstrapping makefile fragments for
        ;;  automatic dependency tracking.  Try re-running configure with […]”
        (list "--disable-dependency-tracking")
+
+       ;; XXX: Parallel tests may cause an indefinite hang with GNU Make 4.3.
+       #:parallel-tests? #f
+
        #:phases
        (modify-phases %standard-phases
          (add-before 'patch-source-shebangs 'patch-test-scripts
