@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -860,6 +860,7 @@ enough to play the original mainframe Zork all the way through.")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("cc=gcc")
+       #:test-target "tests"
        #:phases (modify-phases %standard-phases
                   (add-after 'configure 'fix-tests
                     (lambda _
@@ -867,10 +868,7 @@ enough to play the original mainframe Zork all the way through.")
                         (("/usr/bin") "/"))
                       (substitute* "tests/017/realpath.expected"
                         (("/usr/bin") "/"))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      (invoke "make" "tests"))))))
+                      #t)))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
