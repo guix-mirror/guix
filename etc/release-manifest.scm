@@ -23,6 +23,7 @@
              (guix packages)
              (guix profiles)
              ((gnu ci) #:select (%cross-targets))
+             ((gnu services xorg) #:select (%default-xorg-modules))
              (guix utils)
              (srfi srfi-1)
              (srfi srfi-26))
@@ -49,16 +50,17 @@ TARGET."
 
 (define %system-packages
   ;; Key packages proposed by the Guix System installer.
-  (map specification->package
-       '("xorg-server" "xfce" "gnome" "mate" "enlightenment"
-         "openbox" "awesome" "i3-wm" "ratpoison"
-         "xlockmore" "slock" "libreoffice"
-         "connman" "network-manager" "network-manager-applet"
-         "openssh" "ntp" "tor"
-         "linux-libre" "grub-hybrid"
-         ;; FIXME: Add IceCat when Rust is available on i686.
-         ;;"icecat"
-         )))
+  (append (map specification->package
+               '("xorg-server" "xfce" "gnome" "mate" "enlightenment"
+                 "openbox" "awesome" "i3-wm" "ratpoison"
+                 "xlockmore" "slock" "libreoffice"
+                 "connman" "network-manager" "network-manager-applet"
+                 "openssh" "ntp" "tor"
+                 "linux-libre" "grub-hybrid"
+                 ;; FIXME: Add IceCat when Rust is available on i686.
+                 ;;"icecat"
+                 ))
+          %default-xorg-modules))
 
 (define %packages-to-cross-build
   ;; Packages that must be cross-buildable from x86_64-linux.
