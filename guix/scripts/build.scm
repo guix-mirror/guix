@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 (define-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module (guix import json)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -834,7 +836,10 @@ build---packages, gexps, derivations, and so on."
                        (else
                         (list (specification->package spec)))))
                 (('file . file)
-                 (ensure-list (load* file (make-user-module '()))))
+                 (let ((file (or (and (string-suffix? ".json" file)
+                                      (json->scheme-file file))
+                                 file)))
+                   (ensure-list (load* file (make-user-module '())))))
                 (('manifest . manifest)
                  (map manifest-entry-item
                       (manifest-entries
