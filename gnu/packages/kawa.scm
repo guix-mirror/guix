@@ -28,14 +28,13 @@
 (define-public kawa
   (package
     (name "kawa")
-    (version "3.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/kawa/kawa-" version ".tar.gz"))
        (sha256
-        (base32
-         "1k9qpydc64ar4aqyg3q7jmmxy503ayj85227qfhc5n6ngchqavhy"))))
+        (base32 "06g015zjlfgsx0n4lb326czkbf1grlx0n6dx074m808hdg6m16lc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f
