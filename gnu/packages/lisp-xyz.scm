@@ -11352,3 +11352,38 @@ multiple checkers, including Aspell and Hunspell.")
 
 (define-public cl-enchant
   (sbcl-package->cl-source-package sbcl-enchant))
+
+(define-public sbcl-cl-change-case
+  (let ((commit "5ceff2a5f8bd845b6cb510c6364176b27a238fd3"))
+    (package
+      (name "sbcl-cl-change-case")
+      (version (git-version "0.1.0" "1" commit))
+      (home-page "https://github.com/rudolfochrist/cl-change-case")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1afyglglk9z3yg8gylcl301bl2r8vq3sllyznzj9s5xi5gs6qyf2"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       '(;; FIXME: Test pass but phase fails with 'Component
+         ;; "cl-change-case-test" not found, required by'.
+         #:tests? #f
+         #:test-asd-file "cl-change-case-test.asd"))
+      (synopsis "Convert Common Lisp strings between camelCase, PascalCase and more")
+      (description
+       "@code{cl-change-case} is library to convert strings between camelCase,
+PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
+      (license license:llgpl))))
+
+(define-public cl-change-case
+  (sbcl-package->cl-source-package sbcl-cl-change-case))
