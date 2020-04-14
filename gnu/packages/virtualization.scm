@@ -223,6 +223,7 @@ exec smbd $@")))
        ("gtk+" ,gtk+)
        ("libaio" ,libaio)
        ("libattr" ,attr)
+       ("libcacard" ,libcacard)     ; smartcard support
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
        ("libdrm" ,libdrm)
        ("libepoxy" ,libepoxy)
