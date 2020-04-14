@@ -1559,15 +1559,20 @@ colors are provided.")
 (define-public r-glue
   (package
     (name "r-glue")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glue" version))
        (sha256
         (base32
-         "0alklqcf68kmccssp4j7a7fv553pyqyy6mkkfslav83inppm4d3g"))))
+         "1hb9j2519jv9zgkgjb25hnqi22i7zxnaksqd16m4nxa1f6gl0v7a"))))
     (build-system r-build-system)
+    ;; knitr depends on glue, so we can't add knitr here to build the
+    ;; vignettes.
+    #;
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tidyverse/glue")
     (synopsis "Interpreted string literals")
     (description
