@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,7 @@ when evaluated."
   ;; Print either license variable name or the code for a license object
   (define (license->code lic)
     (let ((var (variable-name lic '(guix licenses))))
-      (or var
+      (or (symbol-append 'license: var)
           `(license
             (name ,(license-name lic))
             (uri ,(license-uri lic))
