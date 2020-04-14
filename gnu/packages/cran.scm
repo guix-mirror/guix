@@ -8636,20 +8636,22 @@ results using @code{ggplot2}.")
 (define-public r-effectsize
   (package
     (name "r-effectsize")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "effectsize" version))
        (sha256
         (base32
-         "1liix8rf8xq3hzi7684bl0s20iflsq6g5mxr5k59wp2qwn1i6aww"))))
+         "0kijp4wamkidaxysc11dd4vhvnm4wnbi87871wcbwn27k5b6i5dg"))))
     (properties `((upstream-name . "effectsize")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
        ("r-insight" ,r-insight)
        ("r-parameters" ,r-parameters)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/easystats/effectsize")
     (synopsis "Indices of effect size and standardized parameters")
     (description
