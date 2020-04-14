@@ -8794,18 +8794,18 @@ terminals that do not support Unicode.")
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.5.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "07an5wbikilg7cb3q6x5aykw8dfqnjrc3wpfb7gjmy0d9fh20fcy"))))
+         "12iyimqyza752anj29wpfisl8nz5r25kfcqbssybg24nb4wyy146"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-clipr" ,r-clipr)
-       ("r-clisymbols" ,r-clisymbols)
+     `(("r-cli" ,r-cli)
+       ("r-clipr" ,r-clipr)
        ("r-crayon" ,r-crayon)
        ("r-curl" ,r-curl)
        ("r-desc" ,r-desc)
@@ -8814,6 +8814,7 @@ terminals that do not support Unicode.")
        ("r-git2r" ,r-git2r)
        ("r-glue" ,r-glue)
        ("r-purrr" ,r-purrr)
+       ("r-rematch2" ,r-rematch2)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
        ("r-rstudioapi" ,r-rstudioapi)
