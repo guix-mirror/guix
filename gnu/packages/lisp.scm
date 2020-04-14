@@ -845,7 +845,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "234")
+    (version "235")
     (source
      (origin
        (method git-fetch)
@@ -854,8 +854,7 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0c9qsj4xwc24c9g02mr5n97m4d87d4n0pcc2c2n58l2vg5dnzba0"))))
+        (base32 "0kpqk2x0sz7sqxsrhasq0xnljjlnxwhh4xjx2nii0zy2jkv4vsbn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -873,9 +872,8 @@ enough to play the original mainframe Zork all the way through.")
              #t))
          (add-after 'configure 'fix-tests
            (lambda _
-             (substitute* "tests/017/realpath.tl"
-               (("/usr/bin") "/"))
-             (substitute* "tests/017/realpath.expected"
+             (substitute* (list "tests/017/realpath.tl"
+                                "tests/017/realpath.expected")
                (("/usr/bin") "/"))
              #t)))))
     (native-inputs
