@@ -17124,17 +17124,19 @@ See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
 (define-public r-lhs
   (package
     (name "r-lhs")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lhs" version))
        (sha256
         (base32
-         "0lzaqr7xi3ckln5nglv5xf5njm359slpz1jc6s02hpsqdw6armd4"))))
+         "0n0i1hr9gmc0hfcs2cvpjvdfgm6k26rhcq3q22r8ic0gfj953572"))))
     (properties `((upstream-name . "lhs")))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/bertcarnell/lhs")
     (synopsis "Latin Hypercube Samples")
     (description
