@@ -396,6 +396,49 @@ functions.  The password hashing function is implemented in XS with a
 pure Perl backup version for systems that cannot handle XS.")
     (license gpl2+)))
 
+(define-public perl-authen-passphrase
+  (package
+    (name "perl-authen-passphrase")
+    (version "0.008")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Authen-Passphrase-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0qq4krap687rxf6xr31bg5nj5dqmm1frcm7fq249v1bxc4h4bnsm"))))
+  (build-system perl-build-system)
+  (native-inputs
+   `(("perl-module-build" ,perl-module-build)
+     ("perl-test-pod" ,perl-test-pod)
+     ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+  (propagated-inputs
+   `(("perl-authen-dechpwd" ,perl-authen-dechpwd)
+     ("perl-crypt-des" ,perl-crypt-des)
+     ("perl-crypt-eksblowfish" ,perl-crypt-eksblowfish)
+     ("perl-crypt-mysql" ,perl-crypt-mysql)
+     ("perl-crypt-passwdmd5" ,perl-crypt-passwdmd5)
+     ("perl-crypt-unixcrypt_xs" ,perl-crypt-unixcrypt_xs)
+     ("perl-data-entropy" ,perl-data-entropy)
+     ("perl-digest-md4" ,perl-digest-md4)
+     ("perl-module-runtime" ,perl-module-runtime)
+     ("perl-params-classify" ,perl-params-classify)))
+  (home-page "https://metacpan.org/release/Authen-Passphrase")
+  (synopsis "Hashed passwords/passphrases as objects")
+  (description "@code{Authen-Passphrase} is the base class for a
+system of objects that encapsulate passphrases.  An object of this
+type is a passphrase recogniser; its job is to recognise whether an
+offered passphrase is the right one.  For security such passphrase
+recognisers usually do not themselves know the passphrase they are
+looking for; they can merely recognise it when they see it.  There are
+many schemes in use to achieve this effect and the intent of this
+class is to provide a consistent interface to them all.  In addition
+to the base class, this module also contains implementations of
+several specific passphrase schemes.")
+  (license perl-license)))
+
 (define-public perl-autovivification
   (package
     (name "perl-autovivification")
