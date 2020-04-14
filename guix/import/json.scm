@@ -24,8 +24,11 @@
   #:use-module (guix http-client)
   #:use-module (guix import utils)
   #:use-module (guix import print)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:export (json-fetch
             json->code
@@ -50,19 +53,41 @@ the query."
       result)))
 
 (define (json->code file-name)
-  "Read FILE-NAME containing a JSON package definition and return an
-S-expression, or return #F when the JSON is invalid."
+  "Read FILE-NAME containing one ore more JSON package definitions and return
+a list of S-expressions, or return #F when the JSON is invalid."
   (catch 'json-invalid
     (lambda ()
       (let ((json (json-string->scm
                    (with-input-from-file file-name read-string))))
-        (package->code (alist->package json))))
+        (match json
+          (#(packages ...)
+           ;; To allow definitions to refer to one another, collect references
+           ;; to local definitions and tell alist->package to ignore them.
+           (second
+            (memq #:result
+                  (fold
+                   (lambda (pkg names+result)
+                     (match names+result
+                       ((#:names names #:result result)
+                        (list #:names
+                              (cons (assoc-ref pkg "name") names)
+                              #:result
+                              (append result
+                                      (list
+                                       (package->code (alist->package pkg names))
+                                       (string->symbol (assoc-ref pkg "name"))))))))
+                        (list #:names '()
+                              #:result '())
+                        packages))))
+          (package
+            (list (package->code (alist->package json))
+                  (string->symbol (assoc-ref json "name")))))))
     (const #f)))
 
 (define (json->scheme-file file)
   "Convert the FILE containing a JSON package definition to a Scheme
 representation and return the new file name (or #F on error)."
-  (and-let* ((json (json->code file))
+  (and-let* ((sexprs (json->code file))
              (file* (let* ((tempdir (or (getenv "TMPDIR") "/tmp"))
                            (template (string-append tempdir "/guix-XXXXXX"))
                            (port     (mkstemp! template)))
@@ -74,5 +99,5 @@ representation and return the new file name (or #F on error)."
                              (guix)
                              ((guix licenses) #:prefix license:))
                port)
-        (write json port)))
+        (for-each (cut write <> port) sexprs)))
     file*))
