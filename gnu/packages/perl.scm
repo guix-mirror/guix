@@ -3546,6 +3546,29 @@ for CRC-CCITT, CRC-16 and CRC-32.")
 interface for the RFC 2104 HMAC mechanism.")
     (license (package-license perl))))
 
+(define-public perl-digest-md4
+  (package
+    (name "perl-digest-md4")
+    (version "1.9")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/M/MI/MIKEM/DigestMD4/Digest-MD4-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "19ma1hmvgiznq95ngzvm6v4dfxc9zmi69k8iyfcg6w14lfxi0lb6"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Digest-MD4")
+    (synopsis "Interface to the MD4 Algorithm")
+    (description "The @code{Digest::MD4} module allows you to use the
+RSA Data Security Inc.@: MD4 Message Digest algorithm from within Perl
+programs.  The algorithm takes as input a message of arbitrary length
+and produces as output a 128-bit \"fingerprint\" or \"message digest\"
+of the input.  MD4 is described in RFC 1320.")
+    (license perl-license)))
+
 (define-public perl-digest-md5
   (package
     (name "perl-digest-md5")
