@@ -16203,14 +16203,14 @@ are noisy or are discontinuous at the solution.")
 (define-public r-txtplot
   (package
     (name "r-txtplot")
-    (version "1.0-3")
+    (version "1.0-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "txtplot" version))
        (sha256
         (base32
-         "1949ab1bzvysdb79g8x1gaknj0ih3d6g63pv9512h5m5l3a6c31h"))))
+         "00sriml48y70j18jz235dsfm5x3a81bnzskfp3hnv6cbjwwsmca4"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/txtplot/")
     (synopsis "Text-based plotting")
