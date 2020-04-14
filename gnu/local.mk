@@ -1480,7 +1480,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
-  %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
