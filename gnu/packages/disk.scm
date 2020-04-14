@@ -47,6 +47,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file-systems)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -64,6 +65,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
@@ -83,6 +85,52 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
+
+(define-public udevil
+  (package
+    (name "udevil")
+    (version "0.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/IgnorantGuru/udevil.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x9mjr9abvbxzfa9mrip5264iz1qxvsl01k3ybz95q4a7xl4jcb3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-systemd"
+             (string-append "--sysconfdir="
+                            (assoc-ref %outputs "out")
+                            "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-root-reference
+           (lambda _
+             (substitute* "src/Makefile.in"
+               (("-o root -g root") ""))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cifs-utils" ,cifs-utils)
+       ("curlftpfs" ,curlftpfs)
+       ("eudev" ,eudev)
+       ("fakeroot" ,fakeroot)
+       ("glib" ,glib)
+       ("sshfs" ,sshfs)))
+    (synopsis "Device and file system manager")
+    (description "udevil is a command line program that mounts and unmounts
+removable devices without a password, shows device info, and monitors device
+changes.  It can also mount ISO files, NFS, SMB, FTP, SSH and WebDAV URLs, and
+tmpfs/ramfs filesystems.")
+    (home-page "https://ignorantguru.github.io/udevil/")
+    (license license:gpl3+)))
 
 (define-public parted
   (package
