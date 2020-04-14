@@ -22,7 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages hurd)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:hide (zlib))
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
@@ -31,7 +31,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages libdaemon)
@@ -531,3 +533,87 @@ augmentation of standard Unix kernels.  It is a collection of protocols for
 system interaction (file systems, networks, authentication), and servers
 implementing them.")
     (license gpl2+)))
+
+(define-public netdde
+  (let ((commit "4a1016f130b6f2065d3f088325e5fb0b2997ae12")
+        (revision "1"))
+    (package
+      (name "netdde")
+      ;; The version prefix corresponds to the version of Linux from which the
+      ;; drivers were taken.
+      (version (git-version "2.6.32.65" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/hurd/incubator.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1njv9dszq4lj05yq4v9j5v247hfghpzvvz4hzy0khjjr35mw7hr8"))
+                (file-name (git-file-name name commit))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags
+         (list (string-append "SHELL=" (assoc-ref %build-inputs "bash")
+                              "/bin/bash")
+               "PKGDIR=libdde_linux26"
+               ,@(if (%current-target-system)
+                     (list "CC=i586-pc-gnu-gcc"
+                           "LINK_PROGRAM=i586-pc-gnu-gcc")
+                     (list "CC=gcc")))
+         #:configure-flags
+         (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'prepare-dde
+             (lambda* (#:key native-inputs inputs #:allow-other-keys)
+               (for-each make-file-writable (find-files "."))
+               (let ((dde (or (assoc-ref inputs "dde-sources")
+                              (assoc-ref native-inputs "dde-sources"))))
+                 (for-each (lambda (dir)
+                             (copy-recursively
+                              (string-append dde "/" dir ) dir))
+                           '("libdde_linux26" "libddekit")))
+               (substitute* "libdde_linux26/mk/rel2abs.sh"
+                 (("/bin/bash") (which "bash")))
+               #t))
+           (add-after 'patch-generated-file-shebangs 'build-libdde-linux26
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (with-directory-excursion "libdde_linux26"
+                 (apply invoke "make"
+                        (delete "PKGDIR=libdde_linux26" make-flags)))))
+           (add-after 'build-libdde-linux26 'convert
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "convert" make-flags)))
+           (replace 'build
+             (lambda* (#:key make-flags #:allow-other-keys)
+               ;; no-common can be dropped with GCC 10+ where this is the
+               ;; default.
+               (apply invoke "make" "CFLAGS=-fno-common" make-flags)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (install-file "netdde"
+                             (string-append (assoc-ref outputs "out")
+                                            "/bin"))
+               #t)))))
+      (inputs
+       `(("hurd" ,hurd)
+         ("libpciaccess" ,libpciaccess)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("coreutils" ,coreutils)
+         ("gawk" ,gawk)
+         ("grep" ,grep)
+         ("perl" ,perl)
+         ("sed" ,sed)
+         ("dde-sources" ,dde-sources)))
+      (supported-systems %hurd-systems)
+      (home-page "https://www.gnu.org/software/hurd/hurd.html")
+      (synopsis "Linux network drivers glued by the DDE layer")
+      (description
+       "This package provides Linux 2.6 network drivers that can be embedded
+in userland processes thanks to the DDE layer.")
+      ;; Some drivers are dually licensed with the options being GPLv2 or one
+      ;; of MPL/Expat/BSD-3 (dependent on the driver).
+      (license gpl2))))
