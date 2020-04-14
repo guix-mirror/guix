@@ -131,8 +131,9 @@ when evaluated."
        ,@(if replacement
              `((replacement ,replacement))
              '())
-       (build-system ,(symbol-append (build-system-name build-system)
-                                     '-build-system))
+       (build-system (@ (guix build-system ,(build-system-name build-system))
+                        ,(symbol-append (build-system-name build-system)
+                                        '-build-system)))
        ,@(match arguments
            (() '())
            (args `((arguments ,(list 'quasiquote args)))))
