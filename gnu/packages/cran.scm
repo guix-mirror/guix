@@ -18804,14 +18804,14 @@ Edition), John Wiley and Sons.")
 (define-public r-anthropometry
   (package
     (name "r-anthropometry")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Anthropometry" version))
        (sha256
         (base32
-         "1f568ri1s6psaby8y737vrkarbjg64v89d4jyw23hy17apdmszr8"))))
+         "0y52g15pcgs4b68sfczn6nnpdqsialsb4mq3wb9a2gba7qdcf76y"))))
     (properties `((upstream-name . "Anthropometry")))
     (build-system r-build-system)
     (propagated-inputs
@@ -18824,6 +18824,8 @@ Edition), John Wiley and Sons.")
        ("r-nnls" ,r-nnls)
        ("r-rgl" ,r-rgl)
        ("r-shapes" ,r-shapes)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/Anthropometry/")
     (synopsis "Statistical methods for anthropometric data")
     (description
