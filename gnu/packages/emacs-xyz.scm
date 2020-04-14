@@ -597,6 +597,45 @@ Gitea, Gogs and Bitbucket.  It abstracts access to API resources using only a
 handful of functions that are not resource-specific.")
       (license license:gpl3+))))
 
+(define-public emacs-typit
+  ;; Last release is from 2017.
+  (let ((commit "231cb7df43253b84323520b8ed70f128d37003af")
+        (revision "1"))
+    (package
+      (name "emacs-typit")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mrkkrp/typit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1savrxs7xl92ifyxpxkkzv2didr7lb405h0dwz1bs1wldr5fb53f"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-dictionaries
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (site-lisp
+                       (string-append
+                        out "/share/emacs/site-lisp/dict")))
+                 (mkdir-p site-lisp)
+                 (copy-recursively "dict" site-lisp)
+                 #t))))))
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-mmt" ,emacs-mmt)))
+      (home-page "https://github.com/mrkkrp/typit")
+      (synopsis "Typing game for Emacs with two difficulties")
+      (description "Emacs Typit is a typing game for Emacs.  Words that are
+picked randomly from the most frequent words in language you're practicing,
+until time is up.")
+      (license license:gpl3+))))
+
 (define-public emacs-scribble-mode
   (let ((commit "217945d54de5e4bb207033f2116baa28f5c5ecf2")
         (revision "2"))
