@@ -12768,7 +12768,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.41")
+    (version "0.0.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12776,7 +12776,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0akbxdmsjsq5fzbwaap04hqjpsfgv1l6yrc2pwgbya1xgqvcq6vy"))))
+                "0xbvgqpk32a8iczhvac56cacr46rdkqb0allhhpvmj940idf72bi"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))
