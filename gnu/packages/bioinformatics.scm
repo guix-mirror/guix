@@ -7944,13 +7944,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.2")
+    (version "0.12.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "09lackgix5jpm16k0mz2zkibflfb4wzidbz4q32mlxmklf40037q"))))
+                "02i88ll2d7r83nk0wdj28akvsz3jq19g6ixpaahfy3jy5av4byv6"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -7961,6 +7961,8 @@ tab-delimited (tabix) files.")
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/DelayedArray")
     (synopsis "Delayed operations on array-like objects")
     (description
