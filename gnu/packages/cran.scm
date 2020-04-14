@@ -13123,21 +13123,23 @@ classes.")
 (define-public r-classint
   (package
     (name "r-classint")
-    (version "0.4-2")
+    (version "0.4-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "classInt" version))
        (sha256
         (base32
-         "0w980hrw8sgfdfyd5dsimalq7gwhvqm7507abk7k363pvgks23dv"))))
+         "1b1lqhpzxm6b8pza8l3s0cxy74mm9y45lcd3354i2v3bg8m7mply"))))
     (properties `((upstream-name . "classInt")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
        ("r-e1071" ,r-e1071)
        ("r-kernsmooth" ,r-kernsmooth)))
-    (native-inputs `(("gfortran" ,gfortran)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-spatial/classInt/")
     (synopsis "Choose univariate class intervals")
     (description
