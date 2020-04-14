@@ -602,7 +602,7 @@ available.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.2.1")
+    (version "3.3")
     (outputs '("out" "static"))
     (source
       (origin
@@ -612,7 +612,7 @@ available.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32 "1k5vijsy6cgcghw69f5275xfmbjjx7js0nlbgxbd6krnjb7sv6zv"))
+         (base32 "170b61cgpcs5n35qps0p40dqs1q81vkgagzbs4zv7pzls6718vpj"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
