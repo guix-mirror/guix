@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-34)
   #:export (json-fetch
+            json->code
             json->scheme-file))
 
 (define* (json-fetch url
