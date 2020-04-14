@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,15 @@
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f
-       #:parallel-tests? #f))
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-kawa
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/share/kawa/bin/kawa")
+                 `("JAVA_HOME" ":" = (,(assoc-ref inputs "icedtea"))))
+               #t))))))
     (inputs
      `(("icedtea" ,icedtea-8 "jdk")))
     (home-page "https://www.gnu.org/software/kawa/")
