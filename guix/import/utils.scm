@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
@@ -310,7 +310,18 @@ the expected fields of an <origin> object."
               (uri (assoc-ref orig "uri"))
               (sha256 sha))))))
 
-(define (alist->package meta)
+(define* (alist->package meta #:optional (known-inputs '()))
+  "Return a package value generated from the alist META.  If the list of
+strings KNOWN-INPUTS is provided, do not treat the mentioned inputs as
+specifications to look up and replace them with plain symbols instead."
+  (define (process-inputs which)
+    (let-values (((regular known)
+                  (lset-diff+intersection
+                   string=?
+                   (vector->list (or (assoc-ref meta which) #()))
+                   known-inputs)))
+      (append (specs->package-lists regular)
+              (map string->symbol known))))
   (package
     (name (assoc-ref meta "name"))
     (version (assoc-ref meta "version"))
@@ -318,15 +329,9 @@ the expected fields of an <origin> object."
     (build-system
       (lookup-build-system-by-name
        (string->symbol (assoc-ref meta "build-system"))))
-    (native-inputs
-     (specs->package-lists
-      (vector->list (or (assoc-ref meta "native-inputs") '#()))))
-    (inputs
-     (specs->package-lists
-      (vector->list (or (assoc-ref meta "inputs") '#()))))
-    (propagated-inputs
-     (specs->package-lists
-      (vector->list (or (assoc-ref meta "propagated-inputs") '#()))))
+    (native-inputs (process-inputs "native-inputs"))
+    (inputs (process-inputs "inputs"))
+    (propagated-inputs (process-inputs "propagated-inputs"))
     (home-page
      (assoc-ref meta "home-page"))
     (synopsis

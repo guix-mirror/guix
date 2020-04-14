@@ -92,6 +92,8 @@ when evaluated."
   (define (package-lists->code lsts)
     (list 'quasiquote
           (map (match-lambda
+                 ((? symbol? s)
+                  (list (symbol->string s) (list 'unquote s)))
                  ((label pkg . out)
                   (let ((mod (package-module-name pkg)))
                     (cons* label
