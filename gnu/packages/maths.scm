@@ -4921,6 +4921,18 @@ aggregation-based algebraic multigrid.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; XXX: localfunctions/test/lagrangeshapefunctiontest.cc includes <fenv.h>
+         ;; and fails to find the stdlib types when the gfortran header is used.
+         ;; Hide gfortran from CPLUS_INCLUDE_PATH to ensure we get the GCC header.
+         (add-after 'set-paths 'hide-gfortran
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gfortran (assoc-ref inputs "gfortran")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gfortran "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags))))))
