@@ -6315,10 +6315,10 @@ various string metrics in Common Lisp:
   (sbcl-package->cl-source-package sbcl-mk-string-metrics))
 
 (define-public sbcl-cl-str
-  (let ((commit "3d5ec86e3a0199e5973aacde951086dfd754b5e5"))
+  (let ((commit "eb480f283e28802d67b35bf916506701152f9a2a"))
     (package
       (name "sbcl-cl-str")
-      (version (git-version "0.8" "1" commit))
+      (version (git-version "0.17" "1" commit))
       (home-page "https://github.com/vindarel/cl-str")
       (source (origin
                 (method git-fetch)
@@ -6326,12 +6326,13 @@ various string metrics in Common Lisp:
                       (url home-page)
                       (commit commit)))
                 (sha256
-                 (base32 "0szzzbygw9h985yxz909vvqrp69pmpcpahn7hn350lnyjislk9ga"))
+                 (base32 "1hpq5m8zjjnzns370zy27z2vcm1p8n2ka5ij2x67gyc9amz9vla0"))
                 (file-name (git-file-name name version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
-         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-change-case" ,sbcl-cl-change-case)))
       (native-inputs
        `(("prove" ,sbcl-prove)
          ("prove-asdf" ,sbcl-prove-asdf)))
