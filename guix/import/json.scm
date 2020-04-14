@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,8 +23,12 @@
   #:use-module (json)
   #:use-module (guix http-client)
   #:use-module (guix import utils)
+  #:use-module (guix import print)
+  #:use-module (ice-9 rdelim)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-34)
-  #:export (json-fetch))
+  #:export (json-fetch
+            json->scheme-file))
 
 (define* (json-fetch url
                      ;; Note: many websites returns 403 if we omit a
@@ -42,3 +47,31 @@ the query."
            (result (json->scm port)))
       (close-port port)
       result)))
+
+(define (json->code file-name)
+  "Read FILE-NAME containing a JSON package definition and return an
+S-expression, or return #F when the JSON is invalid."
+  (catch 'json-invalid
+    (lambda ()
+      (let ((json (json-string->scm
+                   (with-input-from-file file-name read-string))))
+        (package->code (alist->package json))))
+    (const #f)))
+
+(define (json->scheme-file file)
+  "Convert the FILE containing a JSON package definition to a Scheme
+representation and return the new file name (or #F on error)."
+  (and-let* ((json (json->code file))
+             (file* (let* ((tempdir (or (getenv "TMPDIR") "/tmp"))
+                           (template (string-append tempdir "/guix-XXXXXX"))
+                           (port     (mkstemp! template)))
+                      (close-port port)
+                      template)))
+    (call-with-output-file file*
+      (lambda (port)
+        (write '(use-modules (gnu)
+                             (guix)
+                             ((guix licenses) #:prefix license:))
+               port)
+        (write json port)))
+    file*))
