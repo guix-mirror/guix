@@ -93,6 +93,13 @@ TARGET."
                       %base-packages))
                %hydra-supported-systems)))
 
+(define %system-manifest
+  (manifest
+   (append-map (lambda (system)
+                 (map (cut package->manifest-entry* <> system)
+                      %system-packages))
+               '("x86_64-linux" "i686-linux"))))  ;Guix System
+
 (define %cross-manifest
   (manifest
    (append-map (lambda (target)
@@ -115,5 +122,6 @@ TARGET."
 
 ;; Return the union of all three manifests.
 (concatenate-manifests (list %base-manifest
+                             %system-manifest
                              %cross-manifest
                              %cross-bootstrap-manifest))
