@@ -291,6 +291,13 @@ and return the resulting '.go' file."
           (default-environment-variables
             '("PATH=/run/current-system/profile/bin"))
 
+          ;; Booting off a DVD, especially on a slow machine, can make
+          ;; everything slow.  Thus, increase the timeout compared to the
+          ;; default 5s in the Shepherd 0.7.0.  See
+          ;; <https://bugs.gnu.org/40572>.
+          ;; XXX: Use something better when the next Shepherd is out.
+          (set! (@@ (shepherd service) %pid-file-timeout) 30)
+
           ;; Arrange to spawn a REPL if something goes wrong.  This is better
           ;; than a kernel panic.
           (call-with-error-handling
