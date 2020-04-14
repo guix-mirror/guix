@@ -18584,14 +18584,14 @@ tests.")
 (define-public python-gssapi
   (package
     (name "python-gssapi")
-    (version "1.6.1")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gssapi" version))
        (sha256
         (base32
-         "1gymg4asvwrz7y13qpwp2s5g8qwq179d72gkj09q6bfcgs82l5wr"))))
+         "02i5s7998dg5kcr4m0xwamd8vjqk1816xbzldyp68l91f6bynwcr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
