@@ -10464,13 +10464,28 @@ abbreviation of the mode line displays (lighters) of minor modes.")
                (base32
                 "1b7mjjh0d6fmkkd9vyj64vca27xqhga0nvyrrcqxpqjn62zq046y"))))
     (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (propagated-inputs
      `(("emacs-diminish" ,emacs-diminish)))
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "--batch"
                         "-l" "use-package-tests.el"
-                        "-f" "ert-run-tests-batch-and-exit")))
+                        "-f" "ert-run-tests-batch-and-exit")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'install-manual
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info-dir (string-append out "/share/info")))
+               (mkdir-p info-dir)
+               (install-file "use-package.info" info-dir)
+               #t)))
+         (add-before 'install-manual 'build-manual
+           (lambda _
+             (invoke "makeinfo" "use-package.texi")
+             #t)))))
     (home-page "https://github.com/jwiegley/use-package")
     (synopsis "Declaration for simplifying your .emacs")
     (description "The use-package macro allows you to isolate package
