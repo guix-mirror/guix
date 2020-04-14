@@ -5445,20 +5445,21 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.4")
+    (version "1.7.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "14a823il77w3wmmnzr89vwrqp50y56dh5raycnaw6c8nv5xsh32i"))))
+         "0g2m9dyhgds4shdrk76w7rqdl9msam4rii2qrhz12gipzhi9k89x"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("r-stringr" ,r-stringr)))
-    (home-page
-     "https://cran.r-project.org/web/packages/lubridate")
+     `(("r-generics" ,r-generics)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/lubridate/")
     (synopsis "Make dealing with dates a little easier")
     (description
      "This package provides functions to work with date-times and time-spans:
