@@ -11388,3 +11388,32 @@ PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
 
 (define-public cl-change-case
   (sbcl-package->cl-source-package sbcl-cl-change-case))
+
+(define-public sbcl-moptilities
+  (let ((commit "a436f16b357c96b82397ec018ea469574c10dd41"))
+    (package
+      (name "sbcl-moptilities")
+      (version (git-version "0.3.13" "1" commit))
+      (home-page "https://github.com/gwkkwg/moptilities/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1q12bqjbj47lx98yim1kfnnhgfhkl80102fkgp9pdqxg0fp6g5fc"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (synopsis "Compatibility layer for Common Lisp MOP implementation differences")
+      (description
+       "MOP utilities provide a common interface between Lisps and make the
+MOP easier to use.")
+      (license license:expat))))
+
+(define-public cl-moptilities
+  (sbcl-package->cl-source-package sbcl-moptilities))
