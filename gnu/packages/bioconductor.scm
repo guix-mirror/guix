@@ -4032,14 +4032,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.10.3")
+    (version "1.10.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "18zf90iksglbs13cwr4jjwsv332a19lf4bpdmy69jz8bpwrklv22"))))
+         "1g07ni134cyl3jd9y19afip39kxddfgpm1jjm0rhrm7jgssp24in"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
