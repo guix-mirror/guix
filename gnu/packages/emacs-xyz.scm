@@ -2123,6 +2123,26 @@ window).")
 single buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-mmt
+  (package
+    (name "emacs-mmt")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mrkkrp/mmt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13vbfc5597v0gd87qyhn10f93nb477vjpg3jlpphbax9fvkf4gav"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mrkkrp/mmt")
+    (synopsis "Classic tools to write Emacs Lisp macros")
+    (description "Emacs MMT is a package that contains classic tools for Emacs
+Lisp developers who want to write macros with convenience.")
+    (license license:gpl3+)))
+
 (define-public emacs-tablist
   (package
     (name "emacs-tablist")
