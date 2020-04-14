@@ -212,6 +212,7 @@ which allows users to view a desktop computing environment.")
       `(("cyrus-sasl" ,cyrus-sasl)
         ("glib" ,glib)
         ("libjpeg-turbo" ,libjpeg-turbo)
+        ("libcacard" ,libcacard)        ; smartcard support
         ("lz4" ,lz4)
         ("opus" ,opus)
         ("orc" ,orc)
