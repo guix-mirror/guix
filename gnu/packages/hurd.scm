@@ -355,6 +355,19 @@ boot, since this cannot be done from GNU/Linux."
   (with-parameters ((%current-target-system "i586-pc-gnu"))
     (program-file "rc" rc)))
 
+(define dde-sources
+  ;; This is the current tip of the dde branch
+  (let ((commit "ac1c7eb7a8b24b7469bed5365be38a968d59a136"))
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://git.savannah.gnu.org/git/hurd/incubator.git")
+            (commit commit)))
+      (sha256
+       (base32
+        "1vryinbg75xpydfrv9dbgfnds6knlh8l8bk2rxp32y9dc58z0692"))
+      (file-name (git-file-name "dde" commit)))))
+
 (define-public hurd
   (package
     (name "hurd")
@@ -508,19 +521,7 @@ fsysopts / --writable\n"))
                    mig))
        ("perl" ,perl)
        ("texinfo" ,texinfo-4)
-       ("dde-sources"
-        ;; This is the current tip of the dde branch
-        ,(let ((commit "ac1c7eb7a8b24b7469bed5365be38a968d59a136"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://git.savannah.gnu.org/git/hurd/incubator.git")
-                   (commit commit)))
-             (sha256
-              (base32
-               "1vryinbg75xpydfrv9dbgfnds6knlh8l8bk2rxp32y9dc58z0692"))
-             (file-name (string-append "dde-checkout-"
-                                       (string-take commit 7))))))))
+       ("dde-sources" ,dde-sources)))
     (supported-systems %hurd-systems)
     (home-page "https://www.gnu.org/software/hurd/hurd.html")
     (synopsis "The kernel servers for the GNU operating system")
