@@ -29,6 +29,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages less)
   #:use-module (gnu system vm)
   #:export (cross-hurd-image))
 
@@ -52,7 +53,7 @@
 (define %base-packages/hurd
   (list hurd bash coreutils file findutils grep sed
         guile-3.0 guile-colorized guile-readline
-        net-base inetutils))
+        net-base inetutils less which))
 
 (define* (cross-hurd-image #:key (hurd hurd) (gnumach gnumach))
   "Return a cross-built GNU/Hurd image."
