@@ -304,6 +304,7 @@ the user's target storage device rather than on the RAM disk."
                     (or (not (and (string-suffix? "linux-gnu" %host-type)
                                   (or (string-prefix? "x86_64" %host-type)
                                       (string-prefix? "i686" %host-type))))
+                        (file-exists? "/dev/fb0")
                         (invoke #+(file-append kmod "/bin/modprobe")
                                 "uvesafb"
                                 (string-append "v86d=" #$v86d "/sbin/v86d")
