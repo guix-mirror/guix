@@ -1066,13 +1066,13 @@ the input of another.")
 (define-public r-reshape2
   (package
     (name "r-reshape2")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reshape2" version))
        (sha256
-        (base32 "03ki5ka1dj208fc0dclbm0b4xp9d769pah2j9cs34l776p4r9zwa"))))
+        (base32 "1n0jrajpvc8hjkh9z4g8bwq63qy5vy5cgl2pzjardyih4ngcz3fq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
