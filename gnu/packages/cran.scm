@@ -12826,14 +12826,14 @@ can be used with function approximation, eligibility traces (Singh & Sutton,
 (define-public r-lemon
   (package
     (name "r-lemon")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lemon" version))
        (sha256
         (base32
-         "0wsn5bfg10wq4dnrgpyraz2bzx9p19c7hf1pwj3h4zmpqfgsdbpw"))))
+         "0m9hqwi709j9iwsxn8jh63741jiyr7ppwgqaw2zkv285p3m5wvd5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -12842,6 +12842,7 @@ can be used with function approximation, eligibility traces (Singh & Sutton,
        ("r-knitr" ,r-knitr)
        ("r-lattice" ,r-lattice)
        ("r-plyr" ,r-plyr)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)))
     (home-page "https://github.com/stefanedwards/lemon")
     (synopsis "Freshen up your ggplot2 plots")
