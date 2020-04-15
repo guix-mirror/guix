@@ -1123,7 +1123,7 @@ microblogging service.")
 (define-public guile-parted
   (package
     (name "guile-parted")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1132,7 +1132,7 @@ microblogging service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kwi777fhfb4rq6fik9bwqzr63k82qjl94dm5lyyyal4rh724xrc"))
+                "0b7h8psfm9gmmwb65pp5zwzglvwnfmw5j40g09hhf3f7kwxc0mv2"))
               (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (arguments
