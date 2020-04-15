@@ -1622,25 +1622,6 @@ To load this plugin, specify the following option when starting mpv:
     (license license:bsd-3)
     (home-page "https://www.webmproject.org/")))
 
-;; GNU IceCat fails to build against 1.8.0, so keep this version for now.
-(define-public libvpx-1.7
-  (package
-    (inherit libvpx)
-    (version "1.7.0")
-    (source (origin
-              (inherit (package-source libvpx))
-              (uri (git-reference
-                    (url "https://chromium.googlesource.com/webm/libvpx")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "libvpx" version))
-              (sha256
-               (base32
-                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
-              (patches
-               (append
-                (origin-patches (package-source libvpx))
-                (search-patches "libvpx-use-after-free-in-postproc.patch")))))))
-
 (define-public youtube-dl
   (package
     (name "youtube-dl")

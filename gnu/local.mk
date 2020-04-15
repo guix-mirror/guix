@@ -1161,7 +1161,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvnc-CVE-2018-20750.patch		\
   %D%/packages/patches/libvnc-CVE-2019-15681.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
-  %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
