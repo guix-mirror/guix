@@ -8849,8 +8849,9 @@ from gi.repository import Atspi"))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python)
-       ("python-pygobject" ,python-pygobject)))
+     `(("python" ,python)))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)))
     (synopsis "Python client bindings for D-Bus AT-SPI")
     (home-page "https://wiki.linuxfoundation.org/accessibility\
 /atk/at-spi/at-spi_on_d-bus")
@@ -8865,8 +8866,9 @@ accessibility infrastructure.")
     (inherit python-pyatspi)
     (name "python2-pyatspi")
     (inputs
-     `(("python" ,python-2)
-       ("python-pygobject" ,python2-pygobject)))))
+     `(("python" ,python-2)))
+    (propagated-inputs
+     `(("python-pygobject" ,python2-pygobject)))))
 
 (define-public orca
   (package
