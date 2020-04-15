@@ -560,3 +560,31 @@ connecting the microphone and headphone connections of a computer to some radio
 hardware.")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
+
+(define-public flrig
+  (package
+    (name "flrig")
+    (version "1.3.50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.w1hkj.com/files/flrig/flrig-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0fzrknzzi8kmzmrcfpc8rxr7v4a4ny6z6z5q5qwh95sp2kn2qzp9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fltk" ,fltk)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)))
+    (synopsis "Radio transceiver control program")
+    (description
+     "Flrig is a transceiver control program for amateur radio use.
+It provides computer aided control of various radios using a serial
+or USB connection.")
+    (home-page "http://www.w1hkj.com/")
+    (license license:gpl3+)))
