@@ -442,7 +442,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                    (list bare-bones-os
                          glibc-utf8-locales
                          texinfo
-                         guile-2.2))
+                         guile-3.0))
 
           ;; Machines without Kernel Mode Setting (those with many old and
           ;; current AMD GPUs, SiS GPUs, ...) need uvesafb to show the GUI
