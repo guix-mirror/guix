@@ -682,6 +682,30 @@ Alternatively the menu can be bound globally, for example:
 @code{(global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)}.")
     (license license:gpl3+)))
 
+(define-public emacs-moody
+  (package
+    (name "emacs-moody")
+    (version "0.5.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tarsius/moody")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xyw4l42053595r76lj8safsx6pj25as0107wd96by3h7dg9m586"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tarsius/moody")
+    (synopsis "Tabs and ribbons for Emacs mode-line")
+    (description
+     "@code{emacs-moody} provides utilities for displaying elements of
+the mode line as tabs and ribbons.  It also provides replacements for a few
+built-in elements.  The biggest difference to similar packages is that
+this one is much simpler and much more consistent.  When using this package,
+then only the color of the mode line changes when a window becomes in-/active.")
+    (license license:gpl3+)))
+
 (define-public emacs-treepy
   (package
     (name "emacs-treepy")
