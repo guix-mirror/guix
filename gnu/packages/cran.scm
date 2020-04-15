@@ -21106,3 +21106,28 @@ client).")
 designs with and without early outcomes for treatment selection and
 subpopulation type designs.")
     (license license:gpl3)))
+
+(define-public r-nbconvertr
+  (package
+    (name "r-nbconvertr")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "nbconvertR" version))
+       (sha256
+        (base32
+         "0yhmz177r1miain65vspclahhz8cg7638ldbpsw8ylgf7a60l0sg"))))
+    (properties `((upstream-name . "nbconvertR")))
+    (build-system r-build-system)
+    (inputs
+     `(("jupyter" ,python-nbconvert)
+       ("pandoc" ,ghc-pandoc)))
+    (home-page "https://cran.r-project.org/web/packages/nbconvertR/")
+    (synopsis "Vignette engine wrapping Jupyter notebooks")
+    (description
+     "This package calls the Jupyter script @code{nbconvert} to create
+vignettes from notebooks.  Those notebooks (@code{.ipynb} files) are files
+containing rich text, code, and its output.  Code cells can be edited and
+evaluated interactively.")
+    (license license:gpl3)))
