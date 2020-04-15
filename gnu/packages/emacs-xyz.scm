@@ -67,6 +67,7 @@
 ;;; Copyright © 2020 6033fe7de85d <6033fe7de85d@airmail.cc>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
+;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -594,6 +595,45 @@ deliver data to mobile and web apps.")
 Emacs packages.  It supports the REST APIs of Github, Github GraphQL, Gitlab,
 Gitea, Gogs and Bitbucket.  It abstracts access to API resources using only a
 handful of functions that are not resource-specific.")
+      (license license:gpl3+))))
+
+(define-public emacs-typit
+  ;; Last release is from 2017.
+  (let ((commit "231cb7df43253b84323520b8ed70f128d37003af")
+        (revision "1"))
+    (package
+      (name "emacs-typit")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mrkkrp/typit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1savrxs7xl92ifyxpxkkzv2didr7lb405h0dwz1bs1wldr5fb53f"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-dictionaries
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (site-lisp
+                       (string-append
+                        out "/share/emacs/site-lisp/dict")))
+                 (mkdir-p site-lisp)
+                 (copy-recursively "dict" site-lisp)
+                 #t))))))
+      (propagated-inputs
+       `(("emacs-f" ,emacs-f)
+         ("emacs-mmt" ,emacs-mmt)))
+      (home-page "https://github.com/mrkkrp/typit")
+      (synopsis "Typing game for Emacs with two difficulties")
+      (description "Emacs Typit is a typing game for Emacs.  Words that are
+picked randomly from the most frequent words in language you're practicing,
+until time is up.")
       (license license:gpl3+))))
 
 (define-public emacs-scribble-mode
@@ -2120,6 +2160,26 @@ window).")
     (description
      "MMM Mode is a minor mode that allows multiple major modes to coexist in a
 single buffer.")
+    (license license:gpl3+)))
+
+(define-public emacs-mmt
+  (package
+    (name "emacs-mmt")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mrkkrp/mmt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13vbfc5597v0gd87qyhn10f93nb477vjpg3jlpphbax9fvkf4gav"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mrkkrp/mmt")
+    (synopsis "Classic tools to write Emacs Lisp macros")
+    (description "Emacs MMT is a package that contains classic tools for Emacs
+Lisp developers who want to write macros with convenience.")
     (license license:gpl3+)))
 
 (define-public emacs-tablist
@@ -7424,29 +7484,27 @@ for search-based navigation of buffers.")
     (license license:gpl2+)))
 
 (define-public emacs-helm-ag
-  (let ((commit "2fc02c4ead29bf0db06fd70740cc7c364cb650ac")
-        (revision "1"))
-    (package
-      (name "emacs-helm-ag")
-      (version (git-version "0.58" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/syohex/emacs-helm-ag.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1gnn0byywbld6afcq1vp92cjvy4wlag9d1wgymnqn86c3b1bcf21"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
-      (home-page "https://github.com/syohex/emacs-helm-ag")
-      (synopsis "Helm interface to the Silver Searcher")
-      (description
-       "This package provides a frontend for grepping tools like ag and ack,
+  (package
+    (name "emacs-helm-ag")
+    (version "0.59")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-helm-ag.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vsz2b5qw4qahlf74059z4p1grinhfz28f0psw4c3qf4jasv3b9j"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)))
+    (home-page "https://github.com/syohex/emacs-helm-ag")
+    (synopsis "Helm interface to the Silver Searcher")
+    (description
+     "This package provides a frontend for grepping tools like ag and ack,
 as well as features for editing search results.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
@@ -12864,7 +12922,7 @@ into sections while preserving the structure imposed by any timestamps.")
 (define-public emacs-org-make-toc
   (package
     (name "emacs-org-make-toc")
-    (version "0.4")
+    (version "0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -12873,7 +12931,7 @@ into sections while preserving the structure imposed by any timestamps.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0348iq3bc3rxs5bqdvskyly4agqxiapamqkfm0323620kxl70agw"))))
+                "180ji6nnj6qj0rs1rdp1zlcrfsqf7ikb44ym8icbp5d6al2s4hnr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)
@@ -14158,12 +14216,12 @@ their meaning for the current Emacs major-mode.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ref
-  (let ((commit "8c9b5d7efb9f0c1ad5186b8203bdd017f4249129")
-        (revision "1"))
+  ;; No release since June 2017.
+  (let ((commit "5bb9be2232db72b04754d7e4c02a3976ad422f6f")
+        (revision "2"))
     (package
       (name "emacs-org-ref")
-      (version (string-append "1.1.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "1.1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14172,29 +14230,40 @@ their meaning for the current Emacs major-mode.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1rxz0bjdsayk0slv23i07d9xhj2m7s4hsc81wc2d1cs52dkr5zmz"))))
+          (base32 "15gcvbfj19kyv4nxa632b261dwhb26m99plq230qhv9ssfwfgxbx"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
          ("emacs-helm" ,emacs-helm)
          ("emacs-helm-bibtex" ,emacs-helm-bibtex)
-         ("emacs-ivy" ,emacs-ivy)
+         ("emacs-htmlize" ,emacs-htmlize)
          ("emacs-hydra" ,emacs-hydra)
+         ("emacs-ivy" ,emacs-ivy)
          ("emacs-key-chord" ,emacs-key-chord)
-         ("emacs-s" ,emacs-s)
-         ("emacs-f" ,emacs-f)
-         ("emacs-pdf-tools" ,emacs-pdf-tools)))
+         ("emacs-pdf-tools" ,emacs-pdf-tools)
+         ("emacs-s" ,emacs-s)))
       (home-page "https://github.com/jkitchin/org-ref")
-      (synopsis "Citations, cross-references and bibliographies in org-mode")
+      (synopsis "Citations, cross-references and bibliographies in Org mode")
       (description
-       "Lisp code to setup bibliography, cite, ref and label org-mode links.
-Also sets up reftex and helm for org-mode citations.  The links are
-clickable and do things that are useful.
+       "Org Ref is an Emacs library that provides rich support for citations,
+labels and cross-references in Org mode.
 
-The default setup uses helm-bibtex.
+The basic idea of Org Ref is that it defines a convenient interface to insert
+citations from a reference database (e.g., from BibTeX files), and a set of
+functional Org links for citations, cross-references and labels that export
+properly to LaTeX, and that provide clickable functionality to the user.  Org
+Ref interfaces with Helm BibTeX to facilitate citation entry, and it can also
+use RefTeX.
 
-You should really read org-ref.org in this package for details.")
+It also provides a fairly large number of utilities for finding bad citations,
+extracting BibTeX entries from citations in an Org file, and functions to
+create and modify BibTeX entries from a variety of sources, most notably from
+a DOI.
+
+Org Ref is especially suitable for Org documents destined for LaTeX export and
+scientific publication.  Org Ref is also useful for research documents and
+notes.")
       (license license:gpl3+))))
 
 ;; This project is unmaintained.  Please use emacs-org-re-reveal instead.
@@ -22407,3 +22476,59 @@ conventions.")
       (description "Haskell-Snippets is a collection of YASnippet Haskell
 snippets for Emacs.")
       (license license:expat))))
+
+(define-public emacs-org-roam
+  (package
+    (name "emacs-org-roam")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jethrokuan/org-roam.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08pfa63k194dpk0y2gfa0nzn5lig81q0l9axkq5j4ibj6ifaap4a"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-company" ,emacs-company)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-emacsql-sqlite" ,emacs-emacsql)
+       ("emacs-f" ,emacs-f)
+       ("emacs-org-ref" ,emacs-org-ref)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/jethrokuan/org-roam/")
+    (synopsis "Non-hierarchical note-taking with Org mode")
+    (description "Emacs Org Roam is a solution for taking non-hierarchical
+notes with Org mode.  Notes are captured without hierarchy and are connected
+by tags.  Notes can be found and created quickly.  Org Roam should also work
+as a plug-and-play solution for anyone already using Org mode for their
+personal wiki.")
+    (license license:gpl3+)))
+
+(define-public emacs-uml-mode
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "4c37ac1c4424b2313cd8f16ba48a98a4cc214200")
+        (revision "1"))
+    (package
+      (name "emacs-uml-mode")
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ianxm/emacs-uml.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "145i4srnfvd1vyibri2a1l6p9mbjvkkwlrpi41134pbarqffcnka"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/ianxm/emacs-uml")
+      (synopsis "Minor mode for editing ASCII UML sequence diagrams")
+      (description "Emacs UML mode is a minor mode that makes it easy to build
+ASCII UML sequence diagrams in Emacs, which can be embedded in source code,
+comments or emails.")
+      (license license:gpl3+))))
+

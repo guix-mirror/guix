@@ -7502,13 +7502,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.24.3")
+    (version "0.24.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "01f7dms4kw9ajwqlvh5s47riv748xrrs41na03byhjvn4fbdc44y"))))
+                "1fzs8j2d3wwfzm2fq63ywf68a4dbggyl5l098f148yn4jw7jd3bc"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7944,13 +7944,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.2")
+    (version "0.12.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "09lackgix5jpm16k0mz2zkibflfb4wzidbz4q32mlxmklf40037q"))))
+                "02i88ll2d7r83nk0wdj28akvsz3jq19g6ixpaahfy3jy5av4byv6"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -7961,6 +7961,8 @@ tab-delimited (tabix) files.")
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/DelayedArray")
     (synopsis "Delayed operations on array-like objects")
     (description
@@ -12769,7 +12771,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.41")
+    (version "0.0.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12777,7 +12779,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0akbxdmsjsq5fzbwaap04hqjpsfgv1l6yrc2pwgbya1xgqvcq6vy"))))
+                "0xbvgqpk32a8iczhvac56cacr46rdkqb0allhhpvmj940idf72bi"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))

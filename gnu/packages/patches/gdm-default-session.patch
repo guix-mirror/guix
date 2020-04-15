@@ -1,0 +1,91 @@
+This patch ensures '.desktop' files are picked up in the system profile
+and not in the directories listed in $XDG_DATA_DIRS.  The latter includes
+'gnome-session.desktop', which should be used if it's in
+/run/current-system/profile, and only then.
+
+Fixes <https://bugs.gnu.org/37831>.
+
+diff --git a/daemon/gdm-session.c b/daemon/gdm-session.c
+index 6a116a8..02c1458 100644
+--- a/daemon/gdm-session.c
++++ b/daemon/gdm-session.c
+@@ -348,24 +348,18 @@ get_system_session_dirs (GdmSession *self)
+         GArray *search_array = NULL;
+         char **search_dirs;
+         int i;
+-        const gchar * const *system_data_dirs = g_get_system_data_dirs ();
+ 
+         static const char *x_search_dirs[] = {
+                 "/etc/X11/sessions/",
+                 DMCONFDIR "/Sessions/",
+                 DATADIR "/gdm/BuiltInSessions/",
+-                DATADIR "/xsessions/",
++                "/run/current-system/profile/share/xsessions/"
+         };
+ 
+         static const char *wayland_search_dir = DATADIR "/wayland-sessions/";
+ 
+         search_array = g_array_new (TRUE, TRUE, sizeof (char *));
+ 
+-        for (i = 0; system_data_dirs[i]; i++) {
+-                gchar *dir = g_build_filename (system_data_dirs[i], "xsessions", NULL);
+-                g_array_append_val (search_array, dir);
+-        }
+-
+         g_array_append_vals (search_array, x_search_dirs, G_N_ELEMENTS (x_search_dirs));
+ 
+ #ifdef ENABLE_WAYLAND_SUPPORT
+@@ -373,16 +367,7 @@ get_system_session_dirs (GdmSession *self)
+ #ifdef ENABLE_USER_DISPLAY_SERVER
+                 g_array_prepend_val (search_array, wayland_search_dir);
+ 
+-                for (i = 0; system_data_dirs[i]; i++) {
+-                        gchar *dir = g_build_filename (system_data_dirs[i], "wayland-sessions", NULL);
+-                        g_array_insert_val (search_array, i, dir);
+-                }
+ #else
+-                for (i = 0; system_data_dirs[i]; i++) {
+-                        gchar *dir = g_build_filename (system_data_dirs[i], "wayland-sessions", NULL);
+-                        g_array_append_val (search_array, dir);
+-                }
+-
+                 g_array_append_val (search_array, wayland_search_dir);
+ #endif
+         }
+diff --git a/libgdm/gdm-sessions.c b/libgdm/gdm-sessions.c
+index afbc5c0..bb5e3e6 100644
+--- a/libgdm/gdm-sessions.c
++++ b/libgdm/gdm-sessions.c
+@@ -238,19 +238,11 @@ collect_sessions (void)
+                 "/etc/X11/sessions/",
+                 DMCONFDIR "/Sessions/",
+                 DATADIR "/gdm/BuiltInSessions/",
+-                DATADIR "/xsessions/",
+-                NULL
++                "/run/current-system/profile/share/xsessions/"
+         };
+ 
+         xorg_search_array = g_array_new (TRUE, TRUE, sizeof (char *));
+ 
+-        const gchar * const *system_data_dirs = g_get_system_data_dirs ();
+-
+-        for (i = 0; system_data_dirs[i]; i++) {
+-                session_dir = g_build_filename (system_data_dirs[i], "xsessions", NULL);
+-                g_array_append_val (xorg_search_array, session_dir);
+-        }
+-
+         g_array_append_vals (xorg_search_array, xorg_search_dirs, G_N_ELEMENTS (xorg_search_dirs));
+ 
+ #ifdef ENABLE_WAYLAND_SUPPORT
+@@ -261,11 +253,6 @@ collect_sessions (void)
+ 
+         wayland_search_array = g_array_new (TRUE, TRUE, sizeof (char *));
+ 
+-        for (i = 0; system_data_dirs[i]; i++) {
+-                session_dir = g_build_filename (system_data_dirs[i], "wayland-sessions", NULL);
+-                g_array_append_val (wayland_search_array, session_dir);
+-        }
+-
+         g_array_append_vals (wayland_search_array, wayland_search_dirs, G_N_ELEMENTS (wayland_search_dirs));
+ #endif
+ 

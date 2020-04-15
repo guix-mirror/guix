@@ -339,8 +339,9 @@ Report the availability of substitutes.\n"))
   "Load the manifest from FILE and return the list of packages it refers to."
   (let* ((user-module (make-user-module '((guix profiles) (gnu))))
          (manifest    (load* file user-module)))
-    (map manifest-entry-item
-         (manifest-transitive-entries manifest))))
+    (delete-duplicates (map manifest-entry-item
+                            (manifest-transitive-entries manifest))
+                       eq?)))
 
 
 ;;;

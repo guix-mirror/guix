@@ -118,9 +118,8 @@ version of this file."
         ;; printed on the console.
         (parameterize ((shepherd-message-port
                         (%make-void-port "w")))
-          (lambda ()
-            (stop-service 'term-tty2)
-            (start-service 'term-tty2 (list locale)))))))
+          (stop-service 'term-tty2)
+          (start-service 'term-tty2 (list locale))))))
 
 (define* (compute-locale-step #:key
                               locales-name

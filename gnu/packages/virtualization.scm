@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018. 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -133,6 +133,12 @@
      `(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
+
+       ;; FIXME: Disable tests on i686 to work around
+       ;; <https://bugs.gnu.org/40527>.
+       #:tests? ,(or (%current-target-system)
+                     (not (string=? "i686-linux" (%current-system))))
+
        #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
                                "--enable-docs"
                                (string-append "--smbd="
@@ -1177,7 +1183,7 @@ DOS or Microsoft Windows.")
 (define-public xen
   (package
     (name "xen")
-    (version "4.11.1")
+    (version "4.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1186,7 +1192,7 @@ DOS or Microsoft Windows.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wv1hyfii14vi9lfjmnv07h2gpm3b7kvh2p55f4yy2b40simksgk"))))
+                "0py50n995gv909i0d1lfdcj9wcp5g1d5z6m2291jqqlfyany138g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1300,14 +1306,13 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
                                          new-search-path ":")))
                     (setenv env-name new-env-value)))
                 environment-variable-names))
-             (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
-             (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
+             (setenv "CROSS_CPATH" (getenv "CPATH"))
              (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
              (filter-environment! cross?
-              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
+              '("CROSS_CPATH"
                 "CROSS_LIBRARY_PATH"))
              (filter-environment! (lambda (e) (not (cross? e)))
-              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
+              '("CPATH"
                 "LIBRARY_PATH"))
              ;; Guix tries to be helpful and automatically adds
              ;; mini-os-git-checkout/include to the include path,
@@ -1316,7 +1321,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
                                     (not
                                      (string-contains e
                                       "mini-os-git-checkout")))
-              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
+              '("CPATH"
                 "LIBRARY_PATH"))
             (setenv "EFI_VENDOR" "guix")
              #t))

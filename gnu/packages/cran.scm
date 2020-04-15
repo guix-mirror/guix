@@ -1559,15 +1559,20 @@ colors are provided.")
 (define-public r-glue
   (package
     (name "r-glue")
-    (version "1.3.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glue" version))
        (sha256
         (base32
-         "0alklqcf68kmccssp4j7a7fv553pyqyy6mkkfslav83inppm4d3g"))))
+         "1hb9j2519jv9zgkgjb25hnqi22i7zxnaksqd16m4nxa1f6gl0v7a"))))
     (build-system r-build-system)
+    ;; knitr depends on glue, so we can't add knitr here to build the
+    ;; vignettes.
+    #;
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tidyverse/glue")
     (synopsis "Interpreted string literals")
     (description
@@ -1727,13 +1732,13 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "1.0.4")
+    (version "1.0.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "1m80pdhzi2p82db5xkbwc2m3fzv6df59955yj03nlq40fj7zx4nr"))))
+        (base32 "00mk23zmrqn1c4mk9d6csjcbnl12wd7yicjk2ikmw5dyvdfngbs5"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ integration")
@@ -4042,14 +4047,18 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.12")
+    (version "0.13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
-        (base32 "0sgh8kafi9x1glmmcp1ly827pm8q7fsfngbplr41fbb4nc9363df"))))
+        (base32 "03iyqgx9mmdbd3qih70qzijjqcdg7k7ps5r1y6q8praanx9qvnm3"))))
     (build-system r-build-system)
+    ;; knitr itself depends on xfun
+    #;
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
     (description
@@ -5387,14 +5396,14 @@ evaluated by the @dfn{Akaike Information Criterion} (AIC).")
 (define-public r-arules
   (package
     (name "r-arules")
-    (version "1.6-4")
+    (version "1.6-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "arules" version))
        (sha256
         (base32
-         "003c5cd3xzq39h7c19px077ygm0n1v7k83icy5zzrnkagyds2p8n"))))
+         "0bcvfn8lvcv74vv9z3kgg7yq5hm7wjqhmzadi55cbm8zxd76g84v"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -6500,14 +6509,14 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.8.3")
+    (version "2.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "0w8l9grmp4q775jrf4q6rxx36ld5daz9b0gdxyyh42xfihk6m62h"))))
+         "1ad7ca71w0v9ja4wb47aygczc987zz1lnjljhh2n497nzrpzzv64"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -6517,6 +6526,8 @@ vice versa), or to deal with multiple declared missing values.")
        ("r-rlang" ,r-rlang)
        ("r-sjlabelled" ,r-sjlabelled)
        ("r-tidyselect" ,r-tidyselect)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/strengejacke/sjmisc")
     (synopsis "Data and variable transformation functions")
     (description
@@ -7905,14 +7916,14 @@ console, resulting in an interactive editing environment.")
 (define-public r-survey
   (package
     (name "r-survey")
-    (version "3.37")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survey" version))
        (sha256
         (base32
-         "1f31dvh48gzzan13pdrwh84ls35x9116095i7mdrcbrhz809r8dy"))))
+         "1q9x0s86s72gl43zj49gypg6jj2b78xjvxr4lmy5147s9h7z8lxh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)
@@ -8285,14 +8296,14 @@ packages maintained by Torsten Hothorn.")
 (define-public r-multcomp
   (package
     (name "r-multcomp")
-    (version "1.4-12")
+    (version "1.4-13")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "multcomp" version))
        (sha256
         (base32
-         "14c2f10rz546w7ly5f4r6wnd07yj5gic38an17gxny1vf2nsff0b"))))
+         "1nszi22rcc551yc75h9cdfkdqsxw1rz30vadazmpyzihp1bh63yk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-codetools" ,r-codetools)
@@ -8630,20 +8641,22 @@ results using @code{ggplot2}.")
 (define-public r-effectsize
   (package
     (name "r-effectsize")
-    (version "0.2.0")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "effectsize" version))
        (sha256
         (base32
-         "1liix8rf8xq3hzi7684bl0s20iflsq6g5mxr5k59wp2qwn1i6aww"))))
+         "0kijp4wamkidaxysc11dd4vhvnm4wnbi87871wcbwn27k5b6i5dg"))))
     (properties `((upstream-name . "effectsize")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
        ("r-insight" ,r-insight)
        ("r-parameters" ,r-parameters)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/easystats/effectsize")
     (synopsis "Indices of effect size and standardized parameters")
     (description
@@ -8744,14 +8757,14 @@ back to file after modifications.")
 (define-public r-fs
   (package
     (name "r-fs")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fs" version))
        (sha256
         (base32
-         "1ishdxrxy88w1lrn657a573wdra5v7xf1yfa1c4kss07rlynwrj7"))))
+         "0kksig9pk8aid9l6r250na8z8j9919jvs20lj0s6m9bcybgh74df"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -8786,18 +8799,18 @@ terminals that do not support Unicode.")
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.5.1")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "07an5wbikilg7cb3q6x5aykw8dfqnjrc3wpfb7gjmy0d9fh20fcy"))))
+         "12iyimqyza752anj29wpfisl8nz5r25kfcqbssybg24nb4wyy146"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-clipr" ,r-clipr)
-       ("r-clisymbols" ,r-clisymbols)
+     `(("r-cli" ,r-cli)
+       ("r-clipr" ,r-clipr)
        ("r-crayon" ,r-crayon)
        ("r-curl" ,r-curl)
        ("r-desc" ,r-desc)
@@ -8806,6 +8819,7 @@ terminals that do not support Unicode.")
        ("r-git2r" ,r-git2r)
        ("r-glue" ,r-glue)
        ("r-purrr" ,r-purrr)
+       ("r-rematch2" ,r-rematch2)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
        ("r-rstudioapi" ,r-rstudioapi)
@@ -9175,14 +9189,14 @@ experiments using ANOVA or mixed models.")
 (define-public r-lmertest
   (package
     (name "r-lmertest")
-    (version "3.1-1")
+    (version "3.1-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lmerTest" version))
        (sha256
         (base32
-         "0r2vvs3nl6p8xla3gd943khb4ixp0alvspqpnz2y6n3wk8zgh3jj"))))
+         "1qkdxx5sri65zgpb9gw4nkfkdam51kgy4hxclk5c40yk7y3p0n1q"))))
     (properties `((upstream-name . "lmerTest")))
     (build-system r-build-system)
     (propagated-inputs
@@ -12067,14 +12081,14 @@ users of rARPACK are advised to switch to the RSpectra package.")
 (define-public r-compositions
   (package
     (name "r-compositions")
-    (version "1.40-4")
+    (version "1.40-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "compositions" version))
        (sha256
         (base32
-         "0z40llyij3cc80ac1vzzrpykk6ysp89bn6dyyh40fbnc4anwx69a"))))
+         "0l9ayz2nb2wqhl7v9hkfl7pd950ba0h6hma8zqncbcxh6xh2k7l7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayesm" ,r-bayesm)
@@ -12817,14 +12831,14 @@ can be used with function approximation, eligibility traces (Singh & Sutton,
 (define-public r-lemon
   (package
     (name "r-lemon")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lemon" version))
        (sha256
         (base32
-         "0wsn5bfg10wq4dnrgpyraz2bzx9p19c7hf1pwj3h4zmpqfgsdbpw"))))
+         "0m9hqwi709j9iwsxn8jh63741jiyr7ppwgqaw2zkv285p3m5wvd5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -12833,6 +12847,7 @@ can be used with function approximation, eligibility traces (Singh & Sutton,
        ("r-knitr" ,r-knitr)
        ("r-lattice" ,r-lattice)
        ("r-plyr" ,r-plyr)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)))
     (home-page "https://github.com/stefanedwards/lemon")
     (synopsis "Freshen up your ggplot2 plots")
@@ -13113,21 +13128,23 @@ classes.")
 (define-public r-classint
   (package
     (name "r-classint")
-    (version "0.4-2")
+    (version "0.4-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "classInt" version))
        (sha256
         (base32
-         "0w980hrw8sgfdfyd5dsimalq7gwhvqm7507abk7k363pvgks23dv"))))
+         "1b1lqhpzxm6b8pza8l3s0cxy74mm9y45lcd3354i2v3bg8m7mply"))))
     (properties `((upstream-name . "classInt")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
        ("r-e1071" ,r-e1071)
        ("r-kernsmooth" ,r-kernsmooth)))
-    (native-inputs `(("gfortran" ,gfortran)))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-spatial/classInt/")
     (synopsis "Choose univariate class intervals")
     (description
@@ -13138,14 +13155,14 @@ univariate class intervals for mapping or other graphics purposes.")
 (define-public r-spdata
   (package
     (name "r-spdata")
-    (version "0.3.3")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spData" version))
        (sha256
         (base32
-         "1v66qkvsx77hvv5c78v760yp0hknf7xzcjir2ri3ha456mz79yl5"))))
+         "09l9j1vjbfyc8mikb8kliqmdjkg4xigq3zhdx98mv51flh5q87lh"))))
     (properties `((upstream-name . "spData")))
     (build-system r-build-system)
     (propagated-inputs
@@ -13215,14 +13232,14 @@ tessellation.")
 (define-public r-sf
   (package
     (name "r-sf")
-    (version "0.9-0")
+    (version "0.9-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sf" version))
        (sha256
         (base32
-         "117r9l3v7nkdj9bfy6qr0yz0gd5bv0pwnkc9vk2gv3xqj0h1fpf6"))))
+         "1qghrskqwwlwxmmvkv7knhlr1a32ngyimycasy5gfazgviljsfn4"))))
     (build-system r-build-system)
     (inputs
      `(("gdal" ,gdal)
@@ -15960,14 +15977,14 @@ in pipelines.")
 (define-public r-parameters
   (package
     (name "r-parameters")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "parameters" version))
        (sha256
         (base32
-         "0zin3ikc013hc713n5zs0dbhc3m4nfw1vhc3924z0mrww8r241xn"))))
+         "0mylxkf1y6mk4kf6c57x102sf4c800pfasjcfbf1hnsh6ya0m6dy"))))
     (properties `((upstream-name . "parameters")))
     (build-system r-build-system)
     (propagated-inputs
@@ -16191,14 +16208,14 @@ are noisy or are discontinuous at the solution.")
 (define-public r-txtplot
   (package
     (name "r-txtplot")
-    (version "1.0-3")
+    (version "1.0-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "txtplot" version))
        (sha256
         (base32
-         "1949ab1bzvysdb79g8x1gaknj0ih3d6g63pv9512h5m5l3a6c31h"))))
+         "00sriml48y70j18jz235dsfm5x3a81bnzskfp3hnv6cbjwwsmca4"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/txtplot/")
     (synopsis "Text-based plotting")
@@ -17112,17 +17129,19 @@ See e.g. Gentle (2003) @url{doi:10.1007/b97336}.")
 (define-public r-lhs
   (package
     (name "r-lhs")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lhs" version))
        (sha256
         (base32
-         "0lzaqr7xi3ckln5nglv5xf5njm359slpz1jc6s02hpsqdw6armd4"))))
+         "0n0i1hr9gmc0hfcs2cvpjvdfgm6k26rhcq3q22r8ic0gfj953572"))))
     (properties `((upstream-name . "lhs")))
     (build-system r-build-system)
     (propagated-inputs `(("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/bertcarnell/lhs")
     (synopsis "Latin Hypercube Samples")
     (description
@@ -18790,14 +18809,14 @@ Edition), John Wiley and Sons.")
 (define-public r-anthropometry
   (package
     (name "r-anthropometry")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Anthropometry" version))
        (sha256
         (base32
-         "1f568ri1s6psaby8y737vrkarbjg64v89d4jyw23hy17apdmszr8"))))
+         "0y52g15pcgs4b68sfczn6nnpdqsialsb4mq3wb9a2gba7qdcf76y"))))
     (properties `((upstream-name . "Anthropometry")))
     (build-system r-build-system)
     (propagated-inputs
@@ -18810,6 +18829,8 @@ Edition), John Wiley and Sons.")
        ("r-nnls" ,r-nnls)
        ("r-rgl" ,r-rgl)
        ("r-shapes" ,r-shapes)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/Anthropometry/")
     (synopsis "Statistical methods for anthropometric data")
     (description
@@ -20804,19 +20825,21 @@ Encyclopedia of Integer Sequences} (OEIS) in the function help page.")
 (define-public r-isoband
   (package
     (name "r-isoband")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "isoband" version))
        (sha256
         (base32
-         "1r023s73qypnvpx18znr9ymylr022m90v65mz2jasn0a1kjrfcbq"))))
+         "1ndlnv4g9pbd02y50sx4ffg2ccwqbi7fm2v1lh22wdd8pq33d20q"))))
     (properties `((upstream-name . "isoband")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-testthat" ,r-testthat)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/wilkelab/isoband")
     (synopsis "Generate isolines and isobands from regularly spaced elevation grids")
     (description
@@ -20924,13 +20947,13 @@ carrying out convergence diagnostics and statistical and graphical analysis of
 (define-public r-httpcode
   (package
     (name "r-httpcode")
-    (version "0.2.0")
+    (version "0.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpcode" version))
               (sha256
                (base32
-                "06k853ihwzkcx4z3jzazpb03p91frqkwz18jy4fwr8j2nwyqbhgv"))))
+                "0xig0rvc81hg7mw0iq9s0an1nw24fg0kfs2p2n6dzhwl9w506fjr"))))
     (build-system r-build-system)
     (home-page "https://github.com/sckott/httpcode")
     (synopsis "HTTP status code helper")

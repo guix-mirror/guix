@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,14 +168,13 @@ downloading episode status changes.")
 (define-public python-podcastparser
   (package
     (name "python-podcastparser")
-    (version "0.6.4")
+    (version "0.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "podcastparser" version))
        (sha256
-        (base32
-         "1ksj1gcmbnm5i43xhpqxbs2mqi6xzawwwkwbh9h6lwa1wxxvv247"))))
+        (base32 "0k62ppg20i41gcc5x8ddjn7zbpy47hqpxzrq9257g2c71m4qw07b"))))
     (native-inputs
      `(("python-nose" ,python-nose)))
     (build-system python-build-system)

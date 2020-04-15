@@ -943,6 +943,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-9-strmov-store-file-names.patch	\
   %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gd-brect-bounds.patch			\
+  %D%/packages/patches/gdm-default-session.patch		\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch	\
   %D%/packages/patches/ghc-testsuite-dlopen-pie.patch		\
@@ -1179,7 +1180,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvnc-CVE-2018-20750.patch		\
   %D%/packages/patches/libvnc-CVE-2019-15681.patch		\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
-  %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
   %D%/packages/patches/libxt-guix-search-paths.patch		\
   %D%/packages/patches/lierolibre-check-unaligned-access.patch	\
@@ -1385,7 +1385,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
-  %D%/packages/patches/python-jedi-deleted-variables.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
@@ -1506,7 +1505,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
-  %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\

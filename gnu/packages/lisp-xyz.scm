@@ -1711,7 +1711,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.48")
+    (version "0.49")
     (source
      (origin
        (method git-fetch)
@@ -1719,8 +1719,7 @@ also be supported.")
              (url "https://github.com/sharplispers/ironclad/")
              (commit (string-append "v" version))))
        (sha256
-        (base32
-         "1wzczpgvgjc5h8ghz75kxi7iykmqxqchdhgdhkif9j99kyqvbyam"))
+        (base32 "0kbzqg2aasrhjwy3nrzy2ddy809n1j045w4qkyc3r2syqd203d4q"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
@@ -1728,7 +1727,8 @@ also be supported.")
      `(("rt" ,sbcl-rt)))
     (inputs
      `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("flexi-streams" ,sbcl-flexi-streams)))
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("trivial-garbage" ,sbcl-trivial-garbage)))
     (synopsis "Cryptographic toolkit written in Common Lisp")
     (description
      "Ironclad is a cryptography library written entirely in Common Lisp.
@@ -6321,10 +6321,10 @@ various string metrics in Common Lisp:
   (sbcl-package->cl-source-package sbcl-mk-string-metrics))
 
 (define-public sbcl-cl-str
-  (let ((commit "3d5ec86e3a0199e5973aacde951086dfd754b5e5"))
+  (let ((commit "eb480f283e28802d67b35bf916506701152f9a2a"))
     (package
       (name "sbcl-cl-str")
-      (version (git-version "0.8" "1" commit))
+      (version (git-version "0.17" "1" commit))
       (home-page "https://github.com/vindarel/cl-str")
       (source (origin
                 (method git-fetch)
@@ -6332,12 +6332,13 @@ various string metrics in Common Lisp:
                       (url home-page)
                       (commit commit)))
                 (sha256
-                 (base32 "0szzzbygw9h985yxz909vvqrp69pmpcpahn7hn350lnyjislk9ga"))
+                 (base32 "1hpq5m8zjjnzns370zy27z2vcm1p8n2ka5ij2x67gyc9amz9vla0"))
                 (file-name (git-file-name name version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
-         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-change-case" ,sbcl-cl-change-case)))
       (native-inputs
        `(("prove" ,sbcl-prove)
          ("prove-asdf" ,sbcl-prove-asdf)))
@@ -11358,3 +11359,67 @@ multiple checkers, including Aspell and Hunspell.")
 
 (define-public cl-enchant
   (sbcl-package->cl-source-package sbcl-enchant))
+
+(define-public sbcl-cl-change-case
+  (let ((commit "5ceff2a5f8bd845b6cb510c6364176b27a238fd3"))
+    (package
+      (name "sbcl-cl-change-case")
+      (version (git-version "0.1.0" "1" commit))
+      (home-page "https://github.com/rudolfochrist/cl-change-case")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1afyglglk9z3yg8gylcl301bl2r8vq3sllyznzj9s5xi5gs6qyf2"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       '(;; FIXME: Test pass but phase fails with 'Component
+         ;; "cl-change-case-test" not found, required by'.
+         #:tests? #f
+         #:test-asd-file "cl-change-case-test.asd"))
+      (synopsis "Convert Common Lisp strings between camelCase, PascalCase and more")
+      (description
+       "@code{cl-change-case} is library to convert strings between camelCase,
+PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
+      (license license:llgpl))))
+
+(define-public cl-change-case
+  (sbcl-package->cl-source-package sbcl-cl-change-case))
+
+(define-public sbcl-moptilities
+  (let ((commit "a436f16b357c96b82397ec018ea469574c10dd41"))
+    (package
+      (name "sbcl-moptilities")
+      (version (git-version "0.3.13" "1" commit))
+      (home-page "https://github.com/gwkkwg/moptilities/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1q12bqjbj47lx98yim1kfnnhgfhkl80102fkgp9pdqxg0fp6g5fc"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (synopsis "Compatibility layer for Common Lisp MOP implementation differences")
+      (description
+       "MOP utilities provide a common interface between Lisps and make the
+MOP easier to use.")
+      (license license:expat))))
+
+(define-public cl-moptilities
+  (sbcl-package->cl-source-package sbcl-moptilities))

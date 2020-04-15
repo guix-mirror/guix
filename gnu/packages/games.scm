@@ -397,6 +397,56 @@ Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
+(define-public blobwars
+  (package
+    (name "blobwars")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/blobwars/"
+                           "blobwars-" version ".tar.gz"))
+       (sha256
+        (base32 "16aagvkx6azf75gm5kaa94bh5npydvhqp3fvdqyfsanzdjgjf1n4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "BINDIR=" out "/bin/")
+               "USEPAK=1"
+               "RELEASE=1"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'werror-begone
+           (lambda _
+             (substitute* "Makefile" (("-Werror") ""))
+             #t))
+         (delete 'configure))))         ;no configure script
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("sdl" ,(sdl-union (list sdl2
+                                sdl2-image
+                                sdl2-mixer
+                                sdl2-ttf
+                                sdl2-net)))))
+    (home-page "https://sourceforge.net/projects/blobwars/")
+    (synopsis "Platform action game featuring a blob with a lot of weapons")
+    (description "Blobwars: Metal Blob Solid is a 2D platform game, the first
+in the Blobwars series.  You take on the role of a fearless Blob agent.  Your
+mission is to infiltrate various enemy bases and rescue as many MIAs as
+possible, while battling many vicious aliens.")
+    (license (list license:gpl2      ; For code and graphics
+                   license:cc0       ; Music and sounds have specific licenses
+                   license:cc-by3.0  ; see /doc/readme
+                   license:cc-by-sa3.0
+                   license:lgpl2.1+
+                   license:bsd-2))))
+
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")

@@ -1018,22 +1018,42 @@ the 'showing the effect of'-style of operation.")
 (define-public volk
   (package
     (name "volk")
-    (version "1.3")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://libvolk.org/releases/volk-"
+       (uri (string-append "https://www.libvolk.org/releases/volk-"
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bz3ywc6y5wmz3i8p4z2wbzhns8bc0ywdkl9qnxpcvfcscarbdlh"))))
+         "1wz5nhmw6np8ka30pgy1qnima3rk2ksln4klfhrj7wah3fian0k9"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-pythonpath
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref inputs "python"))
+                    (file (string-append out "/bin/volk_modtool"))
+                    (path (string-append
+                           out
+                           "/lib/python"
+                           ,(version-major+minor
+                             (package-version python))
+                           "/site-packages:"
+                           (getenv "PYTHONPATH"))))
+               (wrap-program file
+                 `("PYTHONPATH" ":" prefix (,path))
+                 `("PATH" ":" prefix
+                   (,(string-append python "/bin:")))))
+             #t)))))
     (inputs
      `(("boost" ,boost)))
     (native-inputs
-     `(("python-2" ,python-2)
-       ("python2-cheetah" ,python2-cheetah)))
-    (home-page "http://libvolk.org/")
+     `(("python" ,python-wrapper)
+       ("python-mako" ,python-mako)))
+    (home-page "https://www.libvolk.org/")
     (synopsis "Vector-Optimized Library of Kernels")
     (description
      "@code{volk} contains procedures with machine-specific optimizations

@@ -1958,14 +1958,14 @@ experiments.")
 (define-public r-genomicinteractions
   (package
     (name "r-genomicinteractions")
-    (version "1.20.2")
+    (version "1.20.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicInteractions" version))
        (sha256
         (base32
-         "0mqb899wah5n7bp2lajhwy2zpqqhi18plza3i3m51rfl9n62smph"))))
+         "01ps97cs29qvzy5piq2l2k0yyr56rmg5cycfiqhbbvqpjrfvy60g"))))
     (properties
      `((upstream-name . "GenomicInteractions")))
     (build-system r-build-system)
@@ -3332,14 +3332,14 @@ peak definition in combination with known profile characteristics.")
 (define-public r-varianttools
   (package
     (name "r-varianttools")
-    (version "1.28.0")
+    (version "1.28.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "VariantTools" version))
        (sha256
         (base32
-         "0aafcprsqbn1xl8jqnxfl8r2d0lmzhssqpr26lam2cprh3yk0xiv"))))
+         "1x57shc3slcbnc807ra1nwnjr37sqjh04n2xfwd469m4hkjb0jzh"))))
     (properties `((upstream-name . "VariantTools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3783,14 +3783,14 @@ provides reporting features.")
 (define-public r-a4base
   (package
     (name "r-a4base")
-    (version "1.34.0")
+    (version "1.34.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "a4Base" version))
        (sha256
         (base32
-         "0dgqyq4dnlcik5qqygnhxlhfr98sh6kmdcj2qllhrwyk0lmsfk01"))))
+         "1a0yk05ikk1hr1vpxynydrb5xb1hj4hdqlh9zd13n83ir89dss83"))))
     (properties `((upstream-name . "a4Base")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4032,14 +4032,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.10.3")
+    (version "1.10.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "18zf90iksglbs13cwr4jjwsv332a19lf4bpdmy69jz8bpwrklv22"))))
+         "1g07ni134cyl3jd9y19afip39kxddfgpm1jjm0rhrm7jgssp24in"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs

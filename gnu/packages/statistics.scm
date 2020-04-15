@@ -590,13 +590,13 @@ and operations on them using LAPACK and SuiteSparse.")
 (define-public r-nlme
   (package
     (name "r-nlme")
-    (version "3.1-145")
+    (version "3.1-147")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nlme" version))
        (sha256
-        (base32 "1i9a3afdmn2ziks0imz0j09ay9n0zb9mhrymy9mg97vvlz5diwrh"))))
+        (base32 "1rqc3wy3lmy0wczsvsn8yszzsxhppfwg4iznb1j6ki2qawpdij7g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -693,14 +693,14 @@ analysis.")
 (define-public r-survival
   (package
     (name "r-survival")
-    (version "3.1-11")
+    (version "3.1-12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "survival" version))
        (sha256
         (base32
-         "1fbhbm3bnpg1nmj37h1d76x813ggvwk0cp51ixmmgb3pz47i5xj4"))))
+         "07zj3gpwncw89hbiwjb6ih9axv5zwdqnbgz9yw9xzws6nrpdcbmn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
@@ -1066,13 +1066,13 @@ the input of another.")
 (define-public r-reshape2
   (package
     (name "r-reshape2")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "reshape2" version))
        (sha256
-        (base32 "03ki5ka1dj208fc0dclbm0b4xp9d769pah2j9cs34l776p4r9zwa"))))
+        (base32 "1n0jrajpvc8hjkh9z4g8bwq63qy5vy5cgl2pzjardyih4ngcz3fq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-plyr" ,r-plyr)
@@ -1148,14 +1148,14 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "1aax50wyrs4336zpf247l8wmp4spab2n70msziy1ip4gbjn26wa1"))))
+         "08njzin0c6biw62j5w30r9j85vr1m2cg4hmv5d76nym860yrlqjf"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1989,14 +1989,14 @@ and environmental data in the framework of Euclidean exploratory methods.")
 (define-public r-xml2
   (package
     (name "r-xml2")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xml2" version))
        (sha256
         (base32
-         "138v9374xwc7flw8fz8qp8q3w4fch2jviij0g10dg92xn9dsyani"))))
+         "0r7rxp922785dcryghbb3wxqgdav7mafwnmxjqfx8zaj3v1q2j3z"))))
     (build-system r-build-system)
     (inputs
      `(("libxml2" ,libxml2)
@@ -2080,14 +2080,14 @@ limited to R.")
 (define-public r-backports
   (package
     (name "r-backports")
-    (version "1.1.5")
+    (version "1.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "backports" version))
        (sha256
         (base32
-         "0k19w68b2aihyj5mflw3732gkkzs78sssqdns960pdw3yfnkiv33"))))
+         "170rphqq28j0pcr28g6dxv3isp436ajhyzkpri31pn0lfm3szs6h"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/backports")
     (synopsis "Reimplementations of functions introduced since R 3.0.0")
@@ -2401,13 +2401,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.2.2")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "1bhb2j8ilpdzwd0c678mcgfpdw88vncsjma79afcikxmzcsz9279"))))
+                "1l6w765q180bg5mmdq5k2ymf6apz7ldhnknzf6ynfp1kf70pbhsg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -2435,6 +2435,8 @@ informative error messages when it's not available.")
        ("r-testthat" ,r-testthat)
        ("r-usethis" ,r-usethis)
        ("r-withr" ,r-withr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/devtools")
     (synopsis "Tools to make developing R packages easier")
     (description "The devtools package is a collection of package development
@@ -2573,21 +2575,15 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.850.1.0")
+    (version "0.9.860.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0q9clhmbwwph47hrhx5827m7njrcl2klihyqbkf0ihwlbqrjijwz"))))
+                "1rg9ak0zbv8d9cyj10jq52nrcbk1pvfz28kbkhpx79mpjhrl7pb5"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
-    ;; All needed for vignettes
-    (native-inputs
-     `(("r-knitr" ,r-knitr)
-       ("r-rmarkdown" ,r-rmarkdown)
-       ("ghc-pandoc" ,ghc-pandoc)
-       ("ghc-pandoc-citeproc" ,ghc-pandoc-citeproc)))
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)))
     (home-page "https://github.com/RcppCore/RcppArmadillo")
@@ -3769,13 +3765,13 @@ features present in other programming languages.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "4.9.2")
+    (version "4.9.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "19zw3qnhfgqdxlvma8xyikir46aiqhfcwxf072z9xgq0hknpblm5"))))
+                "1f0x83a2s7200iqi6gpngijks06fcvcbm6701d5r5rxpb8rawppl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -4101,14 +4097,14 @@ existing packages provide.")
 (define-public r-sfsmisc
   (package
     (name "r-sfsmisc")
-    (version "1.1-5")
+    (version "1.1-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sfsmisc" version))
        (sha256
         (base32
-         "173qgm2bn84x544fc3x9gc2rv995sbsvji9lnn2drx8drvzyy8lf"))))
+         "04fvjdab6vyyghyqy0abxvfbyr1myz6yib7ibwiyjw9yf7fjrcjp"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sfsmisc")
     (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
@@ -4695,17 +4691,18 @@ models, generalized linear models and model-based clustering.")
 (define-public r-mclust
   (package
     (name "r-mclust")
-    (version "5.4.5")
+    (version "5.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mclust" version))
        (sha256
         (base32
-         "0whandnda1fnjn5k3hgxdbp3b0xr7nlzy1j37saqb536h8q9dwkm"))))
+         "1z46qask09x3xpv0wzvhn09218vwyrip4f5jrhnx96khpwvczzyl"))))
     (build-system r-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://www.stat.washington.edu/mclust/")
     (synopsis "Gaussian mixture modelling for model-based clustering etc.")
     (description
@@ -5137,14 +5134,14 @@ algorithms.")
 (define-public r-lme4
   (package
     (name "r-lme4")
-    (version "1.1-21")
+    (version "1.1-23")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lme4" version))
        (sha256
         (base32
-         "035j2hqkwv939xl07pm2vykvf3wlx8qj317846n9pkpqkyv58mbz"))))
+         "0qh29kqli0l3naylgb6jha6jllx4nwryr3hv9yk37blgyyql5mcr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
@@ -5155,7 +5152,10 @@ algorithms.")
        ("r-nloptr" ,r-nloptr)
        ("r-nlme" ,r-nlme)
        ("r-rcpp" ,r-rcpp)
-       ("r-rcppeigen" ,r-rcppeigen)))
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-statmod" ,r-statmod)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/lme4")
     (synopsis "Linear mixed-effects models using eigen and S4")
     (description
@@ -5403,14 +5403,14 @@ genome-wide association studies can be analyzed efficiently.")
 (define-public r-cairo
   (package
     (name "r-cairo")
-    (version "1.5-11")
+    (version "1.5-12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Cairo" version))
        (sha256
         (base32
-         "1k9kpxcg5n4g6x2gydv344f4w0snqbhww14fnbbj1bny0mmv28xg"))))
+         "02v29am4fac3fyq6y1w6r89zwbqqkxjsxrafcwb5s124ikxyl22f"))))
     (properties `((upstream-name . "Cairo")))
     (build-system r-build-system)
     (inputs
@@ -5439,20 +5439,21 @@ is supported.")
 (define-public r-lubridate
   (package
     (name "r-lubridate")
-    (version "1.7.4")
+    (version "1.7.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lubridate" version))
        (sha256
         (base32
-         "14a823il77w3wmmnzr89vwrqp50y56dh5raycnaw6c8nv5xsh32i"))))
+         "0g2m9dyhgds4shdrk76w7rqdl9msam4rii2qrhz12gipzhi9k89x"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
-       ("r-stringr" ,r-stringr)))
-    (home-page
-     "https://cran.r-project.org/web/packages/lubridate")
+     `(("r-generics" ,r-generics)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/lubridate/")
     (synopsis "Make dealing with dates a little easier")
     (description
      "This package provides functions to work with date-times and time-spans:

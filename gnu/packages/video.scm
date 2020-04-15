@@ -602,7 +602,7 @@ available.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.2.1")
+    (version "3.3")
     (outputs '("out" "static"))
     (source
       (origin
@@ -612,7 +612,7 @@ available.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32 "1k5vijsy6cgcghw69f5275xfmbjjx7js0nlbgxbd6krnjb7sv6zv"))
+         (base32 "170b61cgpcs5n35qps0p40dqs1q81vkgagzbs4zv7pzls6718vpj"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -1621,25 +1621,6 @@ To load this plugin, specify the following option when starting mpv:
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
     (license license:bsd-3)
     (home-page "https://www.webmproject.org/")))
-
-;; GNU IceCat fails to build against 1.8.0, so keep this version for now.
-(define-public libvpx-1.7
-  (package
-    (inherit libvpx)
-    (version "1.7.0")
-    (source (origin
-              (inherit (package-source libvpx))
-              (uri (git-reference
-                    (url "https://chromium.googlesource.com/webm/libvpx")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "libvpx" version))
-              (sha256
-               (base32
-                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
-              (patches
-               (append
-                (origin-patches (package-source libvpx))
-                (search-patches "libvpx-use-after-free-in-postproc.patch")))))))
 
 (define-public youtube-dl
   (package

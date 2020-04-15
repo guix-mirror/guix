@@ -76,6 +76,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2268,14 +2269,14 @@ from git information.
 (define-public python-pyrsistent
   (package
     (name "python-pyrsistent")
-    (version "0.15.7")
+    (version "0.16.0")
     (home-page "https://github.com/tobgu/pyrsistent")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyrsistent" version))
               (sha256
                (base32
-                "103j63g6lb5dfspph96zxjdpnq9h991kazd4f09ddgkpxpivbiyd"))))
+                "1lrsjgblnapfimd0alsi1as5nz2lfqv97131l7d6anbjzq2rjri8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
@@ -11991,15 +11992,14 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.16.0")
+    (version "0.17.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
-       (patches (search-patches "python-jedi-deleted-variables.patch"))
        (sha256
         (base32
-         "1mb5kmrk9bkc3kwzx02j62cdan1jqd92q1z7h7wi9d30jg5p3j6m"))))
+         "0c1h9x3a9klvk2g288wl328x8xgzw7136k6vs9hkd56b85vcjh6z"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -16358,14 +16358,14 @@ time-based (TOTP) passwords.")
 (define-public python-parso
   (package
     (name "python-parso")
-    (version "0.6.2")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parso" version))
        (sha256
         (base32
-         "0mr1j4ijqnrihz1yap34g6i8vjldg5lz814sz4v0d8pbqvh5jmhc"))))
+         "0b7irps2dqmzq41sxbpvxbivhh1x2hwmbqp45bbpd82446p9z3lh"))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
@@ -18696,14 +18696,14 @@ tests.")
 (define-public python-gssapi
   (package
     (name "python-gssapi")
-    (version "1.6.1")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gssapi" version))
        (sha256
         (base32
-         "1gymg4asvwrz7y13qpwp2s5g8qwq179d72gkj09q6bfcgs82l5wr"))))
+         "02i5s7998dg5kcr4m0xwamd8vjqk1816xbzldyp68l91f6bynwcr"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-decorator" ,python-decorator)
@@ -19611,3 +19611,27 @@ there are extensions that allow you to use it with other frameworks.")
 register external CLI commands via setuptools entry-points.")
     (home-page "https://github.com/click-contrib/click-plugins")
     (license license:bsd-3)))
+
+(define-public python-diceware
+  (package
+    (name "python-diceware")
+    (version "0.9.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "diceware" version))
+       (sha256
+        (base32
+         "0klb0ysybzlh2wihvir82hgq62v0jjmlcqklwajyms7c0p529yby"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://github.com/ulif/diceware/")
+    (synopsis "Generates memorable passphrases")
+    (description "This package generates passphrases by concatenating words
+randomly picked from wordlists.  It supports several sources of
+randomness (including real life dice) and different wordlists (including
+cryptographically signed ones).")
+    (license license:gpl3+)))

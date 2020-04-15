@@ -1140,7 +1140,7 @@ microblogging service.")
 (define-public guile-parted
   (package
     (name "guile-parted")
-    (version "0.0.3")
+    (version "0.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1149,7 +1149,7 @@ microblogging service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kwi777fhfb4rq6fik9bwqzr63k82qjl94dm5lyyyal4rh724xrc"))
+                "0b7h8psfm9gmmwb65pp5zwzglvwnfmw5j40g09hhf3f7kwxc0mv2"))
               (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (arguments
@@ -1678,6 +1678,84 @@ features a functional reactive programming interface and live coding
 capabilities.")
     (home-page "https://dthompson.us/projects/sly.html")
     (license license:gpl3+)))
+
+(define-public g-golf
+  (let ((commit "4a4edf25e4877df9182c77843bdd98ab59e13ef7"))
+    (package
+      (name "g-golf")
+      (version (git-version "1" "683" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/g-golf.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09p0gf71wbmlm9kri693a8fvr9hl3hhlmlidyadwjdh7853xg0h8"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ("gettext" ,gettext-minimal)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-lib" ,guile-lib)
+         ("clutter" ,clutter)
+         ("gtk" ,gtk+)
+         ("glib" ,glib)))
+      (propagated-inputs
+       `(("gobject-introspection" ,gobject-introspection)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'tests-work-arounds
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; In build environment, There is no /dev/tty
+               (substitute*
+                   "test-suite/tests/gobject.scm"
+                 (("/dev/tty") "/dev/null"))))
+           (add-before 'configure 'substitute-libs
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((get (lambda (key lib)
+                             (string-append (assoc-ref inputs key) "/lib/" lib)))
+                      (libgi      (get "gobject-introspection" "libgirepository-1.0"))
+                      (libglib    (get "glib" "libglib-2.0"))
+                      (libgobject (get "glib" "libgobject-2.0"))
+                      (libgdk     (get "gtk" "libgdk-3")))
+                 (substitute* "configure"
+                   (("SITEDIR=\"\\$datadir/g-golf\"")
+                    "SITEDIR=\"$datadir/guile/site/$GUILE_EFFECTIVE_VERSION\"")
+                   (("SITECCACHEDIR=\"\\$libdir/g-golf/")
+                    "SITECCACHEDIR=\"$libdir/"))
+                 (substitute* "g-golf/init.scm"
+                   (("libgirepository-1.0") libgi)
+                   (("libglib-2.0") libglib)
+                   (("libgdk-3") libgdk)
+                   (("libgobject-2.0") libgobject)
+                   (("\\(dynamic-link \"libg-golf\"\\)")
+                    (format #f "~s"
+                            `(dynamic-link
+                              (format #f "~alibg-golf"
+                                      (if (getenv "GUILE_GGOLF_UNINSTALLED")
+                                          ""
+                                          ,(format #f "~a/lib/"
+                                                   (assoc-ref outputs "out"))))))))
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+                 (setenv "GUILE_GGOLF_UNINSTALLED" "1")
+                 #t))))))
+      (home-page "https://www.gnu.org/software/g-golf/")
+      (synopsis "Guile bindings for GObject Introspection")
+      (description
+       "G-Golf (Gnome: (Guile Object Library for)) is a library for developing
+modern applications in Guile Scheme.  It comprises a direct binding to the
+GObject Introspection API and higher-level functionality for importing Gnome
+libraries and making GObject classes (and methods) available in Guile's
+object-oriented programming system, GOOPS.")
+      (license license:lgpl3+))))
 
 (define-public g-wrap
   (package
@@ -2722,11 +2800,11 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "f3bf0dbd803d7805b6ae8303253507ad13922293"))
+  (let ((commit "d459ca1d3d09e7624e662bc4cfc3596850796fc6"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "19" commit))
+      (version (git-version "v0.4.1" "28" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2735,7 +2813,7 @@ in C using Gtk+-3 and WebKitGtk.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ivy28km1p7nlrf63xx3hvrpxf5ld5amk1wcan3k7sqv1kq9mqdb"))))
+                  "1ps15w8cxj9kc18gmvys9jv9xa1qqa7m43ismv34l3cmhddrn0sr"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)

@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -855,7 +855,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "234")
+    (version "235")
     (source
      (origin
        (method git-fetch)
@@ -863,24 +863,29 @@ enough to play the original mainframe Zork all the way through.")
              (url "http://www.kylheku.com/git/txr/")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
-       (patches (search-patches "txr-shell.patch"))
        (sha256
-        (base32
-         "0c9qsj4xwc24c9g02mr5n97m4d87d4n0pcc2c2n58l2vg5dnzba0"))))
+        (base32 "0kpqk2x0sz7sqxsrhasq0xnljjlnxwhh4xjx2nii0zy2jkv4vsbn"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("cc=gcc")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'configure 'fix-tests
-                    (lambda _
-                      (substitute* "tests/017/realpath.tl"
-                        (("/usr/bin") "/"))
-                      (substitute* "tests/017/realpath.expected"
-                        (("/usr/bin") "/"))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      (invoke "make" "tests"))))))
+     '(#:configure-flags
+       (list "cc=gcc"
+             (string-append "--prefix=" (assoc-ref %outputs "out")))
+       #:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; ./configure is a hand-written script that can't handle standard
+           ;; autotools arguments like CONFIG_SHELL.
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (setenv "txr_shell" (which "bash"))
+             (apply invoke "./configure" configure-flags)
+             #t))
+         (add-after 'configure 'fix-tests
+           (lambda _
+             (substitute* (list "tests/017/realpath.tl"
+                                "tests/017/realpath.expected")
+               (("/usr/bin") "/"))
+             #t)))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
