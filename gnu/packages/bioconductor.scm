@@ -3901,6 +3901,8 @@ further downstream analysis on its output.")
      `(("r-biocparallel" ,r-biocparallel)
        ("r-ellipse" ,r-ellipse)
        ("r-ggplot2" ,r-ggplot2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/bacon/")
     (synopsis "Controlling bias and inflation in association studies")
     (description
