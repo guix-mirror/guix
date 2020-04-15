@@ -516,7 +516,8 @@ to the fix block above.
        ("portaudio" ,portaudio)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)))
+       ("qtsvg" ,qtsvg)
+       ("volk" ,volk)))
     (arguments
      `(#:tests? #f)) ; No tests
     (synopsis "Software defined radio receiver")
