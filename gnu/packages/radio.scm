@@ -35,6 +35,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages engineering)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -524,4 +525,38 @@ to the fix block above.
     (description "Gqrx is a software defined radio (SDR) receiver implemented
 using GNU Radio and the Qt GUI toolkit.")
     (home-page "https://gqrx.dk/")
+    (license license:gpl3+)))
+
+(define-public fldigi
+  (package
+    (name "fldigi")
+    (version "4.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1y62xn1pim38ibaf2mbl8b7aq20jdaac6lgggb9r402w9bj5b196"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fltk" ,fltk)
+       ("libpng" ,libpng)
+       ("libsamplerate" ,libsamplerate)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("portaudio" ,portaudio)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "Software modem for amateur radio use")
+    (description
+     "Fldigi is a software modem for amateur radio use.  It is a sound card
+based program that is used for both transmitting and receiving data by
+connecting the microphone and headphone connections of a computer to some radio
+hardware.")
+    (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
