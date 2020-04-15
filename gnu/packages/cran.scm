@@ -18006,6 +18006,8 @@ allowed.")
        ("r-rsolnp" ,r-rsolnp)
        ("r-shiny" ,r-shiny)
        ("r-shinydashboard" ,r-shinydashboard)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/Wenchao-Ma/GDINA")
     (synopsis "Generalized DINA model framework")
     (description
