@@ -750,7 +750,7 @@ from forcing GEXP-PROMISE."
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("ffmpeg" ,ffmpeg)
-       ("libvpx" ,libvpx-1.7)
+       ("libvpx" ,libvpx)
        ("icu4c" ,icu4c)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
