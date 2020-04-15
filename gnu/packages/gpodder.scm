@@ -51,7 +51,9 @@
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("python-coverage" ,python-coverage)
+       ("python-minimock" ,python-minimock)))
     (inputs
      `(("gtk+" ,gtk+)
        ("python-pygobject" ,python-pygobject)
@@ -72,6 +74,12 @@
                (substitute* "src/gpodder/util.py"
                  (("xdg-open") (string-append xdg-utils "/bin/xdg-open")))
                #t)))
+         (replace 'check
+           (lambda _
+             ; The `unittest' target overrides the PYTHONPATH variable.
+             (substitute* "makefile"
+               (("PYTHONPATH=src/") "PYTHONPATH=${PYTHONPATH}:src/"))
+             (invoke "make" "unittest")))
          ;; 'msgmerge' introduces non-determinism by resetting the
          ;; POT-Creation-Date in .po files.
          (add-before 'install 'do-not-run-msgmerge
