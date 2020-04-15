@@ -184,7 +184,13 @@ downloading episode status changes.")
        (sha256
         (base32 "0k62ppg20i41gcc5x8ddjn7zbpy47hqpxzrq9257g2c71m4qw07b"))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "nosetests"))))))
     (build-system python-build-system)
     (home-page "http://gpodder.org/podcastparser")
     (synopsis "Simplified and fast RSS parser Python library")
