@@ -27340,7 +27340,8 @@ VM.  To enable that you'll also have to pass the following flags to @command{qem
 name=com.redhat.spice.0
 @end example
 
-You'll also need to add the @pxref{Miscellaneous Services, Spice service}.
+You'll also need to add the @code{(spice-vdagent-service)} to your
+system definition (@pxref{Miscellaneous Services, Spice service}).
 
 @node Defining Services
 @section Defining Services
