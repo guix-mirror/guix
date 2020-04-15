@@ -171,7 +171,22 @@ implementation offers several extensions over the standard utility.")
    (build-system gnu-build-system)
    ;; Note: test suite requires ~1GiB of disk space.
    (arguments
-    `(#:phases (modify-phases %standard-phases
+    `(,@(if (hurd-target?)
+            '(#:make-flags
+              (list (string-append
+                     "TESTSUITEFLAGS= -k '"
+                     "!sparse"
+                     ",!renamed dirs in incrementals"
+                     ",!--exclude-tag option in incremental pass"
+                     ",!incremental dumps with -C"
+                     ",!incremental dumps of nested directories"
+                     ",!incremental restores with -C"
+                     ",!concatenated incremental archives (renames)"
+                     ",!renamed directory containing subdirectories"
+                     ",!renamed subdirectories"
+                     "'")))
+            '())
+      #:phases (modify-phases %standard-phases
                  (add-before 'build 'set-shell-file-name
                    (lambda* (#:key inputs #:allow-other-keys)
                      ;; Do not use "/bin/sh" to run programs.
