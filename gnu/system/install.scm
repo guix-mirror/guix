@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix modules)
   #:use-module ((guix packages) #:select (package-version))
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu installer)
@@ -50,6 +52,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages nvi)
+  #:use-module (gnu packages xorg)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
   #:export (installation-os
@@ -287,6 +290,38 @@ the user's target storage device rather than on the RAM disk."
                     (persistent? #f)
                     (max-database-size (* 5 (expt 2 20)))))) ;5 MiB
 
+
+;; These define a service to load the uvesafb kernel module with the
+;; appropriate options.  The GUI installer needs it when the machine does not
+;; support Kernel Mode Setting.  Otherwise kmscon is missing /dev/fb0.
+(define (uvesafb-shepherd-service _)
+  (list (shepherd-service
+         (documentation "Load the uvesafb kernel module.")
+         (provision '(uvesafb))
+         (requirement '(file-systems))
+         (start #~(lambda ()
+                    ;; uvesafb is only supported on x86 and x86_64.
+                    (or (not (and (string-suffix? "linux-gnu" %host-type)
+                                  (or (string-prefix? "x86_64" %host-type)
+                                      (string-prefix? "i686" %host-type))))
+                        (file-exists? "/dev/fb0")
+                        (invoke #+(file-append kmod "/bin/modprobe")
+                                "uvesafb"
+                                (string-append "v86d=" #$v86d "/sbin/v86d")
+                                "mode_option=1024x768"))))
+         (respawn? #f)
+         (one-shot? #t))))
+
+(define uvesafb-service-type
+  (service-type
+   (name 'uvesafb)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             uvesafb-shepherd-service)))
+   (description
+    "Load the @code{uvesafb} kernel module with the right options.")
+   (default-value #t)))
+
 (define %installation-services
   ;; List of services of the installation system.
   (let ((motd (plain-file "motd" "
@@ -408,7 +443,13 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                    (list bare-bones-os
                          glibc-utf8-locales
                          texinfo
-                         (canonical-package guile-2.2))))))
+                         (canonical-package guile-2.2)))
+
+          ;; Machines without Kernel Mode Setting (those with many old and
+          ;; current AMD GPUs, SiS GPUs, ...) need uvesafb to show the GUI
+          ;; installer.  Some may also need a kernel parameter like nomodeset
+          ;; or vga=793, but we leave that for the user to specify in GRUB.
+          (service uvesafb-service-type))))
 
 (define %issue
   ;; Greeting.

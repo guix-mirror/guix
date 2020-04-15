@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2017, 2018. 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -129,9 +129,15 @@
                "1w38hzlw7xp05gcq1nhga7hxvndxy6dfcnzi7q2il8ff110isj6k"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; Running tests in parallel can occasionally lead to failures, like:
+     `(;; Running tests in parallel can occasionally lead to failures, like:
        ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
        #:parallel-tests? #f
+
+       ;; FIXME: Disable tests on i686 to work around
+       ;; <https://bugs.gnu.org/40527>.
+       #:tests? ,(or (%current-target-system)
+                     (not (string=? "i686-linux" (%current-system))))
+
        #:configure-flags (list "--enable-usb-redir" "--enable-opengl"
                                "--enable-docs"
                                (string-append "--smbd="

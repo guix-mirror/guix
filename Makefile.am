@@ -662,11 +662,16 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon				\
   ac_cv_guix_test_root="$(GUIX_TEST_ROOT)"
 
+# Name of the 'guix' package shipped in the binary tarball.
+GUIX_FOR_BINARY_TARBALL = guile3.0-guix
+
 # The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
 	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
-	  -s "$*" --localstatedir --profile-name=current-guix guix` ;	\
+	  --fallback							\
+	  -s "$*" --localstatedir --profile-name=current-guix		\
+	  $(GUIX_FOR_BINARY_TARBALL)` ;					\
 	cp "$$tarball" "$@.tmp" ; mv "$@.tmp" "$@"
 
 
@@ -699,6 +704,16 @@ gen-AUTHORS:
 	    "$(top_srcdir)/build-aux/generate-authors.scm"	\
 	    "$(top_srcdir)" "$(distdir)/AUTHORS";		\
 	fi
+
+# Like 'dist', but regenerate 'configure' so we get an up-to-date
+# 'PACKAGE_VERSION' string.  (In Gnulib, 'GNUmakefile' has a special trick to
+# do that whenever a 'dist' target is used.)
+dist-with-updated-version:
+	@echo "Running './bootstrap' for new version string..."
+	$(top_srcdir)/bootstrap
+	$(MAKE) $(AM_MAKEFLAGS) $(top_srcdir)/.version dist
+
+.PHONY: dist-with-updated-version
 
 
 #
@@ -755,7 +770,7 @@ system_flags = $(foreach system,$(1),-s $(system))
 #
 # XXX: Depend on 'dist' rather than 'distcheck' to work around the Gettext
 # issue described at <https://savannah.gnu.org/bugs/index.php?51027>.
-release: dist
+release: dist-with-updated-version
 	cd po; git checkout .
 	@if ! git diff-index --quiet HEAD; then			\
 	  echo "There are uncommitted changes; stopping." >&2 ;	\
@@ -769,9 +784,9 @@ release: dist
 	   "`git rev-parse HEAD`" "$(PACKAGE_VERSION)"
 	git add $(top_srcdir)/gnu/packages/package-management.scm
 	git commit -m "gnu: guix: Update to $(PACKAGE_VERSION)."
-	$(top_builddir)/pre-inst-env guix build guix	\
+	$(top_builddir)/pre-inst-env guix build $(GUIX_FOR_BINARY_TARBALL)	\
 	      $(call system_flags,$(SUPPORTED_SYSTEMS))	\
-	      -v1 --no-grafts -K
+	      -v1 --no-grafts --fallback
 	rm -f $(BINARY_TARBALLS)
 	$(MAKE) $(BINARY_TARBALLS)
 	for system in $(SUPPORTED_SYSTEMS) ; do					\
@@ -785,12 +800,12 @@ release: dist
 	git commit -m "gnu: guix: Update to `git rev-parse HEAD | cut -c1-7`."
 	$(top_builddir)/pre-inst-env guix build guix			\
 	      $(call system_flags,$(GUIX_SYSTEM_SUPPORTED_SYSTEMS))	\
-	      -v1 --no-grafts -K
+	      -v1 --no-grafts --fallback
 	for system in $(GUIX_SYSTEM_SUPPORTED_SYSTEMS) ; do				\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system disk-image							\
 	    --file-system-type=iso9660							\
-            --system=$$system								\
+            --system=$$system --fallback						\
 	    gnu/system/install.scm` ;							\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced Guix installation image for $$system" >&2 ;	\
@@ -803,7 +818,7 @@ release: dist
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
-	    --system=$$system								\
+	    --system=$$system --fallback						\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\
 	    echo "failed to produced Guix VM image for $$system" >&2 ;			\
