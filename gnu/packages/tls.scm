@@ -181,7 +181,8 @@ living in the same process.")
                "0jvca1qahn9lrwv6f5kfs95icirc15b2a8x9fzczyj996ipg3b5z"))))
     (build-system gnu-build-system)
     (arguments
-     `(; Ensure we don't keep a reference to this buggy software.
+     `(,@(if (hurd-target?) '(#:tests? #f) '())
+       ; Ensure we don't keep a reference to this buggy software.
        #:disallowed-references (,net-tools)
        #:configure-flags
        (list
@@ -230,7 +231,8 @@ living in the same process.")
              `(("net-tools" ,net-tools)))
        ("pkg-config" ,pkg-config)
        ("which" ,which)
-       ("datefudge" ,datefudge)                   ;tests rely on 'datefudge'
+       ,@(if (hurd-target?) '()
+             `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
        ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
      `(("guile" ,guile-3.0)))
