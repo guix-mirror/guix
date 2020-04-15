@@ -6735,6 +6735,8 @@ using whole genome sequencing data.")
      `(("r-data-table" ,r-data-table)
        ("r-ggplot2" ,r-ggplot2)
        ("r-metap" ,r-metap)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActivePathways/")
     (synopsis "Multivariate pathway enrichment analysis")
     (description
