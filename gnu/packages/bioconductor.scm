@@ -3529,6 +3529,8 @@ to multiple hypothesis correction.")
        ("r-qvalue" ,r-qvalue)
        ("r-reshape2" ,r-reshape2)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/DOSE/")
     (synopsis "Disease ontology semantic and enrichment analysis")
     (description
