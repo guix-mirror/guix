@@ -2313,6 +2313,8 @@ possible, parallelization is achieved using the BiocParallel framework.")
        ("r-tidyr" ,r-tidyr)
        ("r-tidyselect" ,r-tidyselect)
        ("r-vim" ,r-vim)))
+    (native-inputs
+     `(("r-nbconvertr" ,r-nbconvertr))) ; for vignettes
     (home-page "https://bioconductor.org/packages/destiny/")
     (synopsis "Create and plot diffusion maps")
     (description "This package provides tools to create and plot diffusion
