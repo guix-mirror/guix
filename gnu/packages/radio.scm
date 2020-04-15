@@ -34,6 +34,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages engineering)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -243,7 +244,13 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        (uri (string-append "https://www.gnuradio.org/releases/gnuradio/"
                            "gnuradio-" version ".tar.xz"))
        (sha256
-        (base32 "0aw55gf5549b0fz2qdi7vplcmaf92bj34h40s34b2ycnqasv900r"))))
+        (base32 "0aw55gf5549b0fz2qdi7vplcmaf92bj34h40s34b2ycnqasv900r"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled volk to use the shared one.
+           (delete-file-recursively "volk")
+           #t))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -288,6 +295,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("python-pyyaml" ,python-pyyaml)
        ("qtbase" ,qtbase)
        ("qwt" ,qwt)
+       ("volk" ,volk)
        ("zeromq" ,zeromq)))
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -298,6 +306,8 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        #:imported-modules (,@%cmake-build-system-modules
                            (guix build glib-or-gtk-build-system)
                            (guix build python-build-system))
+       #:configure-flags
+       '("-DENABLE_INTERNAL_VOLK=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
