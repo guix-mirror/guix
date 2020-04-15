@@ -393,7 +393,8 @@ environment.")
        ("gnuradio" ,gnuradio)
        ("log4cpp" ,log4cpp)
        ;; TODO: Add more drivers.
-       ("rtl-sdr" ,rtl-sdr)))
+       ("rtl-sdr" ,rtl-sdr)
+       ("volk" ,volk)))
     (synopsis "GNU Radio block for interfacing with various radio hardware")
     (description "This is a block for GNU Radio allowing to use a common API
 to access different radio hardware.")
