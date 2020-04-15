@@ -473,7 +473,8 @@ primitives for SDR (Software Defined Radio).")
        ("gmp" ,gmp)
        ("gnuradio" ,gnuradio)
        ("libosmo-dsp" ,libosmo-dsp)
-       ("log4cpp" ,log4cpp)))
+       ("log4cpp" ,log4cpp)
+       ("volk" ,volk)))
     (synopsis "GNU Radio block to correct IQ imbalance")
     (description
      "This is a GNU Radio block to correct IQ imbalance in quadrature
