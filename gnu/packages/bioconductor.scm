@@ -7109,6 +7109,8 @@ structures.")
        ("r-rjson" ,r-rjson)
        ("r-rsqlite" ,r-rsqlite)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/TylerBackman/bioassayR")
     (synopsis "Cross-target analysis of small molecule bioactivity")
     (description
