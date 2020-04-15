@@ -861,9 +861,9 @@ collaboration using typical untrusted file hosts or services.")
            (method url-fetch)
            ;; cgit is tightly bound to git.  Use GIT_VER from the Makefile,
            ;; which may not match the current (package-version git).
-           (uri "mirror://kernel.org/software/scm/git/git-2.25.1.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.25.3.tar.xz")
            (sha256
-            (base32 "09lzwa183nblr6l8ib35g2xrjf9wm9yhk3szfvyzkwivdv69c9r2"))))
+            (base32 "0yvr97cl0dvj3fwblq1mb0cp97v8hrn9l98p8b1jx8815mbsnz9h"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)
