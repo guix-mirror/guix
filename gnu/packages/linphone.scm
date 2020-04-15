@@ -488,13 +488,27 @@ and video calls or instant messaging capabilities to an application.")
     (arguments
      `(#:tests? #f                      ; No test target
        #:phases
-       ;; For replacing undeclared variable.
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch
+         (add-after 'set-paths 'set-qt-rcc-source-date-override
+           (lambda _
+             ;; This fixes a reproducibility problem where the Qt Resource
+             ;; Compiler (RCC) includes timestamp of the its source files
+             ;; (see: https://reproducible-builds.org/docs/
+             ;;       deterministic-build-systems/#cmake-notes)
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-after 'unpack 'fix-cmake-error
+           (lambda _
+             ;; This is fixed in commit efed2fd8 of the master branch.
+             (substitute* "CMakeLists.txt"
+               (("js)\\$\"")
+                "js$\""))
+             #t))
+         (add-after 'unpack 'set-version-string
            (lambda _
              (substitute* "src/app/AppController.cpp"
                (("LINPHONE_QT_GIT_VERSION")
-                "\"4.1.1\""))
+                (format #f "~s" ,version)))
              #t)))))
     (native-inputs
      `(("qttools" ,qttools)))
@@ -509,10 +523,24 @@ and video calls or instant messaging capabilities to an application.")
        ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)))
-    (synopsis "Belledonne Communications Softphone Application")
-    (description "Linphone is a softphone for voice and video over IP calling
-and instant messaging.  It is fully SIP-based, for all calling, presence
-and IM features.")
+    (synopsis "Desktop client for the Linphone SIP softphone")
+    (description "Linphone is a SIP softphone for voice and video over IP calling
+(VoIP) and instant messaging.  Amongst its features are:
+@itemize
+@item High Definition (HD) audio and video calls
+@item Multiple call management (pause and resume)
+@item Call transfer
+@item Audio conferencing (merge calls into a conference call)
+@item Call recording and replay (audio only)
+@item Instant Messaging with message delivery status (IMDN)
+@item Picture and file sharing
+@item Echo cancellation
+@item Secure user authentication using TLS client certificates
+@item SRTP, zRTP and SRTP-DTLS voice and video encryption
+@item Telephone tone (DTMF) support using SIP INFO or RFC 4733
+@item Audio codecs: opus, speex, g711, g729, gsm, iLBC, g722, SILK, etc.
+@item Video codecs: VP8, H.264 and H.265 with resolutions up to 1080P, MPEG4
+@end itemize")
     (home-page "https://gitlab.linphone.org/BC/public/linphone-desktop")
     (license license:gpl2+)))
 
