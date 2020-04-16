@@ -49,7 +49,7 @@
      `(("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://augeas.net/")
+    (home-page "https://augeas.net")
     (synopsis "Edit configuration files programmatically")
     (description
      "Augeas is a library and command line tool for programmatically editing
