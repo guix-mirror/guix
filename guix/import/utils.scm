@@ -322,6 +322,11 @@ specifications to look up and replace them with plain symbols instead."
                    known-inputs)))
       (append (specs->package-lists regular)
               (map string->symbol known))))
+  (define (process-arguments arguments)
+    (append-map (match-lambda
+                  ((key . value)
+                   (list (symbol->keyword (string->symbol key)) value)))
+                arguments))
   (package
     (name (assoc-ref meta "name"))
     (version (assoc-ref meta "version"))
@@ -329,6 +334,10 @@ specifications to look up and replace them with plain symbols instead."
     (build-system
       (lookup-build-system-by-name
        (string->symbol (assoc-ref meta "build-system"))))
+    (arguments
+     (or (and=> (assoc-ref meta "arguments")
+                process-arguments)
+         '()))
     (native-inputs (process-inputs "native-inputs"))
     (inputs (process-inputs "inputs"))
     (propagated-inputs (process-inputs "propagated-inputs"))
