@@ -1699,14 +1699,14 @@ Python 3.3+.")
 (define-public python-pyicu
   (package
     (name "python-pyicu")
-    (version "2.3.1")
+    (version "2.4.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "PyICU" version))
       (sha256
        (base32
-        "1x4w8m7ifki9z2a187pgjr33z6z0rp2fii9b73djak1vhm9v9cnx"))))
+        "075bw66b3w0nw6mc5k32fwmrhyrmq3d7da3q2mw212qfmm0pgjn0"))))
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
@@ -1717,24 +1717,10 @@ Python 3.3+.")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
-    (properties `((python2-variant . ,(delay python2-pyicu))))
     (license license:x11)))
 
 (define-public python2-pyicu
-  (let ((base (package-with-python2
-                (strip-python2-variant python-pyicu))))
-    (package
-      (inherit base)
-      (arguments
-       `(,@(package-arguments base)
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'delete-failing-test
-             (λ _
-               ;; XXX: This fails due to Unicode issues unique to Python 2,
-               ;; it seems: <https://github.com/ovalhub/pyicu/issues/61>.
-               (delete-file "test/test_Script.py")
-               #t))))))))
+  (package-with-python2 python-pyicu))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
