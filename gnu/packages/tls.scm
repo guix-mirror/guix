@@ -188,7 +188,7 @@ living in the same process.")
                                     '()
                                     (list net-tools iproute socat))
        #:configure-flags
-       (list
+       (cons*
              ;; GnuTLS doesn't consult any environment variables to specify
              ;; the location of the system-wide trust store.  Instead it has a
              ;; configure-time option.  Unless specified, its configure script
@@ -209,9 +209,14 @@ living in the same process.")
              (string-append "--with-guile-extension-dir="
                             "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions")
 
-             ;; FIXME: Temporarily disable p11-kit support since it is not
-             ;; working on mips64el.
-             "--without-p11-kit")
+             (let ((system ,(or (%current-target-system)
+                                (%current-system))))
+               (if (string-prefix? "mips64el" system)
+                   (list
+                    ;; FIXME: Temporarily disable p11-kit support since it is
+                    ;; not working on mips64el.
+                    "--without-p11-kit")
+                   '())))
 
        #:phases (modify-phases %standard-phases
                   ;; fastopen.sh fails to connect to the server in the builder
@@ -250,7 +255,12 @@ living in the same process.")
              `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
        ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
-     `(("guile" ,guile-3.0)))
+     `(("guile" ,guile-3.0)
+       ,@(let ((system (or (%current-target-system)
+                           (%current-system))))
+           (if (string-prefix? "mips64el" system)
+               '()
+               `(("p11-kit" ,p11-kit))))))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
