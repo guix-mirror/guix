@@ -474,7 +474,8 @@ and video calls or instant messaging capabilities to an application.")
         (string-append "https://www.linphone.org/releases/sources/" name
                        "/" name "-" version ".tar.gz"))
        (sha256
-        (base32 "1g2zrr9li0g1hgs6vys06vr98h5dx36z22hx7a6ry231536c002a"))))
+        (base32 "1g2zrr9li0g1hgs6vys06vr98h5dx36z22hx7a6ry231536c002a"))
+       (patches (search-patches "linphoneqt-tabbutton.patch"))))
     (build-system qt-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -512,6 +513,7 @@ and video calls or instant messaging capabilities to an application.")
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols" ,qtquickcontrols)
        ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)))
     (synopsis "Desktop client for the Linphone SIP softphone")
