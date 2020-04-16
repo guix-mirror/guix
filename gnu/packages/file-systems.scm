@@ -187,6 +187,38 @@ caching system, and lets you assign different roles to each device based on its
 performance and other characteristics.")
       (license license:gpl2+))))
 
+(define-public exfatprogs
+  (package
+    (name "exfatprogs")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/exfatprogs/exfatprogs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1s47qvhr702z5c19wfqz8cwl9ammmincs7a8vjc6p974wnnjg77y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/exfatprogs/exfatprogs")
+    (synopsis "Tools to create, check, and repair exFAT file systems")
+    (description
+     "These are command-line user space tools for the @acronym{exFAT,
+Extensible File Allocation Table} file systems.  Included are
+@command{mkfs.exfat} to create (format) new exFAT file systems, and
+@command{fsck.exfat} to check their consistency and repair them.")
+    (license license:gpl2+)))
+
 (define-public httpfs2
   (package
     (name "httpfs2")
