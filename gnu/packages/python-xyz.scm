@@ -11898,6 +11898,7 @@ characters, mouse support, and auto suggestions.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
+       (patches (search-patches "python-jedi-sort-project-test.patch"))
        (sha256
         (base32
          "0c1h9x3a9klvk2g288wl328x8xgzw7136k6vs9hkd56b85vcjh6z"))))
@@ -11908,7 +11909,7 @@ characters, mouse support, and auto suggestions.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (invoke "python" "-m" "pytest"))))))
+             (invoke "python" "-m" "pytest" "-vv"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-docopt" ,python-docopt)))
