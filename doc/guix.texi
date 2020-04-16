@@ -77,6 +77,7 @@ Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
+Copyright @copyright{} 2020 R Veera Kumar@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -25632,6 +25633,11 @@ If true, this must be the name of a file to log messages to.
 @subsection Dictionary Services
 @cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
+
+@defvr {Scheme Variable} dicod-service-type
+This is the type of the service that runs the @command{dicod} daemon, an
+implementation of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
+@end defvr
 
 @deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
 Return a service that runs the @command{dicod} daemon, an implementation
