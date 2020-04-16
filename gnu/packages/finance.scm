@@ -41,6 +41,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
@@ -1164,6 +1165,33 @@ financial years, budget estimates, bankcard management and other
 information.")
     (home-page "https://grisbi.org")
     (license license:gpl2+)))
+
+(define-public trezord-udev-rules
+  (let ((commit "bff7fdfe436c727982cc553bdfb29a9021b423b0")
+        (revision "0"))
+      (package
+        (name "trezord-udev-rules")
+        (version (git-version "0.0.0" revision commit))
+        (source
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/trezor/trezor-common.git")
+                 (commit commit)))
+           (sha256
+            (base32
+             "14mrirrn68if7ja6qdk9qlxs1hv0f21vrxy5ncnms0gx9iwakp2l"))
+           (file-name (git-file-name name version))))
+        (build-system copy-build-system)
+        (arguments
+         '(#:install-plan
+           '(("./udev/51-trezor.rules" "lib/udev/rules.d/"))))
+        (home-page "https://github.com/trezor/trezor-common")
+        (synopsis "Udev rules for trezord")
+        (description
+         "This contains the udev rules for trezord.  This will let a user run
+trezord as a regular user instead of needing to it run as root.")
+        (license license:lgpl3+))))
 
 (define-public trezord
   (package
