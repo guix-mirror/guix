@@ -508,7 +508,7 @@ replacement for the code@{python-memcached} library.")
        ("python" ,python-2)
        ("python2-pymongo" ,python2-pymongo)
        ("python2-pyyaml" ,python2-pyyaml)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata-for-tests)))
     (arguments
      `(#:scons ,scons-python2
        #:phases

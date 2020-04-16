@@ -241,11 +241,11 @@ and dynamically with report tools based on filtering and graphical charts.")
        ("libedit" ,libedit)
        ("mpfr" ,mpfr)
        ("python" ,python-2)
-       ("tzdata" ,tzdata)
        ("utfcpp" ,utfcpp)))
     (native-inputs
      `(("groff" ,groff)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo)
+       ("tzdata" ,tzdata-for-tests)))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
     (description

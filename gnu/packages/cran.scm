@@ -20624,7 +20624,7 @@ techniques to average Bayesian predictive distributions.")
                                     "/share/zoneinfo"))
              #t)))))
     (native-inputs
-     `(("tzdata" ,tzdata)
+     `(("tzdata" ,tzdata-for-tests)
        ("pandoc" ,ghc-pandoc)))
     (propagated-inputs
      `(("r-bh" ,r-bh)
