@@ -79,7 +79,9 @@ when evaluated."
           (patches   (origin-patches source)))
       `(origin
          (method ,(procedure-name method))
-         (uri (string-append ,@(factorize-uri uri version)))
+         (uri (string-append ,@(match (factorize-uri uri version)
+                                 ((? string? uri) (list uri))
+                                 (factorized factorized))))
          (sha256
           (base32
            ,(format #f "~a" (bytevector->nix-base32-string sha256))))
