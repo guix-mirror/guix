@@ -1958,22 +1958,22 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.15.1")
+    (version "0.16.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "18ba2xgfq8sw0bg6xmlfjpizid1hkzgswcfcc54gl21y2dwfda2w"))))
+                "0fg4qh5gzki5wg958wlpc8a2icnk74gzg33lqxjm755cfnjng7qd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-doc
+         (add-after 'install 'install-completions
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/khard")))
-               (copy-recursively "misc/khard" doc)
+                    (zsh (string-append out "/share/zsh/site-functions")))
+               (copy-recursively "misc/zsh" zsh)
                #t))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
