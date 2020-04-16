@@ -2824,6 +2824,15 @@ in the root of their project source tree that can be used to test
 development snapshots and create reproducible development environments
 (@pxref{Invoking guix environment}).
 
+The @var{file} may also contain a JSON representation of one or more
+package definitions.  Running @code{guix package -f} on
+@file{hello.json} with the following contents would result in installing
+the package @code{greeter} after building @code{myhello}:
+
+@example
+@verbatiminclude package-hello.json
+@end example
+
 @item --remove=@var{package} @dots{}
 @itemx -r @var{package} @dots{}
 Remove the specified @var{package}s.
@@ -8549,6 +8558,15 @@ As an example, @var{file} might contain a package definition like this
 @lisp
 @include package-hello.scm
 @end lisp
+
+The @var{file} may also contain a JSON representation of one or more
+package definitions.  Running @code{guix build -f} on @file{hello.json}
+with the following contents would result in building the packages
+@code{myhello} and @code{greeter}:
+
+@example
+@verbatiminclude package-hello.json
+@end example
 
 @item --manifest=@var{manifest}
 @itemx -m @var{manifest}

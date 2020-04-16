@@ -53,7 +53,8 @@ EXTRA_DIST +=					\
   $(DOT_VECTOR_GRAPHICS)			\
   %D%/images/coreutils-size-map.eps		\
   %D%/environment-gdb.scm			\
-  %D%/package-hello.scm
+  %D%/package-hello.scm				\
+  %D%/package-hello.json
 
 OS_CONFIG_EXAMPLES_TEXI =			\
   %D%/os-config-bare-bones.texi			\
