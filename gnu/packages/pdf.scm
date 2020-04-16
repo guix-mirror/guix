@@ -844,11 +844,6 @@ using a stylus.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions-on-po-files
            (lambda _
-             ;; ;; Always generate translations.  A recent upstream patch
-             ;; ;; disabled it.
-             ;; (substitute* "po/CMakeLists.txt"
-             ;;   (("gettext_create_translations \\(\"\\$\\{potfile\\}\"\\)")
-             ;;    "gettext_create_translations (\"${potfile}\" ALL)"))
              ;; Make sure 'msgmerge' can modify the PO files.
              (for-each (lambda (po) (chmod po #o666))
                        (find-files "." "\\.po$"))
