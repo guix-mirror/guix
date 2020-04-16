@@ -741,15 +741,15 @@ on the screen.")
 (define-public xfdesktop
   (package
     (name "xfdesktop")
-    (version "4.14.1")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfdesktop/" (version-major+minor version) "/"
+                                  "xfdesktop-" version ".tar.bz2"))
               (sha256
                (base32
-                "10pqxgpj7b57wpcsh2k98sj4aavcgxbs1lc8qsq4mibf4hba01gp"))
+                "0x1yx9sd5aanrlr1qnbwd2nsmcg09g4132k0kyb7z47a3x3381d3"))
               (modules '((guix build utils)))
               (snippet
                #~(begin
@@ -781,6 +781,7 @@ on the screen.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
 
+       ;; For our own ‘prepare-background-image’ phase.
        ("inkscape" ,inkscape)
        ("imagemagick" ,imagemagick)))
     (inputs
