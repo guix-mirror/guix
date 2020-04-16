@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages serialization)
@@ -206,7 +208,9 @@
        ("expat" ,expat)
        ("file" ,file)
        ("libarchive" ,libarchive)
-       ("libuv" ,libuv)
+       ,@(if (hurd-target?)
+             '()
+             `(("libuv" ,libuv)))       ;not supported on the Hurd
        ("ncurses" ,ncurses)             ;required for ccmake
        ("rhash" ,rhash)
        ("zlib" ,zlib)))
