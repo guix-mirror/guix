@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4071,3 +4072,33 @@ With Peek, you simply place the Peek window over the area you want to record
 and press \"Record\".  Peek is optimized for generating animated GIFs, but you
 can also directly record to WebM or MP4 if you prefer.")
     (license license:gpl3+)))
+
+(define-public wf-recorder
+  (package
+    (name "wf-recorder")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ammen99/wf-recorder.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cw6kpcbl33wh95pvy32xrsrm6kkk1awccr3phyh885xjs3b3iim"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("pulseaudio" ,pulseaudio)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("libx264" ,libx264)))
+    (home-page "https://github.com/ammen99/wf-recorder")
+    (synopsis "Screen recorder for wlroots-based compositors")
+    (description
+     "@code{wf-recorder} is a utility program for screen recording of
+wlroots-based compositors.  More specifically, those that support
+@code{wlr-screencopy-v1} and @code{xdg-output}.")
+    (license license:expat)))
