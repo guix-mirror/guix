@@ -615,3 +615,32 @@ or USB connection.")
 (Amateur Multicast Protocol).")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
+
+(define-public flwrap
+  (package
+    (name "flwrap")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.w1hkj.com/files/flwrap/flwrap-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0qqivqkkravcg7j45740xfky2q3k7czqpkj6y364qff424q2pppg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fltk" ,fltk)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)))
+    (synopsis "File encapsulation program")
+    (description
+     "Flwrap is a software utility for amateur radio use.  Its purpose is to
+encapsulate both text and binary files in a way that allows them to be
+transmitted over any of several digital modes and verified at the receipt end
+for correctness.")
+    (home-page "http://www.w1hkj.com/")
+    (license license:gpl3+)))
