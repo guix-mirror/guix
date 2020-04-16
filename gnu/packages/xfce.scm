@@ -950,15 +950,15 @@ the desktop wallpaper.")
 (define-public xfce4-taskmanager
   (package
     (name "xfce4-taskmanager")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-taskmanager/" (version-major+minor version) "/"
+                                  "xfce4-taskmanager-" version ".tar.bz2"))
               (sha256
                (base32
-                "04qflazmdrj4ys4r54yg4s5pqcjgk02idrjsls395zd4374636p4"))))
+                "1i63bnvpjpblnd0d3l1v065x9q1cz74cvlab5hzd0q8zgkd49z6w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
