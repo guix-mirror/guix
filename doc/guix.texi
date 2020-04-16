@@ -6171,7 +6171,6 @@ if they are defined by the crate.
 
 
 @defvr {Scheme Variable} copy-build-system
-@cindex (copy build system)
 This variable is exported by @code{(guix build-system copy)}.  It
 supports builds of simple packages that don't require much compiling,
 mostly just moving files around.
