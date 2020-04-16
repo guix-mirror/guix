@@ -588,3 +588,30 @@ It provides computer aided control of various radios using a serial
 or USB connection.")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
+
+(define-public flamp
+  (package
+    (name "flamp")
+    (version "2.2.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.w1hkj.com/files/flamp/flamp-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "19z1kghhdf7bq6hi2j0mzlsn2nhpn3gl1a623x3inmsk80yw3ck4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fltk" ,fltk)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)))
+    (synopsis "Tool for AMP file transfer")
+    (description
+     "FLAMP is a program for transfering files by radio waves using AMP
+(Amateur Multicast Protocol).")
+    (home-page "http://www.w1hkj.com/")
+    (license license:gpl3+)))
