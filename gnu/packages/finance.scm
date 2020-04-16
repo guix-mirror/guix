@@ -13,7 +13,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
@@ -1168,7 +1168,7 @@ information.")
 (define-public trezord
   (package
     (name "trezord")
-    (version "2.0.17")
+    (version "2.0.29")
     (source
      (origin
        (method git-fetch)
@@ -1177,7 +1177,7 @@ information.")
               (commit (string-append "v" version))))
        (sha256
         (base32
-         "0nqzpq0i3crh0i4r1cppja5sn3rwi1fv9afxzwzv63096x5l30a7"))
+         "1ks1fa0027s3xp0z6qp0dxmayvrb4dwwscfhbx7da0khp153f2cp"))
        (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
