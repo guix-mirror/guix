@@ -10265,13 +10265,13 @@ programmatically interfacing with your system's $EDITOR.")
 (define-public python-vobject
   (package
     (name "python-vobject")
-    (version "0.9.5")
+    (version "0.9.6.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vobject" version))
               (sha256
                (base32
-                "0hqjgf3ay1m5w1c0k00g5yfpdz1zni5qnr5rh9b8fg9hjvhwlmhg"))))
+                "0081g4gngw28j7vw8101jk600wz4gzfrhf5myrqvn2mrfkn2llcn"))))
     (build-system python-build-system)
     (arguments
      '(;; The test suite relies on some non-portable Windows interfaces.
@@ -10282,7 +10282,7 @@ programmatically interfacing with your system's $EDITOR.")
     (synopsis "Parse and generate vCard and vCalendar files")
     (description "Vobject is intended to be a full featured Python package for
 parsing and generating vCard and vCalendar files.  Currently, iCalendar files
-are supported and well tested. vCard 3.0 files are supported, and all data
+are supported and well tested.  vCard 3.0 files are supported, and all data
 should be imported, but only a few components are understood in a sophisticated
 way.")
     (home-page "https://eventable.github.io/vobject/")
