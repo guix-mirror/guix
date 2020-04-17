@@ -13641,32 +13641,34 @@ fasta subsequences.")
 (define-public python-cooler
   (package
     (name "python-cooler")
-    (version "0.7.11")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cooler" version))
        (sha256
         (base32
-         "08k5nxnxa6qsbk15z5z0q01n28042k87wi4905hh95rzqib15mhx"))))
+         "01g6gqix9ba27sappz6nfyiwabzrlf8i5fn8kwcz8ra356cq9crp"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-biopython" ,python-biopython)
+     `(("python-asciitree" ,python-asciitree)
+       ("python-biopython" ,python-biopython)
        ("python-click" ,python-click)
        ("python-cytoolz" ,python-cytoolz)
        ("python-dask" ,python-dask)
        ("python-h5py" ,python-h5py)
        ("python-multiprocess" ,python-multiprocess)
+       ("python-numpy" ,python-numpy)
        ("python-pandas" ,python-pandas)
        ("python-pyfaidx" ,python-pyfaidx)
        ("python-pypairix" ,python-pypairix)
        ("python-pysam" ,python-pysam)
-       ("python-scipy" ,python-scipy)))
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-scipy" ,python-scipy)
+       ("python-simplejson" ,python-simplejson)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-sphinx" ,python-sphinx)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/mirnylab/cooler")
     (synopsis "Sparse binary format for genomic interaction matrices")
     (description
