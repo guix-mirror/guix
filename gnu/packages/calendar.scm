@@ -223,9 +223,8 @@ data units.")
        ("python-sphinxcontrib-newsfeed" ,python-sphinxcontrib-newsfeed)
        ("python-sphinx" ,python-sphinx)))
     (inputs
-     `(("sqlite" ,sqlite)))
-    (propagated-inputs
-     `(("python-configobj" ,python-configobj)
+     `(("sqlite" ,sqlite)
+       ("python-configobj" ,python-configobj)
        ("python-dateutil" ,python-dateutil)
        ("python-icalendar" ,python-icalendar)
        ("python-tzlocal" ,python-tzlocal)
