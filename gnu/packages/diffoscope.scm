@@ -45,6 +45,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mono)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages package-management)
