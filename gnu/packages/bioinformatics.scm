@@ -2399,13 +2399,13 @@ files.")
 (define-public python-pybigwig
   (package
     (name "python-pybigwig")
-    (version "0.3.12")
+    (version "0.3.17")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyBigWig" version))
               (sha256
                (base32
-                "00w4kfnm2c5l7wdwr2nj1z5djv8kzgf7h1zhsgv6njff1rwr26g0"))
+                "157x6v48y299zm382krf1dw08fdxg95im8lnabhp5vc94s04zxj1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
