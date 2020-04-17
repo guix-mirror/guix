@@ -1977,7 +1977,7 @@ maintained.")
                #t))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (propagated-inputs
+    (inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
        ("python-pyyaml" ,python-pyyaml)
