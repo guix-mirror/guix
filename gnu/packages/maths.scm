@@ -5416,7 +5416,9 @@ researchers and developers alike to get started on SAT.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))))
+        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))
+       (patches
+        (search-patches "libqalculate-3.8.0-libcurl-ssl-fix.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
