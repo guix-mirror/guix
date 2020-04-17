@@ -2,6 +2,7 @@
 ;;
 ;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
@@ -9,6 +10,15 @@
 
 (channel-news
  (version 0)
+
+ (entry (commit "2ca7af43fe17d9acf082dce85d137a27a8ac4887")
+        (title (en "Further reduced binary seed bootstrap"))
+        (body
+         (en "The package graph on x86_64 and i686 is now rooted in a further
+@dfn{reduced set of binary seeds}.  The initial set of binaries from which
+packages are built now weighs in at approximately 60 MiB, a quarter of what it
+used to be.  Run @code{info \"(guix) Bootstrapping\"} to learn more, or watch
+the talk at @uref{https://fosdem.org/2020/schedule/event/gnumes/}.")))
 
  (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
         (title (en "Rottlog service added to @code{%base-services}")
