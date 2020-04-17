@@ -13773,23 +13773,35 @@ genomic scores), long range contacts and the visualization of viewpoints.")
 (define-public python-pygenometracks
   (package
     (name "python-pygenometracks")
-    (version "2.0")
+    (version "3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyGenomeTracks" version))
        (sha256
         (base32
-         "1fws6bqsyy9kj3qiabhkqx4wd4i775gsxnhszqd3zg7w67sc1ic5"))))
+         "16laa0wnf4qn9fb9ych4w1vqhqwjss70v0y0f6wp4gwqfrlgac0f"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("matplotlib ==3.1.1")
+                "matplotlib >=3.1.1"))
+             #t)))))
     (propagated-inputs
-     `(("python-configparser" ,python-configparser)
-       ("python-future" ,python-future)
-       ("python-hicexplorer" ,python-hicexplorer)
+     `(("python-future" ,python-future)
+       ("python-gffutils" ,python-gffutils)
+       ("python-hicmatrix" ,python-hicmatrix)
        ("python-intervaltree" ,python-intervaltree)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
-       ("python-pybigwig" ,python-pybigwig)))
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-tqdm" ,python-tqdm)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://pygenometracks.readthedocs.io")
