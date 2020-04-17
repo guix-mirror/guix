@@ -7980,14 +7980,14 @@ printing of sub-tables by specifying a row range.")
 (define-public python-tables
   (package
     (name "python-tables")
-    (version "3.4.4")
+    (version "3.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tables" version))
        (sha256
         (base32
-         "0affz7k8babh8wdmsgrz5jxrd569by2w8ffimcxs9wiaf5rw1idx"))
+         "0j8vnxh2m5n0cyk9z3ndcj5n1zj5rdxgc1gb78bqlyn2lyw75aa9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -8005,9 +8005,11 @@ printing of sub-tables by specifying a row range.")
          (add-after 'unpack 'use-gcc
            (lambda _
              (substitute* "setup.py"
-               (("compiler = new_compiler\\(\\)" line)
+               (("^( +)compiler = new_compiler\\(\\)" line indent)
                 (string-append line
-                               "\ncompiler.set_executables(compiler='gcc',"
+                               "\n"
+                               indent
+                               "compiler.set_executables(compiler='gcc',"
                                "compiler_so='gcc',"
                                "linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
