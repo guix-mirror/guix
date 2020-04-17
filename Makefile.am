@@ -668,7 +668,7 @@ GUIX_FOR_BINARY_TARBALL = guile3.0-guix
 # The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
-	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
+	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz		\
 	  --fallback							\
 	  -s "$*" --localstatedir --profile-name=current-guix		\
 	  $(GUIX_FOR_BINARY_TARBALL)` ;					\
