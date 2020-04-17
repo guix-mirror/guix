@@ -27252,7 +27252,8 @@ This image boots the Xfce graphical environment and it contains some
 commonly-used tools.  You can install more software in the image by running
 @command{guix package} in a terminal (@pxref{Invoking guix package}).  You can
 also reconfigure the system based on its initial configuration file available
-as @file{/etc/config.scm} (@pxref{Using the Configuration System}).
+as @file{/run/current-system/configuration.scm} (@pxref{Using the
+Configuration System}).
 
 Instead of using this pre-built image, one can also build their own virtual
 machine image using @command{guix system vm-image} (@pxref{Invoking guix
