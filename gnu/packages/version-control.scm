@@ -253,9 +253,17 @@ as well as the classic centralized workflow.")
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
-        ;; We do not have bash-for-tests when cross-compiling.
         ,@(if (%current-target-system)
-              '()
+              ;; The git build system assumes build == host
+              `((add-after 'unpack  'use-host-uname_S
+                  (lambda _
+                    (substitute* "config.mak.uname"
+                      (("uname_S := .*" all)
+                       (if (equal? ,(%current-target-system) "i586-pc-gnu")
+                         "uname_S := GNU\n"
+                         all)))
+                    #t)))
+              ;; We do not have bash-for-tests when cross-compiling.
               `((add-after 'unpack 'modify-PATH
                   (lambda* (#:key inputs #:allow-other-keys)
                     (let ((path (string-split (getenv "PATH") #\:))
