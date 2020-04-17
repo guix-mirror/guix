@@ -48,7 +48,7 @@
   (let ((ref (lambda (module variable)
                (module-ref (resolve-interface module) variable))))
     (match-lambda
-      ("guile"      (ref '(gnu packages guile) 'guile-3.0))
+      ("guile"      (ref '(gnu packages guile) 'guile-3.0/libgc-7))
       ("guile-json" (ref '(gnu packages guile) 'guile-json-3))
       ("guile-ssh"  (ref '(gnu packages ssh)   'guile-ssh))
       ("guile-git"  (ref '(gnu packages guile) 'guile-git))

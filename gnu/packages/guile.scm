@@ -309,6 +309,17 @@ without requiring the source code to be rewritten.")
 
 (define-public guile-next guile-3.0)
 
+(define-public guile-3.0/libgc-7
+  ;; Using libgc-7 avoid crashes that can occur, particularly when loading
+  ;; data in to the Guix Data Service:
+  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40525
+  (hidden-package
+   (package
+     (inherit guile-3.0)
+     (propagated-inputs
+      `(("bdw-gc" ,libgc-7)
+        ,@(srfi-1:alist-delete "bdw-gc" (package-propagated-inputs guile-3.0)))))))
+
 (define-public guile-3.0/fixed
   ;; A package of Guile that's rarely changed.  It is the one used in the
   ;; `base' module, and thus changing it entails a full rebuild.
