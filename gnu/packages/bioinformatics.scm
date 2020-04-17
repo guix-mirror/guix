@@ -13677,6 +13677,46 @@ storage format, called @code{cool}, used to store genomic interaction data,
 such as Hi-C contact matrices.")
     (license license:bsd-3)))
 
+(define-public python-hicmatrix
+  (package
+    (name "python-hicmatrix")
+    (version "12")
+    (source
+     (origin
+       ;; Version 12 is not available on pypi.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deeptools/HiCMatrix.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1xhdyx16f3brgxgxybixdi64ki8nbbkq5vk4h9ahi11pzpjfn1pj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* '("requirements.txt"
+                            "setup.py")
+               (("cooler *=+ *0.8.5")
+                "cooler==0.8.*"))
+             #t)))))
+    (propagated-inputs
+     `(("python-cooler" ,python-cooler)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-tables" ,python-tables)))
+    (home-page "https://github.com/deeptools/HiCMatrix/")
+    (synopsis "HiCMatrix class for HiCExplorer and pyGenomeTracks")
+    (description
+     "This helper package implements the @code{HiCMatrix} class for
+the HiCExplorer and pyGenomeTracks packages.")
+    (license license:gpl3+)))
+
 (define-public python-hicexplorer
   (package
     (name "python-hicexplorer")
