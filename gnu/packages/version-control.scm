@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -147,7 +148,8 @@ as well as the classic centralized workflow.")
 
 (define git-cross-configure-flags
   '("ac_cv_fread_reads_directories=yes"
-    "ac_cv_snprintf_returns_bogus=no"))
+    "ac_cv_snprintf_returns_bogus=no"
+    "ac_cv_iconv_omits_bom=no"))
 
 (define-public git
   (package
@@ -251,16 +253,19 @@ as well as the classic centralized workflow.")
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'modify-PATH
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((path (string-split (getenv "PATH") #\:))
-                  (bash-full (assoc-ref inputs "bash-for-tests")))
-              ;; Drop the test bash from PATH so that (which "sh") and
-              ;; similar does the right thing.
-              (setenv "PATH" (string-join
-                              (remove (cut string-prefix? bash-full <>) path)
-                              ":"))
-              #t)))
+        ;; We do not have bash-for-tests when cross-compiling.
+        ,@(if (%current-target-system)
+              '()
+              `((add-after 'unpack 'modify-PATH
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((path (string-split (getenv "PATH") #\:))
+                          (bash-full (assoc-ref inputs "bash-for-tests")))
+                      ;; Drop the test bash from PATH so that (which "sh") and
+                      ;; similar does the right thing.
+                      (setenv "PATH" (string-join
+                                      (remove (cut string-prefix? bash-full <>) path)
+                                      ":"))
+                      #t)))))
         ;; Add cross curl-config script to PATH when cross-compiling.
         ,@(if (%current-target-system)
               '((add-before 'configure 'add-cross-curl-config
