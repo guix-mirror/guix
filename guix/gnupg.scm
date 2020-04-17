@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2013, 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,8 @@
    "^\\[GNUPG:\\] VALIDSIG ([[:xdigit:]]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+) .*$"))
 (define expkeysig-rx                    ; good signature, but expired key
   (make-regexp "^\\[GNUPG:\\] EXPKEYSIG ([[:xdigit:]]+) (.*)$"))
+(define revkeysig-rx                    ; good signature, but revoked key
+  (make-regexp "^\\[GNUPG:\\] REVKEYSIG ([[:xdigit:]]+) (.*)$"))
 (define errsig-rx
   ;; Note: The fingeprint part (the last element of the line) appeared in
   ;; GnuPG 2.2.7 according to 'doc/DETAILS', and it may be missing.
@@ -113,6 +116,11 @@ revoked.  Return a status s-exp if GnuPG failed."
            =>
            (lambda (match)
              `(expired-key-signature ,(match:substring match 1) ; fingerprint
+                                     ,(match:substring match 2)))) ; user name
+          ((regexp-exec revkeysig-rx line)
+           =>
+           (lambda (match)
+             `(revoked-key-signature ,(match:substring match 1) ; fingerprint
                                      ,(match:substring match 2)))) ; user name
           ((regexp-exec errsig-rx line)
            =>
@@ -157,7 +165,8 @@ a fingerprint/user pair; return #f otherwise."
   (match (assq 'valid-signature status)
     (('valid-signature fingerprint date timestamp)
      (match (or (assq 'good-signature status)
-                (assq 'expired-key-signature status))
+                (assq 'expired-key-signature status)
+                (assq 'revoked-key-signature status))
        ((_ key-id user) (cons fingerprint user))
        (_ #f)))
     (_
