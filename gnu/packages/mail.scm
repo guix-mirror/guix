@@ -714,7 +714,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.2.0")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -722,7 +722,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0fh5bxvhjqv1p9z783lym8y1k3p4jcc3wg6wf7zl8s6w8krcfd7n"))))
+                "1ay68rhlngnp2zm6wdmzgr1fsal3spz61swcxlaz5y215qvgjfpy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -757,13 +757,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                             "guile/mu/Makefile.in")
                (("share/guile/site/2.0/") "share/guile/site/2.2/"))
              #t))
-         (add-after 'patch-configure 'fix-date-tests
-           ;; Loosen test tolerances to prevent failures caused by daylight
-           ;; saving time (DST).  See: https://github.com/djcb/mu/issues/1214.
+         (add-after 'unpack 'patch-bin-sh-in-tests
            (lambda _
-             (substitute* "lib/parser/test-utils.cc"
-               (("\\* 60 \\* 60, 1 },")
-                "* 60 * 60, 3600 + 1 },"))
+             (substitute* '("guile/tests/test-mu-guile.c"
+                            "mu/test-mu-cmd.c"
+                            "mu/test-mu-cmd-cfind.c"
+                            "mu/test-mu-query.c"
+                            "mu/test-mu-threads.c")
+               (("/bin/sh") (which "sh")))
              #t))
          (add-before 'install 'fix-ffi
            (lambda* (#:key outputs #:allow-other-keys)
