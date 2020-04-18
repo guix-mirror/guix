@@ -480,8 +480,8 @@ addition to build events."
           (let ((count (match (assq-ref properties 'profile)
                          (#f  0)
                          (lst (or (assq-ref lst 'count) 0)))))
-            (format port (info (N_ "building profile with ~a package ..."
-                                   "building profile with ~a packages ..."
+            (format port (info (N_ "building profile with ~a package..."
+                                   "building profile with ~a packages..."
                                    count))
                     count)))
          ('profile-hook
