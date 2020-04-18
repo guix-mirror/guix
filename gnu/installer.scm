@@ -358,6 +358,7 @@ selected keymap."
                          (gnu installer services)
                          (gnu installer timezone)
                          (gnu installer user)
+                         (gnu installer utils)
                          (gnu installer newt)
                          ((gnu installer newt keymap)
                           #:select (keyboard-layout->configuration))
