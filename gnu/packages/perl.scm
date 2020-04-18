@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Raoul J.P. Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -48,14 +48,17 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages less)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
@@ -110,6 +113,8 @@
          (add-before 'configure 'setup-configure
            (lambda _
              ;; Use the right path for `pwd'.
+             ;; TODO: use coreutils from INPUTS instead of 'which'
+             ;; in next rebuild cycle, see fixup below.
              (substitute* "dist/PathTools/Cwd.pm"
                (("/bin/pwd")
                 (which "pwd")))
@@ -120,10 +125,80 @@
                (("-std=c89")
                 "-std=gnu89"))
              #t))
-         (replace 'configure
-           (lambda* (#:key configure-flags #:allow-other-keys)
-             (format #t "Perl configure flags: ~s~%" configure-flags)
-             (apply invoke "./Configure" configure-flags)))
+         ,@(if (%current-target-system)
+               `((add-after 'unpack 'unpack-cross
+                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                     (let ((cross-checkout
+                            (assoc-ref native-inputs "perl-cross"))
+                           (cross-patch
+                            (assoc-ref native-inputs "perl-cross-patch")))
+                       (rename-file "Artistic" "Artistic.perl")
+                       (rename-file "Copying" "Copying.perl")
+                       (copy-recursively cross-checkout ".")
+                       (format #t "Applying ~a\n" cross-patch)
+                       (invoke "patch" "-p1" "-i" cross-patch))
+                     (let ((bash (assoc-ref inputs "bash")))
+                       (substitute* '("Makefile.config.SH"
+                                      "cnf/config.guess"
+                                      "cnf/config.sub"
+                                      "cnf/configure"
+                                      "cnf/configure_misc.sh"
+                                      "miniperl_top")
+                         (("! */bin/sh") (string-append "! " bash "/bin/bash"))
+                         ((" /bin/sh") (string-append bash "/bin/bash")))
+                       (substitute* '("ext/Errno/Errno_pm.PL")
+                         (("\\$cpp < errno.c") "$Config{cc} -E errno.c")))
+                       #t))
+                 (replace 'configure
+                   (lambda* (#:key configure-flags outputs inputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (store-directory (%store-directory))
+                            (configure-flags
+                             (cons*
+                              ;; `perl-cross' confuses target and host
+                              (string-append "--target=" ,(%current-target-system))
+                              (string-append "--prefix=" out)
+                              (string-append "-Dcc=" ,(%current-target-system) "-gcc")
+                              "-Dbyteorder=1234"
+                              (filter (negate
+                                       (lambda (x) (or (string-prefix? "-d" x)
+                                                       (string-prefix? "-Dcc=" x))))
+                                      configure-flags)))
+                            (bash (assoc-ref inputs "bash"))
+                            (coreutils (assoc-ref inputs "coreutils")))
+                       (format (current-error-port)
+                               "running ./configure ~a\n" (string-join configure-flags))
+                       (apply invoke (cons "./configure" configure-flags))
+                       (substitute* "config.sh"
+                         (((string-append store-directory "/[^/]*-bash-[^/]*"))
+                          bash))
+                       (substitute* '("config.h")
+                         (("^#define SH_PATH .*")
+                          (string-append  "#define SH_PATH \"" bash "/bin/bash\"\n")))
+                       ;;TODO: fix this in setup-configure next rebuild cycle
+                       (substitute* "dist/PathTools/Cwd.pm"
+                         (((string-append store-directory "/[^/]*-coreutils-[^/]*"))
+                          coreutils))
+                       #t)))
+                 (add-after 'build 'touch-non-built-files-for-install
+                   (lambda _
+                     ;; `make install' wants to install these although they do
+                     ;; not get built...
+                     (with-directory-excursion "cpan"
+                       (mkdir-p "Pod-Usage/blib/script")
+                       (mkdir-p "Pod-Parser/blib/script")
+                       (for-each (lambda (file)
+                                   (call-with-output-file file
+                                     (lambda (port) (display "" port))))
+                                 '("Pod-Usage/blib/script/pod2text"
+                                   "Pod-Usage/blib/script/pod2usage"
+                                   "Pod-Checker/blib/script/podchecker"
+                                   "Pod-Parser/blib/script/podselect")))
+                     #t)))
+               `((replace 'configure
+                   (lambda* (#:key configure-flags #:allow-other-keys)
+                     (format #t "Perl configure flags: ~s~%" configure-flags)
+                     (apply invoke "./Configure" configure-flags)))))
          (add-after 'install 'remove-extra-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
@@ -152,6 +227,24 @@
                                              "/lib',\n"))))
                          config2)
                #t))))))
+    (inputs
+     (if (%current-target-system)
+         `(("bash" ,bash-minimal)
+           ("coreutils" ,coreutils))
+         '()))
+    (native-inputs
+     (if (%current-target-system)
+         `(("perl-cross"
+            ,(origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/arsv/perl-cross")
+                     (commit "1.3.3")))
+               (file-name (git-file-name "perl-cross" "1.3.3"))
+               (sha256
+                (base32 "065qbl1x44maykaj8p8za0b6qxj74bz7fi2zsrlydir1mqb1js3d"))))
+           ("perl-cross-patch" ,@(search-patches "perl-cross.patch")))
+         '()))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
                                 (files '("lib/perl5/site_perl")))))
