@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,12 +56,43 @@
        (base32
         "113nlmidxy9kjr45kg9x3ngar4951mvag1js2a3j8nxcz34wxsv4"))))
     (build-system gnu-build-system)
+    (inputs
+     ;; TODO: remove `if' in the next rebuild cycle.
+     (if (%current-target-system)
+         `(("bash" ,bash-minimal)
+           ("perl" ,perl)
+           ("m4" ,m4))
+         '()))
     (native-inputs
      `(("perl" ,perl)
        ("m4" ,m4)))
-    ;; XXX: testsuite: 209 and 279 failed. The latter is an impurity. It
-    ;; should use our own "cpp" instead of "/lib/cpp".
-    (arguments `(#:tests? #f))
+    (arguments
+     `(;; XXX: testsuite: 209 and 279 failed.  The latter is an impurity.  It
+       ;; should use our own "cpp" instead of "/lib/cpp".
+       #:tests? #f
+       ,@(if (%current-target-system)
+             `(#:phases
+               (modify-phases %standard-phases
+                 (add-after 'install 'patch-non-shebang-references
+                   (lambda* (#:key build inputs outputs #:allow-other-keys)
+                     ;; `patch-shebangs' patches shebangs only, and the Perl
+                     ;; scripts use a re-exec feature that references the
+                     ;; build hosts' perl.  Also, BASH and M4 store references
+                     ;; hide in the scripts.
+                     (let ((bash (assoc-ref inputs "bash"))
+                           (m4 (assoc-ref inputs "m4"))
+                           (perl (assoc-ref inputs "perl"))
+                           (out  (assoc-ref outputs "out"))
+                           (store-directory (%store-directory)))
+                      (substitute* (find-files (string-append out "/bin"))
+                        (((string-append store-directory "/[^/]*-bash-[^/]*"))
+                         bash)
+                        (((string-append store-directory "/[^/]*-m4-[^/]*"))
+                         m4)
+                        (((string-append store-directory "/[^/]*-perl-[^/]*"))
+                         perl))
+                      #t)))))
+             '())))
     (home-page "https://www.gnu.org/software/autoconf/")
     (synopsis "Create source code configuration scripts")
     (description
