@@ -1942,7 +1942,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
 (define-public libavif
   (package
     (name "libavif")
-    (version "0.6.3")
+    (version "0.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1951,7 +1951,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fn2mcpvzw6h9sv8h0icbz10i8ihzzf5d5mx3fc4pvhicyz4syq8"))))
+                "1xybjbbprvfsrwgysrn7grg6yp7v6ch5vci7zvdcdzcgyrbph172"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"
@@ -1959,18 +1959,15 @@ This package can be used to create @code{favicon.ico} files for web sites.")
                            "-DAVIF_BUILD_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./aviftest" "../source/tests/data")))
          (add-after 'install 'install-readme
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/libavif-"
-                                        ,version)))
-               (install-file "../source/README.md" doc)))))
-;; The test suite runs tests for all supported codecs and fails because we don't
-;; have rav1e yet.
-;;         (replace 'check
-;;           (lambda _
-;;             (invoke "./aviftest" "../source/tests/data"))))
-       #:tests? #f))
+                    (doc (string-append out "/share/doc/libavif-" ,version)))
+               (install-file "../source/README.md" doc)
+               #t))))))
     (inputs
      `(("libaom" ,libaom)
        ("dav1d" ,dav1d)))
