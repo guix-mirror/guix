@@ -5,11 +5,10 @@ and not in the directories listed in $XDG_DATA_DIRS.  The latter includes
 
 Fixes <https://bugs.gnu.org/37831>.
 
-diff --git a/daemon/gdm-session.c b/daemon/gdm-session.c
-index 6a116a8..02c1458 100644
---- a/daemon/gdm-session.c
-+++ b/daemon/gdm-session.c
-@@ -348,24 +348,18 @@ get_system_session_dirs (GdmSession *self)
+diff -ur a/daemon/gdm-session.c b/daemon/gdm-session.c
+--- a/daemon/gdm-session.c	2019-09-25 10:40:24.000000000 -0400
++++ b/daemon/gdm-session.c	2020-04-18 18:30:02.671856808 -0400
+@@ -348,24 +348,18 @@
          GArray *search_array = NULL;
          char **search_dirs;
          int i;
@@ -35,7 +34,7 @@ index 6a116a8..02c1458 100644
          g_array_append_vals (search_array, x_search_dirs, G_N_ELEMENTS (x_search_dirs));
  
  #ifdef ENABLE_WAYLAND_SUPPORT
-@@ -373,16 +367,7 @@ get_system_session_dirs (GdmSession *self)
+@@ -373,16 +367,7 @@
  #ifdef ENABLE_USER_DISPLAY_SERVER
                  g_array_prepend_val (search_array, wayland_search_dir);
  
@@ -52,40 +51,39 @@ index 6a116a8..02c1458 100644
                  g_array_append_val (search_array, wayland_search_dir);
  #endif
          }
-diff --git a/libgdm/gdm-sessions.c b/libgdm/gdm-sessions.c
-index afbc5c0..bb5e3e6 100644
---- a/libgdm/gdm-sessions.c
-+++ b/libgdm/gdm-sessions.c
-@@ -238,19 +238,11 @@ collect_sessions (void)
+diff -ur a/libgdm/gdm-sessions.c b/libgdm/gdm-sessions.c
+--- a/libgdm/gdm-sessions.c	2019-10-07 04:53:35.000000000 -0400
++++ b/libgdm/gdm-sessions.c	2020-04-18 18:31:42.491348691 -0400
+@@ -245,19 +245,12 @@
                  "/etc/X11/sessions/",
                  DMCONFDIR "/Sessions/",
                  DATADIR "/gdm/BuiltInSessions/",
 -                DATADIR "/xsessions/",
--                NULL
 +                "/run/current-system/profile/share/xsessions/"
          };
  
-         xorg_search_array = g_array_new (TRUE, TRUE, sizeof (char *));
+         names_seen_before = g_hash_table_new (g_str_hash, g_str_equal);
+         xorg_search_array = g_ptr_array_new_with_free_func (g_free);
  
 -        const gchar * const *system_data_dirs = g_get_system_data_dirs ();
 -
 -        for (i = 0; system_data_dirs[i]; i++) {
 -                session_dir = g_build_filename (system_data_dirs[i], "xsessions", NULL);
--                g_array_append_val (xorg_search_array, session_dir);
+-                g_ptr_array_add (xorg_search_array, session_dir);
 -        }
 -
-         g_array_append_vals (xorg_search_array, xorg_search_dirs, G_N_ELEMENTS (xorg_search_dirs));
+         for (i = 0; i < G_N_ELEMENTS (xorg_search_dirs); i++) {
+                 g_ptr_array_add (xorg_search_array, g_strdup (xorg_search_dirs[i]));
+         }
+@@ -269,11 +262,6 @@
  
- #ifdef ENABLE_WAYLAND_SUPPORT
-@@ -261,11 +253,6 @@ collect_sessions (void)
- 
-         wayland_search_array = g_array_new (TRUE, TRUE, sizeof (char *));
+         wayland_search_array = g_ptr_array_new_with_free_func (g_free);
  
 -        for (i = 0; system_data_dirs[i]; i++) {
 -                session_dir = g_build_filename (system_data_dirs[i], "wayland-sessions", NULL);
--                g_array_append_val (wayland_search_array, session_dir);
+-                g_ptr_array_add (wayland_search_array, session_dir);
 -        }
 -
-         g_array_append_vals (wayland_search_array, wayland_search_dirs, G_N_ELEMENTS (wayland_search_dirs));
- #endif
- 
+         for (i = 0; i < G_N_ELEMENTS (wayland_search_dirs); i++) {
+                 g_ptr_array_add (wayland_search_array, g_strdup (wayland_search_dirs[i]));
+         }
