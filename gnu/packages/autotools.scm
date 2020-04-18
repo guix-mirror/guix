@@ -293,6 +293,13 @@ output is indexed in many ways to simplify browsing.")
              (patches
               (search-patches "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
+    (inputs
+     ;; TODO: remove `if' in the next rebuild cycle.
+     (if (%current-target-system)
+         `(("autoconf" ,autoconf-wrapper)
+           ("bash" ,bash-minimal)
+           ("perl" ,perl))
+         '()))
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
        ("perl" ,perl)))
@@ -301,7 +308,7 @@ output is indexed in many ways to simplify browsing.")
             (variable "ACLOCAL_PATH")
             (files '("share/aclocal")))))
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1)
                   (srfi srfi-26)
@@ -329,6 +336,28 @@ output is indexed in many ways to simplify browsing.")
                  (("^required.*" all)
                   (string-append "exit 77\n" all "\n")))
                #t))
+
+           ,@(if (%current-target-system)
+                 `((add-after 'install 'patch-non-shebang-references
+                     (lambda* (#:key build inputs outputs #:allow-other-keys)
+                     ;; `patch-shebangs' patches shebangs only, and the Perl
+                     ;; scripts use a re-exec feature that references the
+                     ;; build hosts' perl.  Also, AUTOCONF and BASH store
+                     ;; references hide in the scripts.
+                       (let ((autoconf (assoc-ref inputs "autoconf"))
+                             (bash (assoc-ref inputs "bash"))
+                             (perl (assoc-ref inputs "perl"))
+                             (out  (assoc-ref outputs "out"))
+                             (store-directory (%store-directory)))
+                         (substitute* (find-files (string-append out "/bin"))
+                           (((string-append store-directory "/[^/]*-autoconf-[^/]*"))
+                            autoconf)
+                           (((string-append store-directory "/[^/]*-bash-[^/]*"))
+                            bash)
+                           (((string-append store-directory "/[^/]*-perl-[^/]*"))
+                            perl))
+                         #t))))
+                 '())
 
          ;; Files like `install-sh', `mdate.sh', etc. must use
          ;; #!/bin/sh, otherwise users could leak erroneous shebangs
