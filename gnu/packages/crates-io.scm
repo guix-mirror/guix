@@ -16186,6 +16186,29 @@ interactive applications.")
      "This package provides a library for window abstraction.")
     (license license:expat)))
 
+(define-public rust-pin-project-lite-0.1
+  (package
+    (name "rust-pin-project-lite")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pin-project-lite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bljczwz9yyb6jskjhbkilcbdg7v1mhfwzp2mxknzf7v1isl8y13"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-rustversion" ,rust-rustversion-1.0)
+        ("rust-trybuild" ,rust-trybuild-1.0))))
+    (home-page "https://github.com/taiki-e/pin-project-lite")
+    (synopsis "Lightweight version of pin-project written with declarative
+macros")
+    (description "This package provides a lightweight version of pin-project
+written with declarative macros.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pkg-config-0.3
   (package
     (name "rust-pkg-config")
