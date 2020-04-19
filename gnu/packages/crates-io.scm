@@ -24285,6 +24285,32 @@ futures.")
     (description "Synchronization utilities.")
     (license license:expat)))
 
+(define-public rust-tokio-test-0.2
+  (package
+    (name "rust-tokio-test")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-test" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0v81p2n853b1kzyla3dbfmnazirn6s3n8p3z8k20bmdn370lj07d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; FIXME requires Rust >= 1.39 for building
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-tokio" ,rust-tokio-0.2))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-tokio" ,rust-tokio-0.2))))
+    (home-page "https://tokio.rs")
+    (synopsis "Testing utilities for Tokio- and futures-based code")
+    (description "Testing utilities for Tokio- and futures-based code")
+    (license license:expat)))
+
 (define-public rust-tokio-tcp-0.1
   (package
     (name "rust-tokio-tcp")
