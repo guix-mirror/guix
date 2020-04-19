@@ -24260,7 +24260,7 @@ in Rust.")
   (package
     (inherit rust-wasm-bindgen-futures-0.4)
     (name "rust-wasm-bindgen-futures")
-    (version "0.3.24")
+    (version "0.3.27")
     (source
      (origin
        (method url-fetch)
@@ -24268,8 +24268,7 @@ in Rust.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bf9x6qfjczspc4zs605z1n4j15cdd8kk2z7rah0yggw8b6zl5nc"))))
+        (base32 "073p71skp91d9v2wczl6k7z9p0w25vn43br2v2g1ncbc6hvhnhl3"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
