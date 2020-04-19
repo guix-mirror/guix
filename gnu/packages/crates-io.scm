@@ -11832,8 +11832,34 @@ by inspecting the system for user preference.")
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4))))))
 
-(define-public rust-loom-0.1
+(define-public rust-loom-0.2
   (package
+    (name "rust-loom")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "loom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qwvwbpnxff5m6647v9rc9i6ak8ral4jy0br5xx1s9a5zcd3xddh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-generator" ,rust-generator-0.6)
+        ("rust-scoped-tls" ,rust-scoped-tls-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-test" ,rust-serde-test-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/tokio-rs/loom")
+    (synopsis "Model checker for concurrent code")
+    (description "Model checker for concurrent code.")
+    (license license:expat)))
+
+(define-public rust-loom-0.1
+  (package/inherit rust-loom-0.2
     (name "rust-loom")
     (version "0.1.1")
     (source
@@ -11845,7 +11871,6 @@ by inspecting the system for user preference.")
        (sha256
         (base32
          "1jmp5mffwwyqgp914cwz92ij2s6vk1hsnkvgndvzw74xrcfraibj"))))
-    (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-cfg-if" ,rust-cfg-if-0.1)
@@ -11854,11 +11879,7 @@ by inspecting the system for user preference.")
         ("rust-scoped-tls" ,rust-scoped-tls-0.1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page "https://github.com/tokio-rs/loom")
-    (synopsis "Model checker for concurrent code")
-    (description "Model checker for concurrent code.")
-    (license license:expat)))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-lscolors-0.6
   (package
