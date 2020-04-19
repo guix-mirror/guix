@@ -24189,6 +24189,37 @@ futures.")
      "Event loop that drives Tokio I/O resources.")
     (license license:expat)))
 
+(define-public rust-tokio-rustls-0.12
+  (package
+    (name "rust-tokio-rustls")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1k6rpw4nmgsamh8vbf8xqrf4rr5sqs18i93561bydflajz0gw6hl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; FIXME requires Rust >= 1.39 for building
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-rustls" ,rust-rustls-0.16)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-webpki" ,rust-webpki-0.21))
+       #:cargo-development-inputs
+       (("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-tokio" ,rust-tokio-0.2)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.18))))
+    (home-page "https://github.com/quininer/tokio-rustls")
+    (synopsis "Asynchronous TLS/SSL streams for Tokio using Rustls")
+    (description "This package provides asynchronous TLS/SSL streams for Tokio
+using Rustls.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-signal-0.2
   (package
     (name "rust-tokio-signal")
