@@ -9483,13 +9483,15 @@ algorithms and xxHash hashing algorithm.")
     (name "java-bouncycastle")
     (version "1.60")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
-                                  (substring version 0 1) "v"
-                                  (substring version 2 4) ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "http://git.bouncycastle.org/repositories/bc-java")
+                     ;(url "https://github.com/bcgit/bc-java")
+                     (commit (string-append "r1rv" (substring version 2 4)))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v434513y708qc87k4xz13p2kzydc736lk3ks67df9mg11s7hchv"))
+                "1m921a1ac2dl797ffzg3d4j97ch308f25spb4jgsj3npfmmys5gb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
