@@ -1153,6 +1153,25 @@ trace (backtrace) at runtime in a Rust program.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-base64-0.9
+  (package
+    (inherit rust-base64-0.11)
+    (name "rust-base64")
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base64" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hs62r35bgxslawyrn1vp9rmvrkkm76fqv0vqcwd048vs876r7a8"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-safemem" ,rust-safemem-0.3))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))))
+
 (define-public rust-base-x-0.2
   (package
     (name "rust-base-x")
