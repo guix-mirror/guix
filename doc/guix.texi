@@ -13633,6 +13633,57 @@ List of additional command-line arguments to pass to the daemon.
 @end table
 @end deftp
 
+@cindex hostapd service, for Wi-Fi access points
+@cindex Wi-Fi access points, hostapd service
+@defvr {Scheme Variable} hostapd-service-type
+This is the service type to run the @uref{https://w1.fi/hostapd/,
+hostapd} daemon to set up WiFi (IEEE 802.11) access points and
+authentication servers.  Its associated value must be a
+@code{hostapd-configuration} as shown below:
+
+@lisp
+;; Use wlan1 to run the access point for "My Network".
+(service hostapd-service-type
+         (hostapd-configuration
+          (interface "wlan1")
+          (ssid "My Network")
+          (channel 12)))
+@end lisp
+@end defvr
+
+@deftp {Data Type} hostapd-configuration
+This data type represents the configuration of the hostapd service, with
+the following fields:
+
+@table @asis
+@item @code{package} (default: @code{hostapd})
+The hostapd package to use.
+
+@item @code{interface} (default: @code{"wlan0"})
+The network interface to run the WiFi access point.
+
+@item @code{ssid}
+The SSID (@dfn{service set identifier}), a string that identifies this
+network.
+
+@item @code{broadcast-ssid?} (default: @code{#t})
+Whether to broadcast this SSID.
+
+@item @code{channel} (default: @code{1})
+The WiFi channel to use.
+
+@item @code{driver} (default: @code{"nl80211"})
+The driver interface type.  @code{"nl80211"} is used with all Linux
+mac80211 drivers.  Use @code{"none"} if building hostapd as a standalone
+RADIUS server that does # not control any wireless/wired driver.
+
+@item @code{extra-settings} (default: @code{""})
+Extra settings to append as-is to the hostapd configuration file.  See
+@uref{https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf} for the
+configuration file reference.
+@end table
+@end deftp
+
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
 This is the service type to set up an iptables configuration.  iptables is a
