@@ -210,10 +210,18 @@ across a broad spectrum of applications.")
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'provide-libboost_python
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (python-version (python-version
+                                       (assoc-ref inputs "python")))
+                      (libboost_pythonNN.a
+                       (string-append "libboost_python"
+                                      (string-join (string-split
+                                                    python-version #\.)
+                                                   "")
+                                      ".a")))
                  (with-directory-excursion (string-append out "/lib")
-                   (symlink "libboost_python27.a" "libboost_python.a"))
+                   (symlink libboost_pythonNN.a "libboost_python.a"))
                  #t)))))))))
 
 (define-public boost-1.69
