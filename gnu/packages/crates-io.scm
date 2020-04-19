@@ -9611,6 +9611,19 @@ hexadecimal representation.")
          (base32
           "0xsdcjiik5j750j67zk42qdnmm4ahirk3gmkmcqgq7qls2jjcl40"))))))
 
+(define-public rust-hex-0.2
+  (package
+    (inherit rust-hex-0.4)
+    (name "rust-hex")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hex" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32 "1ajkw40qzn2ygnqjj9w584f6l31wi318258n84pn2hax8la2i8nn"))))))
+
 (define-public rust-hex-literal-0.2
   (package
     (name "rust-hex-literal")
