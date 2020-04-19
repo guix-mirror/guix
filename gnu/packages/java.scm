@@ -9167,12 +9167,14 @@ those in Perl and JavaScript.")
     (name "java-fest-assert")
     (version "2.0M10")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-assert-2.x/"
-                                  "archive/fest-assert-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-assert-2.x/")
+                     (commit (string-append "fest-assert-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bi0iqavikzww6rxvz5jyg7y6bflv95s6ibryxx0xfcxrrw6i5lw"))))
+                "1cp8zzyag3s85fz2w68sda9zzaal1y5f9wl8g72wkm12an40w6by"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-assert.jar"
