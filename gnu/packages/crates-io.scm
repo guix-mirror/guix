@@ -9826,6 +9826,29 @@ requests and responses.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0))))))
 
+(define-public rust-http-body-0.3
+  (package
+    (name "rust-http-body")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http-body" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "06qi0ni45lb92w3ml260c0bxbq5zd4snjmz0a9k69xq6021zzm8k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; FIXME requires Rust >= 1.39 for building
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-http" ,rust-http-0.2))))
+    (home-page "https://github.com/hyperium/http-body")
+    (synopsis "Asynchronous, streaming, HTTP request or response body")
+    (description "Trait representing an asynchronous, streaming, HTTP request
+or response body.")
+    (license license:expat)))
+
 (define-public rust-http-req-0.5
   (package
     (name "rust-http-req")
