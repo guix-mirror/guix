@@ -1424,6 +1424,46 @@ This is a part of the TiLP project.")
     (home-page "http://lpg.ticalc.org/prj_tilp/")
     (license license:gpl2+)))
 
+(define-public libticonv
+  (package
+    (name "libticonv")
+    (version "1.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; build fails with out --enable-iconv (...?)
+     `(#:configure-flags (list "--enable-iconv")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libticonv-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libticonv-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)))
+    (synopsis "Character conversion library for TI calculators")
+    (description
+     "This package contains libticonv, a library to support working with
+@acronym{TI, Texas Instruments} calculator charsets.
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
+    (license license:gpl2+)))
+
 (define-public mame
   (package
     (name "mame")
