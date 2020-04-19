@@ -3514,9 +3514,19 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (arguments
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
-       #:allowed-references ("out" ,glibc-final)
+       #:allowed-references
+       ,@(match (%current-system)
+         ("powerpc-linux"
+          `(("out" ,glibc-final ,static-bash-for-glibc)))
+         (_
+          `(("out" ,glibc-final))))
        ,@(package-arguments binutils)))
-    (inputs (%boot2-inputs))))
+    (inputs
+     (match (%current-system)
+       ("powerpc-linux"
+        `(("bash" ,static-bash-for-glibc)
+          ,@(%boot2-inputs)))
+       (_ (%boot2-inputs))))))
 
 (define libstdc++
   ;; Intermediate libstdc++ that will allow us to build the final GCC
