@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Coypright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
@@ -1711,29 +1711,23 @@ Parcellite and adds bugfixes and features.")
 (define-public graphene
   (package
     (name "graphene")
-    (version "1.6.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ebassi/graphene/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/ebassi/graphene/releases/"
+                                  "download/" version
+                                  "/graphene-" version ".tar.xz"))
               (sha256
-               (base32 "1zd2daj7y590wnzn4jw0niyc4fnzgxrcl9i7nwhy8b25ks2hz5wq"))))
-    (build-system gnu-build-system)
+               (base32 "16b4hz73bnrgv5v8n96dczkd6xp9qc06lrl43zln3jnl3psrfva0"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--enable-introspection=yes")))
+     `(#:configure-flags '("-Dinstalled_tests=false")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("which" ,which)
-       ("pkg-config" ,pkg-config)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
-       ("python-2" ,python-2)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("glib" ,glib)))
     (home-page "https://ebassi.github.io/graphene/")
     (synopsis "Thin layer of graphic data types")
     (description "This library provides graphic types and their relative API;
