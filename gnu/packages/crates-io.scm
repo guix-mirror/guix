@@ -9964,6 +9964,59 @@ SystemTime}}.")
         (base32
          "057ilhy6vc9iqhhby5ymh45m051pgxwq2z437gwkbnqhw7rfb9rw"))))))
 
+(define-public rust-hyper-0.12
+  (package
+    (name "rust-hyper")
+    (version "0.12.35")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1xnm8zi4bdjqhlnx3238kx8yjf29jjd1ww54apcql7wf8g8nxglx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; fails due to some missing example file
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-futures-cpupool" ,rust-futures-cpupool-0.1)
+        ("rust-h2" ,rust-h2-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-http-body" ,rust-http-body-0.1)
+        ("rust-httparse" ,rust-httparse-1.3)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-itoa" ,rust-itoa-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-net2" ,rust-net2-0.2)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-buf" ,rust-tokio-buf-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-reactor" ,rust-tokio-reactor-0.1)
+        ("rust-tokio-tcp" ,rust-tokio-tcp-0.1)
+        ("rust-tokio-threadpool" ,rust-tokio-threadpool-0.1)
+        ("rust-tokio-timer" ,rust-tokio-timer-0.2)
+        ("rust-want" ,rust-want-0.2))
+       #:cargo-development-inputs
+       (("rust-futures-timer" ,rust-futures-timer-0.1)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-pretty-env-logger" ,rust-pretty-env-logger-0.3)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-spmc" ,rust-spmc-0.3)
+        ("rust-tokio-fs" ,rust-tokio-fs-0.1)
+        ("rust-tokio-mockstream" ,rust-tokio-mockstream-1)
+        ("rust-url" ,rust-url-1.7))))
+    (home-page "https://hyper.rs")
+    (synopsis "Fast and correct HTTP library")
+    (description "This package provides a fast and correct HTTP library.")
+    (license license:expat)) )
+
 (define-public rust-idna-0.2
   (package
     (name "rust-idna")
