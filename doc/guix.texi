@@ -548,7 +548,14 @@ We recommend the use of this
 @uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
 shell installer script}.  The script automates the download, installation, and
 initial configuration steps described below.  It should be run as the root
-user.
+user.  As root, you can thus run this:
+
+@example
+cd /tmp
+wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
+chmod +x guix-install.sh
+./guix-install.sh
+@end example
 @end quotation
 
 Installing goes along these lines:
@@ -652,7 +659,7 @@ with these commands:
 @example
 # cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
      /etc/systemd/system/
-# systemctl start guix-daemon && systemctl enable guix-daemon
+# systemctl enable --now guix-daemon
 @end example
 
 If your host distro uses the Upstart init system:
