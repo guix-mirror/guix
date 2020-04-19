@@ -1242,11 +1242,11 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("readline" ,readline)
-       ("ncurses" ,ncurses)
+     `(("curl" ,curl)
        ("glib" ,glib)
        ("libxml2" ,libxml2)
-       ("curl" ,curl)))
+       ("ncurses" ,ncurses)
+       ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
