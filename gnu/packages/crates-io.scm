@@ -9318,6 +9318,49 @@ standard printing of search results, similar to grep itself.")
 of gzip files based on the gzip header implementation in the @code{flate2} crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-h2-0.1
+  (package
+    (name "rust-h2")
+    (version "0.1.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "h2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qn457y8xh03p7c7cpk76r22gqpyqxc58g5022j3iya7d0j4rcx5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; TODO missing indirect dependency
+       #:cargo-inputs
+       (("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-indexmap" ,rust-indexmap-1.0)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-string" ,rust-string-0.2)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.5)
+        ("rust-hex" ,rust-hex-0.2)
+        ("rust-quickcheck" ,rust-quickcheck-0.4)
+        ("rust-rand" ,rust-rand-0.3)
+        ;;("rust-rustls" ,rust-rustls-0.12) requires 0.5
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-rustls" ,rust-tokio-rustls-0.12)
+        ("rust-walkdir" ,rust-walkdir-1.0)
+        ("rust-webpki" ,rust-webpki-0.21)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.17))))
+    (home-page "https://github.com/hyperium/h2")
+    (synopsis "HTTP/2.0 client and server")
+    (description "This packages provides a HTTP/2.0 client and server.")
+    (license license:expat)))
+
 (define-public rust-half-1.3
   (package
     (name "rust-half")
