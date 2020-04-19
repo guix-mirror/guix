@@ -18781,6 +18781,36 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ring-0.16
+  (package
+    (name "rust-ring")
+    (version "0.16.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ring" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "033sb54dlmiqdivc8v9ykkq3v08lzy0syjf5k1nag2gfcknai98v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1.3)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-spin" ,rust-spin-0.5)
+        ("rust-untrusted" ,rust-untrusted-0.7)
+        ("rust-web-sys" ,rust-web-sys-0.3)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ;; build dependencies
+        ("rust-cc" ,rust-cc-1.0))
+       #:cargo-development-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-wasm-bindgen-test" ,rust-wasm-bindgen-test-0.2))))
+    (home-page "https://github.com/briansmith/ring")
+    (synopsis "Safe, fast, small crypto using Rust")
+    (description "This package provided safe, fast, small crypto using Rust.")
+    (license (list license:isc license:openssl))))
+
 (define-public rust-ron-0.4
   (package
     (name "rust-ron")
