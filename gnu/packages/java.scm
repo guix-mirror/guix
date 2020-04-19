@@ -9445,13 +9445,14 @@ by technical operatives or consultants working with enterprise platforms.")
     (name "java-lz4")
     (version "1.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lz4/lz4-java/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lz4/lz4-java")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "096dm57p2lzqk28n0j2p52x2j3cvnsd2dfqn43n7vbwrkjsy7y54"))))
+                "0ydjakhv3cz34mfvv14qrh2ksdxifgjwwagjy7r46qr3f68hnf6y"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "lz4.jar"
@@ -9460,6 +9461,10 @@ by technical operatives or consultants working with enterprise platforms.")
        #:tests? #f; FIXME: requires more dependencies
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'generate-source
            (lambda _
              (with-directory-excursion "src/build/source_templates"
