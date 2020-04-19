@@ -92,6 +92,7 @@
        ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
        ("python-fasteners" ,python2-fasteners)
+       ("tzdata" ,tzdata-for-tests)
        ("mock" ,python2-mock)))
     (propagated-inputs
      `(("lockfile" ,python2-lockfile)
@@ -100,8 +101,7 @@
      `(("librsync" ,librsync-0.9)
        ("lftp" ,lftp)
        ("gnupg" ,gnupg)                 ; gpg executable needed
-       ("util-linux" ,util-linux)       ; for setsid
-       ("tzdata" ,tzdata)))
+       ("util-linux" ,util-linux)))     ; for setsid
     (arguments
      `(#:python ,python-2               ; setup assumes Python 2
        #:test-target "test"

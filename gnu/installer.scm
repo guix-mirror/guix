@@ -301,25 +301,6 @@ selected keymap."
              ((installer-final-page current-installer)
               result prev-steps))))))))
 
-(define guile-newt
-  ;; Guile-Newt with 'form-watch-fd'.
-  ;; TODO: Remove once a new release is out.
-  (let ((commit "c3cdeb0b53ac71aedabee669f57d44563c662446")
-        (revision "2"))
-    (package
-      (inherit (@ (gnu packages guile-xyz) guile-newt))
-      (name "guile-newt")
-      (version (git-version "0.0.1" revision commit))
-      (source  (origin
-                 (method git-fetch)
-                 (uri (git-reference
-                       (url "https://gitlab.com/mothacehe/guile-newt")
-                       (commit commit)))
-                 (file-name (git-file-name name version))
-                 (sha256
-                  (base32
-                   "1gksd1lzgjjh1p9vczghg8jw995d22hm34kbsiv8rcryirv2xy09")))))))
-
 (define (installer-program)
   "Return a file-like object that runs the given INSTALLER."
   (define init-gettext
@@ -377,6 +358,7 @@ selected keymap."
                          (gnu installer services)
                          (gnu installer timezone)
                          (gnu installer user)
+                         (gnu installer utils)
                          (gnu installer newt)
                          ((gnu installer newt keymap)
                           #:select (keyboard-layout->configuration))

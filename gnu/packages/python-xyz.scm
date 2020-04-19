@@ -1699,14 +1699,14 @@ Python 3.3+.")
 (define-public python-pyicu
   (package
     (name "python-pyicu")
-    (version "2.3.1")
+    (version "2.4.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "PyICU" version))
       (sha256
        (base32
-        "1x4w8m7ifki9z2a187pgjr33z6z0rp2fii9b73djak1vhm9v9cnx"))))
+        "075bw66b3w0nw6mc5k32fwmrhyrmq3d7da3q2mw212qfmm0pgjn0"))))
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
@@ -1717,24 +1717,10 @@ Python 3.3+.")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
-    (properties `((python2-variant . ,(delay python2-pyicu))))
     (license license:x11)))
 
 (define-public python2-pyicu
-  (let ((base (package-with-python2
-                (strip-python2-variant python-pyicu))))
-    (package
-      (inherit base)
-      (arguments
-       `(,@(package-arguments base)
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'delete-failing-test
-             (λ _
-               ;; XXX: This fails due to Unicode issues unique to Python 2,
-               ;; it seems: <https://github.com/ovalhub/pyicu/issues/61>.
-               (delete-file "test/test_Script.py")
-               #t))))))))
+  (package-with-python2 python-pyicu))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
@@ -3877,14 +3863,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.15")
+    (version "0.29.16")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "0c5cjyxfvba6c0vih1fvhywp8bpz30vwvbjqdm1q1k55xzhmkn30"))))
+         "01gs10myw0rw4jsikvqs0859fg7gficxhv508cxvnb4l9wl5a9r3"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -6499,14 +6485,14 @@ computing.")
 (define-public python-urwid
   (package
     (name "python-urwid")
-    (version "2.0.1")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urwid" version))
        (sha256
         (base32
-         "1g6cpicybvbananpjikmjk8npmjk4xvak1wjzji62wc600wkwkb4"))))
+         "11ndnhxd41m13darf5s0c6bafdpkzq1l6mfb04wbzdmyc1hg75h8"))))
     (build-system python-build-system)
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
@@ -8037,14 +8023,14 @@ printing of sub-tables by specifying a row range.")
 (define-public python-tables
   (package
     (name "python-tables")
-    (version "3.4.4")
+    (version "3.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tables" version))
        (sha256
         (base32
-         "0affz7k8babh8wdmsgrz5jxrd569by2w8ffimcxs9wiaf5rw1idx"))
+         "0j8vnxh2m5n0cyk9z3ndcj5n1zj5rdxgc1gb78bqlyn2lyw75aa9"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -8062,9 +8048,11 @@ printing of sub-tables by specifying a row range.")
          (add-after 'unpack 'use-gcc
            (lambda _
              (substitute* "setup.py"
-               (("compiler = new_compiler\\(\\)" line)
+               (("^( +)compiler = new_compiler\\(\\)" line indent)
                 (string-append line
-                               "\ncompiler.set_executables(compiler='gcc',"
+                               "\n"
+                               indent
+                               "compiler.set_executables(compiler='gcc',"
                                "compiler_so='gcc',"
                                "linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
@@ -9421,13 +9409,13 @@ minimal and fast API targeting the following uses:
 (define-public python-icalendar
   (package
     (name "python-icalendar")
-    (version "4.0.4")
+    (version "4.0.5")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "icalendar" version))
              (sha256
               (base32
-               "16gjvqv0n05jrb9g228pdjgzd3amz2pdhvcgsn1jypszjg5m2w9l"))))
+               "14ynjj65kfmlcvpb7k097w789wvxncd3cr3xz5m1jz9yl9v6vv5q"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -9516,20 +9504,20 @@ with a new public API, and RPython support.")
 (define-public python-hy
   (package
     (name "python-hy")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hy" version))
               (sha256
                (base32
-                "1gdbqsirsdxj320wnp7my5awzs1kfs6m4fqmkzbd1zd47qzj0zfi"))))
+                "04dfwm336gw61fmgwikvh0cnxk682p19b4w555wl5d7mlym4rwj2"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-	 (add-before 'install 'set-HOME
-	   (lambda _
-	     (setenv "HOME" "/tmp")))
+         (add-before 'install 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp") #t))
          (replace 'check
            (lambda _
              ;; Tests require write access to HOME.
@@ -9540,10 +9528,8 @@ with a new public API, and RPython support.")
        ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-astor" ,python-astor)
-       ("python-clint" ,python-clint)
+       ("python-colorama" ,python-colorama)
        ("python-rply" ,python-rply)
-       ("python-fastentrypoints"
-        ,python-fastentrypoints)
        ("python-funcparserlib"
         ,python-funcparserlib)))
     (home-page "http://hylang.org/")
@@ -9553,9 +9539,6 @@ with a new public API, and RPython support.")
 its Lisp code into the Python Abstract Syntax Tree, you have the whole world of
 Python at your fingertips, in Lisp form.")
     (license license:expat)))
-
-(define-public python2-hy
-  (package-with-python2 python-hy))
 
 (define-public python2-functools32
   (package
@@ -10357,13 +10340,13 @@ programmatically interfacing with your system's $EDITOR.")
 (define-public python-vobject
   (package
     (name "python-vobject")
-    (version "0.9.5")
+    (version "0.9.6.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vobject" version))
               (sha256
                (base32
-                "0hqjgf3ay1m5w1c0k00g5yfpdz1zni5qnr5rh9b8fg9hjvhwlmhg"))))
+                "0081g4gngw28j7vw8101jk600wz4gzfrhf5myrqvn2mrfkn2llcn"))))
     (build-system python-build-system)
     (arguments
      '(;; The test suite relies on some non-portable Windows interfaces.
@@ -10374,7 +10357,7 @@ programmatically interfacing with your system's $EDITOR.")
     (synopsis "Parse and generate vCard and vCalendar files")
     (description "Vobject is intended to be a full featured Python package for
 parsing and generating vCard and vCalendar files.  Currently, iCalendar files
-are supported and well tested. vCard 3.0 files are supported, and all data
+are supported and well tested.  vCard 3.0 files are supported, and all data
 should be imported, but only a few components are understood in a sophisticated
 way.")
     (home-page "https://eventable.github.io/vobject/")
@@ -11997,6 +11980,7 @@ characters, mouse support, and auto suggestions.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
+       (patches (search-patches "python-jedi-sort-project-test.patch"))
        (sha256
         (base32
          "0c1h9x3a9klvk2g288wl328x8xgzw7136k6vs9hkd56b85vcjh6z"))))
@@ -12007,7 +11991,7 @@ characters, mouse support, and auto suggestions.")
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
-             (invoke "python" "-m" "pytest"))))))
+             (invoke "python" "-m" "pytest" "-vv"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-docopt" ,python-docopt)))

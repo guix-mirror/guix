@@ -1056,7 +1056,7 @@ format.")
 (define-public guile-newt
   (package
     (name "guile-newt")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1065,20 +1065,7 @@ format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-
-                  ;; Remove "guile.m4" since it contains an obsolete version
-                  ;; of 'GUILE_PKG' that doesn't work with development
-                  ;; versions such as 2.9.
-                  (delete-file "m4/guile.m4")
-                  #t))))
+                "1gksd1lzgjjh1p9vczghg8jw995d22hm34kbsiv8rcryirv2xy09"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags

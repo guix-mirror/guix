@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix search-paths)
+  #:use-module (guix import json)
   #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)
@@ -416,7 +418,10 @@ Install, remove, or upgrade packages in a single transaction.\n"))
          (option '(#\f "install-from-file") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'install
-                                       (load* arg (make-user-module '()))
+                                       (let ((file (or (and (string-suffix? ".json" arg)
+                                                            (json->scheme-file arg))
+                                                       arg)))
+                                         (load* file (make-user-module '())))
                                        result)
                            #f)))
          (option '(#\r "remove") #f #t

@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Robert Smith <robertsmith@posteo.net>
+;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
@@ -43,12 +45,14 @@
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages texinfo)
@@ -934,4 +938,41 @@ equations.
 TuxMath also includes Factoroids, a game that gives practice in
 factoring numbers and simplifying fractions, as well as zapping rocks
 floating through space.")
+    (license license:gpl3+)))
+
+(define-public mdk
+  (package
+    (name "mdk")
+    (version "1.2.10")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/mdk/v1.2.10/mdk-"
+                          version ".tar.gz"))
+      (sha256
+        (base32
+          "1rwcq2b5vvv7318j92nxc5dayj27dpfhzc4rjiv4ccvsc0x35x5h"))))
+   (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-gui=yes" "-with-readline=yes")))
+    (native-inputs
+     `(("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("ncurses" ,ncurses)))
+   (inputs
+    `(("readline" ,readline)
+      ("glib" ,glib)
+      ("gtk+" ,gtk+)
+      ("pango" ,pango)
+      ("libglade" ,libglade)))
+   (home-page "https://www.gnu.org/software/mdk/")
+    (synopsis "Virtual development environment for Knuth's MIX")
+    (description
+     "GNU MDK is the Mix Development Kit, an emulation of the pedagogical
+computer MIX and its assembly language MIXAL.  MIX has a virtual CPU with
+standard features such as registers, memory cells, an overflow toggle,
+comparison flags, input-output devices, and a set of binary instructions.
+The package includes a compiler, a virtual machine, a GUI for the virtual
+machine, and more.")
     (license license:gpl3+)))

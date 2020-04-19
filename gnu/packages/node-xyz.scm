@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -244,3 +245,26 @@ protocol used in @code{node-lynx}.")
     (description "This package provides the Node.js @code{util.deprecate()}
 function with browser support.")
     (license license:expat)))
+
+(define-public node-semver
+  (package
+    (name "node-semver")
+    (version "7.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/npm/node-semver.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "06biknqb05r9xsmcflm3ygh50pjvdk84x6r79w43kmck4fn3qn5p"))))
+    (build-system node-build-system)
+    (arguments
+     `(#:tests? #f)) ;; FIXME: Tests depend on node-tap
+    (home-page "https://github.com/npm/node-semver")
+    (synopsis "Parses semantic versions strings")
+    (description
+     "@code{node-semver} is a JavaScript implementation of the
+@uref{https://semver.org/, SemVer.org} specification.")
+    (license license:isc)))

@@ -822,7 +822,7 @@ using a stylus.")
 (define-public xournalpp
   (package
     (name "xournalpp")
-    (version "1.0.17")
+    (version "1.0.18")
     (source
      (origin
        (method git-fetch)
@@ -831,7 +831,7 @@ using a stylus.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xw2mcgnm4sa9hrhfgp669lfypw97drxjmz5w8i5whaprpvmkxzw"))))
+        (base32 "0a9ygbmd4dwgck3k8wsrm2grynqa0adb12wwspzmzvpisbadffjy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DENABLE_CPPUNIT=ON") ;enable tests
@@ -844,11 +844,6 @@ using a stylus.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-permissions-on-po-files
            (lambda _
-             ;; Always generate translations.  A recent upstream patch
-             ;; disabled it.
-             (substitute* "po/CMakeLists.txt"
-               (("gettext_create_translations \\(\"\\$\\{potfile\\}\"\\)")
-                "gettext_create_translations (\"${potfile}\" ALL)"))
              ;; Make sure 'msgmerge' can modify the PO files.
              (for-each (lambda (po) (chmod po #o666))
                        (find-files "." "\\.po$"))
@@ -857,7 +852,6 @@ using a stylus.")
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
      `(("cppunit" ,cppunit)
-       ("gcc" ,gcc-8)                   ;requires gcc 8+
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs

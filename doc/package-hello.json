@@ -1,0 +1,31 @@
+[
+  {
+    "name": "myhello",
+    "version": "2.10",
+    "source": "mirror://gnu/hello/hello-2.10.tar.gz",
+    "build-system": "gnu",
+    "arguments": {
+      "tests?": false
+    }
+    "home-page": "https://www.gnu.org/software/hello/",
+    "synopsis": "Hello, GNU world: An example GNU package",
+    "description": "GNU Hello prints a greeting.",
+    "license": "GPL-3.0+",
+    "native-inputs": ["gettext"]
+  },
+  {
+    "name": "greeter",
+    "version": "1.0",
+    "source": "https://example.com/greeter-1.0.tar.gz",
+    "build-system": "gnu",
+    "arguments": {
+      "test-target": "foo",
+      "parallel-build?": false,
+    },
+    "home-page": "https://example.com/",
+    "synopsis": "Greeter using GNU Hello",
+    "description": "This is a wrapper around GNU Hello.",
+    "license": "GPL-3.0+",
+    "inputs": ["myhello", "hello"]
+  }
+]

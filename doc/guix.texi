@@ -77,6 +77,7 @@ Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
+Copyright @copyright{} 2020 R Veera Kumar@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -547,7 +548,14 @@ We recommend the use of this
 @uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
 shell installer script}.  The script automates the download, installation, and
 initial configuration steps described below.  It should be run as the root
-user.
+user.  As root, you can thus run this:
+
+@example
+cd /tmp
+wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
+chmod +x guix-install.sh
+./guix-install.sh
+@end example
 @end quotation
 
 Installing goes along these lines:
@@ -651,7 +659,7 @@ with these commands:
 @example
 # cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
      /etc/systemd/system/
-# systemctl start guix-daemon && systemctl enable guix-daemon
+# systemctl enable --now guix-daemon
 @end example
 
 If your host distro uses the Upstart init system:
@@ -2823,6 +2831,15 @@ in the root of their project source tree that can be used to test
 development snapshots and create reproducible development environments
 (@pxref{Invoking guix environment}).
 
+The @var{file} may also contain a JSON representation of one or more
+package definitions.  Running @code{guix package -f} on
+@file{hello.json} with the following contents would result in installing
+the package @code{greeter} after building @code{myhello}:
+
+@example
+@verbatiminclude package-hello.json
+@end example
+
 @item --remove=@var{package} @dots{}
 @itemx -r @var{package} @dots{}
 Remove the specified @var{package}s.
@@ -4616,8 +4633,8 @@ served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
 
 @example
 $ wget -O - \
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-emacs-24.5 \
-  | bunzip2 | guix archive -x /tmp/emacs
+  https://@value{SUBSTITUTE-SERVER}/nar/gzip/@dots{}-emacs-24.5 \
+  | gunzip | guix archive -x /tmp/emacs
 @end example
 
 Single-item archives are different from multiple-item archives produced
@@ -4627,7 +4644,8 @@ and they do @emph{not} embed a signature.  Thus this operation does
 unsafe.
 
 The primary purpose of this operation is to facilitate inspection of
-archive contents coming from possibly untrusted substitute servers.
+archive contents coming from possibly untrusted substitute servers
+(@pxref{Invoking guix challenge}).
 
 @item --list
 @itemx -t
@@ -5807,7 +5825,7 @@ or a list of such values.
 @item @code{home-page}
 The URL to the home-page of the package, as a string.
 
-@item @code{supported-systems} (default: @var{%supported-systems})
+@item @code{supported-systems} (default: @code{%supported-systems})
 The list of systems supported by the package, as strings of the form
 @code{architecture-kernel}, for example @code{"x86_64-linux"}.
 
@@ -6171,7 +6189,6 @@ if they are defined by the crate.
 
 
 @defvr {Scheme Variable} copy-build-system
-@cindex (copy build system)
 This variable is exported by @code{(guix build-system copy)}.  It
 supports builds of simple packages that don't require much compiling,
 mostly just moving files around.
@@ -7371,7 +7388,7 @@ increments the current state value:
 @result{} 3
 @end lisp
 
-When ``run'' through @var{%state-monad}, we obtain that additional state
+When ``run'' through @code{%state-monad}, we obtain that additional state
 value, which is the number of @code{square} calls.
 @end defvr
 
@@ -7403,7 +7420,7 @@ The main interface to the store monad, provided by the @code{(guix
 store)} module, is as follows.
 
 @defvr {Scheme Variable} %store-monad
-The store monad---an alias for @var{%state-monad}.
+The store monad---an alias for @code{%state-monad}.
 
 Values in the store monad encapsulate accesses to the store.  When its
 effect is needed, a value of the store monad must be ``evaluated'' by
@@ -7764,7 +7781,7 @@ information about monads.)
        [#:system (%current-system)] [#:target #f] [#:graft? #t] @
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
-       [#:module-path @var{%load-path}] @
+       [#:module-path @code{%load-path}] @
        [#:effective-version "2.2"] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:disallowed-references #f] @
@@ -8068,7 +8085,7 @@ item.  This is achieved using the @code{lower-object} monadic procedure.
 
 @deffn {Monadic Procedure} lower-object @var{obj} [@var{system}] @
            [#:target #f]
-Return as a value in @var{%store-monad} the derivation or store item
+Return as a value in @code{%store-monad} the derivation or store item
 corresponding to @var{obj} for @var{system}, cross-compiling for
 @var{target} if @var{target} is true.  @var{obj} must be an object that
 has an associated gexp compiler, such as a @code{<package>}.
@@ -8549,6 +8566,15 @@ As an example, @var{file} might contain a package definition like this
 @lisp
 @include package-hello.scm
 @end lisp
+
+The @var{file} may also contain a JSON representation of one or more
+package definitions.  Running @code{guix build -f} on @file{hello.json}
+with the following contents would result in building the packages
+@code{myhello} and @code{greeter}:
+
+@example
+@verbatiminclude package-hello.json
+@end example
 
 @item --manifest=@var{manifest}
 @itemx -m @var{manifest}
@@ -10555,8 +10581,8 @@ Alternately, we can do something along these lines (@pxref{Invoking guix
 archive}):
 
 @example
-$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
-   | guix archive -x /tmp/git
+$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-git-2.5.0 \
+   | lzip -d | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
 
@@ -11234,7 +11260,7 @@ By that, we mean all the global system configuration, not per-user
 configuration (@pxref{Using the Configuration System}).
 
 @table @asis
-@item @code{kernel} (default: @var{linux-libre})
+@item @code{kernel} (default: @code{linux-libre})
 The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
@@ -11391,11 +11417,11 @@ As a user you should @emph{never} need to touch this field.
 Linux @dfn{pluggable authentication module} (PAM) services.
 @c FIXME: Add xref to PAM services section.
 
-@item @code{setuid-programs} (default: @var{%setuid-programs})
+@item @code{setuid-programs} (default: @code{%setuid-programs})
 List of string-valued G-expressions denoting setuid programs.
 @xref{Setuid Programs}.
 
-@item @code{sudoers-file} (default: @var{%sudoers-specification})
+@item @code{sudoers-file} (default: @code{%sudoers-specification})
 @cindex sudoers file
 The contents of the @file{/etc/sudoers} file as a file-like object
 (@pxref{G-Expressions, @code{local-file} and @code{plain-file}}).
@@ -11561,7 +11587,7 @@ variables.
 
 @defvr {Scheme Variable} %base-file-systems
 These are essential file systems that are required on normal systems,
-such as @var{%pseudo-terminal-file-system} and @var{%immutable-store} (see
+such as @code{%pseudo-terminal-file-system} and @code{%immutable-store} (see
 below.)  Operating system declarations should always contain at least
 these.
 @end defvr
@@ -12628,7 +12654,7 @@ and caches.
 @defvr {Scheme Variable} %nscd-default-configuration
 This is the default @code{<nscd-configuration>} value (see below) used
 by @code{nscd-service}.  It uses the caches defined by
-@var{%nscd-default-caches}; see below.
+@code{%nscd-default-caches}; see below.
 @end defvr
 
 @deftp {Data Type} nscd-configuration
@@ -12653,7 +12679,7 @@ Name of the nscd log file.  This is where debugging output goes when
 Integer denoting the debugging levels.  Higher numbers mean that more
 debugging output is logged.
 
-@item @code{caches} (default: @var{%nscd-default-caches})
+@item @code{caches} (default: @code{%nscd-default-caches})
 List of @code{<nscd-cache>} objects denoting things to be cached; see
 below.
 
@@ -12925,7 +12951,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
 @end lisp
 
 @defvr {Scheme Variable} urandom-seed-service-type
-Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
+Save some entropy in @code{%random-seed-file} to seed @file{/dev/urandom}
 when rebooting.  It also tries to seed @file{/dev/urandom} from
 @file{/dev/hwrng} while booting, if @file{/dev/hwrng} exists and is
 readable.
@@ -13304,7 +13330,7 @@ Either @code{#f} or a gexp to execute once the rotation has completed.
 @end deftp
 
 @defvr {Scheme Variable} %default-rotations
-Specifies weekly rotation of @var{%rotated-files} and of
+Specifies weekly rotation of @code{%rotated-files} and of
 @file{/var/log/guix-daemon.log}.
 @end defvr
 
@@ -13764,7 +13790,7 @@ clock synchronized with that of the given servers.
 
 @defvr {Scheme Variable} %openntpd-servers
 This variable is a list of the server addresses defined in
-@var{%ntp-servers}.
+@code{%ntp-servers}.
 @end defvr
 
 @deftp {Data Type} openntpd-configuration
@@ -13782,7 +13808,7 @@ See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
 information.
 @item @code{server} (default: @code{'()})
 Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
-@item @code{servers} (default: @var{%openntp-servers})
+@item @code{servers} (default: @code{%openntp-servers})
 Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
 @item @code{constraint-from} (default: @code{'()})
 @code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
@@ -25634,6 +25660,11 @@ If true, this must be the name of a file to log messages to.
 @cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
 
+@defvr {Scheme Variable} dicod-service-type
+This is the type of the service that runs the @command{dicod} daemon, an
+implementation of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
+@end defvr
+
 @deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
 Return a service that runs the @command{dicod} daemon, an implementation
 of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
@@ -27086,8 +27117,8 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
 
 The file should evaluate to a list of @var{machine} objects.  This example,
 upon being deployed, will create a new generation on the remote system
-realizing the @code{operating-system} declaration @var{%system}.
-@var{environment} and @var{configuration} specify how the machine should be
+realizing the @code{operating-system} declaration @code{%system}.
+@code{environment} and @code{configuration} specify how the machine should be
 provisioned---that is, how the computing resources should be created and
 managed.  The above example does not create any resources, as a
 @code{'managed-host} is a machine that is already running the Guix system and
@@ -27229,7 +27260,8 @@ This image boots the Xfce graphical environment and it contains some
 commonly-used tools.  You can install more software in the image by running
 @command{guix package} in a terminal (@pxref{Invoking guix package}).  You can
 also reconfigure the system based on its initial configuration file available
-as @file{/etc/config.scm} (@pxref{Using the Configuration System}).
+as @file{/run/current-system/configuration.scm} (@pxref{Using the
+Configuration System}).
 
 Instead of using this pre-built image, one can also build their own virtual
 machine image using @command{guix system vm-image} (@pxref{Invoking guix

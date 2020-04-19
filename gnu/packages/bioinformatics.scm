@@ -2399,13 +2399,13 @@ files.")
 (define-public python-pybigwig
   (package
     (name "python-pybigwig")
-    (version "0.3.12")
+    (version "0.3.17")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyBigWig" version))
               (sha256
                (base32
-                "00w4kfnm2c5l7wdwr2nj1z5djv8kzgf7h1zhsgv6njff1rwr26g0"))
+                "157x6v48y299zm382krf1dw08fdxg95im8lnabhp5vc94s04zxj1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -13642,32 +13642,34 @@ fasta subsequences.")
 (define-public python-cooler
   (package
     (name "python-cooler")
-    (version "0.7.11")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cooler" version))
        (sha256
         (base32
-         "08k5nxnxa6qsbk15z5z0q01n28042k87wi4905hh95rzqib15mhx"))))
+         "01g6gqix9ba27sappz6nfyiwabzrlf8i5fn8kwcz8ra356cq9crp"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-biopython" ,python-biopython)
+     `(("python-asciitree" ,python-asciitree)
+       ("python-biopython" ,python-biopython)
        ("python-click" ,python-click)
        ("python-cytoolz" ,python-cytoolz)
        ("python-dask" ,python-dask)
        ("python-h5py" ,python-h5py)
        ("python-multiprocess" ,python-multiprocess)
+       ("python-numpy" ,python-numpy)
        ("python-pandas" ,python-pandas)
        ("python-pyfaidx" ,python-pyfaidx)
        ("python-pypairix" ,python-pypairix)
        ("python-pysam" ,python-pysam)
-       ("python-scipy" ,python-scipy)))
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-scipy" ,python-scipy)
+       ("python-simplejson" ,python-simplejson)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-sphinx" ,python-sphinx)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/mirnylab/cooler")
     (synopsis "Sparse binary format for genomic interaction matrices")
     (description
@@ -13675,6 +13677,46 @@ fasta subsequences.")
 storage format, called @code{cool}, used to store genomic interaction data,
 such as Hi-C contact matrices.")
     (license license:bsd-3)))
+
+(define-public python-hicmatrix
+  (package
+    (name "python-hicmatrix")
+    (version "12")
+    (source
+     (origin
+       ;; Version 12 is not available on pypi.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deeptools/HiCMatrix.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1xhdyx16f3brgxgxybixdi64ki8nbbkq5vk4h9ahi11pzpjfn1pj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* '("requirements.txt"
+                            "setup.py")
+               (("cooler *=+ *0.8.5")
+                "cooler==0.8.*"))
+             #t)))))
+    (propagated-inputs
+     `(("python-cooler" ,python-cooler)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-tables" ,python-tables)))
+    (home-page "https://github.com/deeptools/HiCMatrix/")
+    (synopsis "HiCMatrix class for HiCExplorer and pyGenomeTracks")
+    (description
+     "This helper package implements the @code{HiCMatrix} class for
+the HiCExplorer and pyGenomeTracks packages.")
+    (license license:gpl3+)))
 
 (define-public python-hicexplorer
   (package
@@ -13732,23 +13774,35 @@ genomic scores), long range contacts and the visualization of viewpoints.")
 (define-public python-pygenometracks
   (package
     (name "python-pygenometracks")
-    (version "2.0")
+    (version "3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyGenomeTracks" version))
        (sha256
         (base32
-         "1fws6bqsyy9kj3qiabhkqx4wd4i775gsxnhszqd3zg7w67sc1ic5"))))
+         "16laa0wnf4qn9fb9ych4w1vqhqwjss70v0y0f6wp4gwqfrlgac0f"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("matplotlib ==3.1.1")
+                "matplotlib >=3.1.1"))
+             #t)))))
     (propagated-inputs
-     `(("python-configparser" ,python-configparser)
-       ("python-future" ,python-future)
-       ("python-hicexplorer" ,python-hicexplorer)
+     `(("python-future" ,python-future)
+       ("python-gffutils" ,python-gffutils)
+       ("python-hicmatrix" ,python-hicmatrix)
        ("python-intervaltree" ,python-intervaltree)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
-       ("python-pybigwig" ,python-pybigwig)))
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-tqdm" ,python-tqdm)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://pygenometracks.readthedocs.io")

@@ -2313,6 +2313,8 @@ possible, parallelization is achieved using the BiocParallel framework.")
        ("r-tidyr" ,r-tidyr)
        ("r-tidyselect" ,r-tidyselect)
        ("r-vim" ,r-vim)))
+    (native-inputs
+     `(("r-nbconvertr" ,r-nbconvertr))) ; for vignettes
     (home-page "https://bioconductor.org/packages/destiny/")
     (synopsis "Create and plot diffusion maps")
     (description "This package provides tools to create and plot diffusion
@@ -3529,6 +3531,8 @@ to multiple hypothesis correction.")
        ("r-qvalue" ,r-qvalue)
        ("r-reshape2" ,r-reshape2)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/DOSE/")
     (synopsis "Disease ontology semantic and enrichment analysis")
     (description
@@ -3899,6 +3903,8 @@ further downstream analysis on its output.")
      `(("r-biocparallel" ,r-biocparallel)
        ("r-ellipse" ,r-ellipse)
        ("r-ggplot2" ,r-ggplot2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/bacon/")
     (synopsis "Controlling bias and inflation in association studies")
     (description
@@ -6733,6 +6739,8 @@ using whole genome sequencing data.")
      `(("r-data-table" ,r-data-table)
        ("r-ggplot2" ,r-ggplot2)
        ("r-metap" ,r-metap)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/ActivePathways/")
     (synopsis "Multivariate pathway enrichment analysis")
     (description
@@ -7105,6 +7113,8 @@ structures.")
        ("r-rjson" ,r-rjson)
        ("r-rsqlite" ,r-rsqlite)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/TylerBackman/bioassayR")
     (synopsis "Cross-target analysis of small molecule bioactivity")
     (description

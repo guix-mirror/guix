@@ -669,7 +669,7 @@ GUIX_FOR_BINARY_TARBALL = guile3.0-guix
 # The self-contained tarball.
 guix-binary.%.tar.xz:
 	$(AM_V_GEN)GUIX_PACKAGE_PATH=					\
-	tarball=`$(top_builddir)/pre-inst-env guix pack -K -C xz	\
+	tarball=`$(top_builddir)/pre-inst-env guix pack -C xz		\
 	  --fallback							\
 	  -s "$*" --localstatedir --profile-name=current-guix		\
 	  $(GUIX_FOR_BINARY_TARBALL)` ;					\
@@ -819,6 +819,7 @@ release: dist-with-updated-version
 	for system in $(GUIX_SYSTEM_VM_SYSTEMS) ; do					\
 	  image=`$(top_builddir)/pre-inst-env						\
 	    guix system vm-image $(GUIX_SYSTEM_VM_IMAGE_FLAGS)				\
+	    --save-provenance								\
 	    --system=$$system --fallback						\
 	    gnu/system/examples/vm-image.tmpl` ;					\
 	  if [ ! -f "$$image" ] ; then							\

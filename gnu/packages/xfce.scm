@@ -711,15 +711,15 @@ and import the new pictures from your camera.")
 (define-public xfwm4
   (package
     (name "xfwm4")
-    (version "4.14.0")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfwm4/" (version-major+minor version) "/"
+                                  "xfwm4-" version ".tar.bz2"))
               (sha256
                (base32
-                "05dn4a1i0nm6wm3nyj7qli5bvfalxghcl7x543qr5l33vkw2n65l"))))
+                "0a0la57jh618qfl7czsn7mspcraqczkm1m616j7jwxkhh2hq21qh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -741,15 +741,15 @@ on the screen.")
 (define-public xfdesktop
   (package
     (name "xfdesktop")
-    (version "4.14.1")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfdesktop/" (version-major+minor version) "/"
+                                  "xfdesktop-" version ".tar.bz2"))
               (sha256
                (base32
-                "10pqxgpj7b57wpcsh2k98sj4aavcgxbs1lc8qsq4mibf4hba01gp"))
+                "0x1yx9sd5aanrlr1qnbwd2nsmcg09g4132k0kyb7z47a3x3381d3"))
               (modules '((guix build utils)))
               (snippet
                #~(begin
@@ -781,6 +781,7 @@ on the screen.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
 
+       ;; For our own ‘prepare-background-image’ phase.
        ("inkscape" ,inkscape)
        ("imagemagick" ,imagemagick)))
     (inputs
@@ -949,15 +950,15 @@ the desktop wallpaper.")
 (define-public xfce4-taskmanager
   (package
     (name "xfce4-taskmanager")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfce4-taskmanager/" (version-major+minor version) "/"
+                                  "xfce4-taskmanager-" version ".tar.bz2"))
               (sha256
                (base32
-                "04qflazmdrj4ys4r54yg4s5pqcjgk02idrjsls395zd4374636p4"))))
+                "1i63bnvpjpblnd0d3l1v065x9q1cz74cvlab5hzd0q8zgkd49z6w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)

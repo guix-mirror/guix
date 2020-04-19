@@ -3537,7 +3537,7 @@ workspace.")
        ("shared-mime-info" ,shared-mime-info)
        ("kjobwidgets" ,kjobwidgets) ;; required for running the tests
        ("strace" ,strace)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata-for-tests)))
     (propagated-inputs
      ;; These are required to be installed along with this package, see
      ;; lib64/cmake/KF5KDELibs4Support/KF5KDELibs4SupportConfig.cmake

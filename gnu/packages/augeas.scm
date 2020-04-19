@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,23 +33,23 @@
 (define-public augeas
   (package
     (name "augeas")
-    (version "1.11.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.augeas.net/augeas-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1c507qj6dfn2dnsl27w94zs9r45xrgm07y8bqba9ry2s0psfhg1r"))))
+                "11ybhb13wkkilsn7b416a1dn61m1xrq0lbdpkhp5w61jrk4l469j"))))
     (build-system gnu-build-system)
-    ;; Marked as "required" in augeas.pc
+    ;; Marked as "required" in augeas.pc.
     (propagated-inputs
      `(("libxml2" ,libxml2)))
     (inputs
      `(("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://augeas.net/")
+    (home-page "https://augeas.net")
     (synopsis "Edit configuration files programmatically")
     (description
      "Augeas is a library and command line tool for programmatically editing

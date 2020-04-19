@@ -38,7 +38,7 @@
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.13")
+    (version "3.10.15")
     (source
      (origin
        (method git-fetch)
@@ -47,11 +47,13 @@
              (commit version)))
        (sha256
         (base32
-         "1h542syaxsx1hslfzlk3fx1nbp190zjw35kigw7a1kx1jwvfwapg"))
+         "0ghbanj142n0hgydzfjmnkdgri2kswsjal3mn10c723kih4ir4yr"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("python-coverage" ,python-coverage)
+       ("python-minimock" ,python-minimock)))
     (inputs
      `(("gtk+" ,gtk+)
        ("python-pygobject" ,python-pygobject)
@@ -72,6 +74,12 @@
                (substitute* "src/gpodder/util.py"
                  (("xdg-open") (string-append xdg-utils "/bin/xdg-open")))
                #t)))
+         (replace 'check
+           (lambda _
+             ; The `unittest' target overrides the PYTHONPATH variable.
+             (substitute* "makefile"
+               (("PYTHONPATH=src/") "PYTHONPATH=${PYTHONPATH}:src/"))
+             (invoke "make" "unittest")))
          ;; 'msgmerge' introduces non-determinism by resetting the
          ;; POT-Creation-Date in .po files.
          (add-before 'install 'do-not-run-msgmerge
@@ -176,7 +184,13 @@ downloading episode status changes.")
        (sha256
         (base32 "0k62ppg20i41gcc5x8ddjn7zbpy47hqpxzrq9257g2c71m4qw07b"))))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "nosetests"))))))
     (build-system python-build-system)
     (home-page "http://gpodder.org/podcastparser")
     (synopsis "Simplified and fast RSS parser Python library")

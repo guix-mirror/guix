@@ -503,7 +503,7 @@ than gzip and 15 % smaller output than bzip2.")
                                             "/share/zoneinfo"))
              #t)))))
     (native-inputs
-     `(("tzdata" ,tzdata)))
+     `(("tzdata" ,tzdata-for-tests)))
     (home-page "https://fragglet.github.com/lhasa/")
     (synopsis "LHA archive decompressor")
     (description "Lhasa is a replacement for the Unix LHA tool, for

@@ -369,26 +369,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.4")
+(define-public linux-libre-5.6-version "5.6.5")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "14cxbc9xi4s3xwx4yb1yd4z0kidsk3d443skf5sgmdhcalg79wax")))
+        (hash (base32 "1rjjkcmzsj9azggh960qnk2x44ns475b8nbd4nxazrz1rgdx76zp")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.32")
+(define-public linux-libre-5.4-version "5.4.33")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "1czjjnln1cqrnjxw0md6mpw9haw9abdyvmxnjds56ym4nzx9jb8r")))
+        (hash (base32 "0q9q48ij6vppfcrdf7fr24pvpwsd13pxjkdni6rnjq9a60hrcmxm")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.115")
+(define-public linux-libre-4.19-version "4.19.116")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1hh170z3mv181l6cc6qqc12wif5jsmxbh2qxbq6b9km5irydkchi")))
+        (hash (base32 "0r3vdc3npl1bn06w9v6wsq7d5mm7bnhm9wsz36pb9ar3xhimvrlf")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))

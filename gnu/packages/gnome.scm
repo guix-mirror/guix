@@ -250,6 +250,34 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public notification-daemon
+  (package
+    (name "notification-daemon")
+    (version "3.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1rgchqi4j2ll7d6a7lgy7id0w9rrkwkgic1096fbm2zx6n7pc4yx"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("x11" ,libx11)))
+    (synopsis "Notification Daemon for GNOME Desktop")
+    (description "Notification-Daemon is the server implementation of the
+freedesktop.org desktop notification specification.")
+    (home-page "https://wiki.gnome.org/Projects/NotificationDaemon")
+    (license license:gpl2+)))
+
 (define-public mm-common
   (package
     (name "mm-common")

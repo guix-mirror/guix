@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,7 @@ when evaluated."
   ;; Print either license variable name or the code for a license object
   (define (license->code lic)
     (let ((var (variable-name lic '(guix licenses))))
-      (or var
+      (or (symbol-append 'license: var)
           `(license
             (name ,(license-name lic))
             (uri ,(license-uri lic))
@@ -79,7 +79,9 @@ when evaluated."
           (patches   (origin-patches source)))
       `(origin
          (method ,(procedure-name method))
-         (uri (string-append ,@(factorize-uri uri version)))
+         (uri (string-append ,@(match (factorize-uri uri version)
+                                 ((? string? uri) (list uri))
+                                 (factorized factorized))))
          (sha256
           (base32
            ,(format #f "~a" (bytevector->nix-base32-string sha256))))
@@ -92,6 +94,8 @@ when evaluated."
   (define (package-lists->code lsts)
     (list 'quasiquote
           (map (match-lambda
+                 ((? symbol? s)
+                  (list (symbol->string s) (list 'unquote s)))
                  ((label pkg . out)
                   (let ((mod (package-module-name pkg)))
                     (cons* label
@@ -121,45 +125,47 @@ when evaluated."
         (home-page           (package-home-page package))
         (supported-systems   (package-supported-systems package))
         (properties          (package-properties package)))
-    `(package
-       (name ,name)
-       (version ,version)
-       (source ,(source->code source version))
-       ,@(match properties
-           (() '())
-           (_  `((properties ,properties))))
-       ,@(if replacement
-             `((replacement ,replacement))
-             '())
-       (build-system ,(symbol-append (build-system-name build-system)
-                                     '-build-system))
-       ,@(match arguments
-           (() '())
-           (args `((arguments ,(list 'quasiquote args)))))
-       ,@(match outputs
-           (("out") '())
-           (outs `((outputs (list ,@outs)))))
-       ,@(match native-inputs
-           (() '())
-           (pkgs `((native-inputs ,(package-lists->code pkgs)))))
-       ,@(match inputs
-           (() '())
-           (pkgs `((inputs ,(package-lists->code pkgs)))))
-       ,@(match propagated-inputs
-           (() '())
-           (pkgs `((propagated-inputs ,(package-lists->code pkgs)))))
-       ,@(if (lset= string=? supported-systems %supported-systems)
-             '()
-             `((supported-systems (list ,@supported-systems))))
-       ,@(match (map search-path-specification->code native-search-paths)
-           (() '())
-           (paths `((native-search-paths (list ,@paths)))))
-       ,@(match (map search-path-specification->code search-paths)
-           (() '())
-           (paths `((search-paths (list ,@paths)))))
-       (home-page ,home-page)
-       (synopsis ,synopsis)
-       (description ,description)
-       (license ,(if (list? license)
-                     `(list ,@(map license->code license))
-                     (license->code license))))))
+    `(define-public ,(string->symbol name)
+       (package
+         (name ,name)
+         (version ,version)
+         (source ,(source->code source version))
+         ,@(match properties
+             (() '())
+             (_  `((properties ,properties))))
+         ,@(if replacement
+               `((replacement ,replacement))
+               '())
+         (build-system (@ (guix build-system ,(build-system-name build-system))
+                          ,(symbol-append (build-system-name build-system)
+                                          '-build-system)))
+         ,@(match arguments
+             (() '())
+             (args `((arguments ,(list 'quasiquote args)))))
+         ,@(match outputs
+             (("out") '())
+             (outs `((outputs (list ,@outs)))))
+         ,@(match native-inputs
+             (() '())
+             (pkgs `((native-inputs ,(package-lists->code pkgs)))))
+         ,@(match inputs
+             (() '())
+             (pkgs `((inputs ,(package-lists->code pkgs)))))
+         ,@(match propagated-inputs
+             (() '())
+             (pkgs `((propagated-inputs ,(package-lists->code pkgs)))))
+         ,@(if (lset= string=? supported-systems %supported-systems)
+               '()
+               `((supported-systems (list ,@supported-systems))))
+         ,@(match (map search-path-specification->code native-search-paths)
+             (() '())
+             (paths `((native-search-paths (list ,@paths)))))
+         ,@(match (map search-path-specification->code search-paths)
+             (() '())
+             (paths `((search-paths (list ,@paths)))))
+         (home-page ,home-page)
+         (synopsis ,synopsis)
+         (description ,description)
+         (license ,(if (list? license)
+                       `(list ,@(map license->code license))
+                       (license->code license)))))))
