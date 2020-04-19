@@ -7828,7 +7828,11 @@ world.")
      ;; GNOME-Core-Utilities
        ("baobab" ,baobab)
        ("cheese" ,cheese)
-       ("eog" ,eog)
+       ;; XXX: EoG requires librsvg-next, which depends on Rust, which currently
+       ;; only works on x86_64, so exclude it on other architectures.
+       ,@(if (string-prefix? "x86_64" (%current-system))
+             `(("eog" ,eog))
+             '())
        ("epiphany" ,epiphany)
        ("evince" ,evince)
        ("file-roller" ,file-roller)
