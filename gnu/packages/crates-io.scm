@@ -23669,6 +23669,51 @@ in Rust.")
      "Simple, lightweight template engine.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-tokio-0.2
+  (package
+    (name "rust-tokio")
+    (version "0.2.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04v7rfkrlr8cx30ygy0n45skf6pdbif0zisn9a5xrdnjfb81dvrl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.5)
+        ("rust-fnv" ,rust-fnv-1.0)
+        ("rust-futures-core" ,rust-futures-core-0.3)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1.10)
+        ("rust-parking-lot" ,rust-parking-lot-0.10)
+        ("rust-pin-project-lite" ,rust-pin-project-lite-0.1)
+        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1.2)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-macros" ,rust-tokio-macros-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+      #:cargo-development-inputs
+      (("rust-futures" ,rust-futures-0.3)
+       ("rust-loom" ,rust-loom-0.3)
+       ("rust-proptest" ,rust-proptest-0.9)
+       ("rust-tempfile" ,rust-tempfile-3.1)
+       ("rust-tokio-test" ,rust-tokio-test-0.2))))
+    (home-page "https://tokio.rs")
+    (synopsis "Event-driven, non-blocking I/O platform")
+    (description
+     "An event-driven, non-blocking I/O platform for writing asynchronous I/O
+backed applications.")
+    (license license:expat)))
+
 (define-public rust-tokio-0.1
   (package
     (name "rust-tokio")
