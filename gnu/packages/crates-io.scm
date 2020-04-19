@@ -22027,6 +22027,26 @@ crate.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-string-0.2
+  (package
+    (name "rust-string")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "string" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0vaxz85ja52fn66akgvggb29wqa5bpj3y38syykpr1pbrjzi8hfj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-bytes" ,rust-bytes-0.4))))
+    (home-page "https://github.com/carllerche/string")
+    (synopsis "UTF-8 encoded string with configurable byte storage")
+    (description "This package provides a UTF-8 encoded string with
+configurable byte storage.")
+    (license license:expat)))
+
 (define-public rust-string-cache-0.7
   (package
     (name "rust-string-cache")
