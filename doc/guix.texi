@@ -13684,6 +13684,17 @@ configuration file reference.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} simulated-wifi-service-type
+This is the type of a service to simulate WiFi networking, which can be
+useful in virtual machines for testing purposes.  The service loads the
+Linux kernel
+@uref{https://www.kernel.org/doc/html/latest/networking/mac80211_hwsim/mac80211_hwsim.html,
+@code{mac80211_hwsim} module} and starts hostapd to create a pseudo WiFi
+network that can be seen on @code{wlan0}, by default.
+
+The service's value is a @code{hostapd-configuration} record.
+@end defvr
+
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
 This is the service type to set up an iptables configuration.  iptables is a

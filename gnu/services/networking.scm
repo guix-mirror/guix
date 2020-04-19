@@ -151,6 +151,8 @@
             hostapd-configuration-driver
             hostapd-service-type
 
+            simulated-wifi-service-type
+
             openvswitch-service-type
             openvswitch-configuration
 
@@ -1428,6 +1430,52 @@ extra-settings "\n"))))
    (description
     "Run the @uref{https://w1.fi/hostapd/, hostapd} daemon for Wi-Fi access
 points and authentication servers.")))
+
+(define (simulated-wifi-shepherd-services config)
+  "Return Shepherd services to run hostapd with CONFIG, a
+<hostapd-configuration>, as well as services to set up WiFi hardware
+simulation."
+  (append (hostapd-shepherd-services config
+                                     #:requirement
+                                     '(unblocked-wifi
+                                       mac-simulation-module))
+          (list (shepherd-service
+                 (provision '(unblocked-wifi))
+                 (requirement '(file-systems mac-simulation-module))
+                 (documentation
+                  "Unblock WiFi devices for use by mac80211_hwsim.")
+                 (start #~(lambda _
+                            (invoke #$(file-append util-linux "/sbin/rfkill")
+                                    "unblock" "0")
+                            (invoke #$(file-append util-linux "/sbin/rfkill")
+                                    "unblock" "1")))
+                 (one-shot? #t))
+                (shepherd-service
+                 (provision '(mac-simulation-module))
+                 (requirement '(file-systems))
+                 (modules '((guix build utils)))
+                 (documentation
+                  "Load the mac80211_hwsim Linux kernel module.")
+                 (start (with-imported-modules '((guix build utils))
+                          #~(lambda _
+                              ;; XXX: We can't use 'load-linux-module*' here because it
+                              ;; expects a flat module directory.
+                              (setenv "LINUX_MODULE_DIRECTORY"
+                                      "/run/booted-system/kernel/lib/modules")
+                              (invoke #$(file-append kmod "/bin/modprobe")
+                                      "mac80211_hwsim"))))
+                 (one-shot? #t)))))
+
+(define simulated-wifi-service-type
+  (service-type
+   (name 'simulated-wifi)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             simulated-wifi-shepherd-services)))
+   (default-value (hostapd-configuration
+                   (interface "wlan1")
+                   (ssid "Test Network")))
+   (description "Run hostapd to simulate WiFi connectivity.")))
 
 
 ;;;
