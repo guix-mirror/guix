@@ -11832,8 +11832,34 @@ by inspecting the system for user preference.")
      `(#:cargo-inputs
        (("rust-log" ,rust-log-0.4))))))
 
-(define-public rust-loom-0.2
+(define-public rust-loom-0.3
   (package
+    (name "rust-loom")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "loom" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10z738ig6vgvwc2kxjhjdr5b29p3ribk5f6gg6ak0xjxhjb4cnkc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; TODO fails due to unresolved import
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-futures-util" ,rust-futures-util-0.3)
+        ("rust-generator" ,rust-generator-0.6)
+        ("rust-scoped-tls" ,rust-scoped-tls-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-json" ,rust-serde-json-1.0))))
+    (home-page "https://github.com/tokio-rs/loom")
+    (synopsis "Permutation testing for concurrent code")
+    (description "Permutation testing for concurrent code")
+    (license license:expat)))
+
+(define-public rust-loom-0.2
+  (package/inherit rust-loom-0.3
     (name "rust-loom")
     (version "0.2.13")
     (source
@@ -11852,14 +11878,10 @@ by inspecting the system for user preference.")
         ("rust-scoped-tls" ,rust-scoped-tls-0.1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0)
-        ("rust-serde-json" ,rust-serde-json-1.0))))
-    (home-page "https://github.com/tokio-rs/loom")
-    (synopsis "Model checker for concurrent code")
-    (description "Model checker for concurrent code.")
-    (license license:expat)))
+        ("rust-serde-json" ,rust-serde-json-1.0))))))
 
 (define-public rust-loom-0.1
-  (package/inherit rust-loom-0.2
+  (package/inherit rust-loom-0.3
     (name "rust-loom")
     (version "0.1.1")
     (source
