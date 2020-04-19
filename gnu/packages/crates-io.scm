@@ -26687,6 +26687,25 @@ Verification.")
        #:cargo-development-inputs
        (("rust-base64" ,rust-base64-0.9))))))
 
+(define-public rust-webpki-roots-0.18
+  (package
+    (name "rust-webpki-roots")
+    (version "0.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki-roots" version))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "1d4ss607rgi9pj01zzqa13c1p3m35z314yh6lmjaj4kzvwv5gkci"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-webpki" ,rust-webpki-0.21))))
+    (home-page "https://github.com/ctz/webpki-roots")
+    (synopsis "Mozilla's CA root certificates for use with webpki")
+    (description "Mozilla's CA root certificates for use with webpki")
+    (license license:mpl2.0)))
+
 (define-public rust-weedle-0.10
   (package
     (name "rust-weedle")
