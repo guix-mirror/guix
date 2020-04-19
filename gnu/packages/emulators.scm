@@ -1464,6 +1464,47 @@ This is a part of the TiLP project.")
     (home-page "http://lpg.ticalc.org/prj_tilp/")
     (license license:gpl2+)))
 
+(define-public libtifiles2
+  (package
+    (name "libtifiles2")
+    (version "1.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libtifiles2-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libtifiles2-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libarchive" ,libarchive)
+       ("libticonv" ,libticonv)))
+    (synopsis "File functions library for TI calculators")
+    (description
+     "This package contains libticonv, a library to support working with
+@acronym{TI, Texas Instruments} calculator files.
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
+    (license license:gpl2+)))
+
 (define-public mame
   (package
     (name "mame")
