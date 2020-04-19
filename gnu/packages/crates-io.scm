@@ -24395,7 +24395,7 @@ attribute that is not in the shared backend crate.")
   (package
     (inherit rust-wasm-bindgen-test-0.3)
     (name "rust-wasm-bindgen-test")
-    (version "0.2.48")
+    (version "0.2.50")
     (source
      (origin
        (method url-fetch)
@@ -24403,8 +24403,7 @@ attribute that is not in the shared backend crate.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0gwslc2sfkghzzb3r0gvd8i5rig2nlqgpl1rn43y2w4mr1ci494k"))))
+        (base32 "1h96phc1dmwwqn46k05j2y1mc3ljazh8f1gqqy0x8hm7ccxnknd2"))))
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
