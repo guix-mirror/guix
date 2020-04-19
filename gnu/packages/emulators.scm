@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
@@ -1378,6 +1380,48 @@ classic graphical point-and-click adventure games, provided you
 already have their data files.  The clever part about this: ScummVM
 just replaces the executables shipped with the games, allowing you to
 play them on systems for which they were never designed!")
+    (license license:gpl2+)))
+
+(define-public libticables2
+  (package
+    (name "libticables2")
+    (version "1.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri "https://www.ticalc.org/pub/unix/tilibs.tar.gz")
+              (sha256
+               (base32
+                "07cfwwlidgx4fx88whnlch6y1342x16h15lkvkkdlp2y26sn2yxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-libusb10")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (invoke "tar" "xvkf" source)
+             (invoke "tar" "xvkf"
+                     (string-append "tilibs2/libticables2-"
+                                    ,version ".tar.bz2"))
+             (chdir (string-append "libticables2-" ,version))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autogen" ,autogen)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libusb" ,libusb)))
+    (synopsis "Link cable library for TI calculators")
+    (description
+     "This package contains libticables, a library for operations on
+@acronym{TI, Texas Instruments} calculator link cables.
+
+This is a part of the TiLP project.")
+    (home-page "http://lpg.ticalc.org/prj_tilp/")
     (license license:gpl2+)))
 
 (define-public mame
