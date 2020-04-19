@@ -26643,6 +26643,31 @@ protocol extensions.  Look at the crate wayland-client for usable bindings.")
      "Bindings for all Web APIs, a procedurally generated crate from WebIDL.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-webpki-0.21
+  (package
+    (name "rust-webpki")
+    (version "0.21.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1vv3x2alvczfy6jhx79c9h00d1nliqf7s5jlvcd6npc6f8chxxgi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; tests fail to build "missing file tests/ed25519/ee.der"
+       #:cargo-inputs
+       (("rust-ring" ,rust-ring-0.16)
+        ("rust-untrusted" ,rust-untrusted-0.7))
+       #:cargo-development-inputs
+       (("rust-base64" ,rust-base64-0.9))))
+    (home-page "https://github.com/briansmith/webpki")
+    (synopsis "Web PKI X.509 Certificate Verification")
+    (description "This packge provides Web PKI X.509 Certificate
+Verification.")
+    (license license:isc)))
+
 (define-public rust-weedle-0.10
   (package
     (name "rust-weedle")
