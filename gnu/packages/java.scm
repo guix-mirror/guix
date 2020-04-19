@@ -9117,12 +9117,14 @@ those in Perl and JavaScript.")
     (name "java-fest-util")
     (version "1.2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-util/"
-                                  "archive/fest-util-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-util/")
+                     (commit (string-append "fest-util-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05g6hljz5mdaakk8d7g32klbhz9bdwp3qlj6rdaggdidxs3x1sb8"))))
+                "02kgal7v85snyyvcsxvn4qphid455f4smh2wri1il8d9asw0djbz"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-util.jar"
