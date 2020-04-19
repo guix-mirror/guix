@@ -393,6 +393,7 @@ interactive connmanctl process."
     (dynamic-wind
       (const #t)
       (lambda ()
+        (setvbuf pipe 'line)
         (run-connection-sequence pipe)
         #t)
       (lambda ()
