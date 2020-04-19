@@ -9142,12 +9142,14 @@ those in Perl and JavaScript.")
     (name "java-fest-test")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-test/"
-                                  "archive/fest-test-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-test/")
+                     (commit (string-append "fest-test-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rxfbw6l9vc65iy1x3fb617qc6y4w2k430pgf1mfbxfdlxbm0f7g"))))
+                "0mg1d2jfh7kbx2c40dchbjr6d8pv59snsyb13mfxsr7xk5n69qbn"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-test.jar"
