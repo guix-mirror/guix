@@ -4975,7 +4975,7 @@ number.")
 (define-public emacs-org-superstar
   (package
     (name "emacs-org-superstar")
-    (version "1.1.0")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -4984,7 +4984,7 @@ number.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14aafqw8rnbmiy3kcw1a58vjxdyamrbmlldnlw018wgk0qqv0xpx"))))
+        (base32 "14w06v76xi4f6hpq6xzicrjjv0b802g5zc9as4mpimfy5gx2xpm0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-org" ,emacs-org)))
