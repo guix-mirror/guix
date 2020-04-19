@@ -1233,12 +1233,13 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     (name "sparql-query")
     (version "1.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tialaramex/"
-                                  name "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tialaramex/sparql-query")
+                     (commit version)))
               (sha256
-               (base32 "0yq3k20472rv8npcc420q9ab6idy584g5y0q501d360k5q0ggr8w"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+               (base32 "0a84a89idpjhj9w2y3fmvzv7ldps1cva1kxvfmh897k02kaniwxk"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline)
