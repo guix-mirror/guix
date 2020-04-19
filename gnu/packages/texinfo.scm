@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,7 +69,11 @@
                     "env "))
                  #t))))
          '()))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs `(("ncurses" ,ncurses)
+              ;; TODO: remove `if' in the next rebuild cycle.
+              ,@(if (%current-target-system)
+                    `(("perl" ,perl))
+                    '())))
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
     ;; and native-inputs.
