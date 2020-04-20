@@ -148,14 +148,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.26.1")
+   (version "2.26.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0s03ix9j1h0yychkh1l1cgpr1l9lwzn3rprl08rk8ii5ix02i0l8"))))
+              "0j685w6pzkn926z5nf5r8fij4ziipvw4c9yb0wc577nzf4j16rbd"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -168,7 +168,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0j2031x3qchwjmiy2h849j4x1vd8y4rgqv2ak9dc87xbbpsbfg59"))))
+            "0rb4f4jc31zrcg4gyjg4fi07dw7nggkjg2nqfiq5p1aayw2f2ga3"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
