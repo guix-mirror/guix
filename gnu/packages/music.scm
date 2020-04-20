@@ -27,6 +27,7 @@
 ;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -625,62 +626,72 @@ MusePack, Monkey's Audio, and WavPack files.")
 (define-public extempore
   (package
     (name "extempore")
-    (version "0.7.0")
+    (version "0.8.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/digego/extempore.git")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "12fsp7zkfxb9kykwq46l88kcbbici9arczrrsl4qn87m6vm5349l"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "182jy23qv115dipny7kglwbn21z55dp253w1ykm0kh8n6vkgs7gp"))
+              (file-name (git-file-name name version))
+              (patches (search-patches
+                        "extempore-unbundle-external-dependencies.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled sources.
+                  (map delete-file-recursively
+                       '("src/portaudio"
+                         "src/pcre"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
-     `(;; The default target also includes ahead-of-time compilation of the
-       ;; standard libraries.  However, during the "install" phase this would
-       ;; happen *again* for unknown reasons.  Hence we only build the
-       ;; extempore executable during the build phase.
-       #:make-flags '("extempore")
-       #:configure-flags '("-DJACK=ON"
-                           ;; We want to distribute.
-                           "-DIN_TREE=OFF"
-                           ;; Don't download any dependencies.
-                           "-DBUILD_DEPS=OFF")
+     `(#:configure-flags (list "-DJACK=ON"
+                               "-DPACKAGE=ON"
+                               "-DEXTERNAL_SHLIBS_AUDIO=OFF"
+                               "-DEXTERNAL_SHLIBS_GRAPHICS=OFF"
+                               "-DCMAKE_BUILD_TYPE=Release"
+                               (string-append "-DEXT_SHARE_DIR="
+                                              (assoc-ref %outputs "out")
+                                              "/share"))
        #:modules ((ice-9 match)
                   (guix build cmake-build-system)
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'build 'build-aot-libs
+           (lambda _
+             (for-each (lambda (target)
+                         (invoke "make" target))
+                       '("aot_base"
+                         "aot_math"
+                         "aot_instruments"))
+             #t))
+         (add-after 'unpack 'patch-install-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("EXT_SHARE_DIR=\"\\.\"\\)")
+                "EXT_SHARE_DIR=\"${EXT_SHARE_DIR}/extempore\")")
+               (("DESTINATION \"\\.\"\\)") "DESTINATION bin)")
+               (("DESTINATION \"\\.\"\n") "DESTINATION share/extempore\n"))
+             #t))
          (add-after 'unpack 'patch-directories
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Rewrite default path to runtime directory
-             (substitute* "src/Extempore.cpp"
-               (("runtimedir \\+= \"runtime\"")
-                (string-append "runtimedir = \""
-                               (assoc-ref outputs "out")
-                               "/lib/extempore/runtime\"")))
              (substitute* "extras/extempore.el"
                (("\\(runtime-directory \\(concat default-directory \"runtime\"\\)\\)")
                 (string-append "(runtime-directory \""
                                (assoc-ref outputs "out")
-                               "/lib/extempore/runtime"
+                               "/share/extempore/runtime"
                                "\")")))
              #t))
          (add-after 'unpack 'link-with-additional-libs
            (lambda _
              ;; The executable must be linked with libffi and zlib.
              (substitute* "CMakeLists.txt"
-               (("add_dependencies\\(aot_extended extended_deps\\)") "")
                (("target_link_libraries\\(extempore PRIVATE dl" line)
                 (string-append line " ffi z")))
-             #t))
-         ;; FIXME: AOT compilation of the nanovg bindings fail with the error:
-         ;; "Compiler Error  could not bind _nvgLinearGradient"
-         (add-after 'unpack 'disable-nanovg
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("aotcompile_lib\\(libs/external/nanovg.xtm.*") ""))
              #t))
          ;; FIXME: All examples that are used as tests segfault for some
          ;; unknown reason.
@@ -710,20 +721,16 @@ MusePack, Monkey's Audio, and WavPack files.")
                 ("gl/glcompat-directbind" "libGL.so" "mesa")))
              #t))
          (add-after 'unpack 'use-own-llvm
-          (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "EXT_LLVM_DIR" (assoc-ref inputs "llvm"))
-            ;; Our LLVM builds shared libraries, so Extempore should use
-            ;; those.
-            (substitute* "CMakeLists.txt"
-              (("CMAKE_STATIC_LIBRARY") "CMAKE_SHARED_LIBRARY"))
-            #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "EXT_LLVM_DIR" (assoc-ref inputs "llvm"))
+             ;; Our LLVM builds shared libraries, so Extempore should use
+             ;; those.
+             (substitute* "CMakeLists.txt"
+               (("CMAKE_STATIC_LIBRARY") "CMAKE_SHARED_LIBRARY"))
+             #t))
          (add-after 'unpack 'fix-aot-compilation
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               ;; EXT_SHARE_DIR does not exist before installation, so the
-               ;; working directory should be the source directory instead.
-               (("WORKING_DIRECTORY \\$\\{EXT_SHARE_DIR\\}")
-                "WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}")
                ;; Extempore needs to be told where the runtime is to be found.
                ;; While we're at it we disable automatic tuning for a specific
                ;; CPU to make binary substitution possible.
