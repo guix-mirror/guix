@@ -11450,6 +11450,32 @@ functions and static variables these libraries contain.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-libsqlite3-sys-0.15
+  (package
+    (name "rust-libsqlite3-sys")
+    (version "0.15.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libsqlite3-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "104n0s4f46zprppjq6y82y0wjh1r2cgwzw26w914yj30rizy1cbj"))))
+    (build-system cargo-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:cargo-inputs
+       ;; build dependencies
+       (("rust-bindgen" ,rust-bindgen-0.49)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))))
+    (home-page "https://github.com/rusqlite/rusqlite")
+    (synopsis "Native bindings to the libsqlite3 library")
+    (description "Native bindings to the libsqlite3 library")
+    (license license:expat)))
+
 (define-public rust-libz-sys-1.0
   (package
     (name "rust-libz-sys")
