@@ -16598,6 +16598,32 @@ replacements, adding colorful diffs.")
     (description "This package provides a visually pretty env_logger.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-prettytable-rs-0.8
+  (package
+    (name "rust-prettytable-rs")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "prettytable-rs" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0bmcsxkcy94hi0jz5db0fz137w5aaf17z2j1ryn2vyh400blpl0g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atty" ,rust-atty-0.2)
+        ("rust-csv" ,rust-csv-1.1)
+        ("rust-encode-unicode" ,rust-encode-unicode-0.3)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-term" ,rust-term-0.5)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/phsym/prettytable-rs")
+    (synopsis "Library for printing pretty formatted tables in terminal")
+    (description "This package provides a library for printing pretty
+formatted tables in terminal.")
+    (license license:bsd-3)))
+
 (define-public rust-proc-macro-error-0.4
   (package
     (name "rust-proc-macro-error")
