@@ -105,7 +105,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -121,6 +123,56 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+(define-public blueman
+  (package
+    (name "blueman")
+    (version "2.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/blueman-project/blueman/releases/"
+                       "download/2.1.2/blueman-2.1.2.tar.gz"))
+       (sha256
+        (base32 "0wamxdw36c8i3aqwmja5q70fajqwd7inpkvlpkldd54wdxbcd38d"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-polkit"
+        "--disable-appindicator"         ; Deprecated
+        "--with-systemdsystemunitdir=no" ; Not required
+        "--with-systemduserunitdir=no")))  ; Not required
+    (native-inputs
+     `(("cython" ,python-cython)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("bluez" ,bluez)
+       ("dbus" ,dbus)
+       ("gdkpixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("iproute2" ,iproute)
+       ("net-tools" ,net-tools)
+       ("pango" ,pango)
+       ("polkit" ,polkit)
+       ("pulseaudio" ,pulseaudio)
+       ("pycairo" ,python-pycairo)
+       ("pygobject" ,python-pygobject)
+       ("python" ,python-wrapper)
+       ("libnm" ,libnma)))
+    (synopsis "GTK+ Bluetooth manager")
+    (description "Blueman is a Bluetooth management utility using the Bluez
+D-Bus backend.  It is designed to be easy to use for most common Bluetooth
+tasks.")
+    (home-page "https://github.com/blueman-project/blueman")
+    (license license:gpl3+)))
 
 ;; The gnu.org ‘home’ for this GNU project is a directory listing with 1.6.0 as
 ;; the latest version.  The author's git repository, mentioned in the 1.6.0
