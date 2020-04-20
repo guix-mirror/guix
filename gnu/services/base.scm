@@ -557,7 +557,7 @@ down.")))
         (documentation "Add TRNG to entropy pool.")
         (requirement '(udev))
         (provision '(trng))
-        (start #~(make-forkexec-constructor #$@rngd-command))
+        (start #~(make-forkexec-constructor '#$rngd-command))
         (stop #~(make-kill-destructor))))))
 
 (define* (rngd-service #:key
