@@ -2206,11 +2206,6 @@ is no support for parsing block and inline level HTML.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-finding-guile
-                    (lambda _
-                      (substitute* "configure"
-                        (("2\\.0") "3.0 2.2 2.0"))
-                      #t))
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (substitute* "tests/job-specifier.scm"
