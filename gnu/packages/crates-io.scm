@@ -11241,6 +11241,26 @@ values of all the exported APIs match the platform that libc is compiled for.")
     (license (list license:expat
                    license:asl2.0))))
 
+(define-public rust-libc-print-0.1
+  (package
+    (name "rust-libc-print")
+    (version "0.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libc-print" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1sh4l815w7zxg8w17fvwj63y421sjqxxrdamzwyvg90n6mr70phv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://github.com/mmastrac/rust-libc-print")
+    (synopsis "Println! and eprintln! without stdlib")
+    (description "This package provices @code{println!} and @code{eprintln!}
+macros on libc without stdlib.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-libgit2-sys-0.10
   (package
     (name "rust-libgit2-sys")
