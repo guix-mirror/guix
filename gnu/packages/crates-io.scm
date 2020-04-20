@@ -14898,6 +14898,36 @@ normally prevent moving a type that has been borrowed from.")
     (description "This package provides FFI bindings to libgtk-3.")
     (license license:expat)))
 
+(define-public rust-parity-tokio-ipc-0.4
+  (package
+    (name "rust-parity-tokio-ipc")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "parity-tokio-ipc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1gzifrrpiw78p6dq9ax64vhffc4h6mwg6jazpfgkz8zy0jjzwmqy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
+        ("rust-miow" ,rust-miow-0.3)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-tokio" ,rust-tokio-0.1)
+        ("rust-tokio-named-pipes" ,rust-tokio-named-pipes-0.1)
+        ("rust-tokio-uds" ,rust-tokio-uds-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/nikvolf/parity-tokio-ipc")
+    (synopsis "Interprocess communication library for tokio")
+    (description "Interprocess communication library for tokio.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-parity-wasm-0.41
   (package
     (name "rust-parity-wasm")
