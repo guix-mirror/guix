@@ -41,6 +41,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages serialization)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -2448,6 +2449,33 @@ encoding.")
     (synopsis "Async serialization for Cap'n Proto messages")
     (description "This package provides async serialization for Cap'n Proto
 messages.")
+    (license license:expat)))
+
+(define-public rust-capnp-rpc-0.10
+  (package
+    (name "rust-capnp-rpc")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "capnp-rpc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j6xg7yays1hlm1045wviyn1642yvvi2p4kba26yk07a0kafr3jn"))))
+    (build-system cargo-build-system)
+    (native-inputs
+     `(("capnproto" ,capnproto)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.10)
+        ("rust-capnp-futures" ,rust-capnp-futures-0.10)
+        ("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-capnpc" ,rust-capnpc-0.10))))
+    (home-page "https://github.com/capnproto/capnproto-rust")
+    (synopsis "Cap'n Proto remote procedure call protocol implementation")
+    (description "This package provides an implementation of the Cap'n Proto
+remote procedure call protocol")
     (license license:expat)))
 
 (define-public rust-capnpc-0.10
