@@ -1340,7 +1340,11 @@ code of derivations to GUILE, a package object."
   "Return as a monadic value the absolute file name of FILE within the
 OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
 OUTPUT directory of PACKAGE.  When TARGET is true, use it as a
-cross-compilation target triplet."
+cross-compilation target triplet.
+
+Note that this procedure does _not_ build PACKAGE.  Thus, the result might or
+might not designate an existing file.  We recommend not using this procedure
+unless you know what you are doing."
   (lambda (store)
     (define compute-derivation
       (if target

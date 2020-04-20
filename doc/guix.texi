@@ -7483,6 +7483,10 @@ value in the absolute file name of @var{file} within the @var{output}
 directory of @var{package}.  When @var{file} is omitted, return the name
 of the @var{output} directory of @var{package}.  When @var{target} is
 true, use it as a cross-compilation target triplet.
+
+Note that this procedure does @emph{not} build @var{package}.  Thus, the
+result might or might not designate an existing file.  We recommend not
+using this procedure unless you know what you are doing.
 @end deffn
 
 @deffn {Monadic Procedure} package->derivation @var{package} [@var{system}]
