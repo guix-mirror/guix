@@ -6441,6 +6441,23 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fallible-streaming-iterator-0.1
+  (package
+    (name "rust-fallible-streaming-iterator")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fallible-streaming-iterator" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0nj6j26p71bjy8h42x6jahx1hn0ng6mc2miwpgwnp8vnwqf4jq3k"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sfackler/fallible-streaming-iterator")
+    (synopsis "Fallible streaming iteration")
+    (description "Fallible streaming iteration")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fern-0.5
   (package
     (name "rust-fern")
