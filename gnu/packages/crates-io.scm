@@ -23768,6 +23768,30 @@ backed applications.")
 backed applications.")
     (license license:expat)))
 
+(define-public rust-tokio-buf-0.1
+  (package
+    (name "rust-tokio-buf")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-buf" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0inwrkh8knqy44mr9h2i305zyy4pxhfy90y0gr5rm1akdks21clg"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-either" ,rust-either-1.5)
+        ("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-tokio-mock-task" ,rust-tokio-mock-task-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Asynchronous stream of byte buffers")
+    (description "Asynchronous stream of byte buffers")
+    (license license:expat)))
+
 ;; Cyclic dependency with tokio-io
 (define-public rust-tokio-codec-0.1
   (package
