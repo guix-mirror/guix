@@ -25865,6 +25865,29 @@ specified across Unix and Windows platforms.")
         ("rust-rand" ,rust-rand-0.3)
         ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
 
+(define-public rust-want-0.2
+  (package
+    (name "rust-want")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "want" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c52g7b4hhj033jc56sx9z3krivyciz0hlblixq2gc448zx5wfdn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; 2/5 tests fail
+       #:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-try-lock" ,rust-try-lock-0.2))))
+    (home-page "https://github.com/seanmonstar/want")
+    (synopsis "Detect when another Future wants a result")
+    (description "Detect when another Future wants a result.")
+    (license license:expat)))
+
 (define-public rust-wasi-0.9
   (package
     (name "rust-wasi")
