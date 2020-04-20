@@ -4318,6 +4318,32 @@ intrinsics.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-crossterm-0.13
+  (package
+    (name "rust-crossterm")
+    (version "0.13.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossterm" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1jw9s85mnhpkk38lihr4ildip4jhfhc3h86npncd92i4mdb257vm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-crossterm-winapi" ,rust-crossterm-winapi-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/crossterm-rs/crossterm")
+    (synopsis "Crossplatform terminal library for manipulating terminals")
+    (description "This package provides a crossplatform terminal library for
+manipulating terminals.")
+    (license license:expat)))
+
 (define-public rust-crossterm-winapi-0.4
   (package
     (name "rust-crossterm-winapi")
