@@ -2425,6 +2425,31 @@ exposed as Reader/Writer streams.")
 encoding.")
     (license license:expat)))
 
+(define-public rust-capnp-futures-0.10
+  (package
+    (name "rust-capnp-futures")
+    (version "0.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "capnp-futures" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0qdiqkp9mh4acpa0dqhpzv2gwf949rj3m85mgwl1rih6gvgbh1zs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-capnp" ,rust-capnp-0.10)
+        ("rust-futures" ,rust-futures-0.1))
+       #:cargo-development-inputs
+       (("rust-capnp" ,rust-capnp-0.10)
+        ("rust-quickcheck" ,rust-quickcheck-0.2))))
+    (home-page "https://github.com/capnproto/capnproto-rust")
+    (synopsis "Async serialization for Cap'n Proto messages")
+    (description "This package provides async serialization for Cap'n Proto
+messages.")
+    (license license:expat)))
+
 (define-public rust-capnpc-0.10
   (package
     (name "rust-capnpc")
