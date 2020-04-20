@@ -2425,6 +2425,25 @@ exposed as Reader/Writer streams.")
 encoding.")
     (license license:expat)))
 
+(define-public rust-capnpc-0.10
+  (package
+    (name "rust-capnpc")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "capnpc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1zxbmdkr0xfzkfq9p8zn7pp9jjq275qhr8fh9a0cc0ab37yfvbyj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-capnp" ,rust-capnp-0.10))))
+    (home-page "https://github.com/capnproto/capnproto-rust")
+    (synopsis "Cap'n Proto code generation")
+    (description "Cap'n Proto code generation")
+    (license license:expat)))
+
 (define-public rust-caps-0.3
   (package
     (name "rust-caps")
