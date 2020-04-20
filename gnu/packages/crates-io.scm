@@ -24060,6 +24060,31 @@ futures efficiently")
     (description "Mock a Tokio task.")
     (license license:expat)))
 
+(define-public rust-tokio-named-pipes-0.1
+  (package
+    (name "rust-tokio-named-pipes")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-named-pipes" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1bjy59wdl2anl22w6qyzkff1afv7ynayfpms10iqna2j6142sa4x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
+        ("rust-tokio" ,rust-tokio-0.1))))
+    (home-page "https://github.com/nikvolf/tokio-named-pipes")
+    (synopsis "Windows named pipe bindings for tokio")
+    (description "This package provides bindings for Windows named pipe for
+Tokio.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-process-0.2
   (package
     (name "rust-tokio-process")
