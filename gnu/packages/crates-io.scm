@@ -11903,6 +11903,28 @@ by inspecting the system for user preference.")
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0))))))
 
+(define-public rust-lru-cache-0.1
+  (package
+    (name "rust-lru-cache")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "lru-cache" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "071viv6g2p3akwqmfb3c8vsycs5n7kr17b70l7la071jv0d4zqii"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-heapsize" ,rust-heapsize-0.4)
+        ("rust-linked-hash-map" ,rust-linked-hash-map-0.5))))
+    (home-page "https://github.com/contain-rs/lru-cache")
+    (synopsis "Cache that holds a limited number of key-value pairs")
+    (description "This package provides a cache that holds a limited number of
+key-value pairs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-lscolors-0.6
   (package
     (name "rust-lscolors")
