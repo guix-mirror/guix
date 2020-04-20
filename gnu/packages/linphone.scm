@@ -49,6 +49,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu))
 
 (define-public bcunit
@@ -428,8 +429,17 @@ decoding, and rendering.")
                                       "/lib/glib-2.0/include"))
         "-DENABLE_STATIC=NO"            ; Not required
         "-DENABLE_GTK_UI=YES")          ; For Legacy UI
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build glib-or-gtk-build-system))
+       #:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
          (add-after 'unpack 'patch
            (lambda _
              (substitute* "gtk/main.c"
@@ -449,6 +459,7 @@ decoding, and rendering.")
        ("belcard" ,belcard)
        ("bellesip" ,belle-sip)
        ("bzrtp", bzrtp)
+       ("hicolor-icon-theme" ,hicolor-icon-theme) ; Hard-coded for GTK UI
        ("glib" ,glib)
        ("gtk2" ,gtk+-2)
        ("mediastreamer2" ,mediastreamer2)
