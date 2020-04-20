@@ -7023,6 +7023,31 @@ values to other threads.")
      "This package provides low level binding for FreeType font library.")
     (license license:expat)))
 
+(define-public rust-fs2-0.4
+  (package
+    (name "rust-fs2")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "fs2" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04v2hwk7035c088f19mfl5b1lz84gnvv2hv6m935n0hmirszqr4m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; "#![feature] may not be used on stable release channel"
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.3))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/danburkert/fs2-rs")
+    (synopsis "Cross-platform file locks and file duplication")
+    (description "This package provides cross-platform file locks and file
+duplication.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-fs-extra-1.1
   (package
     (name "rust-fs-extra")
