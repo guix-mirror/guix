@@ -1979,24 +1979,27 @@ using a system-independent interface.")
     (license license:expat)))
 
 (define-public portmidi-for-extempore
-  (package (inherit portmidi)
-    (name "portmidi-for-extempore")
-    (version "217")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/extemporelang/portmidi.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1inriyrjf7xx2b7r54x0vmf9ngyqgr7g5060c22bwkbsgg53apzv"))))
-    (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; no tests
-    (native-inputs '())
-    ;; Extempore refuses to build on architectures other than x86_64
-    (supported-systems '("x86_64-linux"))
-    (home-page "https://github.com/extemporelang/portmidi/")))
+  (let ((version "217")
+        (revision "0")
+        (commit "8602f548f71daf5ef638b2f7d224753400cb2158"))
+    (package (inherit portmidi)
+      (name "portmidi-for-extempore")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/extemporelang/portmidi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1qidzl1s3kzhczzm96rcd2ppn27a97k2axgfh1zhvyf0s52d7m4w"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f))        ; no tests
+      (native-inputs '())
+      ;; Extempore refuses to build on architectures other than x86_64
+      (supported-systems '("x86_64-linux"))
+      (home-page "https://github.com/extemporelang/portmidi/"))))
 
 (define-public python-pyportmidi
   (package
