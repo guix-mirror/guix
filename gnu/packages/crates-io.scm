@@ -27443,6 +27443,29 @@ to XDG Base Directory specification")
        (("rust-clippy" ,rust-clippy-0.0)
         ("rust-linked-hash-map" ,rust-linked-hash-map-0.3))))))
 
+(define-public rust-zbase32-0.1
+  (package
+    (name "rust-zbase32")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "zbase32" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0gz3nmiaidscb5c85rh3qxi8i584gz5xm3amlxqminl8jq27k40g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t ;; dependency cypthon not yet availalbe
+       #:cargo-development-inputs
+       (;; ("rust-cpython" ,rust-cpython-0.2)  TODO
+        ("rust-quickcheck" ,rust-quickcheck-0.7)
+        ("rust-rand" ,rust-rand-0.6))))
+    (home-page "https://gitlab.com/pgerber/zbase32-rust")
+    (synopsis "Implementation of zbase32")
+    (description "This package provides an implementation of zbase32.")
+    (license license:lgpl3+)))
+
 (define-public rust-zip-0.5
   (package
     (name "rust-zip")
