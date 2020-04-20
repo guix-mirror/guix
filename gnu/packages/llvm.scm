@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Arm Ltd <David.Truby@arm.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -627,12 +628,16 @@ output), and Binutils.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-for-extempore
-  (package (inherit llvm-3.7)
+  (package (inherit llvm-3.8)
     (name "llvm-for-extempore")
     (source
      (origin
-       (inherit (package-source llvm-3.7))
-       (patches (list (search-patch "llvm-for-extempore.patch")))))
+       (method url-fetch)
+       (uri (string-append "http://extempore.moso.com.au/extras/"
+                           "llvm-3.8.0.src-patched-for-extempore.tar.xz"))
+       (sha256
+        (base32
+         "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))))
 
