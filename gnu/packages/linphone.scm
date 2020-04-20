@@ -501,7 +501,17 @@ and video calls or instant messaging capabilities to an application.")
              (substitute* "src/app/AppController.cpp"
                (("LINPHONE_QT_GIT_VERSION")
                 (format #f "~s" ,version)))
-             #t)))))
+             #t))
+         (add-after 'install 'extend-shared-resources
+           ;; Not using the FHS exposes an issue where the client refers to
+           ;; its own "share" directory, which lacks sound files installed by
+           ;; liblinphone.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((liblinphone (assoc-ref inputs "linphone"))
+                    (out (assoc-ref outputs "out")))
+               (symlink (string-append liblinphone "/share/sounds")
+                        (string-append out "/share/sounds"))
+               #t))))))
     (native-inputs
      `(("qttools" ,qttools)))
     (inputs
