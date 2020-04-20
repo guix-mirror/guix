@@ -42,6 +42,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
@@ -18909,6 +18910,48 @@ rust.")
     (description "This package provides a crate for reading passwords in
 console applications.")
   (license license:asl2.0)))
+
+(define-public rust-rusqlite-0.19
+  (package
+    (name "rust-rusqlite")
+    (version "0.19.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rusqlite" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "19xq7s0kzhlljm3hqx0vidr91ia8hl49r4m5gwdj9dyywgks5g3f"))))
+    (build-system cargo-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-csv" ,rust-csv-1.1)
+        ("rust-fallible-iterator" ,rust-fallible-iterator-0.2)
+        ("rust-fallible-streaming-iterator"
+         ,rust-fallible-streaming-iterator-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libsqlite3-sys" ,rust-libsqlite3-sys-0.15)
+        ("rust-lru-cache" ,rust-lru-cache-0.1)
+        ("rust-memchr" ,rust-memchr-2.2)
+        ("rust-serde-json" ,rust-serde-json-1.0)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-url" ,rust-url-1.7)
+        ("rust-uuid" ,rust-uuid-0.7))
+       #:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-1.1)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-unicase" ,rust-unicase-2.4)
+        ("rust-uuid" ,rust-uuid-0.7))))
+    (home-page "https://github.com/rusqlite/rusqlite")
+    (synopsis "Wrapper for SQLite")
+    (description "This prackage provides a wrapper for SQLite.")
+    (license license:expat)))
 
 (define-public rust-rust-argon2-0.7
   (package
