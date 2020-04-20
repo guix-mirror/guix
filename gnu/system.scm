@@ -477,19 +477,13 @@ OS."
 value of the SYSTEM-SERVICE-TYPE service."
   (let ((locale (operating-system-locale-directory os)))
     (mlet* %store-monad ((kernel -> (operating-system-kernel os))
-                         (kernel-modules (package-file kernel "lib/modules"))
                          (modules ->
                           (operating-system-kernel-loadable-modules os))
-                         (has-modules? ->
-                          (or (not (null? modules))
-                              (file-exists? kernel-modules)))
                          (kernel
                           (profile-derivation
                            (packages->manifest
                             (cons kernel modules))
-                           #:hooks (if has-modules?
-                                       (list linux-module-database)
-                                       '())))
+                           #:hooks (list linux-module-database)))
                          (initrd -> (operating-system-initrd-file os))
                          (params    (operating-system-boot-parameters-file os)))
       (return `(("kernel" ,kernel)
