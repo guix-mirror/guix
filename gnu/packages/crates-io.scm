@@ -4318,6 +4318,26 @@ intrinsics.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4))))))
 
+(define-public rust-crossterm-winapi-0.4
+  (package
+    (name "rust-crossterm-winapi")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "crossterm-winapi" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j3av8bba3f5y4n4w1vgn0iz28vdajxrli6lqxnvpddbphskmph2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/crossterm-rs/crossterm-winapi")
+    (synopsis "Basic simple abstractions around common WinAPI calls")
+    (description "WinAPI wrapper that provides some basic simple abstractions
+around common WinAPI calls.")
+    (license license:expat)))
+
 (define-public rust-crypto-mac-0.7
   (package
     (name "rust-crypto-mac")
