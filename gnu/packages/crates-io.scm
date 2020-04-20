@@ -9849,6 +9849,25 @@ requests and responses.")
 or response body.")
     (license license:expat)))
 
+(define-public rust-http-body-0.1
+  (package/inherit rust-http-body-0.3
+    (name "rust-http-body")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "http-body" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0b99404k4mw6a92hvyr0qwzkqv4f866ykg0x7913limjq5cwhhb7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-futures" ,rust-futures-0.1)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-tokio-buf" ,rust-tokio-buf-0.1))))))
+
 (define-public rust-http-req-0.5
   (package
     (name "rust-http-req")
