@@ -2401,6 +2401,30 @@ exposed as Reader/Writer streams.")
      "This package provides a callback-based event loop")
     (license license:expat)))
 
+(define-public rust-capnp-0.10
+  (package
+    (name "rust-capnp")
+    (version "0.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "capnp" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "17hsnmlcrzksjjpwpz51y8g36xzq8042i2cwns0lsg7rixfw2rxq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-quickcheck" ,rust-quickcheck-0.2))
+       #:cargo-development-inputs
+       (("rust-quickcheck" ,rust-quickcheck-0.2))))
+    (home-page "https://github.com/capnproto/capnproto-rust")
+    (synopsis "Runtime library for Cap'n Proto data encoding")
+    (description "This package provides a runtime library for Cap'n Proto data
+encoding.")
+    (license license:expat)))
+
 (define-public rust-caps-0.3
   (package
     (name "rust-caps")
