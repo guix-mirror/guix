@@ -2455,7 +2455,7 @@ work with Emacs 24 and 25.")
 
 (define-public emacs-extempore-mode
   ;; Use the latest commit at time of packaging.  There are no releases or tags.
-  (let ((commit "848ad0084f27b92d1cf98dabffbad29f959a642d")
+  (let ((commit "09518ae6650d7be33a4633a4c0f31b7130d04c6e")
         (revision "1"))
     (package
       (name "emacs-extempore-mode")
@@ -2468,7 +2468,7 @@ work with Emacs 24 and 25.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "00wr025php7nl33x541s9rjm99hj0jbdcmnw9ljx5hqpm04aqm7c"))))
+          (base32 "0hfza9lzdsz94gxhmzyp9fwviscv19rmnjgd0q613faayn11sjsp"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/extemporelang/extempore-emacs-mode")
       (synopsis "Emacs major mode for Extempore source files")
