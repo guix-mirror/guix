@@ -1482,6 +1482,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
+  %D%/packages/patches/u-boot-DT-for-Pinebook-Pro.patch		\
+  %D%/packages/patches/u-boot-add-boe-nv140fhmn49-display.patch	\
+  %D%/packages/patches/u-boot-gpio-keys-binding-cons.patch	\
+  %D%/packages/patches/u-boot-leds-common-binding-con.patch	\
+  %D%/packages/patches/u-boot-support-Pinebook-Pro-laptop.patch	\
+  %D%/packages/patches/u-boot-video-rockchip-fix-build.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

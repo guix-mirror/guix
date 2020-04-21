@@ -11,6 +11,7 @@
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2018, 2019, 2020 Vagrant Cascadian <vagrant@debian.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -818,6 +819,35 @@ to Novena upstream, does not load u-boot.img from the first partition.")
   (let ((base (make-u-boot-package "rockpro64-rk3399" "aarch64-linux-gnu")))
     (package
       (inherit base)
+      (arguments
+        (substitute-keyword-arguments (package-arguments base)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'set-environment
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
+                                                "/bl31.elf"))
+                  #t))
+              ;; Phases do not succeed on the bl31 ELF.
+              (delete 'strip)
+              (delete 'validate-runpath)))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-rk3399)
+         ,@(package-native-inputs base))))))
+
+(define-public u-boot-pinebook-pro-rk3399
+  (let ((base (make-u-boot-package "pinebook-pro-rk3399" "aarch64-linux-gnu")))
+    (package
+     (inherit base)
+     (source (origin
+              (inherit (package-source u-boot))
+              (patches
+               (search-patches "u-boot-add-boe-nv140fhmn49-display.patch"
+                               "u-boot-gpio-keys-binding-cons.patch"
+                               "u-boot-leds-common-binding-con.patch"
+                               "u-boot-DT-for-Pinebook-Pro.patch"
+                               "u-boot-support-Pinebook-Pro-laptop.patch"
+                               "u-boot-video-rockchip-fix-build.patch"))))
       (arguments
         (substitute-keyword-arguments (package-arguments base)
           ((#:phases phases)
