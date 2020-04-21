@@ -1,0 +1,69 @@
+python-admiral doesn't have a license
+https://github.com/nspies/admiral/issues/3
+
+diff --git a/setup.py b/setup.py
+index 692b6a0..568f381 100755
+--- a/setup.py
++++ b/setup.py
+@@ -20,7 +20,7 @@ setup(
+         'console_scripts' : ["grocsvs = grocsvs.main:main"]
+     },
+ 
+-    install_requires = ["admiral", "h5py", "networkx>=2.0", "pandas", "pybedtools", 
++    install_requires = ["h5py", "networkx>=2.0", "pandas", "pybedtools", 
+                         "pyfaidx", "pysam>=0.10.0", "scipy", "ipython-cluster-helper",
+                         "pygraphviz", "psutil"],
+ 
+diff --git a/src/grocsvs/jobmanagers.py b/src/grocsvs/jobmanagers.py
+index 6da0b58..112d7ff 100755
+--- a/src/grocsvs/jobmanagers.py
++++ b/src/grocsvs/jobmanagers.py
+@@ -41,34 +41,3 @@ class MultiprocessingCluster(Cluster):
+         pool = multiprocessing.Pool(processes=self.processes)
+         return pool.map_async(fn, args).get(999999)
+ 
+-
+-class AdmiralCluster(Cluster):
+-    def map(self, fn, args):
+-        from admiral import jobmanagers, remote
+-
+-        cluster_options = self.cluster_settings.cluster_options.copy()
+-        
+-        scheduler = cluster_options.pop("scheduler")
+-
+-        jobmanager_class = jobmanagers.get_jobmanager(scheduler)
+-        jobmanager = jobmanager_class(
+-            batch_dir=self.batch_dir, log_dir=self.batch_dir)
+-
+-
+-        if not "mem" in cluster_options:
+-            cluster_options["mem"] = "16g"
+-        if not "time" in cluster_options:
+-            cluster_options["time"] = "12h"
+-
+-        jobs = []
+-        #for i, arg in enumerate(args):
+-
+-        job_name = args[0].__class__.__name__
+-        args = [[arg] for arg in args]
+-        job = remote.run_remote(fn, jobmanager, job_name, args=args,
+-                                array=True, overwrite=True, **cluster_options)
+-
+-        result = jobmanagers.wait_for_jobs([job], wait=5, progress=True)
+-
+-        if not result:
+-            raise Exception("Some chunks failed to complete")
+diff --git a/src/grocsvs/pipeline.py b/src/grocsvs/pipeline.py
+index ab1bb2d..350976f 100755
+--- a/src/grocsvs/pipeline.py
++++ b/src/grocsvs/pipeline.py
+@@ -8,8 +8,7 @@ from grocsvs import utilities
+ def make_jobmanager(jobmanager_settings, processes, batch_dir):
+     jobmanager_classes = {"IPCluster":jobmanagers.IPCluster,
+                           "local":    jobmanagers.LocalCluster,
+-                          "multiprocessing": jobmanagers.MultiprocessingCluster,
+-                          "admiral": jobmanagers.AdmiralCluster}
++                          "multiprocessing": jobmanagers.MultiprocessingCluster}
+ 
+     cls = jobmanager_classes[jobmanager_settings.cluster_type]
+     return cls(processes, jobmanager_settings, batch_dir)
