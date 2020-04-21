@@ -241,6 +241,16 @@ interface and is based on GNU Guile.")
     (inputs
      `(("guile" ,guile-next)))))
 
+(define-public guile2.0-shepherd
+  (package
+    (inherit shepherd)
+    (name "guile2.0-shepherd")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.0)))
+    (inputs
+     `(("guile" ,guile-2.0)))))
+
 (define-public cloud-utils
   (package
     (name "cloud-utils")
