@@ -32,6 +32,7 @@
 # Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 # Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 # Copyright © 2020 Felix Gruber <felgru@posteo.net>
+# Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -522,6 +523,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
   %D%/packages/virtualization.scm		\
+  %D%/packages/visidata.scm			\
   %D%/packages/vnc.scm				\
   %D%/packages/vpn.scm				\
   %D%/packages/vulkan.scm			\
