@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -109,6 +109,9 @@ HTTP-PORT."
                      ((#t) #t)
                      ((pid) (number? pid))))))
              marionette))
+
+          (test-assert "HTTP port ready"
+            (wait-for-tcp-port #$forwarded-port marionette))
 
           ;; Retrieve the index.html file we put in /srv.
           (test-equal "http-get"
