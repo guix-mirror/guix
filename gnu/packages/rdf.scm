@@ -4,6 +4,8 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -369,3 +371,25 @@ powerful language for representing information.")
 
 (define-public python2-rdflib
   (package-with-python2 python-rdflib))
+
+(define-public python-rdflib-jsonld
+  (package
+    (name "python-rdflib-jsonld")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rdflib-jsonld" version))
+        (sha256
+         (base32
+          "1v85f4hdlrrk0l1najmqmm79ijrvcj259kwsrrxiq1q5chr5azag"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-rdflib" ,python-rdflib)))
+    (home-page "https://github.com/RDFLib/rdflib-jsonld")
+    (synopsis "rdflib extension adding JSON-LD parser and serializer")
+    (description "This package provides an rdflib extension adding JSON-LD
+parser and serializer.")
+    (license license:bsd-3)))
