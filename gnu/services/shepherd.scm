@@ -297,8 +297,7 @@ and return the resulting '.go' file."
           ;; everything slow.  Thus, increase the timeout compared to the
           ;; default 5s in the Shepherd 0.7.0.  See
           ;; <https://bugs.gnu.org/40572>.
-          ;; XXX: Use something better when the next Shepherd is out.
-          (set! (@@ (shepherd service) %pid-file-timeout) 30)
+          (default-pid-file-timeout 30)
 
           ;; Arrange to spawn a REPL if something goes wrong.  This is better
           ;; than a kernel panic.
