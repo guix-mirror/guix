@@ -3180,42 +3180,40 @@ over, or update a value in arbitrary data structures.")
       (license license:gpl3+))))
 
 (define-public guile-xapian
-  (let ((commit "ede26b808188eb4d14c6b4181c933dfc09c0a22e")
-        (revision "0"))
-    (package
-      (name "guile-xapian")
-      (version (git-version "0" revision commit))
-      (home-page "https://git.systemreboot.net/guile-xapian")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference (url home-page)
-                             (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "07a9fmqi3pm6mbbpzi01mjwrqwnljs2rnc3603sq49dz4lf663gb"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("xapian" ,xapian)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("autoconf-archive" ,autoconf-archive)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)
-         ("swig" ,swig)))
-      (synopsis "Guile bindings for Xapian")
-      (description "@code{guile-xapian} provides Guile bindings for Xapian, a
+  (package
+    (name "guile-xapian")
+    (version "0.1.0")
+    (home-page "https://git.systemreboot.net/guile-xapian")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16k61f1jn3g48jaf3730b9l0izr5j933jzyri73nmcnjd09gm35i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (synopsis "Guile bindings for Xapian")
+    (description "@code{guile-xapian} provides Guile bindings for Xapian, a
 search engine library.  Xapian is a highly adaptable toolkit which allows
 developers to easily add advanced indexing and search facilities to their own
 applications.  It has built-in support for several families of weighting
 models and also supports a rich set of boolean query operators.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public guile3.0-xapian
   (package
