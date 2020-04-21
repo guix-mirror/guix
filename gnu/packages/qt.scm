@@ -149,7 +149,7 @@ system, and the core design of Django is reused in Grantlee.")
     (version "4.8.7")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://download.qt-project.org/official_releases/qt/"
+             (uri (string-append "http://download.qt-project.org/archive/qt/"
                                  (string-copy version 0 (string-rindex version #\.))
                                  "/" version
                                  "/qt-everywhere-opensource-src-"
