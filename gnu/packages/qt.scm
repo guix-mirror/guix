@@ -223,7 +223,7 @@ system, and the core design of Django is reused in Grantlee.")
      `(;; XXX: The JavaScriptCore engine does not build with the C++11 standard.
        ;; We could build it with -std=gnu++98, but then we'll get in trouble with
        ;; ICU later.  Just keep using GCC 5 for now.
-       ("gcc" ,gcc-5)
+       ("gcc@5" ,gcc-5)
        ("bison" ,bison)
        ("flex" ,flex)
        ("gperf" ,gperf)
@@ -240,6 +240,17 @@ system, and the core design of Django is reused in Grantlee.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-default-gcc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
+               ;; conflicts with the GCC 5 input.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          (replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
