@@ -363,12 +363,25 @@ a list of extra files, such as '(\"contributing\")."
                                   translations))))))
                         (cons prefix extras))))
 
-          (for-each (lambda (po)
-                      (match (reverse (string-split po #\.))
-                        ((_ lang _ ...)
-                         (translate-texi "guix" po lang
-                                         #:extras '("contributing")))))
-                    (find-files "." "^guix-manual\\.[a-z]{2}(_[A-Z]{2})?\\.po$"))
+          (define (available-translations directory domain)
+            ;; Return the list of available translations under DIRECTORY for
+            ;; DOMAIN, a gettext domain such as "guix-manual".  The result is
+            ;; a list of language/PO file pairs.
+            (filter-map (lambda (po)
+                          (let ((base (basename po)))
+                            (and (string-prefix? (string-append domain ".")
+                                                 base)
+                                 (match (string-split base #\.)
+                                   ((_ ... lang "po")
+                                    (cons lang po))))))
+                        (find-files directory
+                                    "\\.[a-z]{2}(_[A-Z]{2})?\\.po$")))
+
+          (for-each (match-lambda
+                      ((language . po)
+                       (translate-texi "guix" po language
+                                       #:extras '("contributing"))))
+                    (available-translations "." "guix-manual"))
 
           (for-each
             (lambda (file)
