@@ -11998,6 +11998,14 @@ characters, mouse support, and auto suggestions.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'check 'adjust-test-for-python-3.8
+           (lambda _
+             ;; Mimic upstream commit e7feeef64 to allow for extra output lines
+             ;; in TestSetupReadline on Python 3.8.  Remove for jedi > 0.17.0.
+             (substitute* "test/test_utils.py"
+               (("assert len\\(difference\\) < 20")
+                "assert len(difference) < 22"))
+             #t))
          (replace 'check
            (lambda _
              (setenv "HOME" "/tmp")
