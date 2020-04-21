@@ -383,12 +383,17 @@ a list of extra files, such as '(\"contributing\")."
                                        #:extras '("contributing"))))
                     (available-translations "." "guix-manual"))
 
-          (for-each
-            (lambda (file)
-              (copy-file file (string-append #$output "/" file)))
-            (append
-              (find-files "." "contributing\\..*\\.texi$")
-              (find-files "." "guix\\..*\\.texi$"))))))
+          (for-each (match-lambda
+                      ((language . po)
+                       (translate-texi "guix-cookbook" po language)))
+                    (available-translations "." "guix-cookbook"))
+
+          (for-each (lambda (file)
+                      (install-file file #$output))
+                    (append
+                     (find-files "." "contributing\\..*\\.texi$")
+                     (find-files "." "guix\\..*\\.texi$")
+                     (find-files "." "guix-cookbook\\..*\\.texi$"))))))
 
   (computed-file "guix-translated-texinfo" build))
 
@@ -415,7 +420,8 @@ a list of extra files, such as '(\"contributing\")."
   (define build
     (with-imported-modules '((guix build utils))
       #~(begin
-          (use-modules (guix build utils))
+          (use-modules (guix build utils)
+                       (ice-9 match))
 
           (mkdir #$output)
 
@@ -476,13 +482,13 @@ a list of extra files, such as '(\"contributing\")."
                   #+(file-append glibc-utf8-locales "/lib/locale"))
 
           (for-each (lambda (texi)
-                      (unless (string=? "guix.texi" texi)
-                        ;; Create 'version-LL.texi'.
-                        (let* ((base (basename texi ".texi"))
-                               (dot  (string-index base #\.))
-                               (tag  (string-drop base (+ 1 dot))))
-                          (symlink "version.texi"
-                                   (string-append "version-" tag ".texi"))))
+                      (match (string-split (basename texi) #\.)
+                        (("guix" language "texi")
+                         ;; Create 'version-LL.texi'.
+                         (symlink "version.texi"
+                                  (string-append "version-" language
+                                                 ".texi")))
+                        (_ #f))
 
                       (invoke #+(file-append texinfo "/bin/makeinfo")
                               texi "-I" #$documentation
@@ -491,7 +497,10 @@ a list of extra files, such as '(\"contributing\")."
                                                   (basename texi ".texi")
                                                   ".info")))
                     (cons "guix.texi"
-                          (find-files "." "^guix\\.[a-z]{2}(_[A-Z]{2})?\\.texi$")))
+                          (append (find-files "."
+                                              "^guix\\.[a-z]{2}(_[A-Z]{2})?\\.texi$")
+                                  (find-files "."
+                                              "^guix-cookbook.*\\.texi$"))))
 
           ;; Compress Info files.
           (setenv "PATH"
