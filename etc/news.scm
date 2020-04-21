@@ -10,6 +10,25 @@
 (channel-news
  (version 0)
 
+ (entry (commit "e1e6491226347d9fb93ff484d78cef98848a510a")
+        (title (en "Guix Cookbook now available as Info"))
+        ;; TRANSLATORS: Adjust the URL and the 'info' command to refer to the
+        ;; translated manual if it's available.
+        (body (en "The new Guix Cookbook is now fetched by @command{guix pull}
+and thus readily available in the Info format.  It aims to provide tutorials
+and detailed examples covering a variety of use cases.  You can access it by
+typing:
+
+@example
+info guix-cookbook
+@end example
+
+The Cookbook is currently available in English and German.  You can also find
+it @uref{https://guix.gnu.org/cookbook/en/, on-line}.
+
+Your contributions are welcome: @uref{https://guix.gnu.org/contact/, get in
+touch with the developers} to share your recipes!")))
+
  (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
         (title (en "Rottlog service added to @code{%base-services}")
                (de "Rottlog-Dienst ist nun Teil der @code{%base-services}"))
