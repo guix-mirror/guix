@@ -2264,6 +2264,16 @@ from git information.
                (base32
                 "1lrsjgblnapfimd0alsi1as5nz2lfqv97131l7d6anbjzq2rjri8"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  ;; The package works fine with newer Pytest and Hypothesis, but
+                  ;; has pinned older versions to stay compatible with Python 2.
+                  (add-before 'check 'loosen-pytest-requirement
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("pytest<5") "pytest")
+                        (("hypothesis<5") "hypothesis"))
+                      #t)))))
     (native-inputs
      `(("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
