@@ -125,6 +125,15 @@
             profile-derivation
             profile-search-paths
 
+            profile
+            profile?
+            profile-name
+            profile-content
+            profile-hooks
+            profile-locales?
+            profile-allow-collisions?
+            profile-relative-symlinks?
+
             generation-number
             generation-profile
             generation-numbers
@@ -1655,6 +1664,33 @@ are cross-built for TARGET."
                                       (count
                                        . ,(length
                                            (manifest-entries manifest))))))))
+
+;; Declarative profile.
+(define-record-type* <profile> profile make-profile
+  profile?
+  (name               profile-name (default "profile")) ;string
+  (content            profile-content)                  ;<manifest>
+  (hooks              profile-hooks                     ;list of procedures
+                      (default %default-profile-hooks))
+  (locales?           profile-locales?            ;Boolean
+                      (default #t))
+  (allow-collisions?  profile-allow-collisions?   ;Boolean
+                      (default #f))
+  (relative-symlinks? profile-relative-symlinks?  ;Boolean
+                      (default #f)))
+
+(define-gexp-compiler (profile-compiler (profile <profile>) system target)
+  "Compile PROFILE to a derivation."
+  (match profile
+    (($ <profile> name manifest hooks
+                  locales? allow-collisions? relative-symlinks?)
+     (profile-derivation manifest
+                         #:name name
+                         #:hooks hooks
+                         #:locales? locales?
+                         #:allow-collisions? allow-collisions?
+                         #:relative-symlinks? relative-symlinks?
+                         #:system system #:target target))))
 
 (define* (profile-search-paths profile
                                #:optional (manifest (profile-manifest profile))

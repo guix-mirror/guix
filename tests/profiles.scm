@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -222,6 +222,17 @@
     (return (and (file-exists? (string-append bindir "/guile"))
                  (string=? (dirname (readlink bindir))
                            (derivation->output-path guile))))))
+
+(test-assertm "<profile>"
+  (mlet* %store-monad
+      ((entry ->   (package->manifest-entry %bootstrap-guile))
+       (profile -> (profile (hooks '()) (locales? #f)
+                            (content (manifest (list entry)))))
+       (drv        (lower-object profile))
+       (profile -> (derivation->output-path drv))
+       (bindir ->  (string-append profile "/bin"))
+       (_          (built-derivations (list drv))))
+    (return (file-exists? (string-append bindir "/guile")))))
 
 (test-assertm "profile-derivation relative symlinks, one entry"
   (mlet* %store-monad
