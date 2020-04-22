@@ -318,11 +318,10 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
 ;;; Core services.
 ;;;
 
-(define (system-derivation mentries mextensions)
+(define (system-derivation entries mextensions)
   "Return as a monadic value the derivation of the 'system' directory
 containing the given entries."
-  (mlet %store-monad ((entries    mentries)
-                      (extensions (mapm/accumulate-builds identity
+  (mlet %store-monad ((extensions (mapm/accumulate-builds identity
                                                           mextensions)))
     (lower-object
      (file-union "system"

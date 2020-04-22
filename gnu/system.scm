@@ -506,11 +506,10 @@ value of the SYSTEM-SERVICE-TYPE service."
                    (hooks (list linux-module-database))))
          (initrd  (operating-system-initrd-file os))
          (params  (operating-system-boot-parameters-file os)))
-    (with-monad %store-monad
-      (return `(("kernel" ,kernel)
-                ("parameters" ,params)
-                ("initrd" ,initrd)
-                ("locale" ,locale))))))   ;used by libc
+    `(("kernel" ,kernel)
+      ("parameters" ,params)
+      ("initrd" ,initrd)
+      ("locale" ,locale))))   ;used by libc
 
 (define (operating-system-default-essential-services os)
   "Return the list of essential services for OS.  These are special services
