@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
-;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -162,9 +162,11 @@
   #:use-module (gnu packages spice)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages virtualization)
@@ -9984,6 +9986,73 @@ to.")
               license:public-domain
               ;; snowball
               license:bsd-2))))
+
+(define-public libratbag
+  (package
+    (name "libratbag")
+    (version "0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libratbag/libratbag.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18y8mfr63d91278m1kcid0wvrxa1sgjs8na9af1ks2n28ssvciwq"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Dsystemd=false"
+             "-Dlogind-provider=elogind")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site (string-append
+                           "/lib/python"
+                           ,(version-major+minor (package-version python))
+                           "/site-packages"))
+                    (evdev (string-append
+                            (assoc-ref inputs "python-evdev") site))
+                    (pygo (string-append
+                           (assoc-ref inputs "python-pygobject") site))
+                    (python-wrap
+                     `("PYTHONPATH" = (,evdev ,pygo))))
+               (wrap-program (string-append out "/bin/" "ratbagctl")
+                 python-wrap)
+               #t))))))
+    (native-inputs
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)
+       ("valgrind" ,valgrind)))
+    (inputs
+     `(("glib" ,glib)
+       ("json-glib" ,json-glib)
+       ("libevdev" ,libevdev)
+       ("libsystemd" ,elogind)
+       ("libunistring" ,libunistring)
+       ("python-evdev" ,python-evdev)
+       ("python-pygobject" ,python-pygobject)
+       ("udev" ,eudev)))
+    (home-page "https://github.com/libratbag/libratbag")
+    (synopsis "DBus daemon and utility for configuring gaming mice")
+    (description "libratbag provides @command{ratbagd}, a DBus daemon to
+configure input devices, mainly gaming mice.  The daemon provides a generic
+way to access the various features exposed by these mice and abstracts away
+hardware-specific and kernel-specific quirks.  There is also the
+@command{ratbagctl} command line interface for configuring devices.
+
+libratbag currently supports devices from Logitech, Etekcity, GSkill, Roccat,
+Steelseries.
+
+The ratbagd DBus service can be enabled by adding the following service to
+your operating-system definition:
+
+  (simple-service 'ratbagd dbus-root-service-type (list libratbag))")
+    (license license:expat)))
 
 (define-public parlatype
   ;; This is one commit away from 2.0, because the latter introduced
