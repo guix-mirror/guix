@@ -21633,3 +21633,40 @@ infinite-precision rational arithmetic.")
 Archive Toolkit.  Rxnat uses the XNAT REST API to perform data queries and
 download images.")
     (license license:gpl2)))
+
+(define-public r-rserve
+  (package
+    (name "r-rserve")
+    (version "1.8-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.rforge.net/Rserve/snapshot/Rserve_"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "017kkzv9lxlz9qhg3gprrf1wcyflxrif6wjk27x9b4bdzylw6bsx"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-mime" ,r-mime)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-knitr" ,r-knitr)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-uuid" ,r-uuid)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/s-u/Rserve")
+    (synopsis
+     "Server providing access to R from many languages and systems")
+    (description
+     "Rserve acts as a socket server (TCP/IP or local sockets) which allows
+binary requests to be sent to R.  Every connection has a separate workspace
+and working directory.  Client-side implementations are available for popular
+languages such as C/C++ and Java, allowing any application to use facilities
+of R without the need of linking to R code.  Rserve supports remote
+connection, user authentication and file transfer.  A simple R client is
+included in this package as well.")
+    (license license:gpl2)))
