@@ -691,10 +691,10 @@ executables, making them setuid-root.")))
 
 (define (packages->profile-entry packages)
   "Return a system entry for the profile containing PACKAGES."
-  (mlet %store-monad ((profile (profile-derivation
-                                (packages->manifest
-                                 (delete-duplicates packages eq?)))))
-    (return `(("profile" ,profile)))))
+  (with-monad %store-monad
+    (return `(("profile" ,(profile
+                           (content (packages->manifest
+                                     (delete-duplicates packages eq?)))))))))
 
 (define profile-service-type
   ;; The service that populates the system's profile---i.e.,
