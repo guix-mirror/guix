@@ -796,53 +796,6 @@ messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license gpl3+)))
 
-(define mumimu
-  ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
-  ;; database.  It also renames the library to "mumimu" to avoid confusion.
-  (let ((commit "6b42431052c7cc9a2e147938e1b67f14a93e4ee5")
-        (revision "2"))
-    (package
-      (inherit mu)
-      (name "mumimu")
-      (version (git-version (package-version mu) revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.elephly.net/software/mumimu.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "044scxmjrckidqx935yza3aqnjyzrmhyvgx2gs2jyf68hl2qzb89"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments mu)
-         ((#:tests? anything '())
-          #f)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'patch-configure
-               (lambda _ (delete-file "autogen.sh") #t))
-             (replace 'fix-ffi
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (substitute* "guile/mumimu.scm"
-                   (("\"libguile-mu\"")
-                    (format #f "\"~a/lib/libguile-mumimu\""
-                            (assoc-ref outputs "out"))))
-                 #t))
-             (delete 'install-emacs-autoloads)))
-         ((#:configure-flags flags)
-          '("--disable-gtk"
-            "--disable-webkit"
-            "--disable-mu4e"))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("glib" ,glib "bin")
-         ("tzdata" ,tzdata-for-tests)
-         ("texinfo" ,texinfo))))))
-
 (define-public alot
   (package
     (name "alot")
