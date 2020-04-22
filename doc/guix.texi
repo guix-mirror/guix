@@ -12881,18 +12881,18 @@ upon detecting a USB device with a given product identifier.
 Return a service that extends @code{udev-service-type } with @var{rules}
 and @code{account-service-type} with @var{groups} as system groups.
 This works by creating a singleton service type
-@var{name}@code{-udev-rules}, of which the returned service is an
+@code{@var{name}-udev-rules}, of which the returned service is an
 instance.
 
-Here we show how it can be used to extend @var{udev-service} with the
+Here we show how it can be used to extend @code{udev-service-type} with the
 previously defined rule @code{%example-udev-rule}.
 
 @lisp
 (operating-system
  ;; @dots{}
  (services
-   (cons* (udev-rules-service 'usb-thing %example-udev-rule)
-          %desktop-services)))
+   (cons (udev-rules-service 'usb-thing %example-udev-rule)
+         %desktop-services)))
 @end lisp
 @end deffn
 
@@ -12931,10 +12931,10 @@ The following example shows how to use the @var{android-udev-rules}
 package so that the Android tool @command{adb} can detect devices
 without root privileges.  It also details how to create the
 @code{adbusers} group, which is required for the proper functioning of
-the rules defined within the @var{android-udev-rules} package.  To
+the rules defined within the @code{android-udev-rules} package.  To
 create such a group, we must define it both as part of the
-@var{supplementary-groups} of our @var{user-account} declaration, as
-well as in the @var{groups} of the @var{udev-rules-service} procedure.
+@code{supplementary-groups} of our @code{user-account} declaration, as
+well as in the @var{groups} of the @code{udev-rules-service} procedure.
 
 @lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
