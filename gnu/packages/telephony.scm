@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
@@ -274,6 +274,8 @@ packet-manipulation library.")
 used to provide multimedia and telecom software developers with an interface
 to initiate and control SIP sessions.")
    (license license:lgpl2.1+)
+   (properties '((ftp-directory . "/gnu/osip")
+                 (upstream-name . "libosip2")))
    (home-page "https://www.gnu.org/software/osip/")))
 
 
