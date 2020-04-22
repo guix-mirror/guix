@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -967,3 +968,35 @@ keybindings, autocomplete and unlimited undo.  It can pipe a marked block
 of text through any command line filter.  It can also open very large binary
 files.  It was originally developed on the Amiga 3000T.")
     (license license:gpl3+)))
+
+(define-public hexer
+  (package
+    (name "hexer")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://devel.ringlet.net/files/editors/hexer/"
+                            "hexer-" version ".tar.xz"))
+        (sha256
+          (base32 "157z17z8qivdin2km2wp86x1bv1nx15frrwcz11mk0l3ab74mf76"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no upstream tests
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "LTERMCAP=-lncurses")
+             (string-append "LDFLAGS=-L" (assoc-ref %build-inputs "ncurses")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))         ;no configure script
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "https://devel.ringlet.net/editors/hexer/")
+    (synopsis "Multi buffer editor for binary files with vi-like interface")
+    (description "Hexer is a multi-buffer editor for binary files for Unix-like
+systems that displays its buffer(s) as a hex dump.  The user interface is kept
+similar to vi/ex.")
+    (license license:bsd-3)))
