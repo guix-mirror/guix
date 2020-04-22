@@ -28,8 +28,10 @@
   #:use-module (guix derivations)
   #:use-module (guix gexp)
   #:use-module (guix modules)
+  #:use-module (guix packages)
   #:use-module (guix monads)
   #:use-module (guix store)
+  #:use-module (guix utils)
   #:export (%test-loadable-kernel-modules-0
             %test-loadable-kernel-modules-1
             %test-loadable-kernel-modules-2))
@@ -118,5 +120,12 @@ with one extra module.")
    (description "Tests loadable kernel modules facility of <operating-system>
 with two extra modules.")
    (value (run-loadable-kernel-modules-test
-           (list acpi-call-linux-module ddcci-driver-linux)
+           (list acpi-call-linux-module
+                 (package
+                   (inherit ddcci-driver-linux)
+                   (arguments
+                    `(#:linux #f
+                      ,@(strip-keyword-arguments '(#:linux)
+                                                 (package-arguments
+                                                  ddcci-driver-linux))))))
            '("acpi_call" "ddcci")))))

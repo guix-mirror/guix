@@ -33,6 +33,7 @@
   #:use-module (guix derivations)
   #:use-module (guix profiles)
   #:use-module (guix ui)
+  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile)
@@ -477,6 +478,16 @@ OS."
   (file-append (operating-system-kernel os)
                "/" (system-linux-image-file-name)))
 
+(define (package-for-kernel target-kernel module-package)
+  "Return a package like MODULE-PACKAGE, adapted for TARGET-KERNEL, if
+possible (that is if there's a LINUX keyword argument in the build system)."
+  (package
+    (inherit module-package)
+    (arguments
+     (substitute-keyword-arguments (package-arguments module-package)
+       ((#:linux kernel #f)
+        target-kernel)))))
+
 (define* (operating-system-directory-base-entries os)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
@@ -487,7 +498,12 @@ value of the SYSTEM-SERVICE-TYPE service."
                          (kernel
                           (profile-derivation
                            (packages->manifest
-                            (cons kernel modules))
+                            (cons kernel
+                             (map (lambda (module)
+                                    (if (package? module)
+                                        (package-for-kernel kernel module)
+                                        module))
+                                  modules)))
                            #:hooks (list linux-module-database)))
                          (initrd -> (operating-system-initrd-file os))
                          (params -> (operating-system-boot-parameters-file os)))
