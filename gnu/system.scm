@@ -485,7 +485,7 @@ value of the SYSTEM-SERVICE-TYPE service."
                             (cons kernel modules))
                            #:hooks (list linux-module-database)))
                          (initrd -> (operating-system-initrd-file os))
-                         (params    (operating-system-boot-parameters-file os)))
+                         (params -> (operating-system-boot-parameters-file os)))
       (return `(("kernel" ,kernel)
                 ("parameters" ,params)
                 ("initrd" ,initrd)
@@ -1078,28 +1078,29 @@ being stored into the \"parameters\" file)."
                    os device
                    #:system-kernel-arguments?
                    system-kernel-arguments?)))
-     (gexp->file "parameters"
-                 #~(boot-parameters
-                    (version 0)
-                    (label #$(boot-parameters-label params))
-                    (root-device
-                     #$(device->sexp
-                        (boot-parameters-root-device params)))
-                    (kernel #$(boot-parameters-kernel params))
-                    (kernel-arguments
-                     #$(boot-parameters-kernel-arguments params))
-                    (initrd #$(boot-parameters-initrd params))
-                    (bootloader-name #$(boot-parameters-bootloader-name params))
-                    (bootloader-menu-entries
-                     #$(map menu-entry->sexp
-                            (or (and=> (operating-system-bootloader os)
-                                       bootloader-configuration-menu-entries)
-                                '())))
-                    (store
-                     (device
-                      #$(device->sexp (boot-parameters-store-device params)))
-                     (mount-point #$(boot-parameters-store-mount-point params))))
-                 #:set-load-path? #f)))
+     (scheme-file "parameters"
+                  #~(boot-parameters
+                     (version 0)
+                     (label #$(boot-parameters-label params))
+                     (root-device
+                      #$(device->sexp
+                         (boot-parameters-root-device params)))
+                     (kernel #$(boot-parameters-kernel params))
+                     (kernel-arguments
+                      #$(boot-parameters-kernel-arguments params))
+                     (initrd #$(boot-parameters-initrd params))
+                     (bootloader-name #$(boot-parameters-bootloader-name params))
+                     (bootloader-menu-entries
+                      #$(map menu-entry->sexp
+                             (or (and=> (operating-system-bootloader os)
+                                        bootloader-configuration-menu-entries)
+                                 '())))
+                     (store
+                      (device
+                       #$(device->sexp (boot-parameters-store-device params)))
+                      (mount-point #$(boot-parameters-store-mount-point
+                                      params))))
+                  #:set-load-path? #f)))
 
 (define-gexp-compiler (operating-system-compiler (os <operating-system>)
                                                  system target)
