@@ -5384,27 +5384,31 @@ board and goal value can be customized.")
     (license license:gpl3+)))
 
 (define-public emacs-4clojure
-  (package
-    (name "emacs-4clojure")
-    (version "0.2.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/emacsorphanage/4clojure.git")
-             (commit "4eccf8c7d4341a36c269451838114b27836699f9")))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "19x653lzc1dxil4ix257hciidbdmbhaxhs6qhlkwi9ygjrlrgvnk"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-request" ,emacs-request)))
-    (home-page "https://github.com/emacsorphanage/4clojure/")
-    (synopsis "Open and evaluate 4clojure questions in Emacs")
-    (description "Emacs 4clojure interacts with @url{http://www4clojure.com,
+  ;; There is no release.  Base version is extracted from Version keyword in
+  ;; the main file.
+  (let ((commit "4eccf8c7d4341a36c269451838114b27836699f9")
+        (revision "1"))
+    (package
+      (name "emacs-4clojure")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsorphanage/4clojure.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19x653lzc1dxil4ix257hciidbdmbhaxhs6qhlkwi9ygjrlrgvnk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-request" ,emacs-request)))
+      (home-page "https://github.com/emacsorphanage/4clojure/")
+      (synopsis "Open and evaluate 4clojure questions in Emacs")
+      (description "Emacs 4clojure interacts with @url{http://www4clojure.com,
 4clojure} problems.  You can open a specific question and move to the next or
 previous one.  You can also verify you answers.")
-    (license license:gpl3)))
+      (license license:gpl3))))
 
 (define-public emacs-base16-theme
   (package
