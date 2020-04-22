@@ -19506,3 +19506,41 @@ randomly picked from wordlists.  It supports several sources of
 randomness (including real life dice) and different wordlists (including
 cryptographically signed ones).")
     (license license:gpl3+)))
+
+(define-public pyzo
+  (package
+    (name "pyzo")
+    (version "4.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyzo" version))
+       (sha256
+        (base32 "1zplxcb78qy8qibifmnsx5i9gnlfmw9n6nr4yflsabpxw57mx4m1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-home-directory
+           (lambda _
+             ;; Tests fail with "Permission denied: '/homeless-shelter'".
+             (setenv "HOME" "/tmp")
+             #t)))
+       ;; Tests fail with "Uncaught Python exception: invalid literal for
+       ;; int() with base 10: 'test'".
+       #:tests? #f))
+    (propagated-inputs
+     `(("python-pyqt" ,python-pyqt)))
+    (home-page "https://pyzo.org")
+    (synopsis
+     "Python IDE for scientific computing")
+    (description
+     "Pyzo is a Python IDE focused on interactivity and introspection,
+which makes it very suitable for scientific computing.  Its practical
+design is aimed at simplicity and efficiency.
+
+It consists of two main components, the editor and the shell, and uses
+a set of pluggable tools to help the programmer in various ways.  Some
+example tools are source structure, project manager, interactive help,
+workspace...")
+    (license license:bsd-2)))
