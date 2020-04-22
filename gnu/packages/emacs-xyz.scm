@@ -5405,9 +5405,10 @@ board and goal value can be customized.")
        `(("emacs-request" ,emacs-request)))
       (home-page "https://github.com/emacsorphanage/4clojure/")
       (synopsis "Open and evaluate 4clojure questions in Emacs")
-      (description "Emacs 4clojure interacts with @url{http://www4clojure.com,
-4clojure} problems.  You can open a specific question and move to the next or
-previous one.  You can also verify you answers.")
+      (description "Emacs 4clojure interacts with
+@url{http://www.4clojure.com, 4clojure} problems.  You can open a specific
+question and move to the next or previous one.  You can also verify your
+answers.")
       (license license:gpl3))))
 
 (define-public emacs-base16-theme
