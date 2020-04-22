@@ -209,6 +209,8 @@ communications via sockets, and various methods for data handling, such as
 serialization and XML parsing.  It includes the uCommon C++ library, a smaller
 reimplementation.")
    (license license:gpl2+) ; plus runtime exception
+   (properties '((ftp-directory . "/gnu/commoncpp")
+                 (upstream-name . "commoncpp2")))
    (home-page "https://www.gnu.org/software/commoncpp/")))
 
 (define-public ucommon
