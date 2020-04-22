@@ -417,6 +417,7 @@ and then run @command{scm example.scm}.")
 library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2.")
+    (properties '((upstream-name . "8sync")))
     (license license:lgpl3+)))
 
 (define-public guile-daemon
