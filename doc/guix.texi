@@ -1691,7 +1691,7 @@ package in Guix looks for fonts in @file{$HOME/.guix-profile}
 by default.  Thus, to allow graphical applications installed with Guix
 to display fonts, you have to install fonts with Guix as well.
 Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
-@code{font-gnu-freefont-ttf}.
+@code{font-gnu-freefont}.
 
 @cindex @code{fc-cache}
 @cindex font cache

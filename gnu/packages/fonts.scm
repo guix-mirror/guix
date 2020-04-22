@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -232,9 +233,9 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 50 Cyrillic-based languages as well as Greek and IPA phonetics.")
     (license license:silofl1.1)))
 
-(define-public font-gnu-freefont-ttf
+(define-public font-gnu-freefont
   (package
-    (name "font-gnu-freefont-ttf")
+    (name "font-gnu-freefont")
     (version "20120503")
     (source (origin
              (method url-fetch)
@@ -251,18 +252,41 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
                    (lambda _
                      (let ((doc-dir  (string-append %output "/share/doc/"
                                                     ,name "-" ,version))
-                           (font-dir (string-append %output
-                                                    "/share/fonts/truetype")))
+                           (ttf-font-dir (string-append %output
+                                                        "/share/fonts/ttf"))
+                           (otf-font-dir (string-append %output
+                                                        "/share/fonts/otf"))
+                           (woff-font-dir (string-append %output
+                                                         "/share/fonts/woff")))
                        (mkdir-p doc-dir)
                        (substitute* "Makefile"
                          (("\\$\\(TMPDIR\\)") doc-dir)
-                         (("sfd/\\*.ttf") ""))
-                       (system* "make" "ttftar")
-                       (mkdir-p font-dir)
+                         (("sfd/\\*.ttf") "")
+                         (("sfd/\\*.otf") "")
+                         (("sfd/\\*.woff") ""))
+                       ;; XXX The FreeFont Makefile tries to use the current
+                       ;; time and date as names for generated files, and fails
+                       ;; silently. But the fonts are still installed, so we
+                       ;; leave the issue alone for now.
+                       ;; See <https://bugs.gnu.org/40783>
+                       (system* "make" "ttftar" "otftar" "wofftar")
+                       (mkdir-p ttf-font-dir)
+                       (mkdir-p otf-font-dir)
+                       (mkdir-p woff-font-dir)
                        (for-each (lambda (file)
-                                   (install-file file font-dir))
+                                   (install-file file ttf-font-dir))
                                  (filter
                                    (lambda (file) (string-suffix? "ttf" file))
+                                   (find-files "." "")))
+                       (for-each (lambda (file)
+                                   (install-file file otf-font-dir))
+                                 (filter
+                                   (lambda (file) (string-suffix? "otf" file))
+                                   (find-files "." "")))
+                       (for-each (lambda (file)
+                                   (install-file file woff-font-dir))
+                                 (filter
+                                   (lambda (file) (string-suffix? "woff" file))
                                    (find-files "." "")))))))
        #:test-target "tests"))
     ;; replace python 3 with python 2
