@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
@@ -491,22 +491,22 @@ possible (that is if there's a LINUX keyword argument in the build system)."
 (define* (operating-system-directory-base-entries os)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
-  (let ((locale (operating-system-locale-directory os)))
-    (mlet* %store-monad ((kernel -> (operating-system-kernel os))
-                         (modules ->
-                          (operating-system-kernel-loadable-modules os))
-                         (kernel
-                          (profile-derivation
-                           (packages->manifest
-                            (cons kernel
-                             (map (lambda (module)
-                                    (if (package? module)
-                                        (package-for-kernel kernel module)
-                                        module))
-                                  modules)))
-                           #:hooks (list linux-module-database)))
-                         (initrd -> (operating-system-initrd-file os))
-                         (params -> (operating-system-boot-parameters-file os)))
+  (let* ((locale  (operating-system-locale-directory os))
+         (kernel  (operating-system-kernel os))
+         (modules (operating-system-kernel-loadable-modules os))
+         (kernel  (profile
+                   (content (packages->manifest
+                             (cons kernel
+                                   (map (lambda (module)
+                                          (if (package? module)
+                                              (package-for-kernel kernel
+                                                                  module)
+                                              module))
+                                        modules))))
+                   (hooks (list linux-module-database))))
+         (initrd  (operating-system-initrd-file os))
+         (params  (operating-system-boot-parameters-file os)))
+    (with-monad %store-monad
       (return `(("kernel" ,kernel)
                 ("parameters" ,params)
                 ("initrd" ,initrd)
