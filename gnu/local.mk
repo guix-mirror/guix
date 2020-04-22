@@ -1442,7 +1442,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-moc-ignore-gcc-macro.patch	\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
-  %D%/packages/patches/qtbase-QTBUG-81715.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\

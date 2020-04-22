@@ -4,8 +4,8 @@ important to be able to update it fast.
 
 Based on a patch fron NixOS.
 ===================================================================
---- qtbase-opensource-src-5.9.4.orig/src/corelib/tools/qtimezoneprivate_tz.cpp
-+++ qtbase-opensource-src-5.9.4/src/corelib/tools/qtimezoneprivate_tz.cpp
+--- qtbase-opensource-src-5.14.2.orig/src/corelib/time/qtimezoneprivate_tz.cpp
++++ qtbase-opensource-src-5.15.2/src/corelib/time/qtimezoneprivate_tz.cpp
 @@ -70,7 +70,11 @@
  // Parse zone.tab table, assume lists all installed zones, if not will need to read directories
  static QTzTimeZoneHash loadTzTimeZones()
