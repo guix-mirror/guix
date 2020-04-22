@@ -1071,7 +1071,21 @@ Create a bundle of PACKAGE.\n"))
                    (localstatedir? (assoc-ref opts 'localstatedir?))
                    (entry-point    (assoc-ref opts 'entry-point))
                    (profile-name   (assoc-ref opts 'profile-name))
-                   (gc-root        (assoc-ref opts 'gc-root)))
+                   (gc-root        (assoc-ref opts 'gc-root))
+                   (profile        (profile
+                                    (content manifest)
+
+                                    ;; Always produce relative symlinks for
+                                    ;; Singularity (see
+                                    ;; <https://bugs.gnu.org/34913>).
+                                    (relative-symlinks?
+                                     (or relocatable?
+                                         (eq? 'squashfs pack-format)))
+
+                                    (hooks (if bootstrap?
+                                               '()
+                                               %default-profile-hooks))
+                                    (locales? (not bootstrap?)))))
               (define (lookup-package package)
                 (manifest-lookup manifest (manifest-pattern (name package))))
 
@@ -1085,22 +1099,7 @@ Create a bundle of PACKAGE.\n"))
 to your package list.")))
 
               (run-with-store store
-                (mlet* %store-monad ((profile (profile-derivation
-                                               manifest
-
-                                               ;; Always produce relative
-                                               ;; symlinks for Singularity (see
-                                               ;; <https://bugs.gnu.org/34913>).
-                                               #:relative-symlinks?
-                                               (or relocatable?
-                                                   (eq? 'squashfs pack-format))
-
-                                               #:hooks (if bootstrap?
-                                                           '()
-                                                           %default-profile-hooks)
-                                               #:locales? (not bootstrap?)
-                                               #:target target))
-                                     (drv (build-image name profile
+                (mlet* %store-monad ((drv (build-image name profile
                                                        #:target
                                                        target
                                                        #:compressor
