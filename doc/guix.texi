@@ -5118,7 +5118,7 @@ guix pack -f squashfs bash guile emacs geiser
 @noindent
 The result is a SquashFS file system image that can either be mounted or
 directly be used as a file system container image with the
-@uref{https://singularity.lbl.gov, Singularity container execution
+@uref{https://www.sylabs.io/docs/, Singularity container execution
 environment}, using commands like @command{singularity shell} or
 @command{singularity exec}.
 
