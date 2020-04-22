@@ -20263,6 +20263,29 @@ commands in @code{evil-mode}.")
 Emacs windows and tmux panes.")
     (license license:expat)))
 
+(define-public emacs-xclip
+  (package
+    (name "emacs-xclip")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "xclip-" version ".el"))
+       (sha256
+        (base32 "0i3i9kwfg8qmhcmqhhnrb1kljgwkccv63s9q1mjwqfjldyfh8j8i"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/xclip.html")
+    (synopsis "Copy and paste GUI clipboard from Emacs in text terminal")
+    (description
+     "This package allows Emacs to copy to and paste from the GUI clipboard
+when running in text terminal.
+
+It can use external command-line tools for that, e.g., @command{xclip} or
+@command{xsel}, which you may need to install in order for the package to
+work.")
+    (license license:gpl3+)))
+
 (define-public emacs-xterm-color
   (package
     (name "emacs-xterm-color")
