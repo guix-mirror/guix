@@ -7955,7 +7955,8 @@ The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
 @end deffn
 
-@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} [#:splice? #f]
+@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} @
+          [#:splice? #f] [#:set-load-path? #t]
 Return an object representing the Scheme file @var{name} that contains
 @var{exp}.
 
