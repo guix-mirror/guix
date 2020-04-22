@@ -259,14 +259,14 @@ packet-manipulation library.")
 (define-public osip
   (package
    (name "osip")
-   (version "5.0.0")
+   (version "5.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/osip/libosip2-" version ".tar.gz"))
             (patches (search-patches "osip-CVE-2017-7853.patch"))
             (sha256
              (base32
-              "00yznbrm9q04wgd4b831km8iwlvwvsnwv87igf79g5vj9yakr88q"))))
+              "0kgnxgzf968kbl6rx3hjsfb3jsg4ydgrsf35gzj319i1f8qjifv1"))))
    (build-system gnu-build-system)
 
    (synopsis "Library implementing SIP (RFC-3261)")
