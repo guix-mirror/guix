@@ -28,7 +28,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
-;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2018, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -2980,6 +2980,43 @@ time.")
                   (("@bindir@")
                    (string-append out "/bin")))
                 #t)))))))))
+
+(define-public python-evdev
+  (package
+    (name "python-evdev")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "evdev" version))
+       (sha256
+        (base32 "0kb3636yaw9l8xi8s184w0r0n9ic5dw3b8hx048jf9fpzss4kimi"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("kernel-headers" ,linux-libre-headers)))
+    (arguments
+     `(#:tests? #f                      ;no rule for tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-hard-coded-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("/usr/include/linux")
+                (string-append
+                 (assoc-ref inputs "kernel-headers") "/include/linux")))
+             #t)))))
+    (home-page "https://github.com/gvalkov/python-evdev")
+    (synopsis "Bindings to the Linux input handling subsystem")
+    (description
+     "Python-evdev provides bindings to the generic input event interface in
+Linux.  The @code{evdev} interface serves the purpose of passing events
+generated in the kernel directly to userspace through character devices that
+are typically located in @file{/dev/input/}.
+
+This package also comes with bindings to @code{uinput}, the userspace input
+subsystem.  @code{uinput} allows userspace programs to create and handle input
+devices that can inject events directly into the input subsystem.")
+    (license license:bsd-3)))
 
 (define-public lvm2
   (package
