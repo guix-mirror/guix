@@ -2632,6 +2632,36 @@ quantities.")
 @code{melt} and @code{cast}.  This package provides them.")
     (license license:expat)))
 
+(define-public r-restrserve
+  (package
+    (name "r-restrserve")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RestRserve" version))
+       (sha256
+        (base32 "07mm65yxzpwlg6x3lsggj41v8nl4m6v9mszhqjpgj19v3yxvwgi0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-checkmate" ,r-checkmate)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-mime" ,r-mime)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rserve" ,r-rserve)
+       ("r-uuid" ,r-uuid)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://restrserve.org")
+    (synopsis "R web API framework")
+    (description
+     "RestRserve is an R web API framework for building high-performance AND
+robust microservices and app backends.  With Rserve backend on UNIX-like
+systems it is parallel by design.  It will handle incoming requests in
+parallel - each request in a separate fork.")
+    (license license:gpl2+)))
+
 (define-public r-progress
   (package
     (name "r-progress")
