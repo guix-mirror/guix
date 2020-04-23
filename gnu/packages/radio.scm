@@ -36,6 +36,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages fltk)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gstreamer)
@@ -44,6 +45,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
@@ -53,8 +55,10 @@
   #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
@@ -644,3 +648,43 @@ transmitted over any of several digital modes and verified at the receipt end
 for correctness.")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
+
+(define-public hamlib
+  (package
+    (name "hamlib")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/Hamlib/Hamlib/releases/download/"
+             version "/hamlib-" version ".tar.gz"))
+       (sha256
+        (base32 "10788mgrhbc57zpzakcxv5aqnr2819pcshml6fbh8zvnkja562y9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("lua" ,lua)
+       ("pkg-config" ,pkg-config)
+       ("python-wrapper" ,python-wrapper)
+       ("swig" ,swig)
+       ("tcl" ,tcl)))
+    (inputs
+     `(("gd" ,gd)
+       ("libusb" ,libusb)
+       ("libxml2" ,libxml2)
+       ("readline" ,readline)))
+    (arguments
+     `(#:configure-flags '("--disable-static"
+                           "--with-lua-binding"
+                           "--with-python-binding"
+                           "--with-tcl-binding"
+                           "--with-xml-support")))
+    (synopsis "Tools and API to control radios")
+    (description
+     "The Ham Radio Control Library (Hamlib) is a project to provide programs
+with a consistent Application Programming Interface (API) for controlling the
+myriad of radios and rotators available to amateur radio and communications
+users.")
+    (home-page "https://hamlib.github.io/")
+    (license (list license:gpl2+ license:lgpl2.1+))))
