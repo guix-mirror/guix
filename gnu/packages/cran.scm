@@ -21301,3 +21301,28 @@ computing for cross validation and subsampling is supported through the
      "This package provides regression models for grouped and coarse data,
 under the coarsened at random assumption.")
     (license license:gpl2+)))
+
+(define-public r-stam
+  (package
+    (name "r-stam")
+    (version "0.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stam" version))
+       (sha256
+        (base32
+         "1x1j45fir64kffny0nssb2hwn4rcp8gd2cjv6fw4yy0l4d0xi5iv"))))
+    (properties
+     `((upstream-name . "stam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-np" ,r-np)
+       ("r-sp" ,r-sp)))
+    (home-page "https://cran.r-project.org/web/packages/stam")
+    (synopsis "Spatio-temporal analysis and modelling")
+    (description
+     "This package provides various methods to conduct Spatio-Temporal
+Analysis and Modelling, including Exploratory Spatio-Temporal Analysis and
+Inferred Spatio-Temporal Modelling.")
+    (license license:gpl2+)))
