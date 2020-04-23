@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -7168,6 +7168,32 @@ or shading the cells of tables.")
 a different path and manipulating characters.  It includes the functionality
 of the old package @code{pst-char}.")
       (license license:lppl))))
+
+(define-public texlive-marginnote
+  (let ((template (simple-texlive-package
+                   "texlive-marginnote"
+                   (list "/source/latex/marginnote/marginnote.dtx")
+                   (base32
+                    "1vj1k8xm11gjdfj60as42d8lsv3dbzrm5dlgqcfk89d9dzm3k39j"))))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/marginnote")
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/marginnote")
+         ((#:build-targets _ '())
+          ''("marginnote.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/marginnote") #t))))))
+      (synopsis "Notes in the margin")
+      (description "This package provides the command @code{\\marginnote} that
+may be used instead of @code{\\marginpar} at almost every place where
+@code{\\marginpar} cannot be used, e.g., inside floats, footnotes, or in
+frames made with the @code{framed} package.")
+      (license license:lppl1.3c+))))
 
 (define-public texlive-iftex
   (let ((template (simple-texlive-package
