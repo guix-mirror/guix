@@ -21377,3 +21377,30 @@ and as convex hull of set of points and rays.  Also does linear programming
 and redundant generator elimination.  All functions can use exact
 infinite-precision rational arithmetic.")
     (license license:gpl2)))
+
+(define-public r-rxnat
+  (package
+    (name "r-rxnat")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rxnat" version))
+       (sha256
+        (base32
+         "12xcs2l6vn50bwzfmv60j1qahjw2npfm1a3yjhffcxzh6p8chwbg"))))
+    (properties
+     `((upstream-name . "Rxnat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-rcurl" ,r-rcurl)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/Rxnat/")
+    (synopsis "Queries and extracts images from neuroimaging datasets")
+    (description
+     "This package allows communication with the Extensible Neuroimaging
+Archive Toolkit.  Rxnat uses the XNAT REST API to perform data queries and
+download images.")
+    (license license:gpl2)))
