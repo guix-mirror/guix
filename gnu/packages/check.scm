@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2436,11 +2437,10 @@ provides a simple way to achieve this.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'skip-broken-test
+         (add-after 'unpack 'fix-test
            (lambda _
              (substitute* "tests/test-umockdev.c"
-               (("/\\* sys/ in other dir")
-                (string-append "return; // ")))
+               (("/run") "/tmp"))
              #t)))))
     (native-inputs
      `(("vala" ,vala)
@@ -2453,8 +2453,7 @@ provides a simple way to achieve this.")
     (inputs
      `(("glib" ,glib)
        ("eudev" ,eudev)
-       ("libgudev" ,libgudev)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("libgudev" ,libgudev)))
     (home-page "https://github.com/martinpitt/umockdev/")
     (synopsis "Mock hardware devices for creating unit tests")
     (description "umockdev mocks hardware devices for creating integration
