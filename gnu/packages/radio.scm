@@ -36,6 +36,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages engineering)
   #:use-module (gnu packages fltk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
@@ -56,10 +57,12 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -690,3 +693,72 @@ myriad of radios and rotators available to amateur radio and communications
 users.")
     (home-page "https://hamlib.github.io/")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define wsjtx-hamlib
+  ;; Fork of hamlib with custom patches used by wsjtx.
+  (package
+    (inherit hamlib)
+    (name "wsjtx-hamlib")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/u/bsomervi/hamlib.git")
+             (commit (string-append "wsjtx-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ksv3cmr1dl45p0pp1panyc9dngd158gvv9ysv25lq4nqv1wn87i"))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("texinfo" ,texinfo)
+       ,@(package-native-inputs hamlib)))))
+
+(define-public wsjtx
+  (package
+    (name "wsjtx")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/wsjt/wsjtx.git")
+             (commit (string-append "wsjtx-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fnqzjd3dmxp3yjwjvwz2djk9gzb1y2cqfa188f3x8lynxhdhnfs"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled boost to use the shared one.
+           (delete-file-recursively "boost")
+           #t))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("ruby-asciidoctor" ,ruby-asciidoctor)))
+    (inputs
+     `(("boost" ,boost)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("hamlib" ,wsjtx-hamlib)
+       ("libusb" ,libusb)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)))
+    (arguments
+     `(#:tests? #f)) ; No test suite
+    (synopsis "Weak-signal ham radio communication program")
+    (description
+     "WSJT-X implements communication protocols or modes called FT4, FT8,
+JT4, JT9, JT65, QRA64, ISCAT, MSK144, and WSPR, as well as one called Echo for
+detecting and measuring your own radio signals reflected from the Moon.  These
+modes were all designed for making reliable, confirmed QSOs under extreme
+weak-signal conditions.")
+    (home-page "https://www.physics.princeton.edu/pulsar/k1jt/wsjtx.html")
+    (license license:gpl3)))
