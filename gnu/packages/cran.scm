@@ -21351,3 +21351,29 @@ methods for climate-growth model in the climate reconstruction from tree
 rings, including Sign Test statistic, Reduction of Error statistic, Product
 Mean Test, Durbin-Watson statistic etc.")
     (license license:gpl2)))
+
+(define-public r-rcdd
+  (package
+    (name "r-rcdd")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rcdd" version))
+       (sha256
+        (base32
+         "0pzpbqnlgzr240iici70278py5wnbbxkzlgn112f9wv5ga3riric"))))
+    (properties
+     `((upstream-name . "rcdd")))
+    (build-system r-build-system)
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "https://www.stat.umn.edu/geyer/rcdd/")
+    (synopsis "Computational geometry")
+    (description
+     "This package converts back and forth between two representations of a
+convex polytope: as solution of a set of linear equalities and inequalities
+and as convex hull of set of points and rays.  Also does linear programming
+and redundant generator elimination.  All functions can use exact
+infinite-precision rational arithmetic.")
+    (license license:gpl2)))
