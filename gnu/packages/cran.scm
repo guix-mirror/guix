@@ -21278,3 +21278,26 @@ algorithm is applicable to a broad class of loss functions.  Use of parallel
 computing for cross validation and subsampling is supported through the
 @code{foreach} and @code{doParallel} packages.")
     (license license:gpl2+)))
+
+(define-public r-grouped
+  (package
+    (name "r-grouped")
+    (version "0.6-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "grouped" version))
+       (sha256
+        (base32
+         "1glxgacpwk7yjbkwg5ci6bmb2il6hf5zhydwi5bbq6hc032m9976"))))
+    (properties
+     `((upstream-name . "grouped")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/grouped/")
+    (synopsis "Regression analysis of grouped and coarse data")
+    (description
+     "This package provides regression models for grouped and coarse data,
+under the coarsened at random assumption.")
+    (license license:gpl2+)))
