@@ -1248,12 +1248,6 @@ test environments.")
   (package (inherit (make-glibc-utf8-locales glibc-2.29))
            (name "glibc-utf8-locales-2.29")))
 
-;; These should no longer be needed.
-(define-public glibc-utf8-locales-2.27
-  (deprecated-package "glibc-utf8-locales-2.27" glibc-utf8-locales-2.28))
-(define-public glibc-locales-2.27
-  (deprecated-package "glibc-locales-2.27" glibc-locales-2.28))
-
 (define-public which
   (package
     (name "which")
