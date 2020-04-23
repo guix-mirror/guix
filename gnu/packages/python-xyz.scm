@@ -63,7 +63,7 @@
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
-;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019, 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
@@ -19544,3 +19544,23 @@ a set of pluggable tools to help the programmer in various ways.  Some
 example tools are source structure, project manager, interactive help,
 workspace...")
     (license license:bsd-2)))
+
+(define-public python-osc
+  (package
+    (name "python-osc")
+    (version "1.7.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-osc" version))
+        (sha256
+          (base32
+            "0cnh0z5lnng7fh48nmfaqqn8j25k13gkd4rhxd3m6sjqiix9s3vn"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/attwad/python-osc")
+    (synopsis "Open Sound Control server and client implementations")
+    (description
+      "@code{python-osc} is a pure Python library with no external
+dependencies.  It implements the @uref{http://opensoundcontrol.org/spec-1_0,
+Open Sound Control 1.0} specification.")
+    (license license:unlicense)))
