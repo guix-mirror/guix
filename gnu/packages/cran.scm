@@ -21326,3 +21326,28 @@ under the coarsened at random assumption.")
 Analysis and Modelling, including Exploratory Spatio-Temporal Analysis and
 Inferred Spatio-Temporal Modelling.")
     (license license:gpl2+)))
+
+(define-public r-dcv
+  (package
+    (name "r-dcv")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dcv" version))
+       (sha256
+        (base32
+         "12c716x8dnxnqksibpmyysqp2axggvy9dpd55s9bhnsvqvi6dshj"))))
+    (properties
+     `((upstream-name . "dcv")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lmtest" ,r-lmtest)))
+    (home-page "https://cran.r-project.org/web/packages/dcv/")
+    (synopsis "Conventional cross-validation statistics for climate-growth model")
+    (description
+     "This package performs several conventional cross-validation statistical
+methods for climate-growth model in the climate reconstruction from tree
+rings, including Sign Test statistic, Reduction of Error statistic, Product
+Mean Test, Durbin-Watson statistic etc.")
+    (license license:gpl2)))
