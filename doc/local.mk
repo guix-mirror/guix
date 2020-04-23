@@ -185,6 +185,7 @@ sub_commands_mans =				\
   $(srcdir)/%D%/guix-archive.1			\
   $(srcdir)/%D%/guix-build.1			\
   $(srcdir)/%D%/guix-challenge.1		\
+  $(srcdir)/%D%/guix-deploy.1			\
   $(srcdir)/%D%/guix-download.1			\
   $(srcdir)/%D%/guix-edit.1			\
   $(srcdir)/%D%/guix-environment.1		\
@@ -197,7 +198,9 @@ sub_commands_mans =				\
   $(srcdir)/%D%/guix-pull.1			\
   $(srcdir)/%D%/guix-refresh.1			\
   $(srcdir)/%D%/guix-size.1			\
-  $(srcdir)/%D%/guix-system.1
+  $(srcdir)/%D%/guix-system.1			\
+  $(srcdir)/%D%/guix-time-machine.1		\
+  $(srcdir)/%D%/guix-weather.1
 
 dist_man1_MANS =				\
   $(srcdir)/%D%/guix.1				\
