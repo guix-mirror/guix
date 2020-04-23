@@ -21191,3 +21191,25 @@ is the number of data in the tail.  The third class is motivated by graphical
 inspection.  In addition, a sequential testing procedure for GPD-GoF-tests
 is also implemented here.")
     (license license:gpl3)))
+
+(define-public r-awsmethods
+  (package
+    (name "r-awsmethods")
+    (version "1.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "awsMethods" version))
+       (sha256
+        (base32
+         "0hbmrcpdyg15zg4rysscsmxpxlpy0dkxx2aa63qibq7l1k14v4sh"))))
+    (properties
+     `((upstream-name . "awsMethods")))
+    (build-system r-build-system)
+    (home-page "http://www.wias-berlin.de/software/imaging/")
+    (synopsis "Class and methods definitions")
+    (description
+     "This package defines the generic method @code{extract} and provides
+@code{openMP} support as needed in several packages like
+@code{aws}, @code{adimpro}, @code{fmri}, and @code{dwi}.")
+    (license license:gpl2+)))
