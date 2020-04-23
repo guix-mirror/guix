@@ -21162,3 +21162,32 @@ evaluated interactively.")
 Bayes factors, posterior model probabilities, and normalizing constants in
 general, via different versions of bridge sampling.")
     (license license:gpl2+)))
+
+(define-public r-tea
+  (package
+    (name "r-tea")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tea" version))
+       (sha256
+        (base32
+         "0ql7lrxk0ihm49kqsvz79ig8i54rwiy9nxav4v9hy72j9kj5bgjn"))))
+    (properties
+     `((upstream-name . "tea")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/tea/")
+    (synopsis "Threshold estimation approaches")
+    (description
+     "This package provide different approaches for selecting the threshold
+in generalized Pareto distributions.  Most of them are based on minimizing the
+AMSE-criterion or atleast by reducing the bias of the assumed GPD-model.
+Others are heuristically motivated by searching for stable sample paths, i.e.
+a nearly constant region of the tail index estimator with respect to k, which
+is the number of data in the tail.  The third class is motivated by graphical
+inspection.  In addition, a sequential testing procedure for GPD-GoF-tests
+is also implemented here.")
+    (license license:gpl3)))
