@@ -305,6 +305,9 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
     (properties '((upstream-name . "freefont")
                   (ftp-directory . "/gnu/freefont")))))
 
+(define-public font-gnu-freefont-ttf
+  (deprecated-package "font-gnu-freefont-ttf" font-gnu-freefont))
+
 (define-public font-liberation
   (package
     (name "font-liberation")
