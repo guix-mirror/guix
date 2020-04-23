@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 # Copyright © 2016, 2018 Mathieu Lirzin <mthl@gnu.org>
@@ -202,9 +202,14 @@ sub_commands_mans =				\
   $(srcdir)/%D%/guix-time-machine.1		\
   $(srcdir)/%D%/guix-weather.1
 
+# Assume that cross-compiled commands cannot be executed.
+if !CROSS_COMPILING
+
 dist_man1_MANS =				\
   $(srcdir)/%D%/guix.1				\
   $(sub_commands_mans)
+
+endif
 
 gen_man =						\
   LANGUAGE= $(top_builddir)/pre-inst-env $(HELP2MAN)	\
@@ -227,10 +232,12 @@ $(srcdir)/%D%/guix-%.1: guix/scripts/%.scm $(GOBJECTS)
 	esac
 
 if BUILD_DAEMON
+if !CROSS_COMPILING
 
 dist_man1_MANS += $(srcdir)/%D%/guix-daemon.1
 
 $(srcdir)/%D%/guix-daemon.1: nix/nix-daemon/guix-daemon.cc
 	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
 
+endif
 endif

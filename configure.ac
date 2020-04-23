@@ -26,6 +26,8 @@ AM_GNU_GETTEXT_VERSION([0.18.1])
 GUIX_SYSTEM_TYPE
 GUIX_ASSERT_SUPPORTED_SYSTEM
 
+AM_CONDITIONAL([CROSS_COMPILING], [test "x$cross_compiling" = "xyes"])
+
 AC_ARG_WITH(store-dir,
   AC_HELP_STRING([--with-store-dir=PATH],
     [file name of the store (defaults to /gnu/store)]),
