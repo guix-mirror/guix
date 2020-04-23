@@ -924,7 +924,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-4.9-libsanitizer-mode-size.patch	\
   %D%/packages/patches/gcc-6-libsanitizer-mode-size.patch	\
   %D%/packages/patches/gcc-7-libsanitizer-mode-size.patch	\
-  %D%/packages/patches/gcc-8-libsanitizer-mode-size.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-4-compile-with-gcc-5.patch		 \
