@@ -206,7 +206,6 @@ and provides a \"top-like\" mode (monitoring).")
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
-              (patches (search-patches "shepherd-hurd.patch"))
               (sha256
                (base32
                 "02lbc8z5gd8v8wfi4yh1zww8mk03w0zcwnmk4l4p3vpjlvlb63ll"))))
