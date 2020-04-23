@@ -21242,3 +21242,39 @@ Propagation-Separation approach to adaptive smoothing, the @dfn{Intersecting
 Confidence Intervals} (ICI), variational approaches, and a non-local means
 filter.")
     (license license:gpl2+)))
+
+(define-public r-sgloptim
+  (package
+    (name "r-sgloptim")
+    (version "1.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sglOptim" version))
+       (sha256
+        (base32
+         "15bkkvgp9v9vsp65wps48g3c2fa0fj1025hbrziywq14j7wayyjr"))))
+    (properties
+     `((upstream-name . "sglOptim")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppprogress" ,r-rcppprogress)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/nielsrhansen/sglOptim")
+    (synopsis "Generic sparse group Lasso solver")
+    (description
+     "This package provides a fast generic solver for sparse group lasso
+optimization problems.  The loss (objective) function must be defined in a C++
+module.  The optimization problem is solved using a coordinate gradient
+descent algorithm.  Convergence of the algorithm is established and the
+algorithm is applicable to a broad class of loss functions.  Use of parallel
+computing for cross validation and subsampling is supported through the
+@code{foreach} and @code{doParallel} packages.")
+    (license license:gpl2+)))
