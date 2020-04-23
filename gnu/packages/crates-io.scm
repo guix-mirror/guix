@@ -38,6 +38,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -13183,6 +13184,36 @@ types as proposed in RFC 1158.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-nettle-sys-2
+  (package
+    (name "rust-nettle-sys")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nettle-sys" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1yq1w6dlcmg89x529i7s20j29afdhgim7qnsa7978fszzwrr6qmq"))
+       (patches (search-patches "rust-nettle-sys-disable-vendor.patch"))))
+    (build-system cargo-build-system)
+    (native-inputs
+     `(("clang" ,clang)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("nettle", nettle)))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-development-inputs
+       (("rust-bindgen" ,rust-bindgen-0.51)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+    (home-page "https://gitlab.com/sequoia-pgp/nettle-sys")
+    (synopsis "Low-level Rust bindings for the Nettle cryptographic library")
+    (description "This package provides low-level Rust bindings for the Nettle
+cryptographic library.")
+    (license ;; licensed under either of these, at your option
+     (list license:lgpl3 license:gpl2 license:gpl3))))
 
 (define-public rust-new-debug-unreachable-1.0
   (package
