@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -943,7 +944,7 @@ system to PUT-OLD."
 
 (define readdir*
   ;; Decide at run time which one must be used.
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       (readdir-procedure (c-struct-field-offset %struct-dirent-header/linux
                                                 name)
                          sizeof-dirent-header/linux

@@ -12,7 +12,6 @@
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
-;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,43 +29,43 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages xfce)
-  #:use-module ((guix licenses) #:hide (freetype))
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix gexp)
-  #:use-module (guix utils)
-  #:use-module (guix build-system cmake)
-  #:use-module (guix build-system glib-or-gtk)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial)
   #:use-module (gnu artwork)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages imagemagick)
-  #:use-module (gnu packages inkscape)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages web)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages image)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages pdf)
-  #:use-module (gnu packages polkit)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages photo)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages wm)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages wm))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
+  #:use-module (guix download)
+  #:use-module (guix gexp)
+  #:use-module ((guix licenses) #:hide (freetype))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public gtk-xfce-engine
   (package
@@ -94,15 +93,15 @@
 (define-public libxfce4util
   (package
     (name "libxfce4util")
-    (version "4.15.0")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.xfce.org/src/xfce/libxfce4util/"
+              (uri (string-append "http://archive.xfce.org/xfce/"
                                   (version-major+minor version)
-                                  "/" name "-" version ".tar.bz2"))
+                                  "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1lq9i30jdci4if2daxdcqni0x5jvpnaflgp19za9sks3gm4jma5v"))))
+                "093338faqqsrlc8dkmzr7qv411ysxczg1wlg7s3gvhrfk6vpkb9j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

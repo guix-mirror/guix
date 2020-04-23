@@ -1691,7 +1691,7 @@ package in Guix looks for fonts in @file{$HOME/.guix-profile}
 by default.  Thus, to allow graphical applications installed with Guix
 to display fonts, you have to install fonts with Guix as well.
 Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
-@code{font-gnu-freefont-ttf}.
+@code{font-gnu-freefont}.
 
 @cindex @code{fc-cache}
 @cindex font cache
@@ -7483,6 +7483,10 @@ value in the absolute file name of @var{file} within the @var{output}
 directory of @var{package}.  When @var{file} is omitted, return the name
 of the @var{output} directory of @var{package}.  When @var{target} is
 true, use it as a cross-compilation target triplet.
+
+Note that this procedure does @emph{not} build @var{package}.  Thus, the
+result might or might not designate an existing file.  We recommend not
+using this procedure unless you know what you are doing.
 @end deffn
 
 @deffn {Monadic Procedure} package->derivation @var{package} [@var{system}]
@@ -7951,7 +7955,8 @@ The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
 @end deffn
 
-@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} [#:splice? #f]
+@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} @
+          [#:splice? #f] [#:set-load-path? #t]
 Return an object representing the Scheme file @var{name} that contains
 @var{exp}.
 
@@ -12845,8 +12850,12 @@ A directory path where the @command{guix-daemon} will perform builds.
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
-variable.  The procedures @code{udev-rule} and @code{file->udev-rule} from
-@code{(gnu services base)} simplify the creation of such rule files.
+variable.  The procedures @code{udev-rule}, @code{udev-rules-service}
+and @code{file->udev-rule} from @code{(gnu services base)} simplify the
+creation of such rule files.
+
+The @command{herd rules udev} command, as root, returns the name of the
+directory containing all the active udev rules.
 @end deffn
 
 @deffn {Scheme Procedure} udev-rule [@var{file-name} @var{contents}]
@@ -12865,23 +12874,27 @@ upon detecting a USB device with a given product identifier.
                    "ATTR@{product@}==\"Example\", "
                    "RUN+=\"/path/to/script\"")))
 @end lisp
-
-The @command{herd rules udev} command, as root, returns the name of the
-directory containing all the active udev rules.
 @end deffn
 
-Here we show how the default @var{udev-service} can be extended with it.
+@deffn {Scheme Procedure} udev-rules-service [@var{name} @var{rules}] @
+               [#:groups @var{groups}]
+Return a service that extends @code{udev-service-type } with @var{rules}
+and @code{account-service-type} with @var{groups} as system groups.
+This works by creating a singleton service type
+@code{@var{name}-udev-rules}, of which the returned service is an
+instance.
+
+Here we show how it can be used to extend @code{udev-service-type} with the
+previously defined rule @code{%example-udev-rule}.
 
 @lisp
 (operating-system
  ;; @dots{}
  (services
- (modify-services %desktop-services
-   (udev-service-type config =>
-     (udev-configuration (inherit config)
-      (rules (append (udev-configuration-rules config)
-                     (list %example-udev-rule))))))))
+   (cons (udev-rules-service 'usb-thing %example-udev-rule)
+         %desktop-services)))
 @end lisp
+@end deffn
 
 @deffn {Scheme Procedure} file->udev-rule [@var{file-name} @var{file}]
 Return a udev file named @var{file-name} containing the rules defined
@@ -12918,10 +12931,10 @@ The following example shows how to use the @var{android-udev-rules}
 package so that the Android tool @command{adb} can detect devices
 without root privileges.  It also details how to create the
 @code{adbusers} group, which is required for the proper functioning of
-the rules defined within the @var{android-udev-rules} package.  To
+the rules defined within the @code{android-udev-rules} package.  To
 create such a group, we must define it both as part of the
-@var{supplementary-groups} of our @var{user-account} declaration, as
-well as in the @var{groups} field of the @var{operating-system} record.
+@code{supplementary-groups} of our @code{user-account} declaration, as
+well as in the @var{groups} of the @code{udev-rules-service} procedure.
 
 @lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
@@ -12935,19 +12948,11 @@ well as in the @var{groups} field of the @var{operating-system} record.
                 (supplementary-groups
                  '("adbusers"   ;for adb
                    "wheel" "netdev" "audio" "video")))))
-
-  (groups (cons (user-group (system? #t) (name "adbusers"))
-                %base-groups))
-
   ;; @dots{}
-
   (services
-   (modify-services %desktop-services
-     (udev-service-type
-      config =>
-      (udev-configuration (inherit config)
-                          (rules (cons android-udev-rules
-                                       (udev-configuration-rules config))))))))
+    (cons (udev-rules-service 'android android-udev-rules
+                              #:groups '("adbusers"))
+          %desktop-services)))
 @end lisp
 
 @defvr {Scheme Variable} urandom-seed-service-type
@@ -13632,6 +13637,68 @@ Optional configuration file to use.
 List of additional command-line arguments to pass to the daemon.
 @end table
 @end deftp
+
+@cindex hostapd service, for Wi-Fi access points
+@cindex Wi-Fi access points, hostapd service
+@defvr {Scheme Variable} hostapd-service-type
+This is the service type to run the @uref{https://w1.fi/hostapd/,
+hostapd} daemon to set up WiFi (IEEE 802.11) access points and
+authentication servers.  Its associated value must be a
+@code{hostapd-configuration} as shown below:
+
+@lisp
+;; Use wlan1 to run the access point for "My Network".
+(service hostapd-service-type
+         (hostapd-configuration
+          (interface "wlan1")
+          (ssid "My Network")
+          (channel 12)))
+@end lisp
+@end defvr
+
+@deftp {Data Type} hostapd-configuration
+This data type represents the configuration of the hostapd service, with
+the following fields:
+
+@table @asis
+@item @code{package} (default: @code{hostapd})
+The hostapd package to use.
+
+@item @code{interface} (default: @code{"wlan0"})
+The network interface to run the WiFi access point.
+
+@item @code{ssid}
+The SSID (@dfn{service set identifier}), a string that identifies this
+network.
+
+@item @code{broadcast-ssid?} (default: @code{#t})
+Whether to broadcast this SSID.
+
+@item @code{channel} (default: @code{1})
+The WiFi channel to use.
+
+@item @code{driver} (default: @code{"nl80211"})
+The driver interface type.  @code{"nl80211"} is used with all Linux
+mac80211 drivers.  Use @code{"none"} if building hostapd as a standalone
+RADIUS server that does # not control any wireless/wired driver.
+
+@item @code{extra-settings} (default: @code{""})
+Extra settings to append as-is to the hostapd configuration file.  See
+@uref{https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf} for the
+configuration file reference.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} simulated-wifi-service-type
+This is the type of a service to simulate WiFi networking, which can be
+useful in virtual machines for testing purposes.  The service loads the
+Linux kernel
+@uref{https://www.kernel.org/doc/html/latest/networking/mac80211_hwsim/mac80211_hwsim.html,
+@code{mac80211_hwsim} module} and starts hostapd to create a pseudo WiFi
+network that can be seen on @code{wlan0}, by default.
+
+The service's value is a @code{hostapd-configuration} record.
+@end defvr
 
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type

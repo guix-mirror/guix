@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +21,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (srfi srfi-64))
 
 (define-syntax-rule (define-with-source object source expr)
@@ -42,11 +42,11 @@
               (sha256
                (base32
                 "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
-    (build-system gnu-build-system)
+    (build-system (@ (guix build-system gnu) gnu-build-system))
     (home-page "http://gnu.org")
     (synopsis "Dummy")
     (description "This is a dummy package.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-with-source pkg-with-inputs pkg-with-inputs-source
   (package
@@ -59,20 +59,20 @@
               (sha256
                (base32
                 "070pwb7brdcn1mfvplkd56vjc7lbz4iznzkqvfsakvgbv68k71ah"))))
-    (build-system gnu-build-system)
+    (build-system (@ (guix build-system gnu) gnu-build-system))
     (inputs `(("coreutils" ,(@ (gnu packages base) coreutils))
               ("glibc" ,(@ (gnu packages base) glibc) "debug")))
     (home-page "http://gnu.org")
     (synopsis "Dummy")
     (description "This is a dummy package.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (test-equal "simple package"
-  pkg-source
+  `(define-public test ,pkg-source)
   (package->code pkg))
 
 (test-equal "package with inputs"
-  pkg-with-inputs-source
+  `(define-public test ,pkg-with-inputs-source)
   (package->code pkg-with-inputs))
 
 (test-end "print")

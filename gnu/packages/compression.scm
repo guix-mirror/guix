@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
@@ -1845,6 +1847,17 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
 (define-public brotli
   ;; We used to provide an older version under the name "brotli".
   (deprecated-package "brotli" google-brotli))
+
+(define-public python-google-brotli
+  (package
+    (inherit google-brotli)
+    (name "python-google-brotli")
+    (build-system python-build-system)
+    (arguments '())
+    (synopsis "Python interface to google-brotli")
+    (description "@code{python-google-brotli} provides a Python interface to
+@code{google-brotli}, an implementation of the Brotli lossless compression
+algorithm.")))
 
 (define-public ucl
   (package

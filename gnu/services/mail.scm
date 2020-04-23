@@ -1544,9 +1544,10 @@ greyed out, instead of only later giving \"not selectable\" popup error.
            (start #~(make-forkexec-constructor
                      (list (string-append #$dovecot "/sbin/dovecot")
                            "-F")))
-           (stop #~(make-forkexec-constructor
-                    (list (string-append #$dovecot "/sbin/dovecot")
-                          "stop")))))))
+           (stop #~(lambda _
+                     (invoke #$(file-append dovecot "/sbin/dovecot")
+                             "stop")
+                     #f))))))
 
 (define %dovecot-pam-services
   (list (unix-pam-service "dovecot")))

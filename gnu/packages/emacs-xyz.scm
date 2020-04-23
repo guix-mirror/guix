@@ -5381,7 +5381,35 @@ orange and red as accent colors.")
      "This program is an implementation of 2048 for Emacs.
 The goal of this game is to create a tile with value 2048.  The size of the
 board and goal value can be customized.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
+
+(define-public emacs-4clojure
+  ;; There is no release.  Base version is extracted from Version keyword in
+  ;; the main file.
+  (let ((commit "4eccf8c7d4341a36c269451838114b27836699f9")
+        (revision "1"))
+    (package
+      (name "emacs-4clojure")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsorphanage/4clojure.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19x653lzc1dxil4ix257hciidbdmbhaxhs6qhlkwi9ygjrlrgvnk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-request" ,emacs-request)))
+      (home-page "https://github.com/emacsorphanage/4clojure/")
+      (synopsis "Open and evaluate 4clojure questions in Emacs")
+      (description "Emacs 4clojure interacts with
+@url{http://www.4clojure.com, 4clojure} problems.  You can open a specific
+question and move to the next or previous one.  You can also verify your
+answers.")
+      (license license:gpl3+))))
 
 (define-public emacs-base16-theme
   (package
@@ -9281,28 +9309,27 @@ information inside the Dired buffer.")
       (license license:gpl3+))))
 
 (define-public emacs-dired-toggle-sudo
-  (package
-    (name "emacs-dired-toggle-sudo")
-    (version "1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/renard/dired-toggle-sudo")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0ajj8d6k5in2hclcrqckinfh80ylddplva0ryfbkzsjkfq167cv2"))
-       (patches
-        (search-patches
-         "emacs-dired-toggle-sudo-emacs-26.patch"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/renard/dired-toggle-sudo")
-    (synopsis "Browse directory with @code{sudo} privileges")
-    (description "This package allows for the use of @code{dired} with
+  (let ((commit "13bbe52c54893f5aa3e56228450ffdd0c9e1d169")
+        (revision "0"))
+    (package
+      (name "emacs-dired-toggle-sudo")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/renard/dired-toggle-sudo")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1fw1pb1z6krqd1pfxxhr6rrfr9ckkcb0zsjzbjk0i2i1q5cg6car"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/renard/dired-toggle-sudo")
+      (synopsis "Browse directory with @code{sudo} privileges")
+      (description "This package allows for the use of @code{dired} with
 @code{sudo} privileges.")
-    (license license:wtfpl2)))
+      (license license:wtfpl2))))
 
 (define-public emacs-diredfl
   (package
@@ -20260,6 +20287,29 @@ commands in @code{evil-mode}.")
      "This package lets you use C-h, C-j, C-k and C-l to navigate between
 Emacs windows and tmux panes.")
     (license license:expat)))
+
+(define-public emacs-xclip
+  (package
+    (name "emacs-xclip")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "xclip-" version ".el"))
+       (sha256
+        (base32 "0i3i9kwfg8qmhcmqhhnrb1kljgwkccv63s9q1mjwqfjldyfh8j8i"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/xclip.html")
+    (synopsis "Copy and paste GUI clipboard from Emacs in text terminal")
+    (description
+     "This package allows Emacs to copy to and paste from the GUI clipboard
+when running in text terminal.
+
+It can use external command-line tools for that, e.g., @command{xclip} or
+@command{xsel}, which you may need to install in order for the package to
+work.")
+    (license license:gpl3+)))
 
 (define-public emacs-xterm-color
   (package

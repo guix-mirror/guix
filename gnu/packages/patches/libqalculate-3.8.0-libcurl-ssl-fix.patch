@@ -1,0 +1,53 @@
+Author: R Veera Kumar 2020 <vkor@vkten.in>
+Desc:
+ 1) Fixes download of exchange rates by specifying SSL CA certificates bundle
+    file while using libcurl (Since libcurl in guix is compiled without using
+    a default CA cert bundle file)
+ 2) Like above fix for using https site in another case
+
+diff -uNr libqalculate-3.8.0/libqalculate/Calculator-definitions.cc libqalculate-3.8.0.new/libqalculate/Calculator-definitions.cc
+--- libqalculate-3.8.0/libqalculate/Calculator-definitions.cc	2020-02-16 15:08:29.000000000 +0530
++++ libqalculate-3.8.0.new/libqalculate/Calculator-definitions.cc	2020-04-17 21:27:36.386039369 +0530
+@@ -3610,6 +3610,7 @@
+ 	curl = curl_easy_init();
+ 	if(!curl) {return false;}
+ 	curl_easy_setopt(curl, CURLOPT_URL, getExchangeRatesUrl(1).c_str());
++	curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
+ 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+ 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+ 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &sbuffer);
+@@ -3663,6 +3664,7 @@
+ 
+ 		sbuffer = "";
+ 		curl_easy_setopt(curl, CURLOPT_URL, getExchangeRatesUrl(2).c_str());
++		curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
+ 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &sbuffer);
+@@ -3687,6 +3689,7 @@
+ 
+ 		sbuffer = "";
+ 		curl_easy_setopt(curl, CURLOPT_URL, getExchangeRatesUrl(3).c_str());
++		curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
+ 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &sbuffer);
+@@ -3710,6 +3713,7 @@
+ 
+ 		sbuffer = "";
+ 		curl_easy_setopt(curl, CURLOPT_URL, getExchangeRatesUrl(4).c_str());
++		curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
+ 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, (timeout > 4 && n <= 0) ? 4 : timeout);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+ 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &sbuffer);
+diff -uNr libqalculate-3.8.0/libqalculate/util.cc libqalculate-3.8.0.new/libqalculate/util.cc
+--- libqalculate-3.8.0/libqalculate/util.cc	2019-12-14 22:56:45.000000000 +0530
++++ libqalculate-3.8.0.new/libqalculate/util.cc	2020-04-17 21:12:17.259674572 +0530
+@@ -769,6 +769,7 @@
+ 	curl = curl_easy_init();
+ 	if(!curl) {return -1;}
+ 	curl_easy_setopt(curl, CURLOPT_URL, "https://qalculate.github.io/CURRENT_VERSIONS");
++	curl_easy_setopt(curl, CURLOPT_CAINFO, getenv("SSL_CERT_FILE"));
+ 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+ 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+ 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &sbuffer);

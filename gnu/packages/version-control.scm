@@ -154,14 +154,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "2.26.1")
+   (version "2.26.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0s03ix9j1h0yychkh1l1cgpr1l9lwzn3rprl08rk8ii5ix02i0l8"))))
+              "0j685w6pzkn926z5nf5r8fij4ziipvw4c9yb0wc577nzf4j16rbd"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -178,7 +178,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0j2031x3qchwjmiy2h849j4x1vd8y4rgqv2ak9dc87xbbpsbfg59"))))
+            "0rb4f4jc31zrcg4gyjg4fi07dw7nggkjg2nqfiq5p1aayw2f2ga3"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc-py3)
       ("docbook-xsl" ,docbook-xsl)
@@ -905,9 +905,9 @@ collaboration using typical untrusted file hosts or services.")
            (method url-fetch)
            ;; cgit is tightly bound to git.  Use GIT_VER from the Makefile,
            ;; which may not match the current (package-version git).
-           (uri "mirror://kernel.org/software/scm/git/git-2.25.3.tar.xz")
+           (uri "mirror://kernel.org/software/scm/git/git-2.25.4.tar.xz")
            (sha256
-            (base32 "0yvr97cl0dvj3fwblq1mb0cp97v8hrn9l98p8b1jx8815mbsnz9h"))))
+            (base32 "11am6s46wmn1yll5614smjhzlghbqq6gysgcs64igjr9y5wzpdxq"))))
        ("openssl" ,openssl)
        ("groff" ,groff)
        ("python" ,python)

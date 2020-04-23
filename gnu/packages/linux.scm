@@ -28,7 +28,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
-;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2018, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -369,26 +369,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.5")
+(define-public linux-libre-5.6-version "5.6.6")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "1rjjkcmzsj9azggh960qnk2x44ns475b8nbd4nxazrz1rgdx76zp")))
+        (hash (base32 "1m3blvkma08v5y11jh0vhf4sr7jbcylkh15bssb5dgp40p8cx134")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.33")
+(define-public linux-libre-5.4-version "5.4.34")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0q9q48ij6vppfcrdf7fr24pvpwsd13pxjkdni6rnjq9a60hrcmxm")))
+        (hash (base32 "1ljcsrw9jknw2d9hb0yfr1pwy85l8z4rqycgd0kad9mb9lrw2glh")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.116")
+(define-public linux-libre-4.19-version "4.19.117")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0r3vdc3npl1bn06w9v6wsq7d5mm7bnhm9wsz36pb9ar3xhimvrlf")))
+        (hash (base32 "12xc1pwhwq4vp67hmn7hdynl4ik76cni79356hpzf1lbiqlrya6n")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -3029,6 +3029,43 @@ to the in-kernel OOM killer.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+(define-public python-evdev
+  (package
+    (name "python-evdev")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "evdev" version))
+       (sha256
+        (base32 "0kb3636yaw9l8xi8s184w0r0n9ic5dw3b8hx048jf9fpzss4kimi"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("kernel-headers" ,linux-libre-headers)))
+    (arguments
+     `(#:tests? #f                      ;no rule for tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-hard-coded-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("/usr/include/linux")
+                (string-append
+                 (assoc-ref inputs "kernel-headers") "/include/linux")))
+             #t)))))
+    (home-page "https://github.com/gvalkov/python-evdev")
+    (synopsis "Bindings to the Linux input handling subsystem")
+    (description
+     "Python-evdev provides bindings to the generic input event interface in
+Linux.  The @code{evdev} interface serves the purpose of passing events
+generated in the kernel directly to userspace through character devices that
+are typically located in @file{/dev/input/}.
+
+This package also comes with bindings to @code{uinput}, the userspace input
+subsystem.  @code{uinput} allows userspace programs to create and handle input
+devices that can inject events directly into the input subsystem.")
+    (license license:bsd-3)))
 
 (define-public lvm2
   (package

@@ -1,0 +1,48 @@
+From ecc69ec25df07e1ce63d7add6b235b37673ed608 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 20 Apr 2020 19:18:25 +0100
+Origin: https://patchwork.ozlabs.org/project/uboot/patch/20200420181825.935797-1-pbrobinson@gmail.com/
+Subject: [PATCH 6/6] drivers: video: rockchip: fix building eDP and LVDS
+ drivers
+
+The rk_edp.c and rk_lvds.c files reference rk_setreg which is declared in
+hardware.h so include it so the drivers build. Adjust rk_lvds.c so
+includes are in alphabetical order while updating.
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+Reviewed-by: Anatolij Gustschin <agust@denx.de>
+---
+ drivers/video/rockchip/rk_edp.c  | 1 +
+ drivers/video/rockchip/rk_lvds.c | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/video/rockchip/rk_edp.c b/drivers/video/rockchip/rk_edp.c
+index 8703df0ec0..cf84b886e7 100644
+--- a/drivers/video/rockchip/rk_edp.c
++++ b/drivers/video/rockchip/rk_edp.c
+@@ -18,6 +18,7 @@
+ #include <asm/arch-rockchip/clock.h>
+ #include <asm/arch-rockchip/edp_rk3288.h>
+ #include <asm/arch-rockchip/grf_rk3288.h>
++#include <asm/arch-rockchip/hardware.h>
+ #include <dt-bindings/clock/rk3288-cru.h>
+ 
+ #define MAX_CR_LOOP 5
+diff --git a/drivers/video/rockchip/rk_lvds.c b/drivers/video/rockchip/rk_lvds.c
+index cf5c0439b1..79e24baf53 100644
+--- a/drivers/video/rockchip/rk_lvds.c
++++ b/drivers/video/rockchip/rk_lvds.c
+@@ -13,8 +13,9 @@
+ #include <asm/gpio.h>
+ #include <asm/io.h>
+ #include <asm/arch-rockchip/clock.h>
+-#include <asm/arch-rockchip/lvds_rk3288.h>
+ #include <asm/arch-rockchip/grf_rk3288.h>
++#include <asm/arch-rockchip/hardware.h>
++#include <asm/arch-rockchip/lvds_rk3288.h>
+ #include <dt-bindings/clock/rk3288-cru.h>
+ #include <dt-bindings/video/rk3288.h>
+ 
+-- 
+2.20.1
+

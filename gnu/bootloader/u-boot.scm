@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
             u-boot-pine64-plus-bootloader
             u-boot-pine64-lts-bootloader
             u-boot-pinebook-bootloader
+            u-boot-pinebook-pro-rk3399-bootloader
             u-boot-puma-rk3399-bootloader
             u-boot-rock64-rk3328-bootloader
             u-boot-rockpro64-rk3399-bootloader
@@ -122,6 +124,8 @@
                               device (* 64 512))
         (write-file-on-device u-boot (stat:size (stat u-boot))
                               device (* 16384 512)))))
+
+(define install-pinebook-pro-rk3399-u-boot install-rockpro64-rk3399-u-boot)
 
 
 
@@ -243,3 +247,10 @@
    (inherit u-boot-bootloader)
    (package u-boot-rockpro64-rk3399)
    (installer install-rockpro64-rk3399-u-boot)))
+
+(define u-boot-pinebook-pro-rk3399-bootloader
+  ;; SD and eMMC use the same format
+  (bootloader
+   (inherit u-boot-bootloader)
+   (package u-boot-pinebook-pro-rk3399)
+   (installer install-pinebook-pro-rk3399-u-boot)))

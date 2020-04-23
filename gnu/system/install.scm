@@ -296,8 +296,8 @@ the user's target storage device rather than on the RAM disk."
 ;; support Kernel Mode Setting.  Otherwise kmscon is missing /dev/fb0.
 (define (uvesafb-shepherd-service _)
   (list (shepherd-service
-         (documentation "Load the uvesafb kernel module.")
-         (provision '(uvesafb))
+         (documentation "Load the uvesafb kernel module if needed.")
+         (provision '(maybe-uvesafb))
          (requirement '(file-systems))
          (start #~(lambda ()
                     ;; uvesafb is only supported on x86 and x86_64.

@@ -9123,12 +9123,14 @@ those in Perl and JavaScript.")
     (name "java-fest-util")
     (version "1.2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-util/"
-                                  "archive/fest-util-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-util/")
+                     (commit (string-append "fest-util-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05g6hljz5mdaakk8d7g32klbhz9bdwp3qlj6rdaggdidxs3x1sb8"))))
+                "02kgal7v85snyyvcsxvn4qphid455f4smh2wri1il8d9asw0djbz"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-util.jar"
@@ -9146,12 +9148,14 @@ those in Perl and JavaScript.")
     (name "java-fest-test")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-test/"
-                                  "archive/fest-test-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-test/")
+                     (commit (string-append "fest-test-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rxfbw6l9vc65iy1x3fb617qc6y4w2k430pgf1mfbxfdlxbm0f7g"))))
+                "0mg1d2jfh7kbx2c40dchbjr6d8pv59snsyb13mfxsr7xk5n69qbn"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-test.jar"
@@ -9169,12 +9173,14 @@ those in Perl and JavaScript.")
     (name "java-fest-assert")
     (version "2.0M10")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-assert-2.x/"
-                                  "archive/fest-assert-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-assert-2.x/")
+                     (commit (string-append "fest-assert-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bi0iqavikzww6rxvz5jyg7y6bflv95s6ibryxx0xfcxrrw6i5lw"))))
+                "1cp8zzyag3s85fz2w68sda9zzaal1y5f9wl8g72wkm12an40w6by"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-assert.jar"
@@ -9445,13 +9451,14 @@ by technical operatives or consultants working with enterprise platforms.")
     (name "java-lz4")
     (version "1.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lz4/lz4-java/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lz4/lz4-java")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "096dm57p2lzqk28n0j2p52x2j3cvnsd2dfqn43n7vbwrkjsy7y54"))))
+                "0ydjakhv3cz34mfvv14qrh2ksdxifgjwwagjy7r46qr3f68hnf6y"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "lz4.jar"
@@ -9460,6 +9467,10 @@ by technical operatives or consultants working with enterprise platforms.")
        #:tests? #f; FIXME: requires more dependencies
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'generate-source
            (lambda _
              (with-directory-excursion "src/build/source_templates"
@@ -9478,13 +9489,15 @@ algorithms and xxHash hashing algorithm.")
     (name "java-bouncycastle")
     (version "1.60")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
-                                  (substring version 0 1) "v"
-                                  (substring version 2 4) ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "http://git.bouncycastle.org/repositories/bc-java")
+                     ;(url "https://github.com/bcgit/bc-java")
+                     (commit (string-append "r1rv" (substring version 2 4)))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v434513y708qc87k4xz13p2kzydc736lk3ks67df9mg11s7hchv"))
+                "1m921a1ac2dl797ffzg3d4j97ch308f25spb4jgsj3npfmmys5gb"))
               (modules '((guix build utils)))
               (snippet
                '(begin

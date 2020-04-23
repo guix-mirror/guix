@@ -14,13 +14,13 @@
 ;;; Copyright © 2018 Laura Lazzati <laura.lazzati.15@gmail.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2020 Todor Kondić <tk.code@protonmail.com>
 ;;; Copyright © 2020 Danjela Lura <danielaluraa@gmail.com>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
+;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21131,3 +21131,34 @@ vignettes from notebooks.  Those notebooks (@code{.ipynb} files) are files
 containing rich text, code, and its output.  Code cells can be edited and
 evaluated interactively.")
     (license license:gpl3)))
+
+(define-public r-bridgesampling
+  (package
+    (name "r-bridgesampling")
+    (version "1.0-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "bridgesampling" version))
+       (sha256
+        (base32
+         "1awhvv0v42w2q6llqi1wqpaiv5zx74cqzigdsvphy2jfp8ajw64y"))))
+    (properties
+     `((upstream-name . "bridgesampling")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-brobdingnag" ,r-brobdingnag)
+       ("r-coda" ,r-coda)
+       ("r-matrix" ,r-matrix)
+       ("r-mvtnorm" ,r-mvtnorm)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/quentingronau/bridgesampling")
+    (synopsis "Bridge sampling for marginal likelihoods and Bayes factors")
+    (description
+     "This package provides functions for estimating marginal likelihoods,
+Bayes factors, posterior model probabilities, and normalizing constants in
+general, via different versions of bridge sampling.")
+    (license license:gpl2+)))

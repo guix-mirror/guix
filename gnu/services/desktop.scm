@@ -452,8 +452,8 @@ site} for more information."
    (requirement '(dbus-system udev))
    (documentation "Run the bluetoothd daemon.")
    (start #~(make-forkexec-constructor
-             (string-append #$(bluetooth-configuration-bluez config)
-                            "/libexec/bluetooth/bluetoothd")))
+             (list #$(file-append (bluetooth-configuration-bluez config)
+                                  "/libexec/bluetooth/bluetoothd"))))
    (stop #~(make-kill-destructor))))
 
 (define bluetooth-service-type

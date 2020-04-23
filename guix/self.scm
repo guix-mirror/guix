@@ -339,43 +339,61 @@ TRANSLATIONS, an alist of msgid and msgstr."
                              #f regexp1 content 'pre "ref{" msgstr "," 'post)
                            'pre "ref{" msgstr "}" 'post))))))
               content translations))
-          
-          (define (translate-texi po lang)
-            "Translate the manual for one language LANG using the PO file."
+
+          (define* (translate-texi prefix po lang
+                                   #:key (extras '()))
+            "Translate the manual for one language LANG using the PO file.
+PREFIX must be the prefix of the manual, 'guix' or 'guix-cookbook'.  EXTRAS is
+a list of extra files, such as '(\"contributing\")."
             (let ((translations (call-with-input-file po read-po-file)))
-              (translate-tmp-texi po "guix.texi"
-                                  (string-append "guix." lang ".texi.tmp"))
-              (translate-tmp-texi po "contributing.texi"
-                                  (string-append "contributing." lang ".texi.tmp"))
-              (let* ((texi-name (string-append "guix." lang ".texi"))
-                     (tmp-name (string-append texi-name ".tmp")))
-                (with-output-to-file texi-name
-                  (lambda _
-                    (format #t "~a"
-                      (translate-cross-references
-                        (call-with-input-file tmp-name get-string-all)
-                        translations)))))
-              (let* ((texi-name (string-append "contributing." lang ".texi"))
-                     (tmp-name (string-append texi-name ".tmp")))
-                (with-output-to-file texi-name
-                  (lambda _
-                    (format #t "~a"
-                      (translate-cross-references
-                        (call-with-input-file tmp-name get-string-all)
-                        translations)))))))
+              (for-each (lambda (file)
+                          (translate-tmp-texi po (string-append file ".texi")
+                                              (string-append file "." lang
+                                                             ".texi.tmp")))
+                        (cons prefix extras))
 
-          (for-each (lambda (po)
-                      (match (reverse (string-split po #\.))
-                        ((_ lang _ ...)
-                         (translate-texi po lang))))
-                    (find-files "." "^guix-manual\\.[a-z]{2}(_[A-Z]{2})?\\.po$"))
+              (for-each (lambda (file)
+                          (let* ((texi (string-append file "." lang ".texi"))
+                                 (tmp  (string-append texi ".tmp")))
+                            (with-output-to-file texi
+                              (lambda ()
+                                (display
+                                 (translate-cross-references
+                                  (call-with-input-file tmp get-string-all)
+                                  translations))))))
+                        (cons prefix extras))))
 
-          (for-each
-            (lambda (file)
-              (copy-file file (string-append #$output "/" file)))
-            (append
-              (find-files "." "contributing\\..*\\.texi$")
-              (find-files "." "guix\\..*\\.texi$"))))))
+          (define (available-translations directory domain)
+            ;; Return the list of available translations under DIRECTORY for
+            ;; DOMAIN, a gettext domain such as "guix-manual".  The result is
+            ;; a list of language/PO file pairs.
+            (filter-map (lambda (po)
+                          (let ((base (basename po)))
+                            (and (string-prefix? (string-append domain ".")
+                                                 base)
+                                 (match (string-split base #\.)
+                                   ((_ ... lang "po")
+                                    (cons lang po))))))
+                        (find-files directory
+                                    "\\.[a-z]{2}(_[A-Z]{2})?\\.po$")))
+
+          (for-each (match-lambda
+                      ((language . po)
+                       (translate-texi "guix" po language
+                                       #:extras '("contributing"))))
+                    (available-translations "." "guix-manual"))
+
+          (for-each (match-lambda
+                      ((language . po)
+                       (translate-texi "guix-cookbook" po language)))
+                    (available-translations "." "guix-cookbook"))
+
+          (for-each (lambda (file)
+                      (install-file file #$output))
+                    (append
+                     (find-files "." "contributing\\..*\\.texi$")
+                     (find-files "." "guix\\..*\\.texi$")
+                     (find-files "." "guix-cookbook\\..*\\.texi$"))))))
 
   (computed-file "guix-translated-texinfo" build))
 
@@ -402,7 +420,8 @@ TRANSLATIONS, an alist of msgid and msgstr."
   (define build
     (with-imported-modules '((guix build utils))
       #~(begin
-          (use-modules (guix build utils))
+          (use-modules (guix build utils)
+                       (ice-9 match))
 
           (mkdir #$output)
 
@@ -463,13 +482,13 @@ TRANSLATIONS, an alist of msgid and msgstr."
                   #+(file-append glibc-utf8-locales "/lib/locale"))
 
           (for-each (lambda (texi)
-                      (unless (string=? "guix.texi" texi)
-                        ;; Create 'version-LL.texi'.
-                        (let* ((base (basename texi ".texi"))
-                               (dot  (string-index base #\.))
-                               (tag  (string-drop base (+ 1 dot))))
-                          (symlink "version.texi"
-                                   (string-append "version-" tag ".texi"))))
+                      (match (string-split (basename texi) #\.)
+                        (("guix" language "texi")
+                         ;; Create 'version-LL.texi'.
+                         (symlink "version.texi"
+                                  (string-append "version-" language
+                                                 ".texi")))
+                        (_ #f))
 
                       (invoke #+(file-append texinfo "/bin/makeinfo")
                               texi "-I" #$documentation
@@ -478,7 +497,10 @@ TRANSLATIONS, an alist of msgid and msgstr."
                                                   (basename texi ".texi")
                                                   ".info")))
                     (cons "guix.texi"
-                          (find-files "." "^guix\\.[a-z]{2}(_[A-Z]{2})?\\.texi$")))
+                          (append (find-files "."
+                                              "^guix\\.[a-z]{2}(_[A-Z]{2})?\\.texi$")
+                                  (find-files "."
+                                              "^guix-cookbook.*\\.texi$"))))
 
           ;; Compress Info files.
           (setenv "PATH"

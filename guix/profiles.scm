@@ -1549,6 +1549,7 @@ MANIFEST."
 
 (define* (profile-derivation manifest
                              #:key
+                             (name "profile")
                              (hooks %default-profile-hooks)
                              (locales? #t)
                              (allow-collisions? #f)
@@ -1638,7 +1639,7 @@ are cross-built for TARGET."
                            #:manifest '#$(manifest->gexp manifest)
                            #:search-paths search-paths))))
 
-    (gexp->derivation "profile" builder
+    (gexp->derivation name builder
                       #:system system
                       #:target target
 

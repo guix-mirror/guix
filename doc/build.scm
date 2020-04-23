@@ -142,7 +142,7 @@ as well as images, OS examples, and translations."
 
           (for-each (lambda (texi)
                       (install-file texi #$output))
-                    (append (find-files #$documentation "\\.(texi|scm)$")
+                    (append (find-files #$documentation "\\.(texi|scm|json)$")
                             (find-files #$(translated-texi-manuals source)
                                         "\\.texi$")))
 

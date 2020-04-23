@@ -1,0 +1,37 @@
+From 451bd72bf966df7518682cb748a804634ea19424 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 20 Apr 2020 20:27:33 +0100
+Origin: https://patchwork.ozlabs.org/project/uboot/patch/20200420192736.962307-3-pbrobinson@gmail.com/
+Subject: [PATCH 2/5] dt-bindings: input: adopt Linux gpio-keys binding
+ constants
+
+Sync the gpio-keys input bindings from linux 5.7-rc1.
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ include/dt-bindings/input/gpio-keys.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+ create mode 100644 include/dt-bindings/input/gpio-keys.h
+
+diff --git a/include/dt-bindings/input/gpio-keys.h b/include/dt-bindings/input/gpio-keys.h
+new file mode 100644
+index 0000000000..8962df79e7
+--- /dev/null
++++ b/include/dt-bindings/input/gpio-keys.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * This header provides constants for gpio keys bindings.
++ */
++
++#ifndef _DT_BINDINGS_GPIO_KEYS_H
++#define _DT_BINDINGS_GPIO_KEYS_H
++
++#define EV_ACT_ANY		0x00	/* asserted or deasserted */
++#define EV_ACT_ASSERTED		0x01	/* asserted */
++#define EV_ACT_DEASSERTED	0x02	/* deasserted */
++
++#endif /* _DT_BINDINGS_GPIO_KEYS_H */
+-- 
+2.20.1
+

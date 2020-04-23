@@ -717,7 +717,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.2.0")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -725,7 +725,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0fh5bxvhjqv1p9z783lym8y1k3p4jcc3wg6wf7zl8s6w8krcfd7n"))))
+                "1ay68rhlngnp2zm6wdmzgr1fsal3spz61swcxlaz5y215qvgjfpy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -760,13 +760,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                             "guile/mu/Makefile.in")
                (("share/guile/site/2.0/") "share/guile/site/2.2/"))
              #t))
-         (add-after 'patch-configure 'fix-date-tests
-           ;; Loosen test tolerances to prevent failures caused by daylight
-           ;; saving time (DST).  See: https://github.com/djcb/mu/issues/1214.
+         (add-after 'unpack 'patch-bin-sh-in-tests
            (lambda _
-             (substitute* "lib/parser/test-utils.cc"
-               (("\\* 60 \\* 60, 1 },")
-                "* 60 * 60, 3600 + 1 },"))
+             (substitute* '("guile/tests/test-mu-guile.c"
+                            "mu/test-mu-cmd.c"
+                            "mu/test-mu-cmd-cfind.c"
+                            "mu/test-mu-query.c"
+                            "mu/test-mu-threads.c")
+               (("/bin/sh") (which "sh")))
              #t))
          (add-before 'install 'fix-ffi
            (lambda* (#:key outputs #:allow-other-keys)
@@ -797,53 +798,6 @@ Maildir-format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license gpl3+)))
-
-(define mumimu
-  ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
-  ;; database.  It also renames the library to "mumimu" to avoid confusion.
-  (let ((commit "6b42431052c7cc9a2e147938e1b67f14a93e4ee5")
-        (revision "2"))
-    (package
-      (inherit mu)
-      (name "mumimu")
-      (version (git-version (package-version mu) revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.elephly.net/software/mumimu.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "044scxmjrckidqx935yza3aqnjyzrmhyvgx2gs2jyf68hl2qzb89"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments mu)
-         ((#:tests? anything '())
-          #f)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'patch-configure
-               (lambda _ (delete-file "autogen.sh") #t))
-             (replace 'fix-ffi
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (substitute* "guile/mumimu.scm"
-                   (("\"libguile-mu\"")
-                    (format #f "\"~a/lib/libguile-mumimu\""
-                            (assoc-ref outputs "out"))))
-                 #t))
-             (delete 'install-emacs-autoloads)))
-         ((#:configure-flags flags)
-          '("--disable-gtk"
-            "--disable-webkit"
-            "--disable-mu4e"))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("glib" ,glib "bin")
-         ("tzdata" ,tzdata-for-tests)
-         ("texinfo" ,texinfo))))))
 
 (define-public alot
   (package
@@ -3006,8 +2960,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "c85015dac8110bd7a4c37375b9eb05ebeadedf74")
-        (revision "15"))
+  (let ((commit "9175199e9039b9a1dbc5e1eafa05b9c618416f3b")
+        (revision "16"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -3019,7 +2973,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "05nma73kqnva6ci92aq8jb3718ry5dz3sd64ibpxn5w77z5kpwr7"))))
+                  "1v0i9h3dw0irc92flmk3wk72l0kiymf82fashklbyhk7mr968zx3"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3056,10 +3010,10 @@ replacement for the @code{urlview} program.")
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("guile-webutils" ,guile-webutils)
+         ("guile-xapian" ,guile-xapian)
          ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)
-         ("mailutils" ,mailutils)
-         ("mumimu" ,mumimu)))   ;'mumimu' executable recorded in (mumi config)
+         ("mailutils" ,mailutils)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)

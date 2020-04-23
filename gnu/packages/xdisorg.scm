@@ -2223,7 +2223,7 @@ tools to complement clipnotify.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "12vvircdhl4psqi51cnfd6bqy85v2vwfcmdq1mimjgng727nwzys"))))
+           "0053j4i14lz5m2bzc5sch5id5ilr1bl196mp8fp0q8x74w3vavs9"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases

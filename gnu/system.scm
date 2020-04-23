@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix derivations)
   #:use-module (guix profiles)
   #:use-module (guix ui)
+  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages guile)
@@ -142,6 +144,10 @@
             %setuid-programs
             %sudoers-specification
             %base-packages
+            %base-packages-interactive
+            %base-packages-linux
+            %base-packages-networking
+            %base-packages-utils
             %base-firmware))
 
 ;;; Commentary:
@@ -472,26 +478,35 @@ OS."
   (file-append (operating-system-kernel os)
                "/" (system-linux-image-file-name)))
 
+(define (package-for-kernel target-kernel module-package)
+  "Return a package like MODULE-PACKAGE, adapted for TARGET-KERNEL, if
+possible (that is if there's a LINUX keyword argument in the build system)."
+  (package
+    (inherit module-package)
+    (arguments
+     (substitute-keyword-arguments (package-arguments module-package)
+       ((#:linux kernel #f)
+        target-kernel)))))
+
 (define* (operating-system-directory-base-entries os)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
   (let ((locale (operating-system-locale-directory os)))
     (mlet* %store-monad ((kernel -> (operating-system-kernel os))
-                         (kernel-modules (package-file kernel "lib/modules"))
                          (modules ->
                           (operating-system-kernel-loadable-modules os))
-                         (has-modules? ->
-                          (or (not (null? modules))
-                              (file-exists? kernel-modules)))
                          (kernel
                           (profile-derivation
                            (packages->manifest
-                            (cons kernel modules))
-                           #:hooks (if has-modules?
-                                       (list linux-module-database)
-                                       '())))
+                            (cons kernel
+                             (map (lambda (module)
+                                    (if (package? module)
+                                        (package-for-kernel kernel module)
+                                        module))
+                                  modules)))
+                           #:hooks (list linux-module-database)))
                          (initrd -> (operating-system-initrd-file os))
-                         (params    (operating-system-boot-parameters-file os)))
+                         (params -> (operating-system-boot-parameters-file os)))
       (return `(("kernel" ,kernel)
                 ("parameters" ,params)
                 ("initrd" ,initrd)
@@ -581,43 +596,55 @@ of PROVENANCE-SERVICE-TYPE to its services."
   (list ath9k-htc-firmware
         openfwwf-firmware))
 
+(define %base-packages-utils
+  ;; Default set of  utilities packages.
+ (cons* procps psmisc which
+        (@ (gnu packages admin) shadow) ;for 'passwd'
+
+        guile-3.0
+
+        ;; The packages below are also in %FINAL-INPUTS, so take them from
+        ;; there to avoid duplication.
+        (list bash coreutils findutils grep sed
+              diffutils patch gawk tar gzip bzip2 xz lzip)))
+
+(define %base-packages-linux
+  ;; Default set of linux specific packages.
+  (list pciutils usbutils
+        util-linux+udev
+        ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
+        ;; already depends on it anyway.
+        kmod eudev))
+
+(define %base-packages-interactive
+  ;; Default set of common interactive packages.
+  (list less zile nano
+        man-db
+        info-reader                     ;the standalone Info reader (no Perl)
+        bash-completion
+        kbd
+        ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
+        ;; want the other commands and the man pages (notably because
+        ;; auto-completion in Emacs shell relies on man pages.)
+        sudo
+        guile-readline guile-colorized))
+
+(define %base-packages-networking
+  ;; Default set of networking packages.
+  (list inetutils isc-dhcp
+        iproute
+        ;; wireless-tools is deprecated in favor of iw, but it's still what
+        ;; many people are familiar with, so keep it around.
+        iw wireless-tools))
+
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
-  (cons* procps psmisc which less zile nano
-         pciutils usbutils
-         util-linux+udev
-         inetutils isc-dhcp
-         (@ (gnu packages admin) shadow)          ;for 'passwd'
-
-         ;; wireless-tools is deprecated in favor of iw, but it's still what
-         ;; many people are familiar with, so keep it around.
-         iw wireless-tools
-
-         iproute
-         man-db
-         info-reader                     ;the standalone Info reader (no Perl)
-
-         ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
-         ;; want the other commands and the man pages (notably because
-         ;; auto-completion in Emacs shell relies on man pages.)
-         sudo
-
-         ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
-         ;; already depends on it anyway.
-         kmod eudev
-
-         e2fsprogs kbd
-
-         bash-completion
-
-         guile-3.0
-         guile-readline guile-colorized
-
-         ;; The packages below are also in %FINAL-INPUTS, so take them from
-         ;; there to avoid duplication.
-         (list bash coreutils findutils grep sed
-               diffutils patch gawk tar gzip bzip2 xz lzip)))
+  (append (list e2fsprogs)
+          %base-packages-interactive
+          %base-packages-linux
+          %base-packages-networking
+          %base-packages-utils))
 
 (define %default-issue
   ;; Default contents for /etc/issue.
@@ -1079,28 +1106,29 @@ being stored into the \"parameters\" file)."
                    os device
                    #:system-kernel-arguments?
                    system-kernel-arguments?)))
-     (gexp->file "parameters"
-                 #~(boot-parameters
-                    (version 0)
-                    (label #$(boot-parameters-label params))
-                    (root-device
-                     #$(device->sexp
-                        (boot-parameters-root-device params)))
-                    (kernel #$(boot-parameters-kernel params))
-                    (kernel-arguments
-                     #$(boot-parameters-kernel-arguments params))
-                    (initrd #$(boot-parameters-initrd params))
-                    (bootloader-name #$(boot-parameters-bootloader-name params))
-                    (bootloader-menu-entries
-                     #$(map menu-entry->sexp
-                            (or (and=> (operating-system-bootloader os)
-                                       bootloader-configuration-menu-entries)
-                                '())))
-                    (store
-                     (device
-                      #$(device->sexp (boot-parameters-store-device params)))
-                     (mount-point #$(boot-parameters-store-mount-point params))))
-                 #:set-load-path? #f)))
+     (scheme-file "parameters"
+                  #~(boot-parameters
+                     (version 0)
+                     (label #$(boot-parameters-label params))
+                     (root-device
+                      #$(device->sexp
+                         (boot-parameters-root-device params)))
+                     (kernel #$(boot-parameters-kernel params))
+                     (kernel-arguments
+                      #$(boot-parameters-kernel-arguments params))
+                     (initrd #$(boot-parameters-initrd params))
+                     (bootloader-name #$(boot-parameters-bootloader-name params))
+                     (bootloader-menu-entries
+                      #$(map menu-entry->sexp
+                             (or (and=> (operating-system-bootloader os)
+                                        bootloader-configuration-menu-entries)
+                                 '())))
+                     (store
+                      (device
+                       #$(device->sexp (boot-parameters-store-device params)))
+                      (mount-point #$(boot-parameters-store-mount-point
+                                      params))))
+                  #:set-load-path? #f)))
 
 (define-gexp-compiler (operating-system-compiler (os <operating-system>)
                                                  system target)

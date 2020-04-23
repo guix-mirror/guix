@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,10 +31,13 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libevent)
@@ -42,6 +46,7 @@
   #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnome-xyz)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -57,10 +62,67 @@
   #:use-module (gnu packages gcc)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (guix build-system asdf))
+
+(define-public midori
+  (package
+    (name "midori")
+    (version "9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/midori-browser/core/releases/"
+                       "download/v" version "/" name "-v" version ".tar.gz"))
+       (sha256
+        (base32
+         "05i04qa83dnarmgkx4xsk6fga5lw1lmslh4rb3vhyyy4ala562jy"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:imported-modules
+       (,@%cmake-build-system-modules
+        (guix build glib-or-gtk-build-system))
+       #:modules
+       ((guix build cmake-build-system)
+        ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+        (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases
+                      'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases
+                      'glib-or-gtk-wrap)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gcr" ,gcr)
+       ("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libarchive" ,libarchive)
+       ("libpeas" ,libpeas)
+       ("libsoup" ,libsoup)
+       ("sqlite" ,sqlite)
+       ("vala" ,vala)
+       ("webkitgtk" ,webkitgtk)))
+    (synopsis "Lightweight graphical web browser")
+    (description "@code{Midori} is a lightweight, Webkit-based web browser.
+It features integration with GTK+3, configurable web search engine, bookmark
+management, extensions such as advertisement blocker and colorful tabs.")
+    (home-page "https://www.midori-browser.org")
+    (license license:lgpl2.1+)))
 
 (define-public dillo
   (package

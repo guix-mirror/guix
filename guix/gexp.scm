@@ -472,24 +472,26 @@ This is the declarative counterpart of 'gexp->script'."
                    #:target target))))
 
 (define-record-type <scheme-file>
-  (%scheme-file name gexp splice?)
+  (%scheme-file name gexp splice? load-path?)
   scheme-file?
   (name       scheme-file-name)                  ;string
   (gexp       scheme-file-gexp)                  ;gexp
-  (splice?    scheme-file-splice?))              ;Boolean
+  (splice?    scheme-file-splice?)               ;Boolean
+  (load-path? scheme-file-set-load-path?))       ;Boolean
 
-(define* (scheme-file name gexp #:key splice?)
+(define* (scheme-file name gexp #:key splice? (set-load-path? #t))
   "Return an object representing the Scheme file NAME that contains GEXP.
 
 This is the declarative counterpart of 'gexp->file'."
-  (%scheme-file name gexp splice?))
+  (%scheme-file name gexp splice? set-load-path?))
 
 (define-gexp-compiler (scheme-file-compiler (file <scheme-file>)
                                             system target)
   ;; Compile FILE by returning a derivation that builds the file.
   (match file
-    (($ <scheme-file> name gexp splice?)
+    (($ <scheme-file> name gexp splice? set-load-path?)
      (gexp->file name gexp
+                 #:set-load-path? set-load-path?
                  #:splice? splice?
                  #:system system
                  #:target target))))

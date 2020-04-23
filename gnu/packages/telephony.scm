@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
@@ -209,6 +209,8 @@ communications via sockets, and various methods for data handling, such as
 serialization and XML parsing.  It includes the uCommon C++ library, a smaller
 reimplementation.")
    (license license:gpl2+) ; plus runtime exception
+   (properties '((ftp-directory . "/gnu/commoncpp")
+                 (upstream-name . "commoncpp2")))
    (home-page "https://www.gnu.org/software/commoncpp/")))
 
 (define-public ucommon
@@ -259,14 +261,14 @@ packet-manipulation library.")
 (define-public osip
   (package
    (name "osip")
-   (version "5.0.0")
+   (version "5.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/osip/libosip2-" version ".tar.gz"))
             (patches (search-patches "osip-CVE-2017-7853.patch"))
             (sha256
              (base32
-              "00yznbrm9q04wgd4b831km8iwlvwvsnwv87igf79g5vj9yakr88q"))))
+              "0kgnxgzf968kbl6rx3hjsfb3jsg4ydgrsf35gzj319i1f8qjifv1"))))
    (build-system gnu-build-system)
 
    (synopsis "Library implementing SIP (RFC-3261)")
@@ -274,6 +276,8 @@ packet-manipulation library.")
 used to provide multimedia and telecom software developers with an interface
 to initiate and control SIP sessions.")
    (license license:lgpl2.1+)
+   (properties '((ftp-directory . "/gnu/osip")
+                 (upstream-name . "libosip2")))
    (home-page "https://www.gnu.org/software/osip/")))
 
 

@@ -12,6 +12,7 @@ Copyright @copyright{} 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2019 Efraim Flashner@*
 Copyright @copyright{} 2019 Pierre Neidhardt@*
 Copyright @copyright{} 2020 Oleg Pykhalov@*
+Copyright @copyright{} 2020 Matthew Brooks@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1322,6 +1323,7 @@ reference.
 @menu
 * Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
 * Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
+* Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
 @end menu
 
 @node Customizing the Kernel
@@ -1612,6 +1614,55 @@ Then you need to add the following code to a StumpWM configuration file
 (setf clx-truetype:+font-cache-filename+ (concat (getenv "HOME") "/.fonts/font-cache.sexp"))
 (xft:cache-fonts)
 (set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
+@end lisp
+
+@node Setting up a bind mount
+@section Setting up a bind mount
+
+To bind mount a file system, one must first set up some definitions
+before the @code{operating-system} section of the system definition. In
+this example we will bind mount a folder from a spinning disk drive to
+@code{/tmp}, to save wear and tear on the primary SSD, without
+dedicating an entire partition to be mounted as @code{/tmp}.
+
+First, the source drive that hosts the folder we wish to bind mount
+should be defined, so that the bind mount can depend on it.
+
+@lisp
+(define source-drive ;; "source-drive" can be named anything you want.
+   (file-system
+    (device (uuid "UUID goes here"))
+    (mount-point "/path-to-spinning-disk-goes-here")
+    (type "ext4"))) ;; Make sure to set this to the appropriate type for your drive.
+@end lisp
+
+The source folder must also be defined, so that guix will know it's not
+a regular block device, but a folder.
+@lisp
+(define (%source-directory) "/path-to-spinning-disk-goes-here/tmp") ;; "source-directory" can be named any valid variable name.
+@end lisp
+
+Finally, inside the @code{file-systems} definition, we must add the
+mount itself.
+
+@lisp
+(file-systems (cons*
+
+                ...<other drives omitted for clarity>...
+
+                source-drive ;; Must match the name you gave the source drive in the earlier definition.
+
+                (file-system
+                 (device (%source-directory)) ;; Make sure "source-directory" matches your earlier definition.
+                 (mount-point "/tmp")
+                 (type "none") ;; We are mounting a folder, not a partition, so this type needs to be "none"
+                 (flags '(bind-mount))
+                 (dependencies (list source-drive)) ;; Ensure "source-drive" matches what you've named the variable for the drive.
+                 )
+
+                 ...<other drives omitted for clarity>...
+
+                ))
 @end lisp
 
 @c *********************************************************************

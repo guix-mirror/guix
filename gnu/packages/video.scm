@@ -39,6 +39,7 @@
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2437,7 +2438,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "24.0.4")
+    (version "25.0.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2446,7 +2447,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m15ch2ix9qrdf1a9mj7wcpl72z3h13zx60c9q72sb1435id2g1q"))))
+                "02ppkp1j5yxnxv663nz5wv4vbcg3k53l43xq94d1p1b3j4wxwq8b"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -3921,3 +3922,31 @@ work-in-progress, aiming to support video-on-demand and live streaming
 applications.  It only supports Intel-compatible CPUs (x86).")
     (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
     (license license:bsd-2)))
+
+(define-public w-scan
+  (package
+    (name "w-scan")
+    (version "20170107")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gen2vdr.de/wirbel/w_scan/w_scan-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1zkgnj2sfvckix360wwk1v5s43g69snm45m0drnzyv7hgf5g7q1q"))))
+    (build-system gnu-build-system)
+    (synopsis "Scan ATSC/DVB-C/DVB-S/DVB-T channels")
+    (description
+     "This is a small command line utility used to perform frequency scans for
+DVB and ATSC transmissions without initial tuning data.  It can print the
+result in several formats:
+@itemize
+@item VDR channels.conf,
+@item czap/tzap/xine/mplayer channels.conf,
+@item Gstreamer dvbsrc plugin,
+@item VLC xspf playlist,
+@item XML,
+@item initial tuning data for scan or dvbv5-scan.
+@end itemize\n")
+    (home-page "https://www.gen2vdr.de/wirbel/w_scan/index2.html")
+    (license license:gpl2+)))

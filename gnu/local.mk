@@ -29,7 +29,10 @@
 # Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 # Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 # Copyright © 2020 R Veera Kumar <vkor@vkten.in>
-# Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz
+# Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+# Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+# Copyright © 2020 Felix Gruber <felgru@posteo.net>
+# Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -520,6 +523,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/video.scm			\
   %D%/packages/vim.scm				\
   %D%/packages/virtualization.scm		\
+  %D%/packages/visidata.scm			\
   %D%/packages/vnc.scm				\
   %D%/packages/vpn.scm				\
   %D%/packages/vulkan.scm			\
@@ -854,6 +858,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/doxygen-1.8.17-runtests.patch		\
   %D%/packages/patches/dstat-fix-crash-when-specifying-delay.patch	\
   %D%/packages/patches/dstat-skip-devices-without-io.patch	\
+  %D%/packages/patches/dune-istl-2.7-fix-non-mpi-tests.patch	\
   %D%/packages/patches/dvd+rw-tools-add-include.patch 		\
   %D%/packages/patches/eigen-stabilise-sparseqr-test.patch	\
   %D%/packages/patches/einstein-build.patch			\
@@ -862,7 +867,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/elm-compiler-disable-reactor.patch	\
   %D%/packages/patches/elm-compiler-fix-map-key.patch		\
   %D%/packages/patches/emacs27-exec-path.patch			\
-  %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
@@ -1162,6 +1166,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmpeg2-global-symbol-test.patch	\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
+  %D%/packages/patches/libqalculate-3.8.0-libcurl-ssl-fix.patch	\
   %D%/packages/patches/libreoffice-poppler-compat.patch		\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
   %D%/packages/patches/libsndfile-CVE-2017-8361-8363-8365.patch	\
@@ -1509,6 +1514,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
+  %D%/packages/patches/u-boot-DT-for-Pinebook-Pro.patch		\
+  %D%/packages/patches/u-boot-add-boe-nv140fhmn49-display.patch	\
+  %D%/packages/patches/u-boot-gpio-keys-binding-cons.patch	\
+  %D%/packages/patches/u-boot-leds-common-binding-con.patch	\
+  %D%/packages/patches/u-boot-support-Pinebook-Pro-laptop.patch	\
+  %D%/packages/patches/u-boot-video-rockchip-fix-build.patch	\
   %D%/packages/patches/ucx-tcp-iface-ioctl.patch		\
   %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\

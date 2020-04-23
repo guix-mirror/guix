@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
-;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -162,9 +162,11 @@
   #:use-module (gnu packages spice)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages virtualization)
@@ -9984,6 +9986,135 @@ to.")
               license:public-domain
               ;; snowball
               license:bsd-2))))
+
+(define-public libratbag
+  (package
+    (name "libratbag")
+    (version "0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libratbag/libratbag.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18y8mfr63d91278m1kcid0wvrxa1sgjs8na9af1ks2n28ssvciwq"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Dsystemd=false"
+             "-Dlogind-provider=elogind")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site (string-append
+                           "/lib/python"
+                           ,(version-major+minor (package-version python))
+                           "/site-packages"))
+                    (evdev (string-append
+                            (assoc-ref inputs "python-evdev") site))
+                    (pygo (string-append
+                           (assoc-ref inputs "python-pygobject") site))
+                    (python-wrap
+                     `("PYTHONPATH" = (,evdev ,pygo))))
+               (wrap-program (string-append out "/bin/" "ratbagctl")
+                 python-wrap)
+               #t))))))
+    (native-inputs
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)
+       ("valgrind" ,valgrind)))
+    (inputs
+     `(("glib" ,glib)
+       ("json-glib" ,json-glib)
+       ("libevdev" ,libevdev)
+       ("libsystemd" ,elogind)
+       ("libunistring" ,libunistring)
+       ("python-evdev" ,python-evdev)
+       ("python-pygobject" ,python-pygobject)
+       ("udev" ,eudev)))
+    (home-page "https://github.com/libratbag/libratbag")
+    (synopsis "DBus daemon and utility for configuring gaming mice")
+    (description "libratbag provides @command{ratbagd}, a DBus daemon to
+configure input devices, mainly gaming mice.  The daemon provides a generic
+way to access the various features exposed by these mice and abstracts away
+hardware-specific and kernel-specific quirks.  There is also the
+@command{ratbagctl} command line interface for configuring devices.
+
+libratbag currently supports devices from Logitech, Etekcity, GSkill, Roccat,
+Steelseries.
+
+The ratbagd DBus service can be enabled by adding the following service to
+your operating-system definition:
+
+  (simple-service 'ratbagd dbus-root-service-type (list libratbag))")
+    (license license:expat)))
+
+(define-public piper
+  (package
+    (name "piper")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libratbag/piper.git")
+             (commit version)))
+       (sha256
+        (base32 "17h06j8lxpbfygq8fzycl7lml4vv7r05bsyhh3gga2hp0zms4mvg"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("python-flake8" ,python-flake8)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gtk" ,gtk+)
+       ("gtk:bin" ,gtk+ "bin")
+       ("librsvg" ,librsvg)
+       ("python-evdev" ,python-evdev)
+       ("python-lxml" ,python-lxml)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%meson-build-system-modules)
+       #:modules (((guix build python-build-system) #:prefix python:)
+                  (guix build meson-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-update-gtk-icon-cache
+           (lambda _
+             (substitute* "meson.build"
+               (("meson.add_install_script('meson_install.sh')") ""))
+             #t))
+         ;; TODO: Switch to wrap-script when it is fixed.
+         (add-after 'install 'wrap-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'wrap-python 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program
+                 (string-append (assoc-ref outputs "out" )"/bin/piper")
+               `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+             #t)))))
+    (home-page "https://github.com/libratbag/piper/")
+    (synopsis "Configure bindings and LEDs on gaming mice")
+    (description "Piper is a GTK+ application for configuring gaming mice with
+onboard configuration for key bindings via libratbag.  Piper requires
+a @command{ratbagd} daemon running with root privileges.  It can be run
+manually as root, but is preferably configured as a DBus service that can
+launch on demand.  This can be configured by enabling the following service,
+provided there is a DBus service present:
+
+  (simple-service 'ratbagd dbus-root-service-type (list libratbag))")
+    (license license:gpl2)))
 
 (define-public parlatype
   ;; This is one commit away from 2.0, because the latter introduced

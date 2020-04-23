@@ -4694,7 +4694,7 @@ linear algebra primitives specifically targeting graph analytics.")
 (define-public dune-common
   (package
     (name "dune-common")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4702,7 +4702,7 @@ linear algebra primitives specifically targeting graph analytics.")
                            version "/dune-common-" version ".tar.gz"))
        (sha256
         (base32
-         "019wcr1qf7jwyxx1y5y290wdlglylskvbb2m01ljkzcza2xnlmhw"))))
+         "140q1zh44cr5yrjwg4b5ga803rkqv55vk30l2cqm29aklj1wb0rw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4732,7 +4732,7 @@ Differences} (FD).")
 (define-public dune-geometry
   (package
     (name "dune-geometry")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4740,7 +4740,7 @@ Differences} (FD).")
                            version "/dune-geometry-" version ".tar.gz"))
        (sha256
         (base32
-         "0hlaaxjyv9j05blasvb67sy02hd0w4g9znf68gdh3l731dd1aqbn"))))
+         "1cicvlwbyyw76npicnblxckyvhbfn3ip8isydiv3hlrlz8zcg5nr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4772,15 +4772,17 @@ This package contains the basic DUNE geometry classes.")
 (define-public dune-uggrid
   (package
     (name "dune-uggrid")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://dune-project.org/download/"
-                           version "/dune-uggrid-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+         (url "https://gitlab.dune-project.org/staging/dune-uggrid.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "05l7a1gb78mny49anyxk6rjvn66rhgm30y72v5cjg0m5kfgr1a1f"))))
+         "192miqgmfj6jwk969gydzpbv9ki7jg5nky3ydnrwa2nq29b5xkh0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4807,7 +4809,7 @@ This package contains the DUNE UG grid classes.")
 (define-public dune-grid
   (package
     (name "dune-grid")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4815,7 +4817,7 @@ This package contains the DUNE UG grid classes.")
                            version "/dune-grid-" version ".tar.gz"))
        (sha256
         (base32
-         "1jp4vscm9yb9xg0lh7apzccfkhvgbnk652yahigmh3cvzpl4acd0"))))
+         "17fjz30qazjgl11sryyxnw9klai4yz1ji4bs68013xcxc5hdv27s"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4850,7 +4852,7 @@ This package contains the basic DUNE grid classes.")
 (define-public dune-istl
   (package
     (name "dune-istl")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4858,7 +4860,8 @@ This package contains the basic DUNE grid classes.")
                            version "/dune-istl-" version ".tar.gz"))
        (sha256
         (base32
-         "0l2gyrvys5w6wsmk0ckbb7295s80b7yk7qrl7x66akv2jv1nzq2w"))))
+         "0gl3wgz5rs6sb4m83440ny45sbx7z7lnbi3gx6r9nm3rvy5j33f9"))
+       (patches (search-patches "dune-istl-2.7-fix-non-mpi-tests.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4908,7 +4911,7 @@ aggregation-based algebraic multigrid.")
 (define-public dune-localfunctions
   (package
     (name "dune-localfunctions")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4916,7 +4919,7 @@ aggregation-based algebraic multigrid.")
                            version "/dune-localfunctions-" version ".tar.gz"))
        (sha256
         (base32
-         "19c6zjinwwpy8jh4v4prhphyd438rapd4x80fj93apmwgw04nrhl"))))
+         "1yih59h6vngii696bx1c2vil02lriij4kz0nc583mjn9kiaqxfqd"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -4963,15 +4966,17 @@ assemble global function spaces on finite-element grids.")
 (define-public dune-alugrid
   (package
     (name "dune-alugrid")
-    (version "2.6.0")
+    (version "2.7.0-git-81d35682")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://dune-project.org/download/"
-                           version "/dune-alugrid-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.dune-project.org/extensions/dune-alugrid.git")
+             (commit "81d356827c84454b971937db02c02b90bbcd7fe5")))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l9adgyjpra8mvwm445s0lpjshnb63jag85fb2hisbjn6bm320yj"))))
+         "0z54lwfp53prcrs94k8gwh047l9z642jll3l56xlyfr69z0b2zz1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -5011,17 +5016,17 @@ cubes.")
 (define-public dune-subgrid
   (package
     (name "dune-subgrid")
-    (version "2.6.0")
+    (version "2.7.0-git-2103a363")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
          (url "https://git.imp.fu-berlin.de/agnumpde/dune-subgrid")
-         (commit "releases/2.6-1")))
+         (commit "2103a363f32e8d7b60e66eee7ddecf969f6cf762")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-          "1gcv35rx3knqd54r4pp9rzd639db4j8w2r2ibq43w1mgwdcqhs64"))))
+          "1wsjlypd3835c3arqjkw836cxx5q67zy447wa65q634lf6f6v9ia"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -5051,7 +5056,7 @@ provides the full grid interface including adaptive mesh refinement.")
 (define-public dune-typetree
   (package
     (name "dune-typetree")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method git-fetch)
@@ -5061,7 +5066,7 @@ provides the full grid interface including adaptive mesh refinement.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mnv6w2f22lz3j4bdpdjq55vjm8xxfx9v4vvhg9bd36xpsbjpjp9"))))
+         "1rhv25yg0q1hw50c8wlfqhgwrjl4mh62zq9v14ilwgzbfgxmpiy7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -5090,7 +5095,7 @@ operating on statically typed trees of objects.")
 (define-public dune-functions
   (package
     (name "dune-functions")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
        (method git-fetch)
@@ -5100,7 +5105,7 @@ operating on statically typed trees of objects.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1an8gb477n8j0kzpbrv7nr1snh8pxip0gsxq6w63jc83gg3dj200"))))
+         "1na4gcih0kin37ksj2xj07ds04v7zx53pjdhm1hzy55jjfqdjk8h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -5140,17 +5145,17 @@ implemented as callable objects, and bases of finite element spaces.")
 (define-public dune-pdelab
   (package
     (name "dune-pdelab")
-    (version "2.6.0-rc1")
+    (version "2.7.0-git-476fe437")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://gitlab.dune-project.org/pdelab/dune-pdelab")
-             (commit (string-append "v" version))))
+             (commit "476fe43763fa6f459c5e4658e2a2b4b5582db834")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07g0s9448z65vjrq88g5rv3340iifil85k170n8kbqchsvi4ny5v"))))
+         "0cs36piqzn6rq0j2ih3ab3q3q9yg199wk72k5qi86pkzh7i7fdn1"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; XXX: the tests cannot be compiled
     (inputs
@@ -5473,7 +5478,9 @@ researchers and developers alike to get started on SAT.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))))
+        (base32 "1vbaza9c7159xf2ym90l0xkyj2mp6c3hbghhsqn29yvz08fda9df"))
+       (patches
+        (search-patches "libqalculate-3.8.0-libcurl-ssl-fix.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

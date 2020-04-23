@@ -632,6 +632,23 @@ and FILE could be \"/usr/bin/env\"."
   (files->etc-directory (service-value service)))
 
 (define (files->etc-directory files)
+  (define (assert-no-duplicates files)
+    (let loop ((files files)
+               (seen (set)))
+      (match files
+        (() #t)
+        (((file _) rest ...)
+         (when (set-contains? seen file)
+           (raise (condition
+                   (&message
+                    (message (format #f (G_ "duplicate '~a' entry for /etc")
+                                     file))))))
+         (loop rest (set-insert file seen))))))
+
+  ;; Detect duplicates early instead of letting them through, eventually
+  ;; leading to a build failure of "etc.drv".
+  (assert-no-duplicates files)
+
   (file-union "etc" files))
 
 (define (etc-entry files)
