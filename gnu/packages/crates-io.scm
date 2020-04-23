@@ -38,6 +38,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
@@ -13184,6 +13185,49 @@ types as proposed in RFC 1158.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-nettle-7
+  (package
+    (name "rust-nettle")
+    (version "7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nettle" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1n6dwy9zba8853bmxzhwaashd3np0wxpx0pj43brm0hb8n2sxbxi"))
+       (patches (search-patches "rust-nettle-disable-vendor.patch"))))
+    (build-system cargo-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("clang" ,clang)
+       ("gmp" ,gmp)
+       ("nettle" ,nettle)))
+    (arguments
+     `(#:skip-build? #t ;; provides nothing, has no tests
+       #:cargo-inputs
+       (("rust-getrandom" ,rust-getrandom-0.1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-nettle-sys" ,rust-nettle-sys-2)
+        ("rust-thiserror" ,rust-thiserror-1.0))
+       #:cargo-development-inputs
+       (("rust-bindgen" ,rust-bindgen-0.51)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-missing-env-vars
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; FIXME: why do we need to set this?
+             (setenv "LIBCLANG_PATH"
+                     (string-append (assoc-ref inputs "clang") "/lib"))
+             #t)))))
+    (home-page "https://gitlab.com/sequoia-pgp/nettle-rs")
+  (synopsis "Rust bindings for the Nettle cryptographic library")
+  (description "This package provides Rust bindings for the Nettle
+cryptographic library.")
+  (license (list license:lgpl3 license:gpl2 license:gpl3))))
 
 (define-public rust-nettle-sys-2
   (package
