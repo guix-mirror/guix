@@ -21213,3 +21213,32 @@ is also implemented here.")
 @code{openMP} support as needed in several packages like
 @code{aws}, @code{adimpro}, @code{fmri}, and @code{dwi}.")
     (license license:gpl2+)))
+
+(define-public r-aws
+  (package
+    (name "r-aws")
+    (version "2.4-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aws" version))
+       (sha256
+        (base32
+         "1czlsy64nx6j7h1smgb561yyv3f98pwqwglk77yla4mx3fp14bvq"))))
+    (properties
+     `((upstream-name . "aws")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-awsmethods" ,r-awsmethods)
+       ("r-gsl" ,r-gsl)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/aws/")
+    (synopsis "Adaptive weights smoothing")
+    (description
+     "This package provides a collection of R-functions implementing adaptive
+smoothing procedures in 1D, 2D and 3D.  This includes the
+Propagation-Separation approach to adaptive smoothing, the @dfn{Intersecting
+Confidence Intervals} (ICI), variational approaches, and a non-local means
+filter.")
+    (license license:gpl2+)))
