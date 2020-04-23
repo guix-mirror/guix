@@ -5409,7 +5409,7 @@ board and goal value can be customized.")
 @url{http://www.4clojure.com, 4clojure} problems.  You can open a specific
 question and move to the next or previous one.  You can also verify your
 answers.")
-      (license license:gpl3))))
+      (license license:gpl3+))))
 
 (define-public emacs-base16-theme
   (package
