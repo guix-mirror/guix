@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -344,3 +346,31 @@ supported by the Linux kernel.")
        "Rkdeveloptool can read from and write to RockChip devices over USB, such
 as the Pinebook Pro.")
       (license license:gpl2+))))
+
+(define-public libqb
+  (package
+    (name "libqb")
+    ;; NOTE: We are using a Release Candidate version (for 2.0) here because
+    ;; of the linker issues with the previous release.
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ClusterLabs/libqb/releases/download/v"
+                    version "/libqb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "008vvw504kh40br5v2xkqavnp9vpmjvf768faqzv1d00fd53ingn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (home-page "https://clusterlabs.github.io/libqb/")
+    (synopsis "Library providing high performance logging, tracing, ipc, and poll")
+    (description "Libqb is a library with the primary purpose of providing
+high-performance, reusable features for client-server architecture, such as
+logging, tracing, inter-process communication (IPC), and polling.  Libqb is
+not intended to be an all-encompassing library, but instead provide focused
+APIs that are highly tuned for maximum performance for client-server
+applications.")
+    (license license:lgpl2.1)))
