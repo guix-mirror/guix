@@ -11,6 +11,73 @@
 (channel-news
  (version 0)
 
+ (entry (commit "a33eac038a811603c8b9ed106ae405a5f80a0e9d")
+        (title (en "GNU C Library upgraded")
+               (de "GNU-C-Bibliothek aktualisiert")
+               (es "Actualización de la biblioteca C de GNU")
+               (fr "Mise à jour de la bibliothèque C de GNU")
+               (nl "GNU C-bibliotheek bijgewerkt"))
+        (body
+         (en "The GNU C Library (glibc) has been upgraded to version 2.31.  To
+run previously-installed programs linked against glibc 2.29, you need to
+install locale data for version 2.29 in addition to locale data for 2.31:
+
+@example
+guix install glibc-locales glibc-locales-2.29
+@end example
+
+On Guix System, you can adjust the @code{locale-libcs} field of your
+@code{operating-system} form.  Run @code{info \"(guix) Locales\"}, for more
+info.")
+         (de "Die GNU-C-Bibliothek (glibc) wurde auf Version 2.31
+aktualisiert. Um zuvor installierte Programme, die an glibc 2.29 gebunden
+worden sind, weiter benutzen zu können, müssen Sie Locale-Daten für Version
+2.29 zusätzlich zu den Locale-Daten für 2.31 installieren:
+
+@example
+guix install glibc-locales glibc-locales-2.29
+@end example
+
+Auf Guix System genügt es, das @code{locale-libcs}-Feld Ihrer
+@code{operating-system}-Form anzupassen. Führen Sie @code{info \"(guix.de)
+Locales\"} aus, um weitere Informationen dazu zu erhalten.")
+         (es "Se ha actualizado la biblioteca de C de GNU (glibc) a la versión
+2.31. Para ejecutar programas instalados previamente que se encuentren
+enlazados con glibc 2.29, es necesario que instale los datos de localización
+de la versión 2.29 junto a los datos de localización de la versión 2.31:
+
+@example
+guix install glibc-locales glibc-locales-2.29
+@end example
+
+En el sistema Guix, puede ajustar el campo @code{locale-libcs} de su
+declaración @code{operating-system}. Ejecute @code{info \"(guix.es)
+Localizaciones\"} para obtener más información.")
+         (fr "La bibliothèque C de GNU (glibc) a été mise à jour en version
+2.31.  Pour pouvoir lancer tes programmes déjà installés et liés à glibc 2.29,
+tu dois installer les données pour la version 2.29 en plus des données de
+régionalisation pour la version 2.31:
+
+@example
+guix install glibc-locales glibc-locales-2.29
+@end example
+
+Sur le système Guix, tu peux ajuster le champ @code{locale-libcs} de ta forme
+@code{operating-system}.  Lance @code{info \"(guix.fr) Régionalisation\"} pour
+plus de détails.")
+         (nl "De GNU C-bibliotheek (glibc) werd bijgewerkt naar versie 2.31.
+Om gebruik te maken van reeds geïnstalleerde programma's die aan glibc 2.29
+gebonden zijn, moet u de regionale informatie van versie 2.29 naast die van
+versie 2.31 installeren:
+
+@example
+guix install glibc-locales glibc-locales-2.29
+@end example
+
+Op Guix System kunt u het @code{locale-libcs}-veld van uw
+@code{operating-system}-vorm aanpassen.   Voer @code{info \"(guix) Locales\"}
+uit voor verdere uitleg.")))
+
  (entry (commit "e1e6491226347d9fb93ff484d78cef98848a510a")
         (title (en "Guix Cookbook now available as Info"))
         ;; TRANSLATORS: Adjust the URL and the 'info' command to refer to the
