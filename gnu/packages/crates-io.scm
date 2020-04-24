@@ -7657,6 +7657,25 @@ futures-rs library.")
     (description "Tools for working with tasks.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-futures-timer-0.1
+  (package
+    (name "rust-futures-timer")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "futures-timer" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hw0nlyrq5an6l6y8md1rg6r380zrddvmh9cg0h64xfwnvlxzkm5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-futures" ,rust-futures-0.1))))
+    (home-page "https://github.com/async-rs/futures-timer")
+    (synopsis "Timeouts for futures")
+    (description "Timeouts for futures.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-futures-util-0.3
   (package
     (name "rust-futures-util")
