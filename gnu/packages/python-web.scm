@@ -1978,14 +1978,16 @@ library.")
            (lambda _
              (delete-file "src/geventhttpclient/tests/test_client.py")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"  "src/geventhttpclient/tests" "-v"
                      ;; Append the test modules to sys.path to avoid
                      ;; namespace conflict which breaks SSL tests.
-                     "--import-mode=append")
+                     "--import-mode=append"
+                     ;; XXX: Disable test fails with Python 3.8:
+                     ;; https://github.com/gwik/geventhttpclient/issues/119
+                     "-k" (string-append "not test_cookielib_compatibility"))
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
