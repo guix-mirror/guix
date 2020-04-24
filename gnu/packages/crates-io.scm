@@ -21665,6 +21665,27 @@ initializers are available.")
          "07ywqn1vrpi3c43fmvsx7pawk9h3rb77yyqbnhap2micl454kb6f"))))
     (arguments '(#:skip-build? #t))))
 
+(define-public rust-spmc-0.3
+  (package
+    (name "rust-spmc")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "spmc" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rgcqgj6b3d0cshi7277akr2xk0cx11rkmviaahy7a3pla6l5a02"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; tests hang
+       #:cargo-development-inputs
+       (("rust-loom" ,rust-loom-0.2))))
+    (home-page "https://github.com/seanmonstar/spmc")
+    (synopsis "Simple SPMC channel")
+    (description "Simple SPMC channel")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-spsc-buffer-0.1
   (package
     (name "rust-spsc-buffer")
