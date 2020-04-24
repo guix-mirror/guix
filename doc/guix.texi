@@ -8830,7 +8830,7 @@ $ guix environment --no-grafts -C foo --ad-hoc strace gdb
 Here, @command{guix environment -C} creates a container and spawns a new
 shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
 strace gdb} part adds the @command{strace} and @command{gdb} commands to
-the container, which would may find handy while debugging.  The
+the container, which you may find handy while debugging.  The
 @option{--no-grafts} option makes sure we get the exact same
 environment, with ungrafted packages (@pxref{Security Updates}, for more
 info on grafts).
