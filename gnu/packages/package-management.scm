@@ -181,46 +181,48 @@ $(prefix)/etc/init.d\n")))
 
                         (invoke "sh" "bootstrap")))
                     (add-before 'check 'copy-bootstrap-guile
-                      (lambda* (#:key system inputs #:allow-other-keys)
-                        ;; Copy the bootstrap guile tarball in the store used
-                        ;; by the test suite.
-                        (define (intern file recursive?)
-                          ;; Note: don't use 'guix download' here because we
-                          ;; need to set the 'recursive?' argument.
-                          (define base
-                            (strip-store-file-name file))
+                      (lambda* (#:key system target inputs #:allow-other-keys)
+                        (unless target
+                          (begin
+                            ;; Copy the bootstrap guile tarball in the store
+                            ;; used by the test suite.
+                            (define (intern file recursive?)
+                              ;; Note: don't use 'guix download' here because we
+                              ;; need to set the 'recursive?' argument.
+                              (define base
+                                (strip-store-file-name file))
 
-                          (define code
-                            `(begin
-                               (use-modules (guix))
-                               (with-store store
-                                 (let* ((item (add-to-store store ,base
-                                                            ,recursive?
-                                                            "sha256" ,file))
-                                        (root (string-append "/tmp/gc-root-"
-                                                             (basename item))))
-                                   ;; Register a root so that the GC tests
-                                   ;; don't delete those.
-                                   (symlink item root)
-                                   (add-indirect-root store root)))))
+                              (define code
+                                `(begin
+                                   (use-modules (guix))
+                                   (with-store store
+                                     (let* ((item (add-to-store store ,base
+                                                                ,recursive?
+                                                                "sha256" ,file))
+                                            (root (string-append "/tmp/gc-root-"
+                                                                 (basename item))))
+                                       ;; Register a root so that the GC tests
+                                       ;; don't delete those.
+                                       (symlink item root)
+                                       (add-indirect-root store root)))))
 
-                          (invoke "./test-env" "guile" "-c"
-                                  (object->string code)))
+                              (invoke "./test-env" "guile" "-c"
+                                      (object->string code)))
 
-                        (intern (assoc-ref inputs "boot-guile") #f)
+                            (intern (assoc-ref inputs "boot-guile") #f)
 
-                        ;; On x86_64 some tests need the i686 Guile.
-                        ,@(if (and (not (%current-target-system))
-                                   (string=? (%current-system)
-                                             "x86_64-linux"))
-                              '((intern (assoc-ref inputs "boot-guile/i686") #f))
-                              '())
+                            ;; On x86_64 some tests need the i686 Guile.
+                            ,@(if (and (not (%current-target-system))
+                                       (string=? (%current-system)
+                                                 "x86_64-linux"))
+                                  '((intern (assoc-ref inputs "boot-guile/i686") #f))
+                                  '())
 
-                        ;; Copy the bootstrap executables.
-                        (for-each (lambda (input)
-                                    (intern (assoc-ref inputs input) #t))
-                                  '("bootstrap/bash" "bootstrap/mkdir"
-                                    "bootstrap/tar" "bootstrap/xz"))
+                            ;; Copy the bootstrap executables.
+                            (for-each (lambda (input)
+                                        (intern (assoc-ref inputs input) #t))
+                                      '("bootstrap/bash" "bootstrap/mkdir"
+                                        "bootstrap/tar" "bootstrap/xz"))))
                         #t))
                     (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
