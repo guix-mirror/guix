@@ -1008,17 +1008,26 @@ result back.")
 (define-public python-pytest-timeout
   (package
     (name "python-pytest-timeout")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-timeout" version))
        (sha256
         (base32
-         "1cczcjhw4xx5sjkhxlhc5c1bkr7x6fcyx12wrnvwfckshdvblc2a"))))
+         "13n42azbvs5slvy2n1a9nw17r4qdq10dd68nln3jp925safa3yl0"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Make the installed plugin discoverable by Pytest.
+                      (add-installed-pythonpath inputs outputs)
+                      (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-pexpect" ,python-pexpect)))
     (home-page "http://bitbucket.org/pytest-dev/pytest-timeout/")
     (synopsis "Plugin for py.test to abort hanging tests")
     (description
