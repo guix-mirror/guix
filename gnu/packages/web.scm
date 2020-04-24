@@ -6264,12 +6264,14 @@ technologies.")
     (name "java-eclipse-jetty-test-helper")
     (version "4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/eclipse/jetty.toolchain/"
-                                  "archive/jetty-test-helper-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse/jetty.toolchain/")
+                     (commit (string-append "jetty-test-helper-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jd6r9wc26fa11si4rn2gvy8ml8q4zw1nr6v04mjp8wvwpgvzwx5"))))
+                "1g7cdh03nfwbdxzvwm84ysgvw08xx7431lsjryj2gmf3lrqpizgb"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "eclipse-jetty-test-helper.jar"
