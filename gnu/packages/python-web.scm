@@ -969,14 +969,14 @@ your Web app.")
 (define-public python-webob
   (package
     (name "python-webob")
-    (version "1.5.1")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebOb" version))
        (sha256
         (base32
-         "02bhhzijfhv8hmi1i54d4b0v43liwhnywhflvxsv4x3zax9s3afq"))))
+          "1cpqskanmvwia8wqlpcr3ykyxysynjdnbl5namvpg8vw6jnkv1dh"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
