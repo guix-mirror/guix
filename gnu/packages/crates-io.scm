@@ -23114,6 +23114,22 @@ directories.")
        (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
         ("rust-winapi" ,rust-winapi-0.2))))))
 
+(define-public rust-term-0.2
+  (package/inherit rust-term-0.4
+    (name "rust-term")
+    (version "0.2.14")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "term" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32 "109jmzddq1kz6wm2ndgddy7yrlqcw2i36ygxl0fcymc0sda7w1zj"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))))
+
 (define-public rust-term-grid-0.1
   (package
     (name "rust-term-grid")
