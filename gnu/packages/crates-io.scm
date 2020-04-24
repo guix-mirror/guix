@@ -4922,6 +4922,38 @@ and arithmetic.")
     (description "Demo of proc-macro-hack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-derive-builder-0.5
+  (package
+    (name "rust-derive-builder")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive_builder" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0fgl8dsigr7h70clxjq8xmsfc021w5ag262wfgcqv0ian1m8x6cc"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-compiletest-rs" ,rust-compiletest-rs-0.3)
+        ("rust-derive-builder-core" ,rust-derive-builder-core-0.2)
+        ("rust-env-logger" ,rust-env-logger-0.4)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-quote" ,rust-quote-0.3)
+        ("rust-skeptic" ,rust-skeptic-0.9)
+        ("rust-syn" ,rust-syn-0.11))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.4)
+        ("rust-log" ,rust-log-0.3)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.2)
+        ("rust-skeptic" ,rust-skeptic-0.9))))
+    (home-page "https://github.com/colin-kiegel/rust-derive-builder")
+    (synopsis "Builder pattern for arbitrary structs")
+    (description "Rust macro to automatically implement the builder pattern
+for arbitrary structs.")
+    (license (list license:expat license:asl2.0))) )
+
 (define-public rust-derive-new-0.5
   (package
     (name "rust-derive-new")
