@@ -6045,7 +6045,8 @@ values (strings, macros, or numbers) pasted together.")
               (file-name (git-file-name name version))
               ;; TODO: Patch awaiting inclusion upstream (see:
               ;; https://github.com/plk/biber/issues/239).
-              (patches (search-patches "biber-fix-encoding-write.patch"))
+              (patches (search-patches "biber-fix-encoding-write.patch"
+                                       "biber-sortinithash.patch"))
               (sha256
                (base32
                 "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
