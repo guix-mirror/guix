@@ -68,6 +68,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2355,7 +2356,15 @@ type, for example: packages, buffers, files, etc.")
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))))
+                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Add support for Guile 3.0.  Remove for versions > 0.5.2.
+                  (substitute* "configure"
+                    (("\"2\\.2 2\\.0\"")
+                     "\"3.0 2.2 2.0\""))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
