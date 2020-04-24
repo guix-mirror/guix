@@ -4922,6 +4922,29 @@ and arithmetic.")
     (description "Demo of proc-macro-hack.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-derive-new-0.5
+  (package
+    (name "rust-derive-new")
+    (version "0.5.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-new" version))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "1ncibp4jhpkym7namg3viqyw8hljd32n6abg64af8qjwrn91iwvi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))))
+    (home-page "https://github.com/nrc/derive-new")
+    (synopsis "Simple constructor functions for structs and enums")
+    (description "`#[derive(new)]` implements simple constructor functions for
+structs and enums.")
+  (license license:expat)))
+
 (define-public rust-diff-0.1
   (package
     (name "rust-diff")
