@@ -6036,7 +6036,7 @@ values (strings, macros, or numbers) pasted together.")
 (define-public biber
   (package
     (name "biber")
-    (version "2.12")
+    (version "2.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6049,7 +6049,7 @@ values (strings, macros, or numbers) pasted together.")
                                        "biber-sortinithash.patch"))
               (sha256
                (base32
-                "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
+                "0qgkc1k9n36yfmndwz879pak6mjphld0p85lzn9g2ng0vhxsifzz"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
