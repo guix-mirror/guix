@@ -7415,3 +7415,29 @@ commands as well as behind-the-scenes optimisation.  Guidelines are given as
 to what constitutes a good table in this context.  The package offers
 @code{longtable} compatibility.")
     (license license:lppl1.3+)))
+
+(define-public texlive-csquotes
+  (let ((template (simple-texlive-package
+                   "texlive-csquotes"
+                   (list "/doc/latex/csquotes/"
+                         "/tex/latex/csquotes/")
+                   (base32
+                    "15hgn37zg433skn7ijqs1kl2z56fhy29cjxn01b5pjrnrkdar4i4")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-etoolbox" ,texlive-etoolbox)))
+      (home-page "https://www.ctan.org/pkg/csquotes")
+      (synopsis "Context sensitive quotation facilities")
+      (description "This package provides advanced facilities for inline and
+display quotations.  It is designed for a wide range of tasks ranging from the
+most simple applications to the more complex demands of formal quotations.
+The facilities include commands, environments, and user-definable 'smart
+quotes' which dynamically adjust to their context.  Quotation marks are
+switched automatically if quotations are nested and they can be adjusted to
+the current language if the babel package is available.  There are additional
+facilities designed to cope with the more specific demands of academic
+writing, especially in the humanities and the social sciences.  All quote
+styles as well as the optional active quotes are freely configurable.")
+      (license license:lppl1.3c+))))
