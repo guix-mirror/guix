@@ -5054,6 +5054,24 @@ structs and enums.")
      "This package provides a Rust text diffing and assertion library.")
     (license license:expat)))
 
+(define-public rust-difference-1
+  (package/inherit rust-difference-2.0
+    (name "rust-difference")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "difference" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1a5v0b73z7vywbclll32wjsfkdgh6wn9prnq91z0d3lag4clsc5k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-getopts" ,rust-getopts-0.2))
+       #:cargo-development-inputs
+       (("rust-term" ,rust-term-0.2))))))
+
 (define-public rust-digest-0.8
   (package
     (name "rust-digest")
