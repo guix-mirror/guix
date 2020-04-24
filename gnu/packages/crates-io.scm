@@ -21254,6 +21254,27 @@ variants in pure Rust.")
      "SipHash functions from rust-core < 1.13.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-skeptic-0.9
+  (package
+    (name "rust-skeptic")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "skeptic" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0savk91xy74izw9z6vn6ialkaqrp81w7dayha801b52h670qszfx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-pulldown-cmark" ,rust-pulldown-cmark-0.0.8)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://github.com/budziq/rust-skeptic")
+    (synopsis "Test your Rust markdown documentation via Cargo")
+    (description "Test your Rust markdown documentation via Cargo")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-skeptic-0.13
   (package
     (name "rust-skeptic")
