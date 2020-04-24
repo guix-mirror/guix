@@ -4813,13 +4813,20 @@ NetSurf project.")
     (version "3.20190228")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://snapshot.debian.org/archive/debian/"
-                           "20190301T035241Z/pool/main/i/ikiwiki/ikiwiki_"
-                           version ".orig.tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.ikiwiki.info/")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "17pyblaqhkb61lxl63bzndiffism8k859p54k3k4sghclq6lsynh"))))
+         "1c0i48jp2vpiwn2pacr6jbjdj26v7s9vzzs7j7gc16bx37dfgbbi"))
+       (snippet
+        '(begin
+           ;; The POT file requires write permission during the build
+           ;; phase.
+           (chmod "po/ikiwiki.pot" #o644)
+           #t))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4837,6 +4844,14 @@ NetSurf project.")
            (lambda _
              (substitute* "Makefile.PL"
                (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+             #t))
+         (add-before 'build 'set-modification-times
+           ;; The wiki '--refresh' steps, which are executed during
+           ;; the check phase, require recent timestamps on files in
+           ;; the 'doc' and 'underlays' directories.
+           (lambda _
+             (invoke "find"  "doc" "underlays" "-type" "f" "-exec"
+                     "touch" "{}" "+")
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
