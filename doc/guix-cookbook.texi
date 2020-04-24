@@ -1080,7 +1080,7 @@ mechanism of passing code around two running processes is called @uref{https://a
 @subsubsection Utility functions
 
 When customizing @code{phases}, we often need to write code that mimics the
-equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.) commonly used during
+equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.)@: commonly used during
 regular ``Unix-style'' installations.
 
 Some like @code{chmod} are native to Guile.
@@ -1576,7 +1576,7 @@ available for inclusion into the initrd.
 
 You could install StumpWM with a Guix system by adding
 @code{stumpwm-checkout} and optionally @code{`(,stumpwm-checkout "lib")}
-packages to a system configuration file, e.g. @file{/etc/config.scm}.
+packages to a system configuration file, e.g.@: @file{/etc/config.scm}.
 
 An example configuration can look like this:
 
@@ -1620,7 +1620,7 @@ Then you need to add the following code to a StumpWM configuration file
 @section Setting up a bind mount
 
 To bind mount a file system, one must first set up some definitions
-before the @code{operating-system} section of the system definition. In
+before the @code{operating-system} section of the system definition.  In
 this example we will bind mount a folder from a spinning disk drive to
 @code{/tmp}, to save wear and tear on the primary SSD, without
 dedicating an entire partition to be mounted as @code{/tmp}.
@@ -1792,7 +1792,7 @@ where we will store our profiles in the rest of this article.
 Placing all your profiles in a single directory, with each profile getting its
 own sub-directory, is somewhat cleaner.  This way, each sub-directory will
 contain all the symlinks for precisely one profile.  Besides, "looping over
-profiles" becomes obvious from any programming language (e.g. a shell script) by
+profiles" becomes obvious from any programming language (e.g.@: a shell script) by
 simply looping over the sub-directories of @samp{$GUIX_EXTRA_PROFILES}.
 
 Note that it's also possible to loop over the output of
@@ -1862,7 +1862,7 @@ guix package -m /path/to/guix-my-project-manifest.scm -p "$GUIX_EXTRA_PROFILES"/
 To upgrade all profiles, it's easy enough to loop over them.  For instance,
 assuming your manifest specifications are stored in
 @samp{~/.guix-manifests/guix-$profile-manifest.scm}, with @samp{$profile} being the name
-of the profile (e.g. "project1"), you could do the following in Bourne shell:
+of the profile (e.g.@: "project1"), you could do the following in Bourne shell:
 
 @example
 for profile in "$GUIX_EXTRA_PROFILES"/*; do
