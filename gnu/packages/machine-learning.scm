@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -835,13 +836,13 @@ computing environments.")
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
-     `(("python-joblib" ,python-joblib)
-       ("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest)
        ("python-pandas" ,python-pandas) ;for tests
        ("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+       ("python-scipy" ,python-scipy)
+       ("python-joblib" ,python-joblib)))
     (home-page "https://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
