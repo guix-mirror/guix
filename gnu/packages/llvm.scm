@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;; Copyright © 2016, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
@@ -84,17 +84,17 @@ as \"x86_64-linux\"."
       (string-append "https://releases.llvm.org/" version "/" component "-"
                      version ".src.tar.xz")))
 
-(define-public llvm
+(define-public llvm-10
   (package
     (name "llvm")
-    (version "9.0.1")
+    (version "10.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
-        "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))
+        "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
@@ -368,23 +368,49 @@ output), and Binutils.")
               ("libc-debug" ,glibc "debug")
               ("libc-static" ,glibc "static")))))
 
-(define-public clang-runtime
+(define-public clang-runtime-10
   (clang-runtime-from-llvm
-   llvm
+   llvm-10
+   "0x9c531k6ww21s2mkdwqx1vbdjmx6d4wmfb8gdbj0wqa796sczba"))
+
+(define-public clang-10
+  (clang-from-llvm llvm-10 clang-runtime-10
+                   "08fbxa2a0kr3ni35ckppj0kyvlcyaywrhpqwcdrdy0z900mhcnw8"
+                   #:patches '("clang-10.0-libc-search-path.patch")))
+
+(define-public clang-toolchain-10
+  (make-clang-toolchain clang-10))
+
+(define-public llvm-9
+  (package
+    (inherit llvm-10)
+    (version "9.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (llvm-download-uri "llvm" version))
+       (sha256
+        (base32
+         "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))))
+
+(define-public clang-runtime-9
+  (clang-runtime-from-llvm
+   llvm-9
    "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"))
 
-(define-public clang
-  (clang-from-llvm llvm clang-runtime
+(define-public clang-9
+  (clang-from-llvm llvm-9 clang-runtime-9
                    "0ls2h3iv4finqyflyhry21qhc9cm9ga7g1zq21020p065qmm2y2p"
                    #:patches '("clang-9.0-libc-search-path.patch")))
 
-(define-public clang-toolchain
-  (make-clang-toolchain clang))
+(define-public clang-toolchain-9
+  (make-clang-toolchain clang-9))
 
-(define-public llvm-9 llvm)
-(define-public clang-runtime-9 clang-runtime)
-(define-public clang-9 clang)
-(define-public clang-toolchain-9 clang-toolchain)
+;; Default LLVM and Clang version.
+(define-public llvm llvm-9)
+(define-public clang-runtime clang-runtime-9)
+(define-public clang clang-9)
+(define-public clang-toolchain clang-toolchain-9)
 
 (define-public llvm-8
   (package
