@@ -4954,6 +4954,30 @@ and arithmetic.")
 for arbitrary structs.")
     (license (list license:expat license:asl2.0))) )
 
+(define-public rust-derive-builder-core-0.2
+  (package
+    (name "rust-derive-builder-core")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-builder-core" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mxpl1ja3l60w1v5vr3733hr5mcpds2hfl6shrmy3a2zkvp28pkk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-log" ,rust-log-0.3)
+        ("rust-quote" ,rust-quote-0.3)
+        ("rust-syn" ,rust-syn-0.11))
+       #:cargo-development-inputs
+       (("rust-pretty-assertions" ,rust-pretty-assertions-0.2))))
+    (home-page "https://github.com/colin-kiegel/rust-derive-builder")
+    (synopsis "Internal helper library for the derive_builder crate")
+    (description "Internal helper library for the derive_builder crate.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-derive-new-0.5
   (package
     (name "rust-derive-new")
