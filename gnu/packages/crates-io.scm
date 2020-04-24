@@ -18164,6 +18164,28 @@ accessors.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0))))))
 
+(define-public rust-rayon-0.8
+  (package/inherit rust-rayon-1.3
+    (name "rust-rayon")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rayon" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1j2l9x98ma63qkh9w8zik0vcpwqf9cvc2ynh66ibjp36nq4gw55n"))))
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rayon-core" ,rust-rayon-core-1.7))
+      #:cargo-development-inputs
+      (("rust-compiletest-rs" ,rust-compiletest-rs-0.2)
+       ("rust-docopt" ,rust-docopt-0.7)
+       ("rust-futures" ,rust-futures-0.1)
+       ("rust-rand" ,rust-rand-0.3)
+       ("rust-rustc-serialize" ,rust-rustc-serialize-0.3))))))
+
 (define-public rust-rayon-core-1.7
   (package
     (name "rust-rayon-core")
