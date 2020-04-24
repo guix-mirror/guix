@@ -24060,6 +24060,31 @@ futures efficiently")
     (description "Mock a Tokio task.")
     (license license:expat)))
 
+(define-public rust-tokio-mockstream-1
+  (package
+    (name "rust-tokio-mockstream")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-mockstream" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0mg1i39cl8x32wxwbn74hlirks8a6f3g0gfzkb0n0zwbxwvc9gs1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1))
+       #:cargo-development-inputs
+       (("rust-bytes" ,rust-bytes-0.4))))
+    (home-page "https://github.com/aatxe/tokio-mockstream")
+    (synopsis "Fake stream for testing network applications backed by
+buffers")
+    (description "This package provides a fake stream for testing network
+applications backed by buffers.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-tokio-named-pipes-0.1
   (package
     (name "rust-tokio-named-pipes")
