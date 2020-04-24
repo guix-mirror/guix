@@ -16573,6 +16573,27 @@ dependency to expose a precomputed hash.")
 replacements, adding colorful diffs.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pretty-assertions-0.2
+  (package
+    (name "rust-pretty-assertions")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pretty-assertions" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1b3nv70i16737w3qkk1q5vqswwnb19znz8r9v2kcg1qyhh3h0l8x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-difference" ,rust-difference-1))))
+    (home-page "https://github.com/colin-kiegel/rust-pretty-assertions")
+    (synopsis "Colorful diffs for `assert_eq!` and `assert_ne!`")
+    (description "Overwrite `assert_eq!` and `assert_ne!` with drop-in
+replacements, adding colorful diffs.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-pretty-env-logger-0.3
   (package
     (name "rust-pretty-env-logger")
