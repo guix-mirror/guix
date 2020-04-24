@@ -29,7 +29,7 @@
 (define-public datamash
   (package
     (name "datamash")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1jvqxcyh0aghnqh3m2rk5av1x0038flcmfzd493vasv1k69vgfdr"))))
+        "1cxdlhgz3wzjqlq8bgwad93fgqymk2abbldfzw1ffnhcp4mmjjjp"))))
     (native-inputs
      `(("which" ,which)                 ;for tests
        ("perl" ,perl)))                 ;for help2man
