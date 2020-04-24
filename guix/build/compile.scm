@@ -194,6 +194,11 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
   (with-augmented-search-path %load-path source-directory
     (with-augmented-search-path %load-compiled-path build-directory
       (with-fluids ((*current-warning-prefix* ""))
+        ;; Make sure the compiler's modules are loaded before 'with-target'
+        ;; (since 'with-target' influences the .go loader), and before
+        ;; starting to compile files in parallel.
+        (compile #f)
+
         (with-target host
           (lambda ()
             ;; FIXME: To work around <https://bugs.gnu.org/15602>, we first
@@ -201,10 +206,6 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
             (load-files source-directory files
                         #:report-load report-load
                         #:debug-port debug-port)
-
-            ;; Make sure compilation related modules are loaded before
-            ;; starting to compile files in parallel.
-            (compile #f)
 
             ;; XXX: Don't use too many workers to work around the insane
             ;; memory requirements of the compiler in Guile 2.2.2:

@@ -179,7 +179,9 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   ;; can happen, for example, when the user swapped the revision and commit
   ;; arguments by mistake.
   (when (< (string-length commit) 7)
-    (error "git-version: commit ID unexpectedly short"))
+    (raise
+      (condition
+        (&message (message "git-version: commit ID unexpectedly short")))))
   (string-append version "-" revision "." (string-take commit 7)))
 
 (define (git-file-name name version)

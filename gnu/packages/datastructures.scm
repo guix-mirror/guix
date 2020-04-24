@@ -129,14 +129,14 @@ in between these sequences may be different in both content and length.")
 (define-public liburcu
   (package
     (name "liburcu")
-    (version "0.12.0")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lttng.org/files/urcu/"
                                   "userspace-rcu-" version ".tar.bz2"))
               (sha256
                (base32
-                "15wzk3nyy6gh6i7xhksxzs8fjar1g4ddz51iahk1v7lq0vjip6s0"))))
+                "03nd1gy2c3fdb6xwdrd5lr1jcjxbzffqh3z91mzbjhjn6k8fmymv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ; for tests

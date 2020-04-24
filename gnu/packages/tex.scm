@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -5891,7 +5891,7 @@ values (strings, macros, or numbers) pasted together.")
 (define-public biber
   (package
     (name "biber")
-    (version "2.12")
+    (version "2.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5900,10 +5900,11 @@ values (strings, macros, or numbers) pasted together.")
               (file-name (git-file-name name version))
               ;; TODO: Patch awaiting inclusion upstream (see:
               ;; https://github.com/plk/biber/issues/239).
-              (patches (search-patches "biber-fix-encoding-write.patch"))
+              (patches (search-patches "biber-fix-encoding-write.patch"
+                                       "biber-sortinithash.patch"))
               (sha256
                (base32
-                "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
+                "0qgkc1k9n36yfmndwz879pak6mjphld0p85lzn9g2ng0vhxsifzz"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -7023,6 +7024,32 @@ a different path and manipulating characters.  It includes the functionality
 of the old package @code{pst-char}.")
       (license license:lppl))))
 
+(define-public texlive-marginnote
+  (let ((template (simple-texlive-package
+                   "texlive-marginnote"
+                   (list "/source/latex/marginnote/marginnote.dtx")
+                   (base32
+                    "1vj1k8xm11gjdfj60as42d8lsv3dbzrm5dlgqcfk89d9dzm3k39j"))))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/marginnote")
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/marginnote")
+         ((#:build-targets _ '())
+          ''("marginnote.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/marginnote") #t))))))
+      (synopsis "Notes in the margin")
+      (description "This package provides the command @code{\\marginnote} that
+may be used instead of @code{\\marginpar} at almost every place where
+@code{\\marginpar} cannot be used, e.g., inside floats, footnotes, or in
+frames made with the @code{framed} package.")
+      (license license:lppl1.3c+))))
+
 (define-public texlive-iftex
   (let ((template (simple-texlive-package
                    "texlive-iftex"
@@ -7243,3 +7270,29 @@ commands as well as behind-the-scenes optimisation.  Guidelines are given as
 to what constitutes a good table in this context.  The package offers
 @code{longtable} compatibility.")
     (license license:lppl1.3+)))
+
+(define-public texlive-csquotes
+  (let ((template (simple-texlive-package
+                   "texlive-csquotes"
+                   (list "/doc/latex/csquotes/"
+                         "/tex/latex/csquotes/")
+                   (base32
+                    "15hgn37zg433skn7ijqs1kl2z56fhy29cjxn01b5pjrnrkdar4i4")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-etoolbox" ,texlive-etoolbox)))
+      (home-page "https://www.ctan.org/pkg/csquotes")
+      (synopsis "Context sensitive quotation facilities")
+      (description "This package provides advanced facilities for inline and
+display quotations.  It is designed for a wide range of tasks ranging from the
+most simple applications to the more complex demands of formal quotations.
+The facilities include commands, environments, and user-definable 'smart
+quotes' which dynamically adjust to their context.  Quotation marks are
+switched automatically if quotations are nested and they can be adjusted to
+the current language if the babel package is available.  There are additional
+facilities designed to cope with the more specific demands of academic
+writing, especially in the humanities and the social sciences.  All quote
+styles as well as the optional active quotes are freely configurable.")
+      (license license:lppl1.3c+))))

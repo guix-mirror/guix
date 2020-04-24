@@ -21162,3 +21162,245 @@ evaluated interactively.")
 Bayes factors, posterior model probabilities, and normalizing constants in
 general, via different versions of bridge sampling.")
     (license license:gpl2+)))
+
+(define-public r-tea
+  (package
+    (name "r-tea")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tea" version))
+       (sha256
+        (base32
+         "0ql7lrxk0ihm49kqsvz79ig8i54rwiy9nxav4v9hy72j9kj5bgjn"))))
+    (properties
+     `((upstream-name . "tea")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/tea/")
+    (synopsis "Threshold estimation approaches")
+    (description
+     "This package provides different approaches for selecting the threshold
+in generalized Pareto distributions.  Most of them are based on minimizing the
+AMSE-criterion or atleast by reducing the bias of the assumed GPD-model.
+Others are heuristically motivated by searching for stable sample paths, i.e.
+a nearly constant region of the tail index estimator with respect to k, which
+is the number of data in the tail.  The third class is motivated by graphical
+inspection.  In addition, a sequential testing procedure for GPD-GoF-tests
+is also implemented here.")
+    (license license:gpl3)))
+
+(define-public r-awsmethods
+  (package
+    (name "r-awsmethods")
+    (version "1.1-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "awsMethods" version))
+       (sha256
+        (base32
+         "0hbmrcpdyg15zg4rysscsmxpxlpy0dkxx2aa63qibq7l1k14v4sh"))))
+    (properties
+     `((upstream-name . "awsMethods")))
+    (build-system r-build-system)
+    (home-page "http://www.wias-berlin.de/software/imaging/")
+    (synopsis "Class and methods definitions")
+    (description
+     "This package defines the generic method @code{extract} and provides
+@code{openMP} support as needed in several packages like
+@code{aws}, @code{adimpro}, @code{fmri}, and @code{dwi}.")
+    (license license:gpl2+)))
+
+(define-public r-aws
+  (package
+    (name "r-aws")
+    (version "2.4-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "aws" version))
+       (sha256
+        (base32
+         "1czlsy64nx6j7h1smgb561yyv3f98pwqwglk77yla4mx3fp14bvq"))))
+    (properties
+     `((upstream-name . "aws")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-awsmethods" ,r-awsmethods)
+       ("r-gsl" ,r-gsl)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://cran.r-project.org/web/packages/aws/")
+    (synopsis "Adaptive weights smoothing")
+    (description
+     "This package provides a collection of R-functions implementing adaptive
+smoothing procedures in 1D, 2D and 3D.  This includes the
+Propagation-Separation approach to adaptive smoothing, the @dfn{Intersecting
+Confidence Intervals} (ICI), variational approaches, and a non-local means
+filter.")
+    (license license:gpl2+)))
+
+(define-public r-sgloptim
+  (package
+    (name "r-sgloptim")
+    (version "1.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sglOptim" version))
+       (sha256
+        (base32
+         "15bkkvgp9v9vsp65wps48g3c2fa0fj1025hbrziywq14j7wayyjr"))))
+    (properties
+     `((upstream-name . "sglOptim")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppprogress" ,r-rcppprogress)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/nielsrhansen/sglOptim")
+    (synopsis "Generic sparse group Lasso solver")
+    (description
+     "This package provides a fast generic solver for sparse group lasso
+optimization problems.  The loss (objective) function must be defined in a C++
+module.  The optimization problem is solved using a coordinate gradient
+descent algorithm.  Convergence of the algorithm is established and the
+algorithm is applicable to a broad class of loss functions.  Use of parallel
+computing for cross validation and subsampling is supported through the
+@code{foreach} and @code{doParallel} packages.")
+    (license license:gpl2+)))
+
+(define-public r-grouped
+  (package
+    (name "r-grouped")
+    (version "0.6-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "grouped" version))
+       (sha256
+        (base32
+         "1glxgacpwk7yjbkwg5ci6bmb2il6hf5zhydwi5bbq6hc032m9976"))))
+    (properties
+     `((upstream-name . "grouped")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)))
+    (home-page "https://cran.r-project.org/web/packages/grouped/")
+    (synopsis "Regression analysis of grouped and coarse data")
+    (description
+     "This package provides regression models for grouped and coarse data,
+under the coarsened at random assumption.")
+    (license license:gpl2+)))
+
+(define-public r-stam
+  (package
+    (name "r-stam")
+    (version "0.0-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "stam" version))
+       (sha256
+        (base32
+         "1x1j45fir64kffny0nssb2hwn4rcp8gd2cjv6fw4yy0l4d0xi5iv"))))
+    (properties
+     `((upstream-name . "stam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-np" ,r-np)
+       ("r-sp" ,r-sp)))
+    (home-page "https://cran.r-project.org/web/packages/stam")
+    (synopsis "Spatio-temporal analysis and modelling")
+    (description
+     "This package provides various methods to conduct Spatio-Temporal
+Analysis and Modelling, including Exploratory Spatio-Temporal Analysis and
+Inferred Spatio-Temporal Modelling.")
+    (license license:gpl2+)))
+
+(define-public r-dcv
+  (package
+    (name "r-dcv")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "dcv" version))
+       (sha256
+        (base32
+         "12c716x8dnxnqksibpmyysqp2axggvy9dpd55s9bhnsvqvi6dshj"))))
+    (properties
+     `((upstream-name . "dcv")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lmtest" ,r-lmtest)))
+    (home-page "https://cran.r-project.org/web/packages/dcv/")
+    (synopsis "Conventional cross-validation statistics for climate-growth model")
+    (description
+     "This package performs several conventional cross-validation statistical
+methods for climate-growth model in the climate reconstruction from tree
+rings, including Sign Test statistic, Reduction of Error statistic, Product
+Mean Test, Durbin-Watson statistic etc.")
+    (license license:gpl2)))
+
+(define-public r-rcdd
+  (package
+    (name "r-rcdd")
+    (version "1.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rcdd" version))
+       (sha256
+        (base32
+         "0pzpbqnlgzr240iici70278py5wnbbxkzlgn112f9wv5ga3riric"))))
+    (properties
+     `((upstream-name . "rcdd")))
+    (build-system r-build-system)
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "https://www.stat.umn.edu/geyer/rcdd/")
+    (synopsis "Computational geometry")
+    (description
+     "This package converts back and forth between two representations of a
+convex polytope: as solution of a set of linear equalities and inequalities
+and as convex hull of set of points and rays.  Also does linear programming
+and redundant generator elimination.  All functions can use exact
+infinite-precision rational arithmetic.")
+    (license license:gpl2)))
+
+(define-public r-rxnat
+  (package
+    (name "r-rxnat")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rxnat" version))
+       (sha256
+        (base32
+         "12xcs2l6vn50bwzfmv60j1qahjw2npfm1a3yjhffcxzh6p8chwbg"))))
+    (properties
+     `((upstream-name . "Rxnat")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-httr" ,r-httr)
+       ("r-rcurl" ,r-rcurl)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/Rxnat/")
+    (synopsis "Queries and extracts images from neuroimaging datasets")
+    (description
+     "This package allows communication with the Extensible Neuroimaging
+Archive Toolkit.  Rxnat uses the XNAT REST API to perform data queries and
+download images.")
+    (license license:gpl2)))

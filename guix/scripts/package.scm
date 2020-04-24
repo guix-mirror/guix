@@ -61,6 +61,8 @@
             delete-matching-generations
             guix-package
 
+            search-path-environment-variables
+
             transaction-upgrade-entry             ;mostly for testing
 
             (%options . %package-options)
