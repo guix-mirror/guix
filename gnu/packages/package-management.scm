@@ -245,11 +245,13 @@ $(prefix)/etc/init.d\n")))
                         (setenv "SHELL" (which "sh"))
                         #t))
                     (add-after 'install 'wrap-program
-                      (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
                         ;; Make sure the 'guix' command finds GnuTLS,
                         ;; Guile-JSON, and Guile-Git automatically.
                         (let* ((out    (assoc-ref outputs "out"))
-                               (guile  (assoc-ref inputs "guile"))
+                               (guile  ,@(if (%current-target-system)
+                                             '((assoc-ref native-inputs "guile"))
+                                             '((assoc-ref inputs "guile"))))
                                (gcrypt (assoc-ref inputs "guile-gcrypt"))
                                (json   (assoc-ref inputs "guile-json"))
                                (sqlite (assoc-ref inputs "guile-sqlite3"))
