@@ -236,7 +236,7 @@ if !CROSS_COMPILING
 
 dist_man1_MANS += $(srcdir)/%D%/guix-daemon.1
 
-$(srcdir)/%D%/guix-daemon.1: nix/nix-daemon/guix-daemon.cc
+$(srcdir)/%D%/guix-daemon.1: guix-daemon$(EXEEXT)
 	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
 
 endif
