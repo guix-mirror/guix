@@ -21182,7 +21182,7 @@ general, via different versions of bridge sampling.")
     (home-page "https://cran.r-project.org/web/packages/tea/")
     (synopsis "Threshold estimation approaches")
     (description
-     "This package provide different approaches for selecting the threshold
+     "This package provides different approaches for selecting the threshold
 in generalized Pareto distributions.  Most of them are based on minimizing the
 AMSE-criterion or atleast by reducing the bias of the assumed GPD-model.
 Others are heuristically motivated by searching for stable sample paths, i.e.
