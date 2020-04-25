@@ -26706,6 +26706,18 @@ Verification.")
     (description "Mozilla's CA root certificates for use with webpki")
     (license license:mpl2.0)))
 
+(define-public rust-webpki-roots-0.17
+  (package/inherit rust-webpki-roots-0.18
+    (name "rust-webpki-roots")
+    (version "0.17.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki-roots" version))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "12vi8dh0yik0h4f0b9dnlw5i3gxyky7iblbksh6zcq4xvlvswqm2"))))))
+
 (define-public rust-weedle-0.10
   (package
     (name "rust-weedle")
