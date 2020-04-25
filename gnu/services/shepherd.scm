@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix store)
   #:use-module (guix records)
   #:use-module (guix derivations)                 ;imported-modules, etc.
+  #:use-module (guix utils)
   #:use-module (gnu services)
   #:use-module (gnu services herd)
   #:use-module (gnu packages admin)
@@ -260,22 +262,27 @@ stored."
 (define (scm->go file)
   "Compile FILE, which contains code to be loaded by shepherd's config file,
 and return the resulting '.go' file."
-  (with-extensions (list shepherd)
-    (computed-file (string-append (basename (scheme-file-name file) ".scm")
-                                  ".go")
-                   #~(begin
-                       (use-modules (system base compile))
+  ;; FIXME: %current-target-system may not be bound <https://bugs.gnu.org/29296>
+  (let ((target (%current-target-system)))
+    (with-extensions (list shepherd)
+      (computed-file (string-append (basename (scheme-file-name file) ".scm")
+                                    ".go")
+                     #~(begin
+                         (use-modules (system base compile)
+                                      (system base target))
 
-                       ;; Do the same as the Shepherd's 'load-in-user-module'.
-                       (let ((env (make-fresh-user-module)))
-                         (module-use! env (resolve-interface '(oop goops)))
-                         (module-use! env (resolve-interface '(shepherd service)))
-                         (compile-file #$file #:output-file #$output
-                                       #:env env)))
+                         ;; Do the same as the Shepherd's 'load-in-user-module'.
+                         (let ((env (make-fresh-user-module)))
+                           (module-use! env (resolve-interface '(oop goops)))
+                           (module-use! env (resolve-interface '(shepherd service)))
+                           (with-target #$(or target #~%host-type)
+                             (lambda _
+                               (compile-file #$file #:output-file #$output
+                                             #:env env)))))
 
-                   ;; It's faster to build locally than to download.
-                   #:options '(#:local-build? #t
-                               #:substitutable? #f))))
+                     ;; It's faster to build locally than to download.
+                     #:options '(#:local-build? #t
+                                 #:substitutable? #f)))))
 
 (define (shepherd-configuration-file services)
   "Return the shepherd configuration file for SERVICES."
