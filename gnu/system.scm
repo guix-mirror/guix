@@ -603,6 +603,7 @@ bookkeeping."
   (list (service system-service-type '())
         %boot-service
         %activation-service
+        (operating-system-etc-service os)
         (service profile-service-type '())))
 
 (define* (operating-system-services os)
@@ -708,7 +709,7 @@ This is the GNU system.  Welcome.\n")
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
 directory."
-  (let ((login.defs
+  (let* ((login.defs
           (plain-file "login.defs"
                       (string-append
                         "# Default paths for non-login shells started by su(1).\n"
@@ -719,10 +720,13 @@ directory."
                         "/run/current-system/profile/bin:"
                         "/run/current-system/profile/sbin\n")))
 
-        (issue      (plain-file "issue" (operating-system-issue os)))
-        (nsswitch   (plain-file "nsswitch.conf"
-                                (name-service-switch->string
-                                 (operating-system-name-service-switch os))))
+         (hurd       (operating-system-hurd os))
+         (issue      (plain-file "issue" (operating-system-issue os)))
+         (nsswitch   (operating-system-name-service-switch os))
+         (nsswitch   (and nsswitch
+                          (plain-file "nsswitch.conf"
+                                      (name-service-switch->string nsswitch))))
+         (sudoers    (operating-system-sudoers-file os))
 
         ;; Startup file for POSIX-compliant login shells, which set system-wide
         ;; environment variables.
@@ -812,7 +816,7 @@ fi\n")))
        ("rpc" ,(file-append net-base "/etc/rpc"))
        ("login.defs" ,#~#$login.defs)
        ("issue" ,#~#$issue)
-       ("nsswitch.conf" ,#~#$nsswitch)
+       ,@(if nsswitch `(("nsswitch.conf" ,#~#$nsswitch)) '())
        ("profile" ,#~#$profile)
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
@@ -828,7 +832,11 @@ fi\n")))
        ("timezone" ,(plain-file "timezone" (operating-system-timezone os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
-       ("sudoers" ,(operating-system-sudoers-file os))))))
+       ,@(if sudoers `(("sudoers" ,sudoers)) '())
+       ,@(if hurd
+             `(("login" ,(file-append hurd "/etc/login"))
+               ("motd"  ,(file-append hurd "/etc/motd")))
+             '())))))
 
 (define %root-account
   ;; Default root account.
