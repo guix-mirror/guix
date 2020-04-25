@@ -63,7 +63,7 @@ Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
-Copyright @copyright{} 2019 Diego Nicola Barbato@*
+Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
@@ -16288,6 +16288,13 @@ details.
 This is the type for the  @uref{https://www.pulseaudio.org/, PulseAudio}
 sound server.  It exists to allow system overrides of the default settings
 via @code{pulseaudio-configuration}, see below.
+
+@quotation Warning
+This service overrides per-user configuration files.  If you want
+PulseAudio to honor configuraton files in @file{~/.config/pulse} you
+have to unset the environment variables @code{PULSE_CONFIG} and
+@code{PULSE_CLIENTCONFIG} in your @file{~/.bash_profile}.
+@end quotation
 
 @quotation Warning
 This service on its own does not ensure, that the @code{pulseaudio} package
