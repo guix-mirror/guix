@@ -25185,6 +25185,18 @@ whitespace from a string.")
 untrusted inputs in Rust.")
     (license license:isc)))
 
+(define-public rust-untrusted-0.6
+  (package/inherit rust-untrusted-0.7
+    (name "rust-untrusted")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "untrusted" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0byf88b7ca1kb5aap8f6npp6xncvg95dnma8ipmnmd4n9r5izkam"))))))
+
 (define-public rust-url-2.1
   (package
     (name "rust-url")
