@@ -11,7 +11,8 @@
  (version 0)
 
  (entry (commit "e1e6491226347d9fb93ff484d78cef98848a510a")
-        (title (en "Guix Cookbook now available as Info"))
+        (title (en "Guix Cookbook now available as Info")
+               (de "Guix-Kochbuch jetzt als Info-Dokument verfügbar"))
         ;; TRANSLATORS: Adjust the URL and the 'info' command to refer to the
         ;; translated manual if it's available.
         (body (en "The new Guix Cookbook is now fetched by @command{guix pull}
@@ -27,7 +28,22 @@ The Cookbook is currently available in English and German.  You can also find
 it @uref{https://guix.gnu.org/cookbook/en/, on-line}.
 
 Your contributions are welcome: @uref{https://guix.gnu.org/contact/, get in
-touch with the developers} to share your recipes!")))
+touch with the developers} to share your recipes!")
+              (de "Das neue Guix-Kochbuch wird nun von @command{guix pull}
+geladen und steht dann im Info-Format zur Verfügung.  Darin sollen Anleitungen
+und detaillierte Beispiele gezeigt werden, die eine breite Spanne an
+Anwendungsfällen abdecken.  Um darauf zuzugreifen, geben Sie dies ein:
+
+@example
+info guix-cookbook.de
+@end example
+
+Das Kochbuch steht derzeit auf Deutsch und Englisch zur Verfügung.  Sie können
+auch @uref{https://guix.gnu.org/cookbook/de/, online} darauf zugreifen.
+
+Ihre Beiträge werden gerne gesehen.  Bitte
+@uref{https://guix.gnu.org/contact/, kontaktieren Sie die Entwickler}, um Ihre
+Rezepte mit uns zu teilen!")))
 
  (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
         (title (en "Rottlog service added to @code{%base-services}")
