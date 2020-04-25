@@ -50,8 +50,6 @@
   #:use-module (gnu packages disk)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages linux)
-  #:use-module ((gnu packages make-bootstrap)
-                #:select (%guile-static-stripped))
   #:use-module (gnu packages admin)
 
   #:use-module (gnu bootloader)
