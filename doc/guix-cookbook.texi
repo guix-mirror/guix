@@ -1791,8 +1791,8 @@ where we will store our profiles in the rest of this article.
 
 Placing all your profiles in a single directory, with each profile getting its
 own sub-directory, is somewhat cleaner.  This way, each sub-directory will
-contain all the symlinks for precisely one profile.  Besides, "looping over
-profiles" becomes obvious from any programming language (e.g.@: a shell script) by
+contain all the symlinks for precisely one profile.  Besides, ``looping over
+profiles'' becomes obvious from any programming language (e.g.@: a shell script) by
 simply looping over the sub-directories of @samp{$GUIX_EXTRA_PROFILES}.
 
 Note that it's also possible to loop over the output of
@@ -1926,7 +1926,7 @@ What about the default profile that Guix keeps in @file{~/.guix-profile}?
 You can assign it the role you want.  Typically you would install the manifest
 of the packages you want to use all the time.
 
-Alternatively, you could keep it "manifest-less" for throw-away packages
+Alternatively, you could keep it ``manifest-less'' for throw-away packages
 that you would just use for a couple of days.
 This way makes it convenient to run
 
@@ -1957,7 +1957,7 @@ Manifests come with multiple benefits.  In particular, they ease maintenance:
 @itemize
 @item
 When a profile is set up from a manifest, the manifest itself is
-self-sufficient to keep a "package listing" around and reinstall the profile
+self-sufficient to keep a ``package listing'' around and reinstall the profile
 later or on a different system.  For ad-hoc profiles, we would need to
 generate a manifest specification manually and maintain the package versions
 for the packages that don't use the default version.
@@ -1994,7 +1994,7 @@ They can be manipulated in Scheme and passed to the various Guix @uref{https://e
 
 It's important to understand that while manifests can be used to declare
 profiles, they are not strictly equivalent: profiles have the side effect that
-they "pin" packages in the store, which prevents them from being
+they ``pin'' packages in the store, which prevents them from being
 garbage-collected (@pxref{Invoking guix gc,,, guix, GNU Guix Reference Manual})
 and ensures that they will still be available at any point in
 the future.
