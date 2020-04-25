@@ -6099,8 +6099,8 @@ implements a build procedure for Android NDK (native development kit)
 packages using a Guix-specific build process.
 
 The build system assumes that packages install their public interface
-(header) files to the subdirectory "include" of the "out" output and
-their libraries to the subdirectory "lib" of the "out" output.
+(header) files to the subdirectory @file{include} of the @code{out} output and
+their libraries to the subdirectory @file{lib} the @code{out} output.
 
 It's also assumed that the union of all the dependencies of a package
 has no conflicting files.
@@ -6802,8 +6802,8 @@ kernel module.
 @end table
 
 It is possible and useful to specify the Linux kernel to use for building
-the module (in the "arguments" form of a package using the
-linux-module-build-system, use the key #:linux to specify it).
+the module (in the @code{arguments} form of a package using the
+@code{linux-module-build-system}, use the key @code{#:linux} to specify it).
 @end defvr
 
 @defvr {Scheme Variable} node-build-system
@@ -12427,7 +12427,7 @@ man page for more information.
 
 @item @code{tty}
 The name of the console this agetty runs on, as a string---e.g.,
-@code{"ttyS0"}. This argument is optional, it will default to
+@code{"ttyS0"}.  This argument is optional, it will default to
 a reasonable default serial port used by the kernel Linux.
 
 For this, if there is a value for an option @code{agetty.tty} in the kernel
@@ -12462,7 +12462,7 @@ in automatically without prompting for their login name or password.
 When @code{#t}, don't reset terminal cflags (control modes).
 
 @item @code{host} (default: @code{#f})
-This accepts a string containing the "login_host", which will be written
+This accepts a string containing the ``login_host'', which will be written
 into the @file{/var/run/utmpx} file.
 
 @item @code{remote?} (default: @code{#f})
@@ -12568,8 +12568,8 @@ This option accepts a string of additional characters that should be
 interpreted as backspace when the user types their login name.
 
 @item @code{kill-characters} (default: @code{#f})
-This option accepts a string that should be interpreted to mean "ignore
-all previous characters" (also called a "kill" character) when the user
+This option accepts a string that should be interpreted to mean ``ignore
+all previous characters'' (also called a ``kill'' character) when the user
 types their login name.
 
 @item @code{chdir} (default: @code{#f})
@@ -12585,7 +12585,7 @@ This option accepts, as an integer, the nice value with which to run the
 @command{login} program.
 
 @item @code{extra-options} (default: @code{'()})
-This option provides an "escape hatch" for the user to provide arbitrary
+This option provides an ``escape hatch'' for the user to provide arbitrary
 command-line arguments to @command{agetty} as a list of strings.
 
 @end table
@@ -14691,15 +14691,15 @@ The default SLiM theme and its name.
 
 
 @deftp {Data Type} sddm-configuration
-This is the data type representing the sddm service configuration.
+This is the data type representing the SDDM service configuration.
 
 @table @asis
 @item @code{display-server} (default: "x11")
-Select display server to use for the greeter. Valid values are "x11"
-or "wayland".
+Select display server to use for the greeter.  Valid values are
+@samp{"x11"} or @samp{"wayland"}.
 
 @item @code{numlock} (default: "on")
-Valid values are "on", "off" or "none".
+Valid values are @samp{"on"}, @samp{"off"} or @samp{"none"}.
 
 @item @code{halt-command} (default @code{#~(string-apppend #$shepherd "/sbin/halt")})
 Command to run when halting.
@@ -14708,7 +14708,8 @@ Command to run when halting.
 Command to run when rebooting.
 
 @item @code{theme} (default "maldives")
-Theme to use. Default themes provided by SDDM are "elarun", "maldives" or "maya".
+Theme to use.  Default themes provided by SDDM are @samp{"elarun"},
+@samp{"maldives"} or @samp{"maya"}.
 
 @item @code{themes-directory} (default "/run/current-system/profile/share/sddm/themes")
 Directory to look for themes.
@@ -15196,9 +15197,9 @@ Defaults to @samp{#f}.
 
 @deftypevr {@code{cups-configuration} parameter} string classification
 Specifies the security classification of the server.  Any valid banner
-name can be used, including "classified", "confidential", "secret",
-"topsecret", and "unclassified", or the banner can be omitted to disable
-secure printing functions.
+name can be used, including @samp{"classified"}, @samp{"confidential"},
+@samp{"secret"}, @samp{"topsecret"}, and @samp{"unclassified"}, or the
+banner can be omitted to disable secure printing functions.
 
 Defaults to @samp{""}.
 @end deftypevr
@@ -15400,7 +15401,7 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{method-access-controls} parameter} access-control-list access-controls
 Access control directives, as a list of strings.  Each string should be
-one directive, such as "Order allow,deny".
+one directive, such as @samp{"Order allow,deny"}.
 
 Defaults to @samp{()}.
 @end deftypevr
@@ -15481,7 +15482,7 @@ Defaults to @samp{0}.
 
 @deftypevr {@code{cups-configuration} parameter} non-negative-integer max-job-time
 Specifies the maximum time a job may take to print before it is
-canceled, in seconds.  Set to 0 to disable cancellation of "stuck" jobs.
+canceled, in seconds.  Set to 0 to disable cancellation of ``stuck'' jobs.
 
 Defaults to @samp{10800}.
 @end deftypevr
@@ -17216,12 +17217,12 @@ if the user doesn't yet have any mail, so you should explicitly tell
 Dovecot the full location.
 
 If you're using mbox, giving a path to the INBOX
-file (e.g.@: /var/mail/%u) isn't enough.  You'll also need to tell Dovecot
-where the other mailboxes are kept.  This is called the "root mail
-directory", and it must be the first path given in the
+file (e.g.@: @file{/var/mail/%u}) isn't enough.  You'll also need to tell Dovecot
+where the other mailboxes are kept.  This is called the @emph{root mail
+directory}, and it must be the first path given in the
 @samp{mail-location} setting.
 
-There are a few special variables you can use, eg.:
+There are a few special variables you can use, e.g.:
 
 @table @samp
 @item %u
@@ -17258,31 +17259,31 @@ Defaults to @samp{""}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-privileged-group
 Group to enable temporarily for privileged operations.  Currently
 this is used only with INBOX when either its initial creation or
-dotlocking fails.  Typically this is set to "mail" to give access to
-/var/mail.
+dotlocking fails.  Typically this is set to @samp{"mail"} to give access to
+@file{/var/mail}.
 Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string mail-access-groups
 Grant access to these supplementary groups for mail processes.
 Typically these are used to set up access to shared mailboxes.  Note
-that it may be dangerous to set these if users can create
-symlinks (e.g.@: if "mail" group is set here, ln -s /var/mail ~/mail/var
-could allow a user to delete others' mailboxes, or ln -s
-/secret/shared/box ~/mail/mybox would allow reading it).
-Defaults to @samp{""}.
+that it may be dangerous to set these if users can create symlinks
+(e.g.@: if @samp{mail} group is set here, @code{ln -s /var/mail ~/mail/var}
+could allow a user to delete others' mailboxes, or @code{ln -s
+/secret/shared/box ~/mail/mybox} would allow reading it).  Defaults to
+@samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
 Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
-names with e.g.@: /path/ or ~user/.
+names with e.g.@: @file{/path/} or @file{~user/}.
 Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mmap-disable?
-Don't use mmap() at all.  This is required if you store indexes to
+Don't use @code{mmap()} at all.  This is required if you store indexes to
 shared file systems (NFS or clustered file system).
 Defaults to @samp{#f}.
 @end deftypevr
@@ -17300,7 +17301,7 @@ When to use fsync() or fdatasync() calls:
 @item optimized
 Whenever necessary to avoid losing important data
 @item always
-Useful with e.g.@: NFS when write()s are delayed
+Useful with e.g.@: NFS when @code{write()}s are delayed
 @item never
 Never use it (best performance, but crashes can lose data).
 @end table
@@ -17367,10 +17368,10 @@ Defaults to @samp{50}.
 
 @deftypevr {@code{dovecot-configuration} parameter} colon-separated-file-name-list valid-chroot-dirs
 List of directories under which chrooting is allowed for mail
-processes (i.e.@: /var/mail will allow chrooting to /var/mail/foo/bar
+processes (i.e.@: @file{/var/mail} will allow chrooting to @file{/var/mail/foo/bar}
 too).  This setting doesn't affect @samp{login-chroot}
 @samp{mail-chroot} or auth chroot settings.  If this setting is empty,
-"/./" in home dirs are ignored.  WARNING: Never add directories here
+@samp{/./} in home dirs are ignored.  WARNING: Never add directories here
 which local users can modify, that may lead to root exploit.  Usually
 this should be done only if you don't allow shell access for users.
 <doc/wiki/Chrooting.txt>.
@@ -17379,11 +17380,11 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string mail-chroot
 Default chroot directory for mail processes.  This can be overridden
-for specific users in user database by giving /./ in user's home
-directory (e.g.@: /home/./user chroots into /home).  Note that usually
+for specific users in user database by giving @samp{/./} in user's home
+directory (e.g.@: @samp{/home/./user} chroots into @file{/home}).  Note that usually
 there is no real need to do chrooting, Dovecot doesn't allow users to
 access files outside their mail directory anyway.  If your home
-directories are prefixed with the chroot directory, append "/."@: to
+directories are prefixed with the chroot directory, append @samp{/.} to
 @samp{mail-chroot}.  <doc/wiki/Chrooting.txt>.
 Defaults to @samp{""}.
 @end deftypevr
@@ -18490,7 +18491,7 @@ Curve for Elliptic curve Diffie-Hellman. Prosody's default is
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} maybe-string-list verifyext
-A list of "extra" verification options.
+A list of ``extra'' verification options.
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} maybe-string password
@@ -18578,7 +18579,7 @@ example if you want your users to have addresses like
 @samp{"john.smith@@example.com"} then you need to add a host
 @samp{"example.com"}.  All options in this list will apply only to this host.
 
-Note: the name "virtual" host is used in configuration to avoid confusion with
+Note: the name @emph{virtual} host is used in configuration to avoid confusion with
 the actual physical host that Prosody is installed on.  A single Prosody
 instance can serve many domains, each one defined as a VirtualHost entry in
 Prosody's configuration.  Conversely a server that hosts a single domain would
@@ -18624,7 +18625,7 @@ Multi-user chat (MUC) is Prosody's module for allowing you to create
 hosted chatrooms/conferences for XMPP users.
 
 General information on setting up and using multi-user chatrooms can be found
-in the "Chatrooms" documentation (@url{https://prosody.im/doc/chatrooms}),
+in the ``Chatrooms'' documentation (@url{https://prosody.im/doc/chatrooms}),
 which you should read if you are new to XMPP chatrooms.
 
 See also @url{https://prosody.im/doc/modules/mod_muc}.
@@ -19699,11 +19700,12 @@ Defaults to @samp{"nslcd"}.
 
 @deftypevr {@code{nslcd-configuration} parameter} log-option log
 This option controls the way logging is done via a list containing
-SCHEME and LEVEL.  The SCHEME argument may either be the symbols "none"
-or "syslog", or an absolute file name.  The LEVEL argument is optional
-and specifies the log level.  The log level may be one of the following
-symbols: "crit", "error", "warning", "notice", "info" or "debug".  All
-messages with the specified log level or higher are logged.
+SCHEME and LEVEL.  The SCHEME argument may either be the symbols
+@samp{none} or @samp{syslog}, or an absolute file name.  The LEVEL
+argument is optional and specifies the log level.  The log level may be
+one of the following symbols: @samp{crit}, @samp{error}, @samp{warning},
+@samp{notice}, @samp{info} or @samp{debug}.  All messages with the
+specified log level or higher are logged.
 
 Defaults to @samp{("/var/log/nslcd" info)}.
 
@@ -23585,7 +23587,7 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{libvirt-configuration} parameter} string tls-priority
 Override the compile time default TLS priority string.  The default is
-usually "NORMAL" unless overridden at build time.  Only set this is it
+usually @samp{"NORMAL"} unless overridden at build time.  Only set this is it
 is desired for libvirt to deviate from the global default settings.
 
 Defaults to @samp{"NORMAL"}.
@@ -23719,11 +23721,12 @@ x:+name
 
 where @code{name} is a string which is matched against the category
 given in the @code{VIR_LOG_INIT()} at the top of each libvirt source
-file, e.g., "remote", "qemu", or "util.json" (the name in the filter can
-be a substring of the full category name, in order to match multiple
-similar categories), the optional "+" prefix tells libvirt to log stack
-trace for each message matching name, and @code{x} is the minimal level
-where matching messages should be logged:
+file, e.g., @samp{"remote"}, @samp{"qemu"}, or @samp{"util.json"} (the
+name in the filter can be a substring of the full category name, in
+order to match multiple similar categories), the optional @samp{"+"}
+prefix tells libvirt to log stack trace for each message matching name,
+and @code{x} is the minimal level where matching messages should be
+logged:
 
 @itemize @bullet
 @item
@@ -24141,7 +24144,7 @@ expose repositories over the Git protocol for anonymous access.
 The optional @var{config} argument should be a
 @code{<git-daemon-configuration>} object, by default it allows read-only
 access to exported@footnote{By creating the magic file
-"git-daemon-export-ok" in the repository directory.} repositories under
+@file{git-daemon-export-ok} in the repository directory.} repositories under
 @file{/srv/git}.
 
 @end deffn
@@ -24808,7 +24811,7 @@ Defaults to @samp{"a fast webinterface for the git dscm"}.
 
 @deftypevr {@code{cgit-configuration} parameter} string root-readme
 The content of the file specified with this option will be included
-verbatim below the "about" link on the repository index page.
+verbatim below the ``about'' link on the repository index page.
 
 Defaults to @samp{""}.
 
@@ -24825,8 +24828,8 @@ Defaults to @samp{""}.
 If set to @samp{#t} and repository-directory is enabled,
 repository-directory will recurse into directories whose name starts
 with a period.  Otherwise, repository-directory will stay away from such
-directories, considered as "hidden".  Note that this does not apply to
-the ".git" directory in non-bare repos.
+directories, considered as ``hidden''.  Note that this does not apply to
+the @file{.git} directory in non-bare repos.
 
 Defaults to @samp{#f}.
 
@@ -24889,7 +24892,7 @@ Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{cgit-configuration} parameter} integer summary-branches
-Specifies the number of branches to display in the repository "summary"
+Specifies the number of branches to display in the repository ``summary''
 view.
 
 Defaults to @samp{10}.
@@ -24898,14 +24901,14 @@ Defaults to @samp{10}.
 
 @deftypevr {@code{cgit-configuration} parameter} integer summary-log
 Specifies the number of log entries to display in the repository
-"summary" view.
+``summary'' view.
 
 Defaults to @samp{10}.
 
 @end deftypevr
 
 @deftypevr {@code{cgit-configuration} parameter} integer summary-tags
-Specifies the number of tags to display in the repository "summary"
+Specifies the number of tags to display in the repository ``summary''
 view.
 
 Defaults to @samp{10}.
@@ -24997,7 +25000,7 @@ Defaults to @samp{""}.
 @deftypevr {@code{repository-cgit-configuration} parameter} repo-string defbranch
 The name of the default branch for this repository.  If no such branch
 exists in the repository, the first branch name (when sorted) is used as
-default instead.  By default branch pointed to by HEAD, or "master" if
+default instead.  By default branch pointed to by HEAD, or ``master'' if
 there is no suitable HEAD.
 
 Defaults to @samp{""}.
@@ -25158,7 +25161,7 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{repository-cgit-configuration} parameter} repo-string readme
 A path (relative to repo) which specifies a file to include verbatim as
-the "About" page for this repo.
+the ``About'' page for this repo.
 
 Defaults to @samp{""}.
 
@@ -25297,7 +25300,7 @@ A value like @code{#o0027} will give read access to the group used by Gitolite
 like cgit or gitweb.
 
 @item @code{git-config-keys} (default: @code{""})
-Gitolite allows you to set git config values using the "config" keyword. This
+Gitolite allows you to set git config values using the @samp{config} keyword. This
 setting allows control over the config keys to accept.
 
 @item @code{roles} (default: @code{'(("READERS" . 1) ("WRITERS" . ))})
