@@ -18811,6 +18811,26 @@ uses finite automata and guarantees linear time matching on all inputs.")
     (description "This package provided safe, fast, small crypto using Rust.")
     (license (list license:isc license:openssl))))
 
+(define-public rust-ring-0.13
+  (package/inherit rust-ring-0.16
+    (name "rust-ring")
+    (version "0.13.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "ring" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "12j580by6a438i5mw3136cj3lxylywymdr5p8rqlkwrm5s5bck9c"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-untrusted" ,rust-untrusted-0.6)
+        ;; build dependencies
+        ("rust-cc" ,rust-cc-1.0))))))
+
 (define-public rust-ron-0.4
   (package
     (name "rust-ron")
