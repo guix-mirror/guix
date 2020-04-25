@@ -904,13 +904,13 @@ optimize toolbar for portrait / landscape
 (define-public python-reportlab
   (package
     (name "python-reportlab")
-    (version "3.5.32")
+    (version "3.5.42")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "reportlab" version))
               (sha256
                (base32
-                "0lf8hil9nbm74zl27l8rydxbhwnpr0pbghibsqrc9sglds9l9vw3"))))
+                "0i17qgm7gzy7pzp240mkpsx9rn8rr67jh5npp5bylv3sd41g48cw"))))
     (build-system python-build-system)
     (arguments
      '(;; FIXME: There is one test failure, building the pdf manual from source,
