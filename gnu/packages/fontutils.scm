@@ -727,7 +727,7 @@ maintain the Noto Fonts project.")
 (define-public fontmanager
   (package
    (name "fontmanager")
-   (version "0.7.5")
+   (version "0.7.7")
    (source
     (origin
       (method git-fetch)
@@ -737,7 +737,7 @@ maintain the Noto Fonts project.")
       (file-name (git-file-name name version))
       (sha256
        (base32
-        "16hma8rrkam6ngn5vbdaryn31vdixvii6920g9z928gylz9xkd3g"))))
+        "1bzqvspplp1zj0n0869jqbc60wgbjhf0vdrn5bj8dfawxynh8s5f"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
