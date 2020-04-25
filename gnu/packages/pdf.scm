@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -913,11 +913,35 @@ optimize toolbar for portrait / landscape
                 "0lf8hil9nbm74zl27l8rydxbhwnpr0pbghibsqrc9sglds9l9vw3"))))
     (build-system python-build-system)
     (arguments
-     '(;; FIXME: There is one test failure, but it does not cause the
-       ;; build to fail. No time to investigate right now.
-       #:test-target "tests"))
+     '(;; FIXME: There is one test failure, building the pdf manual from source,
+       ;; but it does not cause the build to fail.
+       #:test-target "tests"
+       #:configure-flags (list "--use-system-libart")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libart (assoc-ref inputs "libart-lgpl"))
+                   (freetype (assoc-ref inputs "freetype"))
+                   (dlt1 (assoc-ref inputs "font-curve-files")))
+               (substitute* "setup.py"
+                 (("/usr/include/libart-\\*")
+                  (string-append libart "/include/libart-2.0"))
+                 (("/usr/include/freetype2")
+                  (string-append freetype "/include"))
+                 (("http://www.reportlab.com/ftp/pfbfer-20180109.zip")
+                  (string-append "file://" dlt1)))
+               #t))))))
     (inputs
-     `(("freetype" ,freetype)))
+     `(("freetype" ,freetype)
+       ("libart-lgpl" ,libart-lgpl)
+       ("font-curve-files"
+        ,(origin
+           (method url-fetch)
+           (uri "http://www.reportlab.com/ftp/pfbfer-20180109.zip")
+           (sha256
+            (base32
+             "1v0gy4mbx02ys96ssx89420y0njknlrxs2bx64bv4rp8a0al66w5"))))))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "https://www.reportlab.com")
