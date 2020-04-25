@@ -19442,6 +19442,38 @@ rustc compiler.")
   (description "This package provides a modern TLS library written in Rust.")
   (license (list license:asl2.0 license:isc license:expat))))
 
+(define-public rust-rustls-0.12
+  (package/inherit rust-rustls-0.16
+    (name "rust-rustls")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustls" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1k8b8cc0pjkv5cxdgs43jif7nslzsxair9b2sifgvjag7a4f8wmb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ;; 1/45 tests fails due to some missing file
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-ring" ,rust-ring-0.13)
+        ("rust-sct" ,rust-sct-0.3)
+        ("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-webpki" ,rust-webpki-0.18))
+       #:cargo-development-inputs
+       (("rust-ct-logs" ,rust-ct-logs-0.3)
+        ("rust-docopt" ,rust-docopt-0.8)
+        ("rust-env-logger" ,rust-env-logger-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-webpki-roots" ,rust-webpki-roots-0.14))))))
+
 (define-public rust-rusttype-0.8
   (package
     (name "rust-rusttype")
