@@ -43,6 +43,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages groff)
@@ -979,7 +980,15 @@ known public suffixes.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda _
+           (lambda* (#:key native-inputs target #:allow-other-keys)
+             ;; make_32bit_tables generates a header file that is used during
+             ;; compilation. Hence, during cross compilation, it should be
+             ;; built for the host system.
+             (when target
+               (substitute* "rng/Makefile"
+                 (("\\$\\(CC\\) -o make_32bit_tables")
+                  (string-append (assoc-ref native-inputs "gcc")
+                                 "/bin/gcc -o make_32bit_tables"))))
              (invoke "./configure")))
          (add-before 'install 'create-install-directories
            (lambda* (#:key outputs #:allow-other-keys)
