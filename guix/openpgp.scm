@@ -33,6 +33,7 @@
 
             openpgp-signature?
             openpgp-signature-issuer
+            openpgp-signature-issuer-fingerprint
             openpgp-signature-public-key-algorithm
             openpgp-signature-hash-algorithm
             openpgp-signature-creation-time
@@ -345,7 +346,6 @@ hexadecimal format for fingerprints."
   ;; 12 = Revocation Key
 
 (define SUBPACKET-ISSUER 16)
-;; TODO: hashed SUBPACKET-ISSUER-FINGERPRINT-V4
 (define SUBPACKET-NOTATION-DATA 20)
 (define SUBPACKET-PREFERRED-HASH-ALGORITHMS 21)
 (define SUBPACKET-PREFERRED-COMPRESSION-ALGORITHMS 22)
@@ -358,8 +358,8 @@ hexadecimal format for fingerprints."
 (define SUBPACKET-REASON-FOR-REVOCATION 29)
 (define SUBPACKET-FEATURES 30)
   ;; 31 = Signature Target
-
 (define SUBPACKET-EMBEDDED-SIGNATURE 32)
+(define SUBPACKET-ISSUER-FINGERPRINT 33)          ;defined in RFC4880bis
 
 (define SIGNATURE-BINARY #x00)
 (define SIGNATURE-TEXT #x01)
@@ -486,6 +486,13 @@ hexadecimal format for fingerprints."
         ;; XXX: is the issuer always in the unhashed subpackets?
         (else #f)))
 
+(define (openpgp-signature-issuer-fingerprint sig)
+  "When it's available, return the fingerprint, a bytevector, or the issuer of
+SIG.  Otherwise, return #f."
+  (or (assoc-ref (openpgp-signature-hashed-subpackets sig) 'issuer-fingerprint)
+      (assoc-ref (openpgp-signature-unhashed-subpackets sig)
+                 'issuer-fingerprint)))
+
 (define (openpgp-signature-creation-time sig)
   (cond ((assq 'signature-ctime (openpgp-signature-hashed-subpackets sig))
          => (lambda (x) (unixtime (cdr x))))
@@ -578,6 +585,14 @@ the issuer's OpenPGP public key extracted from KEYRING."
               (values 'missing-key issuer))))
       (values 'unsupported-signature sig)))
 
+(define (key-id-matches-fingerprint? key-id fingerprint)
+  "Return true if KEY-ID, a number, corresponds to the low 8 bytes of
+FINGERPRINT, a bytevector."
+  (let* ((len (bytevector-length fingerprint))
+         (low (make-bytevector 8)))
+    (bytevector-copy! fingerprint (- len 8) low 0 8)
+    (= (bytevector->uint low) key-id)))
+
 (define (get-signature p)
   (define (->hex n)
     (string-hex-pad (number->string n 16)))
@@ -662,14 +677,26 @@ the issuer's OpenPGP public key extracted from KEYRING."
                     ;; Errata ID: 2214.
                     (integers->bytevector u8 #x04
                                           u8 #xff
-                                          u32 (+ 6 subpacket-len)))))
+                                          u32 (+ 6 subpacket-len))))
+                  (unhashed-subpackets
+                   (parse-subpackets unhashed-subpackets))
+                  (hashed-subpackets (parse-subpackets hashed-subpackets))
+                  (subpackets        (append hashed-subpackets
+                                             unhashed-subpackets))
+                  (issuer-key-id     (assoc-ref subpackets 'issuer))
+                  (issuer            (assoc-ref subpackets
+                                                'issuer-fingerprint)))
+             (unless (or (not issuer) (not issuer-key-id)
+                         (key-id-matches-fingerprint? issuer-key-id issuer))
+               (error "issuer key id does not match fingerprint" issuer))
+
              (make-openpgp-signature version type
                                      (public-key-algorithm pkalg)
                                      (openpgp-hash-algorithm halg)
                                      hashl16
                                      append-data
-                                     (parse-subpackets hashed-subpackets)
-                                     (parse-subpackets unhashed-subpackets)
+                                     hashed-subpackets
+                                     unhashed-subpackets
                                      value)))))
       (else
        (print "Unsupported signature version: " version)
@@ -701,6 +728,13 @@ the issuer's OpenPGP public key extracted from KEYRING."
        ((= type SUBPACKET-ISSUER)
         (cons 'issuer
               (bytevector-u64-ref data 0 (endianness big))))
+       ((= type SUBPACKET-ISSUER-FINGERPRINT)     ;v4+ only, RFC4880bis
+        (cons 'issuer-fingerprint
+              (let* ((version     (bytevector-u8-ref data 0))
+                     (len         (match version (4 20) (5 32)) )
+                     (fingerprint (make-bytevector len)))
+                (bytevector-copy! data 1 fingerprint 0 len)
+                fingerprint)))
        ((= type SUBPACKET-NOTATION-DATA)
         (let ((p (open-bytevector-input-port data)))
           (let-values (((f1 nlen vlen)

@@ -18,6 +18,7 @@
 
 (define-module (tests-openpgp)
   #:use-module (guix openpgp)
+  #:use-module (gcrypt base16)
   #:use-module (gcrypt hash)
   #:use-module (gcrypt pk-crypto)
   #:use-module (ice-9 binary-ports)
@@ -64,6 +65,16 @@ vBSFjNSiVHsuAA==
 (define %rsa-key-id      #xAE25DA2A70DEED59)      ;rsa.key
 (define %dsa-key-id      #x587918047BE8BD2C)      ;dsa.key
 (define %ed25519-key-id  #x771F49CBFAAE072D)      ;ed25519.key
+
+(define %rsa-key-fingerprint
+  (base16-string->bytevector
+   (string-downcase "385F86CFC86B665A5C165E6BAE25DA2A70DEED59")))
+(define %dsa-key-fingerprint
+  (base16-string->bytevector
+   (string-downcase "2884A980422330A4F33DD97F587918047BE8BD2C")))
+(define %ed25519-key-fingerprint
+  (base16-string->bytevector
+   (string-downcase "44D31E21AF7138F9B632280A771F49CBFAAE072D")))
 
 
 ;;; The following are detached signatures created commands like:
@@ -160,15 +171,16 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
                       "Ludovic Courtès <ludo@gnu.org>"))))))
 
 (test-equal "get-openpgp-detached-signature/ascii"
-  (list `(,%dsa-key-id dsa sha256)
-        `(,%rsa-key-id rsa sha256)
-        `(,%ed25519-key-id eddsa sha256)
-        `(,%ed25519-key-id eddsa sha512)
-        `(,%ed25519-key-id eddsa sha1))
+  (list `(,%dsa-key-id ,%dsa-key-fingerprint dsa sha256)
+        `(,%rsa-key-id ,%rsa-key-fingerprint rsa sha256)
+        `(,%ed25519-key-id ,%ed25519-key-fingerprint eddsa sha256)
+        `(,%ed25519-key-id ,%ed25519-key-fingerprint eddsa sha512)
+        `(,%ed25519-key-id ,%ed25519-key-fingerprint eddsa sha1))
   (map (lambda (str)
          (let ((signature (get-openpgp-detached-signature/ascii
                            (open-input-string str))))
            (list (openpgp-signature-issuer signature)
+                 (openpgp-signature-issuer-fingerprint signature)
                  (openpgp-signature-public-key-algorithm signature)
                  (openpgp-signature-hash-algorithm signature))))
        (list %hello-signature/dsa
