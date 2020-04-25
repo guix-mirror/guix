@@ -19996,6 +19996,26 @@ Pwrite traits from the scroll crate.")
     (description "Certificate transparency SCT verification library")
     (license (list license:asl2.0 license:isc license:expat))))
 
+(define-public rust-sct-0.3
+  (package/inherit rust-sct-0.6
+    (name "rust-sct")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sct" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0z090j3lvy0lqbhmpswm4vb2n4i8dqswy0l93abdx9biipnhlm5l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ring" ,rust-ring-0.13)
+        ("rust-untrusted" ,rust-untrusted-0.6))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc-1.0))))))
+
+
 (define-public rust-seahash-3.0
   (package
     (name "rust-seahash")
