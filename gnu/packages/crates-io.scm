@@ -26718,6 +26718,22 @@ Verification.")
       (sha256
        (base32 "12vi8dh0yik0h4f0b9dnlw5i3gxyky7iblbksh6zcq4xvlvswqm2"))))))
 
+(define-public rust-webpki-roots-0.14
+  (package/inherit rust-webpki-roots-0.18
+    (name "rust-webpki-roots")
+    (version "0.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "webpki-roots" version))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "05zw919077i3jadbvdsvl69wv2siijg2pjbykl6fyi7hmgb7bggd"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-untrusted" ,rust-untrusted-0.6)
+        ("rust-webpki" ,rust-webpki-0.18))))))
+
 (define-public rust-weedle-0.10
   (package
     (name "rust-weedle")
