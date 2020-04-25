@@ -5327,6 +5327,25 @@ from macros.")
     (description "Command line argument parsing.")
     (license (list license:expat license:unlicense))))
 
+(define-public rust-docopt-0.8
+  (package/inherit rust-docopt-1.1
+    (name "rust-docopt")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "docopt" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jha611mffc2qnxvdl3pmglz07akl99lk1vihhb3nl1cd69x7b6q"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-regex" ,rust-regex-0.2)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0)
+        ("rust-strsim" ,rust-strsim-0.6))))))
+
 (define-public rust-docopt-0.7
   (package
     (inherit rust-docopt-1.1)
