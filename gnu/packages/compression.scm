@@ -2164,6 +2164,6 @@ archiver is not installed.")
     (home-page "https://github.com/AQUAOSOTech/tarsplitter")
     (synopsis "Multithreaded tar utility")
     (description
-     "Archive huge numbers of files, or spilt massive tar archives into smaller
+     "Archive huge numbers of files, or split massive tar archives into smaller
 chunks.")
     (license license:expat)))
