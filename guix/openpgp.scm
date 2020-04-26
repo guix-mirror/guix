@@ -564,16 +564,23 @@ the issuer's OpenPGP public key extracted from KEYRING."
 
   ;; TODO: Support SIGNATURE-TEXT.
   (if (= (openpgp-signature-type sig) SIGNATURE-BINARY)
-      (let* ((issuer   (openpgp-signature-issuer-key-id sig))
-             (key-data (lookup-key-by-id keyring issuer)))
+      (let* ((id          (openpgp-signature-issuer-key-id sig))
+             (fingerprint (openpgp-signature-issuer-fingerprint sig))
+             (key-data    (if fingerprint
+                              (lookup-key-by-fingerprint keyring fingerprint)
+                              (lookup-key-by-id keyring id))))
         ;; Find the primary key or subkey that made the signature.
         (let ((key (find (lambda (k)
                            (and (openpgp-public-key? k)
-                                (= (openpgp-public-key-id k) issuer)))
+                                (if fingerprint
+                                    (bytevector=?
+                                     (openpgp-public-key-fingerprint k)
+                                     fingerprint)
+                                    (= (openpgp-public-key-id k) id))))
                          key-data)))
           (if key
               (check key sig)
-              (values 'missing-key issuer))))
+              (values 'missing-key (or fingerprint id)))))
       (values 'unsupported-signature sig)))
 
 (define (key-id-matches-fingerprint? key-id fingerprint)

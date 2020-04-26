@@ -192,7 +192,7 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
              %hello-signature/ed25519/sha1)))
 
 (test-equal "verify-openpgp-signature, missing key"
-  `(missing-key ,%rsa-key-id)
+  `(missing-key ,%rsa-key-fingerprint)
   (let* ((keyring   (get-openpgp-keyring (%make-void-port "r")))
          (signature (get-openpgp-packet
                      (open-bytevector-input-port
