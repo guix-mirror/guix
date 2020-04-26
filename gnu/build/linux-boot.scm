@@ -534,10 +534,13 @@ upon error."
             ;; The "--root=SPEC" kernel command-line option always provides a
             ;; string, but the string can represent a device, a UUID, or a
             ;; label.  So check for all three.
-            (let ((root (cond ((string-prefix? "/" root) root)
-                              ((uuid root) => identity)
-                              (else (file-system-label root)))))
-              (mount-root-file-system (canonicalize-device-spec root)
+            (let ((device-spec (cond ((string-prefix? "/" root) root)
+                                     ((uuid root) => identity)
+                                     ((string-contains root ":/") #f) ; nfs
+                                     (else (file-system-label root)))))
+              (mount-root-file-system (if device-spec
+                                          (canonicalize-device-spec device-spec)
+                                          root)
                                       root-fs-type
                                       #:volatile-root? volatile-root?
                                       #:flags root-fs-flags
