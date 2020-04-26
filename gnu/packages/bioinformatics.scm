@@ -13365,14 +13365,14 @@ in RNA-seq data.")
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.4.5.1")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scanpy" version))
        (sha256
         (base32
-         "14kh1ji70xxhmri5q8sgcibsidhr6f221wxrcw8a5xvibj5da17j"))))
+         "0s2b6cvaigx4wzw3850qb93sjwwxbzh22kpbp498zklc5rjpbz4l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13382,6 +13382,7 @@ in RNA-seq data.")
              ;; These tests require Internet access.
              (delete-file-recursively "scanpy/tests/notebooks")
              (delete-file "scanpy/tests/test_clustering.py")
+             (delete-file "scanpy/tests/test_datasets.py")
 
              ;; TODO: I can't get the plotting tests to work, even with Xvfb.
              (delete-file "scanpy/tests/test_plotting.py")
@@ -13398,8 +13399,8 @@ in RNA-seq data.")
        ("python-h5py" ,python-h5py)
        ("python-igraph" ,python-igraph)
        ("python-joblib" ,python-joblib)
-       ("python-louvain" ,python-louvain)
        ("python-legacy-api-wrap" ,python-legacy-api-wrap)
+       ("python-louvain" ,python-louvain)
        ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
@@ -13412,6 +13413,7 @@ in RNA-seq data.")
        ("python-seaborn" ,python-seaborn)
        ("python-statsmodels" ,python-statsmodels)
        ("python-tables" ,python-tables)
+       ("python-tqdm" ,python-tqdm)
        ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
