@@ -80,6 +80,11 @@ clients.")
             (if tests?
                 (invoke "make" "test")
                 #t)))
+        (add-after 'unpack 'patch-version-call
+          (lambda _
+            (substitute* "docs/conf.py"
+              (("^release.*") (string-append "release = '" ,version "'\n")))
+            #t))
         (add-after 'install 'manpage
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (invoke "make" "--directory=docs/" "man")
