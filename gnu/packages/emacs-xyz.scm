@@ -2584,6 +2584,30 @@ strings.")
 Stack Overflow, Super User, and other StackExchange sites.")
       (license license:gpl3+))))
 
+(define-public emacs-toml-mode
+  (let ((version "0.1.3")
+        (revision "0")
+        (commit "f6c61817b00f9c4a3cab1bae9c309e0fc45cdd06"))
+    (package
+      (name "emacs-toml-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dryman/toml-mode.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "05b4ksay85c8y5ncax0qsvnmplwsfiw24z16a58gkarjz938hb57"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dryman/toml-mode.el")
+      (synopsis "Emacs major mode for editing TOML files")
+      (description
+       "This package provides a major mode for editing files in @acronym{TOML,
+Tom's Obvious, Minimal Language} data format.")
+      (license license:gpl3+))))
+
 (define-public emacs-f
   (package
     (name "emacs-f")
