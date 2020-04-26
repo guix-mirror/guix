@@ -2558,9 +2558,9 @@ strings.")
     (license license:gpl2+)))
 
 (define-public emacs-sx
-  (let ((version "20180212")
-        (revision "1")
-        (commit "833435fbf90d1c9e927d165b155f3b1ef39271de"))
+  (let ((version "20191229")
+        (revision "0")
+        (commit "e9d1093c97507a6d7b4f4710ef65200dae725e5f"))
     (package
       (name "emacs-sx")
       (version (git-version version revision commit))
@@ -2572,8 +2572,7 @@ strings.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1369xaxq1vy3d9yh862ddnhddikdpg2d0wv1ly00pnvdp9v4cqgd"))))
+          (base32 "0m90ddwm8j0y6d1ppqhd2gil1107k202blw6mzm5bdambn4nfqkf"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-markdown-mode" ,emacs-markdown-mode)))
