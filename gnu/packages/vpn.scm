@@ -11,6 +11,7 @@
 ;;; Copyright © 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system linux-module)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
@@ -465,19 +467,24 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
               (sha256
                (base32
                 "0ymprz3h4b92wlcqm5k5vmcgap8pjv202bgkdx0axmp12n1lmyvx"))))
-    (build-system gnu-build-system)
+    (build-system linux-module-build-system)
+    (outputs '("out"
+               "kernel-patch"))
     (arguments
      `(#:tests? #f ; No test suite
-       #:modules ((guix build gnu-build-system)
+       #:modules ((guix build linux-module-build-system)
                   (guix build utils)
                   (ice-9 popen)
                   (ice-9 textual-ports))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; No ./configure script
-         (replace 'build
+         (add-before 'build 'change-directory
+           (lambda _
+             (chdir "./src")
+             #t))
+         (add-after 'build 'build-patch
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((patch-builder "./kernel-tree-scripts/create-patch.sh")
+             (let* ((patch-builder "../kernel-tree-scripts/create-patch.sh")
                     (port (open-input-pipe patch-builder))
                     (str (get-string-all port)))
                (close-pipe port)
@@ -485,15 +492,21 @@ The peer-to-peer VPN implements a Layer 2 (Ethernet) network between the peers
                  (lambda (port)
                    (format port "~a" str))))
                #t))
-         (replace 'install
+         (add-after 'install 'install-patch
            (lambda* (#:key outputs #:allow-other-keys)
              (install-file "wireguard.patch"
-                           (assoc-ref %outputs "out"))
+                           (assoc-ref %outputs "kernel-patch"))
+             #t))
+         ;; So that 'install-license-files' works...
+         (add-before 'install-license-files 'reset-cwd
+           (lambda _
+             (chdir "..")
              #t)))))
     (home-page "https://git.zx2c4.com/wireguard-linux-compat/")
     (synopsis "WireGuard kernel module for Linux 3.10 through 5.5")
-    (description "This is an out-of-tree Linux kernel patch adding WireGuard to
-kernel versions 3.10 through 5.5.  WireGuard was added to Linux 5.6.")
+    (description "This package contains an out-of-tree kernel patch and
+a loadable module adding WireGuard to Linux kernel versions 3.10 through 5.5.
+WireGuard was added to Linux 5.6.")
     (license license:gpl2)))
 
 (define-public wireguard-tools
