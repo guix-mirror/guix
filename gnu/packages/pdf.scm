@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -904,20 +904,44 @@ optimize toolbar for portrait / landscape
 (define-public python-reportlab
   (package
     (name "python-reportlab")
-    (version "3.5.32")
+    (version "3.5.42")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "reportlab" version))
               (sha256
                (base32
-                "0lf8hil9nbm74zl27l8rydxbhwnpr0pbghibsqrc9sglds9l9vw3"))))
+                "0i17qgm7gzy7pzp240mkpsx9rn8rr67jh5npp5bylv3sd41g48cw"))))
     (build-system python-build-system)
     (arguments
-     '(;; FIXME: There is one test failure, but it does not cause the
-       ;; build to fail. No time to investigate right now.
-       #:test-target "tests"))
+     '(;; FIXME: There is one test failure, building the pdf manual from source,
+       ;; but it does not cause the build to fail.
+       #:test-target "tests"
+       #:configure-flags (list "--use-system-libart")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libart (assoc-ref inputs "libart-lgpl"))
+                   (freetype (assoc-ref inputs "freetype"))
+                   (dlt1 (assoc-ref inputs "font-curve-files")))
+               (substitute* "setup.py"
+                 (("/usr/include/libart-\\*")
+                  (string-append libart "/include/libart-2.0"))
+                 (("/usr/include/freetype2")
+                  (string-append freetype "/include"))
+                 (("http://www.reportlab.com/ftp/pfbfer-20180109.zip")
+                  (string-append "file://" dlt1)))
+               #t))))))
     (inputs
-     `(("freetype" ,freetype)))
+     `(("freetype" ,freetype)
+       ("libart-lgpl" ,libart-lgpl)
+       ("font-curve-files"
+        ,(origin
+           (method url-fetch)
+           (uri "http://www.reportlab.com/ftp/pfbfer-20180109.zip")
+           (sha256
+            (base32
+             "1v0gy4mbx02ys96ssx89420y0njknlrxs2bx64bv4rp8a0al66w5"))))))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)))
     (home-page "https://www.reportlab.com")
@@ -1232,7 +1256,7 @@ multiple files.")
 (define-public pdfpc
   (package
     (name "pdfpc")
-    (version "4.3.4")
+    (version "4.4.0")
     (source
      (origin
        (method git-fetch)
@@ -1241,7 +1265,7 @@ multiple files.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "07aafsm4jzdgpahz83p0ajv40hry7gviyadqi13ahr8xdhhwy2sd"))))
+        (base32 "0vh2r32akvasdrghkaq7ard24r2qncp34jfiyshi3zxabm9bhfaa"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test target
     (inputs

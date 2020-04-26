@@ -6923,7 +6923,7 @@ the file to which it applies.")
     (home-page "https://www.ctan.org/pkg/pdfx")
     (synopsis "PDF/X and PDF/A support for pdfTeX, LuaTeX and XeTeX")
     (description
-     "This package helps LaTeX users to create PDF/X, PFD/A and other
+     "This package helps LaTeX users to create PDF/X, PDF/A and other
 standards-compliant PDF documents with pdfTeX, LuaTeX and XeTeX.")
     (license license:lppl1.2+)))
 

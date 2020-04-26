@@ -194,9 +194,9 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.6
   (linux-libre-deblob-scripts
-   "5.6"
-   (base32 "09hxrr4xzllq5lmipfb6if30318lksrk9py1axc36m9ynql4w0rc")
-   (base32 "09qz5d31g5zwicsnncjnjij193hk0g6kg0ss9jyzh6lp3wilcm71")))
+   "5.6.7"
+   (base32 "196fdbfy1f8zbmnv0ik720snig2bacsh7hfyvgbmlsfk3cil2zgv")
+   (base32 "1g0bi3c8xzy1vz6w1xbpkb3a26bqn9d1yphcqz2ki4aikra81wid")))
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -393,26 +393,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.176")
+(define-public linux-libre-4.14-version "4.14.177")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "18jwxhf29ax54xnylmz9zfkslnxw7y3h215dbfmmvddfp9b0kbmw")))
+        (hash (base32 "04hq0i06mg2yc09jj2xk0vhf5q9yigzjzm55a5bvfy2a6j43r9rk")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.219")
+(define-public linux-libre-4.9-version "4.9.220")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0i5wlyp11ss9p035bhq73xjx8iyk5dk4ynvd7msw5qfkrs6265vb")))
+        (hash (base32 "0bhbkybzbdsbmrjmb5m7hxxl8b3v6n79zhh86cbr95kzg1hcgnfs")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.219")
+(define-public linux-libre-4.4-version "4.4.220")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1mpxqb2m24ay4n9px4n2cyklxy4lhnv9q6wlvilx13rs5qfbb62f")))
+        (hash (base32 "1knj3qsl7x3fysdz1h0s980ddbafs3658z2y67w6sn79wp7d8blg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4739,7 +4739,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
                     (share (string-append out "/share/" ,name)))
                (substitute* "CMakeLists.txt"
                  (("pkg_check_modules\\((OPENRC|SYSTEMD) .*" _ package)
-                  (format "option(~a_FOUND \"Faked\" ON)\n" package))
+                  (format #f "option(~a_FOUND \"Faked\" ON)\n" package))
                  ;; That was easy!  Now we just need to fix the destinations.
                  (("/etc" directory)
                   (string-append out directory)))
@@ -4781,11 +4781,11 @@ from userspace.")
            (lambda _
              (substitute* "tpacpi-bat"
                (("cat ")
-                (format "~a " (which "cat")))
+                (format #f "~a " (which "cat")))
                ;; tpacpi-bat modprobes the acpi_call kernel module if it's not
                ;; loaded.  That's the administrator's prerogative; disable it.
                (("system \"(modprobe .*)\"" _ match)
-                (format "die \"Please run ‘~a’ first.\\n\"" match)))
+                (format #f "die \"Please run ‘~a’ first.\\n\"" match)))
              #t))
          (delete 'configure)            ; nothing to configure
          (delete 'build)                ; nothing to build

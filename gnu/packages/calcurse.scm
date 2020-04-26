@@ -59,7 +59,7 @@
                     (lambda _
                       (substitute* "doc/Makefile.in"
                         (("(docdir =) .*" _ match)
-                         (format "~a @docdir@\n" match)))
+                         (format #f "~a @docdir@\n" match)))
                       #t))
                   (add-before 'check 'check-setup
                     (lambda* (#:key inputs #:allow-other-keys)

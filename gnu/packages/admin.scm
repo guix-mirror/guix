@@ -53,6 +53,7 @@
 (define-module (gnu packages admin)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
@@ -65,6 +66,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -129,6 +131,52 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
+
+(define-public ktsuss
+  (package
+    (name "ktsuss")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nomius/ktsuss.git")
+         (commit version)))
+       (sha256
+        (base32 "0q9931f9hp47v1n8scli4bdg2rkjpf5jf8v7jj2gdn83aia1r2hz"))
+       (file-name (git-file-name name version))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-sudo=yes")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-sudo-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("sudopath=`which sudo 2>/dev/null`")
+                (string-append "sudopath="
+                               (string-append (assoc-ref inputs "sudo")
+                                              "/bin/sudo"))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autogen" ,autogen)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("sudo" ,sudo)))
+    (synopsis "Graphical front end for @command{su}")
+    (description
+     "Ktsuss stands for ``Keep the @command{su} simple, stupid''.
+It is a graphical version of @command{su} written in C and GTK+ 2, with
+simplicity in mind.")
+    (home-page "https://github.com/nomius/ktsuss")
+    (license license:bsd-3)))
 
 (define-public aide
   (package

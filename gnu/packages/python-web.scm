@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -978,14 +979,14 @@ your Web app.")
 (define-public python-webob
   (package
     (name "python-webob")
-    (version "1.5.1")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebOb" version))
        (sha256
         (base32
-         "02bhhzijfhv8hmi1i54d4b0v43liwhnywhflvxsv4x3zax9s3afq"))))
+          "1cpqskanmvwia8wqlpcr3ykyxysynjdnbl5namvpg8vw6jnkv1dh"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
@@ -1727,17 +1728,19 @@ and to spawn subprocesses to handle requests.")
 (define-public python-pastedeploy
   (package
     (name "python-pastedeploy")
-    (version "1.5.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PasteDeploy" version))
        (sha256
-        (base32
-         "1jz3m4hq8v6hyhfjz9425nd3nvn52cvbfipdcd72krjmla4qz1fm"))))
+        (base32 "16qsq5y6mryslmbp5pn35x4z8z3ndp5rpgl42h226879nrw9hmg7"))))
     (build-system python-build-system)
+    (arguments
+     '(#:test-target "pytest"))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://pylonsproject.org/")
     (synopsis
      "Load, configure, and compose WSGI applications and servers")
@@ -2818,7 +2821,7 @@ List.")
              ;; the unused ‘update_psl’ helper command.
              (substitute* "setup.py"
                (("'requests " match)
-                (format "# ~a" match)))
+                (format #f "# ~a" match)))
              #t)))
        #:tests? #f))                  ; the test suite requires network access
     (home-page "https://github.com/pombredanne/python-publicsuffix2")

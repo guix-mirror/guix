@@ -11423,3 +11423,54 @@ MOP easier to use.")
 
 (define-public cl-moptilities
   (sbcl-package->cl-source-package sbcl-moptilities))
+
+(define-public sbcl-osicat
+  (let ((commit "de0c18a367eedc857e1902a7319828af072a0d97"))
+    (package
+      (name "sbcl-osicat")
+      (version (git-version "0.7.0" "1" commit))
+      (home-page "http://www.common-lisp.net/project/osicat/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/osicat/osicat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15viw5pi5sa7qq9b4n2rr3dj2jkqr180rh9z1lh8w3rgl42i2adc"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'validate-runpath 'cleanup-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/sbcl")))
+                 (for-each
+                  delete-file
+                  (filter (lambda (file)
+                            (not (member (basename file)
+                                         '("basic-unixint__grovel"
+                                           "libosicat.so"
+                                           "osicat--system.fasl"
+                                           "osicat.asd"
+                                           "unixint__grovel"))))
+                          (find-files lib ".*")))
+                 #t))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (native-inputs
+       `(("cffi-grovel" ,sbcl-cffi-grovel)
+         ("rt" ,sbcl-rt)))
+      (synopsis "Operating system interface for Common Lisp")
+      (description
+       "Osicat is a lightweight operating system interface for Common Lisp on
+Unix-platforms.  It is not a POSIX-style API, but rather a simple lispy
+accompaniment to the standard ANSI facilities.")
+      (license license:expat))))
+
+(define-public cl-osicat
+  (sbcl-package->cl-source-package sbcl-osicat))

@@ -56,7 +56,7 @@
                                         "lib/pure/osproc.nim")
                    (("/bin/sh") sh))
                  (substitute* (find-files "c_code" "stdlib_osproc.c")
-                   (("\"/bin/sh\", 7") (format "~s, ~s" sh (string-length sh)))))
+                   (("\"/bin/sh\", 7") (format #f "~s, ~s" sh (string-length sh)))))
                #t))
            (replace 'build
              (lambda _

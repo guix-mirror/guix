@@ -13,6 +13,7 @@
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -444,7 +445,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
 (define u-boot
   (package
     (name "u-boot")
-    (version "2020.01")
+    (version "2020.04")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -452,7 +453,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
                     "u-boot-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w9ml4jl15q6ixpdqzspxjnl7d3rgxd7f99ms1xv5c8869h3qida"))))
+                "0wjkasnz87q86hx93inspdjfjsinmxi87bcvj30c773x0fpjlwzy"))))
     (native-inputs
      `(("bc" ,bc)
        ("bison" ,bison)
@@ -463,7 +464,7 @@ tree binary files.  These are board description files used by Linux and BSD.")
        ("python" ,python)
        ("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)
-       ("sdl" ,sdl)
+       ("sdl2" ,sdl2)
        ("swig" ,swig)))
     (build-system  gnu-build-system)
     (home-page "https://www.denx.de/wiki/U-Boot/")

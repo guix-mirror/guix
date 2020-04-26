@@ -525,7 +525,7 @@ and enhance them.")
 (define-public hugin
   (package
     (name "hugin")
-    (version "2019.0.0")
+    (version "2019.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hugin/hugin/hugin-"
@@ -533,7 +533,7 @@ and enhance them.")
                                   "/hugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1l925qslp98gg7yzmgps10h6dq0nb60wbfk345anlxsv0g2ifizr"))))
+                "0gjsm5bgz10wbr5q3y74f8dzb238dh32xx0p5wa3yca6lbzbv9lb"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)

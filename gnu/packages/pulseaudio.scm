@@ -33,6 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix l:)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -257,10 +258,11 @@ sound server.")
              (sha256
               (base32
                "14486c6lmmirkhscbfygz114f6yzf97h35n3h3pdr27w4mdfmlmk"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (inputs
-     `(("libcanberra" ,libcanberra)
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)          ;hard-coded theme
        ("gtkmm" ,gtkmm)
+       ("libcanberra" ,libcanberra)
        ("pulseaudio" ,pulseaudio)))
     (native-inputs
      `(("intltool" ,intltool)
