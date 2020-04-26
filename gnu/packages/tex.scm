@@ -4902,6 +4902,32 @@ fonts.  Note that direct substitutes for the bitmapped EC fonts are available,
 via the CM-super, Latin Modern and (in a restricted way) CM-LGC font sets.")
     (license license:lppl1.3+)))
 
+(define-public texlive-inconsolata
+  (package
+    (inherit (simple-texlive-package
+              "texlive-inconsolata"
+              (list "/doc/fonts/inconsolata/"
+                    "/fonts/enc/dvips/inconsolata/"
+                    "/fonts/map/dvips/inconsolata/"
+                    "/fonts/opentype/public/inconsolata/"
+                    "/fonts/tfm/public/inconsolata/"
+                    "/fonts/type1/public/inconsolata/"
+                    "/tex/latex/inconsolata/")
+              (base32
+               "1a77w26m4c4j0202s1qkikz7ha6cxlv8zxhzi9s3l0x1l2pl7cr2")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/inconsolata")
+    (synopsis "Monospaced font with support files for use with TeX")
+    (description
+     "Inconsolata is a monospaced font designed by Raph Levien.  This package
+contains the font (in both Adobe Type 1 and OpenType formats) in regular and
+bold weights, with additional glyphs and options to control slashed zero,
+upright quotes and a shapelier lower-case L, plus metric files for use with
+TeX, and LaTeX font definition and other relevant files.")
+    (license (list license:lppl1.3+
+                   license:silofl1.1
+                   license:asl2.0))))
+
 (define-public texlive-times
   (package
     (inherit (simple-texlive-package
