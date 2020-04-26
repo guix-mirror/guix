@@ -811,6 +811,32 @@ performing parallel computations on multicore machines.")
 Disease Ontology.")
     (license license:artistic2.0)))
 
+(define-public r-pasilla
+  (package
+    (name "r-pasilla")
+    (version "1.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://bioconductor.org/packages/release/data/experiment"
+                    "/src/contrib/pasilla_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0h124i2fb2lbj2k48zzf1n7ldqa471bs26fbd9vw50299aqx28x0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocstyle" ,r-biocstyle)
+       ("r-dexseq" ,r-dexseq)
+       ("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://www.bioconductor.org/packages/pasilla/")
+    (synopsis "Data package with per-exon and per-gene read counts")
+    (description "This package provides per-exon and per-gene read counts
+computed for selected genes from RNA-seq data that were presented in the
+article 'Conservation of an RNA regulatory map between Drosophila and mammals'
+by Brooks et al., Genome Research 2011.")
+    (license license:lgpl2.1+)))
+
 (define-public r-pfam-db
   (package
     (name "r-pfam-db")
