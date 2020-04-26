@@ -4022,6 +4022,54 @@ distributions, modules and filter motifs.")
 frequency matrices from nine public sources, for multiple organisms.")
    (license license:artistic2.0)))
 
+(define-public r-motifbreakr
+  (package
+   (name "r-motifbreakr")
+   (version "2.0.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "motifbreakR" version))
+            (sha256
+             (base32 "190z8gj393qdpq5wz7gph96k0l8c1j9wd0p0llscysvk5kr1hf9n"))))
+   (properties `((upstream-name . "motifbreakR")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-grimport" ,r-grimport)
+      ("r-stringr" ,r-stringr)
+      ("r-biocgenerics" ,r-biocgenerics)
+      ("r-s4vectors" ,r-s4vectors)
+      ("r-iranges" ,r-iranges)
+      ("r-genomeinfodb" ,r-genomeinfodb)
+      ("r-genomicranges" ,r-genomicranges)
+      ("r-biostrings" ,r-biostrings)
+      ("r-bsgenome" ,r-bsgenome)
+      ("r-rtracklayer" ,r-rtracklayer)
+      ("r-variantannotation" ,r-variantannotation)
+      ("r-biocparallel" ,r-biocparallel)
+      ("r-motifstack" ,r-motifstack)
+      ("r-gviz" ,r-gviz)
+      ("r-matrixstats" ,r-matrixstats)
+      ("r-tfmpvalue" ,r-tfmpvalue)
+      ("r-motifdb" ,r-motifdb)))
+   (home-page "https://www.bioconductor.org/packages/motifbreakR/")
+   (synopsis "Predicting disruptiveness of single nucleotide polymorphisms")
+   (description "This package allows biologists to judge in the first place
+whether the sequence surrounding the polymorphism is a good match, and in
+the second place how much information is gained or lost in one allele of
+the polymorphism relative to another.  This package gives a choice of
+algorithms for interrogation of genomes with motifs from public sources:
+@enumerate
+@item a weighted-sum probability matrix;
+@item log-probabilities;
+@item weighted by relative entropy.
+@end enumerate
+
+This package can predict effects for novel or previously described variants in
+public databases, making it suitable for tasks beyond the scope of its original
+design.  Lastly, it can be used to interrogate any genome curated within
+Bioconductor.")
+   (license license:gpl2+)))
+
 (define-public r-motifstack
   (package
     (name "r-motifstack")
