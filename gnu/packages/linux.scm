@@ -4717,11 +4717,11 @@ from userspace.")
            (lambda _
              (substitute* "tpacpi-bat"
                (("cat ")
-                (format "~a " (which "cat")))
+                (format #f "~a " (which "cat")))
                ;; tpacpi-bat modprobes the acpi_call kernel module if it's not
                ;; loaded.  That's the administrator's prerogative; disable it.
                (("system \"(modprobe .*)\"" _ match)
-                (format "die \"Please run ‘~a’ first.\\n\"" match)))
+                (format #f "die \"Please run ‘~a’ first.\\n\"" match)))
              #t))
          (delete 'configure)            ; nothing to configure
          (delete 'build)                ; nothing to build
