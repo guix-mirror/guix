@@ -52,6 +52,7 @@
             openpgp-keyring?
             %empty-keyring
             lookup-key-by-id
+            lookup-key-by-fingerprint
             get-openpgp-keyring
 
             read-radix-64)
@@ -912,14 +913,32 @@ FINGERPRINT, a bytevector."
 ;;; Keyring management
 
 (define-record-type <openpgp-keyring>
-  (openpgp-keyring table)
+  (openpgp-keyring ids fingerprints)
   openpgp-keyring?
-  (table openpgp-keyring-table))              ;vhash mapping key id to packets
+  (ids            openpgp-keyring-ids)        ;vhash mapping key id to packets
+  (fingerprints   openpgp-keyring-fingerprints)) ;mapping fingerprint to packets
+
+(define* (keyring-insert key keyring #:optional (packets (list key)))
+  "Insert the KEY/PACKETS association into KEYRING and return the resulting
+keyring.  PACKETS typically contains KEY, an <openpgp-public-key>, alongside
+with additional <openpgp-public-key> records for sub-keys, <openpgp-user-id>
+records, and so on."
+  (openpgp-keyring (vhash-consv (openpgp-public-key-id key) packets
+                                (openpgp-keyring-ids keyring))
+                   (vhash-cons (openpgp-public-key-fingerprint key) packets
+                               (openpgp-keyring-fingerprints keyring))))
 
 (define (lookup-key-by-id keyring id)
   "Return a list of packets for the key with ID in KEYRING, or #f if ID could
 not be found.  ID must be the 64-bit key ID of the key, an integer."
-  (match (vhash-assv id (openpgp-keyring-table keyring))
+  (match (vhash-assv id (openpgp-keyring-ids keyring))
+    ((_ . lst) lst)
+    (#f '())))
+
+(define (lookup-key-by-fingerprint keyring fingerprint)
+  "Return a list of packets for the key with FINGERPRINT in KEYRING, or #f if
+FINGERPRINT could not be found.  FINGERPRINT must be a bytevector."
+  (match (vhash-assoc fingerprint (openpgp-keyring-fingerprints keyring))
     ((_ . lst) lst)
     (#f '())))
 
@@ -928,7 +947,7 @@ not be found.  ID must be the 64-bit key ID of the key, an integer."
 
 (define %empty-keyring
   ;; The empty keyring.
-  (openpgp-keyring vlist-null))
+  (openpgp-keyring vlist-null vlist-null))
 
 (define* (get-openpgp-keyring port
                               #:optional (keyring %empty-keyring)
@@ -939,15 +958,15 @@ complements KEYRING.  LIMIT is the maximum number of keys to read, or -1 if
 there is no limit."
   (let lp ((pkt (get-packet port))
            (limit limit)
-           (keyring (openpgp-keyring-table keyring)))
+           (keyring keyring))
     (print "#;key " pkt)
     (cond ((or (zero? limit) (eof-object? pkt))
-           (openpgp-keyring keyring))
+           keyring)
           ((openpgp-public-key-primary? pkt)
            ;; Read signatures, user id's, subkeys
-           (let lp* ((pkt (get-packet port))
+           (let lp* ((pkt  (get-packet port))
                      (pkts (list pkt))
-                     (key-ids (list (openpgp-public-key-id pkt))))
+                     (keys (list pkt)))
              (print "#;keydata " pkt)
              (cond ((or (eof-object? pkt)
                         (eq? pkt 'unsupported-public-key-version)
@@ -957,13 +976,13 @@ there is no limit."
                     ;; packets.
                     (lp pkt
                         (- limit 1)
-                        (fold (cute vhash-consv <> (reverse pkts) <>)
-                              keyring key-ids)))
+                        (fold (cute keyring-insert <> <> (reverse pkts))
+                              keyring keys)))
                    ((openpgp-public-key? pkt)     ;subkey
                     (lp* (get-packet port) (cons pkt pkts)
-                         (cons (openpgp-public-key-id pkt) key-ids)))
+                         (cons pkt keys)))
                    (else
-                    (lp* (get-packet port) (cons pkt pkts) key-ids)))))
+                    (lp* (get-packet port) (cons pkt pkts) keys)))))
           (else
            ;; Skip until there's a primary key. Ignore errors...
            (lp (get-packet port) limit keyring)))))

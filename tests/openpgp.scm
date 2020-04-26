@@ -162,13 +162,15 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
                     (call-with-input-file key read-radix-64)))))
     (match (lookup-key-by-id keyring %civodul-key-id)
       (((? openpgp-public-key? primary) packets ...)
-       (and (= (openpgp-public-key-id primary) %civodul-key-id)
-            (not (openpgp-public-key-subkey? primary))
-            (string=? (openpgp-format-fingerprint
-                       (openpgp-public-key-fingerprint primary))
-                      %civodul-fingerprint)
-            (string=? (openpgp-user-id-value (find openpgp-user-id? packets))
-                      "Ludovic Courtès <ludo@gnu.org>"))))))
+       (let ((fingerprint (openpgp-public-key-fingerprint primary)))
+         (and (= (openpgp-public-key-id primary) %civodul-key-id)
+              (not (openpgp-public-key-subkey? primary))
+              (string=? (openpgp-format-fingerprint fingerprint)
+                        %civodul-fingerprint)
+              (string=? (openpgp-user-id-value (find openpgp-user-id? packets))
+                        "Ludovic Courtès <ludo@gnu.org>")
+              (equal? (lookup-key-by-id keyring %civodul-key-id)
+                      (lookup-key-by-fingerprint keyring fingerprint))))))))
 
 (test-equal "get-openpgp-detached-signature/ascii"
   (list `(,%dsa-key-id ,%dsa-key-fingerprint dsa sha256)
