@@ -27,6 +27,7 @@
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
@@ -2131,3 +2133,37 @@ independent.  Supported formats are 7z, ARJ, bzip2, gzip, LHA, lzma, lzop,
 RAR, RPM, DEB, tar, and ZIP.  It cannot perform functions for archives, whose
 archiver is not installed.")
     (license license:gpl2+)))
+
+(define-public tarsplitter
+  (package
+    (name "tarsplitter")
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/AQUAOSOTech/tarsplitter.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17qkg95r97kcrs17b0mcqswx99280ni47j5yx8xa7nl3bdhm6325"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/AQUAOSOTech/tarsplitter"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key import-path outputs #:allow-other-keys)
+             (let* ((source (string-append "src/" import-path))
+                    (out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (with-directory-excursion source
+                 (install-file "README.md" doc))
+               #t))))))
+    (home-page "https://github.com/AQUAOSOTech/tarsplitter")
+    (synopsis "Multithreaded tar utility")
+    (description
+     "Archive huge numbers of files, or spilt massive tar archives into smaller
+chunks.")
+    (license license:expat)))
