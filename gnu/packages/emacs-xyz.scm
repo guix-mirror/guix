@@ -14314,7 +14314,7 @@ notes.")
       (build-system emacs-build-system)
       (home-page "https://github.com/yjwen/org-reveal")
       (synopsis "Org and Reveal.js powered HTML presentation tool")
-      (description "Org-Reveal is a command@{org-mode} extension that allows
+      (description "Org-Reveal is a @command{org-mode} extension that allows
 to create beautiful presentations (slides) with 3D effects from simple but
 powerful Org contents.")
       (license license:gpl3+))))
