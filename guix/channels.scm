@@ -568,9 +568,7 @@ channel instances."
 (define (package-cache-file manifest)
   "Build a package cache file for the instance in MANIFEST.  This is meant to
 be used as a profile hook."
-  (mlet %store-monad ((profile (profile-derivation manifest
-                                                   #:hooks '())))
-
+  (let ((profile (profile (content manifest) (hooks '()))))
     (define build
       #~(begin
           (use-modules (gnu packages))
