@@ -91,7 +91,8 @@ C or C++ programs, though that is not its primary goal.")
    libgc
    (arguments (substitute-keyword-arguments (package-arguments libgc)
                 ((#:configure-flags flags ''())
-                 `(cons "--enable-static" ,flags))))))
+                 `(cons "--enable-static" ,flags))))
+   (properties '((hidden? . #t)))))
 
 (define-public libgc-7
   (package
