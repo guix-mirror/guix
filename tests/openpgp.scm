@@ -179,7 +179,7 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
   (map (lambda (str)
          (let ((signature (get-openpgp-detached-signature/ascii
                            (open-input-string str))))
-           (list (openpgp-signature-issuer signature)
+           (list (openpgp-signature-issuer-key-id signature)
                  (openpgp-signature-issuer-fingerprint signature)
                  (openpgp-signature-public-key-algorithm signature)
                  (openpgp-signature-hash-algorithm signature))))
