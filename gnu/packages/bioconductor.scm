@@ -3998,6 +3998,30 @@ database (e.g. JASPAR).  It can also be used to visualize motifs, motif
 distributions, modules and filter motifs.")
     (license license:gpl2)))
 
+(define-public r-motifdb
+  (package
+   (name "r-motifdb")
+   (version "1.28.0")
+   (source (origin
+            (method url-fetch)
+            (uri (bioconductor-uri "MotifDb" version))
+            (sha256
+             (base32 "0m5apkjlvdq9yhjdyds3hivfnkbm6f059hy2bkjhalrlhd2si2jc"))))
+   (properties `((upstream-name . "MotifDb")))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-biocgenerics" ,r-biocgenerics)
+      ("r-biostrings" ,r-biostrings)
+      ("r-iranges" ,r-iranges)
+      ("r-rtracklayer" ,r-rtracklayer)
+      ("r-s4vectors" ,r-s4vectors)
+      ("r-splitstackshape" ,r-splitstackshape)))
+   (home-page "https://www.bioconductor.org/packages/MotifDb/")
+   (synopsis "Annotated collection of protein-DNA binding sequence motifs")
+   (description "This package provides more than 2000 annotated position
+frequency matrices from nine public sources, for multiple organisms.")
+   (license license:artistic2.0)))
+
 (define-public r-motifstack
   (package
     (name "r-motifstack")
