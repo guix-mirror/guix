@@ -50,6 +50,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -63,6 +64,10 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -70,6 +75,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages xml)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (last)))
 
@@ -2093,4 +2099,35 @@ possibly untrusted extraction shell script.")
 programs that used to be the de facto UNIX standard for compressing and
 uncompressing files.  These programs implement a fast, simple Lempel-Ziv (LZW)
 file compression algorithm.")
+    (license license:gpl2+)))
+
+(define-public xarchiver
+  (package
+    (name "xarchiver")
+    (version "0.5.4.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ib/xarchiver.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1iklwgykgymrwcc5p1cdbh91v0ih1m58s3w9ndl5kyd44bwlb7px"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("libxslt" ,libxslt)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; Hard-coded theme
+       ("gtk+" ,gtk+)))
+    (home-page "https://github.com/ib/xarchiver")
+    (synopsis "Graphical front-end for archive operations")
+    (description "Xarchiver is a front-end to various command line archiving
+tools.  It uses GTK+ tool-kit and is designed to be desktop-environment
+independent.  Supported formats are 7z, ARJ, bzip2, gzip, LHA, lzma, lzop,
+RAR, RPM, DEB, tar, and ZIP.  It cannot perform functions for archives, whose
+archiver is not installed.")
     (license license:gpl2+)))
