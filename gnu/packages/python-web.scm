@@ -2809,7 +2809,7 @@ List.")
              ;; the unused ‘update_psl’ helper command.
              (substitute* "setup.py"
                (("'requests " match)
-                (format "# ~a" match)))
+                (format #f "# ~a" match)))
              #t)))
        #:tests? #f))                  ; the test suite requires network access
     (home-page "https://github.com/pombredanne/python-publicsuffix2")
