@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,7 +95,7 @@ loop-back communications.")
                           file-system-/sys/fs/cgroup/cpuset
                           file-system-/sys/fs/cgroup/devices
                           file-system-/sys/fs/cgroup/memory
-                          ; TODO: file-system-/sys/fs/cgroup/pids
+                          file-system-/sys/fs/cgroup/pids
                           networking
                           udev))
            (start #~(make-forkexec-constructor
