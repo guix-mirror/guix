@@ -493,6 +493,30 @@ annotations for the genome of the model mouse Mus musculus.")
 by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (license license:artistic2.0)))
 
+(define-public r-bsgenome-hsapiens-ucsc-hg38
+  (package
+    (name "r-bsgenome-hsapiens-ucsc-hg38")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BSgenome.Hsapiens.UCSC.hg38"
+                                     version 'annotation))
+              (sha256
+               (base32
+                "1ql08pvi4vv0ynvg4qs9kysw1c7s3crkgin6zxvgzqk6fray9mvi"))))
+    (properties
+     `((upstream-name . "BSgenome.Hsapiens.UCSC.hg38")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)))
+    (home-page
+     "https://www.bioconductor.org/packages/BSgenome.Hsapiens.UCSC.hg38/")
+    (synopsis "Full genome sequences for Homo sapiens")
+    (description
+     "This package provides full genome sequences for Homo sapiens (Human)
+as provided by UCSC (hg38, Dec. 2013) and stored in Biostrings objects.")
+    (license license:artistic2.0)))
+
 (define-public r-ensdb-hsapiens-v75
   (package
     (name "r-ensdb-hsapiens-v75")
