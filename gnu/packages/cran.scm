@@ -15397,6 +15397,32 @@ feature effects.  Key functions are:
 @end itemize\n")
     (license license:gpl3)))
 
+(define-public r-ibreakdown
+  (package
+    (name "r-ibreakdown")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "iBreakDown" version))
+       (sha256
+        (base32
+         "0y4zjpyn8j76jrs5phjzs5lfq3lqjspmrwcksqv9wq0rbdgh14vk"))))
+    (properties `((upstream-name . "iBreakDown")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://ModelOriented.github.io/iBreakDown/")
+    (synopsis "Model agnostic instance level variable attributions")
+    (description
+     "This package provides a model agnostic tool for decomposition of
+predictions from black boxes.  It supports additive attributions and
+attributions with interactions.  The Break Down Table shows contributions of
+every variable to a final prediction.  The Break Down Plot presents variable
+contributions in a concise graphical way.  This package works for
+classification and regression models.")
+    (license license:gpl3)))
+
 (define-public r-dalex
   (package
     (name "r-dalex")
