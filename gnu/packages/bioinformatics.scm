@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -2354,6 +2354,41 @@ files.  The code was previously part of the cutadapt tool.")
 interval trees with associated meta-data.  It is primarily used by the
 @code{deeptools} package.")
     (license license:expat)))
+
+(define-public python-deeptools
+  (package
+    (name "python-deeptools")
+    (version "3.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "deepTools" version))
+              (sha256
+               (base32
+                "1azgjniss5ff6a90nicdjkxyjwqmi3gzfn09gra42hwlz19hipxb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-py2bit" ,python-py2bit)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)
+       ("python-deeptoolsintervals" ,python-deeptoolsintervals)
+       ("python-plotly" ,python-plotly)))
+    (home-page "https://pypi.org/project/deepTools/")
+    (synopsis "Useful tools for exploring deep sequencing data")
+    (description "This package addresses the challenge of handling large amounts
+of data that are now routinely generated from DNA sequencing centers.
+@code{deepTools} contains useful modules to process the mapped reads data for
+multiple quality checks, creating normalized coverage files in standard bedGraph
+and bigWig file formats, that allow comparison between different files.  Finally,
+using such normalized and standardized files, deepTools can create many
+publication-ready visualizations to identify enrichments and for functional
+annotations of the genome.")
+    ;; The file deeptools/cm.py is licensed under the BSD license.  The
+    ;; remainder of the code is licensed under the MIT license.
+    (license (list license:bsd-3 license:expat))))
 
 (define-public cutadapt
   (package
