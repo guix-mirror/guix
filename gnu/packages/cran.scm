@@ -3222,14 +3222,14 @@ by base R methods related to model fitting.")
 (define-public r-broom
   (package
     (name "r-broom")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "broom" version))
        (sha256
         (base32
-         "0n7zd64263kfavdi28rl2bxrsa00c3m4vjhhjdrfwvvmrcxj39fx"))))
+         "0da3jsb02xckrk6alznicn6l5lnyvdhc64qklyarnd77miqgc1hb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
@@ -3241,6 +3241,8 @@ by base R methods related to model fitting.")
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tidyverse/broom")
     (synopsis "Convert statistical analysis objects into tidy data frames")
     (description
