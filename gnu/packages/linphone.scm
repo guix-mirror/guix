@@ -459,7 +459,6 @@ decoding, and rendering.")
        ("belcard" ,belcard)
        ("bellesip" ,belle-sip)
        ("bzrtp", bzrtp)
-       ("hicolor-icon-theme" ,hicolor-icon-theme) ; Hard-coded for GTK UI
        ("glib" ,glib)
        ("gtk2" ,gtk+-2)
        ("mediastreamer2" ,mediastreamer2)
@@ -469,8 +468,6 @@ decoding, and rendering.")
        ("six" ,python-six)
        ("sqlite" ,sqlite)
        ("udev" ,eudev)))
-    (propagated-inputs
-     `(("murrine" ,murrine)))           ; Required for GTK UI
     (synopsis "Belledonne Communications Softphone Library")
     (description "Liblinphone is a high-level SIP library integrating
 all calling and instant messaging features into an unified
