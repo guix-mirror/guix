@@ -121,6 +121,36 @@ degree elevation and curve fitting.")
 the system clipboards.")
     (license license:gpl3)))
 
+(define-public r-ggpmisc
+  (package
+    (name "r-ggpmisc")
+    (version "0.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ggpmisc" version))
+              (sha256
+               (base32
+                "0xc1yp0kphipq23ri4ij93garx1x2nrf4i0lhs6m10pp9yz7fbmj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-lubridate" ,r-lubridate)
+       ("r-mass" ,r-mass)
+       ("r-plyr" ,r-plyr)
+       ("r-polynom" ,r-polynom)
+       ("r-splus2r" ,r-splus2r)
+       ("r-tibble" ,r-tibble)
+       ("r-xts" ,r-xts)
+       ("r-zoo" ,r-zoo)))
+    (home-page "https://www.r4photobiology.info/")
+    (synopsis "Miscellaneous Extensions to @code{ggplot2}")
+    (description "This package provides extensions to @code{ggplot2},
+respecting the grammar of its graphics paradigm.")
+    (license license:gpl2+)))
+
 (define-public r-oenb
   (package
     (name "r-oenb")
