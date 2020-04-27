@@ -19739,17 +19739,20 @@ character codes as well as the UN M.49 area codes.")
 (define-public r-stopwords
   (package
     (name "r-stopwords")
-    (version "1.0")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stopwords" version))
        (sha256
         (base32
-         "1nmi0bpd0c238g5b8ch1v034m5ng9llhs519cgxdrj3sh9fplwlv"))))
+         "155g00ansyqfpp1mzd2q6mn0k214xinf78nww2368h24kz761jjw"))))
     (properties `((upstream-name . "stopwords")))
     (build-system r-build-system)
-    (propagated-inputs `(("r-isocodes" ,r-isocodes)))
+    (propagated-inputs
+     `(("r-desc" ,r-desc)
+       ("r-isocodes" ,r-isocodes)
+       ("r-usethis" ,r-usethis)))
     (home-page "https://github.com/quanteda/stopwords")
     (synopsis "Multilingual stopword lists")
     (description
