@@ -745,30 +745,30 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                  "guile-default-utf8.patch"
                                  "guile-linux-syscalls.patch")))
 
-(define %guile-static-stripped
-  ;; A stripped static Guile binary, for use during bootstrap.
-  (package (inherit %guile-static)
-    (name "guile-static-stripped")
+(define* (make-guile-static-stripped static-guile)
+  (package
+    (inherit static-guile)
+    (name (string-append (package-name static-guile) "-stripped"))
     (build-system trivial-build-system)
     (arguments
      ;; The end result should depend on nothing but itself.
      `(#:allowed-references ("out")
        #:modules ((guix build utils))
        #:builder
-       (let ()
+       (let ((version ,(version-major+minor (package-version static-guile))))
          (use-modules (guix build utils))
 
          (let* ((in     (assoc-ref %build-inputs "guile"))
                 (out    (assoc-ref %outputs "out"))
                 (guile1 (string-append in "/bin/guile"))
                 (guile2 (string-append out "/bin/guile")))
-           (mkdir-p (string-append out "/share/guile/2.0"))
-           (copy-recursively (string-append in "/share/guile/2.0")
-                             (string-append out "/share/guile/2.0"))
+           (mkdir-p (string-append out "/share/guile/" version))
+           (copy-recursively (string-append in "/share/guile/" version)
+                             (string-append out "/share/guile/" version))
 
-           (mkdir-p (string-append out "/lib/guile/2.0/ccache"))
-           (copy-recursively (string-append in "/lib/guile/2.0/ccache")
-                             (string-append out "/lib/guile/2.0/ccache"))
+           (mkdir-p (string-append out "/lib/guile/" version "/ccache"))
+           (copy-recursively (string-append in "/lib/guile/" version "/ccache")
+                             (string-append out "/lib/guile/" version "/ccache"))
 
            (mkdir (string-append out "/bin"))
            (copy-file guile1 guile2)
@@ -789,9 +789,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                  '((invoke guile2 "--version")))
 
            #t))))
-    (inputs `(("guile" ,%guile-static)))
+    (inputs `(("guile" ,static-guile)))
     (outputs '("out"))
     (synopsis "Minimal statically-linked and relocatable Guile")))
+
+(define %guile-static-stripped
+  ;; A stripped static Guile binary, for use during bootstrap.
+  (make-guile-static-stripped %guile-static))
 
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
