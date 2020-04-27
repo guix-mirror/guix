@@ -55,7 +55,8 @@
             %mes-bootstrap-tarball
             %bootstrap-tarballs
 
-            %guile-static-stripped))
+            %guile-static-stripped
+            %guile-3.0-static-stripped))
 
 ;;; Commentary:
 ;;;
@@ -796,6 +797,14 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %guile-static-stripped
   ;; A stripped static Guile binary, for use during bootstrap.
   (make-guile-static-stripped %guile-static))
+
+(define %guile-3.0-static-stripped
+  ;; A stripped static Guile 3.0 binary, for use in initrds.
+  (make-guile-static-stripped
+   (make-guile-static guile-3.0
+                      '("guile-2.2-default-utf8.patch"
+                        "guile-3.0-linux-syscalls.patch"
+                        "guile-3.0-relocatable.patch"))))
 
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
