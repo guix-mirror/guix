@@ -15435,17 +15435,20 @@ classification and regression models.")
 (define-public r-dalex
   (package
     (name "r-dalex")
-    (version "1.0.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DALEX" version))
        (sha256
         (base32
-         "1jbyn57vn6d281a5y15h5d8ljin8cdb9lr7lbgggc950blyfv4g0"))))
+         "0mfcci54622gnk8al9fl2jhs9i2vfly7lam04y5rdacbyiam49j6"))))
     (properties `((upstream-name . "DALEX")))
     (build-system r-build-system)
-    (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-ibreakdown" ,r-ibreakdown)
+       ("r-ingredients" ,r-ingredients)))
     (home-page "https://pbiecek.github.io/DALEX/")
     (synopsis "Descriptive machine learning explanations")
     (description
