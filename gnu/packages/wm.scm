@@ -1760,6 +1760,36 @@ rendering.")
 windows in the current X session.")
       (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
+(define-public sbcl-stumpwm-swm-gaps
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-swm-gaps")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/swm-gaps"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Gaps between windows for StumpWM")
+      (description "This package provides a StumpWM module which adds gaps
+between windows.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
