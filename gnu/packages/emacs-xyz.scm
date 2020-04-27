@@ -15881,10 +15881,10 @@ provide an incremental search that moves all fake cursors in sync.")
       (license license:expat))))
 
 (define-public emacs-evil-org
-  (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
+  (let ((commit "9d4be14118bf27094a30dbff349b815f098aacbf"))
     (package
       (name "emacs-evil-org")
-      (version (git-version "0.1.1" "1" commit))
+      (version (git-version "1.0.2" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -15894,7 +15894,7 @@ provide an incremental search that moves all fake cursors in sync.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "176hrw7y7nczffbyhsa167b8rvfacsmcafm2gpkrdjqlrikbmrhl"))))
+           "1fxxfkinb0gq4p5b686r7z4jrkv98zfgh5z889zkjacncv8ibswn"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
       (home-page
