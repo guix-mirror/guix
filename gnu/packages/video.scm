@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2015, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -4036,3 +4036,38 @@ result in several formats:
     (description
      "The fastest and safest AV1 encoder.")
     (license license:bsd-2)))
+
+(define-public peek
+  (package
+    (name "peek")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phw/peek.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xwlfizga6hvjqq127py8vabaphsny928ar7mwqj9cyqfl6fx41x"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")         ; for glib-compile-resources
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://github.com/phw/peek")
+    (synopsis "Simple animated GIF screen recorder")
+    (description
+     "Peek makes it easy to create short screencasts of a screen area.  It was
+built for the specific use case of recording screen areas, e.g. for easily
+showing UI features of your own apps or for showing a bug in bug reports.
+With Peek, you simply place the Peek window over the area you want to record
+and press \"Record\".  Peek is optimized for generating animated GIFs, but you
+can also directly record to WebM or MP4 if you prefer.")
+    (license license:gpl3+)))
