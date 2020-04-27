@@ -183,7 +183,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "3.6.3")
+    (version "4.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -191,7 +191,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13xaxwfbzj0bd6rn2n27z0n04lb93mcyq991w4vdbbg8v282jc49"))))
+                "0h1995smlyiyhx7gpg9paxsfqrcn6g9bbp5h9r47i6an3clv1gh6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
@@ -269,6 +269,11 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                  (("my \\$date = strftime \"%B %Y\", localtime" line)
                   (string-append line " 1"))))
              #t))
+         (add-before 'build 'set-locales
+           (lambda _
+             (setlocale LC_ALL "C")
+             (setenv "LC_ALL" "C")
+             #t))
          (add-before 'configure 'set-default-pager
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
@@ -322,7 +327,9 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo) ; for building HTML manuals
-       ("texlive" ,(texlive-union (list texlive-fonts-ec
+       ("texlive" ,(texlive-union (list texlive-ae
+                                        texlive-inconsolata
+                                        texlive-fonts-ec
                                         texlive-amsfonts
                                         texlive-latex-base
                                         texlive-latex-fancyvrb
@@ -331,7 +338,8 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
                                         texlive-latex-oberdiek
                                         texlive-latex-tools
                                         texlive-latex-upquote
-                                        texlive-latex-url)))
+                                        texlive-latex-url
+                                        texlive-latex-xkeyval)))
        ("tzdata" ,tzdata-for-tests)
        ("xz" ,xz)))
     (inputs
@@ -347,7 +355,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libxt" ,libxt)
-       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
        ("readline" ,readline)
        ;; This avoids a reference to the ungraftable static bash.  R uses the
        ;; detected shell for the "system" procedure.
