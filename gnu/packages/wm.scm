@@ -33,6 +33,7 @@
 ;;; Copyright © 2019, 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,7 +150,7 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.7.2")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -157,9 +158,9 @@ the leaves of a full binary tree.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kc18aj9j3nfz6fj4qxg9s3gg4jvn6kzi3ii24hfm0vqdpy17xnz"))
+         "0c1lf82z6a56g8asin91cmqhzk3anw0xwc44b31bpjixadmns57y"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (inputs
      `(("dzen"        ,dzen)
        ("dmenu"       ,dmenu)
@@ -169,13 +170,20 @@ the leaves of a full binary tree.")
        ("xsetroot"    ,xsetroot)
        ("libx11"      ,libx11)
        ("libxext"     ,libxext)
-       ("libxinerama" ,libxinerama)))
+       ("libxinerama" ,libxinerama)
+       ("libxrandr"   ,libxrandr)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("asciidoc"   ,asciidoc)
+       ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     '(#:tests? #f
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "-DCC=gcc"
+               (string-append "-DCMAKE_INSTALL_SYSCONF_PREFIX=" out "/etc")
+               (string-append "-DBASHCOMPLETIONDIR=" out "/etc/bash_completion.d")))
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
          (add-after 'install 'install-xsession
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -190,17 +198,7 @@ the leaves of a full binary tree.")
                      Comment=Manual tiling window manager~@
                      Exec=~a/bin/herbstluftwm~@
                      Type=XSession~%" out)))
-               #t))))
-       #:tests? #f
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list "CC=gcc"
-               (string-append "PREFIX=''")
-               (string-append "DESTDIR=" out)
-               (string-append "FISHCOMPLETIONDIR="
-                              "/share/fish/vendor_completions.d")
-               (string-append "BASHCOMPLETIONDIR=" out
-                              "/etc/bash_completion.d")))))
+               #t))))))
     (synopsis "Tiling window manager for X11")
     (description "herbstluftwm is a manual tiling window manager for X11 using
 Xlib and GLib.  Its main features are:
