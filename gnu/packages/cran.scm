@@ -16026,22 +16026,22 @@ both R code and compiled C/C++/FORTRAN code.")
 (define-public r-systemfonts
   (package
     (name "r-systemfonts")
-    (version "0.1.1")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "systemfonts" version))
        (sha256
         (base32
-         "0m0ljid683xcam2f14x7k2zv1yx4npac38a3gfv11vhxfbnpgp0z"))))
+         "1aba07djvxqdmnsdbwvzcsbm2fddnhrssa54xyrlviiwsv2c1qsd"))))
     (properties `((upstream-name . "systemfonts")))
     (build-system r-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/r-lib/systemfonts")
     (synopsis "System native font finding")
     (description
