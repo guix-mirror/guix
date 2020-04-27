@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
@@ -175,6 +175,30 @@ legends.")
     (description
      "This package provides an implementation of heatmaps that offers more
 control over dimensions and appearance.")
+    (license license:gpl2+)))
+
+(define-public r-ecp
+  (package
+    (name "r-ecp")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ecp" version))
+              (sha256
+               (base32
+                "11f9p869xr0zg779i46gmflxlq4xclk9wxbab0nj2fan26pn4sfy"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)))
+    (home-page "https://cran.r-project.org/web/packages/ecp/")
+    (synopsis "Multiple change-point analysis of multivariate data")
+    (description
+     "This package implements various procedures for finding multiple
+change-points.  Two methods make use of dynamic programming and pruning, with
+no distributional assumptions other than the existence of certain absolute
+moments in one method.  Hierarchical and exact search methods are included.
+All methods return the set of estimated change-points as well as other summary
+information.")
     (license license:gpl2+)))
 
 (define-public r-ellipsis
