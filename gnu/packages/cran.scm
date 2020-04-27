@@ -16949,6 +16949,39 @@ for original research.  A variety of user defined options and formatting are
 included.")
     (license license:gpl3)))
 
+(define-public r-qgam
+  (package
+    (name "r-qgam")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "qgam" version))
+       (sha256
+        (base32
+         "0lks2cj0p7irp1i01756v1l7i26d7alax1fbkc20qd6wpz840fi7"))))
+    (properties `((upstream-name . "qgam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-doparallel" ,r-doparallel)
+       ("r-mgcv" ,r-mgcv)
+       ("r-plyr" ,r-plyr)
+       ("r-shiny" ,r-shiny)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/qgam/")
+    (synopsis "Smooth additive quantile regression models")
+    (description
+     "This package provides smooth additive quantile regression models, fitted
+using the methods of Fasiolo et al. (2017).  Differently from @code{quantreg},
+the smoothing parameters are estimated automatically by marginal loss
+minimization, while the regression coefficients are estimated using either
+PIRLS or Newton algorithm.  The learning rate is determined so that the
+Bayesian credible intervals of the estimated effects have approximately the
+correct coverage.  The main function is @code{qgam()} which is similar to
+@code{gam()} in the @code{mgcv} package, but fits non-parametric quantile
+regression models.")
+    (license license:gpl2+)))
+
 (define-public r-abtest
   (package
     (name "r-abtest")
