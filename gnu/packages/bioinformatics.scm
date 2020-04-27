@@ -2334,6 +2334,27 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 files.  The code was previously part of the cutadapt tool.")
     (license license:expat)))
 
+(define-public python-deeptoolsintervals
+  (package
+    (name "python-deeptoolsintervals")
+    (version "0.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "deeptoolsintervals" version))
+              (sha256
+               (base32
+                "1xnl80nblysj6dylj4683wgrfa425rkx4dp5k65hvwdns9pw753x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/deeptools/deeptools_intervals")
+    (synopsis "Create GTF-based interval trees with associated meta-data")
+    (description
+     "This package provides a Python module creating/accessing GTF-based
+interval trees with associated meta-data.  It is primarily used by the
+@code{deeptools} package.")
+    (license license:expat)))
+
 (define-public cutadapt
   (package
     (name "cutadapt")
