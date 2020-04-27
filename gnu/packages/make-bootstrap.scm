@@ -676,70 +676,74 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("mes" ,%mes-minimal)))))
 
+(define* (make-guile-static guile patches)
+  (package-with-relocatable-glibc
+   (static-package
+    (package
+      (inherit guile)
+      (source
+       (origin (inherit (package-source guile))
+               (patches (append (map search-patch patches)
+                                (origin-patches (package-source guile))))))
+      (name (string-append (package-name guile) "-static"))
+      (synopsis "Statically-linked and relocatable Guile")
+
+      ;; Remove the 'debug' output (see above for the reason.)
+      (outputs (delete "debug" (package-outputs guile)))
+
+      (inputs
+       `(("libunistring:static" ,libunistring "static")
+         ,@(package-inputs guile)))
+
+      (propagated-inputs
+       `(("bdw-gc" ,libgc/static-libs)
+         ,@(alist-delete "bdw-gc"
+                         (package-propagated-inputs guile))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments guile)
+         ((#:configure-flags flags '())
+          ;; When `configure' checks for ltdl availability, it
+          ;; doesn't try to link using libtool, and thus fails
+          ;; because of a missing -ldl.  Work around that.
+          ''("LDFLAGS=-ldl"))
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+
+             ;; Do not record the absolute file name of 'sh' in
+             ;; (ice-9 popen).  This makes 'open-pipe' unusable in
+             ;; a build chroot ('open-pipe*' is fine) but avoids
+             ;; keeping a reference to Bash.
+             (delete 'pre-configure)
+
+             (add-before 'configure 'static-guile
+               (lambda _
+                 (substitute* "libguile/Makefile.in"
+                   ;; Create a statically-linked `guile'
+                   ;; executable.
+                   (("^guile_LDFLAGS =")
+                    "guile_LDFLAGS = -all-static")
+
+                   ;; Add `-ldl' *after* libguile-2.0.la.
+                   (("^guile_LDADD =(.*)$" _ ldadd)
+                    (string-append "guile_LDADD = "
+                                   (string-trim-right ldadd)
+                                   " -ldl\n")))))))
+         ((#:tests? _ #f)
+          ;; There are uses of `dynamic-link' in
+          ;; {foreign,coverage}.test that don't fly here.
+          #f)
+         ((#:parallel-build? _ #f)
+          ;; Work around the fact that the Guile build system is
+          ;; not deterministic when parallel-build is enabled.
+          #f)))))))
+
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
-  (let* ((patches (cons* (search-patch "guile-relocatable.patch")
-                         (search-patch "guile-default-utf8.patch")
-                         (search-patch "guile-linux-syscalls.patch")
-                         (origin-patches (package-source guile-2.0))))
-         (source  (origin (inherit (package-source guile-2.0))
-                    (patches patches)))
-         (guile (package (inherit guile-2.0)
-                  (name (string-append (package-name guile-2.0) "-static"))
-                  (source source)
-                  (synopsis "Statically-linked and relocatable Guile")
-
-                  ;; Remove the 'debug' output (see above for the reason.)
-                  (outputs (delete "debug" (package-outputs guile-2.0)))
-
-                  (inputs
-                   `(("libunistring:static" ,libunistring "static")
-                     ,@(package-inputs guile-2.2)))
-
-                  (propagated-inputs
-                   `(("bdw-gc" ,libgc/static-libs)
-                     ,@(alist-delete "bdw-gc"
-                                     (package-propagated-inputs guile-2.0))))
-                  (arguments
-                   (substitute-keyword-arguments (package-arguments guile-2.0)
-                     ((#:configure-flags flags '())
-                      ;; When `configure' checks for ltdl availability, it
-                      ;; doesn't try to link using libtool, and thus fails
-                      ;; because of a missing -ldl.  Work around that.
-                      ''("LDFLAGS=-ldl"))
-                     ((#:phases phases '%standard-phases)
-                      `(modify-phases ,phases
-
-                         ;; Do not record the absolute file name of 'sh' in
-                         ;; (ice-9 popen).  This makes 'open-pipe' unusable in
-                         ;; a build chroot ('open-pipe*' is fine) but avoids
-                         ;; keeping a reference to Bash.
-                         (delete 'pre-configure)
-
-                         (add-before 'configure 'static-guile
-                           (lambda _
-                             (substitute* "libguile/Makefile.in"
-                               ;; Create a statically-linked `guile'
-                               ;; executable.
-                               (("^guile_LDFLAGS =")
-                                "guile_LDFLAGS = -all-static")
-
-                               ;; Add `-ldl' *after* libguile-2.0.la.
-                               (("^guile_LDADD =(.*)$" _ ldadd)
-                                (string-append "guile_LDADD = "
-                                               (string-trim-right ldadd)
-                                               " -ldl\n")))))))
-                     ((#:tests? _ #f)
-                      ;; There are uses of `dynamic-link' in
-                      ;; {foreign,coverage}.test that don't fly here.
-                      #f)
-                     ((#:parallel-build? _ #f)
-                      ;; Work around the fact that the Guile build system is
-                      ;; not deterministic when parallel-build is enabled.
-                      #f))))))
-    (package-with-relocatable-glibc (static-package guile))))
+  (make-guile-static guile-2.0 '("guile-relocatable.patch"
+                                 "guile-default-utf8.patch"
+                                 "guile-linux-syscalls.patch")))
 
 (define %guile-static-stripped
   ;; A stripped static Guile binary, for use during bootstrap.
