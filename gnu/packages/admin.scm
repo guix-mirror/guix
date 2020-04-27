@@ -150,24 +150,22 @@
        (list "--enable-sudo=yes")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-sudo-path
-           (lambda* (#:key inputs #:allow-other-keys)
+         (add-after 'unpack 'patch-file-names
+           (lambda _
              (substitute* "configure.ac"
+               (("supath=`which su 2>/dev/null`")
+                "supath=/run/setuid-programs/su")
                (("sudopath=`which sudo 2>/dev/null`")
-                (string-append "sudopath="
-                               (string-append (assoc-ref inputs "sudo")
-                                              "/bin/sudo"))))
+                "sudopath=/run/setuid-programs/sudo"))
              #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
-       ("autogen" ,autogen)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
-       ("gtk+" ,gtk+-2)
-       ("sudo" ,sudo)))
+       ("gtk+" ,gtk+-2)))
     (synopsis "Graphical front end for @command{su}")
     (description
      "Ktsuss stands for ``Keep the @command{su} simple, stupid''.
