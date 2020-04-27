@@ -16985,25 +16985,25 @@ regression models.")
 (define-public r-abtest
   (package
     (name "r-abtest")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abtest" version))
        (sha256
         (base32
-         "1ky3cf827kj24bhcpk00v5zl5jdkii1gca0x81ay1cjkzfispgws"))))
+         "1zfd13d7dplawk24dbdr1ka8cbdp5w6sxb0zlm7k4dhvn6ksi8h0"))))
     (properties `((upstream-name . "abtest")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)
        ("r-mvtnorm" ,r-mvtnorm)
        ("r-plotrix" ,r-plotrix)
+       ("r-qgam" ,r-qgam)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
        ("r-sn" ,r-sn)
-       ("r-truncnorm" ,r-truncnorm)
-       ("r-vgam" ,r-vgam)))
+       ("r-truncnorm" ,r-truncnorm)))
     (home-page "https://cran.r-project.org/web/packages/abtest/")
     (synopsis "Bayesian A/B testing")
     (description
