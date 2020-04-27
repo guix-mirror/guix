@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
@@ -1532,6 +1532,10 @@ is hereby granted."))))
     (arguments
      `(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
                            "-DENABLE_STATIC=0"
+                           ;; djpeg-shared-3x2-float-prog-cmp fails on 32-bit PPC.
+                           ,@(if (string=? "powerpc-linux" (%current-system))
+                               `("-DFLOATTEST=NO")
+                               '())
                            ;; The build system probes for the current CPU, but
                            ;; that fails when cross-compiling.
                            ,@(let ((target (%current-target-system)))
@@ -1545,6 +1549,9 @@ is hereby granted."))))
                                      `("-DCMAKE_SYSTEM_PROCESSOR=x86"))
                                     ((string-prefix? "x86_64" target)
                                      `("-DCMAKE_SYSTEM_PROCESSOR=x86_64"))
+                                    ;; 32-bit and 64-bit
+                                    ((string-prefix? "powerpc" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=powerpc"))
                                     (else '()))
                                    '())))
        ,@(if (%current-target-system)
