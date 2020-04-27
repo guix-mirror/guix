@@ -13207,7 +13207,7 @@ version does count multisplits.")
 (define-public minimap2
   (package
     (name "minimap2")
-    (version "2.10")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
@@ -13216,7 +13216,7 @@ version does count multisplits.")
                            "minimap2-" version ".tar.bz2"))
        (sha256
         (base32
-         "080w9066irkbhbyr4nmf19pzkdd2s4v31hpzlajgq2y0drr6zcsj"))))
+         "0hi7i9pzxhvjj44khzzzj1lrn5gb5837arr4wgln7k1k5n4ci2mn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
