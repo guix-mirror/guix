@@ -8443,14 +8443,14 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.4.5")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "10fmvmd6q4zjr6b18hhc85mwrzv778qzj6lwl9kbs2fsfvsgw7mm"))))
+         "0mxk7ghlv4r6sna4897q1la2xgyn1dw3r9srhm9x4h5l4701avfa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
@@ -8458,6 +8458,8 @@ Hothorn, Westfall, 2010, CRC Press).")
        ("r-numderiv" ,r-numderiv)
        ("r-plyr" ,r-plyr)
        ("r-xtable" ,r-xtable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/rvlenth/emmeans")
     (synopsis "Estimated marginal means, aka least-squares means")
     (description
