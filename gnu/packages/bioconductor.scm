@@ -1069,6 +1069,33 @@ examples' of Affymetrix data, unlike the artificial examples included in the
 package @code{affy}.")
     (license license:gpl2+)))
 
+(define-public r-coverageview
+  (package
+    (name "r-coverageview")
+    (version "1.24.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "CoverageView" version))
+              (sha256
+               (base32
+                "0s47svs7xnr9jkylq0dxidqrigihdddiprcl0951vjr4w7kmb5nf"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-s4vectors" ,r-s4vectors)
+       ("r-iranges" ,r-iranges)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-rsamtools" ,r-rsamtools)))
+    (home-page "https://bioconductor.org/packages/CoverageView/")
+    (synopsis "Coverage visualization package for R")
+    (description "This package provides a framework for the visualization of
+genome coverage profiles.  It can be used for ChIP-seq experiments, but it can
+be also used for genome-wide nucleosome positioning experiments or other
+experiment types where it is important to have a framework in order to inspect
+how the coverage distributed across the genome.")
+    (license license:artistic2.0)))
+
 (define-public r-curatedtcgadata
   (package
     (name "r-curatedtcgadata")
