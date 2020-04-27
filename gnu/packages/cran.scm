@@ -449,6 +449,27 @@ small, reproducible, and runnable examples on code-oriented websites or email.
 such as copy/paste from an R session.")
     (license license:expat)))
 
+(define-public r-reordercluster
+  (package
+   (name "r-reordercluster")
+   (version "1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (cran-uri "ReorderCluster" version))
+            (sha256
+             (base32
+              "0ss750frzvj0bm1w7zblmcsjpszhnbffwlkaw31sm003lbx9hy58"))))
+   (build-system r-build-system)
+   (propagated-inputs
+    `(("r-gplots" ,r-gplots)
+      ("r-rcpp" ,r-rcpp)))
+   (home-page "https://cran.r-project.org/web/packages/ReorderCluster")
+   (synopsis "Reordering the dendrogram according to the class labels")
+   (description "This package provides tools for performing the leaf reordering
+for the dendrogram that preserves the hierarchical clustering result and at the
+same time tries to group instances from the same class together.")
+   (license license:gpl3+)))
+
 (define-public r-callr
   (package
     (name "r-callr")
