@@ -15357,6 +15357,46 @@ engine (Salmon et al., 2011) as provided by the package @code{sitmo}.")
     ;; whole is distributed under the terms of the AGPL 3.
     (license license:agpl3)))
 
+(define-public r-ingredients
+  (package
+    (name "r-ingredients")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "ingredients" version))
+       (sha256
+        (base32
+         "1q196y9xzn4wk44fa1bvh0hcbizgm93rwir82nyk31k5pgixk967"))))
+    (properties `((upstream-name . "ingredients")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-scales" ,r-scales)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://ModelOriented.github.io/ingredients/")
+    (synopsis "Effects and importances of model ingredients")
+    (description
+     "This is a collection of tools for assessment of feature importance and
+feature effects.  Key functions are:
+
+@itemize
+@item @code{feature_importance()} for assessment of global level feature
+  importance,
+@item @code{ceteris_paribus()} for calculation of the what-if plots,
+@item @code{partial_dependence()} for partial dependence plots,
+@item @code{conditional_dependence()} for conditional dependence plots,
+@item @code{accumulated_dependence()} for accumulated local effects plots,
+@item @code{aggregate_profiles()} and @code{cluster_profiles()} for
+  aggregation of ceteris paribus profiles,
+@item generic @code{print()} and @code{plot()} for better usability of
+  selected explainers,
+@item generic @code{plotD3()} for interactive, D3 based explanations, and
+@item generic @code{describe()} for explanations in natural language.
+@end itemize\n")
+    (license license:gpl3)))
+
 (define-public r-dalex
   (package
     (name "r-dalex")
