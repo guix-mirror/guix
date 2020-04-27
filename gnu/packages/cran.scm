@@ -13851,17 +13851,19 @@ authoring books and technical documents with R Markdown.")
 (define-public r-optparse
   (package
     (name "r-optparse")
-    (version "1.6.4")
+    (version "1.6.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "optparse" version))
        (sha256
         (base32
-         "0wyrc42ja3ab5szx46zmz8lm7vzfqxkjca0m0sms8g9hqbmmay6d"))))
+         "1l301dy3gc8pn7j00awcjh41wmc1ks9kswak255kbsa6f54rsxsi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-getopt" ,r-getopt)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/trevorld/optparse")
     (synopsis "Command line option parser")
     (description
