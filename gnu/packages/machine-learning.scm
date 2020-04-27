@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -1056,8 +1056,8 @@ association studies (GWAS) on extremely large data sets.")
 
 ;; There have been no proper releases yet.
 (define-public kaldi
-  (let ((commit "2f95609f0bb085bd3a1dc5eb0a39f3edea59e606")
-        (revision "1"))
+  (let ((commit "d4791c0f3fc1a09c042dac365e120899ee2ad21e")
+        (revision "2"))
     (package
       (name "kaldi")
       (version (git-version "0" revision commit))
@@ -1069,7 +1069,7 @@ association studies (GWAS) on extremely large data sets.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "082qh3pfi7hvncylp4xsmkfahbd7gb0whdfa4rwrx7fxk9rdh3kz"))))
+                  "07k80my6f19mhrkwbzhjsnpf9871wmrwkl0ym468i830w67qyjrz"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
