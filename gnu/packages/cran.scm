@@ -2494,6 +2494,27 @@ and S4 methods with inlined C, C++ or Fortran code supporting @code{.C} and
     ;; Any version of the LGPL.
     (license license:lgpl3+)))
 
+(define-public r-inum
+  (package
+    (name "r-inum")
+    (version "1.0-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "inum" version))
+              (sha256
+               (base32
+                "16d09391l65w557dkzhhx1aqn1ljamcmjj3yh42pwq037k0r8brw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-libcoin" ,r-libcoin)))
+    (home-page "https://cran.r-project.org/web/packages/inum/")
+    (synopsis "Interval and enum-type representation of vectors")
+    (description
+     "This package provides an enum-type representation of vectors and
+representation of intervals, including a method of coercing variables
+in data frames.")
+    (license license:gpl2)))
+
 (define-public r-bdsmatrix
   (package
     (name "r-bdsmatrix")
