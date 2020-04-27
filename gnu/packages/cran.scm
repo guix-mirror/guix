@@ -83,6 +83,25 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg))
 
+(define-public r-bezier
+  (package
+    (name "r-bezier")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "bezier" version))
+              (sha256
+               (base32
+                "1vw5128v8h973xwa1fdm9cw2jvrldj87nd55lddlp3qsz3ag4br6"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/bezier/")
+    (synopsis "Bezier curve and spline toolkit")
+    (description
+     "This package is a toolkit for working with Bezier curves and splines.
+The package provides functions for point generation, arc length estimation,
+degree elevation and curve fitting.")
+    (license license:gpl2+)))
+
 (define-public r-clipr
   (package
     (name "r-clipr")
