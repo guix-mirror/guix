@@ -2583,6 +2583,41 @@ and regression inferences from RNA-sequencing data.")
 gene and isoform level using RNA-seq data")
     (license license:artistic2.0)))
 
+(define-public r-karyoploter
+  (package
+    (name "r-karyoploter")
+    (version "1.12.4")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "karyoploteR" version))
+              (sha256
+               (base32
+                "03jmfgmw35hrgn3pc5lq6pblzhfx9fp4l6dx50rp303lr7kjxp9v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-regioner" ,r-regioner)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-memoise" ,r-memoise)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-biovizbase" ,r-biovizbase)
+       ("r-digest" ,r-digest)
+       ("r-bezier" ,r-bezier)
+       ("r-bamsignals" ,r-bamsignals)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-variantannotation" ,r-variantannotation)))
+    (home-page "https://bioconductor.org/packages/karyoploteR/")
+    (synopsis "Plot customizable linear genomes displaying arbitrary data")
+    (description "This package creates karyotype plots of arbitrary genomes and
+offers a complete set of functions to plot arbitrary data on them.  It mimicks
+many R base graphics functions coupling them with a coordinate change function
+automatically mapping the chromosome and data coordinates into the plot
+coordinates.")
+    (license license:artistic2.0)))
+
 (define-public r-lpsymphony
   (package
     (name "r-lpsymphony")
