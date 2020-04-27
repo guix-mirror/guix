@@ -15023,18 +15023,19 @@ external dependencies.  This package has is implemented purely in R.")
 (define-public r-rex
   (package
     (name "r-rex")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rex" version))
        (sha256
         (base32
-         "0alsadgjgass3wr8y5d247j12qqzg454sc84vpskclrkmz778g5x"))))
+         "0m7bq8db3m5dhf01rw7xc7xy1ciq3m7dfgsl80p8cy4h8vqr3d06"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lazyeval" ,r-lazyeval)
-       ("r-magrittr" ,r-magrittr)))
+     `(("r-lazyeval" ,r-lazyeval)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/kevinushey/rex")
     (synopsis "Friendly regular expressions")
     (description
