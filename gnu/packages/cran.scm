@@ -2004,17 +2004,19 @@ multi-dimensional data.")
 (define-public r-powerlaw
   (package
     (name "r-powerlaw")
-    (version "0.70.4")
+    (version "0.70.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "poweRlaw" version))
        (sha256
-        (base32 "19zah9mx93az5lh9vicn3c8q1xb12g0w46dh5p901fbyimc32vwk"))))
+        (base32 "14d1myxllvm1grnfiszzzxaiqpb2jpmsi19wq70r8r2wki293h7g"))))
     (properties `((upstream-name . "poweRlaw")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-vgam" ,r-vgam)))
+     `(("r-pracma" ,r-pracma)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/csgillespie/poweRlaw")
     (synopsis "Tools for the analysis of heavy tailed distributions")
     (description
