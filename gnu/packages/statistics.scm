@@ -2000,14 +2000,14 @@ and environmental data in the framework of Euclidean exploratory methods.")
 (define-public r-xml2
   (package
     (name "r-xml2")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xml2" version))
        (sha256
         (base32
-         "0r7rxp922785dcryghbb3wxqgdav7mafwnmxjqfx8zaj3v1q2j3z"))))
+         "1kx400v62xkd5xal7rzz7jcarz94ac8g1sh4i2dqr78qwgkzj8nz"))))
     (build-system r-build-system)
     (inputs
      `(("libxml2" ,libxml2)
