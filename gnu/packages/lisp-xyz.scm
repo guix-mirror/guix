@@ -3015,7 +3015,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "pango/pango.init.lisp"
                (("libpango" all)
                 (string-append
-                 (assoc-ref inputs "pango") "/lib/" all))))))))))
+                 (assoc-ref inputs "pango") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-pango")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk-pixbuf
   (package
