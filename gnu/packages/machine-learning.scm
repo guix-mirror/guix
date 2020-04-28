@@ -1239,8 +1239,9 @@ automatically.")
       (license license:asl2.0))))
 
 (define-public kaldi-gstreamer-server
-  (let ((commit "1735ba49c5dc0ebfc184e45105fc600cd9f1f508")
-        (revision "1"))
+  ;; This is the tip of the py3 branch
+  (let ((commit "f68cab490be7eb0da2af1475fbc16655f50a60cb")
+        (revision "2"))
     (package
       (name "kaldi-gstreamer-server")
       (version (git-version "0" revision commit))
@@ -1252,7 +1253,7 @@ automatically.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0j701m7lbwmzqxsfanj882v7881hrbmpqybbczbxqpcbg8q34w0k"))))
+                  "17lh1368vkg8ngrcbn2phvigzlmalrqg6djx2gg61qq1a0nj87dm"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f ; there are no tests that can be run automatically
@@ -1268,6 +1269,10 @@ automatically.")
                ;; are reproducible.
                (setenv "PYTHONHASHSEED" "0")
                (with-directory-excursion "kaldigstserver"
+                 ;; This is a Python 2 file
+                 (delete-file "decoder_test.py")
+                 (delete-file "test-buffer.py")
+
                  (for-each (lambda (file)
                              (apply invoke
                                     `("python"
@@ -1318,12 +1323,10 @@ exec ~a ~a/~a \"$@\"~%"
                  #t))))))
       (inputs
        `(("gst-kaldi-nnet2-online" ,gst-kaldi-nnet2-online)
-         ("python2" ,python-2)
-         ("python2-futures" ,python2-futures)
-         ("python2-pygobject" ,python2-pygobject)
-         ("python2-pyyaml" ,python2-pyyaml)
-         ("python2-tornado" ,python2-tornado)
-         ("python2-ws4py" ,python2-ws4py-for-kaldi-gstreamer-server)))
+         ("python" ,python-wrapper)
+         ("python-pygobject" ,python-pygobject)
+         ("python-pyyaml" ,python-pyyaml)
+         ("python-tornado" ,python-tornado)))
       (home-page "https://github.com/alumae/kaldi-gstreamer-server")
       (synopsis "Real-time full-duplex speech recognition server")
       (description "This is a real-time full-duplex speech recognition server,
