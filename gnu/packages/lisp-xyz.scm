@@ -3037,6 +3037,7 @@ is a library for creating graphical user interfaces.")
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
      `(#:asd-file "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
@@ -3047,7 +3048,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gdk-pixbuf/gdk-pixbuf.init.lisp"
                (("libgdk_pixbuf" all)
                 (string-append
-                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all))))))))))
+                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gdk-pixbuf")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk
   (package
