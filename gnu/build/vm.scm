@@ -27,6 +27,7 @@
   #:use-module (guix build store-copy)
   #:use-module (guix build syscalls)
   #:use-module (guix store database)
+  #:use-module (gnu build bootloader)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (gnu system uuid)
@@ -610,30 +611,16 @@ passing it a directory name where it is mounted."
 
     (when esp
       ;; Mount the ESP somewhere and install GRUB UEFI image.
-      (let ((mount-point (string-append target "/boot/efi"))
-            (grub-config (string-append target "/tmp/grub-standalone.cfg")))
+      (let ((mount-point (string-append target "/boot/efi")))
         (display "mounting EFI system partition...\n")
         (mkdir-p mount-point)
         (mount (partition-device esp) mount-point
                (partition-file-system esp))
 
-        ;; Create a tiny configuration file telling the embedded grub
-        ;; where to load the real thing.
-        ;; XXX This is quite fragile, and can prevent the image from booting
-        ;; when there's more than one volume with this label present.
-        ;; Reproducible almost-UUIDs could reduce the risk (not eliminate it).
-        (call-with-output-file grub-config
-          (lambda (port)
-            (format port
-                    "insmod part_msdos~@
-                    search --set=root --label Guix_image~@
-                    configfile /boot/grub/grub.cfg~%")))
-
         (display "creating EFI firmware image...")
-        (install-efi grub-efi mount-point grub-config)
+        (install-efi-loader grub-efi mount-point)
         (display "done.\n")
 
-        (delete-file grub-config)
         (umount mount-point)))
 
     ;; Register BOOTCFG as a GC root.
