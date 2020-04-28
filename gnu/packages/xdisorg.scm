@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2286,3 +2287,40 @@ to find all available clips and launches @command{dmenu} (or @command{rofi},
 depending on the value of @code{CM_LAUNCHER}) to let the user select a clip.
 After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
       (license license:public-domain))))
+
+(define-public kbdd
+  (package
+    (name "kbdd")
+    (version "0.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/qnikst/kbdd.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0qkq75grbd4wkx4nlvswgavpijk9ad0pzqyj89a0ayjsbsn36pqy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus-glib", dbus-glib)
+       ("glib" ,glib)
+       ("libx11" ,libx11)))
+    (home-page "https://github.com/qnikst/kbdd")
+    (synopsis "Per-window keyboard layout switching daemon for X")
+    (description "@command{kbdd} is a simple keyboard layout switching
+program, which is designed to run in an X11 session and remember
+keyboard layouts on a per-window basis.  That can be very handy for a
+user of a non-US keyboard who does not want to jump through layouts back
+and forth while typing in terminals (mostly in a latin alphabet) and
+some kind of chat (in native language).
+
+@command{kbdd} also supports D-Bus signals, which makes it possible to
+create layout indicator widgets.")
+    (license license:bsd-2)))
