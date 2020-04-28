@@ -371,14 +371,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "001gckyw8hl842nk7nwf5kcspzkc1g8dycpwylzh5chl6893ym5m"))))
+        (base32 "1lc2i4qq1kfdybmxnj2zq2hn3hfx0vvlqim4gvlgvs3bfr0lcaqj"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -397,7 +397,7 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;
      ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
      ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
-     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last updated
+     ;; 2019-09-05, ECL was last updated in 2020 while CLISP was last updated
      ;; in 2010.
      ;;
      ;; For now we stick to CLISP for all systems.  We keep the `match' here to
