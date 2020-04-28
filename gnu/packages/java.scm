@@ -2259,6 +2259,48 @@ new Date();"))
        ("zip" ,zip)))
     (home-page "https://openjdk.java.net/projects/jdk/12")))
 
+(define-public openjdk13
+  (package
+    (inherit openjdk12)
+    (name "openjdk")
+    (version "13.0")
+    (source (origin
+	     (method url-fetch)
+	     (uri "http://hg.openjdk.java.net/jdk/jdk13/archive/9c250a7600e1.tar.bz2")
+	     (file-name (string-append name "-" version ".tar.bz2"))
+	     (sha256
+	      (base32
+	       "0v0ljvx5dyzp96dw4z4ksw3pvasil7783mgnmd1wk9gads5ab8iq"))
+	     (modules '((guix build utils)))
+	     (snippet
+	      `(begin
+		 (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+		 #t))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk12:jdk" ,openjdk12 "jdk")
+       ("make@4.2" ,gnu-make-4.2)
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk/13")))
+
 (define-public icedtea icedtea-8)
 
 
