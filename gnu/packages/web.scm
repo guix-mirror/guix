@@ -4840,10 +4840,13 @@ NetSurf project.")
                  "        addenv(\"PERL5LIB\", \""
                  (getenv "PERL5LIB")
                  "\");")))))
-         (add-after 'patch-source-shebangs 'patch-Makefile
+         (add-after 'patch-source-shebangs 'patch-Makefiles
            (lambda _
              (substitute* "Makefile.PL"
-               (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+                          (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+             (with-directory-excursion "po"
+               (substitute* "Makefile"
+                            (("PERL5LIB=") "PERL5LIB=${PERL5LIB}:")))
              #t))
          (add-before 'build 'set-modification-times
            ;; The wiki '--refresh' steps, which are executed during
@@ -4885,7 +4888,8 @@ NetSurf project.")
        ("perl-timedate" ,perl-timedate)
        ("perl-xml-sax" ,perl-xml-sax)
        ("perl-xml-simple" ,perl-xml-simple)
-       ("perl-xml-twig" ,perl-xml-twig)))
+       ("perl-xml-twig" ,perl-xml-twig)
+       ("po4a" ,po4a)))
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
        ("perl-html-scrubber" ,perl-html-scrubber)
