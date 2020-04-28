@@ -10,7 +10,7 @@
 # Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
-# Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 # Copyright © 2016, 2017, 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
@@ -1276,6 +1276,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
+  %D%/packages/patches/openldap-CVE-2020-12243.patch		\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
