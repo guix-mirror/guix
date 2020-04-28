@@ -99,6 +99,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gpodder)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -5158,7 +5159,7 @@ and as an LV2 plugin.")
 (define-public zrythm
   (package
     (name "zrythm")
-    (version "0.8.200")
+    (version "0.8.333")
     (source
       (origin
         (method url-fetch)
@@ -5166,7 +5167,7 @@ and as an LV2 plugin.")
                             version ".tar.xz"))
         (sha256
           (base32
-            "13ivxbrd44qnhyh46dcr94dvqxg8cn4bbd8xm77ljw0p9b4ks4zs"))))
+            "0x2kxr5zz058jpy6k6ymj0fi2gqfcgrlv4qkwz9443hjy5345iwb"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t
@@ -5190,7 +5191,9 @@ and as an LV2 plugin.")
       ("fftwf" ,fftwf)
       ("gettext" ,gettext-minimal)
       ("glibc" ,glibc)
+      ("graphviz" ,graphviz)
       ("gtk+" ,gtk+)
+      ("gtksourceview" ,gtksourceview)
       ("guile" ,guile-2.2)
       ("libcyaml" ,libcyaml)
       ("libsamplerate" ,libsamplerate)
