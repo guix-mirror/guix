@@ -34,7 +34,7 @@
 ;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -22585,3 +22585,26 @@ ASCII UML sequence diagrams in Emacs, which can be embedded in source code,
 comments or emails.")
       (license license:gpl3+))))
 
+(define-public emacs-trashed
+  (package
+    (name "emacs-trashed")
+    (version "1.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shingo256/trashed/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13grdi12iwlw4fiphdfmvclfpbr6ajlgfbfyi7v41z8k3rxz4ypz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/shingo256/trashed/")
+    (synopsis "View and edit system trash can in Emacs")
+    (description "Open, view, browse, restore or permanently delete trashed
+files or directories in trash can with Dired-like look and feel.  The trash
+can has to be compliant with freedesktop.org. In Emacs, you can trash files by
+deleting them with @code{(setq delete-by-moving-to-trash t)}.  This package
+provides a simple but convenient user interface to manage those trashed
+files.")
+    (license license:gpl3+)))
