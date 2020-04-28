@@ -153,7 +153,7 @@
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (propagated-inputs
      `(("guile-json" ,guile-json-1)
-       ("guile-readline" ,guile-readline)
+       ("guile-readline" ,guile2.2-readline)
        ("guile-redis" ,guile-redis)))
     (native-inputs
      `(("bash"       ,bash)         ;for the `source' builtin
