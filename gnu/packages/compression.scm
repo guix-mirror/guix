@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -2167,3 +2167,30 @@ archiver is not installed.")
      "Archive huge numbers of files, or split massive tar archives into smaller
 chunks.")
     (license license:expat)))
+
+(define-public c-blosc
+  (package
+    (name "c-blosc")
+    (version "1.18.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Blosc/c-blosc.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ywq8j70149859vvs19wgjq89d6xsvvmvm2n1dmkzpchxgrvnw70"))))
+    (build-system cmake-build-system)
+    (home-page "https://blosc.org")
+    (synopsis "Blocking, shuffling and lossless compression library")
+    (description
+     "Blosc is a high performance compressor optimized for binary data. It has
+been designed to transmit data to the processor cache faster than the
+traditional, non-compressed, direct memory fetch approach via a
+@code{memcpy()} system call.  Blosc is meant not only to reduce the size of
+large datasets on-disk or in-memory, but also to accelerate memory-bound
+computations.")
+    ;; Blosc itself is released under BSD-3 but it incorporates code under
+    ;; other non-copyleft licenses.
+    (license license:bsd-3)))
