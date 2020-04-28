@@ -103,16 +103,34 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--disable-systemd"
-             (string-append "--sysconfdir="
-                            (assoc-ref %outputs "out")
-                            "/etc"))
+       (list
+        "--disable-systemd"
+        (string-append "--sysconfdir="
+                       (assoc-ref %outputs "out")
+                       "/etc")
+        ;; udevil expects these programs to be run with uid set as root.
+        ;; user has to manually add these programs to setuid-programs.
+        ;; mount and umount are default setuid-programs in guix system.
+        "--with-mount-prog=/run/setuid-programs/mount"
+        "--with-umount-prog=/run/setuid-programs/umount"
+        "--with-losetup-prog=/run/setuid-programs/losetup"
+        "--with-setfacl-prog=/run/setuid-programs/setfacl")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-root-reference
            (lambda _
              (substitute* "src/Makefile.in"
                (("-o root -g root") ""))
+             #t))
+         (add-after 'unpack 'patch-udevil-reference
+           ;; udevil expects itself to be run with uid set as root.
+           ;; devmon also expects udevil to be run with uid set as root.
+           ;; user has to manually add udevil to setuid-programs.
+           (lambda _
+             (substitute* "src/udevil.c"
+               (("/usr/bin/udevil") "/run/setuid-programs/udevil"))
+             (substitute* "src/devmon"
+               (("`which udevil 2>/dev/null`") "/run/setuid-programs/udevil"))
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
