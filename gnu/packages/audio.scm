@@ -1979,14 +1979,14 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.16.0")
+    (version "1.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://lv2plug.in/spec/lv2-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1ppippbpdpv13ibs06b0bixnazwfhiw0d0ja6hx42jnkgdyp5hyy"))))
+               "0gs7401xz23q9vajqr31aa2db8dvssgyh5zrvr4ipa6wig7yb8wh"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
