@@ -222,7 +222,7 @@ interface to the Tk widget system.")
 (define-public ecl
   (package
     (name "ecl")
-    (version "16.1.3")
+    (version "20.4.24")
     (source
      (origin
        (method url-fetch)
@@ -230,17 +230,22 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))))
+        (base32 "01qgdmr54wkj854f69qdm9sybrvd6gd21dpx4askdaaqybnkh237"))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
-    (native-inputs `(("cl-asdf" ,cl-asdf)
-                     ("which" ,which)))
-    (inputs `(("gmp" ,gmp)
-              ("libatomic-ops" ,libatomic-ops)
-              ("libgc" ,libgc)
-              ("libffi" ,libffi)))
+    (native-inputs
+     `(("cl-asdf" ,cl-asdf)
+       ("which" ,which)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("libatomic-ops" ,libatomic-ops)
+       ("libgc" ,libgc)
+       ("libffi" ,libffi)))
     (arguments
      `(#:configure-flags '("--without-rt")
+       ;; FIXME: As of version 20.4.24, we pass 17995 tests and fail 7.
+       ;; 2-3 tests may be due to FHS assumptions.
        #:tests? #t
        #:parallel-tests? #f
        #:phases
@@ -301,9 +306,10 @@ bytecode compiler and interpreter, being able to compile Common Lisp with any
 C/C++ compiler, being able to build standalone executables and libraries, and
 supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
     ;; Note that the file "Copyright" points to some files and directories
-    ;; which aren't under the lgpl2.0+ and instead contain many different,
+    ;; which aren't under the lgpl2.1+ and instead contain many different,
     ;; non-copyleft licenses.
-    (license license:lgpl2.0+)))
+    ;; See https://common-lisp.net/project/ecl/posts/ECL-license.html.
+    (license license:lgpl2.1+)))
 
 (define-public clisp
   (package
