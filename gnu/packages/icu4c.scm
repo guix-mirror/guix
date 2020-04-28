@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -36,7 +36,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "66.1")
+   (version "67.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -45,10 +45,8 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
-            (patch-flags '("-p2"))
-            (patches (search-patches "icu4c-CVE-2020-10531.patch"))
             (sha256
-             (base32 "0bharwzc9nzkbrcf405z2nb3h7q0711z450arz0mjmdrk8hg58sj"))))
+             (base32 "1p6mhvxl0xr2n0g6xdps3mwzwlv6mjsz3xlpm793p9aiybb0ra4l"))))
    (build-system gnu-build-system)
    ;; When cross-compiling, this package needs a source directory of a
    ;; native-build of itself.
