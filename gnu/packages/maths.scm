@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -1297,6 +1297,45 @@ Swath).")
                  (("/bin/sh") (which "sh")))
                #t))))))
     (synopsis "Management suite for data with parallel IO support")))
+
+(define-public hdf5-blosc
+  (package
+    (name "hdf5-blosc")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Blosc/hdf5-blosc.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1nj2bm1v6ymm3fmyvhbn6ih5fgdiapavlfghh1pvbmhw71cysyqs"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DBLOSC_INSTALL_DIR="
+                            (assoc-ref %build-inputs "c-blosc"))
+             (string-append "-DPLUGIN_INSTALL_PATH="
+                            (assoc-ref %outputs "out")
+                            "/hdf5/lib/plugin"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-build-blosc
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("set\\(BLOSC_INSTALL_DIR.*") "")
+               (("ExternalProject_Add\\(project_blosc") "message("))
+             #t)))))
+    (inputs
+     `(("c-blosc" ,c-blosc)
+       ("hdf5" ,hdf5-1.10)))
+    (home-page "https://github.com/Blosc/hdf5-blosc")
+    (synopsis "Filter for HDF5 using the Blosc compressor")
+    (description "This is a filter for HDF5 that uses the Blosc compressor; by
+installing this filter, you can read and write HDF5 files with
+Blosc-compressed datasets.")
+    (license license:expat)))
 
 (define-public h5check
   (package
