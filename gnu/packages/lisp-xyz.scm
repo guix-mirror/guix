@@ -3121,7 +3121,22 @@ is a library for creating graphical user interfaces.")
        #:test-asd-file "test/cl-cffi-gtk-test.asd"
        ;; TODO: Tests fail with memory fault.
        ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
-       #:tests? #f))))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public cl-cffi-gtk
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
