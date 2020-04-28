@@ -2670,10 +2670,11 @@ relational database engine.")
   (sbcl-package->cl-source-package sbcl-cl-sqlite))
 
 (define-public sbcl-parenscript
-  (let ((commit "061d8e286c81c3f45c84fb2b11ee7d83f590a8f8"))
+  ;; Source archives are overwritten on every release, we use the Git repo instead.
+  (let ((commit "7a1ac46353cecd144fc91915ba9f122aafcf4766"))
     (package
       (name "sbcl-parenscript")
-      (version (git-version "2.6" "1" commit))
+      (version (git-version "2.7.1" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2683,7 +2684,7 @@ relational database engine.")
          (file-name (git-file-name "parenscript" version))
          (sha256
           (base32
-           "1kbhgsjbikc73m5cwdp4d4fdafyqcr1b7b630qjrziql0nh6mi3k"))))
+           "0c22lqarrpbq82dg1sb3y6mp6w2faczp34ymzhnmff88yfq1xzsf"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
