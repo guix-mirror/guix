@@ -77,7 +77,7 @@
 
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
-            system-disk-image
+            system-disk-image-in-vm
             system-docker-image
 
             virtual-machine
@@ -604,14 +604,13 @@ system."
 ;;; VM and disk images.
 ;;;
 
-
-(define* (system-disk-image os
-                            #:key
-                            (name "disk-image")
-                            (file-system-type "ext4")
-                            (disk-image-size (* 900 (expt 2 20)))
-                            (volatile? #t)
-                            (substitutable? #t))
+(define* (system-disk-image-in-vm os
+                                  #:key
+                                  (name "disk-image")
+                                  (file-system-type "ext4")
+                                  (disk-image-size (* 900 (expt 2 20)))
+                                  (volatile? #t)
+                                  (substitutable? #t))
   "Return the derivation of a disk image of DISK-IMAGE-SIZE bytes of the
 system described by OS.  Said image can be copied on a USB stick as is.  When
 VOLATILE? is true, the root file system is made volatile; this is useful

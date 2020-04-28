@@ -22,9 +22,11 @@
 (define-module (gnu tests install)
   #:use-module (gnu)
   #:use-module (gnu bootloader extlinux)
+  #:use-module (gnu image)
   #:use-module (gnu tests)
   #:use-module (gnu tests base)
   #:use-module (gnu system)
+  #:use-module (gnu system image)
   #:use-module (gnu system install)
   #:use-module (gnu system vm)
   #:use-module ((gnu build vm) #:select (qemu-command))
@@ -229,14 +231,18 @@ packages defined in installation-os."
                        ;; we cheat a little bit by adding TARGET to its GC
                        ;; roots.  This way, we know 'guix system init' will
                        ;; succeed.
-                       (image  (system-disk-image
-                                (operating-system-with-gc-roots
-                                 os (list target))
-                                #:disk-image-size install-size
-                                #:file-system-type
-                                installation-disk-image-file-system-type
-                                ;; Don't provide substitutes; too big.
-                                #:substitutable? #f)))
+                       (image
+                        (system-image
+                         (image
+                          (inherit
+                           (find-image
+                            installation-disk-image-file-system-type))
+                          (size install-size)
+                          (operating-system
+                            (operating-system-with-gc-roots
+                             os (list target)))
+                          ;; Don't provide substitutes; too big.
+                          (substitutable? #f)))))
     (define install
       (with-imported-modules '((guix build utils)
                                (gnu build marionette))

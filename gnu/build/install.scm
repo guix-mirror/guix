@@ -25,7 +25,6 @@
   #:export (install-boot-config
             evaluate-populate-directive
             populate-root-file-system
-            register-closure
             install-database-and-gc-roots
             populate-single-profile-directory))
 

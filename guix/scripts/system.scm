@@ -54,9 +54,11 @@
   #:autoload   (gnu build linux-modules)
                  (device-module-aliases matching-modules)
   #:use-module (gnu system linux-initrd)
+  #:use-module (gnu image)
   #:use-module (gnu system)
   #:use-module (gnu bootloader)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system image)
   #:use-module (gnu system mapped-devices)
   #:use-module (gnu system linux-container)
   #:use-module (gnu system uuid)
@@ -692,12 +694,11 @@ checking this by themselves in their 'check' procedure."
                                                 (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
-     (system-disk-image os
-                        #:name (match file-system-type
-                                 ("iso9660" "image.iso")
-                                 (_         "disk-image"))
-                        #:disk-image-size image-size
-                        #:file-system-type file-system-type))
+     (system-image
+      (image
+       (inherit (find-image file-system-type))
+       (size image-size)
+       (operating-system os))))
     ((docker-image)
      (system-docker-image os))))
 

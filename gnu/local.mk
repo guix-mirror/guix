@@ -62,6 +62,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/u-boot.scm                     \
   %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
+  %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -606,6 +607,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system.scm				\
   %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
+  %D%/system/image.scm 				\
   %D%/system/install.scm			\
   %D%/system/keyboard.scm			\
   %D%/system/linux-container.scm		\
@@ -626,6 +628,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
   %D%/build/cross-toolchain.scm			\
+  %D%/build/image.scm				\
   %D%/build/file-systems.scm			\
   %D%/build/install.scm				\
   %D%/build/linux-boot.scm			\
