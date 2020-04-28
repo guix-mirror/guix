@@ -3069,6 +3069,7 @@ is a library for creating graphical user interfaces.")
     (name "sbcl-cl-cffi-gtk-gdk")
     (inputs
      `(("gtk" ,gtk+)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
        ("cl-cffi-gtk-gdk-pixbuf" ,sbcl-cl-cffi-gtk-gdk-pixbuf)
@@ -3088,7 +3089,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gdk/gdk.package.lisp"
                (("libgtk" all)
                 (string-append
-                 (assoc-ref inputs "gtk") "/lib/" all))))))))))
+                 (assoc-ref inputs "gtk") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gdk")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk
   (package
