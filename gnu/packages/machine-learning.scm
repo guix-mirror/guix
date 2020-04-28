@@ -1167,8 +1167,8 @@ written in C++.")
       (license license:asl2.0))))
 
 (define-public gst-kaldi-nnet2-online
-  (let ((commit "617e43e73c7cc45eb9119028c02bd4178f738c4a")
-        (revision "1"))
+  (let ((commit "cb227ef43b66a9835c14eb0ad39e08ee03c210ad")
+        (revision "2"))
     (package
       (name "gst-kaldi-nnet2-online")
       (version (git-version "0" revision commit))
@@ -1180,7 +1180,7 @@ written in C++.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0xh3w67b69818s6ib02ara4lw7wamjdmh4jznvkpzrs4skbs9jx9"))))
+                  "1i6ffwiavxx07ri0lxix6s8q0r31x7i4xxvhys5jxkixf5q34w8g"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                    ; there are none
