@@ -47,7 +47,11 @@
     (outputs '("doc"                              ;16 MB
                "out"))
     (arguments
-     '(#:phases
+     `(,@(if (string-prefix? "powerpc" (or (%current-target-system)
+                                           (%current-system)))
+           `(#:make-flags '("CFLAGS+=-maltivec"))
+           '())
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'patch-suppression-files
            (lambda* (#:key outputs #:allow-other-keys)
