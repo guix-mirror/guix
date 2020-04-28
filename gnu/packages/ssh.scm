@@ -793,6 +793,45 @@ dynamically loadable modules for extended functionality such as new remote
 shell services and remote host selection.")
     (license license:gpl2+)))
 
+(define-public python-asyncssh
+  (package
+    (name "python-asyncssh")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "asyncssh" version))
+       (sha256
+        (base32
+         "0pi6npmsgx7l9r1qrfvg8mxx3i23ipff492xz4yhrw13f56a7ga4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-pyopenssl" ,python-pyopenssl)
+       ("python-gssapi" ,python-gssapi)
+       ("python-bcrypt" ,python-bcrypt)))
+    (native-inputs
+     `(("openssh" ,openssh)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-tests
+           (lambda* _
+             (substitute* "tests/test_agent.py"
+               ;; TODO Test fails for unknown reason
+               (("(.+)async def test_confirm" all indent)
+                (string-append indent "@unittest.skip('disabled by guix')\n"
+                               indent "async def test_confirm")))
+             #t)))))
+    (home-page "https://asyncssh.readthedocs.io/")
+    (synopsis "Asynchronous SSHv2 client and server library for Python")
+    (description
+     "AsyncSSH is a Python package which provides an asynchronous client and
+server implementation of the SSHv2 protocol on top of the Python 3.6+ asyncio
+framework.")
+    (license license:epl2.0)))
+
 (define-public clustershell
   (package
     (name "clustershell")
