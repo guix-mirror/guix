@@ -412,16 +412,17 @@ data for video and audio files.")
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.6.5")
+    (version "5.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
-        (base32 "0isil5jxwwd8awz54qk28rpgjg43i5l6yl70g40vxwa4r4m56lfh"))))
+        (base32 "03jykdi3dgf1cdal9bv4fq9zjvzj9l9bs99gi5ar81sdl5nc2pk8"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: some tests does not return and times out.
+     ;; FIXME: some tests do not return and time out.  Some tests fail because
+     ;; some processes survive kill().
      '(#:tests? #f))
     (home-page "https://www.github.com/giampaolo/psutil")
     (synopsis "Library for retrieving information on running processes")
