@@ -1276,7 +1276,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
-  %D%/packages/patches/openldap-CVE-2020-12243.patch		\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssl-runpath.patch			\
