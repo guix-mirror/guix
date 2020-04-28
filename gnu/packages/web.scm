@@ -4810,7 +4810,7 @@ NetSurf project.")
 (define-public ikiwiki
   (package
     (name "ikiwiki")
-    (version "3.20190228")
+    (version "3.20200202.3")
     (source
      (origin
        (method git-fetch)
@@ -4820,7 +4820,7 @@ NetSurf project.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1c0i48jp2vpiwn2pacr6jbjdj26v7s9vzzs7j7gc16bx37dfgbbi"))
+         "0fphyqzlk9y8v9s89ypsmrnbhyymzrpc2w0liy0n4knc7kk2pabq"))
        (snippet
         '(begin
            ;; The POT file requires write permission during the build
