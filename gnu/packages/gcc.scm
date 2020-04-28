@@ -641,12 +641,12 @@ as the 'native-search-paths' field."
     (native-search-paths search-paths)
     (properties (alist-delete 'hidden? (package-properties gcc)))
     (arguments
-     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
-                                                (guix build utils)
-                                                (ice-9 regex)
-                                                (srfi srfi-1)
-                                                (srfi srfi-26))
-                                               ,@(package-arguments gcc))
+     (substitute-keyword-arguments (package-arguments gcc)
+       ((#:modules modules %gnu-build-system-modules)
+        `(,@modules
+          (srfi srfi-1)
+          (srfi srfi-26)
+          (ice-9 regex)))
        ((#:configure-flags flags)
         `(cons (string-append "--enable-languages="
                               ,(string-join languages ","))
