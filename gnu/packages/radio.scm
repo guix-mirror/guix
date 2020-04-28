@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019 Christopher Howard <christopher@librehacker.com>
+;;; Copyright © 2019, 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
@@ -653,6 +653,73 @@ transmitted over any of several digital modes and verified at the receipt end
 for correctness.")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
+
+(define-public hackrf
+  ;; Using a git commit because there have been many many commits
+  ;; since the relase two years ago, but no sign of a promised
+  ;; release for many months now.
+  (let ((commit "43e6f99fe8543094d18ff3a6550ed2066c398862")
+        (revision "0"))
+    (package
+     (name "hackrf")
+     (version (git-version "2018.01.1" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mossmann/hackrf.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0avnv693xi0zsnrvkbfn0ln1r3s1iyj0bz7sc3gxay909av0pvbc"))))
+     (build-system cmake-build-system)
+     (arguments
+      '(#:configure-flags
+        (list "-DUDEV_RULES_GROUP=dialout"
+              (string-append "-DUDEV_RULES_PATH="
+                             (assoc-ref %outputs "out")
+                             "/lib/udev/rules.d"))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'enter-source-directory
+            (lambda _
+              (chdir "host")
+              #t))
+          (add-after 'install 'delete-static-library
+            (lambda* (#:key outputs #:allow-other-keys)
+              (delete-file (string-append (assoc-ref outputs "out")
+                                          "/lib/libhackrf.a"))
+              #t))
+          (add-before 'install-license-files 'leave-source-directory
+            (lambda _
+              (chdir "..")
+              #t)))
+        #:tests? #f)) ; no test suite
+     (native-inputs
+      `(("pkg-config" ,pkg-config)))
+     (inputs
+      `(("fftw" ,fftw)
+        ("fftwf" ,fftwf)
+        ("libusb" ,libusb)))
+     (home-page "https://greatscottgadgets.com/hackrf/")
+     (synopsis "User-space library and utilities for HackRF SDR")
+     (description
+      "Command line utilities and a C library for controlling the HackRF
+Software Defined Radio (SDR) over USB.  Installing this package installs
+the userspace hackrf utilities and C library.  To install the hackrf
+udev rules, you must add this package as a system service via
+modify-services.  E.g.:
+
+@lisp
+(services
+ (modify-services
+  %desktop-services
+  (udev-service-type config =>
+   (udev-configuration (inherit config)
+    (rules (cons hackrf
+            (udev-configuration-rules config)))))))
+@end lisp")
+     (license license:gpl2))))
 
 (define-public hamlib
   (package
