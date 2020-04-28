@@ -2981,7 +2981,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "cairo/cairo.init.lisp"
                (("libcairo" all)
                 (string-append
-                 (assoc-ref inputs "cairo") "/lib/" all))))))))))
+                 (assoc-ref inputs "cairo") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-cairo")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-pango
   (package
