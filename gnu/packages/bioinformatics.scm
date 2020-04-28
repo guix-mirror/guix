@@ -9158,6 +9158,46 @@ samples into a single report.  It contains modules for a large number of
 common bioinformatics tools.")
     (license license:gpl3+)))
 
+(define-public variant-tools
+  (package
+    (name "variant-tools")
+    (version "3.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vatlab/varianttools.git")
+             ;; There is no tag corresponding to version 3.1.2
+             (commit "813ae4a90d25b69abc8a40f4f70441fe09015249")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "12ibdmksj7icyqhks4xyvd61bygk4pjmxn618kp6vgk1af01y34g"))))
+    (build-system python-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("c-blosc" ,c-blosc)
+       ("gsl" ,gsl)
+       ("hdf5" ,hdf5)
+       ("hdf5-blosc" ,hdf5-blosc)
+       ("python-cython" ,python-cython)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pycurl" ,python-pycurl)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-scipy" ,python-scipy)
+       ("python-tables" ,python-tables)))
+    (home-page "https://vatlab.github.io/vat-docs/")
+    (synopsis "Analyze genetic variants from Next-Gen sequencing studies")
+    (description
+     "Variant tools is a tool for the manipulation, annotation,
+selection, simulation, and analysis of variants in the context of next-gen
+sequencing analysis.  Unlike some other tools used for next-gen sequencing
+analysis, variant tools is project based and provides a whole set of tools to
+manipulate and analyze genetic variants.")
+    (license license:gpl3+)))
+
 (define-public r-chipseq
   (package
     (name "r-chipseq")
