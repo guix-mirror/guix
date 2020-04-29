@@ -7380,6 +7380,27 @@ PEP 8.")
 (define-public python2-pyflakes
   (package-with-python2 python-pyflakes))
 
+;; Flake8 2.6 requires an older version of pyflakes.
+;; This should be removed ASAP.
+(define-public python-pyflakes-1.2
+  (package (inherit python-pyflakes)
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyflakes" version))
+       (sha256
+        (base32
+         "17hkw8yd44cr8fz13phy4aih3r5j2p7ild4zlvqdh2c8dmiinjif"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; This one test fails.
+         (replace 'check
+           (lambda _ (invoke "pytest" "-vv" "-k" "not test_f_string"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))))
+
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -7437,22 +7458,6 @@ complexity of Python source code.")
 
 (define-public python2-pep8-1.5.7
   (package-with-python2 python-pep8-1.5.7))
-
-;; Flake8 2.4.1 requires an older version of pyflakes.
-;; This should be removed ASAP.
-(define-public python-pyflakes-0.8.1
-  (package (inherit python-pyflakes)
-    (version "0.8.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyflakes" version))
-       (sha256
-        (base32
-         "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
-    (arguments
-     ;; XXX Tests not compatible with Python 3.5.
-     '(#:tests? #f))))
 
 (define-public python-flake8
   (package

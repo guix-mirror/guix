@@ -144,7 +144,7 @@ manner.")
        ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
        ("python-pbr" ,python-pbr)
        ("python-pep8-1.5.7" ,python-pep8-1.5.7)
-       ("python-pyflakes-0.8.1" ,python-pyflakes-0.8.1)
+       ("python-pyflakes-1.2" ,python-pyflakes-1.2)
        ("python-six" ,python-six)))
     (native-inputs
      `( ;; Tests
