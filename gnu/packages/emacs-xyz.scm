@@ -18241,7 +18241,7 @@ stored playlists.")
 (define-public emacs-vterm
   (let ((version "0")
         (revision "1")
-        (commit "7d7381fa8104b55b70148cf147523d9ab7f01fcd"))
+        (commit "e63bd65eece7c5de3a534b7e2fdbe58256ec2da0"))
     (package
       (name "emacs-vterm")
       (version (git-version version revision commit))
@@ -18253,7 +18253,7 @@ stored playlists.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "04a2jlhmr20ipgzpnba3yryw3ly7qdxjgaw10dwn9wxy1yqmapz1"))))
+                  "0iq857w54qmazxh23fipz85fb9i6dav3f63g0ghpmi6mybfp6i5v"))))
       (build-system emacs-build-system)
       (arguments
        `(#:modules ((guix build emacs-build-system)
@@ -18264,14 +18264,11 @@ stored playlists.")
                              (guix build cmake-build-system))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'add-source-to-load-path 'remove-vterm-module-make
+           (add-before 'add-source-to-load-path 'substitute-vterm-module-path
              (lambda* (#:key outputs #:allow-other-keys)
-               ;; Remove the Emacs Lisp file.
-               (delete-file "vterm-module-make.el")
-               ;; Remove references to the removed file.
-               (make-file-writable "vterm.el")
+               (chmod "vterm.el" #o644)
                (emacs-substitute-sexps "vterm.el"
-                 ("(or (require 'vterm-module nil t)"
+                 ("(require 'vterm-module nil t)"
                   `(module-load
                     ,(string-append (assoc-ref outputs "out")
                                     "/lib/vterm-module.so"))))
