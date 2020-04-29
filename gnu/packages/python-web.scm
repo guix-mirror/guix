@@ -3627,3 +3627,26 @@ without requiring a page refresh.")
 management.  It can find an unused TCP localhost port and remember the
 association.")
     (license license:expat)))
+
+(define-public python-livereload
+  (package
+    (name "python-livereload")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "livereload" version))
+       (sha256
+        (base32
+         "0rhggz185bxc3zjnfpmhcvibyzi86i624za1lfh7x7ajsxw4y9c9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/lepture/python-livereload")
+    (synopsis "Python LiveReload")
+    (description
+     "Python LiveReload provides a command line utility, @command{livereload},
+for starting a web server in a directory.  It can trigger arbitrary commands
+and serve updated contents upon changes to the directory.")
+    (license license:bsd-3)))
