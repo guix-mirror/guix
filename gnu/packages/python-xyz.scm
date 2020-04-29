@@ -19681,3 +19681,49 @@ Open Sound Control 1.0} specification.")
      "Voluptuous is a Python data validation library.  It is primarily
 intended for validating data coming into Python as JSON, YAML, etc.")
     (license license:bsd-3)))
+
+(define-public python-cmd2
+  (package
+    (name "python-cmd2")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cmd2" version))
+       (sha256
+        (base32
+         "1f18plbc9yyvhn0js3d2bii9yld8zfl775gxsaw9jza5pmlg9ss2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-colorama" ,python-colorama)
+       ("python-pyperclip" ,python-pyperclip)
+       ("python-wcwidth" ,python-wcwidth)))
+    (native-inputs
+     `(("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
+       ("python-doc8" ,python-doc8)
+       ("python-flake8" ,python-flake8)
+       ("python-invoke" ,python-invoke)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-autobuild" ,python-sphinx-autobuild)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-tox" ,python-tox)
+       ("python-twine" ,python-twine)
+       ("which" ,which)))
+    (home-page "https://github.com/python-cmd2/cmd2")
+    (synopsis "Tool for building interactive command line applications")
+    (description
+     "Cmd2 is a tool for building interactive command line applications in
+Python.  Its goal is to make it quick and easy for developers to build
+feature-rich and user-friendly interactive command line applications.  It
+provides a simple API which is an extension of Python's built-in @code{cmd}
+module.  @code{cmd2} provides a wealth of features on top of @code{cmd} to
+make your life easier and eliminates much of the boilerplate code which would
+be necessary when using @code{cmd}.")
+    (license license:expat)))
