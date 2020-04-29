@@ -11274,7 +11274,7 @@ possible to use the GNU@tie{}Hurd.}.
 A list of objects (usually packages) to collect loadable kernel modules
 from--e.g. @code{(list ddcci-driver-linux)}.
 
-@item @code{kernel-arguments} (default: @code{'("quiet")})
+@item @code{kernel-arguments} (default: @code{%default-kernel-arguments})
 List of strings or gexps representing additional arguments to pass on
 the command-line of the kernel---e.g., @code{("console=ttyS0")}.
 
