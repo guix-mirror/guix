@@ -7454,9 +7454,6 @@ complexity of Python source code.")
      ;; XXX Tests not compatible with Python 3.5.
      '(#:tests? #f))))
 
-(define-public python2-pyflakes-0.8.1
-  (package-with-python2 python-pyflakes-0.8.1))
-
 (define-public python-flake8
   (package
     (name "python-flake8")
