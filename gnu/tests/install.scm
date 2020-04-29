@@ -252,7 +252,7 @@ packages defined in installation-os."
               (make-marionette
                `(,(which #$(qemu-command system))
                  "-no-reboot"
-                 "-m" "800"
+                 "-m" "1200"
                  #$@(cond
                      ((string=? "ext4" installation-disk-image-file-system-type)
                       #~("-drive"
