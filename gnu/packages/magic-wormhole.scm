@@ -107,14 +107,14 @@ together, allowing them to pretend they have a direct connection.")
 (define-public magic-wormhole
   (package
     (name "magic-wormhole")
-    (version "0.11.2")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "magic-wormhole" version))
         (sha256
          (base32
-          "01fr4bi6kc6fz9n3c4qq892inrc3nf6p2djy65yvm7xkvdxncydf"))))
+          "0q41j99718y7m95zg1vaybnsp31lp6lhyqkbv4yqz5ys6jixh3qv"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
