@@ -363,6 +363,10 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                (wrap-program (string-append out "/bin/gnuradio-companion")
                  `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
              #t)))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GRC_BLOCKS_PATH")
+            (files '("/share/gnuradio/grc/blocks")))))
     (synopsis "Toolkit for software-defined radios")
     (description
      "GNU Radio is a development toolkit that provides signal processing blocks
