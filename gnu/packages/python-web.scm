@@ -3595,3 +3595,35 @@ and rendering come directly from GitHub, so you'll know exactly how it will
 appear.  Changes you make to the file will be instantly reflected in the browser
 without requiring a page refresh.")
       (license license:expat))))
+
+(define-public python-port-for
+  (package
+    (name "python-port-for")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "port-for" version))
+       (sha256
+        (base32
+         "1pncxlj25ggw99r0ijfbkq70gd7cbhqdx5ivsxy4jdp0z14cpda7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-urllib3
+           (lambda _
+             (substitute* "port_for/_download_ranges.py"
+               (("urllib2") "urllib3"))
+             #t)))))
+    (propagated-inputs
+     `(("python-urllib3" ,python-urllib3)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/kmike/port-for/")
+    (synopsis "TCP localhost port finder and association manager")
+    (description
+     "This package provides a utility that helps with local TCP ports
+management.  It can find an unused TCP localhost port and remember the
+association.")
+    (license license:expat)))
