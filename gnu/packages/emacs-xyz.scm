@@ -2479,6 +2479,37 @@ create an Extempore REPL, connect the current @code{extempore-mode} buffer to a
 running Extempore process, and more.")
       (license license:bsd-2))))
 
+(define-public emacs-kakoune
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "d73d14e69ea38076af50cc69f846808383ff539d")
+        (revision "0"))
+    (package
+      (name "emacs-kakoune")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jmorag/kakoune.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nk6jdy1y5mc3ryd0smiqghrk6iv34d5grc7f7migmshlbq0np92"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-expand-region"    ,emacs-expand-region)
+         ("emacs-multiple-cursors" ,emacs-multiple-cursors)
+         ("emacs-ryo-modal"        ,emacs-ryo-modal)))
+      (home-page "https://github.com/jmorag/kakoune.el")
+      (synopsis "Emacs simple simulation, but not emulation, of Kakoune")
+      (description "This package provides many, but not all of the editing
+primitives in the Kakoune editor.  Unlike Evil mode for Vim, this is a very
+shallow emulation, which seeks to do as little work as possible, leveraging
+Emacs native editing commmands and the work of other packages wherever
+possible.")
+      (license license:expat))))
+
 (define-public emacs-keyfreq
   (package
     (name "emacs-keyfreq")
