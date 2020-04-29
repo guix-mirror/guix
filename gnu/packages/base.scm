@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -1173,6 +1173,15 @@ command.")
     (outputs '("out"))
     (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
                          ("hurd-headers" ,hurd-headers)))
+    (native-inputs
+     `(("mig" ,(if (%current-target-system)
+                   ;; XXX: When targeting i586-pc-gnu, we need a 32-bit MiG,
+                   ;; hence this hack.
+                   (package
+                     (inherit mig)
+                     (arguments `(#:system "i686-linux")))
+                   mig))
+       ,@(package-native-inputs glibc)))
     (arguments
      (substitute-keyword-arguments (package-arguments glibc)
        ;; We just pass the flags really needed to build the headers.
