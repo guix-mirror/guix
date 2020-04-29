@@ -6,12 +6,14 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2019, 2020 Adrian Malacoda <malacoda@monarch-pass.net>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1145,6 +1147,302 @@ standards of the IceCat project.")
      `((ftp-directory . "/gnu/gnuzilla")
        (cpe-name . "firefox_esr")
        (cpe-version . ,(first (string-split version #\-)))))))
+
+;; Update this together with icecat!
+(define %icedove-build-id "20200505000000") ;must be of the form YYYYMMDDhhmmss
+(define-public icedove
+  (package
+    (name "icedove")
+    (version "68.8.0")
+    (source icecat-source)
+    (properties
+     `((cpe-name . "thunderbird_esr")))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                              ; no check target
+       #:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
+       #:modules ((guix build utils)    ;find-files
+                  (sxml simple)
+                  (ice-9 regex)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-thunderbird-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (mkdir "comm")
+             (copy-recursively (assoc-ref inputs "thunderbird-sources")
+                               "comm")
+             (delete-file-recursively "obj-x86_64-pc-linux-gnu")
+             (delete-file "sourcestamp.txt")
+             #t))
+         (add-after 'patch-source-shebangs 'patch-cargo-checksums
+           (lambda _
+             (use-modules (guix build cargo-utils))
+             (let ((null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
+               (substitute* '("Cargo.lock" "gfx/wr/Cargo.lock")
+                 (("(\"checksum .* = )\".*\"" all name)
+                  (string-append name "\"" null-hash "\"")))
+               (generate-all-checksums "third_party/rust"))
+             #t))
+         ;; Fixes issue where each installation directory generates its own profile.
+         ;; See e.g. https://trac.torproject.org/projects/tor/ticket/31457
+         (add-after 'patch-source-shebangs 'fix-profile-setting
+           (lambda _
+             (substitute* "comm/mail/moz.configure"
+               (("'MOZ_DEDICATED_PROFILES', True")
+                "'MOZ_DEDICATED_PROFILES', False"))
+             #t))
+         (add-after 'prepare-thunderbird-sources 'rename-to-icedove
+           (lambda _
+             (substitute* "comm/mail/confvars.sh"
+               (("MOZ_APP_BASENAME=Thunderbird")
+                "MOZ_APP_BASENAME=Icedove\nMOZ_APP_DISPLAYNAME=Icedove")
+               (("MOZ_APP_NAME=thunderbird")
+                "MOZ_APP_NAME=icedove")
+               (("MOZ_UPDATER=1")
+                "MOZ_UPDATER=0"))
+             ;; Remove branding to comply with Mozilla's trademark policy
+             (with-directory-excursion "comm/mail/branding/nightly"
+               (delete-file "content/about-wordmark.svg")
+               (call-with-output-file "content/about-wordmark.svg"
+                 (lambda (port)
+                   (sxml->xml '(svg (@ (xmlns "http://www.w3.org/2000/svg")
+                                       (viewBox "0 0 789.1 90.78")
+                                       (width "333")
+                                       (height "48")
+                                       (fill "#fff"))
+                                    (text (@ (x "400") (y "70")
+                                             (text-anchor "middle")
+                                             (font-size "90"))
+                                          "Icedove Daily"))
+                              port)))
+               (substitute* '("locales/en-US/brand.properties"
+                              "locales/en-US/brand.ftl"
+                              "locales/en-US/brand.dtd"
+                              "configure.sh")
+                 (("Thunderbird") "Icedove")
+                 (("mozilla.org") "guix.gnu.org")))
+             ;; Remove other mentions of Thunderbird in user-visible text.
+             (with-directory-excursion "comm/mail/base/content"
+               (substitute* '("newInstallPage.xhtml"
+                              "overrides/app-license-name.html"
+                              "newInstall.xul")
+                 (("Thunderbird") "Icedove")))
+             (with-directory-excursion "comm/mail/components/"
+               (substitute* '("mailGlue.js"
+                              "extensions/schemas/addressBook.json"
+                              "extensions/schemas/tabs.json"
+                              "extensions/schemas/cloudFile.json"
+                              "extensions/schemas/chrome_settings_overrides.json"
+                              "extensions/schemas/windows.json"
+                              "extensions/parent/ext-mail.js"
+                              "im/messages/mail/Info.plist"
+                              "enterprisepolicies/moz.build"
+                              "enterprisepolicies/helpers/moz.build"
+                              "enterprisepolicies/schemas/moz.build"
+                              "preferences/chat.inc.xul")
+                 (("Thunderbird") "Icedove")))
+             (substitute* "comm/calendar/lightning/lightning-packager.mk"
+               (("ifeq \\(thunderbird")
+                "ifeq (icedove"))
+             (substitute* '("comm/mailnews/base/prefs/content/accountUtils.js"
+                            "comm/mailnews/extensions/newsblog/content/feed-subscriptions.js"
+                            "comm/common/src/customizeToolbar.js")
+               (("AppConstants.MOZ_APP_NAME (.)= \"thunderbird" _ e)
+                (format #f "AppConstants.MOZ_APP_NAME ~a= \"icedove" e)))
+
+             ;; Override addon URLs and settings
+             (substitute* "comm/mail/app/profile/all-thunderbird.js"
+               (("(pref\\(\"extensions.webservice.discoverURL\").*" _ m)
+                (string-append m ", \"https://directory.fsf.org/wiki/Icedove\");"))
+               (("(pref\\(\"extensions.getAddons.search.url\").*" _ m)
+                (string-append m ", \"https://guix.gnu.org/packages\");"))
+               (("(pref\\(\"extensions.update.enabled\").*" _ m)
+                (string-append m ", false);"))
+               (("(pref\\(\"extensions.systemAddon.update.enabled\").*" _ m)
+                (string-append m ", false);"))
+               (("(pref\\(\"lightweightThemes.update.enabled\").*" _ m)
+                (string-append m ", false);")))
+             #t))
+         (add-after 'build 'neutralize-store-references
+           (lambda _
+             ;; Mangle the store references to compilers & other build tools in
+             ;; about:buildconfig, reducing Icedove's closure significant.
+             ;; The resulting files are saved in lib/thunderbird/omni.ja
+             (substitute*
+                 ;; Use find because the path "obj-x86_64-pc-linux-gnu" contains
+                 ;; the architecture and the system -> more complicated.
+                 (find-files "." "buildconfig.html")
+               (((format #f "(~a/)([0-9a-df-np-sv-z]{32})"
+                         (regexp-quote (%store-directory)))
+                 _ store hash)
+                (string-append store
+                               (string-take hash 8)
+                               "<!-- Guix: not a runtime dependency -->"
+                               (string-drop hash 8))))
+             #t))
+         (replace 'configure
+           (lambda* (#:key inputs outputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (which "bash"))
+                    (abs-srcdir (getcwd))
+                    (srcdir (string-append "../" (basename abs-srcdir)))
+                    (flags `(,(string-append "--prefix=" out)
+                             ,@configure-flags))
+                    (mozconfig (string-append (getcwd) "/.mozconfig")))
+               (setenv "SHELL" bash)
+               (setenv "AUTOCONF"
+                       (string-append (assoc-ref %build-inputs
+                                                 "autoconf")
+                                      "/bin/autoconf"))
+               (setenv "CONFIG_SHELL" bash)
+               (setenv "QA_CONFIGURE_OPTIONS" ".*")
+               (setenv "MOZBUILD_STATE_PATH"
+                       (string-append (getcwd) "/mach_state"))
+               (setenv "MOZCONFIG"
+                       (string-append (getcwd) "/.mozconfig"))
+               (setenv "CC" "gcc")
+               (setenv "MOZ_NOSPAM" "1")
+               (setenv "PYTHON"
+                       (string-append (assoc-ref inputs "python2")
+                                      "/bin/python"))
+               (setenv "MOZ_BUILD_DATE" ,%icedove-build-id) ; avoid timestamp
+               (setenv "LDFLAGS" (string-append "-Wl,-rpath="
+                                                (assoc-ref outputs "out")
+                                                "/lib/icedove"))
+               (mkdir-p (string-append (getcwd) "/builddir"))
+               (with-output-to-file mozconfig
+                 (lambda ()
+                   (display
+                    (string-append
+                     "ac_add_options --disable-crashreporter\n"
+                     "ac_add_options --disable-debug\n"
+                     "ac_add_options --disable-debug-symbols\n"
+                     "ac_add_options --disable-elf-hack\n"
+                     "ac_add_options --disable-gconf\n"
+                     "ac_add_options --disable-ion\n"
+                     "ac_add_options --disable-necko-wifi\n"
+                     "ac_add_options --disable-official-branding\n"
+                     "ac_add_options --disable-tests\n"
+                     "ac_add_options --disable-updater\n"
+                     "ac_add_options --disable-webrtc\n"
+                     "ac_add_options --enable-application=comm/mail\n"
+                     "ac_add_options --enable-calendar\n"
+                     "ac_add_options --enable-content-sandbox\n"
+                     "ac_add_options --enable-default-toolkit=\"cairo-gtk3\"\n"
+                     "ac_add_options --enable-optimize\n"
+                     "ac_add_options --enable-pulseaudio\n"
+                     "ac_add_options --enable-release\n"
+                     "ac_add_options --enable-startup-notification\n"
+                     "ac_add_options --enable-strip\n"
+                     "ac_add_options --enable-system-ffi\n"
+                     "ac_add_options --enable-system-pixman\n"
+                     "ac_add_options --enable-system-sqlite\n"
+                     "ac_add_options --prefix=" out "\n"
+                     "ac_add_options --with-clang-path=" (assoc-ref %build-inputs "clang") "/bin/clang\n"
+                     "ac_add_options --with-distribution-id=org.gnu\n"
+                     "ac_add_options --with-libclang-path=" (assoc-ref %build-inputs "clang") "/lib\n"
+                     "ac_add_options --with-system-bz2\n"
+                     "ac_add_options --with-system-icu\n"
+                     "ac_add_options --with-system-jpeg\n"
+                     "ac_add_options --with-system-libevent\n"
+                     "ac_add_options --with-system-nspr\n"
+                     "ac_add_options --with-system-nss\n"
+                     "ac_add_options --with-system-zlib\n"
+                     "ac_add_options --with-user-appdir=\\.icedove\n"))))
+               (display (getcwd))
+               (newline)
+               (display "mach configure")
+               (invoke "./mach" "configure"))))
+         (replace 'build
+           (lambda _ (invoke "./mach" "build")))
+         (replace 'install
+           (lambda _ (invoke "./mach" "install")))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (gtk (assoc-ref inputs "gtk+"))
+                    (gtk-share (string-append gtk "/share"))
+                    (pulseaudio (assoc-ref inputs "pulseaudio"))
+                    (pulseaudio-lib (string-append pulseaudio "/lib")))
+               (wrap-program (car (find-files lib "^icedove$"))
+                 `("XDG_DATA_DIRS" prefix (,gtk-share))
+                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib)))
+               #t))))))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("cairo" ,cairo)
+       ("cups" ,cups)
+       ("dbus-glib" ,dbus-glib)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
+       ("hunspell" ,hunspell)
+       ("icu4c" ,icu4c)
+       ("libcanberra" ,libcanberra)
+       ("libevent" ,libevent)
+       ("libffi" ,libffi)
+       ("libgnome" ,libgnome)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng-apng" ,libpng-apng)
+       ("libvpx" ,libvpx)
+       ("libxcomposite" ,libxcomposite)
+       ("libxft" ,libxft)
+       ("libxinerama" ,libxinerama)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxt" ,libxt)
+       ("mesa" ,mesa)
+       ("mit-krb5" ,mit-krb5)
+       ("nspr" ,nspr)
+       ("nss" ,nss)
+       ("pango" ,pango)
+       ("pixman" ,pixman)
+       ("pulseaudio" ,pulseaudio)
+       ("sqlite" ,sqlite)
+       ("startup-notification" ,startup-notification)
+       ("unzip" ,unzip)
+       ("zip" ,zip)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("thunderbird-sources"
+        ;; The changeset identifier is taken from the file "sourcestamp.txt"
+        ;; in the Thunderbird release tarball.  We don't use the release
+        ;; tarball because it duplicates the Icecat sources and only adds the
+        ;; "comm" directory, which is provided by this repository.
+        ,(let ((changeset "4c022a34cd5dd776671721c44db89f693f59132c"))
+           (origin
+             (method hg-fetch)
+             (uri (hg-reference
+                   (url "https://hg.mozilla.org/releases/comm-esr68")
+                   (changeset changeset)))
+             (file-name (string-append "thunderbird-" version "-checkout"))
+             (sha256
+              (base32
+               "0k3653ic1g5pwcmf87a95lbzjah25l9qx0r49c4j04c21069fhad")))))
+       ("autoconf" ,autoconf-2.13)
+       ("cargo" ,rust "cargo")
+       ("clang" ,clang)
+       ("llvm" ,llvm)
+       ("nasm" ,nasm)
+       ("node" ,node)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python2" ,python-2.7)
+       ("rust" ,rust)
+       ("rust-cbindgen" ,rust-cbindgen)
+       ("which" ,which)
+       ("yasm" ,yasm)))
+    (home-page "https://www.thunderbird.net")
+    (synopsis "Rebranded Mozilla Thunderbird email client")
+    (description
+     "This package provides an email client built based on Mozilla
+Thunderbird.  It supports email, news feeds, chat, calendar and contacts.")
+    (license license:mpl2.0)))
 
 (define-public firefox-decrypt
   (package
