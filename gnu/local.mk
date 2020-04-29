@@ -34,6 +34,7 @@
 # Copyright © 2020 Felix Gruber <felgru@posteo.net>
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+# Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 #
 # This file is part of GNU Guix.
 #
@@ -1322,6 +1323,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/openmpi-mtl-priorities.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/openssh-hurd.patch			\
+  %D%/packages/patches/openresolv-restartcmd-guix.patch	\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-1.1-c-rehash-in.patch		\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
