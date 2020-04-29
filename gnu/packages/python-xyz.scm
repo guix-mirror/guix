@@ -3212,6 +3212,38 @@ reStructuredText.")
                (base32
                 "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))))
 
+(define-public python-restructuredtext-lint
+  (package
+    (name "python-restructuredtext-lint")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "restructuredtext-lint" version))
+       (sha256
+        (base32
+         "026rdy5h82ng4vqxk8fnprii9d6qxf7hkygiv0a8afjvdlsxmcwp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "nosetests" "-v"))
+             #t)))))
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/twolfson/restructuredtext-lint")
+    (synopsis "reStructuredText linter")
+    (description "This package provides a linter for the reStructuredText
+format.")
+    (license license:unlicense)))
+
 (define-public python-pygments
   (package
     (name "python-pygments")
