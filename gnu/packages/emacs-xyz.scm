@@ -2632,6 +2632,27 @@ Stack Overflow, Super User, and other StackExchange sites.")
 Tom's Obvious, Minimal Language} data format.")
       (license license:gpl3+))))
 
+(define-public emacs-twittering-mode
+  (package
+    (name "emacs-twittering-mode")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/twmode"
+                           "/twittering-mode-" version
+                           "/twittering-mode-" version ".tar.xz"))
+       (sha256
+        (base32 "02imis1gxz90lah0b5n37j2hlsaw5igss11d85vpsm5d1bgw8j28"))))
+    (build-system emacs-build-system)
+    (home-page "http://twmode.sourceforge.net")
+    (synopsis "Emacs major mode for Twitter")
+    (description
+     "Twittering mode is an Emacs major mode for Twitter.
+You can check timelines, tweet, mark posts as favorites and so on with
+Emacs.")
+    (license license:gpl2+)))
+
 (define-public emacs-f
   (package
     (name "emacs-f")
