@@ -29,14 +29,14 @@
 (define-public magic-wormhole-mailbox-server
   (package
     (name "magic-wormhole-mailbox-server")
-    (version "0.3.1")
+    (version "0.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "magic-wormhole-mailbox-server" version))
         (sha256
          (base32
-          "1q6zhbx8fcpk7rchclm7yqcxdsc1x97hki2ji61sa544r5xvxv55"))))
+          "1yw8i8jv5iv1kkz1aqimskw7fpichjn6ww0fq0czbalwj290bw8s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
