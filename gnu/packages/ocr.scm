@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;;
@@ -57,13 +57,13 @@ it produces text in 8-bit or UTF-8 formats.")
     (version "3.04.01")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/tesseract-ocr/tesseract/archive/"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/tesseract-ocr/tesseract")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0snwd8as5i8vx7zkimpd2yg898jl96zf90r65a9w615f2hdkxxjp"))))
+        (base32 "0h1x4z1h86n2gwknd0wck6gykkp99bmm02lg4a47a698g4az6ybv"))))
     (build-system gnu-build-system)
     (inputs
      `(("leptonica" ,leptonica)))
@@ -71,7 +71,7 @@ it produces text in 8-bit or UTF-8 formats.")
      '(#:configure-flags
        (let ((leptonica (assoc-ref %build-inputs "leptonica")))
          (list (string-append "LIBLEPT_HEADERSDIR=" leptonica "/include")))))
-    (home-page "https://github.com/tesseract-ocr")
+    (home-page "https://github.com/tesseract-ocr/tesseract")
     (synopsis "Optical character recognition engine")
     (description
      "Tesseract is an optical character recognition (OCR) engine with very

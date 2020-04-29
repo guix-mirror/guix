@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -91,6 +91,7 @@
        ("par2cmdline" ,par2cmdline)
        ("python-pexpect" ,python2-pexpect)
        ("python-fasteners" ,python2-fasteners)
+       ("tzdata" ,tzdata-for-tests)
        ("mock" ,python2-mock)))
     (propagated-inputs
      `(("lockfile" ,python2-lockfile)
@@ -99,8 +100,7 @@
      `(("librsync" ,librsync-0.9)
        ("lftp" ,lftp)
        ("gnupg" ,gnupg)                 ; gpg executable needed
-       ("util-linux" ,util-linux)       ; for setsid
-       ("tzdata" ,tzdata)))
+       ("util-linux" ,util-linux)))     ; for setsid
     (arguments
      `(#:python ,python-2               ; setup assumes Python 2
        #:test-target "test"
@@ -979,15 +979,25 @@ precious backup space.
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.20")
+    (version "2.3.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/burp/burp-" version
                                   "/burp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dm2y76z7pg17kfv6ahmh4mf2r3pg7mlwd69lvmjwssnd9vs1nn5"))))
+                "0dmahqx8ldqdrx9b47r7ag3m801n7h3kclcqja1cc1jzhfhfq27w"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'extend-test-time-outs
+           ;; The defaults are far too low for busy boxes & spinning storage.
+           (lambda _
+             (substitute* (find-files "utest" "\\.c$")
+               (("(tcase_set_timeout\\(tc_core,)[ 0-9]*(\\);.*)$" _ prefix suffix)
+                (string-append prefix " 3600" suffix "\n")))
+             #t)))))
     (inputs
      `(("librsync" ,librsync)
        ("openssl" ,openssl)

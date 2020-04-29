@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
+;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,10 +91,23 @@
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))))
+         "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))
+       (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
+
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f))                    ;missing pytest-timeout
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; disable brotli tests, because we’re not providing that optional library
+             (substitute* "tests/test_http_parser.py"
+               (("    async def test_feed_eof_no_err_brotli")
+                "    @pytest.mark.xfail\n    async def test_feed_eof_no_err_brotli"))
+             ;; make sure the timestamp of this file is > 1990, because a few
+             ;; tests like test_static_file_if_modified_since_past_date depend on it
+             (invoke "touch" "-d" "2020-01-01" "tests/data.unknown_mime_type")
+             #t)))))
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
        ("python-async-timeout" ,python-async-timeout)
@@ -102,6 +116,15 @@
        ("python-idna-ssl" ,python-idna-ssl)
        ("python-multidict" ,python-multidict)
        ("python-yarl" ,python-yarl)))
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)
+       ("python-pytest-xdit" ,python-pytest-xdist)
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-forked" ,python-pytest-forked)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("gunicorn" ,gunicorn-bootstrap)
+       ("python-freezegun" ,python-freezegun)
+       ("python-async-generator" ,python-async-generator)))
     (home-page "https://github.com/aio-libs/aiohttp/")
     (synopsis "Async HTTP client/server framework (asyncio)")
     (description "@code{aiohttp} is an asynchronous HTTP client/server
@@ -946,14 +969,14 @@ your Web app.")
 (define-public python-webob
   (package
     (name "python-webob")
-    (version "1.5.1")
+    (version "1.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebOb" version))
        (sha256
         (base32
-         "02bhhzijfhv8hmi1i54d4b0v43liwhnywhflvxsv4x3zax9s3afq"))))
+          "1cpqskanmvwia8wqlpcr3ykyxysynjdnbl5namvpg8vw6jnkv1dh"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
@@ -1695,17 +1718,19 @@ and to spawn subprocesses to handle requests.")
 (define-public python-pastedeploy
   (package
     (name "python-pastedeploy")
-    (version "1.5.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PasteDeploy" version))
        (sha256
-        (base32
-         "1jz3m4hq8v6hyhfjz9425nd3nvn52cvbfipdcd72krjmla4qz1fm"))))
+        (base32 "16qsq5y6mryslmbp5pn35x4z8z3ndp5rpgl42h226879nrw9hmg7"))))
     (build-system python-build-system)
+    (arguments
+     '(#:test-target "pytest"))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://pylonsproject.org/")
     (synopsis
      "Load, configure, and compose WSGI applications and servers")
@@ -1752,13 +1777,13 @@ minimum of WSGI.")
 (define-public python-flask
   (package
     (name "python-flask")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask" version))
               (sha256
                (base32
-                "0ljdjgyjn7vh8ic1n1dc2l1cl421i6pr3kx5sz2w5irhyfbg3y8k"))))
+                "0q3h295izcil7lswkzfnyg3k5gq4hpmqmpl6i7s5m1n9szi1myjf"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -2650,7 +2675,7 @@ for Flask programs that are using @code{python-alembic}.")
 (define-public python-genshi
   (package
     (name "python-genshi")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method git-fetch)
@@ -2659,7 +2684,7 @@ for Flask programs that are using @code{python-alembic}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "06rch30x10l105k5b6rahd839lkhmgrzn6691wbci0cb2fzps32w"))))
+        (base32 "04bw7nd4wyn8ixnhik57hny2xpjjpn80k5hp6691inix5gc6rxaf"))))
     (build-system python-build-system)
     (home-page "https://genshi.edgewall.org/")
     (synopsis "Toolkit for generation of output for the web")
@@ -2784,7 +2809,7 @@ List.")
              ;; the unused ‘update_psl’ helper command.
              (substitute* "setup.py"
                (("'requests " match)
-                (format "# ~a" match)))
+                (format #f "# ~a" match)))
              #t)))
        #:tests? #f))                  ; the test suite requires network access
     (home-page "https://github.com/pombredanne/python-publicsuffix2")
@@ -3390,14 +3415,14 @@ hard or impossible to fix in cssselect.")
 (define-public gunicorn
   (package
     (name "gunicorn")
-    (version "20.0.0")
+    (version "20.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "gunicorn" version))
        (sha256
         (base32
-         "0l1zm8a0vz8ws3lkn8q9a0f93ipdzyvlf2zlwdj5xyadh6jdwsgg"))))
+         "09n6fc019bgrvph1s5h1lwhn2avcsprw6ncd203qhra3i8mvn10r"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (arguments
@@ -3413,11 +3438,6 @@ hard or impossible to fix in cssselect.")
            (lambda _
              (setenv "PYTHONPATH"
                      (string-append ".:" (getenv "PYTHONPATH")))
-             ;; Remove test modules failing due to libc not found due to
-             ;; section '.dynamic' not found in libc.so
-             (delete-file "tests/test_arbiter.py")
-             (delete-file "tests/test_config.py")
-             (delete-file "tests/test_sock.py")
              (invoke "pytest")))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
@@ -3451,6 +3471,16 @@ Unicorn project.  The Gunicorn server is broadly compatible with
 various web frameworks, simply implemented, light on server resources,
 and fairly speedy.")
   (license license:expat)))
+
+;; break cyclic dependency for python-aiohttp, which depends on gunicorn for
+;; its tests
+(define-public gunicorn-bootstrap
+  (package
+    (inherit gunicorn)
+    (name "gunicorn")
+	(arguments `(#:tests? #f))
+	(properties '((hidden? . #t)))
+    (native-inputs `())))
 
 (define-public python-translation-finder
   (package

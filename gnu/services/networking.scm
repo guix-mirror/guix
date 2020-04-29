@@ -32,6 +32,7 @@
 (define-module (gnu services networking)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
@@ -139,6 +140,18 @@
             wpa-supplicant-configuration-config-file
             wpa-supplicant-configuration-extra-options
             wpa-supplicant-service-type
+
+            hostapd-configuration
+            hostapd-configuration?
+            hostapd-configuration-package
+            hostapd-configuration-interface
+            hostapd-configuration-ssid
+            hostapd-configuration-broadcast-ssid?
+            hostapd-configuration-channel
+            hostapd-configuration-driver
+            hostapd-service-type
+
+            simulated-wifi-service-type
 
             openvswitch-service-type
             openvswitch-configuration
@@ -1357,6 +1370,112 @@ whatever the thing is supposed to do).")))
                   (description "Run the WPA Supplicant daemon, a service that
 implements authentication, key negotiation and more for wireless networks.")
                   (default-value (wpa-supplicant-configuration)))))
+
+
+;;;
+;;; Hostapd.
+;;;
+
+(define-record-type* <hostapd-configuration>
+  hostapd-configuration make-hostapd-configuration
+  hostapd-configuration?
+  (package           hostapd-configuration-package
+                     (default hostapd))
+  (interface         hostapd-configuration-interface ;string
+                     (default "wlan0"))
+  (ssid              hostapd-configuration-ssid)  ;string
+  (broadcast-ssid?   hostapd-configuration-broadcast-ssid? ;Boolean
+                     (default #t))
+  (channel           hostapd-configuration-channel ;integer
+                     (default 1))
+  (driver            hostapd-configuration-driver ;string
+                     (default "nl80211"))
+  ;; See <https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf> for a list of
+  ;; additional options we could add.
+  (extra-settings    hostapd-configuration-extra-settings ;string
+                     (default "")))
+
+(define (hostapd-configuration-file config)
+  "Return the configuration file for CONFIG, a <hostapd-configuration>."
+  (match-record config <hostapd-configuration>
+    (interface ssid broadcast-ssid? channel driver extra-settings)
+    (plain-file "hostapd.conf"
+                (string-append "\
+# Generated from your Guix configuration.
+
+interface=" interface "
+ssid=" ssid "
+ignore_broadcast_ssid=" (if broadcast-ssid? "0" "1") "
+channel=" (number->string channel) "\n"
+extra-settings "\n"))))
+
+(define* (hostapd-shepherd-services config #:key (requirement '()))
+  "Return Shepherd services for hostapd."
+  (list (shepherd-service
+         (provision '(hostapd))
+         (requirement `(user-processes ,@requirement))
+         (documentation "Run the hostapd WiFi access point daemon.")
+         (start #~(make-forkexec-constructor
+                   (list #$(file-append hostapd "/sbin/hostapd")
+                         #$(hostapd-configuration-file config))
+                   #:log-file "/var/log/hostapd.log"))
+         (stop #~(make-kill-destructor)))))
+
+(define hostapd-service-type
+  (service-type
+   (name 'hostapd)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             hostapd-shepherd-services)))
+   (description
+    "Run the @uref{https://w1.fi/hostapd/, hostapd} daemon for Wi-Fi access
+points and authentication servers.")))
+
+(define (simulated-wifi-shepherd-services config)
+  "Return Shepherd services to run hostapd with CONFIG, a
+<hostapd-configuration>, as well as services to set up WiFi hardware
+simulation."
+  (append (hostapd-shepherd-services config
+                                     #:requirement
+                                     '(unblocked-wifi
+                                       mac-simulation-module))
+          (list (shepherd-service
+                 (provision '(unblocked-wifi))
+                 (requirement '(file-systems mac-simulation-module))
+                 (documentation
+                  "Unblock WiFi devices for use by mac80211_hwsim.")
+                 (start #~(lambda _
+                            (invoke #$(file-append util-linux "/sbin/rfkill")
+                                    "unblock" "0")
+                            (invoke #$(file-append util-linux "/sbin/rfkill")
+                                    "unblock" "1")))
+                 (one-shot? #t))
+                (shepherd-service
+                 (provision '(mac-simulation-module))
+                 (requirement '(file-systems))
+                 (modules '((guix build utils)))
+                 (documentation
+                  "Load the mac80211_hwsim Linux kernel module.")
+                 (start (with-imported-modules '((guix build utils))
+                          #~(lambda _
+                              ;; XXX: We can't use 'load-linux-module*' here because it
+                              ;; expects a flat module directory.
+                              (setenv "LINUX_MODULE_DIRECTORY"
+                                      "/run/booted-system/kernel/lib/modules")
+                              (invoke #$(file-append kmod "/bin/modprobe")
+                                      "mac80211_hwsim"))))
+                 (one-shot? #t)))))
+
+(define simulated-wifi-service-type
+  (service-type
+   (name 'simulated-wifi)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             simulated-wifi-shepherd-services)))
+   (default-value (hostapd-configuration
+                   (interface "wlan1")
+                   (ssid "Test Network")))
+   (description "Run hostapd to simulate WiFi connectivity.")))
 
 
 ;;;

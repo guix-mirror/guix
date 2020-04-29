@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,7 +114,10 @@
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
    (arguments
-    `(#:phases
+    `(#:modules ((guix build gnu-build-system)
+                 (guix build utils)
+                 (ice-9 match))
+      #:phases
       (modify-phases %standard-phases
        (replace 'configure
          (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -145,7 +148,7 @@
        (add-before 'check 'setup-check
          (lambda _
            ;; install temporarily into /tmp/netpbm
-           (system* "make" "package")
+           (invoke "make" "package")
            ;; remove test requiring X
            (substitute* "test/all-in-place.test" (("pamx") ""))
            ;; do not worry about non-existing file
@@ -168,19 +171,21 @@
        (replace 'install
          (lambda* (#:key outputs make-flags #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
-             (apply system* "make" "package"
+             (apply invoke "make" "package"
                     (string-append "pkgdir=" out) make-flags)
-             ;; copy static library
-             (copy-file (string-append out "/link/libnetpbm.a")
-                        (string-append out "/lib/libnetpbm.a"))
-             ;; remove superfluous folders and files
-             (system* "rm" "-r" (string-append out "/link"))
-             (system* "rm" "-r" (string-append out "/misc"))
+             ;; Remove superfluous files.
              (with-directory-excursion out
-               (for-each delete-file
-                         '("config_template" "pkginfo" "README"
-                           "VERSION")))
-             #t))))))
+               (for-each delete-file-recursively
+                         '("config_template" "pkginfo" "README" "VERSION"
+                           "link/" "misc/"))
+               ;; Install the required ‘libnetpbm.so’ link.
+               ;; See <https://issues.guix.gnu.org/issue/40376>.
+               (with-directory-excursion "lib"
+                 (symlink
+                  (match (find-files "." "^libnetpbm\\.so\\.[^.]*\\.[^.]*$")
+                         ((head _ ...) head))
+                  "libnetpbm.so"))
+               #t)))))))
    (synopsis "Toolkit for manipulation of images")
    (description
     "Netpbm is a toolkit for the manipulation of graphic images, including

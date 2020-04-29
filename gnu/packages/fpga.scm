@@ -271,6 +271,7 @@ Includes the actual FTDI connector.")
         (uri (git-reference
                (url "git://github.com/YosysHQ/nextpnr")
                (commit commit)))
+        (file-name (git-file-name name version))
         (sha256
           (base32
             "0g2ar1z89b31qw5vgqj2rrcv9rzncs94184dgcsrz19p866654mf"))))
@@ -289,8 +290,8 @@ Includes the actual FTDI connector.")
                                             "/share/icebox"))
         #:tests? #f))
     (synopsis "Place-and-Route tool for FPGAs")
-    (description "nextpnr aims to be a vendor neutral, timing driven,
-FOSS FPGA place and route tool.  ")
+    (description "Nextpnr aims to be a vendor neutral, timing driven,
+FOSS FPGA place and route tool.")
     (home-page "https://github.com/YosysHQ/nextpnr")
     (license license:expat))))
 

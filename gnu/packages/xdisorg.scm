@@ -34,6 +34,8 @@
 ;;; Copyright © 2020 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -601,7 +603,7 @@ System style license, and has no special dependencies.")
     (home-page "http://tomas.styblo.name/wmctrl/")
     (synopsis "Command-line tool to control X window managers")
     (description
-     "Wmctrl allows to interact with an X window manager that is compatible
+     "Wmctrl interacts with an X window manager that is compatible
 with the EWMH/NetWM specification.  It can query the window manager for
 information, and request for certain window management actions (resize and
 move windows, switch between desktops, etc.).")
@@ -634,7 +636,7 @@ move windows, switch between desktops, etc.).")
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
-     "Scrot allows to save a screenshot of a full screen, a window or a part
+     "Scrot saves a screenshot of a full screen, a window or a part
 of the screen selected by mouse.")
     ;; This license removes a clause about X Consortium from the original
     ;; X11 license.
@@ -1054,7 +1056,7 @@ within a single process.")
     (home-page "https://github.com/alols/xcape")
     (synopsis "Use a modifier key in X.org as another key")
     (description
-     "This utility for X.org allows to use modifier key as another key when
+     "This utility for X.org uses a modifier key as another key when
 pressed and released on its own.  The default behaviour is to generate the
 Escape key when Left Control is pressed and released on its own.")
     (license license:gpl3+)))
@@ -1062,7 +1064,7 @@ Escape key when Left Control is pressed and released on its own.")
 (define-public libwacom
   (package
     (name "libwacom")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1070,7 +1072,7 @@ Escape key when Left Control is pressed and released on its own.")
                     "libwacom-" version "/libwacom-" version ".tar.bz2"))
               (sha256
                (base32
-                "1hv3z2qkvycqcyv99zfpbbgrlbyppdq8kk2y9x51578mwbgcy162"))))
+                "0g48cdg2qpvrr2nk8ccibjg3iv7iqskdv66izxacqx70w47y1771"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -1211,7 +1213,7 @@ protocol.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.43")
+    (version "5.44")
     (source
      (origin
        (method url-fetch)
@@ -1219,7 +1221,7 @@ protocol.")
         (string-append "https://www.jwz.org/xscreensaver/xscreensaver-"
                        version ".tar.gz"))
        (sha256
-        (base32 "1571pj1a9998sq14y9366s2rw9wd2kq3l3dvvsk610vyd0fki3qm"))))
+        (base32 "15bv05vpfjwsrqbazrjmm382jd7vvw0mp6y9vasn6wvxzjf0in3k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -1235,7 +1237,7 @@ protocol.")
                            "--without-readdisplay")
        #:make-flags (list (string-append "AD_DIR="
                                          (assoc-ref %outputs "out")
-                                         "/usr/lib/X11/app-defaults"))))
+                                         "/lib/X11/app-defaults"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -1730,7 +1732,7 @@ commandline).")
        `(#:tests? #f))
       (synopsis "Use external screen locker on events")
       (description "@code{xss-lock} listens to X signals to fire up a
-user-defined screensaver.  In effect this allows to automatically lock the
+user-defined screensaver.  In effect this automatically locks the
 screen when closing a laptop lid or after a period of user inactivity (as set
 with @code{xset s TIMEOUT}).  The notifier command, if specified, is executed
 first.  Additionally, xss-lock uses the inhibition logic to lock the screen
@@ -2019,6 +2021,42 @@ can optionally use some appearance settings from XSettings, tint2 and GTK.")
     (home-page "https://jgmenu.github.io/")
     (license license:gpl2)))
 
+(define-public xwallpaper
+  (package
+    (name "xwallpaper")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stoeckmann/xwallpaper")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "175fzifvia58vah2x7509drvfn3xfv5d9szgh9x1w1a1w8rcs2hx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libxpm" ,libxpm)
+       ("pixman" ,pixman)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)))
+    (home-page "https://github.com/stoeckmann/xwallpaper")
+    (synopsis "Wallpaper setting utility for X")
+    (description
+     "The xwallpaper utility allows you to set image files as your X
+wallpaper. JPEG, PNG, and XPM file formats are supported.
+
+The wallpaper is also advertised to programs which support semi-transparent
+backgrounds.")
+    (license license:isc)))
+
 (define-public xwrits
   (package
     (name "xwrits")
@@ -2169,22 +2207,22 @@ tools to complement clipnotify.")
     (license license:public-domain)))
 
 (define-public clipmenu
-  (let ((commit "a495bcc7a4ab125182a661c5808364f66938a87c")
+  (let ((commit "bcbe7b144598db4a103f14e8408c4b7327d6d5e1")
         (revision "1"))
     (package
       (name "clipmenu")
-      (version (string-append "5.6.0-"
+      (version (string-append "6.0.1-"
                               revision "." (string-take commit 7)))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/cdown/clipnotify.git")
+               (url "https://github.com/cdown/clipmenu.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "12vvircdhl4psqi51cnfd6bqy85v2vwfcmdq1mimjgng727nwzys"))))
+           "0053j4i14lz5m2bzc5sch5id5ilr1bl196mp8fp0q8x74w3vavs9"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases
@@ -2249,3 +2287,40 @@ to find all available clips and launches @command{dmenu} (or @command{rofi},
 depending on the value of @code{CM_LAUNCHER}) to let the user select a clip.
 After selection, the clip is put onto the PRIMARY and CLIPBOARD X selections.")
       (license license:public-domain))))
+
+(define-public kbdd
+  (package
+    (name "kbdd")
+    (version "0.7.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/qnikst/kbdd.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0qkq75grbd4wkx4nlvswgavpijk9ad0pzqyj89a0ayjsbsn36pqy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dbus-glib", dbus-glib)
+       ("glib" ,glib)
+       ("libx11" ,libx11)))
+    (home-page "https://github.com/qnikst/kbdd")
+    (synopsis "Per-window keyboard layout switching daemon for X")
+    (description "@command{kbdd} is a simple keyboard layout switching
+program, which is designed to run in an X11 session and remember
+keyboard layouts on a per-window basis.  That can be very handy for a
+user of a non-US keyboard who does not want to jump through layouts back
+and forth while typing in terminals (mostly in a latin alphabet) and
+some kind of chat (in native language).
+
+@command{kbdd} also supports D-Bus signals, which makes it possible to
+create layout indicator widgets.")
+    (license license:bsd-2)))

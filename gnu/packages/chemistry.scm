@@ -277,16 +277,16 @@ analogy is that InChI is the bar-code for chemistry and chemical structures.")
                ;; and Guix contains currently no free molecular viewer that
                ;; could be substituted.
                (("PREFERENCES\\['acroread_path'\\] = ''")
-                (format "PREFERENCES['acroread_path'] = '~a'"
+                (format #f "PREFERENCES['acroread_path'] = '~a'"
                         (which "gv")))
                (("PREFERENCES\\['ncdump_path'\\] = ''")
-                (format "PREFERENCES['ncdump_path'] = '~a'"
+                (format #f "PREFERENCES['ncdump_path'] = '~a'"
                         (which "ncdump")))
                (("PREFERENCES\\['ncgen_path'\\] = ''")
-                (format "PREFERENCES['ncgen_path'] = '~a'"
+                (format #f "PREFERENCES['ncgen_path'] = '~a'"
                         (which "ncgen3")))
                (("PREFERENCES\\['task_manager_path'\\] = ''")
-                (format "PREFERENCES['task_manager_path'] = '~a'"
+                (format #f "PREFERENCES['task_manager_path'] = '~a'"
                         (which "task_manager")))
                ;; Show documentation as PDF
                (("PREFERENCES\\['documentation_style'\\] = 'html'")

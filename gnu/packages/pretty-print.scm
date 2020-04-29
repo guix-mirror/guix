@@ -6,6 +6,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,11 +72,11 @@
     (build-system gnu-build-system)
     (inputs
      `(("psutils" ,psutils)
-       ("groff" ,groff)
        ("gv" ,gv)
        ("imagemagick" ,imagemagick)))
     (native-inputs
      `(("gperf" ,gperf)
+       ("groff" ,groff)
        ("perl" ,perl)))
     (arguments
      '(#:phases

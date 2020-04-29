@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages hardware)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
@@ -276,3 +278,32 @@ supported by the Linux kernel.")
     ;; Source file headers still say GPL2+, but the authorial intent
     ;; (from COPYING and the F9 'about' screen) is clearly GPL3+.
     (license license:gpl3+)))
+
+(define-public rkdeveloptool
+  (let ((commit "6e92ebcf8b1812da02663494a68972f956e490d3")
+        (revision "0"))
+    (package
+      (name "rkdeveloptool")
+      (version (git-version "1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/rockchip-linux/rkdeveloptool.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0zwrkqfxd671iy69v3q0844gfdpm1yk51i9qh2rqc969bd8glxga"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("libusb" ,libusb)))
+      (home-page "https://github.com/rockchip-linux/rkdeveloptool")
+      (synopsis "Read from and write to RockChicp devices over USB")
+      (description
+       "Rkdeveloptool can read from and write to RockChip devices over USB, such
+as the Pinebook Pro.")
+      (license license:gpl2+))))

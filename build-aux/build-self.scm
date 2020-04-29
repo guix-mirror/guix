@@ -408,7 +408,11 @@ files."
                       (major  ((store-lift nix-server-major-version)))
                       (minor  ((store-lift nix-server-minor-version))))
     (mbegin %store-monad
-      (show-what-to-build* (list build))
+      ;; Before 'with-build-handler' was implemented and used, we had to
+      ;; explicitly call 'show-what-to-build*'.
+      (munless (module-defined? (resolve-module '(guix store))
+                                'with-build-handler)
+        (show-what-to-build* (list build)))
       (built-derivations (list build))
 
       ;; Use the port beneath the current store as the stdin of BUILD.  This

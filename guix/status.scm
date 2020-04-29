@@ -472,8 +472,8 @@ addition to build events."
            (let ((count (match (assq-ref properties 'graft)
                           (#f  0)
                           (lst (or (assq-ref lst 'count) 0)))))
-             (format port (info (N_ "applying ~a graft for ~a..."
-                                    "applying ~a grafts for ~a..."
+             (format port (info (N_ "applying ~a graft for ~a ..."
+                                    "applying ~a grafts for ~a ..."
                                     count))
                      count drv)))
          ('profile
@@ -525,7 +525,7 @@ addition to build events."
        (newline port)))
     (('download-started item uri _ ...)
      (erase-current-line*)
-     (format port (info (G_ "downloading from ~a...")) uri)
+     (format port (info (G_ "downloading from ~a ...")) uri)
      (newline port))
     (('download-progress item uri
                          (= string->number size)

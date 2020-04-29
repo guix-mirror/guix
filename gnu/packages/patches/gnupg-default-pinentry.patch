@@ -1,0 +1,65 @@
+Make GnuPG automatically find a pinentry installed by Guix. Try using
+$HOME or, if that variable is not set, use the system password database,
+or fall back to looking in "/".
+
+More information:
+
+https://bugs.gnu.org/24076
+
+diff --git a/common/homedir.c b/common/homedir.c
+index 4b6e46e88..f7ae68ba5 100644
+--- a/common/homedir.c
++++ b/common/homedir.c
+@@ -33,6 +33,7 @@
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <unistd.h>
++#include <pwd.h>
+ 
+ #ifdef HAVE_W32_SYSTEM
+ #include <winsock2.h>   /* Due to the stupid mingw64 requirement to
+@@ -67,6 +68,10 @@
+  * gnupg_homedir and gnupg_set_homedir.  Malloced.  */
+ static char *the_gnupg_homedir;
+ 
++/* The user's home directory. Used in Guix to help GnuPG find the
++ * pinentry. */
++static char *the_user_homedir;
++
+ /* Flag indicating that home directory is not the default one.  */
+ static byte non_default_homedir;
+ 
+@@ -509,6 +514,25 @@ gnupg_homedir (void)
+   return the_gnupg_homedir;
+ }
+ 
++/* Return the user's home directory */
++const char *
++user_homedir (void)
++{
++  const char *dir;
++  dir = getenv("HOME");
++  if (dir == NULL)
++    {
++       struct passwd *pw = NULL;
++       pw = getpwuid (getuid ());
++       if (pw != NULL)
++         dir = pw->pw_dir;
++       else
++         dir = "/";
++    }
++  if (!the_user_homedir)
++    the_user_homedir = make_absfilename (dir, NULL);
++  return the_user_homedir;
++}
+ 
+ /* Return whether the home dir is the default one.  */
+ int
+@@ -971,6 +995,7 @@ get_default_pinentry_name (int reset)
+   } names[] = {
+     /* The first entry is what we return in case we found no
+        other pinentry.  */
++    { user_homedir, "/.guix-profile/bin/pinentry" },
+     { gnupg_bindir, DIRSEP_S "pinentry" EXEEXT_S },
+ #ifdef HAVE_W32_SYSTEM
+     /* Try Gpg4win directory (with bin and without.) */

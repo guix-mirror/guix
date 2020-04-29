@@ -554,8 +554,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "68.6.0-guix0-preview1")
-(define %icecat-build-id "20200309000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "68.7.0-guix0-preview1")
+(define %icecat-build-id "20200406000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -577,11 +577,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "17qwfq9hwra8jarawy8k2sqfa6hdhwa9qk84ndr6gjvmxcy22a14"))))
+              "0w3mad0r4khcd7hfmm3xix9x6mp5yp8g8kyh18vanfnjqdls0gmd"))))
 
-         (upstream-icecat-base-version "68.6.0") ; maybe older than base-version
+         (upstream-icecat-base-version "68.7.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "9dcb24d885eae5973eb2245b532b158c685d707a")
+         (gnuzilla-commit "d185c5a67506311e19440fd4b824a822ce840369")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -593,7 +593,7 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "1y3jmh055vmx44gsjgwxvwv3zcyvz8pc5mhgrwkzm0ybbwpp2pqi"))))
+              "09skws692qv5kbhj8bvy3prj7v0iyfz68xjck4vbfxkahldfppqx"))))
 
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch"))))
@@ -750,7 +750,7 @@ from forcing GEXP-PROMISE."
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("ffmpeg" ,ffmpeg)
-       ("libvpx" ,libvpx-1.7)
+       ("libvpx" ,libvpx)
        ("icu4c" ,icu4c)
        ("pixman" ,pixman)
        ("pulseaudio" ,pulseaudio)
@@ -1141,11 +1141,6 @@ standards of the IceCat project.")
      `((ftp-directory . "/gnu/gnuzilla")
        (cpe-name . "firefox_esr")
        (cpe-version . ,(first (string-split version #\-)))))))
-
-(define-public conkeror
-  ;; The Conkeror web browser relied on XULRunner, which IceCat > 50 no longer
-  ;; provides.  See <http://conkeror.org> for the original web page.
-  (deprecated-package "conkeror" icecat))
 
 (define-public firefox-decrypt
   (package

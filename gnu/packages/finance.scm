@@ -13,9 +13,11 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +41,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system go)
@@ -238,11 +242,11 @@ and dynamically with report tools based on filtering and graphical charts.")
        ("libedit" ,libedit)
        ("mpfr" ,mpfr)
        ("python" ,python-2)
-       ("tzdata" ,tzdata)
        ("utfcpp" ,utfcpp)))
     (native-inputs
      `(("groff" ,groff)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo)
+       ("tzdata" ,tzdata-for-tests)))
     (home-page "https://ledger-cli.org/")
     (synopsis "Command-line double-entry accounting program")
     (description
@@ -387,11 +391,11 @@ This package provides the Emacs mode.")
     (synopsis "Free Elster client, for sending Germany VAT declarations")
     (description
      "Geierlein is a free Elster client, i.e. an application that
-allows to send VAT declarations to Germany's fiscal authorities.
+sends VAT declarations to Germany's fiscal authorities.
 
 Currently it is *not* possible to send returns that are due annually
 (especially the income tax return) since the fiscal authority doesn't
-allow to do that off the ERiC library (which is proprietary however).
+allow doing that off the ERiC library (which is proprietary however).
 It's not clear at the moment whether one day it will be possible to
 do so.")
     (license license:agpl3+)))
@@ -744,9 +748,6 @@ the Monero command line client and daemon.")
 the Monero GUI client.")
     (license license:bsd-3)))
 
-(define-public monero-core
-  (deprecated-package "monero-core" monero-gui))
-
 (define-public python-trezor-agent
   (package
     (name "python-trezor-agent")
@@ -1049,13 +1050,13 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.56.0")
+    (version "0.57.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "duniterpy" version))
        (sha256
-        (base32 "1h8d8cnr6k5sw4cqy8r82zy4ldzpvn4nlk2221lz2haqq7xm4s5z"))))
+        (base32 "0rw2c7r9gcqhymp82gbk1ky45zqbypsi2q5x4vdwjc6g00kh7h6l"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests fail with: "ModuleNotFoundError: No module named
@@ -1165,10 +1166,37 @@ information.")
     (home-page "https://grisbi.org")
     (license license:gpl2+)))
 
+(define-public trezord-udev-rules
+  (let ((commit "bff7fdfe436c727982cc553bdfb29a9021b423b0")
+        (revision "0"))
+      (package
+        (name "trezord-udev-rules")
+        (version (git-version "0.0.0" revision commit))
+        (source
+         (origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/trezor/trezor-common.git")
+                 (commit commit)))
+           (sha256
+            (base32
+             "14mrirrn68if7ja6qdk9qlxs1hv0f21vrxy5ncnms0gx9iwakp2l"))
+           (file-name (git-file-name name version))))
+        (build-system copy-build-system)
+        (arguments
+         '(#:install-plan
+           '(("./udev/51-trezor.rules" "lib/udev/rules.d/"))))
+        (home-page "https://github.com/trezor/trezor-common")
+        (synopsis "Udev rules for trezord")
+        (description
+         "This contains the udev rules for trezord.  This will let a user run
+trezord as a regular user instead of needing to it run as root.")
+        (license license:lgpl3+))))
+
 (define-public trezord
   (package
     (name "trezord")
-    (version "2.0.17")
+    (version "2.0.29")
     (source
      (origin
        (method git-fetch)
@@ -1177,7 +1205,7 @@ information.")
               (commit (string-append "v" version))))
        (sha256
         (base32
-         "0nqzpq0i3crh0i4r1cppja5sn3rwi1fv9afxzwzv63096x5l30a7"))
+         "1ks1fa0027s3xp0z6qp0dxmayvrb4dwwscfhbx7da0khp153f2cp"))
        (file-name (git-file-name name version))))
     (build-system go-build-system)
     (arguments
@@ -1401,3 +1429,168 @@ entity management.")
 electronic cash system.  This package provides a command line client and
 a Qt GUI.")
     (license license:expat)))
+
+(define-public fulcrum
+  (package
+    (name "fulcrum")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/FloweeTheHub/fulcrum/-/archive/v"
+                           version "/fulcrum-v" version ".tar.gz"))
+       (sha256
+        (base32 "1xywwgsdhkiblv6la0pfhvn2s9q8vnz6pjg35647rlwzi6ybf0ak"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Call qmake instead of configure to create a Makefile.
+         (replace 'configure
+           (lambda _
+             (invoke
+              "qmake"
+              (string-append "PREFIX=" %output)
+              "features="))))))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("python" ,python)
+       ("qtbase" ,qtbase)
+       ("rocksdb" ,rocksdb)
+       ("zlib" ,zlib)))
+    (home-page "https://gitlab.com/FloweeTheHub/fulcrum/")
+    (synopsis "Fast and nimble SPV server for Bitcoin Cash")
+    (description
+     "Flowee Fulcrum is a server that is the back-end for @acronym{SPV,
+Simplified Payment Verification} wallets, it provides the full API for those
+walets in a fast and small server.  The full data is stored in a full node,
+like Flowee the Hub, which Fulcrum connects to over RPC.")
+    (license license:gpl3+)))
+
+(define-public flowee
+  (package
+    (name "flowee")
+    (version "2020.03.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/FloweeTheHub/thehub/-/archive/"
+                            version "/thehub-" version ".tar.gz"))
+       (sha256
+         (base32 "1m8wfwxljvd2gqpfj1w37xky4isa3h9a7g57cnf3l4r90r4bxj47"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-Dbuild_tests=ON" "-Denable_gui=OFF")
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'make-qt-deterministic
+            (lambda _
+              ;; Make Qt deterministic.
+              (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+          (add-before 'configure 'disable-black-box
+            ;; the black-box testing runs full hubs and lets them interact.
+            ;; this is more fragile and a slow machine, or low memory machine, may
+            ;; make the tests timeout and fail.  We just disable them here.
+            (lambda _
+              (substitute* "testing/CMakeLists.txt"
+                (("test_api") ""))
+              #t))
+          (add-after 'configure 'set-build-info
+            ;; Their genbuild.sh to generate a build.h fails in guix (no .git dir) .
+            ;; Its purpose is to write the tag name in the build.h file. We do that
+            ;; here instead.
+            (lambda _
+              (with-output-to-file "include/build.h"
+                (lambda _
+                  (display
+                    (string-append "#define BUILD_DESC " "\"", version "\""))))))
+          (add-before 'check 'set-home
+            (lambda _
+              (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
+              #t))
+          (replace 'check
+            (lambda _
+              (invoke "make" "check" "-C" "testing"))))))
+    (inputs
+     `(("boost" ,boost)
+       ("gmp" ,gmp)
+       ("libevent" ,libevent)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("qtbase" ,qtbase)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("util-linux" ,util-linux)))       ; provides the hexdump command for tests
+    (home-page "https://flowee.org")
+    (synopsis "Flowee infrastructure tools and services")
+    (description
+     "Flowee packages all tier-1 applications and services from the Flowee group.
+This includes components like The Hub and Indexer which and various others
+that allows you to run services and through them access the Bitcoin Cash networks.")
+    (license license:gpl3+)))
+
+
+(define-public beancount
+  (package
+    (name "beancount")
+    (version "2.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beancount" version))
+       (sha256
+        (base32
+         "0pcfl2rx2ng06i4f9izdpnlnb1k0rdzsckbzzn4cn4ixfzyssm0m"))
+       (patches (search-patches "beancount-disable-googleapis-fonts.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ; Says test is missing, not sure why
+       #:phases
+       (modify-phases %standard-phases
+         ;; Not importing the googleapis package for now
+         (add-after 'unpack 'ignore-googleapis
+           (lambda _
+             (substitute* "setup.py"
+               (("'google-api-python-client',") ""))
+             #t)))))
+    (inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-bottle" ,python-bottle)
+       ("python-chardet" ,python-chardet)
+       ("python-dateutil" ,python-dateutil)
+       ("python-lxml" ,python-lxml)
+       ("python-magic" ,python-magic)
+       ("python-ply" ,python-ply)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://furius.ca/beancount")
+    (synopsis "Command-line double-entry accounting tool")
+    (description
+     "Beancount is a double-entry bookkeeping computer language that lets you
+define financial transaction records in a text file, read them in memory,
+generate a variety of reports from them, and provides a web interface.")
+    (license license:gpl2)))
+
+;; The beancount source ships with elisp in a subdirectory
+(define-public emacs-beancount
+  (package
+    (inherit beancount)
+    (name "emacs-beancount")
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'chdir-emacs
+           (lambda _
+             (chdir "editors/emacs")
+             #t)))))
+    (inputs '())
+    (native-inputs '())
+    (synopsis "Emacs mode for beancount")
+    (description
+      "Emacs-beancount is an Emacs mode for the Beancount accounting tool.")))

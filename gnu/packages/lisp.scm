@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -222,7 +222,7 @@ interface to the Tk widget system.")
 (define-public ecl
   (package
     (name "ecl")
-    (version "16.1.3")
+    (version "20.4.24")
     (source
      (origin
        (method url-fetch)
@@ -230,17 +230,22 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))))
+        (base32 "01qgdmr54wkj854f69qdm9sybrvd6gd21dpx4askdaaqybnkh237"))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
-    (native-inputs `(("cl-asdf" ,cl-asdf)
-                     ("which" ,which)))
-    (inputs `(("gmp" ,gmp)
-              ("libatomic-ops" ,libatomic-ops)
-              ("libgc" ,libgc)
-              ("libffi" ,libffi)))
+    (native-inputs
+     `(("cl-asdf" ,cl-asdf)
+       ("which" ,which)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("libatomic-ops" ,libatomic-ops)
+       ("libgc" ,libgc)
+       ("libffi" ,libffi)))
     (arguments
      `(#:configure-flags '("--without-rt")
+       ;; FIXME: As of version 20.4.24, we pass 17995 tests and fail 7.
+       ;; 2-3 tests may be due to FHS assumptions.
        #:tests? #t
        #:parallel-tests? #f
        #:phases
@@ -301,9 +306,10 @@ bytecode compiler and interpreter, being able to compile Common Lisp with any
 C/C++ compiler, being able to build standalone executables and libraries, and
 supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
     ;; Note that the file "Copyright" points to some files and directories
-    ;; which aren't under the lgpl2.0+ and instead contain many different,
+    ;; which aren't under the lgpl2.1+ and instead contain many different,
     ;; non-copyleft licenses.
-    (license license:lgpl2.0+)))
+    ;; See https://common-lisp.net/project/ecl/posts/ECL-license.html.
+    (license license:lgpl2.1+)))
 
 (define-public clisp
   (package
@@ -365,14 +371,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.2")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "07pyzdjnhcpqwvr3rrk4i18maqdywbq1qj93fnpx1h4b7dp08r28"))))
+        (base32 "1lc2i4qq1kfdybmxnj2zq2hn3hfx0vvlqim4gvlgvs3bfr0lcaqj"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -391,7 +397,7 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;
      ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
      ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
-     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last updated
+     ;; 2019-09-05, ECL was last updated in 2020 while CLISP was last updated
      ;; in 2010.
      ;;
      ;; For now we stick to CLISP for all systems.  We keep the `match' here to
@@ -687,6 +693,53 @@ interface.")
     (license (list license:lgpl2.1
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
 
+(define-public ccl-1.12
+  ;; This is a development snapshot.  The last stable version is from November
+  ;; 2017 and does not support package-local-nicknames, which prevents CCL
+  ;; from compiling some third-party packages.
+  ;; The main drawback of 1.12 is that ARM is not supported for now.
+  (package
+    (inherit ccl)
+    (version "1.12-dev.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Clozure/ccl/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "ccl" version))
+              (sha256
+               (base32
+                "1za5j4ll4hk1vi1i7v1bmqhaqbsgc16izn46qmry7dnbig0rdqm0"))))
+    ;; CCL consists of a "lisp kernel" and "heap image".
+    ;; See comment in `ccl' package.
+    (inputs
+     `(("ccl-bootstrap"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/Clozure/ccl/releases/download/v" version "/"
+                 (match (%current-system)
+                   ((or "i686-linux" "x86_64-linux") "linuxx86")
+                   ;; Prevent errors when querying this package on unsupported
+                   ;; platforms, e.g. when running "guix package --search="
+                   (_ "UNSUPPORTED"))
+                 ".tar.gz"))
+           (sha256
+            (base32
+             (match (%current-system)
+               ((or "i686-linux" "x86_64-linux")
+                "1pqiybxxv4wx5zlp1i60nim3njaczwl5321bdwq6frjsl3s95xmb")
+               (_ ""))))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ccl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'unpack (assoc-ref %standard-phases 'unpack))
+           (add-after 'unpack 'unpack-image
+             (lambda* (#:key inputs #:allow-other-keys)
+               (invoke "tar" "xzvf" (assoc-ref inputs "ccl-bootstrap"))))))))
+    (supported-systems '("i686-linux" "x86_64-linux"))))
+
 (define-public lush2
   (package
     (name "lush2")
@@ -798,7 +851,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "233")
+    (version "235")
     (source
      (origin
        (method git-fetch)
@@ -806,24 +859,29 @@ enough to play the original mainframe Zork all the way through.")
              (url "http://www.kylheku.com/git/txr/")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
-       (patches (search-patches "txr-shell.patch"))
        (sha256
-        (base32
-         "14dwjgx9lbfajk3q539m3v3b9j047q83ldnqb4cagbs8ampvhfbv"))))
+        (base32 "0kpqk2x0sz7sqxsrhasq0xnljjlnxwhh4xjx2nii0zy2jkv4vsbn"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("cc=gcc")
-       #:phases (modify-phases %standard-phases
-                  (add-after 'configure 'fix-tests
-                    (lambda _
-                      (substitute* "tests/017/realpath.tl"
-                        (("/usr/bin") "/"))
-                      (substitute* "tests/017/realpath.expected"
-                        (("/usr/bin") "/"))
-                      #t))
-                  (replace 'check
-                    (lambda _
-                      (invoke "make" "tests"))))))
+     '(#:configure-flags
+       (list "cc=gcc"
+             (string-append "--prefix=" (assoc-ref %outputs "out")))
+       #:test-target "tests"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; ./configure is a hand-written script that can't handle standard
+           ;; autotools arguments like CONFIG_SHELL.
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (setenv "txr_shell" (which "bash"))
+             (apply invoke "./configure" configure-flags)
+             #t))
+         (add-after 'configure 'fix-tests
+           (lambda _
+             (substitute* (list "tests/017/realpath.tl"
+                                "tests/017/realpath.expected")
+               (("/usr/bin") "/"))
+             #t)))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))

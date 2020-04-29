@@ -86,7 +86,7 @@
                      ("cross-binutils" ,(cross-binutils "xtensa-elf"))
                      ("cmake" ,cmake-minimal)
                      ("perl" ,perl)))
-    (home-page "http://wireless.kernel.org/en/users/Drivers/ath9k_htc")
+    (home-page "https://wireless.wiki.kernel.org/en/users/Drivers/ath9k_htc")
     (synopsis "Firmware for the Atheros AR7010 and AR9271 USB 802.11n NICs")
     (description
      "This is the firmware for the Qualcomm Atheros AR7010 and AR9271 USB
@@ -445,7 +445,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
-    (version "2.2")
+    (version "2.3")
     (source
       (origin
         (method git-fetch)
@@ -454,11 +454,9 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
                (url "https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git/")
                (commit (string-append "v" version))))
         (file-name (git-file-name "arm-trusted-firmware" version))
-        (patches (search-patches
-                  "arm-trusted-firmware-disable-hdcp.patch"))
        (sha256
         (base32
-         "03fjl5hy1bqlya6fg553bqz7jrvilzrzpbs87cv6jd04v8qrvry8"))))
+         "113mcf1hwwl0i90cqh08lywxs1bfbg0nwqibay9wlkmx1a5v0bnj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

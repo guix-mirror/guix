@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,20 +34,34 @@
   #:export (run-keymap-page
             keyboard-layout->configuration))
 
-(define (run-layout-page layouts layout->text)
+(define (run-layout-page layouts layout->text context)
   (let ((title (G_ "Layout")))
     (run-listbox-selection-page
      #:title title
-     #:info-text (G_ "Please choose your keyboard layout.")
+     #:info-text
+     (case context
+       ((param) (G_ "Please choose your keyboard layout. \
+It will only be used during the installation process. \
+Non-Latin layouts can be toggled with Alt+Shift."))
+       (else (G_ "Please choose your keyboard layout. \
+It will be used during the install process, and for the installed system. \
+Non-Latin layouts can be toggled with Alt+Shift. You can switch to a \
+different layout at any time from the parameters menu.")))
      #:listbox-items layouts
      #:listbox-item->text layout->text
      #:sort-listbox-items? #f
-     #:button-text (G_ "Exit")
+     #:button-text
+     (case context
+       ((param) (G_ "Continue"))
+       (else (G_ "Exit")))
      #:button-callback-procedure
-     (lambda _
-       (raise
-        (condition
-         (&installer-step-abort)))))))
+     (case context
+       ((param) (const #t))
+       (else
+        (lambda _
+          (raise
+           (condition
+            (&installer-step-abort)))))))))
 
 (define (run-variant-page variants variant->text)
   (let ((title (G_ "Variant")))
@@ -89,21 +104,66 @@
       (append (sort main layout<?)
               (sort others layout<?)))))
 
+(define (add-empty-variant variants)
+  "Prepend #f to VARIANTS so the user has the option to select no variant.
+The resulting layout may be different from all other variants (e.g. for
+Azerbaijani)."
+  (cons #f variants))
+
 (define (sort-variants variants)
   "Sort VARIANTS list by putting the international variant ahead and return it."
   (call-with-values
       (lambda ()
         (partition
          (lambda (variant)
-           (let ((name (x11-keymap-variant-name variant)))
-             (string=? name "altgr-intl")))
+           (and variant
+                (let ((name (x11-keymap-variant-name variant)))
+                  (string=? name "altgr-intl"))))
          variants))
     (cut append <> <>)))
 
-(define* (run-keymap-page layouts)
+(define %non-latin-layouts
+  ;; List of keyboard layouts marked as $nonlatin in xkeyboard-config.
+  ;; See comments in xkeyboard-config file /share/X11/xkb/rules/base.
+  ;; We ignore layouts that support Latin input: "kr"
+  '("am" "ara" "ben" "bd" "bg" "bt" "by" "cs" "deva" "ge" "gh"
+    "gr" "guj" "guru" "il" "in" "ir" "iku" "jp" "kan" "kh"
+    "la" "lao" "lk" "mk" "mm" "mn" "mv" "mal" "olck" "ori" "pk"
+    "ru" "scc" "sy" "syr" "tel" "th" "tj" "tam" "ua" "uz"
+    ;; The list from xkeyboard-config is incomplete.  Add more layouts when
+    ;; noticed:
+    "et" "kz"))
+
+(define %non-latin-variants
+  '("cyrillic"))
+
+(define %latin-layout+variants
+  ;; These layout+variant combinations are Latin after all.
+  '(("ir" "ku")))
+
+(define (toggleable-latin-layout layout variant)
+  "If LAYOUT is a non-Latin layout, return a new combined layout,
+a variant, and options that allow the user to switch between the
+non-Latin and the Latin layout.  Otherwise, return LAYOUT, VARIANT,
+and #f."
+  (if (and (not (equal? variant "latin"))
+           (not (member (list layout variant) %latin-layout+variants))
+           (or (member layout %non-latin-layouts)
+               (member variant %non-latin-variants)))
+      (let ((latin-layout (if (equal? variant "azerty") "fr" "us")))
+        (list
+         (string-append layout "," latin-layout)
+         ;; Comma to use variant only for non-Latin:
+         (and variant (string-append variant ","))
+         "grp:alt_shift_toggle"))
+      (list layout variant #f)))
+
+(define* (run-keymap-page layouts #:key (context #f))
   "Run a page asking the user to select a keyboard layout and variant. LAYOUTS
-is a list of supported X11-KEYMAP-LAYOUT. Return a list of two elements, the
-names of the selected keyboard layout and variant."
+is a list of supported X11-KEYMAP-LAYOUT.  For non-Latin keyboard layouts, a
+second layout and toggle options will be added automatically.  Return a list
+of three elements, the names of the selected keyboard layout, variant and
+options."
   (define keymap-steps
     (list
      (installer-step
@@ -114,7 +174,8 @@ names of the selected keyboard layout and variant."
           (sort-layouts layouts)
           (lambda (layout)
             (gettext (x11-keymap-layout-description layout)
-                     "xkeyboard-config"))))))
+                     "xkeyboard-config"))
+          context))))
      ;; Propose the user to select a variant among those supported by the
      ;; previously selected layout.
      (installer-step
@@ -126,10 +187,14 @@ names of the selected keyboard layout and variant."
            ;; Return #f if the layout does not have any variant.
            (and (not (null? variants))
                 (run-variant-page
-                 (sort-variants variants)
+                 (sort-variants (add-empty-variant variants))
                  (lambda (variant)
-                   (gettext (x11-keymap-variant-description variant)
-                            "xkeyboard-config"))))))))))
+                   (if variant
+                       (gettext (x11-keymap-variant-description variant)
+                                "xkeyboard-config")
+                       ;; Text to opt for no variant at all:
+                       (gettext (x11-keymap-layout-description layout)
+                                "xkeyboard-config")))))))))))
 
   (define (format-result result)
     (let ((layout (x11-keymap-layout-name
@@ -138,14 +203,20 @@ names of the selected keyboard layout and variant."
                           (lambda (variant)
                             (gettext (x11-keymap-variant-name variant)
                                      "xkeyboard-config")))))
-      (list layout (or variant ""))))
+      (toggleable-latin-layout layout variant)))
   (format-result
    (run-installer-steps #:steps keymap-steps)))
 
 (define (keyboard-layout->configuration keymap)
   "Return the operating system configuration snippet to install KEYMAP."
   (match keymap
-    ((name "")
+    ((name #f "grp:alt_shift_toggle")
+     `((keyboard-layout (keyboard-layout ,name
+                                         #:options '("grp:alt_shift_toggle")))))
+    ((name #f _)
      `((keyboard-layout (keyboard-layout ,name))))
-    ((name variant)
+    ((name variant "grp:alt_shift_toggle")
+     `((keyboard-layout (keyboard-layout ,name ,variant
+                                         #:options '("grp:alt_shift_toggle")))))
+    ((name variant _)
      `((keyboard-layout (keyboard-layout ,name ,variant))))))

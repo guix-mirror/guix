@@ -2,7 +2,7 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 
   Copying and distribution of this file, with or without modification,
@@ -10,6 +10,150 @@ Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes in 1.1.0 (since 1.0.1)
+** Package management
+*** New ‘guix deploy’ command to deploy several machines at once
+*** Channels can now provide news, viewed with ‘guix pull --news’
+*** ‘guix system reconfigure’ saves provenance data
+*** New ‘guix system describe’ command to view system provenance info
+*** New /run/current-system/{channels,configuration}.scm files
+*** New ‘guix time-machine’ command
+*** ‘guix pack’ has a new ‘--entry-point’ option
+*** ‘guix pack’ saves environment variables for ‘docker’ and ‘singularity’
+*** ‘guix pack’ provides a meaningful repository name for ‘docker’
+*** New ‘--target’ option for ‘guix system’
+*** ‘--no-build-hook’ was renamed to ‘--no-offload’
+*** ‘--keep-failed’ now implies ‘--no-offload’
+*** ‘--dry-run’ no longer implies ‘--no-grafts’
+*** ‘guix import crate’ has a new ‘--recursive’ option
+*** ‘guix import crate’ can import a specific package version
+*** ‘guix pull’ returns Guix on Guile 3.0
+*** ‘guix pull’ and ‘--with-git-url’ can clone repositories over SSH
+*** ‘--with-commit’ now accepts tags
+*** ‘guix challenge’ has a new ‘--diff’ option to show differences
+*** ‘guix weather’ has a new ‘--display-missing’ option
+*** Guix can now fetch lzip-compressed substitutes in addition to gzip
+*** ‘guix publish’ supports lzip compression via ‘-C’
+*** ‘guix lint -c archival’ queries Software Heritage
+*** ‘guix archive’ has a new ‘-t’ option to list archive contents
+*** ‘guix describe’ and similar commands emit terminal hyperlinks
+*** ‘guix build’ now attempts to substitute missing .drv files
+*** ‘guix package’ etc. now lock the profile they operate on
+*** ‘guix pull’ honors /etc/guix/channels.scm when it exists
+*** New ‘guix show’ command, synonymous with ‘guix package --show’
+*** The ‘--manifest’ option can be repeated to combine manifests
+*** Some commands previously lacking ‘--load-path’ now support it
+** Distribution
+*** The set of pre-built bootstrap “binary seeds” has been halved
+*** Graphical installer has better support for non-Latin keyboard layouts
+*** Graphical installer allows users to choose an HTTP/HTTPS proxy
+*** Graphical installer allows users to edit the system configuration
+*** New ‘kernel-loadable-modules’ field in ‘operating-system’
+*** rottlog service is now part of ‘%base-services’
+*** ‘%base-services’ now includes /usr/bin/env as a “special file”
+*** ‘herd set-http-proxy guix-daemon URL’ can be used to set a proxy
+*** ‘qemu-binfmt’ service now supports riscv32 and riscv64
+*** File system UUIDs and labels are now supported for JFS
+*** New services
+
+auditd, fontconfig-file-system, getmail, gnome-keyring, kernel-module-loader,
+knot-resolver, mumi, nfs, nftables, nix, pagekite, pam-mount, patchwork,
+polkit-wheel, provenance, pulseaudio, sane, singularity, usb-modeswitch
+
+*** 3514 new packages
+
+*** 3368 package updates
+
+Noteworthy updates:
+bash 5.0.7, binutils 2.32, cups 2.3.1, emacs 26.3, enlightenment 0.23.1,
+gcc-toolchain 9.3.0, gdb 9.1, ghc 8.6.5, gimp 2.10.18, glibc 2.29,
+gnome 3.32.2, gnupg 2.2.20, go 1.13.9, guile 2.2.7,
+icecat 68.7.0-guix0-preview1, icedtea 3.7.0, julia 1.3.1,
+libreoffice 6.4.2.2, linux-libre 5.4.31, mate 1.24.0, ocaml 4.09.0,
+octave 5.2.0, openjdk 12.33, perl 5.30.0, python2 2.7.16, python 3.7.4,
+racket 7.6, rust 1.39.0, r 3.6.3, sbcl 2.0.3, shepherd 0.7.0, xfce 4.14.0,
+xorg-server 1.20.7
+
+** Programming interfaces
+*** New build systems
+
+copy-build-system, julia-build-system, node-build-system, qt-build-system
+
+*** New ‘with-build-handler’ and ‘map/accumulate-builds’ in (guix store)
+*** (guix gexp) has a new ‘with-parameters’ form
+*** New (guix remote) module for remote evaluation of gexps
+*** New ‘eval/container’ procedure in (gnu system linux-container)
+*** (guix inferior) now reifies exceptions as ‘&inferior-exception’
+*** (guix cve) uses the new NIST-provided JSON files instead of XML
+*** New (guix json) module to map JSON objects to Scheme records
+*** New (gnu installer tests) module to drive the graphical installer
+*** New (guix diagnostics) module for consistent diagnostic messages
+*** “Checkers” now live in (guix lint)
+** Notewothy bug fixes
+*** Grafts leads to inefficient substitute info retrieval
+    (<https://issues.guix.gnu.org/issue/22990>)
+*** Grafting prevents build plan from being displayed upfront
+    (https://issues.guix.gnu.org/issue/28310)
+*** Changing the HTTP/FTP proxy used by the daemon is inconvenient
+    (<https://issues.guix.gnu.org/issue/25569>)
+*** ‘guix system disk-image’ successfully builds a bad image
+    (<https://issues.guix.gnu.org/issue/34276>)
+*** Installer cannot be restarted after a failed install
+    (<https://issues.guix.gnu.org/issue/35543>)
+*** Null pointer error when partitioning with the graphical installer
+    (<https://issues.guix.gnu.org/issue/35858>)
+*** 'guix upgrade' misdiagnoses upgrades in the presence of propagated inputs
+    (<https://issues.guix.gnu.org/issue/35872>)
+*** mcron randomly stops running jobs
+    (<https://issues.guix.gnu.org/issue/37237>)
+*** Mistaken warning "guix pull was never run"
+    (<https://issues.guix.gnu.org/issue/38196>)
+*** `guix pack --format=squashfs` fails on CentOS7
+    (<https://issues.guix.gnu.org/issue/40043>)
+*** installer: No way to input Latin characters with non-Latin keyboard layouts
+    (<https://issues.guix.gnu.org/issue/40273>)
+*** installer: Always add '%base-initrd-modules' to 'initrd-modules'
+    (<https://issues.guix.gnu.org/issue/36099>)
+*** [MATE] shutdown and reboot not possible from UI
+    (<https://issues.guix.gnu.org/issue/40327>)
+*** 'guix-daemon' honors %localstatedir, %sysconfdir, and %storedir
+    (<https://issues.guix.gnu.org/issue/35874>)
+*** Fix ‘GUIX_LOCPATH’ quoting in ‘guix-daemon.service’ (systemd)
+    (<https://issues.guix.gnu.org/issue/36074>)
+*** Include USB_ModeSwitch in %desktop-services
+    (<https://issues.guix.gnu.org/issue/35640>)
+*** linux-container: Mount a new /dev/pts instance in the container
+    (<https://issues.guix.gnu.org/issue/36463>)
+*** system: Write the timezone to /etc/timezone
+    (<https://issues.guix.gnu.org/issue/35746>)
+*** linux-modules: Define and use a module name database
+    (<https://issues.guix.gnu.org/issue/34902>)
+*** pack: Create /tmp in Docker images
+    (<https://issues.guix.gnu.org/issue/37161>)
+*** guix system: Reinstalling the bootloader preserves extra menu entries
+    (<https://issues.guix.gnu.org/issue/36876>)
+*** system: Add 'mount' and 'umount' to '%setuid-programs'
+    (<https://issues.guix.gnu.org/issue/37569>)
+*** linux-libre: Try to aggressively gather entropy during boot
+    (<https://issues.guix.gnu.org/issue/37501>)
+*** daemon: Make 'profiles/per-user' non-world-writable
+    (<https://issues.guix.gnu.org/issue/37744>)
+*** linux-boot: Don't ignore options when mounting root file system
+    (<https://issues.guix.gnu.org/issue/37977>)
+*** Files produced by syslogd are no longer world-readable
+    (<https://issues.guix.gnu.org/issue/40405>)
+
+** Native language support
+*** Updated translations of the manual
+
+The manual is fully translated into Spanish, more than 85% complete in French
+and German, and has preliminary translations into Russian and Chinese.
+
+*** Updated translations of messages
+
+This version of Guix is fully translated in Brazilian Portuguese, French,
+German, and Spanish, and partially translated in 10 other languages.
 
 * Changes in 1.0.1 (since 1.0.0)
 ** Package management

@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -86,10 +87,10 @@
     (inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)
-       ("qtbase" ,qtbase)
-       ("qttools" ,qttools)))
+       ("qtbase" ,qtbase)))
     (native-inputs
      `(("which" ,which)
+       ("qttools" ,qttools)
        ("libxml2" ,libxml2)))              ;'xmllint' needed for the KML tests
     (home-page "https://www.gpsbabel.org/")
     (synopsis "Convert and exchange data with GPS and map programs")
@@ -153,7 +154,7 @@ between two other data points.")
 (define-public gama
   (package
     (name "gama")
-    (version "2.07")
+    (version "2.08")
     (source
       (origin
         (method url-fetch)
@@ -161,7 +162,7 @@ between two other data points.")
                             version ".tar.gz"))
         (sha256
          (base32
-          "0nmc6mkd55nryfffq5k9c09dhkbq6bfs06af8ammhbh5jzdn3s36"))))
+          "0fic6a3a83hgj3gj85bin3wd6ghgi2qg76d6jfwckamab0hlv7wx"))))
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f)) ; race condition
     (native-inputs
@@ -220,14 +221,14 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
 (define-public gpsd
   (package
     (name "gpsd")
-    (version "3.19")
+    (version "3.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download-mirror.savannah.gnu.org"
                            "/releases/gpsd/gpsd-" version ".tar.gz"))
        (sha256
-        (base32 "0faz2mvk82hi7ispxxih07lhpyz5dazs4gcknym9piiabga29p97"))))
+        (base32 "0l2yz0yw9sil82lh2l4swkkldgmhzhv588n5lcavib4f0q2phahp"))))
     (build-system scons-build-system)
     (native-inputs
      `(("bc" ,bc)
@@ -235,6 +236,7 @@ such as elevation, speed, heart rate, power, temperature, and gear shifts.")
     (inputs
      `(("bluez" ,bluez)
        ("dbus" ,dbus)
+       ("gtk+" ,gtk+)
        ("libcap" ,libcap)
        ("libusb" ,libusb)
        ("ncurses" ,ncurses)

@@ -14,7 +14,7 @@
 ;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,9 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages inkscape)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
@@ -2217,6 +2220,65 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
 X server: @code{handhelds}, @code{redglass} and @code{whiteglass}.")
     (license license:x11)))
 
+
+(define-public hackneyed-x11-cursors
+  ;; The current release 0.8 suffers from non-deterministic build problems.
+  (let ((revision "1")
+        (commit "9423cef2e2e5ff6b1d65d61f7108c97bc7f5fdfb"))
+    (package
+      (name "hackneyed-x11-cursors")
+      (version (git-version "0.8.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/Enthymeme/hackneyed-x11-cursors.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0f637i76sdwz3nm1g1iynamq6j0i6k3c70fpl0fmd0dlynm8ga96"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                    ;no test suite
+         #:make-flags (list (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'set-inkscape-environment-variable
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((inkscape (string-append (assoc-ref inputs "inkscape")
+                                              "/bin/inkscape")))
+                 (setenv "INKSCAPE" inkscape)
+                 #t)))
+           (add-before 'build 'placate-inkscape-warnings
+             (lambda _
+               (setenv "HOME" (getcwd))
+               #t))
+           (add-after 'build 'generate-black-cursors
+             (lambda* (#:key make-flags parallel-build #:allow-other-keys)
+               (let ((build (assoc-ref %standard-phases 'build))
+                     (make-flags/extended
+                      `(,@make-flags
+                        "THEME_NAME=Hackneyed-Dark"
+                        "COMMON_SOURCE=theme/common-dark.svg"
+                        "RSVG_SOURCE=theme/right-handed-dark.svg"
+                        "LSVG_SOURCE=theme/left-handed-dark.svg")))
+                 (build #:make-flags make-flags/extended
+                        #:parallel-build parallel-build))))
+           (add-after 'install 'install-black-cursors
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke `("make" "install" ,@make-flags
+                               "THEME_NAME=Hackneyed-Dark")))))))
+      (native-inputs `(("imagemagick" ,imagemagick)
+                       ("inkscape" ,inkscape)
+                       ("xcursorgen" ,xcursorgen)))
+      (home-page "https://gitlab.com/Enthymeme/hackneyed-x11-cursors")
+      (synopsis "Classic cursor theme for X11")
+      (description "Hackneyed is a scalable cursor theme mildly resembling old
+Windows 3.x cursors.  The cursors are available in white and black colors.  A
+left-handed version of the cursors is also included.")
+      (license license:x11))))
 
 (define-public xcursorgen
   (package
@@ -5911,7 +5973,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "351")
+    (version "353")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -5921,7 +5983,7 @@ to answer a question.  Xmessage can also exit after a specified time.")
                                    "xterm-" version ".tgz")))
               (sha256
                (base32
-                "05kf586my4irrzz2bxgmwjdvynyrg9ybhvfqmx29g70w4888l2kn"))))
+                "0s5pkfn4r8iy09s1q1y78zhnr9f3sm6wgbqir7azaqggkppd68g5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,14 +82,14 @@ fundamental object types for C.")
 (define-public sssd
   (package
     (name "sssd")
-    (version "1.16.4")
+    (version "1.16.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
+              (uri (string-append "https://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
               (sha256
                (base32
-                "0ngr7cgimyjc6flqkm7psxagp1m4jlzpqkn28pliifbmdg6i5ckb"))))
+                "1h6hwibaf3xa2w6qpzjiiywmfj6zkgbz4r2isf3gd0xm6vq7n6if"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -307,7 +308,7 @@ access to servers running the Discord protocol.")
                (("if 'DESTDIR' not in os.environ:")
                  "if False:"))
              #t)))))
-    (synopsis "Graphical IRC Client")
+    (synopsis "Graphical IRC client")
     (description
      "HexChat lets you connect to multiple IRC networks at once.  The main
 window shows the list of currently connected networks and their channels, the
@@ -727,68 +728,52 @@ on Axolotl and PEP.")
     (license license:gpl3+)))
 
 (define-public dino
-  ;; The only release tarball is for version 0.0, but it is very old and fails
-  ;; to build.
-  (let ((commit "8e14ac6d714b7f88e16de31a6c795e811dc27417")
-        (revision "4"))
-    (package
-      (name "dino")
-      (version (git-version "0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/dino/dino.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0xfmwnc2f8lsvmp7m8ggikzqjaw5z6wmxrv6j5ljha5ckffrdd9m"))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f ; there are no tests
-         #:parallel-build? #f ; not supported
-         ; Use our libsignal-protocol-c instead of the git submodule.
-         #:configure-flags '("-DSHARED_SIGNAL_PROTOCOL=yes")
-         #:modules ((guix build cmake-build-system)
-                    ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
-                    (guix build utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build cmake-build-system)
-                             (guix build glib-or-gtk-build-system))
-         #:phases
-         (modify-phases %standard-phases
-           ;; The signal-protocol plugin accesses internal headers of
-           ;; libsignal-protocol-c, so we need to put the sources there.
-           (add-after 'unpack 'unpack-sources
-             (lambda* (#:key inputs #:allow-other-keys)
-               (with-directory-excursion "plugins/signal-protocol/libsignal-protocol-c"
-                 (invoke "tar" "xvf"
-                         (assoc-ref inputs "libsignal-protocol-c-source")
-                         "--strip-components=1"))))
-           (add-after 'install 'glib-or-gtk-wrap
-             (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
-      (inputs
-       `(("libgee" ,libgee)
-         ("libsignal-protocol-c" ,libsignal-protocol-c)
-         ("libgcrypt" ,libgcrypt)
-         ("libsoup" ,libsoup)
-         ("qrencode" ,qrencode)
-         ("sqlite" ,sqlite-with-column-metadata)
-         ("gpgme" ,gpgme)
-         ("gtk+" ,gtk+)
-         ("glib-networking" ,glib-networking)
-         ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("libsignal-protocol-c-source" ,(package-source libsignal-protocol-c))
-         ("glib" ,glib "bin")
-         ("vala" ,vala)
-         ("gettext" ,gettext-minimal)))
-      (home-page "https://dino.im")
-      (synopsis "Graphical Jabber (XMPP) client")
-      (description "Dino is a Jabber (XMPP) client which aims to fit well into
+  (package
+    (name "dino")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dino/dino/releases/download/v"
+                           version "/dino-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dcq2jhpywgxrp9x1qqmrl2z50hazspqj547b9zz70apy3y4418h"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f
+       #:parallel-build? #f ; not supported
+       #:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build cmake-build-system)
+                           (guix build glib-or-gtk-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
+    (inputs
+     `(("libgee" ,libgee)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
+       ("libgcrypt" ,libgcrypt)
+       ("libsoup" ,libsoup)
+       ("qrencode" ,qrencode)
+       ("sqlite" ,sqlite-with-column-metadata)
+       ("gpgme" ,gpgme)
+       ("gtk+" ,gtk+)
+       ("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("vala" ,vala)
+       ("gettext" ,gettext-minimal)))
+    (home-page "https://dino.im")
+    (synopsis "Graphical Jabber (XMPP) client")
+    (description "Dino is a Jabber (XMPP) client which aims to fit well into
 a graphical desktop environment like GNOME.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public prosody
   (package
@@ -2030,13 +2015,13 @@ messaging that aren’t available to clients that connect over XMPP.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
        ("which" ,which)))
     (inputs
      `(("pidgin" ,pidgin)
        ("libgcrypt" ,libgcrypt)
        ("libwebp" ,libwebp)
        ("glib" ,glib)
-       ("gettext" ,gnu-gettext)
        ("gtk+" ,gtk+-2)
        ("zlib" ,zlib)))
     (arguments

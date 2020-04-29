@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -111,6 +111,8 @@
             package-output
             package-grafts
             package-patched-vulnerabilities
+            package-with-patches
+            package-with-extra-patches
             package/inherit
 
             transitive-input-references
@@ -449,7 +451,7 @@ derivations."
   ;; Guile 2.2 would not work due to <https://bugs.gnu.org/28211> when
   ;; grafting packages.
   (let ((distro (resolve-interface '(gnu packages guile))))
-    (module-ref distro 'guile-3.0)))
+    (module-ref distro 'guile-2.0)))
 
 (define* (default-guile-derivation #:optional (system (%current-system)))
   "Return the derivation for SYSTEM of the default Guile package used to run
@@ -653,6 +655,18 @@ specifies modules in scope when evaluating SNIPPET."
                         #:guile-for-build guile-for-build
                         #:properties `((type . origin)
                                        (patches . ,(length patches)))))))
+
+(define (package-with-patches original patches)
+  "Return package ORIGINAL with PATCHES applied."
+  (package (inherit original)
+           (source (origin (inherit (package-source original))
+                           (patches patches)))))
+
+(define (package-with-extra-patches original patches)
+  "Return package ORIGINAL with all PATCHES appended to its list of patches."
+  (package-with-patches original
+                        (append (origin-patches (package-source original))
+                                patches)))
 
 (define (transitive-inputs inputs)
   "Return the closure of INPUTS when considering the 'propagated-inputs'
@@ -1029,39 +1043,39 @@ information in exceptions."
                        #:key (graft? (%graft?)))
   "Compile PACKAGE into a bag for SYSTEM, possibly cross-compiled to TARGET,
 and return it."
-  (cached (=> %bag-cache)
-          package (list system target graft?)
-          ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked
-          ;; field values can refer to it.
-          (parameterize ((%current-system system)
-                         (%current-target-system target))
-            (match (if graft?
-                       (or (package-replacement package) package)
-                       package)
-              ((and self
-                    ($ <package> name version source build-system
-                                 args inputs propagated-inputs native-inputs
-                                 outputs))
-               ;; Even though we prefer to use "@" to separate the package
-               ;; name from the package version in various user-facing parts
-               ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
-               ;; prohibits the use of "@", so use "-" instead.
-               (or (make-bag build-system (string-append name "-" version)
-                             #:system system
-                             #:target target
-                             #:source source
-                             #:inputs (append (inputs self)
-                                              (propagated-inputs self))
-                             #:outputs outputs
-                             #:native-inputs (native-inputs self)
-                             #:arguments (args self))
-                   (raise (if target
-                              (condition
-                               (&package-cross-build-system-error
-                                (package package)))
-                              (condition
-                               (&package-error
-                                (package package)))))))))))
+  (let ((package (or (and graft? (package-replacement package))
+                     package)))
+    (cached (=> %bag-cache)
+            package (list system target)
+            ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked
+            ;; field values can refer to it.
+            (parameterize ((%current-system system)
+                           (%current-target-system target))
+              (match package
+                ((and self
+                      ($ <package> name version source build-system
+                                   args inputs propagated-inputs native-inputs
+                                   outputs))
+                 ;; Even though we prefer to use "@" to separate the package
+                 ;; name from the package version in various user-facing parts
+                 ;; of Guix, checkStoreName (in nix/libstore/store-api.cc)
+                 ;; prohibits the use of "@", so use "-" instead.
+                 (or (make-bag build-system (string-append name "-" version)
+                               #:system system
+                               #:target target
+                               #:source source
+                               #:inputs (append (inputs self)
+                                                (propagated-inputs self))
+                               #:outputs outputs
+                               #:native-inputs (native-inputs self)
+                               #:arguments (args self))
+                     (raise (if target
+                                (condition
+                                 (&package-cross-build-system-error
+                                  (package package)))
+                                (condition
+                                 (&package-error
+                                  (package package))))))))))))
 
 (define %graft-cache
   ;; 'eq?' cache mapping package objects to a graft corresponding to their
@@ -1326,7 +1340,11 @@ code of derivations to GUILE, a package object."
   "Return as a monadic value the absolute file name of FILE within the
 OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
 OUTPUT directory of PACKAGE.  When TARGET is true, use it as a
-cross-compilation target triplet."
+cross-compilation target triplet.
+
+Note that this procedure does _not_ build PACKAGE.  Thus, the result might or
+might not designate an existing file.  We recommend not using this procedure
+unless you know what you are doing."
   (lambda (store)
     (define compute-derivation
       (if target

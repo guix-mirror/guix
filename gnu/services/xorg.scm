@@ -798,6 +798,7 @@ the GNOME desktop environment.")
         (user-account
          (name "gdm")
          (group "gdm")
+         (supplementary-groups '("video"))
          (system? #t)
          (comment "GNOME Display Manager user")
          (home-directory "/var/lib/gdm")

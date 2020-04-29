@@ -54,7 +54,7 @@
       (documentation "Spice vdagentd service")
       (requirement '(udev))
       (provision '(spice-vdagentd))
-      (start #~(make-forkexec-constructor #$@spice-vdagentd-command))
+      (start #~(make-forkexec-constructor '#$spice-vdagentd-command))
       (stop #~(make-kill-destructor)))))
 
 (define spice-vdagent-profile

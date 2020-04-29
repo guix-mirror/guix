@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix search-paths)
+  #:use-module (guix import json)
   #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)
@@ -60,6 +62,8 @@
             delete-generations
             delete-matching-generations
             guix-package
+
+            search-path-environment-variables
 
             transaction-upgrade-entry             ;mostly for testing
 
@@ -199,6 +203,10 @@ non-zero relevance score."
 (define (transaction-upgrade-entry store entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
 <manifest-entry>."
+  (define (lower-manifest-entry* entry)
+    (run-with-store store
+      (lower-manifest-entry entry (%current-system))))
+
   (define (supersede old new)
     (info (G_ "package '~a' has been superseded by '~a'~%")
           (manifest-entry-name old) (package-name new))
@@ -211,40 +219,44 @@ non-zero relevance score."
         (output (manifest-entry-output old)))
       transaction)))
 
-  (match (if (manifest-transaction-removal-candidate? entry transaction)
-             'dismiss
-             entry)
-    ('dismiss
-     transaction)
-    (($ <manifest-entry> name version output (? string? path))
-     (match (find-best-packages-by-name name #f)
-       ((pkg . rest)
-        (let ((candidate-version (package-version pkg)))
-          (match (package-superseded pkg)
-            ((? package? new)
-             (supersede entry new))
-            (#f
-             (case (version-compare candidate-version version)
-               ((>)
-                (manifest-transaction-install-entry
-                 (package->manifest-entry* pkg output)
-                 transaction))
-               ((<)
-                transaction)
-               ((=)
-                (let ((candidate-path (derivation->output-path
-                                       (package-derivation store pkg))))
-                  ;; XXX: When there are propagated inputs, assume we need to
-                  ;; upgrade the whole entry.
-                  (if (and (string=? path candidate-path)
-                           (null? (package-propagated-inputs pkg)))
-                      transaction
-                      (manifest-transaction-install-entry
-                       (package->manifest-entry* pkg output)
-                       transaction)))))))))
-       (()
-        (warning (G_ "package '~a' no longer exists~%") name)
-        transaction)))))
+  (define (upgrade entry)
+    (match entry
+      (($ <manifest-entry> name version output (? string? path))
+       (match (find-best-packages-by-name name #f)
+         ((pkg . rest)
+          (let ((candidate-version (package-version pkg)))
+            (match (package-superseded pkg)
+              ((? package? new)
+               (supersede entry new))
+              (#f
+               (case (version-compare candidate-version version)
+                 ((>)
+                  (manifest-transaction-install-entry
+                   (package->manifest-entry* pkg output)
+                   transaction))
+                 ((<)
+                  transaction)
+                 ((=)
+                  (let* ((new (package->manifest-entry* pkg output)))
+                    ;; Here we want to determine whether the NEW actually
+                    ;; differs from ENTRY, but we need to intercept
+                    ;; 'build-things' calls because they would prevent us from
+                    ;; displaying the list of packages to install/upgrade
+                    ;; upfront.  Thus, if lowering NEW triggers a build (due
+                    ;; to grafts), assume NEW differs from ENTRY.
+                    (if (with-build-handler (const #f)
+                          (manifest-entry=? (lower-manifest-entry* new)
+                                            entry))
+                        transaction
+                        (manifest-transaction-install-entry
+                         new transaction)))))))))
+         (()
+          (warning (G_ "package '~a' no longer exists~%") name)
+          transaction)))))
+
+  (if (manifest-transaction-removal-candidate? entry transaction)
+      transaction
+      (upgrade entry)))
 
 
 ;;;
@@ -410,7 +422,10 @@ Install, remove, or upgrade packages in a single transaction.\n"))
          (option '(#\f "install-from-file") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'install
-                                       (load* arg (make-user-module '()))
+                                       (let ((file (or (and (string-suffix? ".json" arg)
+                                                            (json->scheme-file arg))
+                                                       arg)))
+                                         (load* file (make-user-module '())))
                                        result)
                            #f)))
          (option '(#\r "remove") #f #t
@@ -489,8 +504,7 @@ kind of search path~%")
                            #f)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result arg-handler)
-                   (values (alist-cons 'dry-run? #t
-                                       (alist-cons 'graft? #f result))
+                   (values (alist-cons 'dry-run? #t result)
                            #f)))
          (option '(#\v "verbosity") #t #f
                  (lambda (opt name arg result arg-handler)

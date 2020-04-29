@@ -11,6 +11,8 @@
 Copyright @copyright{} 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2019 Efraim Flashner@*
 Copyright @copyright{} 2019 Pierre Neidhardt@*
+Copyright @copyright{} 2020 Oleg Pykhalov@*
+Copyright @copyright{} 2020 Matthew Brooks@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -579,7 +581,7 @@ packages.
 Guix makes it possible to streamline the process by adding as many ``package
 declaration directories'' as you want.
 
-Create a directory, say @samp{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
+Create a directory, say @file{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
 environment variable:
 
 @example
@@ -849,7 +851,7 @@ version when packaging programs for a specific commit.
 @subsubsection Snippets
 
 Snippets are quoted (i.e. non-evaluated) Scheme code that are a means of patching
-the source.  They are a Guix-y alternative to the traditional @samp{.patch} files.
+the source.  They are a Guix-y alternative to the traditional @file{.patch} files.
 Because of the quote, the code in only evaluated when passed to the Guix daemon
 for building.  There can be as many snippets as needed.
 
@@ -953,7 +955,7 @@ $ make CC=gcc prefix=/gnu/store/...-<out>
 This sets the C compiler to @code{gcc} and the @code{prefix} variable (the installation
 directory in Make parlance) to @code{(assoc-ref %outputs "out")}, which is a build-stage
 global variable pointing to the destination directory in the store (something like
-@samp{/gnu/store/...-my-libgit2-20180408}).
+@file{/gnu/store/...-my-libgit2-20180408}).
 
 Similarly, it's possible to set the configure flags:
 
@@ -1078,7 +1080,7 @@ mechanism of passing code around two running processes is called @uref{https://a
 @subsubsection Utility functions
 
 When customizing @code{phases}, we often need to write code that mimics the
-equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.) commonly used during
+equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.)@: commonly used during
 regular ``Unix-style'' installations.
 
 Some like @code{chmod} are native to Guile.
@@ -1319,7 +1321,9 @@ chapter is to demonstrate some advanced configuration concepts.
 reference.
 
 @menu
-* Customizing the Kernel::     Creating and using a custom Linux kernel on Guix System.
+* Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
+* Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
+* Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
 @end menu
 
 @node Customizing the Kernel
@@ -1562,6 +1566,105 @@ likely that you'll need to modify the initrd on a machine using a custom
 kernel, since certain modules which are expected to be built may not be
 available for inclusion into the initrd.
 
+@node Customizing a Window Manager
+@section Customizing a Window Manager
+@cindex wm
+
+@node StumpWM
+@subsection StumpWM
+@cindex stumpwm
+
+You could install StumpWM with a Guix system by adding
+@code{stumpwm-checkout} and optionally @code{`(,stumpwm-checkout "lib")}
+packages to a system configuration file, e.g.@: @file{/etc/config.scm}.
+
+An example configuration can look like this:
+
+@lisp
+(use-modules (gnu))
+(use-package-modules wm)
+
+(operating-system
+  ;; …
+  (packages (append (list sbcl stumpwm-checkout `(,stumpwm-checkout "lib"))
+                    %base-packages)))
+@end lisp
+
+@cindex stumpwm fonts
+By default StumpWM uses X11 fonts, which could be small or pixelated on
+your system.  You could fix this by installing StumpWM contrib Lisp
+module @code{sbcl-stumpwm-ttf-fonts}, adding it to Guix system packages:
+
+@lisp
+(use-modules (gnu))
+(use-package-modules fonts wm)
+
+(operating-system
+  ;; …
+  (packages (append (list sbcl stumpwm-checkout `(,stumpwm-checkout "lib"))
+                    sbcl-stumpwm-ttf-fonts font-dejavu %base-packages)))
+@end lisp
+
+Then you need to add the following code to a StumpWM configuration file
+@file{~/.stumpwm.d/init.lisp}:
+
+@lisp
+(require :ttf-fonts)
+(setf xft:*font-dirs* '("/run/current-system/profile/share/fonts/"))
+(setf clx-truetype:+font-cache-filename+ (concat (getenv "HOME") "/.fonts/font-cache.sexp"))
+(xft:cache-fonts)
+(set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
+@end lisp
+
+@node Setting up a bind mount
+@section Setting up a bind mount
+
+To bind mount a file system, one must first set up some definitions
+before the @code{operating-system} section of the system definition.  In
+this example we will bind mount a folder from a spinning disk drive to
+@file{/tmp}, to save wear and tear on the primary SSD, without
+dedicating an entire partition to be mounted as @file{/tmp}.
+
+First, the source drive that hosts the folder we wish to bind mount
+should be defined, so that the bind mount can depend on it.
+
+@lisp
+(define source-drive ;; "source-drive" can be named anything you want.
+   (file-system
+    (device (uuid "UUID goes here"))
+    (mount-point "/path-to-spinning-disk-goes-here")
+    (type "ext4"))) ;; Make sure to set this to the appropriate type for your drive.
+@end lisp
+
+The source folder must also be defined, so that guix will know it's not
+a regular block device, but a folder.
+@lisp
+(define (%source-directory) "/path-to-spinning-disk-goes-here/tmp") ;; "source-directory" can be named any valid variable name.
+@end lisp
+
+Finally, inside the @code{file-systems} definition, we must add the
+mount itself.
+
+@lisp
+(file-systems (cons*
+
+                ...<other drives omitted for clarity>...
+
+                source-drive ;; Must match the name you gave the source drive in the earlier definition.
+
+                (file-system
+                 (device (%source-directory)) ;; Make sure "source-directory" matches your earlier definition.
+                 (mount-point "/tmp")
+                 (type "none") ;; We are mounting a folder, not a partition, so this type needs to be "none"
+                 (flags '(bind-mount))
+                 (dependencies (list source-drive)) ;; Ensure "source-drive" matches what you've named the variable for the drive.
+                 )
+
+                 ...<other drives omitted for clarity>...
+
+                ))
+@end lisp
+
 @c *********************************************************************
 @node Advanced package management
 @chapter Advanced package management
@@ -1688,8 +1791,8 @@ where we will store our profiles in the rest of this article.
 
 Placing all your profiles in a single directory, with each profile getting its
 own sub-directory, is somewhat cleaner.  This way, each sub-directory will
-contain all the symlinks for precisely one profile.  Besides, "looping over
-profiles" becomes obvious from any programming language (e.g. a shell script) by
+contain all the symlinks for precisely one profile.  Besides, ``looping over
+profiles'' becomes obvious from any programming language (e.g.@: a shell script) by
 simply looping over the sub-directories of @samp{$GUIX_EXTRA_PROFILES}.
 
 Note that it's also possible to loop over the output of
@@ -1698,9 +1801,9 @@ Note that it's also possible to loop over the output of
 guix package --list-profiles
 @end example
 
-although you'll probably have to filter out @samp{~/.config/guix/current}.
+although you'll probably have to filter out @file{~/.config/guix/current}.
 
-To enable all profiles on login, add this to your @samp{~/.bash_profile} (or similar):
+To enable all profiles on login, add this to your @file{~/.bash_profile} (or similar):
 
 @example
 for i in $GUIX_EXTRA_PROFILES/*; do
@@ -1714,8 +1817,8 @@ done
 @end example
 
 Note to Guix System users: the above reflects how your default profile
-@samp{~/.guix-profile} is activated from @samp{/etc/profile}, that latter being loaded by
-@samp{~/.bashrc} by default.
+@file{~/.guix-profile} is activated from @file{/etc/profile}, that latter being loaded by
+@file{~/.bashrc} by default.
 
 You can obviously choose to only enable a subset of them:
 
@@ -1758,8 +1861,8 @@ guix package -m /path/to/guix-my-project-manifest.scm -p "$GUIX_EXTRA_PROFILES"/
 
 To upgrade all profiles, it's easy enough to loop over them.  For instance,
 assuming your manifest specifications are stored in
-@samp{~/.guix-manifests/guix-$profile-manifest.scm}, with @samp{$profile} being the name
-of the profile (e.g. "project1"), you could do the following in Bourne shell:
+@file{~/.guix-manifests/guix-$profile-manifest.scm}, with @samp{$profile} being the name
+of the profile (e.g.@: "project1"), you could do the following in Bourne shell:
 
 @example
 for profile in "$GUIX_EXTRA_PROFILES"/*; do
@@ -1818,12 +1921,12 @@ The same is true for @samp{INFOPATH} (you can install @samp{info-reader}),
 @node Default profile
 @subsection Default profile
 
-What about the default profile that Guix keeps in @samp{~/.guix-profile}?
+What about the default profile that Guix keeps in @file{~/.guix-profile}?
 
 You can assign it the role you want.  Typically you would install the manifest
 of the packages you want to use all the time.
 
-Alternatively, you could keep it "manifest-less" for throw-away packages
+Alternatively, you could keep it ``manifest-less'' for throw-away packages
 that you would just use for a couple of days.
 This way makes it convenient to run
 
@@ -1854,7 +1957,7 @@ Manifests come with multiple benefits.  In particular, they ease maintenance:
 @itemize
 @item
 When a profile is set up from a manifest, the manifest itself is
-self-sufficient to keep a "package listing" around and reinstall the profile
+self-sufficient to keep a ``package listing'' around and reinstall the profile
 later or on a different system.  For ad-hoc profiles, we would need to
 generate a manifest specification manually and maintain the package versions
 for the packages that don't use the default version.
@@ -1891,7 +1994,7 @@ They can be manipulated in Scheme and passed to the various Guix @uref{https://e
 
 It's important to understand that while manifests can be used to declare
 profiles, they are not strictly equivalent: profiles have the side effect that
-they "pin" packages in the store, which prevents them from being
+they ``pin'' packages in the store, which prevents them from being
 garbage-collected (@pxref{Invoking guix gc,,, guix, GNU Guix Reference Manual})
 and ensures that they will still be available at any point in
 the future.

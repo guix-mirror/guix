@@ -1,0 +1,16 @@
+Origin: $NetBSD: patch-src_libdisplay_DisplayOutput.cpp,v 1.1 2019/11/16 17:36:28 ng0 Exp $
+
+Modified by: R Veera Kumar <vkor@vkten.in> 2020-03-28; change to patch -p1
+
+diff -uNr xplanet-1.3.1/src/libdisplay/DisplayOutput.cpp xplanet-1.3.1.new/src/libdisplay/DisplayOutput.cpp
+--- xplanet-1.3.1/src/libdisplay/DisplayOutput.cpp	2013-02-17 01:07:47.000000000 +0530
++++ xplanet-1.3.1.new/src/libdisplay/DisplayOutput.cpp	2020-03-28 22:08:44.432499170 +0530
+@@ -51,7 +51,7 @@
+     string outputFilename = options->OutputBase();
+     int startIndex = options->OutputStartIndex();
+     int stopIndex = options->NumTimes() + startIndex - 1;
+-    if (stopIndex > 1)
++    if (stopIndex > 0)
+     {
+         const int digits = (int) (log10((double) stopIndex) + 1);
+         char buffer[64];

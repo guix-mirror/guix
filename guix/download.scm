@@ -531,7 +531,8 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                                       (string-append "tarbomb-"
                                                      (or name file-name))
                                       #:system system
-                                      #:guile guile)))
+                                      #:guile guile))
+                      (guile (package->derivation guile system)))
     ;; Take the tar bomb, and simply unpack it as a directory.
     ;; Use ungrafted tar/gzip so that the resulting tarball doesn't depend on
     ;; whether grafts are enabled.
@@ -544,6 +545,8 @@ own.  This helper makes it easier to deal with \"tar bombs\"."
                             (chdir #$output)
                             (invoke (string-append #$tar "/bin/tar")
                                     "xf" #$drv)))
+                      #:system system
+                      #:guile-for-build guile
                       #:graft? #f
                       #:local-build? #t)))
 
@@ -566,7 +569,8 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                                       (string-append "zipbomb-"
                                                      (or name file-name))
                                       #:system system
-                                      #:guile guile)))
+                                      #:guile guile))
+                      (guile (package->derivation guile system)))
     ;; Take the zip bomb, and simply unpack it as a directory.
     ;; Use ungrafted unzip so that the resulting tarball doesn't depend on
     ;; whether grafts are enabled.
@@ -578,6 +582,8 @@ own.  This helper makes it easier to deal with \"zip bombs\"."
                             (chdir #$output)
                             (invoke (string-append #$unzip "/bin/unzip")
                                     #$drv)))
+                      #:system system
+                      #:guile-for-build guile
                       #:graft? #f
                       #:local-build? #t)))
 

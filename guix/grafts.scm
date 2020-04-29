@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,51 +152,23 @@ are not recursively applied to dependencies of DRV."
 
                                      #:properties properties)))))
 
-(define (non-self-references references drv outputs)
+(define (non-self-references store drv outputs)
   "Return the list of references of the OUTPUTS of DRV, excluding self
-references.  Call REFERENCES to get the list of references."
-  (let ((refs (append-map (compose references
-                                   (cut derivation->output-path drv <>))
-                          outputs))
+references."
+  (define (references* items)
+    ;; Return the references of ITEMS.
+    (guard (c ((store-protocol-error? c)
+               ;; ITEMS are not in store so build INPUT first.
+               (and (build-derivations store (list drv))
+                    (append-map (cut references/cached store <>) items))))
+      (append-map (cut references/cached store <>) items)))
+
+  (let ((refs (references* (map (cut derivation->output-path drv <>)
+                                outputs)))
         (self (match (derivation->output-paths drv)
                 (((names . items) ...)
                  items))))
     (remove (cut member <> self) refs)))
-
-(define (references-oracle store input)
-  "Return a one-argument procedure that, when passed the output file names of
-INPUT, a derivation input, or their dependencies, returns the list of
-references of that item.  Use either local info or substitute info; build
-INPUT if no information is available."
-  (define (references* items)
-    (guard (c ((store-protocol-error? c)
-               ;; As a last resort, build DRV and query the references of the
-               ;; build result.
-
-               ;; Warm up the narinfo cache, otherwise each derivation build
-               ;; will result in one HTTP request to get one narinfo, which is
-               ;; much less efficient than fetching them all upfront.
-               (substitution-oracle store
-                                    (list (derivation-input-derivation input)))
-
-               (and (build-derivations store (list input))
-                    (map (cut references store <>) items))))
-      (references/substitutes store items)))
-
-  (let loop ((items (derivation-input-output-paths input))
-             (result vlist-null))
-    (match items
-      (()
-       (lambda (item)
-         (match (vhash-assoc item result)
-           ((_ . refs) refs)
-           (#f         #f))))
-      (_
-       (let* ((refs   (references* items))
-              (result (fold vhash-cons result items refs)))
-         (loop (remove (cut vhash-assoc <> result)
-                       (delete-duplicates (concatenate refs) string=?))
-               result))))))
 
 (define-syntax-rule (with-cache key exp ...)
   "Cache the value of monadic expression EXP under KEY."
@@ -239,15 +211,12 @@ of DRV."
                        (set-insert drv visited)))))))))
 
 (define* (cumulative-grafts store drv grafts
-                            references
                             #:key
                             (outputs (derivation-output-names drv))
                             (guile (%guile-for-build))
                             (system (%current-system)))
   "Augment GRAFTS with additional grafts resulting from the application of
-GRAFTS to the dependencies of DRV; REFERENCES must be a one-argument procedure
-that returns the list of references of the store item it is given.  Return the
-resulting list of grafts.
+GRAFTS to the dependencies of DRV.  Return the resulting list of grafts.
 
 This is a monadic procedure in %STATE-MONAD where the state is a vhash mapping
 derivations to the corresponding set of grafts."
@@ -270,7 +239,7 @@ derivations to the corresponding set of grafts."
        ;; If GRAFTS already contains a graft from DRV, do not override it.
        (if (find (cut graft-origin? drv <>) grafts)
            (state-return grafts)
-           (cumulative-grafts store drv grafts references
+           (cumulative-grafts store drv grafts
                               #:outputs (list output)
                               #:guile guile
                               #:system system)))
@@ -278,7 +247,7 @@ derivations to the corresponding set of grafts."
        (state-return grafts))))
 
   (with-cache (cons (derivation-file-name drv) outputs)
-    (match (non-self-references references drv outputs)
+    (match (non-self-references store drv outputs)
       (()                                         ;no dependencies
        (return grafts))
       (deps                                       ;one or more dependencies
@@ -315,15 +284,8 @@ derivations to the corresponding set of grafts."
   "Apply GRAFTS to the OUTPUTS of DRV and all their dependencies, recursively.
 That is, if GRAFTS apply only indirectly to DRV, graft the dependencies of
 DRV, and graft DRV itself to refer to those grafted dependencies."
-
-  ;; First, pre-compute the dependency tree of the outputs of DRV.  Do this
-  ;; upfront to have as much parallelism as possible when querying substitute
-  ;; info or when building DRV.
-  (define references
-    (references-oracle store (derivation-input drv outputs)))
-
   (match (run-with-state
-             (cumulative-grafts store drv grafts references
+             (cumulative-grafts store drv grafts
                                 #:outputs outputs
                                 #:guile guile #:system system)
            vlist-null)                            ;the initial cache

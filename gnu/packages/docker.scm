@@ -503,6 +503,7 @@ built-in registry server of Docker.")
          (replace 'configure
            (lambda _
              (setenv "DOCKER_GITCOMMIT" (string-append "v" ,%docker-version))
+             (setenv "VERSION" (string-append ,%docker-version "-ce"))
              ;; Automatically use bundled dependencies.
              ;; TODO: Unbundle - see file "vendor.conf".
              (setenv "AUTO_GOPATH" "1")
@@ -540,7 +541,9 @@ built-in registry server of Docker.")
              (let* ((out (assoc-ref outputs "out"))
                     (out-bin (string-append out "/bin")))
                (install-file "bundles/dynbinary-daemon/dockerd" out-bin)
-               (install-file "bundles/dynbinary-daemon/dockerd-dev" out-bin)
+               (install-file (string-append "bundles/dynbinary-daemon/dockerd-"
+                                            (getenv "VERSION"))
+                             out-bin)
                #t))))))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)

@@ -182,11 +182,10 @@ OID (roughly the commit hash) corresponding to REF."
         (('tag    . tag)
          (let ((oid (reference-name->oid repository
                                          (string-append "refs/tags/" tag))))
-           ;; Get the commit that the tag at OID refers to.  This is not
-           ;; strictly needed, but it's more consistent to always return the
-           ;; OID of a commit.
-           (object-lookup repository
-                          (tag-target-id (tag-lookup repository oid))))))))
+           ;; OID may point to a "tag" object, but it can also point directly
+           ;; to a "commit" object, as surprising as it may seem.  Return that
+           ;; object, whatever that is.
+           (object-lookup repository oid))))))
 
   (reset repository obj RESET_HARD)
   (object-id obj))

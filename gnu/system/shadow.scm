@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -215,6 +216,10 @@ for a colorful Guile experience.\\n\\n\"))))\n"))
                                    ((target source)
                                     (copy-recursively source target)))
                                  '#$skeletons)
+                       ;; Make nanorc respect XDG_CONFIG_HOME.
+                       (when (file-exists? ".nanorc")
+                         (mkdir-p ".config/nano")
+                         (rename-file ".nanorc" ".config/nano/nanorc"))
                        #t))))
 
 (define (assert-valid-users/groups users groups)
@@ -309,9 +314,7 @@ accounts among ACCOUNTS+GROUPS."
   ;;
   ;; XXX: We arrange for this service to stop right after it's done its job so
   ;; that 'guix system reconfigure' knows that it can reload it fearlessly
-  ;; (and thus create new home directories).  The cost of this hack is that
-  ;; there's a small window during which first-time logins could happen before
-  ;; the home directory has been created.
+  ;; (and thus create new home directories).
   (list (shepherd-service
          (requirement '(file-systems))
          (provision '(user-homes))
@@ -369,6 +372,11 @@ the /etc/skel directory for those."
                                           account-activation)
                        (service-extension shepherd-root-service-type
                                           account-shepherd-service)
+                       ;; Have 'user-processes' depend on 'user-homes' so that
+                       ;; daemons start after their home directory has been
+                       ;; created.
+                       (service-extension user-processes-service-type
+                                          (const '(user-homes)))
                        (service-extension etc-service-type
                                           etc-files)))))
 

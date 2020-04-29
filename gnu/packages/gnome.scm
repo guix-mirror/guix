@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
-;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2017, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -48,6 +48,8 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,9 +162,11 @@
   #:use-module (gnu packages spice)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
   #:use-module (gnu packages virtualization)
@@ -246,6 +250,77 @@
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
+    (license license:gpl2+)))
+
+(define-public notification-daemon
+  (package
+    (name "notification-daemon")
+    (version "3.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1rgchqi4j2ll7d6a7lgy7id0w9rrkwkgic1096fbm2zx6n7pc4yx"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("x11" ,libx11)))
+    (synopsis "Notification Daemon for GNOME Desktop")
+    (description "Notification-Daemon is the server implementation of the
+freedesktop.org desktop notification specification.")
+    (home-page "https://wiki.gnome.org/Projects/NotificationDaemon")
+    (license license:gpl2+)))
+
+(define-public mm-common
+  (package
+    (name "mm-common")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1m4w33da9f4rx2d6kdj3ix3kl0gn16ml82v2mdn4hljr3q29nzdr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "util/mm-common-prepare.in"
+              (("ln") (string-append (assoc-ref inputs "coreutils")
+                                     "/bin/ln"))
+              (("cp") (string-append (assoc-ref inputs "coreutils")
+                                     "/bin/cp"))
+              (("sed") (string-append (assoc-ref inputs "sed")
+                                      "/bin/sed"))
+              (("cat") (string-append (assoc-ref inputs "coreutils")
+                                      "/bin/cat")))
+             #t)))))
+    (native-inputs
+     `(("coreutils" ,coreutils)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("sed" ,sed)))
+    (inputs
+     `(("python" ,python)))
+    (synopsis "Module of GNOME C++ bindings")
+    (description "The mm-common module provides the build infrastructure
+and utilities shared among the GNOME C++ binding libraries.  Release
+archives of mm-common include the Doxygen tag file for the GNU C++
+Library reference documentation.")
+    (home-page "https://gitlab.gnome.org/GNOME/mm-common")
     (license license:gpl2+)))
 
 (define-public phodav
@@ -333,7 +408,7 @@ in the GNOME desktop.")
 (define-public gnome-online-miners
   (package
     (name "gnome-online-miners")
-    (version "3.30.0")
+    (version "3.34.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -341,7 +416,7 @@ in the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pjamwwzn5wqgihyss357dyl2q70r0bngnqmwsqawchx5f9aja9c"))))
+                "1n2jz9i8a42zwxx5h8j2gdy6q1vyydh4vl00r0al7w8jzdh24p44"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -535,7 +610,18 @@ extraction, and lookup for applications on the desktop.")
    (arguments
     '(#:configure-flags '(;; Enable camera support for user selfie.
                           "-Dcheese=auto"
-                          "-Dsystemd=false")))
+                          "-Dsystemd=false")
+      #:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'set-gkbd-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Allow the "Preview" button in the keyboard layout
+                     ;; selection dialog to display the layout.
+                     (let ((libgnomekbd (assoc-ref inputs "libgnomekbd")))
+                       (substitute* "gnome-initial-setup/pages/keyboard/cc-input-chooser.c"
+                         (("\"gkbd-keyboard-display")
+                          (string-append "\"" libgnomekbd
+                                         "/bin/gkbd-keyboard-display")))
+                       #t))))))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
@@ -564,7 +650,8 @@ extraction, and lookup for applications on the desktop.")
       ("pwquality" ,libpwquality)
       ("rest" ,rest)
       ("upower" ,upower)
-      ("webkitgtk" ,webkitgtk)))
+      ("webkitgtk" ,webkitgtk)
+      ("libgnomekbd" ,libgnomekbd)))
    (synopsis "Initial setup wizard for GNOME desktop")
    (description "This package provides a set-up wizard when a
 user logs into GNOME for the first time.  It typically provides a
@@ -5064,7 +5151,7 @@ supports image conversion, rotation, and slideshows.")
     (synopsis "Extensions for the Eye of GNOME image viewer")
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gettext" ,gnu-gettext)))
+       ("gettext" ,gettext-minimal)))
     (inputs
      `(("eog" ,eog)
        ("glib" ,glib)
@@ -6080,7 +6167,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.32.1")
+    (version "3.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6088,7 +6175,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08g9kdj8fzcgp76z2zsj9m7wfjks9z6xfrfrbfmcr69k40mapfx8"))))
+                "0bigfi225g1prnxpb9lcc1i7mdcrkplwb05vilc43jik12cn53qw"))))
     (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -6719,7 +6806,8 @@ libxml2.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12ypdz9i24hwbl1d1wnnxb8zlvfa4f49n9ac5cl9d6h8qp4b0gb4"))))
+                "12ypdz9i24hwbl1d1wnnxb8zlvfa4f49n9ac5cl9d6h8qp4b0gb4"))
+              (patches (search-patches "gdm-default-session.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -7642,7 +7730,7 @@ software that do not provide their own configuration interface.")
          (let* ((out (assoc-ref %outputs "out"))
                 (apps (string-append out "/share/applications")))
            (mkdir-p apps)
-           (call-with-output-file (string-append apps "/defaults.list")
+           (call-with-output-file (string-append apps "/gnome-mimeapps.list")
              (lambda (port)
                (format port "[Default Applications]\n")
                (format port "inode/directory=org.gnome.Nautilus.desktop\n")
@@ -7714,6 +7802,17 @@ associations for GNOME.")
       ("gjs" ,gjs)
       ("gnome-desktop" ,gnome-desktop)
       ("libgweather" ,libgweather)))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'fix-desktop-file
+          ;; FIXME: "gapplication launch org.gnome.Weather" fails for some reason.
+          ;; See https://issues.guix.gnu.org/issue/39324.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (applications (string-append out "/share/applications")))
+              (substitute* (string-append applications "/org.gnome.Weather.desktop")
+                (("Exec=.*") "Exec=gnome-weather\n"))))))))
    (synopsis "Weather monitoring for GNOME desktop")
    (description "GNOME Weather is a small application that allows you to
 monitor the current weather conditions for your city, or anywhere in the
@@ -8155,10 +8254,6 @@ GNOME 3.  This includes things like the fonts used in user interface elements,
 alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
-
-;; This package has been renamed by upstream.
-(define-public gnome-tweak-tool
-  (deprecated-package "gnome-tweak-tool" gnome-tweaks))
 
 (define-public gnome-shell-extensions
   (package
@@ -8890,10 +8985,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
         (base32 "1ng9492k8754vlqggbfsyzbmfdx4w17fzc4ad21fr92710na0w5a"))))
     (build-system meson-build-system)
     (arguments
-     `(#:imported-modules ((guix build python-build-system)
-                           ,@%meson-build-system-modules)
+     `(#:imported-modules
+       (,@%meson-build-system-modules
+        (guix build python-build-system))
+       #:modules
+       ((guix build meson-build-system)
+        ((guix build python-build-system) #:prefix python:)
+        (guix build utils))
        #:glib-or-gtk? #t
-       #:tests? #f ; no test suite
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -8904,9 +9004,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t))
          (add-after 'install 'wrap-python
-           (@@ (guix build python-build-system) wrap))
-         (add-after 'install 'wrap-glib-or-gtk
-           (@@ (guix build glib-or-gtk-build-system) wrap-all-programs)))))
+           (assoc-ref python:%standard-phases 'wrap)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
@@ -9133,7 +9231,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.37")
+    (version "1.10.42")
     (source
      (origin
        (method git-fetch)
@@ -9144,7 +9242,7 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01cxy7606hx9wgxl550l4p2xa9hsy0rk7swsp58hyi842z2z0y13"))))
+        (base32 "03i9kk8r1wgrfkkbwikx8wxaw4r4kn62vismr2zdq5g34fkkjh95"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; The only tests are maintainer tests (in po/), which fail.
@@ -9162,7 +9260,7 @@ configurable file renaming. ")
               ("libxscrnsaver" ,libxscrnsaver)))
     (native-inputs `(("boost" ,boost)
                      ("pkg-config" ,pkg-config)
-                     ("gettext" ,gnu-gettext)
+                     ("gettext" ,gettext-minimal)
                      ("autoconf" ,autoconf)
                      ("autoconf-archive" , autoconf-archive)
                      ("automake" ,automake)
@@ -9611,7 +9709,7 @@ repository and commit your work.")
     (description
      "Gamin is a file and directory monitoring system defined to be a subset
 of the FAM (File Alteration Monitor) system.  This is a service provided by a
-library which allows to detect when a file or a directory has been modified.")
+library which detects when a file or a directory has been modified.")
     (license license:gpl2+)))
 
 (define-public gnome-mahjongg
@@ -9859,7 +9957,7 @@ join_paths\\('build-aux', 'post_install.py'\\)\\)")
      `(("appstream-glib" ,appstream-glib)
        ("cmake-minimal" ,cmake-minimal)
        ("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
@@ -9888,3 +9986,219 @@ to.")
               license:public-domain
               ;; snowball
               license:bsd-2))))
+
+(define-public libratbag
+  (package
+    (name "libratbag")
+    (version "0.13")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libratbag/libratbag.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "18y8mfr63d91278m1kcid0wvrxa1sgjs8na9af1ks2n28ssvciwq"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Dsystemd=false"
+             "-Dlogind-provider=elogind")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site (string-append
+                           "/lib/python"
+                           ,(version-major+minor (package-version python))
+                           "/site-packages"))
+                    (evdev (string-append
+                            (assoc-ref inputs "python-evdev") site))
+                    (pygo (string-append
+                           (assoc-ref inputs "python-pygobject") site))
+                    (python-wrap
+                     `("PYTHONPATH" = (,evdev ,pygo))))
+               (wrap-program (string-append out "/bin/" "ratbagctl")
+                 python-wrap)
+               #t))))))
+    (native-inputs
+     `(("check" ,check)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)
+       ("valgrind" ,valgrind)))
+    (inputs
+     `(("glib" ,glib)
+       ("json-glib" ,json-glib)
+       ("libevdev" ,libevdev)
+       ("libsystemd" ,elogind)
+       ("libunistring" ,libunistring)
+       ("python-evdev" ,python-evdev)
+       ("python-pygobject" ,python-pygobject)
+       ("udev" ,eudev)))
+    (home-page "https://github.com/libratbag/libratbag")
+    (synopsis "DBus daemon and utility for configuring gaming mice")
+    (description "libratbag provides @command{ratbagd}, a DBus daemon to
+configure input devices, mainly gaming mice.  The daemon provides a generic
+way to access the various features exposed by these mice and abstracts away
+hardware-specific and kernel-specific quirks.  There is also the
+@command{ratbagctl} command line interface for configuring devices.
+
+libratbag currently supports devices from Logitech, Etekcity, GSkill, Roccat,
+Steelseries.
+
+The ratbagd DBus service can be enabled by adding the following service to
+your operating-system definition:
+
+  (simple-service 'ratbagd dbus-root-service-type (list libratbag))")
+    (license license:expat)))
+
+(define-public piper
+  (package
+    (name "piper")
+    (version "0.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libratbag/piper.git")
+             (commit version)))
+       (sha256
+        (base32 "17h06j8lxpbfygq8fzycl7lml4vv7r05bsyhh3gga2hp0zms4mvg"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("python-flake8" ,python-flake8)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gtk" ,gtk+)
+       ("gtk:bin" ,gtk+ "bin")
+       ("librsvg" ,librsvg)
+       ("python-evdev" ,python-evdev)
+       ("python-lxml" ,python-lxml)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)))
+    (arguments
+     `(#:imported-modules ((guix build python-build-system)
+                           ,@%meson-build-system-modules)
+       #:modules (((guix build python-build-system) #:prefix python:)
+                  (guix build meson-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'dont-update-gtk-icon-cache
+           (lambda _
+             (substitute* "meson.build"
+               (("meson.add_install_script('meson_install.sh')") ""))
+             #t))
+         ;; TODO: Switch to wrap-script when it is fixed.
+         (add-after 'install 'wrap-python
+           (assoc-ref python:%standard-phases 'wrap))
+         (add-after 'wrap-python 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-program
+                 (string-append (assoc-ref outputs "out" )"/bin/piper")
+               `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+             #t)))))
+    (home-page "https://github.com/libratbag/piper/")
+    (synopsis "Configure bindings and LEDs on gaming mice")
+    (description "Piper is a GTK+ application for configuring gaming mice with
+onboard configuration for key bindings via libratbag.  Piper requires
+a @command{ratbagd} daemon running with root privileges.  It can be run
+manually as root, but is preferably configured as a DBus service that can
+launch on demand.  This can be configured by enabling the following service,
+provided there is a DBus service present:
+
+  (simple-service 'ratbagd dbus-root-service-type (list libratbag))")
+    (license license:gpl2)))
+
+(define-public parlatype
+  ;; This is one commit away from 2.0, because the latter introduced
+  ;; a regression in ASR.
+  (let ((commit "7d22ead13ef7578f99d24146663cc1bdb7d8c2a9")
+        (revision "0"))
+    (package
+      (name "parlatype")
+      (version (git-version "2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gkarsay/parlatype.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0r3k3qczbzi7bs5s1rddhpsnadyr805df40bqkx0srlxgh5mfghf"))))
+      (build-system meson-build-system)
+      (arguments
+       `(#:glib-or-gtk? #t
+         #:tests? #f                    ;require internet access
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-parlatype
+             ;; Add gstreamer plugin provided in this package to system's
+             ;; plugins.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (gst-plugin-path (string-append
+                                        out "/lib/gstreamer-1.0/"
+                                        ":"
+                                        (getenv "GST_PLUGIN_SYSTEM_PATH"))))
+                 (wrap-program (string-append out "/bin/parlatype")
+                   `("GST_PLUGIN_SYSTEM_PATH" ":" = (,gst-plugin-path))))
+               #t)))))
+      (native-inputs
+       `(("appstream-glib" ,appstream-glib)
+         ("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
+         ("gettext" ,gettext-minimal)
+         ("glib" ,glib "bin")           ;for glib-compile-resources
+         ("pkg-config" ,pkg-config)
+         ("yelp-tools" ,yelp-tools)))
+      (inputs
+       `(("gst-plugins-base" ,gst-plugins-base)
+         ("gst-plugins-good" ,gst-plugins-good)
+         ("gstreamer" ,gstreamer)
+         ("gtk+" ,gtk+)
+         ("pocketsphinx" ,pocketsphinx)
+         ("pulseaudio" ,pulseaudio)
+         ("sphinxbase" ,sphinxbase)))
+      (home-page "http://gkarsay.github.io/parlatype/")
+      (synopsis "GNOME audio player for transcription")
+      (description "Parlatype is an audio player for the GNOME desktop
+environment.  Its main purpose is the manual transcription of spoken
+audio files.")
+      (license license:gpl3+))))
+
+(define-public jsonrpc-glib
+  (package
+    (name "jsonrpc-glib")
+    (version "3.34.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                   name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0j05x4xv2cp3cbmp30m68z8g4rdw7b030ip4wszyfj9ya15v5kni"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("json-glib" ,json-glib)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)))
+    (home-page "https://gitlab.gnome.org/GNOME/jsonrpc-glib")
+    (synopsis "JSON-RPC library for GLib")
+    (description "Jsonrpc-GLib is a library to communicate with JSON-RPC based
+peers in either a synchronous or asynchronous fashion.  It also allows
+communicating using the GVariant serialization format instead of JSON when
+both peers support it.  You might want that when communicating on a single
+host to avoid parser overhead and memory-allocator fragmentation.")
+    (license license:lgpl2.1+)))

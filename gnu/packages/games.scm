@@ -19,7 +19,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
@@ -48,6 +48,9 @@
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
+;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,6 +175,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
@@ -329,9 +333,6 @@ the more advanced player there are new game modes and a wide variety of
 physics settings to tweak as well.")
     (license license:gpl2+)))
 
-(define-public armagetron-advanced
-  (deprecated-package "armagetron-advanced" armagetronad))
-
 (define-public bastet
   (package
     (name "bastet")
@@ -396,62 +397,112 @@ Playing bastet can be a painful experience, especially if you usually make
 canyons and wait for the long I-shaped block to clear four rows at a time.")
     (license license:gpl3+)))
 
+(define-public blobwars
+  (package
+    (name "blobwars")
+    (version "2.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/blobwars/"
+                           "blobwars-" version ".tar.gz"))
+       (sha256
+        (base32 "16aagvkx6azf75gm5kaa94bh5npydvhqp3fvdqyfsanzdjgjf1n4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "BINDIR=" out "/bin/")
+               "USEPAK=1"
+               "RELEASE=1"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'werror-begone
+           (lambda _
+             (substitute* "Makefile" (("-Werror") ""))
+             #t))
+         (delete 'configure))))         ;no configure script
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("sdl" ,(sdl-union (list sdl2
+                                sdl2-image
+                                sdl2-mixer
+                                sdl2-ttf
+                                sdl2-net)))))
+    (home-page "https://sourceforge.net/projects/blobwars/")
+    (synopsis "Platform action game featuring a blob with a lot of weapons")
+    (description "Blobwars: Metal Blob Solid is a 2D platform game, the first
+in the Blobwars series.  You take on the role of a fearless Blob agent.  Your
+mission is to infiltrate various enemy bases and rescue as many MIAs as
+possible, while battling many vicious aliens.")
+    (license (list license:gpl2      ; For code and graphics
+                   license:cc0       ; Music and sounds have specific licenses
+                   license:cc-by3.0  ; see /doc/readme
+                   license:cc-by-sa3.0
+                   license:lgpl2.1+
+                   license:bsd-2))))
+
 (define-public cataclysm-dda
-  (let ((commit "9c732a5de48928691ab863d3ab275ca7b0e522fc"))
-    (package
-      (name "cataclysm-dda")
-      (version "0.D")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "00zzhx1mh1qjq668cga5nbrxp2qk6b82j5ak65skhgnlr6ii4ysc"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-                            "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
-                            "LOCALIZE=1" "LANGUAGES=all")
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (add-after 'build 'build-tiles
-             (lambda* (#:key make-flags outputs #:allow-other-keys)
-               ;; Change prefix directory and enable tile graphics and sound.
-               (apply invoke "make" "TILES=1" "SOUND=1"
-                      (string-append "PREFIX="
-                                     (assoc-ref outputs "tiles"))
-                      (cdr make-flags))))
-           (add-after 'install 'install-tiles
-             (lambda* (#:key make-flags outputs #:allow-other-keys)
-               (apply invoke "make" "install" "TILES=1" "SOUND=1"
-                      (string-append "PREFIX="
-                                     (assoc-ref outputs "tiles"))
-                      (cdr make-flags)))))
-         ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
-         ;;       input in order to support tests.
-         #:tests? #f))
-      (outputs '("out"
-                 "tiles")) ; For tile graphics and sound support.
-      (native-inputs
-       `(("gettext" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("freetype" ,freetype)
-         ("libogg" ,libogg)
-         ("libvorbis" ,libvorbis)
-         ("ncurses" ,ncurses)
-         ("sdl2" ,sdl2)
-         ("sdl2-image" ,sdl2-image)
-         ("sdl2-ttf" ,sdl2-ttf)
-         ("sdl2-mixer" ,sdl2-mixer)))
-      (home-page "https://cataclysmdda.org/")
-      (synopsis "Survival horror roguelike video game")
-      (description
-       "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
+  (package
+    (name "cataclysm-dda")
+    (version "0.E")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
+             (commit version)))
+       (sha256
+        (base32 "0pbi0fw37zimzdklfj58s1ql0wlqq7dy6idkcsib3hn910ajaxan"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "USE_HOME_DIR=1" "DYNAMIC_LINKING=1" "RELEASE=1"
+             "LOCALIZE=1" "LANGUAGES=all")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             ;; Change prefix directory and enable tile graphics and sound.
+             (apply invoke "make" "TILES=1" "SOUND=1"
+                    (string-append "PREFIX="
+                                   (assoc-ref outputs "tiles"))
+                    (cdr make-flags))))
+         (add-after 'install 'install-tiles
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (apply invoke "make" "install" "TILES=1" "SOUND=1"
+                    (string-append "PREFIX="
+                                   (assoc-ref outputs "tiles"))
+                    (cdr make-flags)))))
+       ;; TODO: Add libtap++ from https://github.com/cbab/libtappp as a native
+       ;;       input in order to support tests.
+       #:tests? #f))
+    (outputs '("out"
+               "tiles"))                ;for tile graphics and sound support
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("ncurses" ,ncurses)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "https://cataclysmdda.org/")
+    (synopsis "Survival horror roguelike video game")
+    (description
+     "Cataclysm: Dark Days Ahead (or \"DDA\" for short) is a roguelike set
 in a post-apocalyptic world.  Struggle to survive in a harsh, persistent,
 procedurally generated world.  Scavenge the remnants of a dead civilization
 for food, equipment, or, if you are lucky, a vehicle with a full tank of gas
@@ -459,10 +510,7 @@ to get you out of Dodge.  Fight to defeat or escape from a wide variety of
 powerful monstrosities, from zombies to giant insects to killer robots and
 things far stranger and deadlier, and against the others like yourself, that
 want what you have.")
-      (license license:cc-by-sa3.0))))
-
-(define-public cataclysm-dark-days-ahead
-  (deprecated-package "cataclysm-dark-days-ahead" cataclysm-dda))
+    (license license:cc-by-sa3.0)))
 
 (define-public corsix-th
   (package
@@ -1099,6 +1147,46 @@ destroying an ancient book using a special wand.")
     ;; license.  The whole package is released under GPLv3+.
     (license license:gpl3+)))
 
+(define-public gnome-chess
+  (package
+    (name "gnome-chess")
+    (version "3.36.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1a9fgi749gy1f60vbcyrqqkab9vqs42hji70q73k1xx8rv0agmg0"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ; for desktop-file-validate and appstream-util
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/Chess")
+    (synopsis "Chess board for GNOME")
+    (description "GNOME Chess provides a 2D board for playing chess games
+against human or computer players.  It supports loading and saving games in
+Portable Game Notation.  To play against a computer, install a chess engine
+such as chess or stockfish.")
+    (license license:gpl3+)))
+
 (define-public gnubg
   (package
     (name "gnubg")
@@ -1150,9 +1238,6 @@ evaluation engine based on artificial neural networks suitable for both
 beginners and advanced players.  In addition to a command-line interface, it
 also features an attractive, 3D representation of the playing board.")
     (license license:gpl3+)))
-
-(define-public gnubackgammon
-  (deprecated-package "gnubackgammon" gnubg))
 
 (define-public gnubik
   (package
@@ -1259,10 +1344,11 @@ watch your CPU playing while enjoying a cup of tea!")
                         (string-join (string-split version #\.) "") "-src.tgz"))
         (sha256
           (base32 "1liyckjp34j354qnxc1zn9730lh1p2dabrg1hap24z6xnqx0rpng"))))
+    (native-inputs
+      `(("bison" ,bison)
+        ("flex" ,flex)))
     (inputs
       `(("ncurses" ,ncurses)
-        ("bison" ,bison)
-        ("flex" ,flex)
         ("less" ,less)))
     (build-system gnu-build-system)
     (arguments
@@ -1704,9 +1790,6 @@ them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
     (license license:gpl3)))
 
-(define-public l-abbaye-des-morts
-  (deprecated-package "l-abbaye-des-morts" abbaye))
-
 (define-public angband
   (package
     (name "angband")
@@ -1872,7 +1955,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.5")
+    (version "6.2.6")
     (source
      (origin
        (method url-fetch)
@@ -1880,13 +1963,15 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "00j8s0npgfdi41a0mr5w9qbdxagdk2v41lcr42rwl1jp6miyk6cs"))))
+         "0kxhdv01ia91v2y0cmzbll391ns2vbmn65jjrv37h4s1srszh5yn"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
     (description "GNU Chess is a chess engine.  It allows you to compete
 against the computer in a game of chess, either through the default terminal
 interface or via an external visual interface such as GNU XBoard.")
+    (properties '((upstream-name . "gnuchess")
+                  (ftp-directory . "/chess")))
     (license license:gpl3+)))
 
 (define freedink-engine
@@ -2835,9 +2920,6 @@ experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
 
-(define-public the-battle-for-wesnoth
-  (deprecated-package "the-battle-for-wesnoth" wesnoth))
-
 (define-public wesnoth-server
   (package
     (inherit wesnoth)
@@ -2853,9 +2935,6 @@ next campaign.")
     (synopsis "Dedicated @emph{Battle for Wesnoth} server")
     (description "This package contains a dedicated server for @emph{The
 Battle for Wesnoth}.")))
-
-(define-public the-battle-for-wesnoth-server
-  (deprecated-package "the-battle-for-wesnoth-server" wesnoth-server))
 
 (define-public gamine
   (package
@@ -2944,20 +3023,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.9.3")
+    (version "1.10.0")
     (source
      (origin (method url-fetch)
-             (uri (string-append "https://proxy.binaries.openttd.org/openttd-releases/"
+             (uri (string-append "https://cdn.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "0ijq72kgx997ggw40i5f4a3nf7y2g72z37l47i18yjvgbdzy320r"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; The DOS port contains proprietary software.
-              '(begin
-                 (delete-file-recursively "os/dos")
-                 #t))))
+               "0lz2y2rjc23k0d97y65cqhy2splw9cmrbvhgz0iqps8xkan1m8hv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; no "check" target
@@ -3007,15 +3080,15 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.5.5")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://binaries.openttd.org/extra/opengfx/"
+       (uri (string-append "https://cdn.openttd.org/opengfx-releases/"
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "009fa1bdin1bk0ynzhzc30hzkmmwzmwkk6j591ax3f6w75l28n49"))))
+         "0qxc6gl2gxcrn1np88dnjgbaaakkkx96b13rcmy1spryc8c09hyr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -3045,6 +3118,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                      ("gimp" ,gimp)
                      ("grfcodec" ,grfcodec)
                      ("nml" ,nml)
+                     ("which" ,which)
                      ("python" ,python-2)))
     (home-page "http://dev.openttdcoop.org/projects/opengfx")
     (synopsis "Base graphics set for OpenTTD")
@@ -3689,6 +3763,69 @@ fullscreen, use F5 or Alt+Enter.")
     ;; Code mainly BSD-2, some parts under Boost 1.0. All assets are WTFPL2.
     (license (list license:bsd-2 license:boost1.0 license:wtfpl2))))
 
+(define-public tennix
+  (package
+    (name "tennix")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://repo.or.cz/tennix.git")
+             (commit (string-append "tennix-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02cj4lrdrisal5s9pnbf2smx7qz9czczjzndfkhfx0qy67b957sk"))
+       ;; Remove non-free images.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     '("data/loc_training_camp.png"
+                       "data/loc_austrian_open.png"
+                       "data/loc_olympic_green_tennis.png"))
+           #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-include
+           (lambda _
+             (substitute* '("src/graphics.h" "src/sound.h")
+               (("#include \"(SDL_(image|ttf|mixer)\\.h)\"" _ header)
+                (string-append "#include \"SDL/" header "\"")))
+             (substitute* '("src/tennix.h" "src/network.h" "src/SDL_rotozoom.h")
+               (("#include <SDL.h>") "#include <SDL/SDL.h>")
+               (("#include <SDL_net.h>") "#include <SDL/SDL_net.h>"))
+             #t))
+         (add-after 'unpack 'locate-install
+           ;; Build process cannot expand "$(INSTALL)" in Makefile.
+           (lambda _
+             (substitute* "makefile"
+               (("^CONFIGURE_OUTPUT :=.*" all)
+                (string-append "INSTALL := install -c\n" all)))
+             #t))
+         (replace 'configure
+           ;; The "configure" script is picky about the arguments it
+           ;; gets.  Call it ourselves.
+           (lambda _
+             (invoke "./configure" "--prefix" (assoc-ref %outputs "out")))))))
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-ttf sdl-net)))))
+    (home-page "http://icculus.org/tennix/")
+    (synopsis "Play tennis against the computer or a friend")
+    (description "Tennix is a 2D tennis game.  You can play against the
+computer or against another player using the keyboard.  The game runs
+in-window at 640x480 resolution or fullscreen.")
+    ;; Project is licensed under GPL2+ terms.  It includes images
+    ;; released under Public Domain terms, and SDL_rotozoom, released
+    ;; under LGPL2.1 terms.
+    (license (list license:gpl2+ license:public-domain license:lgpl2.1))))
+
 (define-public warzone2100
   (package
     (name "warzone2100")
@@ -3745,7 +3882,7 @@ fullscreen, use F5 or Alt+Enter.")
 modes. An extensive tech tree with over 400 different technologies, combined
 with the unit design system, allows for a wide variety of possible units and
 tactics.")
-    ; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
+                                        ; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
     (license (list license:bsd-3
                    license:cc0
                    license:cc-by-sa3.0
@@ -3789,9 +3926,6 @@ in strikes against the evil corporation.")
                    license:cc-by-sa3.0
                    license:cc0
                    license:public-domain))))
-
-(define-public project-starfighter
-  (deprecated-package "project-starfighter" starfighter))
 
 (define-public chromium-bsu
   (package
@@ -3994,7 +4128,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.6.1")
+   (version "0.6.1.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -4003,7 +4137,7 @@ with the \"Stamp\" tool within Tux Paint.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "0lqch5gcq6ccnspy93z9r13bp8w2j1vrd8jhvk5kp4qhrd1f069s"))
+              "0n36qxwjlkdlksximz4s729az6pry2sdjavwgm7m65vfgdiz139f"))
             (patches
              (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
@@ -4728,9 +4862,6 @@ small robot living in the nano world, repair its maker.")
     ;; for a statement from the author.
     (license license:public-domain)))
 
-(define-public kiki-the-nano-bot
-  (deprecated-package "kiki-the-nano-bot" kiki))
-
 (define-public teeworlds
   (package
     (name "teeworlds")
@@ -5000,9 +5131,6 @@ underwater realm quarrel among themselves or comment on the efforts of your
 fish.  The whole game is accompanied by quiet, comforting music.")
     (license license:gpl2+)))
 
-(define-public fish-fillets-ng
-  (deprecated-package "fish-fillets-ng" fillets-ng))
-
 (define-public crawl
   (package
     (name "crawl")
@@ -5082,9 +5210,6 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
                    license:zlib
                    license:asl2.0))))
 
-(define-public dungeon-crawl-stone-soup
-  (deprecated-package "dungeon-crawl-stone-soup" crawl))
-
 ;; The linter here claims that patch file names should start with the package
 ;; name. But, in this case, the patches are inherited from crawl with the
 ;; "crawl-" prefix instead of "crawl-tiles-".
@@ -5120,9 +5245,6 @@ monsters in a quest to find the mystifyingly fabulous Orb of Zot.")
        ("pngcrush" ,pngcrush)
        ("which" ,which)))
     (synopsis "Graphical roguelike dungeon crawler game")))
-
-(define-public dungeon-crawl-stone-soup-tiles
-  (deprecated-package "dungeon-crawl-stone-soup-tiles" crawl-tiles))
 
 (define-public lugaru
   (package
@@ -5532,9 +5654,6 @@ abilities and powers.  With a modern graphical and customisable interface,
 intuitive mouse control, streamlined mechanics and deep, challenging combat,
 Tales of Maj’Eyal offers engaging roguelike gameplay for the 21st century.")
     (license license:gpl3+)))
-
-(define-public tales-of-maj-eyal
-  (deprecated-package "tales-of-maj-eyal" tome4))
 
 (define-public quakespasm
   (package
@@ -6072,7 +6191,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.7.1")
+    (version "5.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6080,7 +6199,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "1gqivy4pxasy7phyznixsagylf9f70bk33b0knpfzzlks6cc6zzj"))))
+               (base32 "002aqbgsksrgzqridwdlkrjincaxh0dkvwlrbb8d2f3kwk7lj4fq"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -6685,7 +6804,7 @@ GameController.")
              #t)))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ;for desktop-file-validate
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("glib" ,glib "bin")             ;for glib-compile-resources
        ("itstool" ,itstool)
        ("libxml2" ,libxml2)             ;for xmllint
@@ -7001,9 +7120,6 @@ and cooperative.")
     ;; developers.
     (license (list license:gpl2+ license:lgpl2.1+))))
 
-(define-public battle-tanks
-  (deprecated-package "battle-tanks" btanks))
-
 (define-public slingshot
   (package
     (name "slingshot")
@@ -7193,7 +7309,7 @@ where the player draws runes in real time to effect the desired spell.")
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("gnu-gettext" ,gnu-gettext)
+       ("gnu-gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("which" ,which)))
     (synopsis "2d action platformer game")
@@ -7203,9 +7319,6 @@ Edgar fears the worst: he has been captured by the evil sorcerer who lives in
 a fortress beyond the forbidden swamp.")
     (home-page "https://www.parallelrealities.co.uk/games/edgar/")
     (license license:gpl2+)))
-
-(define-public the-legend-of-edgar
-  (deprecated-package "the-legend-of-edgar" edgar))
 
 (define-public openclonk
   (package
@@ -10352,3 +10465,119 @@ to conquer opponents by defeating them in war (with troops or machines),
 capturing their buildings with spies, or offering opponents money for their
 kingdom.")
     (license license:gpl2+)))
+
+(define-public neverball
+  ;; Git version is 6-years younger than latest release.
+  (let ((commit "760a25d32a5fb0661b99426d4ddcb9ac9f3d1644")
+        (revision "1"))
+    (package
+      (name "neverball")
+      (version (git-version "1.6.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Neverball/neverball.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0bwh67df3lyf33bv710y25l3frjdd34j9b7gsjadwxviz6r1vpj5"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Octocat seems to be non-free.  Oddly, Debian doesn't strip it.
+             (delete-file-recursively "data/ball/octocat")
+             #t))))
+      (build-system copy-build-system)
+      (arguments
+       `(#:install-plan
+         '(("neverball" "bin/")
+           ("neverputt" "bin/")
+           ("mapc" "bin/")
+           ("data" "share/games/neverball/")
+           ("locale" "share/")
+           ("dist/" "share/games/neverball" #:include ("neverball_replay.png"
+                                                       "neverlogos.svg"
+                                                       "svg readme.txt"))
+           ("dist/" "share/applications" #:include ("neverball.desktop"
+                                                    "neverputt.desktop"))
+           ("dist/neverball_16.png"
+            "/share/icons/hicolor/16x16/apps/neverball.png")
+           ("dist/neverball_24.png"
+            "/share/icons/hicolor/24x24/apps/neverball.png")
+           ("dist/neverball_32.png"
+            "/share/icons/hicolor/32x32/apps/neverball.png")
+           ("dist/neverball_48.png"
+            "/share/icons/hicolor/48x48/apps/neverball.png")
+           ("dist/neverball_64.png"
+            "/share/icons/hicolor/64x64/apps/neverball.png")
+           ("dist/neverball_128.png"
+            "/share/icons/hicolor/128x128/apps/neverball.png")
+           ("dist/neverball_256.png"
+            "/share/icons/hicolor/256x256/apps/neverball.png")
+           ("dist/neverball_512.png"
+            "/share/icons/hicolor/512x512/apps/neverball.png")
+           ("dist/neverputt_16.png"
+            "/share/icons/hicolor/16x16/apps/neverputt.png")
+           ("dist/neverputt_24.png"
+            "/share/icons/hicolor/24x24/apps/neverputt.png")
+           ("dist/neverputt_32.png"
+            "/share/icons/hicolor/32x32/apps/neverputt.png")
+           ("dist/neverputt_48.png"
+            "/share/icons/hicolor/48x48/apps/neverputt.png")
+           ("dist/neverputt_64.png"
+            "/share/icons/hicolor/64x64/apps/neverputt.png")
+           ("dist/neverputt_128.png"
+            "/share/icons/hicolor/128x128/apps/neverputt.png")
+           ("dist/neverputt_256.png"
+            "/share/icons/hicolor/256x256/apps/neverputt.png")
+           ("dist/neverputt_512.png"
+            "/share/icons/hicolor/512x512/apps/neverputt.png")
+           ("dist/" "share/man/man1" #:include ("mapc.1"))
+           ("dist/" "share/man/man6" #:include ("neverball.6" "neverputt.6"))
+           ("doc/" "share/doc/neverball")
+           ("README.md" "share/doc/neverball/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'install 'build
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (sdl (assoc-ref inputs "sdl")))
+                 (invoke "make" "-j" (number->string (parallel-job-count))
+                         "--environment-overrides"
+                         "CC=gcc" "BUILD=release"
+                         (string-append "DATADIR="
+                                        out
+                                        "/share/games/neverball/data")
+                         (string-append "LOCALEDIR=" out "/share/locale")
+                         (string-append "SDL_CPPFLAGS=-I"
+                                        sdl
+                                        "/include/SDL2/")))
+               #t))
+           (add-after 'install 'fix-some-broken-fonts
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/neverball")
+                   `("LANG" = ("en_US.utf8")))
+                 (wrap-program (string-append out "/bin/neverputt")
+                   `("LANG" = ("en_US.utf8"))))
+               #t)))))
+      (native-inputs
+       `(("gettext" ,gettext-minimal))) ;for msgfmt
+      (inputs
+       `(("libjpeg" ,libjpeg)
+         ("libpng" ,libpng)
+         ("libvorbis" ,libvorbis)
+         ("physfs" ,physfs)
+         ("sdl" ,(sdl-union (list sdl2 sdl2-ttf)))))
+      (home-page "https://neverball.org/")
+      (synopsis "3D floor-tilting game")
+      (description
+       "In the grand tradition of Marble Madness and Super Monkey Ball,
+Neverball has you guide a rolling ball through dangerous territory.  Balance
+on narrow bridges, navigate mazes, ride moving platforms, and dodge pushers
+and shovers to get to the goal.  Race against the clock to collect coins to
+earn extra balls.  Also included is Neverputt, which is a 3D miniature golf
+game.")  ;thanks to Debian for description
+      (license license:gpl2+))))

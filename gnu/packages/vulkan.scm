@@ -218,9 +218,6 @@ and the ICD.")
                    (license:x11-style "file://COPYRIGHT.txt")
                    license:bsd-3))))
 
-(define-public vulkan-icd-loader
-  (deprecated-package "vulkan-icd-loader" vulkan-loader))
-
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
@@ -348,7 +345,7 @@ shader compilation.")
      (native-inputs
       `(("autoconf" ,autoconf)
         ("automake" ,automake)
-        ("gettext" ,gnu-gettext)
+        ("gettext" ,gettext-minimal)
         ("libtool" ,libtool)
         ("pkg-config" ,pkg-config)))
      (inputs

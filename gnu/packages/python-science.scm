@@ -195,9 +195,6 @@ routines such as routines for numerical integration and optimization.")
      "Scikit-image is a collection of algorithms for image processing.")
     (license license:bsd-3)))
 
-(define-public python2-scikit-image
-  (package-with-python2 python-scikit-image))
-
 (define-public python-pandas
   (package
     (name "python-pandas")

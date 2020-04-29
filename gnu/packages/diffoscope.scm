@@ -45,6 +45,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mono)
   #:use-module (gnu packages ocaml)
   #:use-module (gnu packages package-management)
@@ -68,7 +69,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "137"))
+  (let ((version "141"))
     (package
       (name "diffoscope")
       (version version)
@@ -80,7 +81,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "11llnh2h2mx3xygj4482ld1rnjnhszk4828pmcbi75kanxfrqzq6"))))
+                  "0pls2jryx394ysaz0g8h959lhrsdqak9bkxjd5r6sdckgiikplkj"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -91,6 +92,12 @@
                       (lambda _
                         (substitute* "setup.py"
                           (("'python-magic',") ""))))
+                    ;; Patch in support for known tools
+                    (add-after 'unpack 'add-known-tools
+                      (lambda _
+                        (substitute* "diffoscope/external_tools.py"
+                          (("'debian': 'hdf5-tools'")
+                           "'debian': 'hdf5-tools', 'guix': 'hdf5'"))))
                     ;; This test is broken because our `file` package has a
                     ;; bug in berkeley-db file type detection.
                     (add-after 'unpack 'remove-berkeley-test
@@ -189,6 +196,7 @@
                        ("giflib:bin" ,giflib "bin")
                        ("gnumeric" ,gnumeric)
                        ("gnupg" ,gnupg)
+                       ("hdf5" ,hdf5)
                        ("imagemagick" ,imagemagick)
                        ("libarchive" ,libarchive)
                        ("llvm" ,llvm)
@@ -228,7 +236,7 @@ install.")
 (define-public reprotest
   (package
     (name "reprotest")
-    (version "0.7.13")
+    (version "0.7.14")
     (source
      (origin
        (method git-fetch)
@@ -236,10 +244,9 @@ install.")
              (url "https://salsa.debian.org/reproducible-builds/reprotest.git")
              (commit version)))
        (file-name (git-file-name name version))
-       (patches (search-patches "reprotest-support-guix.patch"))
        (sha256
         (base32
-         "0jj9sqxbdpypnc0y8md352wwzh1by6nyhmx5fwqnvrbznrng332f"))))
+         "12d07xq5zx5dfbsgakm6zcn7hgf0h9f5kvfjqkiyak4ix5aa6xkf"))))
     (inputs
      `(("python-debian" ,python-debian)
        ("python-distro" ,python-distro)

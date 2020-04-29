@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,5 +94,8 @@ Layout information is taken from the XKEYBOARD-CONFIG package."
                    #$(keyboard-layout-name layout))))))
 
   (computed-file (string-append "console-keymap."
-                                (keyboard-layout-name layout))
+                                (string-map (match-lambda
+                                              (#\, #\-)
+                                              (chr chr))
+                                            (keyboard-layout-name layout)))
                  build))

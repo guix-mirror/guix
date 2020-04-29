@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,13 +228,13 @@ plans and designs.")
        ("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.0)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
        ("pcb" ,pcb)
        ("python" ,python-2))) ; for xorn
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("perl" ,perl))) ; for tests
     (home-page "http://geda-project.org/")
     (synopsis "Schematic capture, netlister, symbols, symbol checker, and utils")
@@ -266,8 +267,9 @@ utilities.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("libtool" ,libtool)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("texinfo" ,texinfo)
        ("groff" ,groff)
        ("which" ,which)
@@ -276,7 +278,6 @@ utilities.")
      `(("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.2)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("m4" ,m4)
        ("pcb" ,pcb)))
@@ -385,13 +386,13 @@ features.")))
        ("gd" ,gd)
        ("gtk" ,gtk+-2)
        ("gtkglext" ,gtkglext)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("shared-mime-info" ,shared-mime-info)
        ("tk" ,tk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("bison" ,bison)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("flex" ,flex)
        ;; For tests
        ("imagemagick" ,imagemagick)
@@ -675,11 +676,11 @@ ready for production.")
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-schemas, etc.
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
-       ("gtk" ,gtk+-2)
-       ("desktop-file-utils" ,desktop-file-utils)))
+       ("gtk" ,gtk+-2)))
     (home-page "http://gerbv.geda-project.org/")
     (synopsis "Gerber file viewer")
     (description
@@ -791,9 +792,6 @@ language.")
       (license (list license:mpl2.0               ;library
                      license:gpl2+)))))           ;Guile bindings and GUI
 
-(define-public ao
-  (deprecated-package "ao-cad" libfive))
-
 ;; TODO Add doc https://gitlab.com/kicad/services/kicad-doc/-/tree/master
 (define-public kicad
   (package
@@ -858,7 +856,7 @@ language.")
     (native-inputs
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("kicad-i18l" ,kicad-i18l)
        ("pkg-config" ,pkg-config)
        ("swig" ,swig)
@@ -905,7 +903,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
          (delete 'build)
          (delete 'check))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (home-page "https://kicad-pcb.org/")
     (synopsis "KiCad GUI translations")
     (description "This package contains the po files that are used for the GUI
@@ -1019,22 +1017,42 @@ the 'showing the effect of'-style of operation.")
 (define-public volk
   (package
     (name "volk")
-    (version "1.3")
+    (version "2.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://libvolk.org/releases/volk-"
+       (uri (string-append "https://www.libvolk.org/releases/volk-"
                            version ".tar.gz"))
        (sha256
         (base32
-         "1bz3ywc6y5wmz3i8p4z2wbzhns8bc0ywdkl9qnxpcvfcscarbdlh"))))
+         "1wz5nhmw6np8ka30pgy1qnima3rk2ksln4klfhrj7wah3fian0k9"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-pythonpath
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (python (assoc-ref inputs "python"))
+                    (file (string-append out "/bin/volk_modtool"))
+                    (path (string-append
+                           out
+                           "/lib/python"
+                           ,(version-major+minor
+                             (package-version python))
+                           "/site-packages:"
+                           (getenv "PYTHONPATH"))))
+               (wrap-program file
+                 `("PYTHONPATH" ":" prefix (,path))
+                 `("PATH" ":" prefix
+                   (,(string-append python "/bin:")))))
+             #t)))))
     (inputs
      `(("boost" ,boost)))
     (native-inputs
-     `(("python-2" ,python-2)
-       ("python2-cheetah" ,python2-cheetah)))
-    (home-page "http://libvolk.org/")
+     `(("python" ,python-wrapper)
+       ("python-mako" ,python-mako)))
+    (home-page "https://www.libvolk.org/")
     (synopsis "Vector-Optimized Library of Kernels")
     (description
      "@code{volk} contains procedures with machine-specific optimizations

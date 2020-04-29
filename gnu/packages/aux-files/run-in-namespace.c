@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -343,7 +343,13 @@ Please refer to the 'guix pack' documentation for more information.\n");
 	    chdir ("/");			  /* avoid EBUSY */
 	    rm_rf (new_root);
 	    free (new_root);
-	    exit (status);
+
+	    if (WIFEXITED (status))
+	      exit (WEXITSTATUS (status));
+	    else
+	      /* Abnormal termination cannot really be reproduced, so exit
+		 with 255.  */
+	      exit (255);
 	  }
 	}
     }

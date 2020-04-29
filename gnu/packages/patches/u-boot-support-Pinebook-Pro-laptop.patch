@@ -1,0 +1,367 @@
+From 60381e4add64dddbd07e78248b2b0f819eb2776e Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 20 Apr 2020 20:27:36 +0100
+Origin: https://patchwork.ozlabs.org/project/uboot/patch/20200420192736.962307-6-pbrobinson@gmail.com/
+Subject: [PATCH 5/5] Add initial support for the Pinebook Pro laptop from
+ Pine64.
+
+Specification:
+- Rockchip RK3399
+- 4GB Dual-Channel LPDDR4
+- eMMC socket
+- mSD card slot
+- 128Mbit (16Mb) SPI Flash
+- AP6256 for 11AC WiFi + BT5
+- 14 inch 1920*1080 eDP MiPi display
+- Camera
+- USB 3.0, 2.0 ports
+- Type-C port with alt-mode display (DP 1.2) and 15W charge
+- DC 5V/3A
+- optional PCIe slot for NVMe SSD drive
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi  | 43 ++++++++++
+ arch/arm/mach-rockchip/rk3399/Kconfig         |  8 ++
+ board/pine64/pinebook-pro-rk3399/Kconfig      | 15 ++++
+ board/pine64/pinebook-pro-rk3399/MAINTAINERS  |  8 ++
+ board/pine64/pinebook-pro-rk3399/Makefile     |  1 +
+ .../pinebook-pro-rk3399/pinebook-pro-rk3399.c | 76 +++++++++++++++++
+ configs/pinebook-pro-rk3399_defconfig         | 84 +++++++++++++++++++
+ include/configs/pinebook-pro-rk3399.h         | 29 +++++++
+ 8 files changed, 264 insertions(+)
+ create mode 100644 arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
+ create mode 100644 board/pine64/pinebook-pro-rk3399/Kconfig
+ create mode 100644 board/pine64/pinebook-pro-rk3399/MAINTAINERS
+ create mode 100644 board/pine64/pinebook-pro-rk3399/Makefile
+ create mode 100644 board/pine64/pinebook-pro-rk3399/pinebook-pro-rk3399.c
+ create mode 100644 configs/pinebook-pro-rk3399_defconfig
+ create mode 100644 include/configs/pinebook-pro-rk3399.h
+
+diff --git a/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi b/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
+new file mode 100644
+index 0000000000..1a2e24d3ef
+--- /dev/null
++++ b/arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
+@@ -0,0 +1,43 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2019 Peter Robinson <pbrobinson at gmail.com>
++ */
++
++#include "rk3399-u-boot.dtsi"
++#include "rk3399-sdram-lpddr4-100.dtsi"
++
++/ {
++	aliases {
++		spi0 = &spi1;
++	};
++
++	chosen {
++		u-boot,spl-boot-order = "same-as-spl", &sdhci, &sdmmc;
++	};
++};
++
++&i2c0 {
++	u-boot,dm-pre-reloc;
++};
++
++&rk808 {
++	u-boot,dm-pre-reloc;
++};
++
++&sdhci {
++	max-frequency = <25000000>;
++	u-boot,dm-pre-reloc;
++};
++
++&sdmmc {
++	max-frequency = <20000000>;
++	u-boot,dm-pre-reloc;
++};
++
++&spiflash {
++	u-boot,dm-pre-reloc;
++};
++
++&vdd_log {
++	regulator-init-microvolt = <950000>;
++};
+diff --git a/arch/arm/mach-rockchip/rk3399/Kconfig b/arch/arm/mach-rockchip/rk3399/Kconfig
+index 927bb62a9f..254b9c5b4d 100644
+--- a/arch/arm/mach-rockchip/rk3399/Kconfig
++++ b/arch/arm/mach-rockchip/rk3399/Kconfig
+@@ -19,6 +19,13 @@ config TARGET_EVB_RK3399
+ 	  with full function and physical connectors support like Type-C ports,
+ 	  USB.0 host ports, LVDS, JTAG, MAC, SD card, HDMI, USB-to-serial...
+ 
++config TARGET_PINEBOOK_PRO_RK3399
++	bool "Pinebook Pro"
++	help
++	  Pinebook Pro is a laptop based on the Rockchip rk3399 SoC
++	  with 4Gb RAM, onboard eMMC, USB-C, a USB3 and USB2 port,
++	  1920*1080 screen and all the usual laptop features.
++
+ config TARGET_PUMA_RK3399
+ 	bool "Theobroma Systems RK3399-Q7 (Puma)"
+ 	help
+@@ -144,6 +151,7 @@ endif # BOOTCOUNT_LIMIT
+ 
+ source "board/firefly/roc-pc-rk3399/Kconfig"
+ source "board/google/gru/Kconfig"
++source "board/pine64/pinebook-pro-rk3399/Kconfig"
+ source "board/pine64/rockpro64_rk3399/Kconfig"
+ source "board/rockchip/evb_rk3399/Kconfig"
+ source "board/theobroma-systems/puma_rk3399/Kconfig"
+diff --git a/board/pine64/pinebook-pro-rk3399/Kconfig b/board/pine64/pinebook-pro-rk3399/Kconfig
+new file mode 100644
+index 0000000000..3bb7ca448e
+--- /dev/null
++++ b/board/pine64/pinebook-pro-rk3399/Kconfig
+@@ -0,0 +1,15 @@
++if TARGET_PINEBOOK_PRO_RK3399
++
++config SYS_BOARD
++	default "pinebook-pro-rk3399"
++
++config SYS_VENDOR
++	default "pine64"
++
++config SYS_CONFIG_NAME
++	default "pinebook-pro-rk3399"
++
++config BOARD_SPECIFIC_OPTIONS
++	def_bool y
++
++endif
+diff --git a/board/pine64/pinebook-pro-rk3399/MAINTAINERS b/board/pine64/pinebook-pro-rk3399/MAINTAINERS
+new file mode 100644
+index 0000000000..7153eaf2e0
+--- /dev/null
++++ b/board/pine64/pinebook-pro-rk3399/MAINTAINERS
+@@ -0,0 +1,8 @@
++PINEBOOK_PRO
++M:	Peter Robinson <pbrobinson at gmail.com>
++S:	Maintained
++F:	board/pine64/rk3399-pinebook-pro/
++F:	include/configs/rk3399-pinebook-pro.h
++F:	arch/arm/dts/rk3399-pinebook-pro.dts
++F:	arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
++F:	configs/pinebook-pro-rk3399_defconfig
+diff --git a/board/pine64/pinebook-pro-rk3399/Makefile b/board/pine64/pinebook-pro-rk3399/Makefile
+new file mode 100644
+index 0000000000..2f692a12a6
+--- /dev/null
++++ b/board/pine64/pinebook-pro-rk3399/Makefile
+@@ -0,0 +1 @@
++obj-y	+= pinebook-pro-rk3399.o
+diff --git a/board/pine64/pinebook-pro-rk3399/pinebook-pro-rk3399.c b/board/pine64/pinebook-pro-rk3399/pinebook-pro-rk3399.c
+new file mode 100644
+index 0000000000..01421cbac2
+--- /dev/null
++++ b/board/pine64/pinebook-pro-rk3399/pinebook-pro-rk3399.c
+@@ -0,0 +1,76 @@
++/*
++ * (C) Copyright 2016 Rockchip Electronics Co., Ltd
++ * (C) Copyright 2020 Peter Robinson <pbrobinson at gmail.com>
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#include <common.h>
++#include <dm.h>
++#include <syscon.h>
++#include <asm/io.h>
++#include <asm/arch-rockchip/clock.h>
++#include <asm/arch-rockchip/grf_rk3399.h>
++#include <asm/arch-rockchip/hardware.h>
++#include <asm/arch-rockchip/misc.h>
++#include <power/regulator.h>
++
++#define GRF_IO_VSEL_BT565_SHIFT 0
++#define PMUGRF_CON0_VSEL_SHIFT 8
++
++#ifndef CONFIG_SPL_BUILD
++int board_early_init_f(void)
++{
++	struct udevice *regulator;
++	int ret;
++
++	ret = regulator_get_by_platname("vcc5v0_usb", &regulator);
++	if (ret) {
++		debug("%s vcc5v0_usb init fail! ret %d\n", __func__, ret);
++		goto out;
++	}
++
++	ret = regulator_set_enable(regulator, true);
++	if (ret)
++		debug("%s vcc5v0-host-en-gpio set fail! ret %d\n", __func__, ret);
++
++out:
++	return 0;
++}
++#endif
++
++#ifdef CONFIG_MISC_INIT_R
++static void setup_iodomain(void)
++{
++	struct rk3399_grf_regs *grf =
++	   syscon_get_first_range(ROCKCHIP_SYSCON_GRF);
++	struct rk3399_pmugrf_regs *pmugrf =
++	   syscon_get_first_range(ROCKCHIP_SYSCON_PMUGRF);
++
++	/* BT565 is in 1.8v domain */
++	rk_setreg(&grf->io_vsel, 1 << GRF_IO_VSEL_BT565_SHIFT);
++
++	/* Set GPIO1 1.8v/3.0v source select to PMU1830_VOL */
++	rk_setreg(&pmugrf->soc_con0, 1 << PMUGRF_CON0_VSEL_SHIFT);
++}
++
++int misc_init_r(void)
++{
++	const u32 cpuid_offset = 0x7;
++	const u32 cpuid_length = 0x10;
++	u8 cpuid[cpuid_length];
++	int ret;
++
++	setup_iodomain();
++
++	ret = rockchip_cpuid_from_efuse(cpuid_offset, cpuid_length, cpuid);
++	if (ret)
++		return ret;
++
++	ret = rockchip_cpuid_set(cpuid, cpuid_length);
++	if (ret)
++		return ret;
++
++	return ret;
++}
++#endif
+diff --git a/configs/pinebook-pro-rk3399_defconfig b/configs/pinebook-pro-rk3399_defconfig
+new file mode 100644
+index 0000000000..0e9f0ec250
+--- /dev/null
++++ b/configs/pinebook-pro-rk3399_defconfig
+@@ -0,0 +1,84 @@
++CONFIG_ARM=y
++CONFIG_ARCH_ROCKCHIP=y
++CONFIG_SYS_TEXT_BASE=0x00200000
++CONFIG_ENV_OFFSET=0x3F8000
++CONFIG_ROCKCHIP_RK3399=y
++CONFIG_RAM_RK3399_LPDDR4=y
++CONFIG_NR_DRAM_BANKS=1
++CONFIG_TARGET_PINEBOOK_PRO_RK3399=y
++CONFIG_BAUDRATE=1500000
++CONFIG_DEBUG_UART=y
++CONFIG_DEBUG_UART_SHIFT=2
++CONFIG_DEBUG_UART_BASE=0xFF1A0000
++CONFIG_DEBUG_UART_CLOCK=24000000
++CONFIG_SPL_SPI_SUPPORT=y
++CONFIG_SPL_SPI_FLASH_SUPPORT=y
++CONFIG_SPL_MTD_SUPPORT=y
++CONFIG_DEFAULT_FDT_FILE="rockchip/rk3399-pinebook-pro.dtb"
++CONFIG_MISC_INIT_R=y
++CONFIG_DISPLAY_BOARDINFO_LATE=y
++# CONFIG_SPL_RAW_IMAGE_SUPPORT is not set
++CONFIG_SPL_STACK_R=y
++CONFIG_SPL_STACK_R_MALLOC_SIMPLE_LEN=0x10000
++CONFIG_TPL=y
++CONFIG_SPL_OF_CONTROL=y
++CONFIG_DEFAULT_DEVICE_TREE="rk3399-pinebook-pro"
++CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names clock-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_CMD_BOOTZ=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_GPT=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_MTDPARTS=y
++CONFIG_CMD_PMIC=y
++CONFIG_CMD_REGULATOR=y
++# CONFIG_CMD_SETEXPR is not set
++CONFIG_CMD_SF=y
++CONFIG_CMD_TIME=y
++CONFIG_CMD_USB=y
++CONFIG_ROCKCHIP_GPIO=y
++CONFIG_SYS_I2C_ROCKCHIP=y
++CONFIG_BOOTDELAY=3
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
++CONFIG_MISC=y
++CONFIG_ROCKCHIP_EFUSE=y
++CONFIG_MMC_DW=y
++CONFIG_MMC_DW_ROCKCHIP=y
++CONFIG_MMC_SDHCI=y
++CONFIG_MMC_SDHCI_SDMA=y
++CONFIG_MMC_SDHCI_ROCKCHIP=y
++CONFIG_ROCKCHIP_SPI=y
++CONFIG_SF_DEFAULT_SPEED=20000000
++CONFIG_SPI_FLASH=y
++CONFIG_SPI_FLASH_GIGADEVICE=y
++CONFIG_SPI_FLASH_WINBOND=y
++CONFIG_DM_ETH=y
++CONFIG_PMIC_RK8XX=y
++CONFIG_DM_PMIC_FAN53555=y
++CONFIG_REGULATOR_PWM=y
++CONFIG_REGULATOR_RK8XX=y
++CONFIG_PWM_ROCKCHIP=y
++CONFIG_SYSRESET=y
++CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_XHCI_DWC3=y
++# CONFIG_USB_XHCI_ROCKCHIP is not set
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_EHCI_GENERIC=y
++CONFIG_USB_DWC3=y
++CONFIG_ROCKCHIP_USB2_PHY=y
++CONFIG_USB_HOST_ETHER=y
++CONFIG_USB_ETHER_ASIX=y
++CONFIG_USB_ETHER_RTL8152=y
++CONFIG_USB_KEYBOARD=y
++CONFIG_USE_TINY_PRINTF=y
++CONFIG_SPL_TINY_MEMSET=y
++CONFIG_ERRNO_STR=y
++CONFIG_DM_VIDEO=y
++CONFIG_VIDEO_BPP16=y
++CONFIG_VIDEO_BPP32=y
++CONFIG_DISPLAY=y
++CONFIG_VIDEO_ROCKCHIP=y
++CONFIG_DISPLAY_ROCKCHIP_EDP=y
+diff --git a/include/configs/pinebook-pro-rk3399.h b/include/configs/pinebook-pro-rk3399.h
+new file mode 100644
+index 0000000000..423d742a79
+--- /dev/null
++++ b/include/configs/pinebook-pro-rk3399.h
+@@ -0,0 +1,29 @@
++/*
++ * Copyright (C) 2016 Rockchip Electronics Co., Ltd
++ * Copyright (C) 2020 Peter Robinson <pbrobinson at gmail.com>
++ *
++ * SPDX-License-Identifier:     GPL-2.0+
++ */
++
++#ifndef __PINEBOOK_PRO_RK3399_H
++#define __PINEBOOK_PRO_RK3399_H
++
++#define ROCKCHIP_DEVICE_SETTINGS \
++		"stdin=serial,usbkbd\0" \
++		"stdout=serial,vidconsole\0" \
++		"stderr=serial,vidconsole\0"
++
++#include <configs/rk3399_common.h>
++
++#if defined(CONFIG_ENV_IS_IN_MMC)
++#define CONFIG_SYS_MMC_ENV_DEV 0
++#elif defined(CONFIG_ENV_IS_IN_SPI_FLASH)
++#define CONFIG_ENV_SECT_SIZE		(8 * 1024)
++#endif
++
++#undef CONFIG_SYS_SPI_U_BOOT_OFFS
++#define CONFIG_SYS_SPI_U_BOOT_OFFS	1024 * 512
++
++#define SDRAM_BANK_SIZE			(2UL << 30)
++
++#endif
+-- 
+2.20.1
+

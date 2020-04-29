@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,7 +117,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.119")
+    (version "1.0.123")
     (source
       (origin
         (method git-fetch)
@@ -126,8 +126,7 @@ contains the archive keys used for that.")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "0p0p8qmlsbvpfa0r7ifghr67zrrc96d83r9qwahzaxyxkvnhr4x4"))))
+         (base32 "0fr5ir8arzisx71jybbk4xz85waz50lf2y052nfimzh6vv9dx54c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

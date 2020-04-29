@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2015, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
@@ -38,6 +38,9 @@
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,7 +67,9 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
+  #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system meson)
@@ -87,6 +92,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
+  #:use-module (gnu packages crates-io)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages dns)
@@ -137,6 +143,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdesktop)
   #:use-module (gnu packages ruby)
+  #:use-module (gnu packages rust-apps)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
@@ -212,14 +219,14 @@ old-fashioned output methods with powerful ascii-art renderer.")
 (define-public celluloid
   (package
     (name "celluloid")
-    (version "0.18")
+    (version "0.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/celluloid-player/celluloid/releases"
                            "/download/v" version "/celluloid-" version ".tar.xz"))
        (sha256
-        (base32 "0gmscx9zb8ppfjlnmgbcmhknhawa05sdhxi7dv5wjapjq0glq481"))))
+        (base32 "1s3qkism96gi44incvsb6rqg255qcvjvw61ya7nw30md0sapj4sl"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -600,7 +607,7 @@ available.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.2.1")
+    (version "3.3")
     (outputs '("out" "static"))
     (source
       (origin
@@ -610,7 +617,7 @@ available.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32 "1k5vijsy6cgcghw69f5275xfmbjjx7js0nlbgxbd6krnjb7sv6zv"))
+         (base32 "170b61cgpcs5n35qps0p40dqs1q81vkgagzbs4zv7pzls6718vpj"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -756,7 +763,7 @@ canvas operations.")
 (define-public libdca
   (package
     (name "libdca")
-    (version "0.0.6")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -764,8 +771,12 @@ canvas operations.")
                     version "/libdca-" version ".tar.bz2"))
               (sha256
                (base32
-                "0h0zvcn97i9kyljdpifzi8in9xnw31fx3b3ggj96p8h0l2d8mycq"))))
+                "0sjz0s0nrv7jcpvh1i432x3jza0y5yycmzw84cfncb2qby0i62rs"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (home-page "https://www.videolan.org/developers/libdca.html")
     (synopsis "DTS Coherent Acoustics decoder")
     (description "libdca is a library for decoding DTS Coherent Acoustics
@@ -1538,7 +1549,7 @@ projects while introducing many more.")
 (define-public mpv-mpris
   (package
     (name "mpv-mpris")
-    (version "0.2")
+    (version "0.4")
     (source
       (origin
         (method git-fetch)
@@ -1548,19 +1559,17 @@ projects while introducing many more.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "06hq3j1jjlaaz9ss5l7illxz8vm5bng86jl24kawglwkqayhdnjx"))))
-    (build-system gnu-build-system)
+          "1fr3jvja8s2gdpx8qyk9r17977flms3qpm8zci62nd9r5wjdvr5i"))))
+    (build-system copy-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags '("CC=gcc")
+     '(#:install-plan
+       '(("mpris.so" "lib/"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure) ; no configure script
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "mpris.so" (string-append out "/lib")))
-             #t)))))
+         (add-before 'install 'build
+           (lambda _
+             (setenv "CC" (which "gcc"))
+             (invoke "make"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1618,29 +1627,10 @@ To load this plugin, specify the following option when starting mpv:
     (license license:bsd-3)
     (home-page "https://www.webmproject.org/")))
 
-;; GNU IceCat fails to build against 1.8.0, so keep this version for now.
-(define-public libvpx-1.7
-  (package
-    (inherit libvpx)
-    (version "1.7.0")
-    (source (origin
-              (inherit (package-source libvpx))
-              (uri (git-reference
-                    (url "https://chromium.googlesource.com/webm/libvpx")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "libvpx" version))
-              (sha256
-               (base32
-                "0vvh89hvp8qg9an9vcmwb7d9k3nixhxaz6zi65qdjnd0i56kkcz6"))
-              (patches
-               (append
-                (origin-patches (package-source libvpx))
-                (search-patches "libvpx-use-after-free-in-postproc.patch")))))))
-
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.03.08")
+    (version "2020.03.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1648,7 +1638,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1xbka14wnalcqkhibfcqw8f5bw1m9b1f44719yifv1jk0614q4bn"))))
+                "05l4asakakxn53wrvxn6c03fd80zdizdbj6r2cj8c1ja3sj9i8s5"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2211,7 +2201,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "48")
+    (version "49")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2220,7 +2210,7 @@ capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1i6163bidlp0p9zcnxpsphr44ayfzd51fig4ri7vbrbl9lw9jaih"))))
+                "1d298mlb24nlc2x7pixfbkd0qbpv4c706c32idsgpi96z1spkhvl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2310,9 +2300,6 @@ and custom quantization matrices.")
     (description "Streamlink is command-line utility that extracts streams
 from sites like Twitch.tv and pipes them into a video player of choice.")
     (license license:bsd-2)))
-
-(define-public livestreamer
-  (deprecated-package "livestreamer" streamlink))
 
 (define-public twitchy
   (let ((commit "9beb36d80b16662414129693e74fa3a2fd97554e")) ; 3.4 has no tag
@@ -2455,7 +2442,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "24.0.4")
+    (version "25.0.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2464,7 +2451,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0m15ch2ix9qrdf1a9mj7wcpl72z3h13zx60c9q72sb1435id2g1q"))))
+                "02ppkp1j5yxnxv663nz5wv4vbcg3k53l43xq94d1p1b3j4wxwq8b"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -3281,7 +3268,6 @@ programmers to access a standard API to open and decompress media files.")
                  #t)))))
     (inputs
      `(("boost" ,boost)
-       ("desktop-file-utils" ,desktop-file-utils)
        ("ffms2" ,ffms2)
        ("fftw" ,fftw)
        ("hunspell" ,hunspell)
@@ -3294,6 +3280,7 @@ programmers to access a standard API to open and decompress media files.")
        ("wxwidgets-gtk2" ,wxwidgets-gtk2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.aegisub.org/")
     (synopsis "Subtitle engine")
@@ -3659,7 +3646,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
 (define-public openshot
   (package
     (name "openshot")
-    (version "2.4.4")
+    (version "2.5.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3668,10 +3655,11 @@ API.  It includes bindings for Python, Ruby, and other languages.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mg63v36h7l8kv2sgf6x8c1n3ygddkqqwlciz7ccxpbm4x1idqba"))
+                "0qc5i0ay6j2wab1whl41sjb71cj02pg6y79drf7asrprq8b2rmfq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
+           ;; TODO: Unbundle jquery and others from src/timeline/media
            (delete-file-recursively "src/images/fonts") #t))))
     (build-system python-build-system)
     (inputs
@@ -3684,14 +3672,17 @@ API.  It includes bindings for Python, Ruby, and other languages.")
        ("python-requests" ,python-requests)
        ("qtsvg" ,qtsvg)))
     (arguments
-     `(#:tests? #f                      ;no tests
-       #:modules ((guix build python-build-system)
+     `(#:modules ((guix build python-build-system)
                   (guix build qt-utils)
                   (guix build utils))
        #:imported-modules (,@%python-build-system-modules
                             (guix build qt-utils))
        #:phases (modify-phases %standard-phases
                   (delete 'build)       ;install phase does all the work
+                  (replace 'check
+                    (lambda _
+                      (setenv "QT_QPA_PLATFORM" "offscreen")
+                      (invoke "python" "src/tests/query_tests.py")))
                   (add-after 'unpack 'patch-font-location
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((font (assoc-ref inputs "font-ubuntu")))
@@ -3710,7 +3701,7 @@ API.  It includes bindings for Python, Ruby, and other languages.")
                       (let ((out (assoc-ref outputs "out")))
                         (wrap-qt-program out "openshot-qt"))
                       #t)))))
-    (home-page "https://openshot.org")
+    (home-page "https://www.openshot.org/")
     (synopsis "Video editor")
     (description "OpenShot takes your videos, photos, and music files and
 helps you create the film you have always dreamed of.  Easily add sub-titles,
@@ -3901,7 +3892,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.1")
+    (version "0.8.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3910,7 +3901,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08sx9zhhks8wzq05f67jqmc1zqmmi7hqkgg2gyjpcsan5qc5476w"))))
+                "0273fxgf4r832y9s0p8hqdj1j1nj8nlz4hylya0b4nsif89yfrhp"))))
     (build-system cmake-build-system)
     ;; SVT-AV1 only supports Intel-compatible CPUs.
     (supported-systems '("x86_64-linux" "i686-linux"))
@@ -3934,3 +3925,180 @@ work-in-progress, aiming to support video-on-demand and live streaming
 applications.  It only supports Intel-compatible CPUs (x86).")
     (home-page "https://github.com/OpenVisualCloud/SVT-AV1")
     (license license:bsd-2)))
+
+(define-public w-scan
+  (package
+    (name "w-scan")
+    (version "20170107")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.gen2vdr.de/wirbel/w_scan/w_scan-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1zkgnj2sfvckix360wwk1v5s43g69snm45m0drnzyv7hgf5g7q1q"))))
+    (build-system gnu-build-system)
+    (synopsis "Scan ATSC/DVB-C/DVB-S/DVB-T channels")
+    (description
+     "This is a small command line utility used to perform frequency scans for
+DVB and ATSC transmissions without initial tuning data.  It can print the
+result in several formats:
+@itemize
+@item VDR channels.conf,
+@item czap/tzap/xine/mplayer channels.conf,
+@item Gstreamer dvbsrc plugin,
+@item VLC xspf playlist,
+@item XML,
+@item initial tuning data for scan or dvbv5-scan.
+@end itemize\n")
+    (home-page "https://www.gen2vdr.de/wirbel/w_scan/index2.html")
+    (license license:gpl2+)))
+
+(define-public rav1e
+  (package
+    (name "rav1e")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rav1e" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1bsmj8kqzs5pf8dl98rsl6a67cljj1gkj3b5hmd8hn8wdy4ya173"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-simd-helpers" ,rust-simd-helpers-0.1)
+        ("rust-ivf" ,rust-ivf-0.1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-paste" ,rust-paste-0.1)
+        ("rust-signal-hook" ,rust-signal-hook-0.1)
+        ("rust-aom-sys" ,rust-aom-sys-0.1)
+        ("rust-nasm-rs" ,rust-nasm-rs-0.1)
+        ("rust-arbitrary" ,rust-arbitrary-0.2)
+        ("rust-better-panic" ,rust-better-panic-0.2)
+        ("rust-noop-proc-macro"
+         ,rust-noop-proc-macro-0.2)
+        ("rust-num-traits" ,rust-num-traits-0.2)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
+        ("rust-err-derive" ,rust-err-derive-0.2)
+        ("rust-interpolate-name"
+         ,rust-interpolate-name-0.2)
+        ("rust-rustc-version" ,rust-rustc-version-0.2)
+        ("rust-scan-fmt" ,rust-scan-fmt-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-image" ,rust-image-0.22)
+        ("rust-arg-enum-proc-macro"
+         ,rust-arg-enum-proc-macro-0.3)
+        ("rust-num-derive" ,rust-num-derive-0.3)
+        ("rust-dav1d-sys" ,rust-dav1d-sys-0.3)
+        ("rust-backtrace" ,rust-backtrace-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-y4m" ,rust-y4m-0.5)
+        ("rust-arrayvec" ,rust-arrayvec-0.5)
+        ("rust-toml" ,rust-toml-0.5)
+        ("rust-fern" ,rust-fern-0.5)
+        ("rust-rust-hawktracer"
+         ,rust-rust-hawktracer-0.7)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-itertools" ,rust-itertools-0.8)
+        ("rust-bitstream-io" ,rust-bitstream-io-0.8)
+        ("rust-console" ,rust-console-0.9)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-byteorder" ,rust-byteorder-1.3)
+        ("rust-clap" ,rust-clap-2)
+        ("rust-vergen" ,rust-vergen-3.1))
+       #:cargo-development-inputs
+       (("rust-rand-chacha" ,rust-rand-chacha-0.2)
+        ("rust-interpolate-name"
+         ,rust-interpolate-name-0.2)
+        ("rust-criterion" ,rust-criterion-0.3)
+        ("rust-pretty-assertions"
+         ,rust-pretty-assertions-0.6)
+        ("rust-rand" ,rust-rand-0.7)
+        ("rust-semver" ,rust-semver-0.9))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (invoke "cargo" "cinstall" "--release"
+                       (string-append "--prefix=" out))))))))
+    (native-inputs
+     `(("cargo-c" ,rust-cargo-c)))
+    (inputs
+     `(("nasm" ,nasm)))
+    (home-page "https://github.com/xiph/rav1e/")
+    (synopsis "The fastest and safest AV1 encoder")
+    (description
+     "The fastest and safest AV1 encoder.")
+    (license license:bsd-2)))
+
+(define-public peek
+  (package
+    (name "peek")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phw/peek.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1xwlfizga6hvjqq127py8vabaphsny928ar7mwqj9cyqfl6fx41x"))))
+    (build-system meson-build-system)
+    (arguments '(#:glib-or-gtk? #t))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")         ; for glib-compile-resources
+       ("gtk+-bin" ,gtk+ "bin")         ; For gtk-update-icon-cache
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://github.com/phw/peek")
+    (synopsis "Simple animated GIF screen recorder")
+    (description
+     "Peek makes it easy to create short screencasts of a screen area.  It was
+built for the specific use case of recording screen areas, e.g. for easily
+showing UI features of your own apps or for showing a bug in bug reports.
+With Peek, you simply place the Peek window over the area you want to record
+and press \"Record\".  Peek is optimized for generating animated GIFs, but you
+can also directly record to WebM or MP4 if you prefer.")
+    (license license:gpl3+)))
+
+(define-public wf-recorder
+  (package
+    (name "wf-recorder")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ammen99/wf-recorder.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cw6kpcbl33wh95pvy32xrsrm6kkk1awccr3phyh885xjs3b3iim"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("pulseaudio" ,pulseaudio)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ("libx264" ,libx264)))
+    (home-page "https://github.com/ammen99/wf-recorder")
+    (synopsis "Screen recorder for wlroots-based compositors")
+    (description
+     "@code{wf-recorder} is a utility program for screen recording of
+wlroots-based compositors.  More specifically, those that support
+@code{wlr-screencopy-v1} and @code{xdg-output}.")
+    (license license:expat)))

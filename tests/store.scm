@@ -412,6 +412,69 @@
       (build-derivations %store (list d2))
       'fail)))
 
+(test-equal "with-build-handler + with-store"
+  'success
+  ;; Check that STORE remains valid when the build handler invokes CONTINUE,
+  ;; even though 'with-build-handler' is outside the dynamic extent of
+  ;; 'with-store'.
+  (with-build-handler (lambda (continue store things mode)
+                        (match things
+                          ((drv)
+                           (and (string-suffix? "thingie.drv" drv)
+                                (not (port-closed?
+                                      (store-connection-socket store)))
+                                (continue #t)))))
+    (with-store store
+      (let* ((b (add-text-to-store store "build" "echo $foo > $out" '()))
+             (s (add-to-store store "bash" #t "sha256"
+                              (search-bootstrap-binary "bash"
+                                                       (%current-system))))
+             (d (derivation store "thingie"
+                            s `("-e" ,b)
+                            #:env-vars `(("foo" . ,(random-text)))
+                            #:sources (list b s))))
+        (build-derivations store (list d))
+
+        ;; Here STORE's socket should still be open.
+        (and (valid-path? store (derivation->output-path d))
+             'success)))))
+
+(test-assert "map/accumulate-builds"
+  (let* ((b  (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s  (add-to-store %store "bash" #t "sha256"
+                           (search-bootstrap-binary "bash"
+                                                    (%current-system))))
+         (d1 (derivation %store "the-thing"
+                         s `("-e" ,b)
+                         #:env-vars `(("foo" . ,(random-text)))
+                         #:sources (list b s)))
+         (d2 (derivation %store "the-thing"
+                         s `("-e" ,b)
+                         #:env-vars `(("foo" . ,(random-text))
+                                      ("bar" . "baz"))
+                         #:sources (list b s))))
+    (with-build-handler (lambda (continue store things mode)
+                          (equal? (map derivation-file-name (list d1 d2))
+                                  things))
+      (map/accumulate-builds %store
+                             (lambda (drv)
+                               (build-derivations %store (list drv))
+                               (add-to-store %store "content-addressed"
+                                             #t "sha256"
+                                             (derivation->output-path drv)))
+                             (list d1 d2)))))
+
+(test-assert "mapm/accumulate-builds"
+  (let* ((d1 (run-with-store %store
+               (gexp->derivation "foo" #~(mkdir #$output))))
+         (d2 (run-with-store %store
+               (gexp->derivation "bar" #~(mkdir #$output)))))
+    (with-build-handler (lambda (continue store things mode)
+                          (equal? (map derivation-file-name (pk 'zz (list d1 d2)))
+                                  (pk 'XX things)))
+      (run-with-store %store
+        (mapm/accumulate-builds built-derivations `((,d1) (,d2)))))))
+
 (test-assert "topologically-sorted, one item"
   (let* ((a (add-text-to-store %store "a" "a"))
          (b (add-text-to-store %store "b" "b" (list a)))

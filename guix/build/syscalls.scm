@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,6 @@
 
 (define-module (guix build syscalls)
   #:use-module (system foreign)
-  #:use-module (system base target)             ;for cross-compilation support
   #:use-module (rnrs bytevectors)
   #:autoload   (ice-9 binary-ports) (get-bytevector-n)
   #:use-module (srfi srfi-1)
@@ -892,36 +892,6 @@ system to PUT-OLD."
   (namelen uint8)
   (name    uint8))
 
-(define-syntax define-generic-identifier
-  (syntax-rules (gnu/linux gnu/hurd =>)
-    "Define a generic identifier that adjust to the current GNU variant."
-    ((_ id (gnu/linux => linux) (gnu/hurd => hurd))
-     (define-syntax id
-       (lambda (s)
-         (syntax-case s ()
-           ((_ args (... ...))
-            (if (string-contains (or (target-type) %host-type)
-                                 "linux")
-                #'(linux args (... ...))
-                #'(hurd args (... ...))))
-           (_
-            (if (string-contains (or (target-type) %host-type)
-                                 "linux")
-                #'linux
-                #'hurd))))))))
-
-(define-generic-identifier read-dirent-header
-  (gnu/linux => read-dirent-header/linux)
-  (gnu/hurd  => read-dirent-header/hurd))
-
-(define-generic-identifier %struct-dirent-header
-  (gnu/linux => %struct-dirent-header/linux)
-  (gnu/hurd  => %struct-dirent-header/hurd))
-
-(define-generic-identifier sizeof-dirent-header
-  (gnu/linux => sizeof-dirent-header/linux)
-  (gnu/hurd  => sizeof-dirent-header/hurd))
-
 ;; Constants for the 'type' field, from <dirent.h>.
 (define DT_UNKNOWN 0)
 (define DT_FIFO 1)
@@ -960,18 +930,29 @@ system to PUT-OLD."
                  "closedir: ~A" (list (strerror err))
                  (list err)))))))
 
-(define readdir*
+(define (readdir-procedure name-field-offset sizeof-dirent-header
+                           read-dirent-header)
   (let ((proc (syscall->procedure '* "readdir64" '(*))))
     (lambda* (directory #:optional (pointer->string pointer->string/utf-8))
       (let ((ptr (proc directory)))
         (and (not (null-pointer? ptr))
              (cons (pointer->string
-                    (make-pointer (+ (pointer-address ptr)
-                                     (c-struct-field-offset
-                                      %struct-dirent-header name)))
+                    (make-pointer (+ (pointer-address ptr) name-field-offset))
                     -1)
                    (read-dirent-header
                     (pointer->bytevector ptr sizeof-dirent-header))))))))
+
+(define readdir*
+  ;; Decide at run time which one must be used.
+  (if (string-contains %host-type "linux-gnu")
+      (readdir-procedure (c-struct-field-offset %struct-dirent-header/linux
+                                                name)
+                         sizeof-dirent-header/linux
+                         read-dirent-header/linux)
+      (readdir-procedure (c-struct-field-offset %struct-dirent-header/hurd
+                                                name)
+                         sizeof-dirent-header/hurd
+                         read-dirent-header/hurd)))
 
 (define* (scandir* name #:optional
                    (select? (const #t))

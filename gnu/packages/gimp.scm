@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
@@ -151,6 +151,9 @@ buffers.")
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
+             ;; Disable automatic network request on startup to check for
+             ;; version updates.
+             "--disable-check-update"
              ;; ./configure requests not to annoy upstream with packaging bugs.
              "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases
@@ -180,7 +183,7 @@ buffers.")
        ("gexiv2" ,gexiv2)
        ("gtk+" ,gtk+-2)
        ("libmypaint" ,libmypaint)
-       ("mypaint-brushes" ,mypaint-brushes)
+       ("mypaint-brushes" ,mypaint-brushes-1.3)
        ("exif" ,libexif)                ; optional, EXIF + XMP support
        ("lcms" ,lcms)                   ; optional, color management
        ("librsvg" ,librsvg)             ; optional, SVG support
@@ -267,7 +270,7 @@ inverse fourier transform.")
 (define-public libmypaint
   (package
     (name "libmypaint")
-    (version "1.3.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mypaint/libmypaint/"
@@ -275,7 +278,7 @@ inverse fourier transform.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0wd6jk69vmhsq1mdw96v0fh7b28n3glkr5ca466zcq7agzaxj1va"))))
+                "0aqcv4fyscpfhknxgfpq0v84aj2nzigqvpi4zgv2zkl41h51by5f"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -295,34 +298,42 @@ brushstrokes which is used by MyPaint and GIMP.")
 (define-public mypaint-brushes
   (package
     (name "mypaint-brushes")
-    (version "1.3.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/Jehan/mypaint-brushes.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1iz89z6v2mp8j1lrf942k561s8311i3s34ap36wh4rybb2lq15m0"))))
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mypaint/mypaint-brushes.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0kcqz13vzpy24dhmrx9hbs6s7hqb8y305vciznm15h277sabpmw9"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'relax-dependency-version
-           (lambda _
-             (substitute* "autogen.sh"
-               (("automake-1.13") "automake")
-               (("aclocal-1.13") "aclocal"))
-             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (synopsis "Default brushes for MyPaint")
     (description "This package provides the default set of brushes for
 MyPaint.")
-    (home-page "https://github.com/Jehan/mypaint-brushes")
-    (license license:cc0)))
+    (home-page "https://github.com/mypaint/mypaint-brushes/")
+    ;; Scripts are distributed under GPL2+ terms, brushes are provided as
+    ;; public domain or under CC0 terms.
+    (license (list license:gpl2+ license:cc0 license:public-domain))))
+
+(define-public mypaint-brushes-1.3
+  (package
+    (inherit mypaint-brushes)
+    (name "mypaint-brushes")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mypaint/mypaint-brushes.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1c95l1vfz7sbrdlzrbz7h1p6s1k113kyjfd9wfnxlm0p6562cz3j"))))))
 
 (define-public gimp-resynthesizer
   ;; GIMP does not respect any plugin search path environment variable, so after
@@ -334,13 +345,14 @@ MyPaint.")
     (version "2.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/bootchk/resynthesizer/archive/v"
-			   version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/bootchk/resynthesizer")
+              (commit (string-append "v" version))))
        (sha256
         (base32
-         "0l3404w6rqny7h3djskxf149gzx6x4qhndgbh3403c9lbh4pi1kr"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+         "1jwc8bhhm21xhrgw56nzbma6fwg59gc8anlmyns7jdiw83y0zx3j"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `( ;; Turn off tests to avoid:
@@ -348,11 +360,11 @@ MyPaint.")
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-	 (add-after 'unpack 'set-env
-	   (lambda _
-	     (setenv "CONFIG_SHELL" (which "sh"))
-	     #t))
-	 (add-after 'configure 'set-prefix
+         (add-after 'unpack 'set-env
+           (lambda _
+             (setenv "CONFIG_SHELL" (which "sh"))
+             #t))
+         (add-after 'configure 'set-prefix
            ;; Install plugin under $prefix, not under GIMP's libdir.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((target (string-append (assoc-ref outputs "out")
@@ -361,8 +373,8 @@ MyPaint.")
                                             (package-version gimp))
                                           ".0")))
                (substitute* (list "src/resynthesizer/Makefile"
-				  "src/resynthesizer-gui/Makefile")
-		 (("GIMP_LIBDIR = .*")
+                                  "src/resynthesizer-gui/Makefile")
+                 (("GIMP_LIBDIR = .*")
                   (string-append "GIMP_LIBDIR = " target "\n")))
                (mkdir-p target)
                #t))))))

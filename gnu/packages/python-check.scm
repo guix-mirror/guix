@@ -5,6 +5,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,26 +38,39 @@
 (define-public python-coveralls
   (package
     (name "python-coveralls")
-    (version "1.6.0")
+    (version "1.11.1")
+    (home-page "https://github.com/coveralls-clients/coveralls-python")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "coveralls" version))
+       ;; The PyPI release lacks tests, so we pull from git instead.
+       (method git-fetch)
+       (uri (git-reference (url home-page) (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1dswhd2q2412wrldi97hdwlsymj9pm79v7pvjx53z5wh2d33w8bg"))))
+         "1zr1lqdjcfwj6wcx2449mzzjq8bbhwnqcm5vdif5s8hlz35bjxkp"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-git-test
+                    (lambda _
+                      ;; Remove test that requires 'git' and the full checkout.
+                      (delete-file "tests/git_test.py")
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "pytest" "-vv")
+                          (format #t "test suite not run~%"))
+                      #t)))))
     (propagated-inputs
      `(("python-coverage" ,python-coverage)
        ("python-docopt" ,python-docopt)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests)
-       ("python-sh" ,python-sh)
-       ("python-urllib3" ,python-urllib3)))
+       ("python-requests" ,python-requests)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/coveralls-clients/coveralls-python")
     (synopsis "Show coverage stats online via coveralls.io")
     (description
      "Coveralls.io is a service for publishing code coverage statistics online.

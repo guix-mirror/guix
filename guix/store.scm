@@ -105,6 +105,8 @@
             add-file-tree-to-store
             binary-file
             with-build-handler
+            map/accumulate-builds
+            mapm/accumulate-builds
             build-things
             build
             query-failed-paths
@@ -133,6 +135,7 @@
 
             built-in-builders
             references
+            references/cached
             references/substitutes
             references*
             query-path-info*
@@ -620,14 +623,25 @@ connection.  Use with care."
 (define (call-with-store proc)
   "Call PROC with an open store connection."
   (let ((store (open-connection)))
-    (dynamic-wind
-      (const #f)
-      (lambda ()
-        (parameterize ((current-store-protocol-version
-                        (store-connection-version store)))
-          (proc store)))
-      (lambda ()
-        (false-if-exception (close-connection store))))))
+    (define (thunk)
+      (parameterize ((current-store-protocol-version
+                      (store-connection-version store)))
+        (let ((result (proc store)))
+          (close-connection store)
+          result)))
+
+    (cond-expand
+      (guile-3
+       (with-exception-handler (lambda (exception)
+                                 (close-connection store)
+                                 (raise-exception exception))
+         thunk))
+      (else                                       ;Guile 2.2
+       (catch #t
+         thunk
+         (lambda (key . args)
+           (close-connection store)
+           (apply throw key args)))))))
 
 (define-syntax-rule (with-store store exp ...)
   "Bind STORE to an open connection to the store and evaluate EXPs;
@@ -1263,6 +1277,48 @@ deals with \"dynamic dependencies\" such as grafts---derivations that depend
 on the build output of a previous derivation."
   (call-with-build-handler handler (lambda () exp ...)))
 
+;; Unresolved dynamic dependency.
+(define-record-type <unresolved>
+  (unresolved things continuation)
+  unresolved?
+  (things       unresolved-things)
+  (continuation unresolved-continuation))
+
+(define (build-accumulator continue store things mode)
+  "This build handler accumulates THINGS and returns an <unresolved> object."
+  (if (= mode (build-mode normal))
+      (unresolved things continue)
+      (continue #t)))
+
+(define (map/accumulate-builds store proc lst)
+  "Apply PROC over each element of LST, accumulating 'build-things' calls and
+coalescing them into a single call."
+  (define result
+    (map (lambda (obj)
+           (with-build-handler build-accumulator
+             (proc obj)))
+         lst))
+
+  (match (append-map (lambda (obj)
+                       (if (unresolved? obj)
+                           (unresolved-things obj)
+                           '()))
+                     result)
+    (()
+     result)
+    (to-build
+     ;; We've accumulated things TO-BUILD.  Actually build them and resume the
+     ;; corresponding continuations.
+     (build-things store (delete-duplicates to-build))
+     (map/accumulate-builds store
+                            (lambda (obj)
+                              (if (unresolved? obj)
+                                  ;; Pass #f because 'build-things' is now
+                                  ;; unnecessary.
+                                  ((unresolved-continuation obj) #f)
+                                  obj))
+                            result))))
+
 (define build-things
   (let ((build (operation (build-things (string-list things)
                                         (integer mode))
@@ -1348,6 +1404,13 @@ error if there is no such root."
   ;; 'references/substitutes' many times with the same arguments.  Ideally we
   ;; would use a cache associated with the daemon connection instead (XXX).
   (make-hash-table 100))
+
+(define (references/cached store item)
+  "Like 'references', but cache results."
+  (or (hash-ref %reference-cache item)
+      (let ((references (references store item)))
+        (hash-set! %reference-cache item references)
+        references)))
 
 (define (references/substitutes store items)
   "Return the list of list of references of ITEMS; the result has the same
@@ -1788,6 +1851,18 @@ taking the store as its first argument."
   (preserve-documentation proc
                           (lambda (store . args)
                             (run-with-store store (apply proc args)))))
+
+(define (mapm/accumulate-builds mproc lst)
+  "Like 'mapm' in %STORE-MONAD, but accumulate 'build-things' calls and
+coalesce them into a single call."
+  (lambda (store)
+    (values (map/accumulate-builds store
+                                   (lambda (obj)
+                                     (run-with-store store
+                                       (mproc obj)))
+                                   lst)
+            store)))
+
 
 ;;
 ;; Store monad operators.

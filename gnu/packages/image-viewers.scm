@@ -13,6 +13,8 @@
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Peng Mei Yu <pengmeiyu@riseup.net>
+;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +36,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
@@ -419,44 +422,95 @@ imaging.  It supports several HDR and LDR image formats, and it can:
     (license license:gpl2+)))
 
 ;; CBR and RAR are currently unsupported, due to non-free dependencies.
-;; For optional PDF support, you can install the mupdf package.
 (define-public mcomix
-  (package
-    (name "mcomix")
-    (version "1.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/mcomix/MComix-" version
-                           "/mcomix-" version ".tar.bz2"))
-       (sha256
-        (base32
-         "0fzsf9pklhfs1rzwzj64c0v30b74nk94p93h371rpg45qnfiahvy"))))
-    (build-system python-build-system)
-    (inputs
-     `(("p7zip" ,p7zip)
-       ("python2-pillow" ,python2-pillow)
-       ("python2-pygtk" ,python2-pygtk)))
-    (arguments
-     ;; Python 2.5 or newer (Python 3 and up is not supported)
-     `(#:python ,python-2
-       #:tests? #f ; there are no tests
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((p7zip (assoc-ref inputs "p7zip")))
-               ;; insert absolute path to 7z executable
-               (substitute* "mcomix/archive/sevenzip_external.py"
-                 (("_7z_executable = -1")
-                  (string-append "_7z_executable = u'" p7zip "/bin/7z'"))))
-             #t)))))
-    (home-page "https://sourceforge.net/p/mcomix/wiki/Home/")
-    (synopsis "Image viewer for comics")
-    (description "MComix is a customizable image viewer that specializes as
+  ;; Official mcomix hasn't been updated since 2016, it's broken with
+  ;; python-pillow 6+ and only supports Python 2.  We use fork instead.
+  (let ((commit "fea55a7a9369569eefed72209eed830409c4af98"))
+    (package
+      (name "mcomix")
+      (version (git-version "1.2.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/multiSnow/mcomix3")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "05zl0dkjwbdcm2zlk4nz9w33amlqj8pbf32a8ymshc2356fqhhi5"))))
+      (build-system python-build-system)
+      (inputs
+       `(("p7zip" ,p7zip)
+         ("python-pillow" ,python-pillow)
+         ("python-pygobject" ,python-pygobject)
+         ("python-pycairo" ,python-pycairo)))
+      (arguments
+       `(#:tests? #f                    ; FIXME: How do we run tests?
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((p7zip (assoc-ref inputs "p7zip")))
+                 ;; insert absolute path to 7z executable
+                 (substitute* "mcomix/mcomix/archive/sevenzip_external.py"
+                   (("_7z_executable = -1")
+                    (string-append "_7z_executable = u'" p7zip "/bin/7z'"))))
+               #t))
+           (replace 'build
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (pyver ,(version-major+minor (package-version python)))
+                      (lib (string-append out "/lib/python" pyver)))
+                 (invoke (which "python") "installer.py" "--srcdir=mcomix"
+                         (string-append "--target=" lib))
+                 (rename-file (string-append lib "/mcomix")
+                              (string-append lib "/site-packages"))
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (share (string-append out "/share"))
+                      (bin (string-append out "/bin"))
+                      (pyver ,(version-major+minor (package-version python)))
+                      (lib (string-append out "/lib/python" pyver "/site-packages")))
+                 (mkdir-p bin)
+                 (rename-file (string-append lib "/mcomixstarter.py")
+                              (string-append bin "/mcomix"))
+                 (rename-file (string-append lib "/comicthumb.py")
+                              (string-append bin "/comicthumb"))
+                 (install-file "mime/mcomix.desktop"
+                               (string-append share "/applications"))
+                 (install-file "mime/mcomix.appdata.xml"
+                               (string-append share "/metainfo"))
+                 (install-file "mime/mcomix.xml"
+                               (string-append share "/mime/packages"))
+                 (install-file "mime/comicthumb.thumbnailer"
+                               (string-append share "/thumbnailers"))
+                 (install-file "man/mcomix.1" (string-append share "/man/man1"))
+                 (install-file "man/comicthumb.1" (string-append share "/man/man1"))
+                 (for-each
+                  (lambda (size)
+                    (install-file
+                     (format #f "mcomix/mcomix/images/~sx~s/mcomix.png" size size)
+                     (format #f "~a/icons/hicolor/~sx~s/apps/" share size size))
+                    (for-each
+                     (lambda (ext)
+                       (install-file
+                        (format #f "mime/icons/~sx~s/application-x-~a.png" size size ext)
+                        (format #f "~a/icons/hicolor/~sx~s/mimetypes/"
+                                share size size)))
+                     '("cb7" "cbr" "cbt" "cbz")))
+                  '(16 22 24 32 48))
+                 #t))))))
+      (home-page "https://sourceforge.net/p/mcomix/wiki/Home/")
+      (synopsis "Image viewer for comics")
+      (description "MComix is a customizable image viewer that specializes as
 a comic and manga reader.  It supports a variety of container formats
-including CBZ, CB7, CBT, LHA.")
-    (license license:gpl2+)))
+including CBZ, CB7, CBT, LHA.
+
+For PDF support, install the @emph{mupdf} package.")
+      (license license:gpl2+))))
 
 (define-public qview
   (package
@@ -596,3 +650,60 @@ with tiling window managers.  Features include:
 @end itemize\n")
     (home-page "https://github.com/eXeC64/imv")
     (license license:expat)))
+
+(define-public qiv
+  (package
+    (name "qiv")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://spiegl.de/qiv/download/qiv-"
+                           version ".tgz"))
+       (sha256
+        (base32 "1rlf5h67vhj7n1y7jqkm9k115nfnzpwngj3kzqsi2lg676srclv7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ;; That is required for testing.
+       ("xorg-server" ,xorg-server-for-tests)))
+    (inputs
+     `(("imlib2" ,imlib2)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+-2)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libtiff" ,libtiff)
+       ("libexif" ,libexif)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-before 'install 'patch-file-start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; patch the file so that qiv runs and exits by itself
+             (substitute* "Makefile"
+               (("./qiv -f ./intro.jpg") "./qiv -f -C -s ./intro.jpg")
+               ;; Fail the build when test fails.
+               (("echo \"-- Test Failed --\"")
+                "(echo \"-- Test Failed --\" ; false)"))
+             ;; There must be a running X server and make install doesn't start one.
+             ;; Therefore we must do it.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))
+       #:tests? #f                      ; there is no check target
+       #:make-flags
+       (list
+        (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (home-page "http://spiegl.de/qiv/")
+    (synopsis "Graphical image viewer for X")
+    (description
+     "Quick Image Viewer is a small and fast GDK/Imlib2 image viewer.
+Features include zoom, maxpect, scale down, fullscreen, slideshow, delete,
+brightness/contrast/gamma correction, pan with keyboard and mouse, flip,
+rotate left/right, jump/forward/backward images, filename filter and use it
+to set X desktop background.")
+    (license license:gpl2)))

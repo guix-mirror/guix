@@ -30,6 +30,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -580,14 +581,14 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.7.1")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
         (base32
-         "1vapry9lyfb2mlpgk2wh9079hzxzq5120bsczncxxay663mdp53a"))))
+         "0g1q6n7fkanjv7i1djzw62f46xf573jvza7afabh3baqjqxy7rpd"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1007,22 +1008,56 @@ result back.")
 (define-public python-pytest-timeout
   (package
     (name "python-pytest-timeout")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-timeout" version))
        (sha256
         (base32
-         "1cczcjhw4xx5sjkhxlhc5c1bkr7x6fcyx12wrnvwfckshdvblc2a"))))
+         "13n42azbvs5slvy2n1a9nw17r4qdq10dd68nln3jp925safa3yl0"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Make the installed plugin discoverable by Pytest.
+                      (add-installed-pythonpath inputs outputs)
+                      (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-pexpect" ,python-pexpect)))
     (home-page "http://bitbucket.org/pytest-dev/pytest-timeout/")
     (synopsis "Plugin for py.test to abort hanging tests")
     (description
      "This package provides a py.test plugin that aborts hanging tests after a
 timeout has been exceeded.")
+    (license license:expat)))
+
+(define-public python-pytest-forked
+  (package
+    (name "python-pytest-forked")
+    (version "1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-forked" version))
+       (sha256
+        (base32
+         "000i4q7my2fq4l49n8idx2c812dql97qv6qpm2vhrrn9v6g6j18q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page
+     "https://github.com/pytest-dev/pytest-forked")
+    (synopsis
+     "Run tests in isolated forked subprocesses")
+    (description
+     "Pytest plugin which will run each test in a subprocess and will report if
+a test crashed the process.")
     (license license:expat)))
 
 (define-public python-scripttest
@@ -1868,8 +1903,8 @@ possible to write plugins to add your own checks.")
     (synopsis
      "Simple extension to have parametrized unit tests")
     (description
-     "This package allows to create parametrized unit-tests that work with the standard
-unittest package.  A parametrized test case is automatically converted to multiple test
+     "This package creates parameterized unit-tests that work with the standard
+unittest package.  A parameterized test case is automatically converted to multiple test
 cases.  Since they are TestCase subclasses, they work with other test suites that
 recognize TestCases.")
     (license license:bsd-2)))
@@ -2509,3 +2544,25 @@ system.  The code under test requires no modification to work with pyfakefs.")
 
 (define-public python2-pyfakefs
   (package-with-python2 python-pyfakefs))
+
+(define-public python-aiounittest
+  (package
+    (name "python-aiounittest")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiounittest" version))
+       (sha256
+        (base32
+         "1q4bhmi80smaa1lknvdna0sx3915naczlfna1fp435nf6cjyrjl1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (home-page
+     "https://github.com/kwarunek/aiounittest")
+    (synopsis "Test asyncio code more easily")
+    (description "Aiounittest is a library that helps write tests using
+asynchronous code in Python (asyncio).")
+    (license license:expat)))

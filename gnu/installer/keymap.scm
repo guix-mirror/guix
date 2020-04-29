@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,8 +155,8 @@ Configuration Database, describing possible XKB configurations."
       ((models layouts)
        (values models layouts)))))
 
-(define (kmscon-update-keymap model layout variant)
-  "Update kmscon keymap with the provided MODEL, LAYOUT and VARIANT."
+(define (kmscon-update-keymap model layout variant options)
+  "Update kmscon keymap with the provided MODEL, LAYOUT, VARIANT and OPTIONS."
   (and=>
    (getenv "KEYMAP_UPDATE")
    (lambda (keymap-file)
@@ -174,5 +175,8 @@ Configuration Database, describing possible XKB configurations."
          (format port layout)
          (put-u8 port 0)
 
-         (format port variant)
+         (format port (or variant ""))
+         (put-u8 port 0)
+
+         (format port (or options ""))
          (put-u8 port 0))))))

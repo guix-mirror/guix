@@ -111,7 +111,7 @@ listing the files modified by a patch.")
         (base32 "01vfvk4pqigahx82fhaaffg921ivd3k7rylz1yfvy4zbdyd32jri"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
+     `(("gettext" ,gettext-minimal)))
     (inputs `(("perl" ,perl)
               ("less" ,less)
               ("file" ,file)

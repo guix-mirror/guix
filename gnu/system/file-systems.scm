@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -389,7 +390,7 @@ TARGET in the other system."
                    ;; parent directory.
                    (dependencies (list parent))))
                '("cpuset" "cpu" "cpuacct" "memory" "devices" "freezer"
-                 "blkio" "perf_event")))))
+                 "blkio" "perf_event" "pids")))))
 
 (define %elogind-file-systems
   ;; We don't use systemd, but these file systems are needed for elogind,

@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2333,6 +2334,62 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
 files.  The code was previously part of the cutadapt tool.")
     (license license:expat)))
 
+(define-public python-deeptoolsintervals
+  (package
+    (name "python-deeptoolsintervals")
+    (version "0.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "deeptoolsintervals" version))
+              (sha256
+               (base32
+                "1xnl80nblysj6dylj4683wgrfa425rkx4dp5k65hvwdns9pw753x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/deeptools/deeptools_intervals")
+    (synopsis "Create GTF-based interval trees with associated meta-data")
+    (description
+     "This package provides a Python module creating/accessing GTF-based
+interval trees with associated meta-data.  It is primarily used by the
+@code{deeptools} package.")
+    (license license:expat)))
+
+(define-public python-deeptools
+  (package
+    (name "python-deeptools")
+    (version "3.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "deepTools" version))
+              (sha256
+               (base32
+                "1azgjniss5ff6a90nicdjkxyjwqmi3gzfn09gra42hwlz19hipxb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-py2bit" ,python-py2bit)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)
+       ("python-deeptoolsintervals" ,python-deeptoolsintervals)
+       ("python-plotly" ,python-plotly)))
+    (home-page "https://pypi.org/project/deepTools/")
+    (synopsis "Useful tools for exploring deep sequencing data")
+    (description "This package addresses the challenge of handling large amounts
+of data that are now routinely generated from DNA sequencing centers.
+@code{deepTools} contains useful modules to process the mapped reads data for
+multiple quality checks, creating normalized coverage files in standard bedGraph
+and bigWig file formats, that allow comparison between different files.  Finally,
+using such normalized and standardized files, deepTools can create many
+publication-ready visualizations to identify enrichments and for functional
+annotations of the genome.")
+    ;; The file deeptools/cm.py is licensed under the BSD license.  The
+    ;; remainder of the code is licensed under the MIT license.
+    (license (list license:bsd-3 license:expat))))
+
 (define-public cutadapt
   (package
     (name "cutadapt")
@@ -2398,13 +2455,13 @@ files.")
 (define-public python-pybigwig
   (package
     (name "python-pybigwig")
-    (version "0.3.12")
+    (version "0.3.17")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "pyBigWig" version))
               (sha256
                (base32
-                "00w4kfnm2c5l7wdwr2nj1z5djv8kzgf7h1zhsgv6njff1rwr26g0"))
+                "157x6v48y299zm382krf1dw08fdxg95im8lnabhp5vc94s04zxj1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -7501,13 +7558,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.24.3")
+    (version "0.24.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "01f7dms4kw9ajwqlvh5s47riv748xrrs41na03byhjvn4fbdc44y"))))
+                "1fzs8j2d3wwfzm2fq63ywf68a4dbggyl5l098f148yn4jw7jd3bc"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7580,13 +7637,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.22.0")
+    (version "1.22.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "07zljs2mfi8rf31g903f43v2f7767xbnflfrx9qjnmgf7bm039x0"))))
+                "0phadr67yb4l25x41a9wg4pjy1wbxlk14jhidhz6g5n4z6x45qbm"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
@@ -7596,6 +7653,8 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
        ("r-iranges" ,r-iranges)
        ("r-rcurl" ,r-rcurl)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/GenomeInfoDb")
     (synopsis "Utilities for manipulating chromosome identifiers")
     (description
@@ -7808,13 +7867,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.42.0")
+    (version "2.42.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0difh4dsccjzhpfkvajy2adh98ym9164gd6clnsnic6qr6sk86ss"))))
+                "0676s8aq9xj2pdrfk28kf5j69fmssn900k4vxrp11ghwjr8z24h7"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -7827,6 +7886,8 @@ annotation data packages using SQLite data storage.")
        ("r-rappdirs" ,r-rappdirs)
        ("r-stringr" ,r-stringr)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/biomaRt")
     (synopsis "Interface to BioMart databases")
     (description
@@ -7939,13 +8000,13 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.2")
+    (version "0.12.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "09lackgix5jpm16k0mz2zkibflfb4wzidbz4q32mlxmklf40037q"))))
+                "02i88ll2d7r83nk0wdj28akvsz3jq19g6ixpaahfy3jy5av4byv6"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
@@ -7956,6 +8017,8 @@ tab-delimited (tabix) files.")
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/DelayedArray")
     (synopsis "Delayed operations on array-like objects")
     (description
@@ -8396,7 +8459,7 @@ system.  It is used to analyze experimental crosses for identifying
 genes contributing to variation in quantitative traits (so-called
 quantitative trait loci, QTLs).
 
-Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
+Using a hidden Markov model, R/qtl estimates genetic maps, to
 identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
@@ -8527,7 +8590,7 @@ of other R packages who wish to make use of HTSlib.")
     (home-page "https://bioconductor.org/packages/bamsignals")
     (synopsis "Extract read count signals from bam files")
     (description
-     "This package allows to efficiently obtain count vectors from indexed bam
+     "This package efficiently obtains count vectors from indexed bam
 files.  It counts the number of nucleotide sequence reads in given genomic
 ranges and it computes reads profiles and coverage profiles.  It also handles
 paired-end data.")
@@ -9095,6 +9158,46 @@ samples into a single report.  It contains modules for a large number of
 common bioinformatics tools.")
     (license license:gpl3+)))
 
+(define-public variant-tools
+  (package
+    (name "variant-tools")
+    (version "3.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vatlab/varianttools.git")
+             ;; There is no tag corresponding to version 3.1.2
+             (commit "813ae4a90d25b69abc8a40f4f70441fe09015249")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "12ibdmksj7icyqhks4xyvd61bygk4pjmxn618kp6vgk1af01y34g"))))
+    (build-system python-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("c-blosc" ,c-blosc)
+       ("gsl" ,gsl)
+       ("hdf5" ,hdf5)
+       ("hdf5-blosc" ,hdf5-blosc)
+       ("python-cython" ,python-cython)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pycurl" ,python-pycurl)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-scipy" ,python-scipy)
+       ("python-tables" ,python-tables)))
+    (home-page "https://vatlab.github.io/vat-docs/")
+    (synopsis "Analyze genetic variants from Next-Gen sequencing studies")
+    (description
+     "Variant tools is a tool for the manipulation, annotation,
+selection, simulation, and analysis of variants in the context of next-gen
+sequencing analysis.  Unlike some other tools used for next-gen sequencing
+analysis, variant tools is project based and provides a whole set of tools to
+manipulate and analyze genetic variants.")
+    (license license:gpl3+)))
+
 (define-public r-chipseq
   (package
     (name "r-chipseq")
@@ -9653,13 +9756,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.4")
+    (version "3.1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0lhjbjhv1hnx5i3gkx41k68i8ykay3f24708h30wx9xywww9lsvi"))))
+                "1lbq2pqhb6ih6iqawlnzdh05zff71pwbw1cpfv2sld3pd7kz0zkm"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9681,7 +9784,6 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
-       ("r-metap" ,r-metap)
        ("r-patchwork" ,r-patchwork)
        ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
@@ -10627,14 +10729,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.14.3")
+    (version "1.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "1z153a7nxmlml72pl1saasj2il9g5ahpynkpv3mkhhsvl5kbwbh6"))))
+         "0ib0grhd9zbrn0dkrm4aa7qj7h0y6z1dvyx1ab3w6vczw7xghsfb"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -12763,7 +12865,7 @@ expression report comparing samples in an easily configurable manner.")
 (define-public pigx-chipseq
   (package
     (name "pigx-chipseq")
-    (version "0.0.41")
+    (version "0.0.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_chipseq/"
@@ -12771,7 +12873,7 @@ expression report comparing samples in an easily configurable manner.")
                                   "/pigx_chipseq-" version ".tar.gz"))
               (sha256
                (base32
-                "0akbxdmsjsq5fzbwaap04hqjpsfgv1l6yrc2pwgbya1xgqvcq6vy"))))
+                "0xbvgqpk32a8iczhvac56cacr46rdkqb0allhhpvmj940idf72bi"))))
     (build-system gnu-build-system)
     ;; parts of the tests rely on access to the network
     (arguments '(#:tests? #f))
@@ -13144,7 +13246,7 @@ version does count multisplits.")
 (define-public minimap2
   (package
     (name "minimap2")
-    (version "2.10")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
@@ -13153,7 +13255,7 @@ version does count multisplits.")
                            "minimap2-" version ".tar.bz2"))
        (sha256
         (base32
-         "080w9066irkbhbyr4nmf19pzkdd2s4v31hpzlajgq2y0drr6zcsj"))))
+         "0hi7i9pzxhvjj44khzzzj1lrn5gb5837arr4wgln7k1k5n4ci2mn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
@@ -13167,7 +13269,7 @@ version does count multisplits.")
                 ((or (string-prefix? "armhf" system)
                      (string-prefix? "aarch64" system))
                  "arm_neon=1")
-                (_ "sse2only=1"))))
+                (else "sse2only=1"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -13358,14 +13460,14 @@ in RNA-seq data.")
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.4.5.1")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scanpy" version))
        (sha256
         (base32
-         "14kh1ji70xxhmri5q8sgcibsidhr6f221wxrcw8a5xvibj5da17j"))))
+         "0s2b6cvaigx4wzw3850qb93sjwwxbzh22kpbp498zklc5rjpbz4l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13375,6 +13477,7 @@ in RNA-seq data.")
              ;; These tests require Internet access.
              (delete-file-recursively "scanpy/tests/notebooks")
              (delete-file "scanpy/tests/test_clustering.py")
+             (delete-file "scanpy/tests/test_datasets.py")
 
              ;; TODO: I can't get the plotting tests to work, even with Xvfb.
              (delete-file "scanpy/tests/test_plotting.py")
@@ -13391,8 +13494,8 @@ in RNA-seq data.")
        ("python-h5py" ,python-h5py)
        ("python-igraph" ,python-igraph)
        ("python-joblib" ,python-joblib)
-       ("python-louvain" ,python-louvain)
        ("python-legacy-api-wrap" ,python-legacy-api-wrap)
+       ("python-louvain" ,python-louvain)
        ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
@@ -13405,6 +13508,7 @@ in RNA-seq data.")
        ("python-seaborn" ,python-seaborn)
        ("python-statsmodels" ,python-statsmodels)
        ("python-tables" ,python-tables)
+       ("python-tqdm" ,python-tqdm)
        ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -13548,17 +13652,27 @@ allowing the insertion of arbitrary types into the tree.")
 (define-public python-intervaltree
   (package
     (name "python-intervaltree")
-    (version "2.1.0")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "intervaltree" version))
        (sha256
         (base32
-         "02w191m9zxkcjqr1kv2slxvhymwhj3jnsyy3a28b837pi15q19dc"))))
+         "0wz234g6irlm4hivs2qzmnywk0ss06ckagwh15nflkyb3p462kyb"))))
     (build-system python-build-system)
-    ;; FIXME: error when collecting tests
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; pytest seems to have a check to make sure the user is testing
+         ;; their checked-out code and not an installed, potentially
+         ;; out-of-date copy. This is harmless here, since we just installed
+         ;; the package, so we disable the check to avoid skipping tests
+         ;; entirely.
+         (add-before 'check 'import-mismatch-error-workaround
+           (lambda _
+             (setenv "PY_IGNORE_IMPORTMISMATCH" "1")
+             #t)))))
     (propagated-inputs
      `(("python-sortedcontainers" ,python-sortedcontainers)))
     (native-inputs
@@ -13624,32 +13738,34 @@ fasta subsequences.")
 (define-public python-cooler
   (package
     (name "python-cooler")
-    (version "0.7.11")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cooler" version))
        (sha256
         (base32
-         "08k5nxnxa6qsbk15z5z0q01n28042k87wi4905hh95rzqib15mhx"))))
+         "01g6gqix9ba27sappz6nfyiwabzrlf8i5fn8kwcz8ra356cq9crp"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-biopython" ,python-biopython)
+     `(("python-asciitree" ,python-asciitree)
+       ("python-biopython" ,python-biopython)
        ("python-click" ,python-click)
        ("python-cytoolz" ,python-cytoolz)
        ("python-dask" ,python-dask)
        ("python-h5py" ,python-h5py)
        ("python-multiprocess" ,python-multiprocess)
+       ("python-numpy" ,python-numpy)
        ("python-pandas" ,python-pandas)
        ("python-pyfaidx" ,python-pyfaidx)
        ("python-pypairix" ,python-pypairix)
        ("python-pysam" ,python-pysam)
-       ("python-scipy" ,python-scipy)))
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-scipy" ,python-scipy)
+       ("python-simplejson" ,python-simplejson)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-sphinx" ,python-sphinx)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/mirnylab/cooler")
     (synopsis "Sparse binary format for genomic interaction matrices")
     (description
@@ -13657,6 +13773,46 @@ fasta subsequences.")
 storage format, called @code{cool}, used to store genomic interaction data,
 such as Hi-C contact matrices.")
     (license license:bsd-3)))
+
+(define-public python-hicmatrix
+  (package
+    (name "python-hicmatrix")
+    (version "12")
+    (source
+     (origin
+       ;; Version 12 is not available on pypi.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deeptools/HiCMatrix.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1xhdyx16f3brgxgxybixdi64ki8nbbkq5vk4h9ahi11pzpjfn1pj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* '("requirements.txt"
+                            "setup.py")
+               (("cooler *=+ *0.8.5")
+                "cooler==0.8.*"))
+             #t)))))
+    (propagated-inputs
+     `(("python-cooler" ,python-cooler)
+       ("python-intervaltree" ,python-intervaltree)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-scipy" ,python-scipy)
+       ("python-tables" ,python-tables)))
+    (home-page "https://github.com/deeptools/HiCMatrix/")
+    (synopsis "HiCMatrix class for HiCExplorer and pyGenomeTracks")
+    (description
+     "This helper package implements the @code{HiCMatrix} class for
+the HiCExplorer and pyGenomeTracks packages.")
+    (license license:gpl3+)))
 
 (define-public python-hicexplorer
   (package
@@ -13714,23 +13870,35 @@ genomic scores), long range contacts and the visualization of viewpoints.")
 (define-public python-pygenometracks
   (package
     (name "python-pygenometracks")
-    (version "2.0")
+    (version "3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyGenomeTracks" version))
        (sha256
         (base32
-         "1fws6bqsyy9kj3qiabhkqx4wd4i775gsxnhszqd3zg7w67sc1ic5"))))
+         "16laa0wnf4qn9fb9ych4w1vqhqwjss70v0y0f6wp4gwqfrlgac0f"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'relax-requirements
+           (lambda _
+             (substitute* "setup.py"
+               (("matplotlib ==3.1.1")
+                "matplotlib >=3.1.1"))
+             #t)))))
     (propagated-inputs
-     `(("python-configparser" ,python-configparser)
-       ("python-future" ,python-future)
-       ("python-hicexplorer" ,python-hicexplorer)
+     `(("python-future" ,python-future)
+       ("python-gffutils" ,python-gffutils)
+       ("python-hicmatrix" ,python-hicmatrix)
        ("python-intervaltree" ,python-intervaltree)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
-       ("python-pybigwig" ,python-pybigwig)))
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-tqdm" ,python-tqdm)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://pygenometracks.readthedocs.io")

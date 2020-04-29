@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,38 +225,22 @@ standard Go idioms.")
 (define-public ephemeralpg
   (package
     (name "ephemeralpg")
-    (version "2.8")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://eradman.com/ephemeralpg/code/ephemeralpg-"
+             "https://eradman.com/ephemeralpg/code/ephemeralpg-"
              version ".tar.gz"))
        (sha256
-        (base32 "1dpfxsd8a52psx3zlfbqkw53m35w28qwyb87a8anz143x6gnkkr4"))))
+        (base32 "1j0g7g114ma7y7sadbng5p1ss1zsm9zpicm77qspym6565733vvh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'check
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; The intention for one test is to test without PostgreSQL on
-             ;; the $PATH, so replace the test $PATH with just the util-linux
-             ;; bin, which contains getopt. It will hopefully be possible to
-             ;; remove this for releases after 2.8.
-             (substitute* "test.rb"
-               (("/bin:/usr/bin")
-                (string-append (assoc-ref inputs "util-linux")
-                               "/bin")))
-             ;; Set the LC_ALL=C as some tests use sort, and the locale
-             ;; affects the order. It will hopefully be possible to remove
-             ;; this for releases after 2.8.
-             (setenv "LC_ALL" "C")
-             (invoke "ruby" "test.rb")
-             #t))
+         (delete 'configure)            ; no configure script
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -265,15 +250,18 @@ standard Go idioms.")
                                     "/bin")
                     ,(string-append (assoc-ref inputs "postgresql")
                                     "/bin")
-                    ;; For getsocket
+                    ;; For getsocket.
                     ,(string-append out "/bin")))))
-             #t)))))
+             #t)))
+       #:test-target "test"))
     (inputs
      `(("postgresql" ,postgresql)
        ("util-linux" ,util-linux)))
     (native-inputs
-     `(("ruby" ,ruby)))
-    (home-page "http://eradman.com/ephemeralpg/")
+     ;; For tests.
+     `(("ruby" ,ruby)
+       ("which" ,which)))
+    (home-page "https://eradman.com/ephemeralpg/")
     (synopsis "Run temporary PostgreSQL databases")
     (description
      "@code{pg_tmp} creates temporary PostgreSQL databases, suitable for tasks
@@ -520,7 +508,7 @@ replacement for the code@{python-memcached} library.")
        ("python" ,python-2)
        ("python2-pymongo" ,python2-pymongo)
        ("python2-pyyaml" ,python2-pyyaml)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata-for-tests)))
     (arguments
      `(#:scons ,scons-python2
        #:phases
@@ -1245,19 +1233,20 @@ data in a single database.  RocksDB is partially based on @code{LevelDB}.")
     (name "sparql-query")
     (version "1.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tialaramex/"
-                                  name "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/tialaramex/sparql-query")
+                     (commit version)))
               (sha256
-               (base32 "0yq3k20472rv8npcc420q9ab6idy584g5y0q501d360k5q0ggr8w"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+               (base32 "0a84a89idpjhj9w2y3fmvzv7ldps1cva1kxvfmh897k02kaniwxk"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
-     `(("readline" ,readline)
-       ("ncurses" ,ncurses)
+     `(("curl" ,curl)
        ("glib" ,glib)
        ("libxml2" ,libxml2)
-       ("curl" ,curl)))
+       ("ncurses" ,ncurses)
+       ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
@@ -2205,6 +2194,41 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public python2-peewee
   (package-with-python2 python-peewee))
 
+(define-public python-tortoise-orm
+  (package
+    (name "python-tortoise-orm")
+    (version "0.16.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tortoise-orm" version))
+       (sha256
+        (base32
+         "01hbvfyxs2qd1mjc96aipwsdxxhydw8ww686r4gsf87bl6f98dvz"))))
+    (build-system python-build-system)
+    ;; Disable tests for now. They pull in a lot of dependencies.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("python-ciso8601" ,python-ciso8601)
+       ("python-asynctest" ,python-asynctest)
+       ("python-nose2" ,python-nose2)))
+    (propagated-inputs
+     `(("python-aiosqlite" ,python-aiosqlite)
+       ("python-pypika" ,python-pypika)
+       ("python-typing-extensions"
+        ,python-typing-extensions)))
+    (home-page
+     "https://github.com/tortoise/tortoise-orm")
+    (synopsis
+     "Easy async ORM for python, built with relations in mind")
+    (description
+     "Tortoise ORM is an easy-to-use asyncio ORM (Object Relational Mapper)
+inspired by Django.  Tortoise ORM was build with relations in mind and
+admiration for the excellent and popular Django ORM.  It’s engraved in its
+design that you are working not with just tables, you work with relational
+data.")
+    (license license:asl2.0)))
+
 (define-public sqlcipher
   (package
     (name "sqlcipher")
@@ -2716,6 +2740,29 @@ translate the complete SQLite API into Python.")
 (define-public python2-apsw
   (package-with-python2 python-apsw))
 
+(define-public python-aiosqlite
+  (package
+    (name "python-aiosqlite")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "aiosqlite" version))
+       (sha256
+        (base32
+         "1f3zdldp9zgrw6qz5fsp3wa5zw73cjf139pj4vf24ryv895320jg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-aiounittest" ,python-aiounittest)))
+    (home-page "https://github.com/jreese/aiosqlite")
+    (synopsis
+     "Asyncio bridge for sqlite3")
+    (description
+     "The package aiosqlite replicates the standard sqlite3 module, but with
+async versions of all the standard connection and cursor methods, and context
+managers for automatically closing connections.")
+    (license license:expat)))
+
 (define-public python2-neo4j-driver
   (package
     (name "python2-neo4j-driver")
@@ -3023,6 +3070,27 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 
 (define-public python2-sql
   (package-with-python2 python-sql))
+
+(define-public python-pypika
+  (package
+    (name "python-pypika")
+    (version "0.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PyPika" version))
+       (sha256
+        (base32
+         "0qzn5vygirg52dlizm6ayzdc5llq8p2krrx0kymr236lrz89wqp8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-parameterized" ,python-parameterized)))
+    (home-page "https://github.com/kayak/pypika")
+    (synopsis "SQL query builder API for Python")
+    (description
+     "PyPika is a python SQL query builder that exposes the full richness of
+the SQL language using a syntax that reflects the resulting query.")
+    (license license:asl2.0)))
 
 (define-public mongo-tools
   (package

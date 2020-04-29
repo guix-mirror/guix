@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -33,6 +33,7 @@
   #:use-module (guix modules)
   #:use-module (guix monads)
   #:use-module (guix store)
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -60,6 +61,14 @@
 ;;; Profile creation.
 ;;;
 
+(define not-config?
+  ;; Select (guix …) and (gnu …) modules, except (guix config).
+  (match-lambda
+    (('guix 'config) #f)
+    (('guix rest ...) #t)
+    (('gnu rest ...) #t)
+    (_ #f)))
+
 (define* (switch-system-program os #:optional profile)
   "Return an executable store item that, upon being evaluated, will create a
 new generation of PROFILE pointing to the directory of OS, switch to it
@@ -67,9 +76,11 @@ atomically, and run OS's activation script."
   (program-file
    "switch-to-system.scm"
    (with-extensions (list guile-gcrypt)
-     (with-imported-modules (source-module-closure '((guix config)
-                                                     (guix profiles)
-                                                     (guix utils)))
+     (with-imported-modules `(,@(source-module-closure
+                                 '((guix profiles)
+                                   (guix utils))
+                                 #:select? not-config?)
+                              ((guix config) => ,(make-config.scm)))
        #~(begin
            (use-modules (guix config)
                         (guix profiles)
@@ -89,7 +100,8 @@ atomically, and run OS's activation script."
   "Using EVAL, a monadic procedure taking a single G-Expression as an argument,
 create a new generation of PROFILE pointing to the directory of OS, switch to
 it atomically, and run OS's activation script."
-  (eval #~(primitive-load #$(switch-system-program os profile))))
+  (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+            (primitive-load #$(switch-system-program os profile)))))
 
 
 ;;;
@@ -165,10 +177,11 @@ services as defined by OS."
                                         (map live-service-canonical-name
                                              live-services)))
              (service-files (map shepherd-service-file target-services)))
-        (eval #~(primitive-load #$(upgrade-services-program service-files
-                                                            to-start
-                                                            to-unload
-                                                            to-restart)))))))
+        (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+                  (primitive-load #$(upgrade-services-program service-files
+                                                              to-start
+                                                              to-unload
+                                                              to-restart))))))))
 
 
 ;;;
@@ -184,10 +197,13 @@ BOOTLOADER-PACKAGE."
   (program-file
    "install-bootloader.scm"
    (with-extensions (list guile-gcrypt)
-     (with-imported-modules (source-module-closure '((gnu build bootloader)
-                                                     (gnu build install)
-                                                     (guix store)
-                                                     (guix utils)))
+     (with-imported-modules `(,@(source-module-closure
+                                 '((gnu build bootloader)
+                                   (gnu build install)
+                                   (guix store)
+                                   (guix utils))
+                                 #:select? not-config?)
+                              ((guix config) => ,(make-config.scm)))
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build install)
@@ -195,8 +211,10 @@ BOOTLOADER-PACKAGE."
                         (guix store)
                         (guix utils)
                         (ice-9 binary-ports)
+                        (ice-9 match)
                         (srfi srfi-34)
                         (srfi srfi-35))
+
            (let* ((gc-root (string-append #$target %gc-roots-directory "/bootcfg"))
                   (new-gc-root (string-append gc-root ".new")))
              ;; #$bootcfg has dependencies.
@@ -218,7 +236,11 @@ BOOTLOADER-PACKAGE."
                    (#$installer #$bootloader-package #$device #$target))
                  (lambda args
                    (delete-file new-gc-root)
-                   (apply throw args))))
+                   (match args
+                     (('%exception exception)     ;Guile 3 SRFI-34 or similar
+                      (raise-exception exception))
+                     ((key . args)
+                      (apply throw key args))))))
              ;; We are sure that the installation of the bootloader
              ;; succeeded, so we can replace the old GC root by the new
              ;; GC root now.
@@ -237,9 +259,10 @@ additional configurations specified by MENU-ENTRIES can be selected."
          (package (bootloader-package bootloader))
          (device (bootloader-configuration-target configuration))
          (bootcfg-file (bootloader-configuration-file bootloader)))
-    (eval #~(primitive-load #$(install-bootloader-program installer
-                                                          package
-                                                          bootcfg
-                                                          bootcfg-file
-                                                          device
-                                                          target)))))
+    (eval #~(parameterize ((current-warning-port (%make-void-port "w")))
+              (primitive-load #$(install-bootloader-program installer
+                                                            package
+                                                            bootcfg
+                                                            bootcfg-file
+                                                            device
+                                                            target))))))

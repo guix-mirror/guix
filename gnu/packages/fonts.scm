@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
-;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
 ;;; Copyright © 2018 Charlie Ritter <chewzerita@posteo.net>
 ;;; Copyright © 2018 Gabriel Hondet <gabrielhondet@gmail.com>
@@ -30,6 +30,9 @@
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,9 +65,11 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages xorg))
 
 (define-public font-ibm-plex
@@ -228,9 +233,9 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 50 Cyrillic-based languages as well as Greek and IPA phonetics.")
     (license license:silofl1.1)))
 
-(define-public font-gnu-freefont-ttf
+(define-public font-gnu-freefont
   (package
-    (name "font-gnu-freefont-ttf")
+    (name "font-gnu-freefont")
     (version "20120503")
     (source (origin
              (method url-fetch)
@@ -247,18 +252,41 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
                    (lambda _
                      (let ((doc-dir  (string-append %output "/share/doc/"
                                                     ,name "-" ,version))
-                           (font-dir (string-append %output
-                                                    "/share/fonts/truetype")))
+                           (ttf-font-dir (string-append %output
+                                                        "/share/fonts/ttf"))
+                           (otf-font-dir (string-append %output
+                                                        "/share/fonts/otf"))
+                           (woff-font-dir (string-append %output
+                                                         "/share/fonts/woff")))
                        (mkdir-p doc-dir)
                        (substitute* "Makefile"
                          (("\\$\\(TMPDIR\\)") doc-dir)
-                         (("sfd/\\*.ttf") ""))
-                       (system* "make" "ttftar")
-                       (mkdir-p font-dir)
+                         (("sfd/\\*.ttf") "")
+                         (("sfd/\\*.otf") "")
+                         (("sfd/\\*.woff") ""))
+                       ;; XXX The FreeFont Makefile tries to use the current
+                       ;; time and date as names for generated files, and fails
+                       ;; silently. But the fonts are still installed, so we
+                       ;; leave the issue alone for now.
+                       ;; See <https://bugs.gnu.org/40783>
+                       (system* "make" "ttftar" "otftar" "wofftar")
+                       (mkdir-p ttf-font-dir)
+                       (mkdir-p otf-font-dir)
+                       (mkdir-p woff-font-dir)
                        (for-each (lambda (file)
-                                   (install-file file font-dir))
+                                   (install-file file ttf-font-dir))
                                  (filter
                                    (lambda (file) (string-suffix? "ttf" file))
+                                   (find-files "." "")))
+                       (for-each (lambda (file)
+                                   (install-file file otf-font-dir))
+                                 (filter
+                                   (lambda (file) (string-suffix? "otf" file))
+                                   (find-files "." "")))
+                       (for-each (lambda (file)
+                                   (install-file file woff-font-dir))
+                                 (filter
+                                   (lambda (file) (string-suffix? "woff" file))
                                    (find-files "." "")))))))
        #:test-target "tests"))
     ;; replace python 3 with python 2
@@ -276,6 +304,9 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
     (license license:gpl3+)
     (properties '((upstream-name . "freefont")
                   (ftp-directory . "/gnu/freefont")))))
+
+(define-public font-gnu-freefont-ttf
+  (deprecated-package "font-gnu-freefont-ttf" font-gnu-freefont))
 
 (define-public font-liberation
   (package
@@ -558,17 +589,16 @@ fonts.")
 (define-public font-rachana
   (package
     (name "font-rachana")
-    (version "7.0")
+    (version "7.0.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/smc/rachana/repository/archive.tar.gz?ref=Version"
-             version))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/smc/fonts/rachana")
+             (commit (string-append "Version" version))))
        (sha256
-        (base32
-         "0jc091gshna6p1dd6lf507jxkgk6rsja835fc9dm71mcplq53bm1"))))
+        (base32 "0r100pvk56y1s38nbv24d78s8nd7dkblgasbn8s887dzj6dps23d"))
+       (file-name (git-file-name name version))))
     (build-system font-build-system)
     (home-page "https://smc.org.in")
     (synopsis "Malayalam font")
@@ -649,7 +679,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "12.1.04")
+    (version "13.0.01")
     (source
      (origin
        (method url-fetch)
@@ -659,7 +689,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "1h5dyhg4j8sh4qpbwnsn34igb8mfapz5b3nf4k71hq1c5z3j0mcv"))))
+        (base32 "1svzm3xahb2m8r79ha9gb1z3zlckykx9d87cghswj7dxn9868j4b"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -702,7 +732,7 @@ for use at smaller text sizes")))
      "GNU Unifont is a bitmap font covering essentially all of
 Unicode's Basic Multilingual Plane.  The package also includes
 utilities to ease adding new glyphs to the font.")
-    (home-page "http://unifoundry.com/unifont.html")
+    (home-page "http://unifoundry.com/unifont/index.html")
     (properties '((upstream-name . "unifont")))
     (license license:gpl2+)))
 
@@ -1177,6 +1207,50 @@ programming.  Iosevka is completely generated from its source code.")
        (sha256
         (base32 "1rkmgi08kknc1fg54zpa6w92m3b3v7pc8cpwygz22kgd2h0mdrr8"))))))
 
+(define-public font-iosevka-term
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-term")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/02-iosevka-term-" version ".zip"))
+       (sha256
+        (base32
+         "1mxlb3qf64nykjd0x4gjfvib3k5kyv9ssv9iyzxxgk2z80bydz00"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*"))
+             #t)))))))
+
+(define-public font-iosevka-term-slab
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-term-slab")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/06-iosevka-term-slab-" version ".zip"))
+       (sha256
+        (base32
+         "1gc16hih157qy6vpa8f88psq0fnksiigi3msqazc75zsm3z4kzqj"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*"))
+             #t)))))))
+
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
         (revision "1"))
@@ -1569,7 +1643,7 @@ This package provides the TrueType fonts.")
 (define-public font-jetbrains-mono
   (package
     (name "font-jetbrains-mono")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -1577,7 +1651,7 @@ This package provides the TrueType fonts.")
         (string-append "https://download.jetbrains.com/fonts/"
                        "JetBrainsMono-" version ".zip"))
        (sha256
-        (base32 "0qlp4902i1v6ni04b6gdip8rxw6wpkdk9w7dir1yn9an5mvbkyar"))))
+        (base32 "0zvhwmpdwpm4vywmm6i9a4najz0c7vfi411yikgkd66l5hwd1p6f"))))
     (build-system font-build-system)
     (home-page "https://www.jetbrains.com/lp/mono/")
     (synopsis "Mono typeface for developers")
@@ -1625,3 +1699,43 @@ always uses Farsi digits, and does not include Latin glyphs from Roboto.
            (license:x11-style           ; ...the Bitstream Vera typeface
             "file://LICENSE" "Bitstream Vera License")
            license:asl2.0))))           ; Latin glyphs from Roboto
+
+(define-public font-meera-inimai
+  (package
+    (name "font-meera-inimai")
+    (version "2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/smc/meera-inimai")
+             (commit "0f39cdd7dbf1b6d1bed7df85834d33789dce20a7")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1x5mhrpx24imh0r4l83mkaiszxgwi1q4ppyyvq63h3ddwk20cwdg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("fontforge" ,fontforge)
+       ("harfbuzz" ,harfbuzz "bin")
+       ("python" ,python-minimal)
+       ("python-fonttools" ,python-fonttools)
+       ("python-google-brotli" ,python-google-brotli)))
+    (arguments
+     `(#:make-flags (list "PY=python3"
+                          (string-append "DESTDIR=" %output)
+                          "fontpath=/share/fonts/truetype")
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (home-page "https://gitlab.com/smc/meera-inimai")
+    (synopsis "Meera Inimai Tamil font")
+    (description "Meera Inimai is a Unicode font for the Tamil Script.  Meera
+Inimai is a san-serif typeface.  It is best used as a screen font for body
+text.  It is also useful for body text of printed pamphlets or single page
+designs.  Meera Inimai can be thought of as similar to Helvetica and its
+variation Arial.  Tamil characters are inherently vertically-elliptical.  The
+orthography of Roman glyphs of Meera Inimai are also based on this
+characteristic so that they sit smoothly with the Tamil glyphs.")
+    (license license:silofl1.1)))

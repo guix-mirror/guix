@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,13 @@
              ;; again.
              (substitute* "test/00/t0077a.sh"
                (("ar qc") "ar qcU"))
+
+             ;; Guix builds have LC_ALL set to "en_US.utf8", which causes
+             ;; `date` to use a 12-hour clock instead of 24h, which in turn
+             ;; makes t0217a.sh fail because of unexpected date output.
+             (substitute* "test/02/t0217a.sh"
+               (("export TZ")
+                "export TZ\nLC_ALL=POSIX\nexport LC_ALL"))
 
              (setenv "SH" (which "sh"))
              #t)))))

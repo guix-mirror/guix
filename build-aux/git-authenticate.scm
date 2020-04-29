@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -148,10 +149,10 @@
      "F2A3 8D7E EB2B 6640 5761  070D 0ADE E100 9460 4D37")
     ("nckx"
      ;; primary: "F5BC 5534 C36F 0087 B39D  36EF 1C9D C4FE B9DB 7C4B"
-     "7E8F AED0 0944 78EF 72E6  4D16 D889 B0F0 18C5 493C")
-    ("nckx (2nd)"
-     ;; primary: "F5BC 5534 C36F 0087 B39D  36EF 1C9D C4FE B9DB 7C4B"
      "F5DA 2032 4B87 3D0B 7A38  7672 0DB0 FF88 4F55 6D79")
+    ("nckx (revoked; not compromised)"
+     ;; primary: "F5BC 5534 C36F 0087 B39D  36EF 1C9D C4FE B9DB 7C4B"
+     "7E8F AED0 0944 78EF 72E6  4D16 D889 B0F0 18C5 493C")
     ("niedzejkob"
      "E576 BFB2 CF6E B13D F571  33B9 E315 A758 4613 1564")
     ("ngz"

@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
 
 (define-public openldap
   (package
+   (replacement openldap/fixed)
    (name "openldap")
    (version "2.4.47")
    (source (origin
@@ -109,6 +111,13 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "https://www.openldap.org/")))
+
+(define openldap/fixed
+  (package
+    (inherit openldap)
+    (source
+      (origin (inherit (package-source openldap))
+              (patches (search-patches "openldap-CVE-2020-12243.patch"))))))
 
 (define-public nss-pam-ldapd
   (package

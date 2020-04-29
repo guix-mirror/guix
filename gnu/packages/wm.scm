@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2017, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
@@ -33,6 +33,7 @@
 ;;; Copyright © 2019, 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,8 +62,10 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -97,6 +100,7 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages suckless)
@@ -146,7 +150,7 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.7.2")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -154,9 +158,9 @@ the leaves of a full binary tree.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kc18aj9j3nfz6fj4qxg9s3gg4jvn6kzi3ii24hfm0vqdpy17xnz"))
+         "0c1lf82z6a56g8asin91cmqhzk3anw0xwc44b31bpjixadmns57y"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (inputs
      `(("dzen"        ,dzen)
        ("dmenu"       ,dmenu)
@@ -166,14 +170,20 @@ the leaves of a full binary tree.")
        ("xsetroot"    ,xsetroot)
        ("libx11"      ,libx11)
        ("libxext"     ,libxext)
-       ("libxinerama" ,libxinerama)))
+       ("libxinerama" ,libxinerama)
+       ("libxrandr"   ,libxrandr)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("asciidoc"   ,asciidoc)
+       ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     '(#:tests? #f
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "-DCC=gcc"
+               (string-append "-DCMAKE_INSTALL_SYSCONF_PREFIX=" out "/etc")
+               (string-append "-DBASHCOMPLETIONDIR=" out "/etc/bash_completion.d")))
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check)
          (add-after 'install 'install-xsession
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -188,15 +198,7 @@ the leaves of a full binary tree.")
                      Comment=Manual tiling window manager~@
                      Exec=~a/bin/herbstluftwm~@
                      Type=XSession~%" out)))
-               #t))))
-       #:tests? #f
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list "CC=gcc"
-               (string-append "PREFIX=''")
-               (string-append "DESTDIR=" out)
-               (string-append "BASHCOMPLETIONDIR=" out
-                              "/etc/bash_completion.d")))))
+               #t))))))
     (synopsis "Tiling window manager for X11")
     (description "herbstluftwm is a manual tiling window manager for X11 using
 Xlib and GLib.  Its main features are:
@@ -1657,8 +1659,136 @@ productive, customizable lisp based systems.")
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
 
+(define-public stumpish
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "stumpish")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("bash" ,bash)
+         ("rlwrap" ,rlwrap)))
+      (build-system trivial-build-system)
+      (arguments
+       '(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (copy-recursively (assoc-ref %build-inputs "source") ".")
+           (chdir "util/stumpish")
+           (substitute* "stumpish"
+             (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
+                                        "/bin/rlwrap"))
+             (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
+                                         "/bin/bash")))
+           (install-file "stumpish" (string-append %output "/bin")))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "StumpWM interactive shell")
+      (description "This package provides a StumpWM interactive shell.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+
 (define-public sbcl-stumpwm+slynk
   (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
+
+(define-public sbcl-stumpwm-ttf-fonts
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-ttf-fonts")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")
+         ("clx-truetype" ,sbcl-clx-truetype)))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/ttf-fonts"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Implementation of TTF font rendering for Lisp")
+      (description "This package provides a Lisp implementation of TTF font
+rendering.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+
+(define-public sbcl-stumpwm-globalwindows
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-globalwindows")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/globalwindows"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Manipulate all windows in the current X session")
+      (description "This package provides a StumpWM module to manipulate all
+windows in the current X session.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+
+(define-public sbcl-stumpwm-swm-gaps
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-swm-gaps")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/swm-gaps"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Gaps between windows for StumpWM")
+      (description "This package provides a StumpWM module which adds gaps
+between windows.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")

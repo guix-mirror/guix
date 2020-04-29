@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -47,18 +47,18 @@
 (define-public libzen
   (package
     (name "libzen")
-    (version "0.4.37")
+    (version "0.4.38")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
               ;; Consider an alternate source or report upstream if this
               ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
-                                  name "/" version "/"
-                                  name "_" version ".tar.bz2"))
+                                  "libzen/" version "/"
+                                  "libzen_" version ".tar.bz2"))
               (sha256
                (base32
-                "1dkqbgabzpa6bd7dkqrvd35sdxrhr6qxalb88f3dw0afk65xqb0k"))))
+                "1nkygc17sndznpcf71fdrhwpm8z9a3hc9csqlafwswh49axhfkjr"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -66,7 +66,7 @@
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       ;; build scripts not in root of archive
+       ;; The build scripts are not at the root of the archive.
        (modify-phases %standard-phases
          (add-after 'unpack 'pre-configure
            (lambda _
@@ -262,7 +262,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.8")
+    (version "0.6.13")
     (source (origin
               (method git-fetch)
               (uri
@@ -271,7 +271,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "13gm8vm1b9nzvlcc632f9khnjw1xdjqj6c7k51r173y1hlk0div7"))
+                "0py70lm2i3sxzpgca2cic8zfn6dn18q837h76a5fchl2c0kpxm91"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)

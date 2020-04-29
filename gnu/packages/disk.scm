@@ -16,6 +16,8 @@
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,10 +47,13 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
@@ -60,6 +65,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
@@ -69,6 +75,7 @@
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
@@ -78,6 +85,52 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
+
+(define-public udevil
+  (package
+    (name "udevil")
+    (version "0.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/IgnorantGuru/udevil.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x9mjr9abvbxzfa9mrip5264iz1qxvsl01k3ybz95q4a7xl4jcb3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-systemd"
+             (string-append "--sysconfdir="
+                            (assoc-ref %outputs "out")
+                            "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-root-reference
+           (lambda _
+             (substitute* "src/Makefile.in"
+               (("-o root -g root") ""))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cifs-utils" ,cifs-utils)
+       ("curlftpfs" ,curlftpfs)
+       ("eudev" ,eudev)
+       ("fakeroot" ,fakeroot)
+       ("glib" ,glib)
+       ("sshfs" ,sshfs)))
+    (synopsis "Device and file system manager")
+    (description "udevil is a command line program that mounts and unmounts
+removable devices without a password, shows device info, and monitors device
+changes.  It can also mount ISO files, NFS, SMB, FTP, SSH and WebDAV URLs, and
+tmpfs/ramfs filesystems.")
+    (home-page "https://ignorantguru.github.io/udevil/")
+    (license license:gpl3+)))
 
 (define-public parted
   (package
@@ -368,12 +421,12 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
        ("parted" ,parted)
        ("glib" ,glib)
        ("gtkmm" ,gtkmm)
-       ("libxml2" ,libxml2)
-       ("yelp-tools" ,yelp-tools)))
+       ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
        ("lvm2" ,lvm2) ; for tests
+       ("yelp-tools" ,yelp-tools)
        ("pkg-config" ,pkg-config)))
     (home-page "https://gparted.org/")
     (synopsis "Partition editor to graphically manage disk partitions")
@@ -617,7 +670,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "67")
+    (version "68")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -626,7 +679,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "076jgw1g2aafqgnq705in0wnabysqk46dq5yxdv1qzgjmyhka39n"))))
+                "0xmim7z4qp6x2ggndnbwd940c73pa1qlf3hxyn3qh5pyr69nh9y8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
@@ -855,3 +908,49 @@ written in Go.  It is heavily inspired by ranger with some missing and
 extra features.  Some of the missing features are deliberately omitted
 since they are better handled by external tools.")
     (license license:expat)))
+
+(define-public xfe
+  (package
+    (name "xfe")
+    (version "1.43.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/xfe/files/xfe/"
+                       version
+                       "/xfe-" version ".tar.gz"))
+       (sha256
+        (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fox" ,fox)
+       ("freetype" ,freetype)
+       ("x11" ,libx11)
+       ("xcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ("xft" ,libxft)
+       ("xrandr" ,libxrandr)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-xferc-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (xferc   (string-append out "/share/xfe/xferc")))
+               (substitute* "src/XFileExplorer.cpp"
+                 (("/usr/share/xfe/xferc") xferc))
+               #t))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "BASH_COMPLETION_DIR=" out
+                              "/share/bash-completion/completions")))))
+    (synopsis "File Manager for X-Based Graphical Systems")
+    (description"XFE (X File Explorer) is a file manager for X.  It is based on
+the popular but discontinued, X Win Commander.  It aims to be the file manager
+of choice for all light thinking Unix addicts!")
+    (home-page "http://roland65.free.fr/xfe/")
+    (license license:gpl2+)))

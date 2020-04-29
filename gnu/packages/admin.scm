@@ -32,6 +32,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,53 +50,67 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages admin)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix utils)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autogen)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages c)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dns)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages libbsd)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages guile)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages inkscape)
+  #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages libftdi)
+  #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
+  #:use-module (gnu packages patchutils)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
-  #:use-module (gnu packages tcl)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages cross-base)
-  #:use-module (gnu packages tls)
-  #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages bison)
-  #:use-module (gnu packages flex)
-  #:use-module (gnu packages gl)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages openldap)
-  #:use-module (gnu packages mcrypt)
-  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
@@ -103,28 +118,61 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages groff)
-  #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages libunwind)
-  #:use-module (gnu packages libusb)
-  #:use-module (gnu packages libftdi)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages man)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages kerberos)
-  #:use-module (gnu packages gtk)
-  #:use-module (gnu packages xml)
-  #:use-module (gnu packages boost)
-  #:use-module (gnu packages elf)
-  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
+
+(define-public ktsuss
+  (package
+    (name "ktsuss")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nomius/ktsuss.git")
+         (commit version)))
+       (sha256
+        (base32 "0q9931f9hp47v1n8scli4bdg2rkjpf5jf8v7jj2gdn83aia1r2hz"))
+       (file-name (git-file-name name version))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-sudo=yes")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-file-names
+           (lambda _
+             (substitute* "configure.ac"
+               (("supath=`which su 2>/dev/null`")
+                "supath=/run/setuid-programs/su")
+               (("sudopath=`which sudo 2>/dev/null`")
+                "sudopath=/run/setuid-programs/sudo"))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+-2)))
+    (synopsis "Graphical front end for @command{su}")
+    (description
+     "Ktsuss stands for ``Keep the @command{su} simple, stupid''.
+It is a graphical version of @command{su} written in C and GTK+ 2, with
+simplicity in mind.")
+    (home-page "https://github.com/nomius/ktsuss")
+    (license license:bsd-3)))
 
 (define-public aide
   (package
@@ -197,14 +245,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07j3vd0y8zab2nwbrwj0ahrfif1ldm5sjssn7m3dw4s307fsrfzx"))))
+                "02lbc8z5gd8v8wfi4yh1zww8mk03w0zcwnmk4l4p3vpjlvlb63ll"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -238,6 +286,16 @@ interface and is based on GNU Guile.")
        ("guile" ,guile-next)))
     (inputs
      `(("guile" ,guile-next)))))
+
+(define-public guile2.0-shepherd
+  (package
+    (inherit shepherd)
+    (name "guile2.0-shepherd")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.0)))
+    (inputs
+     `(("guile" ,guile-2.0)))))
 
 (define-public cloud-utils
   (package
@@ -766,7 +824,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "14")
+         (bind-patch-version "18")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -902,7 +960,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1pv3bvm9dzyz2kqjkw15sgh0hd5fzsv274v5z6jp9c4nb5130fyr"))))
+                      "0vws0zzb39mkphj4hhjrgfj9dzw951lc4pfa6pqg5ll5ma51mbsr"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1267,9 +1325,10 @@ system administrator.")
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
        #:tests? #f))
+    (native-inputs
+     `(("groff" ,groff)))
     (inputs
-     `(("groff" ,groff)
-       ("linux-pam" ,linux-pam)
+     `(("linux-pam" ,linux-pam)
        ("zlib" ,zlib)
        ("coreutils" ,coreutils)))
     (home-page "https://www.sudo.ws/")
@@ -1583,7 +1642,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200214")
+    (version "20200326")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1591,7 +1650,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0jdasziq184l3iqyp5vhrsbi6g89n10wr0ssliiz0xi3dqwsxcqk"))))
+                "0y08l6djjn87jmsp5kj0myjdb48000g20xlfs0a22jzzi383h3by"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2474,7 +2533,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.29")
+    (version "3.30")
     (source
      (origin
        (method git-fetch)
@@ -2483,7 +2542,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qhxwjjgrzpqrqjv7l2847ywpln76lyd6j8bl9gz2r6kl0fx2fqs"))
+        (base32 "0fnf78956pwhb9cgv1jmgypnkma5xzflkivfrkfiadbgin848yfg"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2505,7 +2564,8 @@ throughput (in the same interval).")
        ("python-pyte" ,python-pyte)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("python-mock" ,python-mock)
+     `(("go" ,go)
+       ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-pytest-mock" ,python-pytest-mock)))
     (home-page "https://github.com/nvbn/thefuck")
@@ -2622,6 +2682,7 @@ shortcut syntax and completion options.")
               (uri (string-append
                     "https://archives.eyrie.org/software/kerberos/"
                     "pam-krb5-" version ".tar.xz"))
+              (patches (search-patches "pam-krb5-CVE-2020-10595.patch"))
               (sha256
                (base32
                 "1qjp8i1s9bz7g6kiqrkzzkxn5pfspa4sy53b6z40fqmdf9przdfb"))))
@@ -2865,7 +2926,7 @@ buffers.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://cgit.freedesktop.org/xorg/app/intel-gpu-tools/")
+    (home-page "https://gitlab.freedesktop.org/drm/igt-gpu-tools")
     (synopsis "Tools for development and testing of the Intel DRM driver")
     (description "IGT GPU Tools is a collection of tools for development and
 testing of the Intel DRM driver.  There are many macro-level test suites that
@@ -2877,9 +2938,6 @@ low-level tools and tests specifically for development and testing of the
 Intel DRM Driver.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:expat)))
-
-(define-public intel-gpu-tools
-  (deprecated-package "intel-gpu-tools" igt-gpu-tools))
 
 (define-public fabric
   (package

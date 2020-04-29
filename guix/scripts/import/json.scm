@@ -23,7 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix scripts)
   #:use-module (guix import utils)
-  #:use-module (guix import print)
+  #:use-module (guix import json)
   #:use-module (guix scripts import)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
@@ -88,14 +88,8 @@ Import and convert the JSON package definition in PACKAGE-FILE.\n"))
                            (reverse opts))))
     (match args
       ((file-name)
-       (catch 'json-invalid
-         (lambda ()
-           (let ((json (json-string->scm
-                        (with-input-from-file file-name read-string))))
-             ;; TODO: also print define-module boilerplate
-             (package->code (alist->package json))))
-         (lambda _
-           (leave (G_ "invalid JSON in file '~a'~%") file-name))))
+       (or (json->code file-name)
+           (leave (G_ "invalid JSON in file '~a'~%") file-name)))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

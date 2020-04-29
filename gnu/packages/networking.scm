@@ -105,7 +105,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -121,6 +123,56 @@
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (ice-9 match))
+
+(define-public blueman
+  (package
+    (name "blueman")
+    (version "2.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/blueman-project/blueman/releases/"
+                       "download/2.1.2/blueman-2.1.2.tar.gz"))
+       (sha256
+        (base32 "0wamxdw36c8i3aqwmja5q70fajqwd7inpkvlpkldd54wdxbcd38d"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        "--enable-polkit"
+        "--disable-appindicator"         ; Deprecated
+        "--with-systemdsystemunitdir=no" ; Not required
+        "--with-systemduserunitdir=no")))  ; Not required
+    (native-inputs
+     `(("cython" ,python-cython)
+       ("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("bluez" ,bluez)
+       ("dbus" ,dbus)
+       ("gdkpixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("iproute2" ,iproute)
+       ("net-tools" ,net-tools)
+       ("pango" ,pango)
+       ("polkit" ,polkit)
+       ("pulseaudio" ,pulseaudio)
+       ("pycairo" ,python-pycairo)
+       ("pygobject" ,python-pygobject)
+       ("python" ,python-wrapper)
+       ("libnm" ,libnma)))
+    (synopsis "GTK+ Bluetooth manager")
+    (description "Blueman is a Bluetooth management utility using the Bluez
+D-Bus backend.  It is designed to be easy to use for most common Bluetooth
+tasks.")
+    (home-page "https://github.com/blueman-project/blueman")
+    (license license:gpl3+)))
 
 ;; The gnu.org ‘home’ for this GNU project is a directory listing with 1.6.0 as
 ;; the latest version.  The author's git repository, mentioned in the 1.6.0
@@ -608,14 +660,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.2")
+    (version "3.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0ygdxpz0i4jxp55fg9x4xcan093wycjb66yas073gviz9kpj6naz"))))
+        (base32 "1fpsfjrap7j84sy728yhcr2gad9nq3n5gq03mwrmxnc6ijwf81zh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -867,14 +919,15 @@ TCP connection, TLS handshake and so on) in the terminal.")
 (define-public squid
   (package
     (name "squid")
-    (version "4.10")
+    (version "4.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.squid-cache.org/Versions/v4/squid-"
                            version ".tar.xz"))
        (sha256
-        (base32 "07sz0adv8nkhy797675bpra7lvdkwjq9isw1ddgylhlazl511w4q"))))
+        (base32
+          "0z986kykx539wjqd7mr8y0abf3z6hz8byf8fmmbky9hh4ihlgnaf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2030,14 +2083,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.2")
+    (version "5.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "03j3fx357bh89n44a5v9wdc92azdx2d37j7jmlyr4z1kwzdhv446"))))
+        (base32 "0g2m08gmgdi3qvvqz6zy7n16np53sp232xd0rdc2vdhk73img6id"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2712,13 +2765,13 @@ protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
     (build-system gnu-build-system)
     (inputs
      `(("dbus" ,dbus)
-       ("libtool" ,libtool)
        ("ell" ,ell)
        ("readline" ,readline)))
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("libtool" ,libtool)
        ("pkgconfig" ,pkg-config)
        ("python" ,python)
        ("openssl" ,openssl)))

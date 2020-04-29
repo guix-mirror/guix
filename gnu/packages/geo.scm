@@ -1153,8 +1153,8 @@ persisted.
                (copy-file "JMapViewer.jar" (string-append dir "JMapViewer.jar"))))))))
     (home-page "https://wiki.openstreetmap.org/wiki/JMapViewer")
     (synopsis "OSM map integration in Java")
-    (description "JMapViewer is a Java component which allows to easily
-integrate an OSM map view into your Java application.  It is maintained as
+    (description "JMapViewer is a Java component which easily
+integrates an OSM map view into your Java application.  It is maintained as
 an independent project by the JOSM team.")
     (license license:gpl2)))
 
@@ -1292,7 +1292,7 @@ an independent project by the JOSM team.")
     (synopsis "OSM editor")
     (description "JOSM is an extensible editor for OpenStreetMap (OSM).  It
 supports loading GPX tracks, background imagery and OSM data from local
-sources as well as from online sources and allows to edit the OSM data (nodes,
+sources as well as from online sources and allows editing the OSM data (nodes,
 ways, and relations) and their metadata tags.")
     (license license:gpl2+)))
 
@@ -1933,6 +1933,22 @@ growing set of geoscientific methods.")
          (add-after 'wrap-python 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
              (wrap-qt-program (assoc-ref outputs "out") "qgis")
+             #t))
+         (add-after 'wrap-qt 'wrap-gis
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (saga (string-append (assoc-ref inputs "saga") "/bin"))
+                    (grass-version ,(package-version grass))
+                    (grass-majorminor (string-join
+                                       (list-head
+                                        (string-split grass-version #\.) 2)
+                                       ""))
+                    (grass (string-append (assoc-ref inputs "grass")
+                                          "/grass" grass-majorminor)))
+               (wrap-program (string-append out "/bin/qgis")
+                 `("PATH" ":" prefix (,saga))
+                 `("QGIS_PREFIX_PATH" = (,out))
+                 `("GISBASE" = (,grass))))
              #t)))))
     (inputs
      `(("exiv2" ,exiv2)

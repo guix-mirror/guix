@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -105,17 +105,20 @@ and time-efficient for good hash functions.")
 (define-public ssdeep
   (package
     (name "ssdeep")
-    (version "2.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ssdeep/"
-                                  name "-" version "/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1igqy0j7jrklb8fdlrm6ald4cyl1fda5ipfl8crzyl6bax2ajk3f"))))
+    (version "2.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ssdeep-project/ssdeep/"
+                           "releases/download/release-" version "/"
+                           "ssdeep-" version ".tar.gz"))
+       (sha256
+        (base32 "04qkjc6kksxkv7xbnk32rwmf3a8czdv2vvrdzfs0kw06h73snbpz"))))
     (build-system gnu-build-system)
-    (home-page "http://ssdeep.sourceforge.net")
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
+    (home-page "https://ssdeep-project.github.io")
     (synopsis "Context-triggered piecewise hashing algorithm")
     (description "ssdeep computes and matches context triggered piecewise
 hashes (CTPH), also called fuzzy checksums.  It can identify similar files
@@ -126,14 +129,14 @@ in between these sequences may be different in both content and length.")
 (define-public liburcu
   (package
     (name "liburcu")
-    (version "0.11.1")
+    (version "0.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.lttng.org/files/urcu/"
                                   "userspace-rcu-" version ".tar.bz2"))
               (sha256
                (base32
-                "0l1kxgzch4m8fxiz2hc8fwg56hrvzzspp7n0svnl7i7iycdrgfcj"))))
+                "03nd1gy2c3fdb6xwdrd5lr1jcjxbzffqh3z91mzbjhjn6k8fmymv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ; for tests
@@ -149,7 +152,7 @@ queues, stacks, and doubly-linked lists.")
 (define-public uthash
   (package
     (name "uthash")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method git-fetch)
@@ -158,8 +161,7 @@ queues, stacks, and doubly-linked lists.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0kslz8k6lssh7fl7ayzwlj62p0asxs3dq03357ls5ywjad238gqg"))))
+        (base32 "0k80bjbb6ss5wpmfmfji6xbyjm990hg9kcshwwnhdnh73vxkcd1m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -178,7 +180,7 @@ queues, stacks, and doubly-linked lists.")
            ;; There is no top-level Makefile to do this for us.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/" ,name))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
                     (include (string-append out "/include")))
                ;; Don't install HTML files: they're just the below .txt files
                ;; dolled up, can be stale, and regeneration requires asciidoc.

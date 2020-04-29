@@ -162,6 +162,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
+    (replacement gnutls-3.6.13)
     (version "3.6.9")
     (source (origin
              (method url-fetch)
@@ -244,10 +245,23 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define-public gnutls/guile-2.0
-  ;; GnuTLS for Guile 2.0.
+(define-public gnutls-3.6.13
   (package
     (inherit gnutls)
+    (version "3.6.A")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnutls/v"
+                                  (version-major+minor version)
+                                  "/gnutls-3.6.13.tar.xz"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
+              (sha256
+               (base32
+                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))))
+
+(define-public gnutls/guile-2.0
+  ;; GnuTLS for Guile 2.0.
+  (package/inherit gnutls
     (name "guile2.0-gnutls")
     (inputs `(("guile" ,guile-2.0)
               ,@(alist-delete "guile" (package-inputs gnutls))))))
@@ -257,8 +271,7 @@ required structures.")
   ;; Authentication of Named Entities.  This is required for GNS functionality
   ;; by GNUnet and gnURL.  This is done in an extra package definition
   ;; to have the choice between GnuTLS with Dane and without Dane.
-  (package
-    (inherit gnutls)
+  (package/inherit gnutls
     (name "gnutls-dane")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
@@ -266,8 +279,7 @@ required structures.")
 (define gnutls-3.6.10
   ;; This is for 'guile3.0-gnutls', below.  Version 3.6.10 is the first to
   ;; introduce Guile 2.9/3.0 support.
-  (package
-    (inherit gnutls)
+  (package/inherit gnutls
     (version "3.6.10")
     (source (origin
               (inherit (package-source gnutls))
@@ -286,8 +298,7 @@ required structures.")
        ("util-linux" ,util-linux)))))
 
 (define-public guile3.0-gnutls
-  (package
-    (inherit gnutls-3.6.10)
+  (package/inherit gnutls-3.6.10
     (name "guile3.0-gnutls")
     (arguments
      (substitute-keyword-arguments (package-arguments gnutls-3.6.10)
@@ -307,7 +318,7 @@ required structures.")
   (package
    (name "openssl")
    (version "1.1.1c")
-   (replacement openssl-1.1.1e)
+   (replacement openssl-1.1.1g)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -409,10 +420,10 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
-(define openssl-1.1.1e
+(define openssl-1.1.1g
   (package
    (inherit openssl)
-   (version "1.1.1e")
+   (version "1.1.1g")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -425,7 +436,7 @@ required structures.")
              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
              (sha256
               (base32
-               "1gnwlri1dphr5wdzmg9vlhkh6aq2yqgpfkpmffzwjlfb26n62kv9"))))))
+               "0ikdcc038i7jk8h7asq5xcn8b1xc2rrbc88yfm4hqbz3y5s4gc6x"))))))
 
 (define-public openssl-1.0
   (package

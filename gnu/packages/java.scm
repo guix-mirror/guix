@@ -9,8 +9,11 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +107,44 @@
 ;; second stage JDK with which we can build the OpenJDK with the Icedtea 1.x
 ;; build framework.  We then build the more recent JDKs Icedtea 2.x and
 ;; Icedtea 3.x.
+
+(define-public libantlr3c
+  (package
+    (name "libantlr3c")
+    (version "3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.antlr3.org/download/C/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0lpbnb4dq4azmsvlhp6khq1gy42kyqyjv8gww74g5lm2y6blm4fa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-debuginfo" "--disable-static")
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key build target native-inputs inputs outputs
+                              (configure-flags '()) out-of-source? system
+                              #:allow-other-keys)
+                      (let ((configure (assoc-ref %standard-phases 'configure))
+                            (enable-64bit? (member system '("aarch64-linux"
+                                                            "x86_64-linux"
+                                                            "mips64el-linux"))))
+                        (configure #:build build #:target target
+                                   #:native-inputs native-inputs
+                                   #:inputs inputs #:outputs outputs
+                                   #:configure-flags `(,(if enable-64bit?
+                                                            "--enable-64bit"
+                                                            '())
+                                                       ,@configure-flags)
+                                   #:out-of-source? out-of-source?)))))))
+    (synopsis "ANTLR C Library")
+    (description "LIBANTLR3C provides run-time C libraries for ANTLR3 (ANother
+Tool for Language Recognition v3).")
+    (home-page "https://www.antlr3.org/")
+    (license license:bsd-3)))
 
 (define jikes
   (package
@@ -3435,12 +3476,14 @@ an Ant task that extends the built-in @code{jar} task.")
     (name "java-hamcrest-core")
     (version "1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hamcrest/JavaHamcrest/"
-                                  "archive/hamcrest-java-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hamcrest/JavaHamcrest/")
+                     (commit (string-append "hamcrest-java-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "11g0s105fmwzijbv08lx8jlb521yravjmxnpgdx08fvg1kjivhva"))
+                "16fxxkrd31ahqvcaby30jgh3z1i0zxh51m24hxgz0z2agxj6bc63"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3540,13 +3583,14 @@ testing frameworks, mocking libraries and UI validation rules.")
     (name "java-junit")
     (version "4.12")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/junit-team/junit/"
-                                  "archive/r" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/junit-team/junit/")
+                     (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "090dn5v1vs0b3acyaqc0gjf6p8lmd2h24wfzsbq7sly6b214anws"))
+                "1j8avi91px1z8rjc89cfikwrvfifdmmsarwiyrcnr59ynvpz0v8h"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3559,7 +3603,7 @@ testing frameworks, mocking libraries and UI validation rules.")
        #:jar-name "junit.jar"))
     (inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "https://junit.org/")
+    (home-page "https://junit.org/junit4/")
     (synopsis "Test framework for Java")
     (description
      "JUnit is a simple framework to write repeatable tests for Java projects.
@@ -3572,13 +3616,14 @@ sharing common test data, and test runners for running tests.")
     (name "java-plexus-utils")
     (version "3.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/"
-                                  "plexus-utils/archive/plexus-utils-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-utils")
+                     (commit (string-append "plexus-utils-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ihfigar20lvk4pinii7dq05i173xphhw4iyrk6gjfy04m01j2lz"))))
+                "1mlx7xrq7lgqjqcpg7y4hi1ghavf28vvk3har82037dqx61n0f15"))))
     (build-system ant-build-system)
     ;; FIXME: The default build.xml does not include a target to install
     ;; javadoc files.
@@ -3625,13 +3670,14 @@ more.")
     (name "java-plexus-interpolation")
     (version "1.23")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/"
-                                  "plexus-interpolation/archive/"
-                                  "plexus-interpolation-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-interpolation")
+                     (commit (string-append "plexus-interpolation-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03377yzlx5q440m6sxxgv6a5qb8fl30zzcgxgc0hxk5qgl2z1jjn"))))
+                "005hxxg1adv71a96lz4vp65bk3v1pi76j4c45z29xzizclib16vl"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-interpolation.jar"
@@ -3655,13 +3701,14 @@ these two libraries to vary independently of one another.")
     (name "java-plexus-classworlds")
     (version "2.5.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/"
-                                  "plexus-classworlds/archive/plexus-classworlds-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-classworlds")
+                     (commit (string-append "plexus-classworlds-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1qm4p0rl8d82lzhsiwnviw11jnq44s0gflg78zq152xyyr2xmh8g"))))
+                "1iv8x55fbni2hg4l7pdpbwfq75xmvq1f25g6nxma8rcdpihsh13r"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-classworlds.jar"
@@ -3681,12 +3728,14 @@ components.")
     (name "java-plexus-container-default-bootstrap")
     (version "1.7.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-containers"
-                                  "/archive/plexus-containers-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-containers")
+                     (commit (string-append "plexus-containers-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xw5g30qf4a83608rw9v2hv8pfsz7d69dkdhk6r0wia4q78hh1pc"))))
+                "1316hrp5vqfv0aw7miq2fp0wwy833h66h502h29vnh5sxj27x228"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "container-default.jar"
@@ -3720,12 +3769,14 @@ implementation.")
     (name "java-plexus-io")
     (version "3.0.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-io"
-                                  "/archive/plexus-io-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-io")
+                     (commit (string-append "plexus-io-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f2j41kihaymxkpbm55smpxjja235vad8cgz94frfy3ppcp021dw"))))
+                "1h4q9l2j9sfbscvxpnyy2hazi0r83h3am86y4r959wrl1b24xxwd"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-io.jar"
@@ -3879,12 +3930,14 @@ from source tags and class annotations.")))
     (name "java-plexus-cipher")
     (version "1.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-cipher"
-                                  "/archive/plexus-cipher-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-cipher")
+                     (commit (string-append "plexus-cipher-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1j3r8xzlxlk340snkjp6lk2ilkxlkn8qavsfiq01f43xmvv8ymk3"))))
+                "0m638nzlxbmnbcj5cwdpgs326ab584yv0k803zlx37r6iqwvf6b0"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-cipher.jar"
@@ -3915,12 +3968,14 @@ and decryption.")
     (name "java-plexus-compiler-api")
     (version "2.8.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/plexus-compiler"
-                                  "/archive/plexus-compiler-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-compiler")
+                     (commit (string-append "plexus-compiler-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09vmxs0807wsd26nbrwwj5l8ycmzazqycj52l7w6wjvkryywi69h"))))
+                "1nq1gnn3s6z1j29gmi1hqbklsmm8b1lmnafb0191914f95mn18gk"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-compiler-api.jar"
@@ -3966,13 +4021,14 @@ Compiler component.")))
     (source (origin
               ;; This project doesn't tag releases or publish tarballs, so we take
               ;; the "prepare release plexus-sec-dispatcher-1.4" git commit.
-              (method url-fetch)
-              (uri (string-append "https://github.com/sonatype/plexus-sec-dispatcher/"
-                                  "archive/7db8f88048.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/plexus-sec-dispatcher/")
+                     (commit "7db8f880486e192a1c5ea9544e01e756c3d49d0f")))
               (sha256
                (base32
-                "1smfrk4n7xbrsxpxcp2j4i0j8q86j73w0w6xg7qz83dp6dagdjgp"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1ng4yliy4cqpjr4fxxjbpwyk1wkch5f8vblm1kvwf328s4gibszs"))
+              (file-name (git-file-name name version))))
     (arguments
      `(#:jar-name "plexus-sec-dispatcher.jar"
        #:source-dir "src/main/java"
@@ -4087,12 +4143,14 @@ Plexus components.")
     (name "java-sisu-build-api")
     (version "0.0.7")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sonatype/sisu-build-api/"
-                                  "archive/plexus-build-api-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sonatype/sisu-build-api")
+                     (commit (string-append "plexus-build-api-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c3rrpma3x634xp2rm2p5iskfhzdyc7qfbhjzr70agrl1jwghgy2"))))
+                "1d5w6c58gkx30d51v7qwv1xrhc0ly76848gihmgshj19yf6yhca0"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "sisu-build-api.jar"
@@ -4142,12 +4200,14 @@ project and determining what files need to be rebuilt.")
     (name "java-modello-core")
     (version "1.9.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/codehaus-plexus/modello"
-                                  "/archive/modello-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/modello")
+                     (commit (string-append "modello-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0l2pvns8pmlrmjm3iknp7gpg3654y1m8qhy55b19sdwdchdcyxfh"))))
+                "1di6ni42aqllpdvkpyfcw70352vr2i8wf6hd5nhd9kmqjb5dj5j4"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "modello-core.jar"
@@ -4314,7 +4374,7 @@ on the XPP3 API (XML Pull Parser).")))
     (version "6.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.forge.ow2.org/asm/"
+              (uri (string-append "https://download.forge.ow2.org/asm/"
                                   "asm-" version ".tar.gz"))
               (sha256
                (base32
@@ -4356,7 +4416,7 @@ on the XPP3 API (XML Pull Parser).")))
     (description "ASM is an all purpose Java bytecode manipulation and
 analysis framework.  It can be used to modify existing classes or dynamically
 generate classes, directly in binary form.  The provided common
-transformations and analysis algorithms allow to easily assemble custom
+transformations and analysis algorithms allow easily assembling custom
 complex transformations and code analysis tools.")
     (license license:bsd-3)))
 
@@ -4416,13 +4476,14 @@ to generate and transform Java byte code.")
     (name "java-objenesis")
     (version "2.5.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/easymock/objenesis/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append "objenesis-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/easymock/objenesis")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1va5qz1i2wawwavhnxfzxnfgrcaflz9p1pg03irrjh4nd3rz8wh6"))))
+                "054yi200wj00x6dp1sxfrwgndwywadsbn8d8ij1j0v45j9g2vdya"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "objenesis.jar"
@@ -4445,12 +4506,14 @@ constructor on object instantiation.")
     (name "java-easymock")
     (version "3.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/easymock/easymock/"
-                                  "archive/easymock-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/easymock/easymock/")
+                     (commit (string-append "easymock-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yzg0kv256ndr57gpav46cyv4a1ns5sj722l50zpxk3j6sk9hnmi"))))
+                "02vybm8hc0i0n9sp2f2iiqn54zwqhq835f76wc6b2m7819z5a8dq"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "easymock.jar"
@@ -4495,7 +4558,7 @@ constructor on object instantiation.")
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
-    (home-page "http://easymock.org")
+    (home-page "https://easymock.org/")
     (synopsis "Java library providing mock objects for unit tests")
     (description "EasyMock is a Java library that provides an easy way to use
 mock objects in unit testing.")
@@ -4506,13 +4569,14 @@ mock objects in unit testing.")
     (name "java-jmock")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jmock-developers/"
-                                  "jmock-library/archive/" version ".tar.gz"))
-              (file-name (string-append "jmock-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jmock-developers/jmock-library")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xmrlhq0fszldkbv281k9463mv496143vvmqwpxp62yzjvdkx9w0"))))
+                "0lkga995xd9b9mmzxmcd301hlw83p1h78nibh7djlx7wydscr85z"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "jars"
@@ -4520,7 +4584,7 @@ mock objects in unit testing.")
        #:phases
        (modify-phases %standard-phases
          (replace 'install (install-jars "build")))))
-    (home-page "http://www.jmock.org")
+    (home-page "http://jmock.org/")
     (synopsis "Mock object library for test-driven development")
     (description "JMock is a library that supports test-driven development of
 Java code with mock objects.  Mock objects help you design and test the
@@ -4543,13 +4607,14 @@ The jMock library
     (name "java-jmock")
     (version "2.8.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/jmock-developers/"
-                                  "jmock-library/archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/jmock-developers/jmock-library")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "18650a9g8xffcsdb6w91pbswa7f40fp2sh6s3nclkclz5dbzq8f0"))))
+                "12b7l22g3nrjvf2dzcw3z03fpd2chrgp0d8xkvn8w55rwb57pax6"))))
     (inputs
      `(("java-hamcrest-all" ,java-hamcrest-all)
        ("java-asm" ,java-asm)
@@ -6718,12 +6783,14 @@ This is a part of the Apache Commons Project.")
     (name "java-javaewah")
     (version "1.1.6")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lemire/javaewah/"
-                                  "archive/JavaEWAH-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lemire/javaewah/")
+                     (commit (string-append "JavaEWAH-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n7j1r1h24wlhwv9zdcj6yqjrhma2ixwyzm15l5vrv6yqjs6753b"))))
+                "1m8qcb1py76v7avbjjrkvyy6fhr5dk2ywy73gbsxqry04gkm2nhw"))))
     (build-system ant-build-system)
     (arguments `(#:jar-name "javaewah.jar"))
     (inputs
@@ -6736,7 +6803,7 @@ This is a part of the Apache Commons Project.")
 compression scheme.  It can be used to implement bitmap indexes.
 
 The goal of word-aligned compression is not to achieve the best compression,
-but rather to improve query processing time. Hence, JavaEWAH tries to save CPU
+but rather to improve query processing time.  Hence, JavaEWAH tries to save CPU
 cycles, maybe at the expense of storage.  However, the EWAH scheme is always
 more efficient storage-wise than an uncompressed bitmap (as implemented in the
 @code{BitSet} class by Sun).")
@@ -7025,13 +7092,14 @@ StringTemplate also powers ANTLR.")
     (name "antlr3")
     (version "3.5.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/antlr/antlr3/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/antlr/antlr3")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0218v683081lg54z9hvjxinhxd4dqp870jx6n39gslm0bkyi4vd6"))))
+                "0cafavrjmzqhklghrk8c2jqxkdwxgzskm20pbrfd3r41cn00dpnf"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name (string-append ,name "-" ,version ".jar")
@@ -7133,7 +7201,7 @@ tree walking, and translation.")
     (inputs
      `(("junit" ,java-junit)))))
 
-(define antlr3-3.3
+(define-public antlr3-3.3
   (package
     (inherit antlr3)
     (name "antlr3")
@@ -7352,7 +7420,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
     (home-page "https://github.com/barteo/microemu")
     (synopsis "J2ME CLDC emulator")
     (description "Microemulator is a Java 2 Micro Edition (J2ME) CLDC/MIDP
-Emulator.  It allows to demonstrate MIDlet based applications in web browser
+Emulator.  It demonstrates MIDlet based applications in web browser
 applet and can be run as a standalone java application.")
     (license (list license:asl2.0
                    ;; or altenatively:
@@ -8747,7 +8815,7 @@ make data-binding work.")
        ("hamcrest" ,java-hamcrest-core)))
     (home-page "https://hdrhistogram.github.io/HdrHistogram")
     (synopsis "High dynamic range histogram")
-    (description "Hdrhistogram allows to create histograms that support
+    (description "Hdrhistogram creates histograms that support
 recording and analyzing sampled data value counts across a configurable integer
 value range with configurable value precision within the range.  Value precision
 is expressed as the number of significant digits in the value recording, and
@@ -9049,12 +9117,14 @@ those in Perl and JavaScript.")
     (name "java-fest-util")
     (version "1.2.5")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-util/"
-                                  "archive/fest-util-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-util/")
+                     (commit (string-append "fest-util-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "05g6hljz5mdaakk8d7g32klbhz9bdwp3qlj6rdaggdidxs3x1sb8"))))
+                "02kgal7v85snyyvcsxvn4qphid455f4smh2wri1il8d9asw0djbz"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-util.jar"
@@ -9072,12 +9142,14 @@ those in Perl and JavaScript.")
     (name "java-fest-test")
     (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-test/"
-                                  "archive/fest-test-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-test/")
+                     (commit (string-append "fest-test-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rxfbw6l9vc65iy1x3fb617qc6y4w2k430pgf1mfbxfdlxbm0f7g"))))
+                "0mg1d2jfh7kbx2c40dchbjr6d8pv59snsyb13mfxsr7xk5n69qbn"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-test.jar"
@@ -9095,12 +9167,14 @@ those in Perl and JavaScript.")
     (name "java-fest-assert")
     (version "2.0M10")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/alexruiz/fest-assert-2.x/"
-                                  "archive/fest-assert-core-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/alexruiz/fest-assert-2.x/")
+                     (commit (string-append "fest-assert-core-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1bi0iqavikzww6rxvz5jyg7y6bflv95s6ibryxx0xfcxrrw6i5lw"))))
+                "1cp8zzyag3s85fz2w68sda9zzaal1y5f9wl8g72wkm12an40w6by"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-fest-assert.jar"
@@ -9371,13 +9445,14 @@ by technical operatives or consultants working with enterprise platforms.")
     (name "java-lz4")
     (version "1.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lz4/lz4-java/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lz4/lz4-java")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "096dm57p2lzqk28n0j2p52x2j3cvnsd2dfqn43n7vbwrkjsy7y54"))))
+                "0ydjakhv3cz34mfvv14qrh2ksdxifgjwwagjy7r46qr3f68hnf6y"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "lz4.jar"
@@ -9386,6 +9461,10 @@ by technical operatives or consultants working with enterprise platforms.")
        #:tests? #f; FIXME: requires more dependencies
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-before 'configure 'generate-source
            (lambda _
              (with-directory-excursion "src/build/source_templates"
@@ -9404,13 +9483,15 @@ algorithms and xxHash hashing algorithm.")
     (name "java-bouncycastle")
     (version "1.60")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/bcgit/bc-java/archive/r"
-                                  (substring version 0 1) "v"
-                                  (substring version 2 4) ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "http://git.bouncycastle.org/repositories/bc-java")
+                     ;(url "https://github.com/bcgit/bc-java")
+                     (commit (string-append "r1rv" (substring version 2 4)))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v434513y708qc87k4xz13p2kzydc736lk3ks67df9mg11s7hchv"))
+                "1m921a1ac2dl797ffzg3d4j97ch308f25spb4jgsj3npfmmys5gb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -11576,7 +11657,7 @@ the application using Java to Lisp integration APIs.")
     (description "JSON Processing (JSON-P) is a Java API to process (e.g.
 parse, generate, transform and query) JSON messages.  It produces and
 consumes JSON text in a streaming fashion (similar to StAX API for XML)
-and allows to build a Java object model for JSON text using API classes
+and allows building a Java object model for JSON text using API classes
 (similar to DOM API for XML).")
     ;; either gpl2 only with classpath exception, or epl2.0.
     (license (list license:gpl2

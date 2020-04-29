@@ -987,7 +987,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.4.1.2")
+    (version "6.4.2.2")
     (source
      (origin
        (method url-fetch)
@@ -997,7 +997,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
        (sha256
         (base32
-         "02iz94flpxgkvlipk3psddzw2gdq2j4nv7z01kphs5107sfs0r0d"))))
+         "06acm41q9nda8r30b13cn9zafsw1gszjdphh6lx90s09d2sf7f23"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)

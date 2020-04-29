@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -26,6 +26,8 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +51,10 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
@@ -61,6 +66,10 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -68,6 +77,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
+  #:use-module (gnu packages xml)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:select (last)))
 
@@ -489,7 +499,7 @@ than gzip and 15 % smaller output than bzip2.")
                                             "/share/zoneinfo"))
              #t)))))
     (native-inputs
-     `(("tzdata" ,tzdata)))
+     `(("tzdata" ,tzdata-for-tests)))
     (home-page "https://fragglet.github.com/lhasa/")
     (synopsis "LHA archive decompressor")
     (description "Lhasa is a replacement for the Unix LHA tool, for
@@ -1851,6 +1861,17 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
   ;; We used to provide an older version under the name "brotli".
   (deprecated-package "brotli" google-brotli))
 
+(define-public python-google-brotli
+  (package
+    (inherit google-brotli)
+    (name "python-google-brotli")
+    (build-system python-build-system)
+    (arguments '())
+    (synopsis "Python interface to google-brotli")
+    (description "@code{python-google-brotli} provides a Python interface to
+@code{google-brotli}, an implementation of the Brotli lossless compression
+algorithm.")))
+
 (define-public ucl
   (package
     (name "ucl")
@@ -2081,3 +2102,95 @@ programs that used to be the de facto UNIX standard for compressing and
 uncompressing files.  These programs implement a fast, simple Lempel-Ziv (LZW)
 file compression algorithm.")
     (license license:gpl2+)))
+
+(define-public xarchiver
+  (package
+    (name "xarchiver")
+    (version "0.5.4.14")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ib/xarchiver.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1iklwgykgymrwcc5p1cdbh91v0ih1m58s3w9ndl5kyd44bwlb7px"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("intltool" ,intltool)
+       ("libxslt" ,libxslt)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; Hard-coded theme
+       ("gtk+" ,gtk+)))
+    (home-page "https://github.com/ib/xarchiver")
+    (synopsis "Graphical front-end for archive operations")
+    (description "Xarchiver is a front-end to various command line archiving
+tools.  It uses GTK+ tool-kit and is designed to be desktop-environment
+independent.  Supported formats are 7z, ARJ, bzip2, gzip, LHA, lzma, lzop,
+RAR, RPM, DEB, tar, and ZIP.  It cannot perform functions for archives, whose
+archiver is not installed.")
+    (license license:gpl2+)))
+
+(define-public tarsplitter
+  (package
+    (name "tarsplitter")
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/AQUAOSOTech/tarsplitter.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17qkg95r97kcrs17b0mcqswx99280ni47j5yx8xa7nl3bdhm6325"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/AQUAOSOTech/tarsplitter"
+       #:install-source? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-documentation
+           (lambda* (#:key import-path outputs #:allow-other-keys)
+             (let* ((source (string-append "src/" import-path))
+                    (out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (with-directory-excursion source
+                 (install-file "README.md" doc))
+               #t))))))
+    (home-page "https://github.com/AQUAOSOTech/tarsplitter")
+    (synopsis "Multithreaded tar utility")
+    (description
+     "Archive huge numbers of files, or split massive tar archives into smaller
+chunks.")
+    (license license:expat)))
+
+(define-public c-blosc
+  (package
+    (name "c-blosc")
+    (version "1.18.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Blosc/c-blosc.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ywq8j70149859vvs19wgjq89d6xsvvmvm2n1dmkzpchxgrvnw70"))))
+    (build-system cmake-build-system)
+    (home-page "https://blosc.org")
+    (synopsis "Blocking, shuffling and lossless compression library")
+    (description
+     "Blosc is a high performance compressor optimized for binary data. It has
+been designed to transmit data to the processor cache faster than the
+traditional, non-compressed, direct memory fetch approach via a
+@code{memcpy()} system call.  Blosc is meant not only to reduce the size of
+large datasets on-disk or in-memory, but also to accelerate memory-bound
+computations.")
+    ;; Blosc itself is released under BSD-3 but it incorporates code under
+    ;; other non-copyleft licenses.
+    (license license:bsd-3)))

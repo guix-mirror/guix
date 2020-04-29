@@ -201,14 +201,16 @@ latest version of CRATE-NAME."
     (lookup-crate crate-name))
 
   (define version-number
-    (or version
-        (crate-latest-version crate)))
+    (and crate
+         (or version
+             (crate-latest-version crate))))
 
   (define version*
-    (find (lambda (version)
-            (string=? (crate-version-number version)
-                      version-number))
-          (crate-versions crate)))
+    (and crate
+         (find (lambda (version)
+                 (string=? (crate-version-number version)
+                           version-number))
+               (crate-versions crate))))
 
   (and crate version*
        (let* ((dependencies   (crate-version-dependencies version*))

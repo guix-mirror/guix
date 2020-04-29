@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Coypright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1710,29 +1711,23 @@ Parcellite and adds bugfixes and features.")
 (define-public graphene
   (package
     (name "graphene")
-    (version "1.6.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ebassi/graphene/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/ebassi/graphene/releases/"
+                                  "download/" version
+                                  "/graphene-" version ".tar.xz"))
               (sha256
-               (base32 "1zd2daj7y590wnzn4jw0niyc4fnzgxrcl9i7nwhy8b25ks2hz5wq"))))
-    (build-system gnu-build-system)
+               (base32 "16b4hz73bnrgv5v8n96dczkd6xp9qc06lrl43zln3jnl3psrfva0"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("--enable-introspection=yes")))
+     `(#:configure-flags '("-Dinstalled_tests=false")))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("which" ,which)
-       ("pkg-config" ,pkg-config)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
-       ("python-2" ,python-2)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("glib" ,glib)))
     (home-page "https://ebassi.github.io/graphene/")
     (synopsis "Thin layer of graphic data types")
     (description "This library provides graphic types and their relative API;
@@ -1920,3 +1915,49 @@ anchor windows to a corner or edge of the output, or stretch them across the
 entire output.  It supports all Layer Shell features including popups and
 popovers.")
     (license license:expat)))
+
+(define-public goocanvas
+  (package
+    (name "goocanvas")
+    (version "2.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/goocanvas/"
+                           (version-major+minor version)
+                           "/goocanvas-" version ".tar.xz"))
+       (sha256
+        (base32 "141fm7mbqib0011zmkv3g8vxcjwa7hypmq71ahdyhnj2sjvy4a67"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib-bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("python-pygobject" ,python-pygobject)))
+    (arguments
+     `(#:configure-flags '("--disable-rebuilds"
+                           "--disable-static")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-install-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("\\(gi._overridesdir\\)")
+                (string-append "((gi._overridesdir).replace(\\\""
+                               (assoc-ref inputs "python-pygobject")
+                               "\\\", \\\""
+                               (assoc-ref outputs "out")
+                               "\\\"))")))
+             #t)))))
+    (synopsis "Canvas widget for GTK+")
+    (description "GooCanvas is a canvas widget for GTK+ that uses the cairo 2D
+library for drawing.")
+    (home-page "https://wiki.gnome.org/GooCanvas")
+    (license license:lgpl2.0)))

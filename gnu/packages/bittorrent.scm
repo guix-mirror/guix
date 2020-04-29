@@ -94,10 +94,13 @@
                             (string-append gui
                                            "/bin/transmission-gtk"))
 
-               ;; Move the '.desktop' file as well.
+               ;; Move the '.desktop' and icon files as well.
                (mkdir (string-append gui "/share"))
-               (rename-file (string-append out "/share/applications")
-                            (string-append gui "/share/applications")))
+               (for-each
+                (lambda (dir)
+                  (rename-file (string-append out "/share/" dir)
+                               (string-append gui "/share/" dir)))
+                '("applications" "icons" "pixmaps")))
              #t)))))
     (inputs
      `(("inotify-tools" ,inotify-tools)

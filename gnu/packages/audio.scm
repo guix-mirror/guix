@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 okapi <okapi@firemail.cc>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -28,6 +28,8 @@
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Hartmt Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,7 +98,9 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages telephony)
+  #:use-module (gnu packages linphone)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim) ;xxd
   #:use-module (gnu packages webkit)
@@ -118,6 +122,45 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26))
+
+(define-public vo-amrwbenc
+  (package
+    (name "vo-amrwbenc")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/opencore-amr/files/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0klx3nkidc6b8aawchpk19n3xlrzgnc046w4gd0rdqphw28v6ljn"))))
+    (build-system gnu-build-system)
+    (synopsis "Adaptive Multi Rate Codec")
+    (description "VO-AMR is a library of VisualOn implementation of
+Adaptive Multi Rate Narrowband and Wideband (AMR-NB and AMR-WB) speech codec.")
+    (home-page "https://sourceforge.net/projects/opencore-amr/")
+    (license license:asl2.0)))
+
+(define-public opencore-amr
+  (package
+    (name "opencore-amr")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://sourceforge.net/projects/opencore-amr/files/"
+                       name "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0hfk9khz3by0119h3jdwgdfd7jgkdbzxnmh1wssvylgnsnwnq01c"))))
+    (build-system gnu-build-system)
+    (synopsis "Adaptive Multi Rate Codec")
+    (description "OpenCore-AMR is a library of OpenCORE Framework
+implementation of Adaptive Multi Rate Narrowband and Wideband
+(AMR-NB and AMR-WB) speech codec.")
+    (home-page "https://sourceforge.net/projects/opencore-amr/")
+    (license license:asl2.0)))
 
 (define-public alsa-modular-synth
   (package
@@ -153,10 +196,10 @@
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("liblo" ,liblo)
-       ("qtbase" ,qtbase)
-       ("qttools" ,qttools)))
+       ("qtbase" ,qtbase)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
        ("gcc" ,gcc-5)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
@@ -1936,14 +1979,14 @@ significantly faster and have minimal dependencies.")
 (define-public lv2
   (package
     (name "lv2")
-    (version "1.16.0")
+    (version "1.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://lv2plug.in/spec/lv2-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1ppippbpdpv13ibs06b0bixnazwfhiw0d0ja6hx42jnkgdyp5hyy"))))
+               "0gs7401xz23q9vajqr31aa2db8dvssgyh5zrvr4ipa6wig7yb8wh"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f  ; no check target
@@ -3342,7 +3385,7 @@ code, used in @code{libtoxcore}.")
 (define-public gsm
   (package
     (name "gsm")
-    (version "1.0.18")
+    (version "1.0.19")
     (source
      (origin
        (method url-fetch)
@@ -3351,18 +3394,24 @@ code, used in @code{libtoxcore}.")
                        "-" version ".tar.gz"))
        (sha256
         (base32
-         "041amvpz8cvxykl3pwqldrzxligmmzcg8ncdnxbg32rlqf3q1xh4"))))
+         "1xkha9ss5g5qnfaybi8il0mcvp8knwg9plgh8404vh58d0pna0s9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "tst"
+       #:make-flags (list (string-append "INSTALL_ROOT=" %output))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'add-fpic-ccflag
+           (lambda _
+             ;; The -fPIC compiler option is needed when building
+             ;; mediastreamer.
+             (substitute* "Makefile"
+               (("^CCFLAGS.*" all)
+                (string-append all "CCFLAGS += -fPIC\n")))
+             #t))
          (add-before 'install 'pre-install
            (lambda _
              (let ((out (assoc-ref %outputs "out")))
-               (substitute* "Makefile"
-                 (("INSTALL_ROOT\t=")
-                  (string-append "INSTALL_ROOT\t=\t" out)))
                (mkdir-p (string-append out "/inc"))
                (mkdir-p (string-append out "/man"))
                (mkdir-p (string-append out "/man/man1"))
@@ -3881,7 +3930,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "0.6.2")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -3891,7 +3940,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1i874izajbdhlfacwwj84qrsxf7g4y6nblzxalrkzaap9sa7d1r6"))))
+         "1747w1kg8y9jbl11xi018d85dm38xk7843pz26sh0k5fdv87a10q"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
@@ -4159,3 +4208,37 @@ minimum.")
      `(("librsvg" ,librsvg)
        ,@(package-inputs ztoolkit)))
     (synopsis "ZToolkit with SVG support")))
+
+(define-public codec2
+  (package
+    (name "codec2")
+    (version "0.9.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/drowe67/codec2.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jpvr7bra8srz8jvnlbmhf8andbaavq5v01qjnp2f61za93rzwba"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bc" ,bc)
+       ("octave" ,octave)
+       ("valgrind" ,valgrind)))
+    (arguments
+     `(#:tests? #f ; TODO: Fix tests (paths, graphic toolkit, octave modules).
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-test-environment
+           (lambda _
+             (setenv "HOME" "/tmp")
+             #t)))))
+    (synopsis "Speech codec")
+    (description
+     "Codec 2 is a speech codec designed for communications quality speech
+between 700 and 3200 bit/s.  The main application is low bandwidth HF/VHF
+digital radio.")
+    (home-page "https://www.rowetel.com/?page_id=452")
+    (license license:lgpl2.1)))

@@ -1,0 +1,29 @@
+From 00978950fed39b6104b6b4f141450a66cc3400fa Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 20 Apr 2020 20:27:32 +0100
+Origin: https://patchwork.ozlabs.org/project/uboot/patch/20200420192736.962307-2-pbrobinson@gmail.com/
+Subject: [PATCH 1/5] video: simple_panel: add boe,nv140fhmn49 display
+
+add "boe,nv140fhmn49" display to compatible node.
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+Cc: Anatolij Gustschin <agust@denx.de>
+---
+ drivers/video/simple_panel.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/video/simple_panel.c b/drivers/video/simple_panel.c
+index c3c0e84732..5722811117 100644
+--- a/drivers/video/simple_panel.c
++++ b/drivers/video/simple_panel.c
+@@ -105,6 +105,7 @@ static const struct udevice_id simple_panel_ids[] = {
+ 	{ .compatible = "auo,b133xtn01" },
+ 	{ .compatible = "auo,b116xw03" },
+ 	{ .compatible = "auo,b133htn01" },
++	{ .compatible = "boe,nv140fhmn49" },
+ 	{ .compatible = "lg,lb070wv8" },
+ 	{ }
+ };
+-- 
+2.20.1
+

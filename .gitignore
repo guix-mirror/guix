@@ -138,6 +138,7 @@
 /test-env
 /test-tmp
 /tests/*.trs
+/tests/services/*.trs
 GPATH
 GRTAGS
 GTAGS

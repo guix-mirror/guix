@@ -234,8 +234,8 @@ information, or #f if it could not be found."
 
                ;; Give 'load' an absolute file name so that it doesn't try to
                ;; search for FILE in %LOAD-PATH.  Note: use 'load', not
-               ;; 'primitive-load', so that FILE is compiled, which then allows us
-               ;; to provide better error reporting with source line numbers.
+               ;; 'primitive-load', so that FILE is compiled, which then allows
+               ;; us to provide better error reporting with source line numbers.
                (load (canonicalize-path file)))
              (const #f))))))
     (lambda _
@@ -796,7 +796,7 @@ directories:~{ ~a~}~%")
                (apply format #f format-string format-args))))))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
-  "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'
+  "Run EXP... in a context where EPIPE errors are caught and lead to 'exit'
 with successful exit code.  This is useful when writing to the standard output
 may lead to EPIPE, because the standard output is piped through 'head' or
 similar."
@@ -925,7 +925,7 @@ download."
          drv))
 
   (define substitutable-info
-    ;; Call 'substitutation-oracle' upfront so we don't end up launching the
+    ;; Call 'substitution-oracle' upfront so we don't end up launching the
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
     (if use-substitutes?
@@ -1164,7 +1164,7 @@ separator between subsequent columns."
                         names outputs)
                    (map (lambda (old new)
                           (if (string=? old new)
-                              (G_ "(dependencies changed)")
+                              (G_ "(dependencies or package changed)")
                               (string-append old " " → " " new)))
                         old-version new-version))
               #:initial-indent 3))
@@ -1251,7 +1251,7 @@ separator between subsequent columns."
 
 (define* (indented-string str indent
                           #:key (initial-indent? #t))
-  "Return STR with each newline preceded by IDENT spaces.  When
+  "Return STR with each newline preceded by INDENT spaces.  When
 INITIAL-INDENT? is true, the first line is also indented."
   (define indent-string
     (make-list indent #\space))
@@ -1534,7 +1534,7 @@ score, the more relevant OBJ is to REGEXPS."
     (,(lambda (package)
         (filter (lambda (output)
                   (not (member output
-                               ;; Some common outpus shared by many packages.
+                               ;; Some common outputs shared by many packages.
                                '("out" "doc" "debug" "lib" "include" "bin"))))
                 (package-outputs package)))
      . 1)
@@ -1942,7 +1942,7 @@ found."
 (define (run-guix . args)
   "Run the 'guix' command defined by command line ARGS.
 Unlike 'guix-main', this procedure assumes that locale, i18n support,
-and signal handling has already been set up."
+and signal handling have already been set up."
   (define option? (cut string-prefix? "-" <>))
 
   ;; The default %LOAD-EXTENSIONS includes the empty string, which doubles the

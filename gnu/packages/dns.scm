@@ -13,6 +13,8 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +43,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages groff)
@@ -75,7 +78,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.80")
+    (version "2.81")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -83,7 +86,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1fv3g8vikj3sn37x1j6qsywn09w1jipvlv34j3q5qrljbrwa5ayd"))))
+                "1yzq6anwgr5rlnwydpszb51cyhp2vjq29b24ck19flbwac1sk73l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -114,7 +117,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.16.1")
+    (version "9.16.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -122,7 +125,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.xz"))
               (sha256
                (base32
-                "14ayswxnyaqwb935iqdi1w9ih3zs0a0va59j4cyi5f9mh7kxf4x9"))))
+                "0gwr4p14zy5jqq050n762rfc33km51qwipcwy6bsvk55ziybgrfr"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -305,7 +308,7 @@ the two.")
     (synopsis "Asynchronous resolver library by the OpenBSD project")
     (description
      "libasr is a free, simple and portable asynchronous resolver library.
-It allows to run DNS queries and perform hostname resolutions in a fully
+It runs DNS queries and performs hostname resolution in a fully
 asynchronous fashion.")
     (license (list license:isc
                    license:bsd-2 ; last part of getrrsetbyname_async.c
@@ -948,3 +951,58 @@ could) directly register names in the Domain Name System (DNS).  Some examples
 of public suffixes are .com, .co.uk and pvt.k12.ma.us.  This is a list of all
 known public suffixes.")
       (license license:mpl2.0))))
+
+(define-public maradns
+  (package
+    (name "maradns")
+    (version "3.5.0004")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://maradns.samiam.org/download/"
+                           (version-major+minor version) "/"
+                           version "/maradns-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1zv0i6m4m05ay5zlhwq1h88hgjq2d81cjanpnb3gyhr0xhmjwk6a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; need to be root to run tests
+       #:make-flags
+       (list
+        (string-append "CC="
+                       (if ,(%current-target-system)
+                           (string-append (assoc-ref %build-inputs "cross-gcc")
+                                          "/bin/" ,(%current-target-system) "-gcc")
+                           "gcc"))
+        (string-append "PREFIX=" %output)
+        (string-append "RPM_BUILD_ROOT=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key native-inputs target #:allow-other-keys)
+             ;; make_32bit_tables generates a header file that is used during
+             ;; compilation. Hence, during cross compilation, it should be
+             ;; built for the host system.
+             (when target
+               (substitute* "rng/Makefile"
+                 (("\\$\\(CC\\) -o make_32bit_tables")
+                  (string-append (assoc-ref native-inputs "gcc")
+                                 "/bin/gcc -o make_32bit_tables"))))
+             (invoke "./configure")))
+         (add-before 'install 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each (lambda (dir)
+                           (mkdir-p (string-append out dir)))
+                         (list "/bin" "/sbin" "/etc"
+                               "/share/man/man1"
+                               "/share/man/man5"
+                               "/share/man/man8"))
+               #t))))))
+    (home-page "https://maradns.samiam.org")
+    (synopsis "Small lightweight DNS server")
+    (description "MaraDNS is a small and lightweight DNS server.  MaraDNS
+consists of a UDP-only authoritative DNS server for hosting domains, and a UDP
+and TCP-capable recursive DNS server for finding domains on the internet.")
+    (license license:bsd-2)))

@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 (define-module (guix scripts build)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module (guix import json)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -778,7 +780,7 @@ must be one of 'package', 'all', or 'transitive'~%")
                    (alist-cons 'manifest arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
-                   (alist-cons 'dry-run? #t (alist-cons 'graft? #f result))))
+                   (alist-cons 'dry-run? #t result)))
          (option '(#\r "root") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'gc-root arg result)))
@@ -834,7 +836,10 @@ build---packages, gexps, derivations, and so on."
                        (else
                         (list (specification->package spec)))))
                 (('file . file)
-                 (ensure-list (load* file (make-user-module '()))))
+                 (let ((file (or (and (string-suffix? ".json" file)
+                                      (json->scheme-file file))
+                                 file)))
+                   (ensure-list (load* file (make-user-module '())))))
                 (('manifest . manifest)
                  (map manifest-entry-item
                       (manifest-entries
@@ -920,8 +925,10 @@ build."
   (with-unbound-variable-handling
    (parameterize ((%graft? graft?))
      (append-map (lambda (system)
-                   (append-map (cut compute-derivation <> system)
-                               things-to-build))
+                   (concatenate
+                    (map/accumulate-builds store
+                                           (cut compute-derivation <> system)
+                                           things-to-build)))
                  systems))))
 
 (define (show-build-log store file urls)

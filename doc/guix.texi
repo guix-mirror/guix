@@ -63,7 +63,7 @@ Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
-Copyright @copyright{} 2019 Diego Nicola Barbato@*
+Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
@@ -76,6 +76,8 @@ Copyright @copyright{} 2020 Damien Cassou@*
 Copyright @copyright{} 2020 Jakub Kądziołka@*
 Copyright @copyright{} 2020 Jack Hill@*
 Copyright @copyright{} 2020 Naga Malleswari@*
+Copyright @copyright{} 2020 Brice Waegeneire@*
+Copyright @copyright{} 2020 R Veera Kumar@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -546,7 +548,14 @@ We recommend the use of this
 @uref{https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh,
 shell installer script}.  The script automates the download, installation, and
 initial configuration steps described below.  It should be run as the root
-user.
+user.  As root, you can thus run this:
+
+@example
+cd /tmp
+wget https://git.savannah.gnu.org/cgit/guix.git/plain/etc/guix-install.sh
+chmod +x guix-install.sh
+./guix-install.sh
+@end example
 @end quotation
 
 Installing goes along these lines:
@@ -650,7 +659,7 @@ with these commands:
 @example
 # cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
      /etc/systemd/system/
-# systemctl start guix-daemon && systemctl enable guix-daemon
+# systemctl enable --now guix-daemon
 @end example
 
 If your host distro uses the Upstart init system:
@@ -1682,7 +1691,18 @@ package in Guix looks for fonts in @file{$HOME/.guix-profile}
 by default.  Thus, to allow graphical applications installed with Guix
 to display fonts, you have to install fonts with Guix as well.
 Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
-@code{font-gnu-freefont-ttf}.
+@code{font-gnu-freefont}.
+
+@cindex @code{fc-cache}
+@cindex font cache
+Once you have installed or removed fonts, or when you notice an
+application that does not find fonts, you may need to install Fontconfig
+and to force an update of its font cache by running:
+
+@example
+guix install fontconfig
+fc-cache -rv
+@end example
 
 To display text written in Chinese languages, Japanese, or Korean in
 graphical applications, consider installing
@@ -1717,13 +1737,6 @@ xset +fp $(dirname $(readlink -f ~/.guix-profile/share/fonts/truetype/fonts.dir)
 After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
 to make sure your TrueType fonts are listed there.
 
-@cindex @code{fc-cache}
-@cindex font cache
-After installing fonts you may have to refresh the font cache to use
-them in applications.  The same applies when applications installed via
-Guix do not seem to find fonts.  To force rebuilding of the font cache
-run @code{fc-cache -rv}.  The @code{fc-cache} command is provided by
-the @code{fontconfig} package.
 
 @subsection X.509 Certificates
 
@@ -2197,6 +2210,18 @@ ping -c 3 gnu.org
 
 Setting up network access is almost always a requirement because the
 image does not contain all the software and tools that may be needed.
+
+@cindex proxy, during system installation
+If you need HTTP and HTTPS access to go through a proxy, run the
+following command:
+
+@example
+herd set-http-proxy guix-daemon @var{URL}
+@end example
+
+@noindent
+where @var{URL} is the proxy URL, for example
+@code{http://example.org:8118}.
 
 @cindex installing over SSH
 If you want to, you can continue the installation remotely by starting
@@ -2805,6 +2830,15 @@ Developers may find it useful to include such a @file{guix.scm} file
 in the root of their project source tree that can be used to test
 development snapshots and create reproducible development environments
 (@pxref{Invoking guix environment}).
+
+The @var{file} may also contain a JSON representation of one or more
+package definitions.  Running @code{guix package -f} on
+@file{hello.json} with the following contents would result in installing
+the package @code{greeter} after building @code{myhello}:
+
+@example
+@verbatiminclude package-hello.json
+@end example
 
 @item --remove=@var{package} @dots{}
 @itemx -r @var{package} @dots{}
@@ -4599,8 +4633,8 @@ served by @code{@value{SUBSTITUTE-SERVER}} to @file{/tmp/emacs}:
 
 @example
 $ wget -O - \
-  https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-emacs-24.5 \
-  | bunzip2 | guix archive -x /tmp/emacs
+  https://@value{SUBSTITUTE-SERVER}/nar/gzip/@dots{}-emacs-24.5 \
+  | gunzip | guix archive -x /tmp/emacs
 @end example
 
 Single-item archives are different from multiple-item archives produced
@@ -4610,7 +4644,8 @@ and they do @emph{not} embed a signature.  Thus this operation does
 unsafe.
 
 The primary purpose of this operation is to facilitate inspection of
-archive contents coming from possibly untrusted substitute servers.
+archive contents coming from possibly untrusted substitute servers
+(@pxref{Invoking guix challenge}).
 
 @item --list
 @itemx -t
@@ -5083,7 +5118,7 @@ guix pack -f squashfs bash guile emacs geiser
 @noindent
 The result is a SquashFS file system image that can either be mounted or
 directly be used as a file system container image with the
-@uref{https://singularity.lbl.gov, Singularity container execution
+@uref{https://www.sylabs.io/docs/, Singularity container execution
 environment}, using commands like @command{singularity shell} or
 @command{singularity exec}.
 
@@ -5790,7 +5825,7 @@ or a list of such values.
 @item @code{home-page}
 The URL to the home-page of the package, as a string.
 
-@item @code{supported-systems} (default: @var{%supported-systems})
+@item @code{supported-systems} (default: @code{%supported-systems})
 The list of systems supported by the package, as strings of the form
 @code{architecture-kernel}, for example @code{"x86_64-linux"}.
 
@@ -6064,8 +6099,8 @@ implements a build procedure for Android NDK (native development kit)
 packages using a Guix-specific build process.
 
 The build system assumes that packages install their public interface
-(header) files to the subdirectory "include" of the "out" output and
-their libraries to the subdirectory "lib" of the "out" output.
+(header) files to the subdirectory @file{include} of the @code{out} output and
+their libraries to the subdirectory @file{lib} the @code{out} output.
 
 It's also assumed that the union of all the dependencies of a package
 has no conflicting files.
@@ -6154,7 +6189,6 @@ if they are defined by the crate.
 
 
 @defvr {Scheme Variable} copy-build-system
-@cindex (copy build system)
 This variable is exported by @code{(guix build-system copy)}.  It
 supports builds of simple packages that don't require much compiling,
 mostly just moving files around.
@@ -6768,8 +6802,8 @@ kernel module.
 @end table
 
 It is possible and useful to specify the Linux kernel to use for building
-the module (in the "arguments" form of a package using the
-linux-module-build-system, use the key #:linux to specify it).
+the module (in the @code{arguments} form of a package using the
+@code{linux-module-build-system}, use the key @code{#:linux} to specify it).
 @end defvr
 
 @defvr {Scheme Variable} node-build-system
@@ -7354,7 +7388,7 @@ increments the current state value:
 @result{} 3
 @end lisp
 
-When ``run'' through @var{%state-monad}, we obtain that additional state
+When ``run'' through @code{%state-monad}, we obtain that additional state
 value, which is the number of @code{square} calls.
 @end defvr
 
@@ -7386,7 +7420,7 @@ The main interface to the store monad, provided by the @code{(guix
 store)} module, is as follows.
 
 @defvr {Scheme Variable} %store-monad
-The store monad---an alias for @var{%state-monad}.
+The store monad---an alias for @code{%state-monad}.
 
 Values in the store monad encapsulate accesses to the store.  When its
 effect is needed, a value of the store monad must be ``evaluated'' by
@@ -7449,6 +7483,10 @@ value in the absolute file name of @var{file} within the @var{output}
 directory of @var{package}.  When @var{file} is omitted, return the name
 of the @var{output} directory of @var{package}.  When @var{target} is
 true, use it as a cross-compilation target triplet.
+
+Note that this procedure does @emph{not} build @var{package}.  Thus, the
+result might or might not designate an existing file.  We recommend not
+using this procedure unless you know what you are doing.
 @end deffn
 
 @deffn {Monadic Procedure} package->derivation @var{package} [@var{system}]
@@ -7747,7 +7785,7 @@ information about monads.)
        [#:system (%current-system)] [#:target #f] [#:graft? #t] @
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
-       [#:module-path @var{%load-path}] @
+       [#:module-path @code{%load-path}] @
        [#:effective-version "2.2"] @
        [#:references-graphs #f] [#:allowed-references #f] @
        [#:disallowed-references #f] @
@@ -7917,7 +7955,8 @@ The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
 @end deffn
 
-@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} [#:splice? #f]
+@deffn {Scheme Procedure} scheme-file @var{name} @var{exp} @
+          [#:splice? #f] [#:set-load-path? #t]
 Return an object representing the Scheme file @var{name} that contains
 @var{exp}.
 
@@ -8051,7 +8090,7 @@ item.  This is achieved using the @code{lower-object} monadic procedure.
 
 @deffn {Monadic Procedure} lower-object @var{obj} [@var{system}] @
            [#:target #f]
-Return as a value in @var{%store-monad} the derivation or store item
+Return as a value in @code{%store-monad} the derivation or store item
 corresponding to @var{obj} for @var{system}, cross-compiling for
 @var{target} if @var{target} is true.  @var{obj} must be an object that
 has an associated gexp compiler, such as a @code{<package>}.
@@ -8533,6 +8572,15 @@ As an example, @var{file} might contain a package definition like this
 @include package-hello.scm
 @end lisp
 
+The @var{file} may also contain a JSON representation of one or more
+package definitions.  Running @code{guix build -f} on @file{hello.json}
+with the following contents would result in building the packages
+@code{myhello} and @code{greeter}:
+
+@example
+@verbatiminclude package-hello.json
+@end example
+
 @item --manifest=@var{manifest}
 @itemx -m @var{manifest}
 Build all packages listed in the given @var{manifest}
@@ -8782,7 +8830,7 @@ $ guix environment --no-grafts -C foo --ad-hoc strace gdb
 Here, @command{guix environment -C} creates a container and spawns a new
 shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
 strace gdb} part adds the @command{strace} and @command{gdb} commands to
-the container, which would may find handy while debugging.  The
+the container, which you may find handy while debugging.  The
 @option{--no-grafts} option makes sure we get the exact same
 environment, with ungrafted packages (@pxref{Security Updates}, for more
 info on grafts).
@@ -10538,8 +10586,8 @@ Alternately, we can do something along these lines (@pxref{Invoking guix
 archive}):
 
 @example
-$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/@dots{}-git-2.5.0 \
-   | guix archive -x /tmp/git
+$ wget -q -O - https://@value{SUBSTITUTE-SERVER}/nar/lzip/@dots{}-git-2.5.0 \
+   | lzip -d | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
 
@@ -11217,7 +11265,7 @@ By that, we mean all the global system configuration, not per-user
 configuration (@pxref{Using the Configuration System}).
 
 @table @asis
-@item @code{kernel} (default: @var{linux-libre})
+@item @code{kernel} (default: @code{linux-libre})
 The package object of the operating system kernel to use@footnote{Currently
 only the Linux-libre kernel is supported.  In the future, it will be
 possible to use the GNU@tie{}Hurd.}.
@@ -11374,11 +11422,11 @@ As a user you should @emph{never} need to touch this field.
 Linux @dfn{pluggable authentication module} (PAM) services.
 @c FIXME: Add xref to PAM services section.
 
-@item @code{setuid-programs} (default: @var{%setuid-programs})
+@item @code{setuid-programs} (default: @code{%setuid-programs})
 List of string-valued G-expressions denoting setuid programs.
 @xref{Setuid Programs}.
 
-@item @code{sudoers-file} (default: @var{%sudoers-specification})
+@item @code{sudoers-file} (default: @code{%sudoers-specification})
 @cindex sudoers file
 The contents of the @file{/etc/sudoers} file as a file-like object
 (@pxref{G-Expressions, @code{local-file} and @code{plain-file}}).
@@ -11544,7 +11592,7 @@ variables.
 
 @defvr {Scheme Variable} %base-file-systems
 These are essential file systems that are required on normal systems,
-such as @var{%pseudo-terminal-file-system} and @var{%immutable-store} (see
+such as @code{%pseudo-terminal-file-system} and @code{%immutable-store} (see
 below.)  Operating system declarations should always contain at least
 these.
 @end defvr
@@ -11914,6 +11962,9 @@ about.  Here are a few example:
 
 ;; The Catalan layout.
 (keyboard-layout "es" "cat")
+
+;; Arabic layout with "Alt-Shift" to switch to US layout.
+(keyboard-layout "ar,us" #:options '("grp:alt_shift_toggle"))
 
 ;; The Latin American Spanish layout.  In addition, the
 ;; "Caps Lock" key is used as an additional "Ctrl" key,
@@ -12376,7 +12427,7 @@ man page for more information.
 
 @item @code{tty}
 The name of the console this agetty runs on, as a string---e.g.,
-@code{"ttyS0"}. This argument is optional, it will default to
+@code{"ttyS0"}.  This argument is optional, it will default to
 a reasonable default serial port used by the kernel Linux.
 
 For this, if there is a value for an option @code{agetty.tty} in the kernel
@@ -12411,7 +12462,7 @@ in automatically without prompting for their login name or password.
 When @code{#t}, don't reset terminal cflags (control modes).
 
 @item @code{host} (default: @code{#f})
-This accepts a string containing the "login_host", which will be written
+This accepts a string containing the ``login_host'', which will be written
 into the @file{/var/run/utmpx} file.
 
 @item @code{remote?} (default: @code{#f})
@@ -12517,8 +12568,8 @@ This option accepts a string of additional characters that should be
 interpreted as backspace when the user types their login name.
 
 @item @code{kill-characters} (default: @code{#f})
-This option accepts a string that should be interpreted to mean "ignore
-all previous characters" (also called a "kill" character) when the user
+This option accepts a string that should be interpreted to mean ``ignore
+all previous characters'' (also called a ``kill'' character) when the user
 types their login name.
 
 @item @code{chdir} (default: @code{#f})
@@ -12534,7 +12585,7 @@ This option accepts, as an integer, the nice value with which to run the
 @command{login} program.
 
 @item @code{extra-options} (default: @code{'()})
-This option provides an "escape hatch" for the user to provide arbitrary
+This option provides an ``escape hatch'' for the user to provide arbitrary
 command-line arguments to @command{agetty} as a list of strings.
 
 @end table
@@ -12608,7 +12659,7 @@ and caches.
 @defvr {Scheme Variable} %nscd-default-configuration
 This is the default @code{<nscd-configuration>} value (see below) used
 by @code{nscd-service}.  It uses the caches defined by
-@var{%nscd-default-caches}; see below.
+@code{%nscd-default-caches}; see below.
 @end defvr
 
 @deftp {Data Type} nscd-configuration
@@ -12633,7 +12684,7 @@ Name of the nscd log file.  This is where debugging output goes when
 Integer denoting the debugging levels.  Higher numbers mean that more
 debugging output is logged.
 
-@item @code{caches} (default: @var{%nscd-default-caches})
+@item @code{caches} (default: @code{%nscd-default-caches})
 List of @code{<nscd-cache>} objects denoting things to be cached; see
 below.
 
@@ -12771,9 +12822,24 @@ List of extra command-line options for @command{guix-daemon}.
 File where @command{guix-daemon}'s standard output and standard error
 are written.
 
+@cindex HTTP proxy, for @code{guix-daemon}
+@cindex proxy, for @code{guix-daemon} HTTP access
 @item @code{http-proxy} (default: @code{#f})
-The HTTP proxy used for downloading fixed-output derivations and
-substitutes.
+The URL of the HTTP and HTTPS proxy used for downloading fixed-output
+derivations and substitutes.
+
+It is also possible to change the daemon's proxy at run time through the
+@code{set-http-proxy} action, which restarts it:
+
+@example
+herd set-http-proxy guix-daemon http://localhost:8118
+@end example
+
+To clear the proxy settings, run:
+
+@example
+herd set-http-proxy guix-daemon
+@end example
 
 @item @code{tmpdir} (default: @code{#f})
 A directory path where the @command{guix-daemon} will perform builds.
@@ -12784,8 +12850,12 @@ A directory path where the @command{guix-daemon} will perform builds.
 @deffn {Scheme Procedure} udev-service [#:udev @var{eudev} #:rules @code{'()}]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 udev rules can be provided as a list of files through the @var{rules}
-variable.  The procedures @code{udev-rule} and @code{file->udev-rule} from
-@code{(gnu services base)} simplify the creation of such rule files.
+variable.  The procedures @code{udev-rule}, @code{udev-rules-service}
+and @code{file->udev-rule} from @code{(gnu services base)} simplify the
+creation of such rule files.
+
+The @command{herd rules udev} command, as root, returns the name of the
+directory containing all the active udev rules.
 @end deffn
 
 @deffn {Scheme Procedure} udev-rule [@var{file-name} @var{contents}]
@@ -12804,23 +12874,27 @@ upon detecting a USB device with a given product identifier.
                    "ATTR@{product@}==\"Example\", "
                    "RUN+=\"/path/to/script\"")))
 @end lisp
-
-The @command{herd rules udev} command, as root, returns the name of the
-directory containing all the active udev rules.
 @end deffn
 
-Here we show how the default @var{udev-service} can be extended with it.
+@deffn {Scheme Procedure} udev-rules-service [@var{name} @var{rules}] @
+               [#:groups @var{groups}]
+Return a service that extends @code{udev-service-type } with @var{rules}
+and @code{account-service-type} with @var{groups} as system groups.
+This works by creating a singleton service type
+@code{@var{name}-udev-rules}, of which the returned service is an
+instance.
+
+Here we show how it can be used to extend @code{udev-service-type} with the
+previously defined rule @code{%example-udev-rule}.
 
 @lisp
 (operating-system
  ;; @dots{}
  (services
- (modify-services %desktop-services
-   (udev-service-type config =>
-     (udev-configuration (inherit config)
-      (rules (append (udev-configuration-rules config)
-                     (list %example-udev-rule))))))))
+   (cons (udev-rules-service 'usb-thing %example-udev-rule)
+         %desktop-services)))
 @end lisp
+@end deffn
 
 @deffn {Scheme Procedure} file->udev-rule [@var{file-name} @var{file}]
 Return a udev file named @var{file-name} containing the rules defined
@@ -12857,10 +12931,10 @@ The following example shows how to use the @var{android-udev-rules}
 package so that the Android tool @command{adb} can detect devices
 without root privileges.  It also details how to create the
 @code{adbusers} group, which is required for the proper functioning of
-the rules defined within the @var{android-udev-rules} package.  To
+the rules defined within the @code{android-udev-rules} package.  To
 create such a group, we must define it both as part of the
-@var{supplementary-groups} of our @var{user-account} declaration, as
-well as in the @var{groups} field of the @var{operating-system} record.
+@code{supplementary-groups} of our @code{user-account} declaration, as
+well as in the @var{groups} of the @code{udev-rules-service} procedure.
 
 @lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
@@ -12874,23 +12948,15 @@ well as in the @var{groups} field of the @var{operating-system} record.
                 (supplementary-groups
                  '("adbusers"   ;for adb
                    "wheel" "netdev" "audio" "video")))))
-
-  (groups (cons (user-group (system? #t) (name "adbusers"))
-                %base-groups))
-
   ;; @dots{}
-
   (services
-   (modify-services %desktop-services
-     (udev-service-type
-      config =>
-      (udev-configuration (inherit config)
-                          (rules (cons android-udev-rules
-                                       (udev-configuration-rules config))))))))
+    (cons (udev-rules-service 'android android-udev-rules
+                              #:groups '("adbusers"))
+          %desktop-services)))
 @end lisp
 
 @defvr {Scheme Variable} urandom-seed-service-type
-Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
+Save some entropy in @code{%random-seed-file} to seed @file{/dev/urandom}
 when rebooting.  It also tries to seed @file{/dev/urandom} from
 @file{/dev/hwrng} while booting, if @file{/dev/hwrng} exists and is
 readable.
@@ -13178,17 +13244,27 @@ their contents in separate files, possibly compressed.  The @code{(gnu
 services admin)} module provides an interface to GNU@tie{}Rot[t]log, a
 log rotation tool (@pxref{Top,,, rottlog, GNU Rot[t]log Manual}).
 
-The example below defines an operating system that provides log rotation
-with the default settings, for commonly encountered log files.
+This service is part of @code{%base-services}, and thus enabled by
+default, with the default settings, for commonly encountered log files.
+The example below shows how to extend it with an additional
+@dfn{rotation}, should you need to do that (usually, services that
+produce log files already take care of that):
 
 @lisp
 (use-modules (guix) (gnu))
-(use-service-modules admin mcron)
-(use-package-modules base idutils)
+(use-service-modules admin)
+
+(define my-log-files
+  ;; Log files that I want to rotate.
+  '("/var/log/something.log" "/var/log/another.log"))
 
 (operating-system
   ;; @dots{}
-  (services (cons (service rottlog-service-type)
+  (services (cons (simple-service 'rotate-my-stuff
+                                  rottlog-service-type
+                                  (list (log-rotation
+                                         (frequency 'daily)
+                                         (files my-log-files))))
                   %base-services)))
 @end lisp
 
@@ -13259,7 +13335,7 @@ Either @code{#f} or a gexp to execute once the rotation has completed.
 @end deftp
 
 @defvr {Scheme Variable} %default-rotations
-Specifies weekly rotation of @var{%rotated-files} and of
+Specifies weekly rotation of @code{%rotated-files} and of
 @file{/var/log/guix-daemon.log}.
 @end defvr
 
@@ -13562,6 +13638,68 @@ List of additional command-line arguments to pass to the daemon.
 @end table
 @end deftp
 
+@cindex hostapd service, for Wi-Fi access points
+@cindex Wi-Fi access points, hostapd service
+@defvr {Scheme Variable} hostapd-service-type
+This is the service type to run the @uref{https://w1.fi/hostapd/,
+hostapd} daemon to set up WiFi (IEEE 802.11) access points and
+authentication servers.  Its associated value must be a
+@code{hostapd-configuration} as shown below:
+
+@lisp
+;; Use wlan1 to run the access point for "My Network".
+(service hostapd-service-type
+         (hostapd-configuration
+          (interface "wlan1")
+          (ssid "My Network")
+          (channel 12)))
+@end lisp
+@end defvr
+
+@deftp {Data Type} hostapd-configuration
+This data type represents the configuration of the hostapd service, with
+the following fields:
+
+@table @asis
+@item @code{package} (default: @code{hostapd})
+The hostapd package to use.
+
+@item @code{interface} (default: @code{"wlan0"})
+The network interface to run the WiFi access point.
+
+@item @code{ssid}
+The SSID (@dfn{service set identifier}), a string that identifies this
+network.
+
+@item @code{broadcast-ssid?} (default: @code{#t})
+Whether to broadcast this SSID.
+
+@item @code{channel} (default: @code{1})
+The WiFi channel to use.
+
+@item @code{driver} (default: @code{"nl80211"})
+The driver interface type.  @code{"nl80211"} is used with all Linux
+mac80211 drivers.  Use @code{"none"} if building hostapd as a standalone
+RADIUS server that does # not control any wireless/wired driver.
+
+@item @code{extra-settings} (default: @code{""})
+Extra settings to append as-is to the hostapd configuration file.  See
+@uref{https://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf} for the
+configuration file reference.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} simulated-wifi-service-type
+This is the type of a service to simulate WiFi networking, which can be
+useful in virtual machines for testing purposes.  The service loads the
+Linux kernel
+@uref{https://www.kernel.org/doc/html/latest/networking/mac80211_hwsim/mac80211_hwsim.html,
+@code{mac80211_hwsim} module} and starts hostapd to create a pseudo WiFi
+network that can be seen on @code{wlan0}, by default.
+
+The service's value is a @code{hostapd-configuration} record.
+@end defvr
+
 @cindex iptables
 @defvr {Scheme Variable} iptables-service-type
 This is the service type to set up an iptables configuration.  iptables is a
@@ -13719,7 +13857,7 @@ clock synchronized with that of the given servers.
 
 @defvr {Scheme Variable} %openntpd-servers
 This variable is a list of the server addresses defined in
-@var{%ntp-servers}.
+@code{%ntp-servers}.
 @end defvr
 
 @deftp {Data Type} openntpd-configuration
@@ -13737,7 +13875,7 @@ See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
 information.
 @item @code{server} (default: @code{'()})
 Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
-@item @code{servers} (default: @var{%openntp-servers})
+@item @code{servers} (default: @code{%openntp-servers})
 Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
 @item @code{constraint-from} (default: @code{'()})
 @code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
@@ -14553,15 +14691,15 @@ The default SLiM theme and its name.
 
 
 @deftp {Data Type} sddm-configuration
-This is the data type representing the sddm service configuration.
+This is the data type representing the SDDM service configuration.
 
 @table @asis
 @item @code{display-server} (default: "x11")
-Select display server to use for the greeter. Valid values are "x11"
-or "wayland".
+Select display server to use for the greeter.  Valid values are
+@samp{"x11"} or @samp{"wayland"}.
 
 @item @code{numlock} (default: "on")
-Valid values are "on", "off" or "none".
+Valid values are @samp{"on"}, @samp{"off"} or @samp{"none"}.
 
 @item @code{halt-command} (default @code{#~(string-apppend #$shepherd "/sbin/halt")})
 Command to run when halting.
@@ -14570,7 +14708,8 @@ Command to run when halting.
 Command to run when rebooting.
 
 @item @code{theme} (default "maldives")
-Theme to use. Default themes provided by SDDM are "elarun", "maldives" or "maya".
+Theme to use.  Default themes provided by SDDM are @samp{"elarun"},
+@samp{"maldives"} or @samp{"maya"}.
 
 @item @code{themes-directory} (default "/run/current-system/profile/share/sddm/themes")
 Directory to look for themes.
@@ -15058,9 +15197,9 @@ Defaults to @samp{#f}.
 
 @deftypevr {@code{cups-configuration} parameter} string classification
 Specifies the security classification of the server.  Any valid banner
-name can be used, including "classified", "confidential", "secret",
-"topsecret", and "unclassified", or the banner can be omitted to disable
-secure printing functions.
+name can be used, including @samp{"classified"}, @samp{"confidential"},
+@samp{"secret"}, @samp{"topsecret"}, and @samp{"unclassified"}, or the
+banner can be omitted to disable secure printing functions.
 
 Defaults to @samp{""}.
 @end deftypevr
@@ -15262,7 +15401,7 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{method-access-controls} parameter} access-control-list access-controls
 Access control directives, as a list of strings.  Each string should be
-one directive, such as "Order allow,deny".
+one directive, such as @samp{"Order allow,deny"}.
 
 Defaults to @samp{()}.
 @end deftypevr
@@ -15343,7 +15482,7 @@ Defaults to @samp{0}.
 
 @deftypevr {@code{cups-configuration} parameter} non-negative-integer max-job-time
 Specifies the maximum time a job may take to print before it is
-canceled, in seconds.  Set to 0 to disable cancellation of "stuck" jobs.
+canceled, in seconds.  Set to 0 to disable cancellation of ``stuck'' jobs.
 
 Defaults to @samp{10800}.
 @end deftypevr
@@ -16149,6 +16288,13 @@ details.
 This is the type for the  @uref{https://www.pulseaudio.org/, PulseAudio}
 sound server.  It exists to allow system overrides of the default settings
 via @code{pulseaudio-configuration}, see below.
+
+@quotation Warning
+This service overrides per-user configuration files.  If you want
+PulseAudio to honor configuraton files in @file{~/.config/pulse} you
+have to unset the environment variables @code{PULSE_CONFIG} and
+@code{PULSE_CLIENTCONFIG} in your @file{~/.bash_profile}.
+@end quotation
 
 @quotation Warning
 This service on its own does not ensure, that the @code{pulseaudio} package
@@ -17078,12 +17224,12 @@ if the user doesn't yet have any mail, so you should explicitly tell
 Dovecot the full location.
 
 If you're using mbox, giving a path to the INBOX
-file (e.g.@: /var/mail/%u) isn't enough.  You'll also need to tell Dovecot
-where the other mailboxes are kept.  This is called the "root mail
-directory", and it must be the first path given in the
+file (e.g.@: @file{/var/mail/%u}) isn't enough.  You'll also need to tell Dovecot
+where the other mailboxes are kept.  This is called the @emph{root mail
+directory}, and it must be the first path given in the
 @samp{mail-location} setting.
 
-There are a few special variables you can use, eg.:
+There are a few special variables you can use, e.g.:
 
 @table @samp
 @item %u
@@ -17120,31 +17266,31 @@ Defaults to @samp{""}.
 @deftypevr {@code{dovecot-configuration} parameter} string mail-privileged-group
 Group to enable temporarily for privileged operations.  Currently
 this is used only with INBOX when either its initial creation or
-dotlocking fails.  Typically this is set to "mail" to give access to
-/var/mail.
+dotlocking fails.  Typically this is set to @samp{"mail"} to give access to
+@file{/var/mail}.
 Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} string mail-access-groups
 Grant access to these supplementary groups for mail processes.
 Typically these are used to set up access to shared mailboxes.  Note
-that it may be dangerous to set these if users can create
-symlinks (e.g.@: if "mail" group is set here, ln -s /var/mail ~/mail/var
-could allow a user to delete others' mailboxes, or ln -s
-/secret/shared/box ~/mail/mybox would allow reading it).
-Defaults to @samp{""}.
+that it may be dangerous to set these if users can create symlinks
+(e.g.@: if @samp{mail} group is set here, @code{ln -s /var/mail ~/mail/var}
+could allow a user to delete others' mailboxes, or @code{ln -s
+/secret/shared/box ~/mail/mybox} would allow reading it).  Defaults to
+@samp{""}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mail-full-filesystem-access?
 Allow full file system access to clients.  There's no access checks
 other than what the operating system does for the active UID/GID.  It
 works with both maildir and mboxes, allowing you to prefix mailboxes
-names with e.g.@: /path/ or ~user/.
+names with e.g.@: @file{/path/} or @file{~user/}.
 Defaults to @samp{#f}.
 @end deftypevr
 
 @deftypevr {@code{dovecot-configuration} parameter} boolean mmap-disable?
-Don't use mmap() at all.  This is required if you store indexes to
+Don't use @code{mmap()} at all.  This is required if you store indexes to
 shared file systems (NFS or clustered file system).
 Defaults to @samp{#f}.
 @end deftypevr
@@ -17162,7 +17308,7 @@ When to use fsync() or fdatasync() calls:
 @item optimized
 Whenever necessary to avoid losing important data
 @item always
-Useful with e.g.@: NFS when write()s are delayed
+Useful with e.g.@: NFS when @code{write()}s are delayed
 @item never
 Never use it (best performance, but crashes can lose data).
 @end table
@@ -17229,10 +17375,10 @@ Defaults to @samp{50}.
 
 @deftypevr {@code{dovecot-configuration} parameter} colon-separated-file-name-list valid-chroot-dirs
 List of directories under which chrooting is allowed for mail
-processes (i.e.@: /var/mail will allow chrooting to /var/mail/foo/bar
+processes (i.e.@: @file{/var/mail} will allow chrooting to @file{/var/mail/foo/bar}
 too).  This setting doesn't affect @samp{login-chroot}
 @samp{mail-chroot} or auth chroot settings.  If this setting is empty,
-"/./" in home dirs are ignored.  WARNING: Never add directories here
+@samp{/./} in home dirs are ignored.  WARNING: Never add directories here
 which local users can modify, that may lead to root exploit.  Usually
 this should be done only if you don't allow shell access for users.
 <doc/wiki/Chrooting.txt>.
@@ -17241,11 +17387,11 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{dovecot-configuration} parameter} string mail-chroot
 Default chroot directory for mail processes.  This can be overridden
-for specific users in user database by giving /./ in user's home
-directory (e.g.@: /home/./user chroots into /home).  Note that usually
+for specific users in user database by giving @samp{/./} in user's home
+directory (e.g.@: @samp{/home/./user} chroots into @file{/home}).  Note that usually
 there is no real need to do chrooting, Dovecot doesn't allow users to
 access files outside their mail directory anyway.  If your home
-directories are prefixed with the chroot directory, append "/."@: to
+directories are prefixed with the chroot directory, append @samp{/.} to
 @samp{mail-chroot}.  <doc/wiki/Chrooting.txt>.
 Defaults to @samp{""}.
 @end deftypevr
@@ -18352,7 +18498,7 @@ Curve for Elliptic curve Diffie-Hellman. Prosody's default is
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} maybe-string-list verifyext
-A list of "extra" verification options.
+A list of ``extra'' verification options.
 @end deftypevr
 
 @deftypevr {@code{ssl-configuration} parameter} maybe-string password
@@ -18440,7 +18586,7 @@ example if you want your users to have addresses like
 @samp{"john.smith@@example.com"} then you need to add a host
 @samp{"example.com"}.  All options in this list will apply only to this host.
 
-Note: the name "virtual" host is used in configuration to avoid confusion with
+Note: the name @emph{virtual} host is used in configuration to avoid confusion with
 the actual physical host that Prosody is installed on.  A single Prosody
 instance can serve many domains, each one defined as a VirtualHost entry in
 Prosody's configuration.  Conversely a server that hosts a single domain would
@@ -18486,7 +18632,7 @@ Multi-user chat (MUC) is Prosody's module for allowing you to create
 hosted chatrooms/conferences for XMPP users.
 
 General information on setting up and using multi-user chatrooms can be found
-in the "Chatrooms" documentation (@url{https://prosody.im/doc/chatrooms}),
+in the ``Chatrooms'' documentation (@url{https://prosody.im/doc/chatrooms}),
 which you should read if you are new to XMPP chatrooms.
 
 See also @url{https://prosody.im/doc/modules/mod_muc}.
@@ -19561,11 +19707,12 @@ Defaults to @samp{"nslcd"}.
 
 @deftypevr {@code{nslcd-configuration} parameter} log-option log
 This option controls the way logging is done via a list containing
-SCHEME and LEVEL.  The SCHEME argument may either be the symbols "none"
-or "syslog", or an absolute file name.  The LEVEL argument is optional
-and specifies the log level.  The log level may be one of the following
-symbols: "crit", "error", "warning", "notice", "info" or "debug".  All
-messages with the specified log level or higher are logged.
+SCHEME and LEVEL.  The SCHEME argument may either be the symbols
+@samp{none} or @samp{syslog}, or an absolute file name.  The LEVEL
+argument is optional and specifies the log level.  The log level may be
+one of the following symbols: @samp{crit}, @samp{error}, @samp{warning},
+@samp{notice}, @samp{info} or @samp{debug}.  All messages with the
+specified log level or higher are logged.
 
 Defaults to @samp{("/var/log/nslcd" info)}.
 
@@ -20682,6 +20829,30 @@ but it also fetches and indexes mail retrieved from Debbugs.
 This is the service type for Mumi.
 @end defvr
 
+@deftp {Data Type} mumi-configuration
+Data type representing the Mumi service configuration.  This type has the
+following fields:
+
+@table @asis
+@item @code{mumi} (default: @code{mumi})
+The Mumi package to use.
+
+@item @code{mailer?} (default: @code{#true})
+Whether to enable or disable the mailer component.
+
+@item @code{mumi-configuration-sender}
+The email address used as the sender for comments.
+
+@item @code{mumi-configuration-smtp}
+A URI to configure the SMTP settings for Mailutils.  This could be
+something like @code{sendmail:///path/to/bin/msmtp} or any other URI
+supported by Mailutils.  @xref{SMTP Mailboxes, SMTP Mailboxes,,
+mailutils, GNU@tie{}Mailutils}.
+
+@end table
+@end deftp
+
+
 @subsubheading FastCGI
 @cindex fastcgi
 @cindex fcgiwrap
@@ -20850,7 +21021,7 @@ The time in seconds after which a process with no requests is killed.
 @end deftp
 
 
-@deffn {Scheme Procedure} nginx-php-fpm-location @
+@deffn {Scheme Procedure} nginx-php-location @
        [#:nginx-package nginx] @
        [socket (string-append "/var/run/php" @
                               (version-major (package-version php)) @
@@ -23423,7 +23594,7 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{libvirt-configuration} parameter} string tls-priority
 Override the compile time default TLS priority string.  The default is
-usually "NORMAL" unless overridden at build time.  Only set this is it
+usually @samp{"NORMAL"} unless overridden at build time.  Only set this is it
 is desired for libvirt to deviate from the global default settings.
 
 Defaults to @samp{"NORMAL"}.
@@ -23557,11 +23728,12 @@ x:+name
 
 where @code{name} is a string which is matched against the category
 given in the @code{VIR_LOG_INIT()} at the top of each libvirt source
-file, e.g., "remote", "qemu", or "util.json" (the name in the filter can
-be a substring of the full category name, in order to match multiple
-similar categories), the optional "+" prefix tells libvirt to log stack
-trace for each message matching name, and @code{x} is the minimal level
-where matching messages should be logged:
+file, e.g., @samp{"remote"}, @samp{"qemu"}, or @samp{"util.json"} (the
+name in the filter can be a substring of the full category name, in
+order to match multiple similar categories), the optional @samp{"+"}
+prefix tells libvirt to log stack trace for each message matching name,
+and @code{x} is the minimal level where matching messages should be
+logged:
 
 @itemize @bullet
 @item
@@ -23979,7 +24151,7 @@ expose repositories over the Git protocol for anonymous access.
 The optional @var{config} argument should be a
 @code{<git-daemon-configuration>} object, by default it allows read-only
 access to exported@footnote{By creating the magic file
-"git-daemon-export-ok" in the repository directory.} repositories under
+@file{git-daemon-export-ok} in the repository directory.} repositories under
 @file{/srv/git}.
 
 @end deffn
@@ -24646,7 +24818,7 @@ Defaults to @samp{"a fast webinterface for the git dscm"}.
 
 @deftypevr {@code{cgit-configuration} parameter} string root-readme
 The content of the file specified with this option will be included
-verbatim below the "about" link on the repository index page.
+verbatim below the ``about'' link on the repository index page.
 
 Defaults to @samp{""}.
 
@@ -24663,8 +24835,8 @@ Defaults to @samp{""}.
 If set to @samp{#t} and repository-directory is enabled,
 repository-directory will recurse into directories whose name starts
 with a period.  Otherwise, repository-directory will stay away from such
-directories, considered as "hidden".  Note that this does not apply to
-the ".git" directory in non-bare repos.
+directories, considered as ``hidden''.  Note that this does not apply to
+the @file{.git} directory in non-bare repos.
 
 Defaults to @samp{#f}.
 
@@ -24727,7 +24899,7 @@ Defaults to @samp{""}.
 @end deftypevr
 
 @deftypevr {@code{cgit-configuration} parameter} integer summary-branches
-Specifies the number of branches to display in the repository "summary"
+Specifies the number of branches to display in the repository ``summary''
 view.
 
 Defaults to @samp{10}.
@@ -24736,14 +24908,14 @@ Defaults to @samp{10}.
 
 @deftypevr {@code{cgit-configuration} parameter} integer summary-log
 Specifies the number of log entries to display in the repository
-"summary" view.
+``summary'' view.
 
 Defaults to @samp{10}.
 
 @end deftypevr
 
 @deftypevr {@code{cgit-configuration} parameter} integer summary-tags
-Specifies the number of tags to display in the repository "summary"
+Specifies the number of tags to display in the repository ``summary''
 view.
 
 Defaults to @samp{10}.
@@ -24835,7 +25007,7 @@ Defaults to @samp{""}.
 @deftypevr {@code{repository-cgit-configuration} parameter} repo-string defbranch
 The name of the default branch for this repository.  If no such branch
 exists in the repository, the first branch name (when sorted) is used as
-default instead.  By default branch pointed to by HEAD, or "master" if
+default instead.  By default branch pointed to by HEAD, or ``master'' if
 there is no suitable HEAD.
 
 Defaults to @samp{""}.
@@ -24996,7 +25168,7 @@ Defaults to @samp{""}.
 
 @deftypevr {@code{repository-cgit-configuration} parameter} repo-string readme
 A path (relative to repo) which specifies a file to include verbatim as
-the "About" page for this repo.
+the ``About'' page for this repo.
 
 Defaults to @samp{""}.
 
@@ -25135,7 +25307,7 @@ A value like @code{#o0027} will give read access to the group used by Gitolite
 like cgit or gitweb.
 
 @item @code{git-config-keys} (default: @code{""})
-Gitolite allows you to set git config values using the "config" keyword. This
+Gitolite allows you to set git config values using the @samp{config} keyword. This
 setting allows control over the config keys to accept.
 
 @item @code{roles} (default: @code{'(("READERS" . 1) ("WRITERS" . ))})
@@ -25383,6 +25555,42 @@ notifications.
 @end table
 @end deftp
 
+@cindex modprobe
+@cindex kernel module loader
+@subsubsection Kernel Module Loader Service
+
+The kernel module loader service allows one to load loadable kernel
+modules at boot.  This is especially useful for modules that don't
+autoload and need to be manually loaded, as it's the case with
+@code{ddcci}.
+
+@deffn {Scheme Variable} kernel-module-loader-service-type
+The service type for loading loadable kernel modules at boot with
+@command{modprobe}.  Its value must be a list of strings representing
+module names.  For example loading the drivers provided by
+@code{ddcci-driver-linux}, in debugging mode by passing some module
+parameters, can be done as follow:
+
+@lisp
+(use-modules (gnu) (gnu services))
+(use-package-modules linux)
+(use-service-modules linux)
+
+(define ddcci-config
+  (plain-file "ddcci.conf"
+              "options ddcci dyndbg delay=120"))
+
+(operating-system
+  ...
+  (services (cons* (service kernel-module-loader-service-type
+                            '("ddcci" "ddcci_backlight"))
+                   (simple-service 'ddcci-config etc-service-type
+                                   (list `("modprobe.d/ddcci.conf"
+                                           ,ddcci-config)))
+                   %base-services))
+  (kernel-loadable-modules (list ddcci-driver-linux)))
+@end lisp
+@end deffn
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services
@@ -25528,6 +25736,11 @@ If true, this must be the name of a file to log messages to.
 @subsection Dictionary Services
 @cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
+
+@defvr {Scheme Variable} dicod-service-type
+This is the type of the service that runs the @command{dicod} daemon, an
+implementation of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
+@end defvr
 
 @deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
 Return a service that runs the @command{dicod} daemon, an implementation
@@ -26981,8 +27194,8 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
 
 The file should evaluate to a list of @var{machine} objects.  This example,
 upon being deployed, will create a new generation on the remote system
-realizing the @code{operating-system} declaration @var{%system}.
-@var{environment} and @var{configuration} specify how the machine should be
+realizing the @code{operating-system} declaration @code{%system}.
+@code{environment} and @code{configuration} specify how the machine should be
 provisioned---that is, how the computing resources should be created and
 managed.  The above example does not create any resources, as a
 @code{'managed-host} is a machine that is already running the Guix system and
@@ -27124,7 +27337,8 @@ This image boots the Xfce graphical environment and it contains some
 commonly-used tools.  You can install more software in the image by running
 @command{guix package} in a terminal (@pxref{Invoking guix package}).  You can
 also reconfigure the system based on its initial configuration file available
-as @file{/etc/config.scm} (@pxref{Using the Configuration System}).
+as @file{/run/current-system/configuration.scm} (@pxref{Using the
+Configuration System}).
 
 Instead of using this pre-built image, one can also build their own virtual
 machine image using @command{guix system vm-image} (@pxref{Invoking guix
@@ -27235,7 +27449,8 @@ VM.  To enable that you'll also have to pass the following flags to @command{qem
 name=com.redhat.spice.0
 @end example
 
-You'll also need to add the @pxref{Miscellaneous Services, Spice service}.
+You'll also need to add the @code{(spice-vdagent-service)} to your
+system definition (@pxref{Miscellaneous Services, Spice service}).
 
 @node Defining Services
 @section Defining Services

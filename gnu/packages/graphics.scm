@@ -19,6 +19,8 @@
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +87,61 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
+
+(define-public fox
+  (package
+    (name "fox")
+    (version "1.6.57")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://fox-toolkit.org/ftp/fox-" version ".tar.gz"))
+       (sha256
+        (base32 "08w98m6wjadraw1pi13igzagly4b2nfa57kdqdnkjfhgkvg1bvv5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             (substitute* "configure"
+               (("-I/usr/include/freetype2")
+                (string-append "-I"
+                               (string-append
+                                (assoc-ref %build-inputs "freetype")
+                                "/include/freetype2"))))
+             #t)))))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (inputs
+     `(("bzip2" ,lbzip2)
+       ("freetype" ,freetype)
+       ("gl" ,mesa)
+       ("glu" ,glu)
+       ("jpeg" ,libjpeg)
+       ("png" ,libpng)
+       ("tiff" ,libtiff)
+       ("x11" ,libx11)
+       ("xcursor" ,libxcursor)
+       ("xext" ,libxext)
+       ("xfixes" ,libxfixes)
+       ("xft" ,libxft)
+       ("xinput" ,libxi)
+       ("xrandr" ,libxrandr)
+       ("xrender" ,libxrender)
+       ("xshm" ,libxshmfence)
+       ("zlib" ,zlib)))
+    (synopsis "Widget Toolkit for building GUI")
+    (description"FOX (Free Objects for X) is a C++ based Toolkit for developing
+Graphical User Interfaces easily and effectively.   It offers a wide, and
+growing, collection of Controls, and provides state of the art facilities such
+as drag and drop, selection, as well as OpenGL widgets for 3D graphical
+manipulation.  FOX also implements icons, images, and user-convenience features
+such as status line help, and tooltips.  Tooltips may even be used for 3D
+objects!")
+    (home-page "http://www.fox-toolkit.org")
+    (license license:lgpl2.1+)))
 
 (define-public blender
   (package
@@ -274,50 +331,55 @@ exception-handling library.")
 (define-public ogre
   (package
     (name "ogre")
-    (version "1.10.11")
+    (version "1.12.5")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/OGRECave/ogre.git")
-              (commit (string-append "v" version))))
+             (url "https://github.com/OGRECave/ogre.git")
+             (commit (string-append "v" version))
+             (recursive? #t)))          ;for Dear ImGui submodule
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "072rzw9mxymbiypgkrbkk9h10rgly6gczik4dlmssk6xkpqckaqr"))))
+        (base32 "1sx0jsw4kmb4ycf62bgx3ygwv8k1cgjx52y47d7dk07z6gk6wpyj"))))
     (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "Tests/CMakeLists.txt"
-               (("URL(.*)$")
-                (string-append "URL " (assoc-ref inputs "googletest-source"))))
+           ;; CMakeLists.txt forces CMAKE_INSTALL_RPATH value.  As
+           ;; a consequence, we cannot suggest ours in configure flags.  Fix
+           ;; it.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("set\\(CMAKE_INSTALL_RPATH .*") ""))
              #t)))
        #:configure-flags
-       (list "-DOGRE_BUILD_TESTS=TRUE"
-             (string-append "-DCMAKE_INSTALL_RPATH="
-                            (assoc-ref %outputs "out") "/lib:"
-                            (assoc-ref %outputs "out") "/lib/OGRE:"
-                            (assoc-ref %build-inputs "googletest") "/lib")
-             "-DOGRE_INSTALL_DOCS=TRUE"
-             "-DOGRE_INSTALL_SAMPLES=TRUE"
-             "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE")))
+       (let* ((out (assoc-ref %outputs "out"))
+              (runpath
+               (string-join (list (string-append out "/lib")
+                                  (string-append out "/lib/OGRE"))
+                            ";")))
+         (list (string-append "-DCMAKE_INSTALL_RPATH=" runpath)
+               "-DOGRE_BUILD_DEPENDENCIES=OFF"
+               "-DOGRE_BUILD_TESTS=TRUE"
+               "-DOGRE_INSTALL_DOCS=TRUE"
+               "-DOGRE_INSTALL_SAMPLES=TRUE"
+               "-DOGRE_INSTALL_SAMPLES_SOURCE=TRUE"))))
     (native-inputs
      `(("boost" ,boost)
        ("doxygen" ,doxygen)
-       ("googletest-source" ,(package-source googletest))
+       ("googletest" ,googletest-1.8)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("font-dejavu" ,font-dejavu)
        ("freeimage" ,freeimage)
        ("freetype" ,freetype)
        ("glu" ,glu)
-       ("googletest" ,googletest)
-       ("sdl2" ,sdl2)
        ("libxaw" ,libxaw)
        ("libxrandr" ,libxrandr)
+       ("pugixml" ,pugixml)
+       ("sdl2" ,sdl2)
        ("tinyxml" ,tinyxml)
        ("zziplib" ,zziplib)))
     (synopsis "Scene-oriented, flexible 3D engine written in C++")

@@ -10,7 +10,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019, 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
@@ -18,6 +18,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Dimakis Dimakakos <me@bendersteed.tech>
+;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages imagemagick)
@@ -618,6 +620,43 @@ from other CLXes around the net.")
 
 (define-public ecl-clx
   (sbcl-package->ecl-package sbcl-clx))
+
+(define-public sbcl-clx-truetype
+  (let ((commit "c6e10a918d46632324d5863a8ed067a83fc26de8")
+        (revision "1"))
+    (package
+      (name "sbcl-clx-truetype")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/l04m33/clx-truetype")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "079hyp92cjkdfn6bhkxsrwnibiqbz4y4af6nl31lzw6nm91j5j37"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (substitute* "package.lisp"
+               ((":export") ":export\n   :+font-cache-filename+"))
+             #t))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("clx" ,sbcl-clx)
+         ("zpb-ttf" ,sbcl-zpb-ttf)
+         ("cl-vectors" ,sbcl-cl-vectors)
+         ("cl-paths-ttf" ,sbcl-cl-paths-ttf)
+         ("cl-fad" ,sbcl-cl-fad)
+         ("cl-store" ,sbcl-cl-store)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://github.com/l04m33/clx-truetype")
+      (synopsis "Antialiased TrueType font rendering using CLX and XRender")
+      (description "CLX-TrueType is pure common lisp solution for
+antialiased TrueType font rendering using CLX and XRender extension.")
+      (license license:expat))))
 
 (define-public sbcl-cl-ppcre-unicode
   (package (inherit sbcl-cl-ppcre)
@@ -1672,7 +1711,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.48")
+    (version "0.49")
     (source
      (origin
        (method git-fetch)
@@ -1680,8 +1719,7 @@ also be supported.")
              (url "https://github.com/sharplispers/ironclad/")
              (commit (string-append "v" version))))
        (sha256
-        (base32
-         "1wzczpgvgjc5h8ghz75kxi7iykmqxqchdhgdhkif9j99kyqvbyam"))
+        (base32 "0kbzqg2aasrhjwy3nrzy2ddy809n1j045w4qkyc3r2syqd203d4q"))
        (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
@@ -1689,7 +1727,8 @@ also be supported.")
      `(("rt" ,sbcl-rt)))
     (inputs
      `(("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("flexi-streams" ,sbcl-flexi-streams)))
+       ("flexi-streams" ,sbcl-flexi-streams)
+       ("trivial-garbage" ,sbcl-trivial-garbage)))
     (synopsis "Cryptographic toolkit written in Common Lisp")
     (description
      "Ironclad is a cryptography library written entirely in Common Lisp.
@@ -2631,10 +2670,11 @@ relational database engine.")
   (sbcl-package->cl-source-package sbcl-cl-sqlite))
 
 (define-public sbcl-parenscript
-  (let ((commit "061d8e286c81c3f45c84fb2b11ee7d83f590a8f8"))
+  ;; Source archives are overwritten on every release, we use the Git repo instead.
+  (let ((commit "7a1ac46353cecd144fc91915ba9f122aafcf4766"))
     (package
       (name "sbcl-parenscript")
-      (version (git-version "2.6" "1" commit))
+      (version (git-version "2.7.1" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2644,7 +2684,7 @@ relational database engine.")
          (file-name (git-file-name "parenscript" version))
          (sha256
           (base32
-           "1kbhgsjbikc73m5cwdp4d4fdafyqcr1b7b630qjrziql0nh6mi3k"))))
+           "0c22lqarrpbq82dg1sb3y6mp6w2faczp34ymzhnmff88yfq1xzsf"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
@@ -2747,8 +2787,8 @@ advantage of the library is the ability to concisely define command line
 options once and then use this definition for parsing and extraction of
 command line arguments, as well as printing description of command line
 options (you get --help for free).  This way you don't need to repeat
-yourself.  Also, @command{unix-opts} doesn't depend on anything and allows to
-precisely control behavior of the parser via Common Lisp restarts.")
+yourself.  Also, @command{unix-opts} doesn't depend on anything and
+precisely controls the behavior of the parser via Common Lisp restarts.")
     (license license:expat)))
 
 (define-public cl-unix-opts
@@ -2877,7 +2917,20 @@ is a library for creating graphical user interfaces.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "gobject/gobject.init.lisp"
                (("libgobject" all) (string-append
-                                    (assoc-ref inputs "glib") "/lib/" all))))))))))
+                                    (assoc-ref inputs "glib") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gobject")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gio
   (package
@@ -2897,7 +2950,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gio/gio.init.lisp"
                (("libgio" all)
                 (string-append
-                 (assoc-ref inputs "glib") "/lib/" all))))))))))
+                 (assoc-ref inputs "glib") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gio")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-cairo
   (package
@@ -2916,7 +2982,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "cairo/cairo.init.lisp"
                (("libcairo" all)
                 (string-append
-                 (assoc-ref inputs "cairo") "/lib/" all))))))))))
+                 (assoc-ref inputs "cairo") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-cairo")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-pango
   (package
@@ -2937,7 +3016,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "pango/pango.init.lisp"
                (("libpango" all)
                 (string-append
-                 (assoc-ref inputs "pango") "/lib/" all))))))))))
+                 (assoc-ref inputs "pango") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-pango")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk-pixbuf
   (package
@@ -2946,6 +3038,7 @@ is a library for creating graphical user interfaces.")
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
      `(#:asd-file "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
@@ -2956,7 +3049,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gdk-pixbuf/gdk-pixbuf.init.lisp"
                (("libgdk_pixbuf" all)
                 (string-append
-                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all))))))))))
+                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gdk-pixbuf")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk
   (package
@@ -2964,6 +3070,7 @@ is a library for creating graphical user interfaces.")
     (name "sbcl-cl-cffi-gtk-gdk")
     (inputs
      `(("gtk" ,gtk+)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
        ("cl-cffi-gtk-gdk-pixbuf" ,sbcl-cl-cffi-gtk-gdk-pixbuf)
@@ -2983,7 +3090,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gdk/gdk.package.lisp"
                (("libgtk" all)
                 (string-append
-                 (assoc-ref inputs "gtk") "/lib/" all))))))))))
+                 (assoc-ref inputs "gtk") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gdk")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk
   (package
@@ -3002,16 +3122,31 @@ is a library for creating graphical user interfaces.")
        #:test-asd-file "test/cl-cffi-gtk-test.asd"
        ;; TODO: Tests fail with memory fault.
        ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
-       #:tests? #f))))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public cl-cffi-gtk
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
 
 (define-public sbcl-cl-webkit
-  (let ((commit "4832c99c31e0eb1fcce3779d119343ae8a423952"))
+  (let ((commit "d97115ca601838dfa60ea7afbb88641d7a526dba"))
     (package
       (name "sbcl-cl-webkit")
-      (version (git-version "2.4" "1" commit))
+      (version (git-version "2.4" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -3021,7 +3156,7 @@ is a library for creating graphical user interfaces.")
          (file-name (git-file-name "cl-webkit" version))
          (sha256
           (base32
-           "0sn7m181wfg1q49q45dlsry8c38x7pziqcs0frnymk6yvgndybxd"))))
+           "0sdb2l2h5xv5c1m2mfq31i9yl6zjf512fvwwzlvk9nvisyhc4xi3"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cffi" ,sbcl-cffi)
@@ -5038,8 +5173,8 @@ high-level way.  This library provides such operators.")
   (sbcl-package->ecl-package sbcl-cl-quickcheck))
 
 (define-public sbcl-burgled-batteries3
-  (let ((commit "9c0f6667e1a71ddf77e21793a0bea524710fef6e")
-        (revision "1"))
+  (let ((commit "f65f454d13bb6c40e17e9ec62e41eb5069e09760")
+        (revision "2"))
     (package
       (name "sbcl-burgled-batteries3")
       (version (git-version "0.0.0" revision commit))
@@ -5052,33 +5187,33 @@ high-level way.  This library provides such operators.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0b726kz2xxcg5l930gz035rsdvhxrzmp05iwfwympnb4z4ammicb"))))
+           "1nzn7jawrfajyzwfnzrg2cmn9xxadcqh4szbpg0jggkhdkdzz4wa"))))
       (build-system asdf-build-system/sbcl)
       (arguments
-       '(#:tests? #f
+       `(#:tests? #f
+         #:modules (((guix build python-build-system) #:select (python-version))
+                    ,@%asdf-build-system-modules)
+         #:imported-modules ((guix build python-build-system)
+                             ,@%asdf-build-system-modules)
          #:phases
-         (modify-phases %standard-phases
+         (modify-phases (@ (guix build asdf-build-system) %standard-phases)
            (add-after 'unpack 'set-*cpython-include-dir*-var
              (lambda* (#:key inputs #:allow-other-keys)
-               (substitute* "grovel-include-dir.lisp"
-                 (("\\(defparameter \\*cpython-include-dir\\* \\(detect-python\\)\\)")
-                  (string-append
-                   "(defparameter *cpython-include-dir* \""
-                   (assoc-ref inputs "python")
-                   "/include/python3.7m"
-                   "\")")))
-               (substitute* "ffi-interface.lisp"
-                 (("\\*cpython-lib\\*")
-                  (format #f "'(\"~a/lib/libpython3.so\")"
-                          (assoc-ref inputs "python"))))
-               #t)))))
+               (let ((python (assoc-ref inputs "python")))
+                 (setenv "BB_PYTHON3_INCLUDE_DIR"
+                         (string-append python "/include/python"
+                                        (python-version python)
+                                        "m"))
+                 (setenv "BB_PYTHON3_DYLIB"
+                         (string-append python "/lib/libpython3.so"))
+                 #t))))))
       (native-inputs
-       `(("python" ,python)
-         ("sbcl-cl-fad" ,sbcl-cl-fad)
+       `(("sbcl-cl-fad" ,sbcl-cl-fad)
          ("sbcl-lift" ,sbcl-lift)
          ("sbcl-cl-quickcheck" ,sbcl-cl-quickcheck)))
       (inputs
-       `(("sbcl-cffi" ,sbcl-cffi)
+       `(("python" ,python)
+         ("sbcl-cffi" ,sbcl-cffi)
          ("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
          ("sbcl-alexandria" , sbcl-alexandria)
          ("sbcl-parse-declarations-1.0" ,sbcl-parse-declarations)
@@ -5088,7 +5223,6 @@ high-level way.  This library provides such operators.")
        "This package provides a shim between Python3 (specifically, the
 CPython implementation of Python) and Common Lisp.")
       (home-page "https://github.com/snmsts/burgled-batteries3")
-      ;; MIT
       (license license:expat))))
 
 (define-public cl-burgled-batteries3
@@ -5465,7 +5599,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (native-inputs
        `(("fiveam" ,sbcl-fiveam)))
       (synopsis "IEEE 754 binary representation for floats in Common Lisp")
-      (description "This is a Common Lisp library that allows to convert
+      (description "This is a Common Lisp library that converts
 floating point values to IEEE 754 binary representation.")
       (license license:bsd-3))))
 
@@ -6277,10 +6411,10 @@ various string metrics in Common Lisp:
   (sbcl-package->cl-source-package sbcl-mk-string-metrics))
 
 (define-public sbcl-cl-str
-  (let ((commit "3d5ec86e3a0199e5973aacde951086dfd754b5e5"))
+  (let ((commit "eb480f283e28802d67b35bf916506701152f9a2a"))
     (package
       (name "sbcl-cl-str")
-      (version (git-version "0.8" "1" commit))
+      (version (git-version "0.17" "1" commit))
       (home-page "https://github.com/vindarel/cl-str")
       (source (origin
                 (method git-fetch)
@@ -6288,12 +6422,13 @@ various string metrics in Common Lisp:
                       (url home-page)
                       (commit commit)))
                 (sha256
-                 (base32 "0szzzbygw9h985yxz909vvqrp69pmpcpahn7hn350lnyjislk9ga"))
+                 (base32 "1hpq5m8zjjnzns370zy27z2vcm1p8n2ka5ij2x67gyc9amz9vla0"))
                 (file-name (git-file-name name version))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
-         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-change-case" ,sbcl-cl-change-case)))
       (native-inputs
        `(("prove" ,sbcl-prove)
          ("prove-asdf" ,sbcl-prove-asdf)))
@@ -6379,7 +6514,7 @@ power of CXML is available when necessary.")
          ("cl-xmlspam" ,sbcl-cl-xmlspam)
          ("ironclad" ,sbcl-ironclad)))
       (synopsis "D-Bus client library for Common Lisp")
-      (description "This is a Common Lisp library that allows to publish D-Bus
+      (description "This is a Common Lisp library that publishes D-Bus
 objects as well as send and notify other objects connected to a bus.")
       (license license:bsd-2))))
 
@@ -6643,8 +6778,8 @@ which implements a set of utilities.")
   (sbcl-package->ecl-package sbcl-metatilities-base))
 
 (define-public sbcl-cl-containers
-  (let ((commit "b2980bac9ac87ad32b63b722ce520fa26cb36ee6")
-        (revision "2"))
+  (let ((commit "3d1df53c22403121bffb5d553cf7acb1503850e7")
+        (revision "3"))
     (package
       (name "sbcl-cl-containers")
       (version (git-version "0.12.1" revision commit))
@@ -6657,7 +6792,7 @@ which implements a set of utilities.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "19hmlax19hq0xjaqr8za90vwf06ymxw1m29sj053a309k3hm84gx"))))
+           "18s6jfq11n8nv9k4biz32pm1s7y9zl054ry1gmdbcf39nisy377y"))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
        `(("lift" ,sbcl-lift)))
@@ -7204,8 +7339,8 @@ implementation specific equivalent.")
   (sbcl-package->ecl-package sbcl-trivial-macroexpand-all))
 
 (define-public sbcl-serapeum
-  (let ((commit "65837f8a0d65b36369ec8d000fff5c29a395b5fe")
-        (revision "0"))
+  (let ((commit "64f0c4a161bbbda7c275012ca1415b4293b9e169")
+        (revision "1"))
     (package
       (name "sbcl-serapeum")
       (version (git-version "0.0.0" revision commit))
@@ -7219,7 +7354,7 @@ implementation specific equivalent.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0clwf81r2lvk1rbfvk91s9zmbkas9imf57ilqclw12mxaxlfsnbw"))))
+           "0djnj0py8hdjnk5j6shjq2kbmyxqd5sw79cilcfmpfz4dzjdgkx9"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("alexandria" ,sbcl-alexandria)
@@ -11275,3 +11410,157 @@ in DEFPACKAGE.")
 
 (define-public cl-trivial-package-local-nicknames
   (sbcl-package->cl-source-package sbcl-trivial-package-local-nicknames))
+
+(define-public sbcl-enchant
+  (let ((commit "6af162a7bf10541cbcfcfa6513894900329713fa"))
+    (package
+      (name "sbcl-enchant")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/tlikonen/cl-enchant")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19yh5ihirzi1d8xqy1cjqipzd6ly3245cfxa5s9xx496rryz0s01"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("enchant" ,enchant)
+         ("cffi" ,sbcl-cffi)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "load-enchant.lisp"
+                 (("libenchant")
+                  (string-append
+                   (assoc-ref inputs "enchant") "/lib/libenchant-2"))))))))
+      (synopsis "Common Lisp interface for the Enchant spell-checker library")
+      (description
+       "Enchant is a Common Lisp interface for the Enchant spell-checker
+library.  The Enchant library is a generic spell-checker library which uses
+other spell-checkers transparently as back-end.  The library supports the
+multiple checkers, including Aspell and Hunspell.")
+      (license license:public-domain))))
+
+(define-public cl-enchant
+  (sbcl-package->cl-source-package sbcl-enchant))
+
+(define-public sbcl-cl-change-case
+  (let ((commit "5ceff2a5f8bd845b6cb510c6364176b27a238fd3"))
+    (package
+      (name "sbcl-cl-change-case")
+      (version (git-version "0.1.0" "1" commit))
+      (home-page "https://github.com/rudolfochrist/cl-change-case")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1afyglglk9z3yg8gylcl301bl2r8vq3sllyznzj9s5xi5gs6qyf2"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       '(;; FIXME: Test pass but phase fails with 'Component
+         ;; "cl-change-case-test" not found, required by'.
+         #:tests? #f
+         #:test-asd-file "cl-change-case-test.asd"))
+      (synopsis "Convert Common Lisp strings between camelCase, PascalCase and more")
+      (description
+       "@code{cl-change-case} is library to convert strings between camelCase,
+PascalCase, snake_case, param-case, CONSTANT_CASE and more.")
+      (license license:llgpl))))
+
+(define-public cl-change-case
+  (sbcl-package->cl-source-package sbcl-cl-change-case))
+
+(define-public sbcl-moptilities
+  (let ((commit "a436f16b357c96b82397ec018ea469574c10dd41"))
+    (package
+      (name "sbcl-moptilities")
+      (version (git-version "0.3.13" "1" commit))
+      (home-page "https://github.com/gwkkwg/moptilities/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1q12bqjbj47lx98yim1kfnnhgfhkl80102fkgp9pdqxg0fp6g5fc"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (synopsis "Compatibility layer for Common Lisp MOP implementation differences")
+      (description
+       "MOP utilities provide a common interface between Lisps and make the
+MOP easier to use.")
+      (license license:expat))))
+
+(define-public cl-moptilities
+  (sbcl-package->cl-source-package sbcl-moptilities))
+
+(define-public sbcl-osicat
+  (let ((commit "de0c18a367eedc857e1902a7319828af072a0d97"))
+    (package
+      (name "sbcl-osicat")
+      (version (git-version "0.7.0" "1" commit))
+      (home-page "http://www.common-lisp.net/project/osicat/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/osicat/osicat")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "15viw5pi5sa7qq9b4n2rr3dj2jkqr180rh9z1lh8w3rgl42i2adc"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'validate-runpath 'cleanup-files
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib/sbcl")))
+                 (for-each
+                  delete-file
+                  (filter (lambda (file)
+                            (not (member (basename file)
+                                         '("basic-unixint__grovel"
+                                           "libosicat.so"
+                                           "osicat--system.fasl"
+                                           "osicat.asd"
+                                           "unixint__grovel"))))
+                          (find-files lib ".*")))
+                 #t))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("trivial-features" ,sbcl-trivial-features)))
+      (native-inputs
+       `(("cffi-grovel" ,sbcl-cffi-grovel)
+         ("rt" ,sbcl-rt)))
+      (synopsis "Operating system interface for Common Lisp")
+      (description
+       "Osicat is a lightweight operating system interface for Common Lisp on
+Unix-platforms.  It is not a POSIX-style API, but rather a simple lispy
+accompaniment to the standard ANSI facilities.")
+      (license license:expat))))
+
+(define-public cl-osicat
+  (sbcl-package->cl-source-package sbcl-osicat))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +30,24 @@
 (define git-command
   (make-parameter "git"))
 
+(define (call-with-environment-variables variables thunk)
+  "Call THUNK with the environment VARIABLES set."
+  (let ((environment (environ)))
+    (dynamic-wind
+      (lambda ()
+        (for-each (match-lambda
+                    ((variable value)
+                     (setenv variable value)))
+                  variables))
+      thunk
+      (lambda ()
+        (environ environment)))))
+
+(define-syntax-rule (with-environment-variables variables exp ...)
+  "Evaluate EXP with the given environment VARIABLES set."
+  (call-with-environment-variables variables
+                                   (lambda () exp ...)))
+
 (define (populate-git-repository directory directives)
   "Initialize a new Git checkout and repository in DIRECTORY and apply
 DIRECTIVES.  Each element of DIRECTIVES is an sexp like:
@@ -41,8 +59,21 @@ Return DIRECTORY on success."
   ;; Note: As of version 0.2.0, Guile-Git lacks the necessary bindings to do
   ;; all this, so resort to the "git" command.
   (define (git command . args)
-    (apply invoke (git-command) "-C" directory
-           command args))
+    ;; Make sure Git doesn't rely on the user's config.
+    (call-with-temporary-directory
+     (lambda (home)
+       (call-with-output-file (string-append home "/.gitconfig")
+         (lambda (port)
+           (display "[user]
+  email = charlie@example.org\n  name = Charlie Guix\n"
+                    port)))
+
+       (with-environment-variables
+        `(("GIT_CONFIG_NOSYSTEM" "1")
+          ("GIT_ATTR_NOSYSTEM" "1")
+          ("HOME" ,home))
+        (apply invoke (git-command) "-C" directory
+               command args)))))
 
   (mkdir-p directory)
   (git "init")

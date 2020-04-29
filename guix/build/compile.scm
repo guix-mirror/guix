@@ -184,36 +184,36 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
     ;; Exit as soon as something goes wrong.
     (exit-on-exception
      file
-     (with-target host
-       (lambda ()
-         (let ((relative (relative-file source-directory file)))
-           (compile-file file
-                         #:output-file (string-append build-directory "/"
-                                                      (scm->go relative))
-                         #:opts (append warning-options
-                                        (optimization-options relative))))))))
+     (let ((relative (relative-file source-directory file)))
+       (compile-file file
+                     #:output-file (string-append build-directory "/"
+                                                  (scm->go relative))
+                     #:opts (append warning-options
+                                    (optimization-options relative))))))
 
   (with-augmented-search-path %load-path source-directory
     (with-augmented-search-path %load-compiled-path build-directory
       (with-fluids ((*current-warning-prefix* ""))
-
-        ;; FIXME: To work around <https://bugs.gnu.org/15602>, we first load all
-        ;; of FILES.
-        (load-files source-directory files
-                    #:report-load report-load
-                    #:debug-port debug-port)
-
-        ;; Make sure compilation related modules are loaded before starting to
-        ;; compile files in parallel.
+        ;; Make sure the compiler's modules are loaded before 'with-target'
+        ;; (since 'with-target' influences the .go loader), and before
+        ;; starting to compile files in parallel.
         (compile #f)
 
-        ;; XXX: Don't use too many workers to work around the insane memory
-        ;; requirements of the compiler in Guile 2.2.2:
-        ;; <https://lists.gnu.org/archive/html/guile-devel/2017-05/msg00033.html>.
-        (n-par-for-each (min workers 8) build files)
+        (with-target host
+          (lambda ()
+            ;; FIXME: To work around <https://bugs.gnu.org/15602>, we first
+            ;; load all of FILES.
+            (load-files source-directory files
+                        #:report-load report-load
+                        #:debug-port debug-port)
 
-        (unless (zero? total)
-          (report-compilation #f total total))))))
+            ;; XXX: Don't use too many workers to work around the insane
+            ;; memory requirements of the compiler in Guile 2.2.2:
+            ;; <https://lists.gnu.org/archive/html/guile-devel/2017-05/msg00033.html>.
+            (n-par-for-each (min workers 8) build files)
+
+            (unless (zero? total)
+              (report-compilation #f total total))))))))
 
 (eval-when (eval load)
   (when (and (string=? "2" (major-version))

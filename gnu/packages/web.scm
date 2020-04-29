@@ -40,6 +40,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,14 +150,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.41")
+    (version "2.4.43")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0h7a31yxwyh7h521frnmlppl0h7sh9icc3ka6vlmlcg5iwllhg8k"))))
+               "0hqgw47r3p3521ygkkqs8s30s5crm683081avj6330gwncm6b5x4"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -1268,7 +1269,7 @@ Browsers and other web clients can use it to avoid privacy-leaking
 highlighting parts of the domain in a user interface, and sorting domain lists
 by site.
 
-Libpsl has built-in PSL data for fast access, allows to load PSL data from
+Libpsl has built-in PSL data for fast access, allowing to load PSL data from
 files, checks if a given domain is a public suffix, provides immediate cookie
 domain verification, finds the longest public part of a given domain, finds
 the shortest private part of a given domain, works with international
@@ -3254,6 +3255,35 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
 used by the HTTP protocol (and then some more).")
     (home-page "https://metacpan.org/release/HTTP-Date")))
 
+(define-public perl-http-lite
+  (package
+    (name "perl-http-lite")
+    (version "2.44")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/N/NE/NEILB/HTTP-Lite-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0z77nflj8zdcfg70kc93glq5kmd6qxn2nf7h70x4xhfg25wkvr1q"))))
+    (build-system perl-build-system)
+    (native-inputs `(("perl-cgi" ,perl-cgi)))
+    (home-page "https://metacpan.org/release/HTTP-Lite")
+    (synopsis "Lightweight HTTP implementation")
+    (description "@code{HTTP::Lite} is a stand-alone lightweight
+HTTP/1.1 implementation for perl.  It is intended for use in
+situations where it is desirable to install the minimal number of
+modules to achieve HTTP support.  @code{HTTP::Lite} is ideal for
+CGI (or mod_perl) programs or for bundling for redistribution with
+larger packages where only HTTP GET and POST functionality are
+necessary.  @code{HTTP::Lite} is compliant with the Host header,
+necessary for name based virtual hosting, and supports proxies.
+Additionally, @code{HTTP::Lite} supports a callback to allow
+processing of request data as it arrives.")
+    (license license:perl-license)))
+
 (define-public perl-http-message
   (package
     (name "perl-http-message")
@@ -4780,16 +4810,23 @@ NetSurf project.")
 (define-public ikiwiki
   (package
     (name "ikiwiki")
-    (version "3.20190228")
+    (version "3.20200202.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://snapshot.debian.org/archive/debian/"
-                           "20190301T035241Z/pool/main/i/ikiwiki/ikiwiki_"
-                           version ".orig.tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.ikiwiki.info/")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "17pyblaqhkb61lxl63bzndiffism8k859p54k3k4sghclq6lsynh"))))
+         "0fphyqzlk9y8v9s89ypsmrnbhyymzrpc2w0liy0n4knc7kk2pabq"))
+       (snippet
+        '(begin
+           ;; The POT file requires write permission during the build
+           ;; phase.
+           (chmod "po/ikiwiki.pot" #o644)
+           #t))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -4803,10 +4840,21 @@ NetSurf project.")
                  "        addenv(\"PERL5LIB\", \""
                  (getenv "PERL5LIB")
                  "\");")))))
-         (add-after 'patch-source-shebangs 'patch-Makefile
+         (add-after 'patch-source-shebangs 'patch-Makefiles
            (lambda _
              (substitute* "Makefile.PL"
-               (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+                          (("SYSCONFDIR\\?=") "SYSCONFDIR?=$(PREFIX)"))
+             (with-directory-excursion "po"
+               (substitute* "Makefile"
+                            (("PERL5LIB=") "PERL5LIB=${PERL5LIB}:")))
+             #t))
+         (add-before 'build 'set-modification-times
+           ;; The wiki '--refresh' steps, which are executed during
+           ;; the check phase, require recent timestamps on files in
+           ;; the 'doc' and 'underlays' directories.
+           (lambda _
+             (invoke "find"  "doc" "underlays" "-type" "f" "-exec"
+                     "touch" "{}" "+")
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4820,10 +4868,6 @@ NetSurf project.")
                #t))))))
     (native-inputs
      `(("which" ,which)
-       ("perl-html-tagset" ,perl-html-tagset)
-       ("perl-timedate" ,perl-timedate)
-       ("perl-xml-sax" ,perl-xml-sax)
-       ("perl-xml-simple" ,perl-xml-simple)
        ("gettext" ,gettext-minimal)
        ("subversion" ,subversion)
        ("git" ,git)
@@ -4832,14 +4876,24 @@ NetSurf project.")
        ("mercurial" ,mercurial)))
     (inputs
      `(("python" ,python-wrapper)
+       ("perl-authen-passphrase" ,perl-authen-passphrase)
        ("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
        ("perl-cgi-session" ,perl-cgi-session)
        ("perl-cgi-simple" ,perl-cgi-simple)
        ("perl-db-file" ,perl-db-file)
-       ("perl-html-parser" ,perl-html-parser)
+       ("perl-file-mimeinfo" ,perl-file-mimeinfo)
+       ("perl-html-tagset" ,perl-html-tagset)
+       ("perl-image-magick" ,perl-image-magick)
+       ("perl-mail-sendmail" ,perl-mail-sendmail)
+       ("perl-timedate" ,perl-timedate)
+       ("perl-xml-sax" ,perl-xml-sax)
+       ("perl-xml-simple" ,perl-xml-simple)
+       ("perl-xml-twig" ,perl-xml-twig)
+       ("po4a" ,po4a)))
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
        ("perl-html-scrubber" ,perl-html-scrubber)
        ("perl-html-template" ,perl-html-template)
-       ("perl-image-magick" ,perl-image-magick)
        ("perl-json" ,perl-json)
        ("perl-text-markdown-discount" ,perl-text-markdown-discount)
        ("perl-uri" ,perl-uri)
@@ -5788,6 +5842,20 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches
+               ;; When parsing URLs, treat an empty port (eg
+               ;; `http://hostname:/`) as if it were unspecified.  This patch is
+               ;; applied to Fedora's http-parser and to libgit2's bundled version.
+               (list
+                (origin
+                  (method url-fetch)
+                  (uri (string-append
+                         "https://src.fedoraproject.org/rpms/http-parser/raw/"
+                         "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
+                         "f/0001-url-treat-empty-port-as-default.patch"))
+                  (sha256
+                   (base32
+                    "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))))
               (sha256
                (base32
                 "189zi61vczqgmqjd2myjcjbbi5icrk7ccs0kn6nj8hxqiv5j3811"))))
@@ -6085,12 +6153,12 @@ file links.")
      `(#:configure-flags (list "--with-ssl=openssl")
        #:tests? #f)) ;No tests included
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("expat" ,expat)
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl-1.0)))
     (home-page "http://www.webdav.org/cadaver/")
     (synopsis "Command-line WebDAV client")
     (description
@@ -6220,12 +6288,14 @@ technologies.")
     (name "java-eclipse-jetty-test-helper")
     (version "4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/eclipse/jetty.toolchain/"
-                                  "archive/jetty-test-helper-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse/jetty.toolchain/")
+                     (commit (string-append "jetty-test-helper-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jd6r9wc26fa11si4rn2gvy8ml8q4zw1nr6v04mjp8wvwpgvzwx5"))))
+                "1g7cdh03nfwbdxzvwm84ysgvw08xx7431lsjryj2gmf3lrqpizgb"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "eclipse-jetty-test-helper.jar"
@@ -7107,8 +7177,8 @@ compressed JSON header blocks.
                "0wwhwv7cvi1vxpdjwvg0kpa4jzhszclpnwrwfcw728zz53a47z09"))))))
 
 (define-public hpcguix-web
-  (let ((commit "f39c90b35e99e4122b0866ec4337020d61c81508")
-        (revision "4"))
+  (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")
+        (revision "5"))
     (package
       (name "hpcguix-web")
       (version (git-version "0.0.1" revision commit))
@@ -7120,7 +7190,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0idzzlwnaymk6hm5q9nh146h5m6vd8acp32vlmzp6qq08mimfkq7"))))
+                  "0wjgj2s7v2cyz6dx24c111rxs99i84sfvxl4ch8brnh02j2606jz"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -7176,11 +7246,11 @@ compressed JSON header blocks.
          ("uglify-js" ,uglify-js)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guix" ,guix)))
+       `(("guix" ,guile3.0-guix)))
       (propagated-inputs
-       `(("guile" ,guile-2.2)
-         ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json-3)))
+       `(("guile" ,guile-next)
+         ("guile-commonmark" ,guile3.0-commonmark)
+         ("guile-json" ,guile3.0-json)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages

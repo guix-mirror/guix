@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,11 +120,11 @@ program to exhibit a bug.")
       (sha256
        (base32 "0qx0zq8jxzx2as2zf0740g7kvgq163ayn3041di4vwk77490y76v"))))
     (build-system gnu-build-system)
+    (native-inputs `(("flex" ,flex)))
     (inputs
      `(("astyle"          ,astyle)
        ("llvm"            ,llvm)
        ("clang"           ,clang)
-       ("flex"            ,flex)
        ("indent"          ,indent)
        ("perl"            ,perl)
        ("exporter-lite"   ,perl-exporter-lite)

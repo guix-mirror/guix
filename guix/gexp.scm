@@ -472,24 +472,26 @@ This is the declarative counterpart of 'gexp->script'."
                    #:target target))))
 
 (define-record-type <scheme-file>
-  (%scheme-file name gexp splice?)
+  (%scheme-file name gexp splice? load-path?)
   scheme-file?
   (name       scheme-file-name)                  ;string
   (gexp       scheme-file-gexp)                  ;gexp
-  (splice?    scheme-file-splice?))              ;Boolean
+  (splice?    scheme-file-splice?)               ;Boolean
+  (load-path? scheme-file-set-load-path?))       ;Boolean
 
-(define* (scheme-file name gexp #:key splice?)
+(define* (scheme-file name gexp #:key splice? (set-load-path? #t))
   "Return an object representing the Scheme file NAME that contains GEXP.
 
 This is the declarative counterpart of 'gexp->file'."
-  (%scheme-file name gexp splice?))
+  (%scheme-file name gexp splice? set-load-path?))
 
 (define-gexp-compiler (scheme-file-compiler (file <scheme-file>)
                                             system target)
   ;; Compile FILE by returning a derivation that builds the file.
   (match file
-    (($ <scheme-file> name gexp splice?)
+    (($ <scheme-file> name gexp splice? set-load-path?)
      (gexp->file name gexp
+                 #:set-load-path? set-load-path?
                  #:splice? splice?
                  #:system system
                  #:target target))))
@@ -683,22 +685,22 @@ When TARGET is true, use it as the cross-compilation target triplet."
     (and (string? obj) (store-path? obj)))
 
   (with-monad %store-monad
-    (mapm %store-monad
-          (match-lambda
-            (((? struct? thing) sub-drv ...)
-             (mlet %store-monad ((obj (lower-object
-                                       thing system #:target target)))
-               (return (match obj
-                         ((? derivation? drv)
-                          (let ((outputs (if (null? sub-drv)
-                                             '("out")
-                                             sub-drv)))
-                            (derivation-input drv outputs)))
-                         ((? store-item? item)
-                          item)))))
-            (((? store-item? item))
-             (return item)))
-          inputs)))
+    (mapm/accumulate-builds
+     (match-lambda
+       (((? struct? thing) sub-drv ...)
+        (mlet %store-monad ((obj (lower-object
+                                  thing system #:target target)))
+          (return (match obj
+                    ((? derivation? drv)
+                     (let ((outputs (if (null? sub-drv)
+                                        '("out")
+                                        sub-drv)))
+                       (derivation-input drv outputs)))
+                    ((? store-item? item)
+                     item)))))
+       (((? store-item? item))
+        (return item)))
+     inputs)))
 
 (define* (lower-reference-graphs graphs #:key system target)
   "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
@@ -730,7 +732,7 @@ names and file names suitable for the #:allowed-references argument to
                                                #:target target)))
           (return (derivation->output-path drv))))))
 
-    (mapm %store-monad lower lst)))
+    (mapm/accumulate-builds lower lst)))
 
 (define default-guile-derivation
   ;; Here we break the abstraction by talking to the higher-level layer.

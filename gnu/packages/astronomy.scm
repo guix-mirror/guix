@@ -3,6 +3,8 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 by Amar Singh <nly@disroot.org>
+;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,22 +27,28 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages gettext)
-  #:use-module (gnu packages version-control)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xiph)
-  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
-  #:use-module (gnu packages lua)
-  #:use-module (gnu packages perl)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
@@ -149,7 +157,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.19.3")
+    (version "0.20.1")
     (source
      (origin
        (method url-fetch)
@@ -157,7 +165,7 @@ programs for the manipulation and analysis of astronomical data.")
                            "/releases/download/v" version
                            "/stellarium-" version ".tar.gz"))
        (sha256
-        (base32 "0p92rgclag0nkic9gk3p9vclb8xx9hv4zlgyij6cyh43s7c1avhp"))))
+        (base32 "034jkrdaaamvbrkfwi3qcl6h8hwfnw2nvf7a82faj55rskcpnkhm"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -289,3 +297,95 @@ Mechanics, Astrometry and Astrodynamics library.")
     (license (list license:lgpl2.0+
                    license:gpl2+)))) ; examples/transforms.c & lntest/*.c
 
+(define-public xplanet
+  (package
+    (name "xplanet")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "mirror://sourceforge/xplanet/xplanet/"
+         version "/xplanet-" version ".tar.gz"))
+       (sha256
+        (base32 "1rzc1alph03j67lrr66499zl0wqndiipmj99nqgvh9xzm1qdb023"))
+       (patches
+        (search-patches
+         "xplanet-1.3.1-cxx11-eof.patch"
+         "xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch"
+         "xplanet-1.3.1-libimage_gif.c.patch"
+         "xplanet-1.3.1-xpUtil-Add2017LeapSecond.cpp.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("libice" ,libice)
+       ("freetype" ,freetype)
+       ("pango" ,pango)
+       ("giflib" ,giflib)
+       ("libjpeg", libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("netpbm" ,netpbm)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (let ((netpbm (assoc-ref %build-inputs "netpbm")))
+         (append (list
+                  ;; Give correct path for pnm.h header to configure script
+                  (string-append "CPPFLAGS=-I" netpbm "/include/netpbm")
+                  ;; no nasa jpl cspice support
+                  "--without-cspice" )))))
+    (home-page "http://xplanet.sourceforge.net/")
+    (synopsis "Planetary body renderer")
+    (description
+     "Xplanet renders an image of a planet into an X window or file.
+All of the major planets and most satellites can be drawn and different map
+projections are also supported, including azimuthal, hemisphere, Lambert,
+Mercator, Mollweide, Peters, polyconic, orthographic and rectangular.")
+    (license license:gpl2+)))
+
+(define-public gpredict
+  (package
+    (name "gpredict")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/csete/gpredict/releases"
+                           "/download/v" version
+                           "/gpredict-" version ".tar.bz2"))
+       (sha256
+        (base32 "0hwf97kng1zy8rxyglw04x89p0bg07zq30hgghm20yxiw2xc8ng7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("glib" ,glib)
+       ("goocanvas" ,goocanvas)
+       ("gtk+" ,gtk+)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Remove reference to non-existent file.
+             (substitute* "po/POTFILES.in"
+               (("src/gtk-sat-tree\\.c")
+                ""))
+             #t)))))
+    (synopsis "Satellite tracking and orbit prediction application")
+    (description
+     "Gpredict is a real-time satellite tracking and orbit prediction
+application.  It can track a large number of satellites and display their
+position and other data in lists, tables, maps, and polar plots (radar view).
+Gpredict can also predict the time of future passes for a satellite, and
+provide you with detailed information about each pass.")
+    (home-page "http://gpredict.oz9aec.net/index.php")
+    (license license:gpl2+)))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -570,8 +571,8 @@ optimizing, and searching weighted finite-state transducers (FSTs).")
     (synopsis "Machine learning toolbox")
     (description
      "The Shogun Machine learning toolbox provides a wide range of unified and
-efficient Machine Learning (ML) methods.  The toolbox seamlessly allows to
-combine multiple data representations, algorithm classes, and general purpose
+efficient Machine Learning (ML) methods.  The toolbox seamlessly
+combines multiple data representations, algorithm classes, and general purpose
 tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
@@ -835,13 +836,13 @@ computing environments.")
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs
-     `(("python-joblib" ,python-joblib)
-       ("python-pytest" ,python-pytest)
+     `(("python-pytest" ,python-pytest)
        ("python-pandas" ,python-pandas) ;for tests
        ("python-cython" ,python-cython)))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
-       ("python-scipy" ,python-scipy)))
+       ("python-scipy" ,python-scipy)
+       ("python-joblib" ,python-joblib)))
     (home-page "https://scikit-learn.org/")
     (synopsis "Machine Learning in Python")
     (description
@@ -866,6 +867,35 @@ data analysis.")
                 (sha256
                  (base32
                   "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj")))))))
+
+(define-public python-scikit-rebate
+  (package
+    (name "python-scikit-rebate")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "skrebate" version))
+              (sha256
+               (base32
+                "1h7qs9gjxpzqabzhb8rmpv3jpmi5iq41kqdibg48299h94iikiw7"))))
+    (build-system python-build-system)
+    ;; Pandas is only needed to run the tests.
+    (native-inputs
+     `(("python-pandas" ,python-pandas)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-scikit-learn" ,python-scikit-learn)
+       ("python-joblib" ,python-joblib)))
+    (home-page "https://epistasislab.github.io/scikit-rebate/")
+    (synopsis "Relief-based feature selection algorithms for Python")
+    (description "Scikit-rebate is a scikit-learn-compatible Python
+implementation of ReBATE, a suite of Relief-based feature selection algorithms
+for Machine Learning.  These algorithms excel at identifying features that are
+predictive of the outcome in supervised learning problems, and are especially
+good at identifying feature interactions that are normally overlooked by
+standard feature selection algorithms.")
+    (license license:expat)))
 
 (define-public python-autograd
   (let* ((commit "442205dfefe407beffb33550846434baa90c4de7")
@@ -962,21 +992,26 @@ the following advantages:
     (name "vowpal-wabbit")
     (version "8.5.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/JohnLangford/vowpal_wabbit/archive/"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/JohnLangford/vowpal_wabbit")
+                     (commit version)))
               (sha256
                (base32
-                "0clp2kb7rk5sckhllxjr5a651awf4s8dgzg4659yh4hf5cqnf0gr"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "04bwzk6ifgnz3fmzid8b7avxf9n5pnx9xcjm61nkjng1vv0bpj8x"))
+              (file-name (git-file-name name version))))
     (inputs
      `(("boost" ,boost)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-boost="
-                            (assoc-ref %build-inputs "boost")))))
+                            (assoc-ref %build-inputs "boost")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable (find-files "." ".*")) #t)))))
     (build-system gnu-build-system)
     (home-page "https://github.com/JohnLangford/vowpal_wabbit")
     (synopsis "Fast machine learning library for online learning")
@@ -1022,8 +1057,8 @@ association studies (GWAS) on extremely large data sets.")
 
 ;; There have been no proper releases yet.
 (define-public kaldi
-  (let ((commit "2f95609f0bb085bd3a1dc5eb0a39f3edea59e606")
-        (revision "1"))
+  (let ((commit "d4791c0f3fc1a09c042dac365e120899ee2ad21e")
+        (revision "2"))
     (package
       (name "kaldi")
       (version (git-version "0" revision commit))
@@ -1035,7 +1070,7 @@ association studies (GWAS) on extremely large data sets.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "082qh3pfi7hvncylp4xsmkfahbd7gb0whdfa4rwrx7fxk9rdh3kz"))))
+                  "07k80my6f19mhrkwbzhjsnpf9871wmrwkl0ym468i830w67qyjrz"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
@@ -1133,8 +1168,8 @@ written in C++.")
       (license license:asl2.0))))
 
 (define-public gst-kaldi-nnet2-online
-  (let ((commit "617e43e73c7cc45eb9119028c02bd4178f738c4a")
-        (revision "1"))
+  (let ((commit "cb227ef43b66a9835c14eb0ad39e08ee03c210ad")
+        (revision "2"))
     (package
       (name "gst-kaldi-nnet2-online")
       (version (git-version "0" revision commit))
@@ -1146,7 +1181,7 @@ written in C++.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0xh3w67b69818s6ib02ara4lw7wamjdmh4jznvkpzrs4skbs9jx9"))))
+                  "1i6ffwiavxx07ri0lxix6s8q0r31x7i4xxvhys5jxkixf5q34w8g"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                    ; there are none

@@ -55,7 +55,7 @@
        ("intltool" ,intltool)))
     (inputs
      `(("cairo" ,cairo)
-       ("font-gnu-freefont-ttf" ,font-gnu-freefont-ttf)
+       ("font-gnu-freefont" ,font-gnu-freefont)
        ("geocode-glib" ,geocode-glib)
        ("gexiv2" ,gexiv2)
        ("ghostscript" ,ghostscript)

@@ -46,13 +46,13 @@
     \"1.0.0\": [
       {
         \"url\": \"https://example.com/foo-1.0.0.egg\",
-        \"packagetype\": \"bdist_egg\",
+        \"packagetype\": \"bdist_egg\"
       }, {
         \"url\": \"https://example.com/foo-1.0.0.tar.gz\",
-        \"packagetype\": \"sdist\",
+        \"packagetype\": \"sdist\"
       }, {
         \"url\": \"https://example.com/foo-1.0.0-py2.py3-none-any.whl\",
-        \"packagetype\": \"bdist_wheel\",
+        \"packagetype\": \"bdist_wheel\"
       }
     ]
   }
@@ -120,6 +120,7 @@ Provides-Extra: testing
 Requires-Dist: pytest (>=3.1.0); extra == 'testing'
 ")
 
+
 (test-begin "pypi")
 
 (test-equal "guix-package->pypi-name, old URL style"

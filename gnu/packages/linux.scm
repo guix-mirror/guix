@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
@@ -28,7 +28,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
-;;; Copyright © 2018 Brendan Tildesley <mail@brendan.scot>
+;;; Copyright © 2018, 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018 Manuel Graf <graf@init.at>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
@@ -191,6 +191,12 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "/pub/linux-libre/releases/" version "-gnu/"
                               "deblob-check"))
           (sha256 deblob-check-hash))))
+
+(define deblob-scripts-5.6
+  (linux-libre-deblob-scripts
+   "5.6.7"
+   (base32 "196fdbfy1f8zbmnv0ik720snig2bacsh7hfyvgbmlsfk3cil2zgv")
+   (base32 "1g0bi3c8xzy1vz6w1xbpkb3a26bqn9d1yphcqz2ki4aikra81wid")))
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -362,42 +368,51 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.4-version "5.4.28")
+
+(define-public linux-libre-5.6-version "5.6.7")
+(define-public linux-libre-5.6-pristine-source
+  (let ((version linux-libre-5.6-version)
+        (hash (base32 "1jljcva3gxg1yc2kw3jjgmhzzdm16nylzxl63zbndjza547l5813")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.6)))
+
+(define-public linux-libre-5.4-version "5.4.35")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "197p7rjmbs229ncj1y8s80f7n4bm8g9w0jrv1109m3rl8q9wqqy8")))
+        (hash (base32 "1m06k19pbb3wz8z2dgf03jvzbbdh6q8jwwdz509s902a53vxasz1")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.113")
+(define-public linux-libre-4.19-version "4.19.118")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1rf0jz7r1f4rb4k0g3glssfa1hm2ka6vlbwjlkmsx1bybxnmg85m")))
+        (hash (base32 "15lcq3xky59v88vb8vvnmgcsmm1fadz0m4jyrii6rynsz5jr6x49")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.174")
+(define-public linux-libre-4.14-version "4.14.177")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "12ai2lc2ny38s93d0m5ngrv030vwv1h2hhzp0fs6fhjxasikq8jc")))
+        (hash (base32 "04hq0i06mg2yc09jj2xk0vhf5q9yigzjzm55a5bvfy2a6j43r9rk")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.217")
+(define-public linux-libre-4.9-version "4.9.220")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "06b8av9f9pk2yp95nzv4322k0d5wsg40sxd9kfim1xzb093abckg")))
+        (hash (base32 "0bhbkybzbdsbmrjmb5m7hxxl8b3v6n79zhh86cbr95kzg1hcgnfs")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.217")
+(define-public linux-libre-4.4-version "4.4.220")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0vsjchywznmjn01flgvm9vsja5zqni319rfwgy997afcbz0c9spx")))
+        (hash (base32 "1knj3qsl7x3fysdz1h0s980ddbafs3658z2y67w6sn79wp7d8blg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -429,6 +444,15 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.6-source
+  (source-with-patches linux-libre-5.6-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch
+                             ;; Pinebook Pro patch from linux-next,
+                             ;; can be dropped for linux-libre 5.7
+                             (search-patch
+                              "linux-libre-support-for-Pinebook-Pro.patch"))))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
@@ -528,6 +552,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.6
+  (make-linux-libre-headers* linux-libre-5.6-version
+                             linux-libre-5.6-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -844,7 +872,24 @@ It has been modified to remove all non-free binary blobs.")
                      linux-libre-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
-                     #:extra-version "arm-generic"))
+                     #:extra-version "arm-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
+
+(define-public linux-libre-arm-generic-5.6
+  (make-linux-libre* linux-libre-5.6-version
+                     linux-libre-5.6-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
 
 (define-public linux-libre-arm-veyron
   (deprecated-package "linux-libre-arm-veyron" linux-libre-arm-generic))
@@ -889,7 +934,24 @@ It has been modified to remove all non-free binary blobs.")
                      linux-libre-source
                      '("aarch64-linux")
                      #:defconfig "defconfig"
-                     #:extra-version "arm64-generic"))
+                     #:extra-version "arm64-generic"
+		     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
+
+(define-public linux-libre-arm64-generic-5.6
+  (make-linux-libre* linux-libre-5.6-version
+                     linux-libre-5.6-source
+                     '("aarch64-linux")
+                     #:defconfig "defconfig"
+                     #:extra-version "arm64-generic"
+                     #:extra-options
+                     (append
+                      `(;; needed to fix the RTC on rockchip platforms
+                        ("CONFIG_RTC_DRV_RK808" . #t))
+                      %default-extra-linux-options)))
 
 (define-public linux-libre-riscv64-generic
   (make-linux-libre* linux-libre-version
@@ -1443,16 +1505,16 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.45.5")
+    (version "1.45.6")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://kernel.org/linux/kernel/people/tytso/"
-                   name "/v" version "/"
-                   name "-" version ".tar.xz"))
+                   "e2fsprogs/v" version "/"
+                   "e2fsprogs-" version ".tar.xz"))
              (sha256
               (base32
-               "1pmf8inp736l587rqq7qsd8bv0mmg5cwrivxg5p5awqgv70crypr"))))
+               "0mj2yizwygs7xww8jfy5mxjn8ww4pvc0b1hg1p2vsnirailsx9zz"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -2397,14 +2459,14 @@ user-space processes.")
     (name "unionfs-fuse")
     (version "2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/rpodgorny/unionfs-fuse/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/rpodgorny/unionfs-fuse")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hsn8l1iblvx27bpd4dvnvnbh9ri3sv2f9xzpsnfz3379kb7skgj"))))
+                "0lb8zgdxnjy2fjr2284hvdfn7inc1in44ynzgcr66x54bxzvynj6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python)))
@@ -2919,8 +2981,42 @@ time.")
                    (string-append out "/bin")))
                 #t)))))))))
 
-(define-public eudev-with-hwdb
-  (deprecated-package "eudev-with-hwdb" eudev))
+(define-public python-evdev
+  (package
+    (name "python-evdev")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "evdev" version))
+       (sha256
+        (base32 "0kb3636yaw9l8xi8s184w0r0n9ic5dw3b8hx048jf9fpzss4kimi"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("kernel-headers" ,linux-libre-headers)))
+    (arguments
+     `(#:tests? #f                      ;no rule for tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-hard-coded-directory
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("/usr/include/linux")
+                (string-append
+                 (assoc-ref inputs "kernel-headers") "/include/linux")))
+             #t)))))
+    (home-page "https://github.com/gvalkov/python-evdev")
+    (synopsis "Bindings to the Linux input handling subsystem")
+    (description
+     "Python-evdev provides bindings to the generic input event interface in
+Linux.  The @code{evdev} interface serves the purpose of passing events
+generated in the kernel directly to userspace through character devices that
+are typically located in @file{/dev/input/}.
+
+This package also comes with bindings to @code{uinput}, the userspace input
+subsystem.  @code{uinput} allows userspace programs to create and handle input
+devices that can inject events directly into the input subsystem.")
+    (license license:bsd-3)))
 
 (define-public lvm2
   (package
@@ -4257,7 +4353,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.4.1")
+    (version "5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -4265,7 +4361,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0scxg9p6z0wss92gmv5a8yxdmr8x449kb5v3bfnvs26n92r7zq7k"))))
+                "0srg276yccfmqz0skmmga3vbqx4wiqsk1l6h86n6ryhxa9viqcm1"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -4361,6 +4457,40 @@ repair and easy administration.")
     (description "This package provides the statically-linked @command{btrfs}
 from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
+
+(define-public cramfs-tools
+  (package
+    (name "cramfs-tools")
+    (home-page "https://github.com/npitre/cramfs-tools")
+    (version "2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "183rfqqyzx52q0vxicdgf0p984idh3rqkvzfb93gjvyzfhc15c0p"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; No tests.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "mkcramfs" (string-append out "/sbin"))
+               (install-file "cramfsck" (string-append out "/sbin")))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (synopsis "Tools to manage Cramfs file systems")
+    (description "Cramfs is a Linux file system designed to be simple, small,
+and to compress things well.  It is used on a number of embedded systems and
+small devices.  This version has additional features such as uncompressed
+blocks and random block placement.")
+    (license license:gpl2+)))
 
 (define-public compsize
   (package
@@ -4501,7 +4631,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "1.0.2")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -4510,7 +4640,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "107vw0962hrwva3wra9n3hxlbfzg82ldc10qssv3dspja88g8psr"))))
+        (base32 "1fxd1w3z65glw6y04myn7ihgswkx6sqnkky159mik4n96pfrsvr5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -4536,7 +4666,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
                     (share (string-append out "/share/" ,name)))
                (substitute* "CMakeLists.txt"
                  (("pkg_check_modules\\((OPENRC|SYSTEMD) .*" _ package)
-                  (format "option(~a_FOUND \"Faked\" ON)\n" package))
+                  (format #f "option(~a_FOUND \"Faked\" ON)\n" package))
                  ;; That was easy!  Now we just need to fix the destinations.
                  (("/etc" directory)
                   (string-append out directory)))
@@ -4578,11 +4708,11 @@ from userspace.")
            (lambda _
              (substitute* "tpacpi-bat"
                (("cat ")
-                (format "~a " (which "cat")))
+                (format #f "~a " (which "cat")))
                ;; tpacpi-bat modprobes the acpi_call kernel module if it's not
                ;; loaded.  That's the administrator's prerogative; disable it.
                (("system \"(modprobe .*)\"" _ match)
-                (format "die \"Please run ‘~a’ first.\\n\"" match)))
+                (format #f "die \"Please run ‘~a’ first.\\n\"" match)))
              #t))
          (delete 'configure)            ; nothing to configure
          (delete 'build)                ; nothing to build
@@ -5339,7 +5469,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method git-fetch)
@@ -5347,7 +5477,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
              (url "https://github.com/haikarainen/light.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
+        (base32 "1a70zcf88ifsnwll486aicjnh48zisdf8f7vi34ihw61kdadsq9s"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -5641,13 +5771,13 @@ used by nftables.")
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
-    (inputs `(("bison" ,bison)
-              ("flex" ,flex)
-              ("gmp" ,gmp)
+    (inputs `(("gmp" ,gmp)
               ("libmnl" ,libmnl)
               ("libnftnl" ,libnftnl)
               ("readline" ,readline)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("bison" ,bison)
+                     ("flex" ,flex)))
     (home-page "https://www.nftables.org")
     (synopsis "Userspace utility for Linux packet filtering")
     (description "nftables is the project that aims to replace the existing
@@ -5861,9 +5991,11 @@ the MTP device as a file system.")
       (base32 "1javw97yw0qvjmj14js8vw6nsfyf2xc0kfiyq5f2hsp0553w2cdq"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--disable-silent-rules")))
-   (native-inputs `(("pkg-config" ,pkg-config)))
-   (inputs `(("expat" ,expat) ("libcap" ,libcap) ("check" ,check)
-             ("groff" ,groff)           ; for tests
+   (native-inputs `(("groff" ,groff) ; for tests
+                    ("pkg-config" ,pkg-config)))
+   (inputs `(("check" ,check)
+             ("expat" ,expat)
+             ("libcap" ,libcap)
              ("libselinux" ,libselinux)))
    (synopsis "Utility to show process environment")
    (description "Procenv is a command-line tool that displays as much detail about
@@ -6529,10 +6661,10 @@ of Linux application development.")
                (("/usr/bin/dbus-daemon") (which "dbus-daemon")))
              #t)))))
     (inputs
-     `(("dbus" ,dbus)
-       ("libtool" ,libtool)))
+     `(("dbus" ,dbus)))
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("libtool" ,libtool)
        ("pkgconfig" ,pkg-config)
        ("automake" ,automake)))
     (home-page "https://01.org/ell")

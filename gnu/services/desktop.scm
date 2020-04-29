@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -451,8 +452,8 @@ site} for more information."
    (requirement '(dbus-system udev))
    (documentation "Run the bluetoothd daemon.")
    (start #~(make-forkexec-constructor
-             (string-append #$(bluetooth-configuration-bluez config)
-                            "/libexec/bluetooth/bluetoothd")))
+             (list #$(file-append (bluetooth-configuration-bluez config)
+                                  "/libexec/bluetooth/bluetoothd"))))
    (stop #~(make-kill-destructor))))
 
 (define bluetooth-service-type
@@ -892,7 +893,7 @@ rules.")
 (define-record-type* <gnome-desktop-configuration> gnome-desktop-configuration
   make-gnome-desktop-configuration
   gnome-desktop-configuration?
-  (gnome-package gnome-package (default gnome)))
+  (gnome gnome-package (default gnome)))
 
 (define (gnome-polkit-settings config)
   "Return the list of GNOME dependencies that provide polkit actions and
@@ -932,15 +933,23 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
   mate-desktop-configuration?
   (mate-package mate-package (default mate)))
 
+(define (mate-polkit-extension config)
+  "Return the list of packages for CONFIG's MATE package that extend polkit."
+  (let ((mate (mate-package config)))
+    (map (lambda (input)
+           ((package-direct-input-selector input) mate))
+         '("mate-system-monitor"                  ;kill, renice processes
+           "mate-settings-daemon"                 ;date/time settings
+           "mate-power-manager"                   ;modify brightness
+           "mate-control-center"                  ;RandR, display properties FIXME
+           "mate-applets"))))                     ;CPU frequency scaling
+
 (define mate-desktop-service-type
   (service-type
    (name 'mate-desktop)
    (extensions
     (list (service-extension polkit-service-type
-                             (compose list
-                                      (package-direct-input-selector
-                                       "mate-settings-daemon")
-                                      mate-package))
+                             mate-polkit-extension)
           (service-extension profile-service-type
                              (compose list
                                       mate-package))))

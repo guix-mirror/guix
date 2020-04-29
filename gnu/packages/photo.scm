@@ -7,6 +7,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -483,6 +484,10 @@ photographic equipment.")
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
              #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libxslt" ,libxslt)
        ("libxml2" ,libxml2)
@@ -502,9 +507,6 @@ photographic equipment.")
        ("ilmbase" ,ilmbase)
        ("libsoup" ,libsoup)
        ("python-jsonschema" ,python-jsonschema)
-       ("intltool" ,intltool)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
        ("libwebp" ,libwebp)
        ("lensfun" ,lensfun)
        ("librsvg" ,librsvg)
@@ -523,7 +525,7 @@ and enhance them.")
 (define-public hugin
   (package
     (name "hugin")
-    (version "2019.0.0")
+    (version "2019.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hugin/hugin/hugin-"
@@ -531,10 +533,10 @@ and enhance them.")
                                   "/hugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "1l925qslp98gg7yzmgps10h6dq0nb60wbfk345anlxsv0g2ifizr"))))
+                "0gjsm5bgz10wbr5q3y74f8dzb238dh32xx0p5wa3yca6lbzbv9lb"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)

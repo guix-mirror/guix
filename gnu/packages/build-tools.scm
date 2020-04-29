@@ -4,7 +4,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -103,8 +103,8 @@ generate such a compilation database.")
     (license license:gpl3+)))
 
 (define-public gn
-  (let ((commit "6e5ba2e7210823cf7ccce3eb2a23336a4e7f1349")
-        (revision "1666"))          ;as returned by `git describe`, used below
+  (let ((commit "ec938ddaa276646eb8f1ab33e160c156011d8217")
+        (revision "1736"))            ;as returned by `git describe`, used below
     (package
       (name "gn")
       (version (git-version "0.0" revision commit))
@@ -114,7 +114,7 @@ generate such a compilation database.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "157ax65sixjm0i1j89wvny48v1mbsl4pbvv5vqinjc6r0fryaf2r"))
+                  "0j1qjwp2biw12s6npzpx4z8nvih7pyn68q6cz2k4700bk9y0d574"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -135,8 +135,10 @@ generate such a compilation database.")
                         (call-with-output-file "out/last_commit_position.h"
                           (lambda (port)
                             (format port
-                                    "#define LAST_COMMIT_POSITION \"~a (~a)\"\n"
-                                    ,revision ,(string-take commit 8))
+                                    (string-append
+                                     "#define LAST_COMMIT_POSITION_NUM ~a\n"
+                                     "#define LAST_COMMIT_POSITION \"~a (~a)\"\n")
+                                    ,revision ,revision ,(string-take commit 8))
                             #t))))
                     (replace 'build
                       (lambda _

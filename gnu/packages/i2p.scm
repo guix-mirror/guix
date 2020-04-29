@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
-  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
@@ -30,7 +30,7 @@
 (define-public i2pd
   (package
     (name "i2pd")
-    (version "2.29.0")
+    (version "2.31.0")
     (source
      (origin
        (method git-fetch)
@@ -39,12 +39,11 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1issg3aidwikk4g12sa8q81zzp0hd0g8wdy2dx4899z8yrscl300"))))
+        (base32 "1q2gxz041ha9n5lfn91iy11sdf3z7d806vcq4z43m7lf92m7i4nn"))))
     (build-system cmake-build-system)
     (inputs `(("boost" ,boost)
               ("miniupnpc" ,miniupnpc)
               ("openssl" ,openssl)
-              ("websocketpp" ,websocketpp)
               ("zlib" ,zlib)))
     (arguments '(#:configure-flags
                  (let ((source (assoc-ref %build-inputs "source")))
@@ -52,7 +51,6 @@
                          "-DWITH_PCH=OFF"
                          "-DWITH_STATIC=OFF"
                          "-DWITH_UPNP=ON"
-                         "-DWITH_WEBSOCKETS=ON"
                          "-DWITH_LIBRARY=ON"
                          "-DBUILD_SHARED_LIBS=ON"
                          "-DWITH_BINARY=ON"))

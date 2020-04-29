@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -24,11 +24,14 @@
 ;;; Copyright © 2017 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
-;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
+;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,11 +84,13 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
@@ -218,11 +223,11 @@
 
        #:parallel-tests? #f))
     (native-inputs
-     `(("perl" ,perl)))                           ;for 'gylwrap'
-    (inputs
-     `(("dejagnu" ,dejagnu)
-       ("m4" ,m4)
+     `(("perl" ,perl)                           ;for 'gylwrap'
        ("texinfo" ,texinfo)
+       ("dejagnu" ,dejagnu)))
+    (inputs
+     `(("m4" ,m4)
        ("guile" ,guile-2.2)
        ("gsasl" ,gsasl)
        ("gnutls" ,gnutls)
@@ -381,7 +386,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.13.4")
+    (version "1.13.5")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -391,7 +396,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "016dzx2c0kr9xgnw4nfzpkn4nvpk56rdlcqhrwa820fq8083yzdm"))
+               "0lx65a44b03rbvcrz0y9syrik67fx3hvblxyyvz5l9bb7rdipmvc"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -522,7 +527,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "3.2.6")
+    (version "3.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -530,7 +535,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "05s7qjrxbj010q016pmdqdq73gz8vl4hv29kwaign0j8gi61kzxb"))))
+                "0i3xfc84qn1z99i70q68kbnp9rmgqrnprqb418ba52s6g9j9dsia"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -710,7 +715,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.2.0")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -718,7 +723,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0fh5bxvhjqv1p9z783lym8y1k3p4jcc3wg6wf7zl8s6w8krcfd7n"))))
+                "1ay68rhlngnp2zm6wdmzgr1fsal3spz61swcxlaz5y215qvgjfpy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -753,13 +758,14 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                             "guile/mu/Makefile.in")
                (("share/guile/site/2.0/") "share/guile/site/2.2/"))
              #t))
-         (add-after 'patch-configure 'fix-date-tests
-           ;; Loosen test tolerances to prevent failures caused by daylight
-           ;; saving time (DST).  See: https://github.com/djcb/mu/issues/1214.
+         (add-after 'unpack 'patch-bin-sh-in-tests
            (lambda _
-             (substitute* "lib/parser/test-utils.cc"
-               (("\\* 60 \\* 60, 1 },")
-                "* 60 * 60, 3600 + 1 },"))
+             (substitute* '("guile/tests/test-mu-guile.c"
+                            "mu/test-mu-cmd.c"
+                            "mu/test-mu-cmd-cfind.c"
+                            "mu/test-mu-query.c"
+                            "mu/test-mu-threads.c")
+               (("/bin/sh") (which "sh")))
              #t))
          (add-before 'install 'fix-ffi
            (lambda* (#:key outputs #:allow-other-keys)
@@ -790,53 +796,6 @@ Maildir-format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license gpl3+)))
-
-(define mumimu
-  ;; This is a fork of mu for use in Mumi that stores message bug IDs in its
-  ;; database.  It also renames the library to "mumimu" to avoid confusion.
-  (let ((commit "6b42431052c7cc9a2e147938e1b67f14a93e4ee5")
-        (revision "2"))
-    (package
-      (inherit mu)
-      (name "mumimu")
-      (version (git-version (package-version mu) revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.elephly.net/software/mumimu.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "044scxmjrckidqx935yza3aqnjyzrmhyvgx2gs2jyf68hl2qzb89"))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments mu)
-         ((#:tests? anything '())
-          #f)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (replace 'patch-configure
-               (lambda _ (delete-file "autogen.sh") #t))
-             (replace 'fix-ffi
-               (lambda* (#:key outputs #:allow-other-keys)
-                 (substitute* "guile/mumimu.scm"
-                   (("\"libguile-mu\"")
-                    (format #f "\"~a/lib/libguile-mumimu\""
-                            (assoc-ref outputs "out"))))
-                 #t))
-             (delete 'install-emacs-autoloads)))
-         ((#:configure-flags flags)
-          '("--disable-gtk"
-            "--disable-webkit"
-            "--disable-mu4e"))))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("glib" ,glib "bin")
-         ("tzdata" ,tzdata-for-tests)
-         ("texinfo" ,texinfo))))))
 
 (define-public alot
   (package
@@ -1073,6 +1032,38 @@ and search library.")
 (define-public python2-notmuch
   (package-with-python2 python-notmuch))
 
+(define-public muchsync
+  (package
+    (name "muchsync")
+    (version "5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.muchsync.org/src/"
+                           "muchsync-" version ".tar.gz"))
+       (sha256
+        (base32 "1k2m44pj5i6vfhp9icdqs42chsp208llanc666p3d9nww8ngq2lb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ghc-pandoc" ,ghc-pandoc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libcrypto" ,openssl)
+       ("notmuch" ,notmuch)
+       ("sqlite" ,sqlite)
+       ("xapian" ,xapian)))
+    (home-page "http://www.muchsync.org/")
+    (synopsis "Synchronize notmuch mail across machines")
+    (description
+     "Muchsync brings Notmuch to all of your computers by synchronizing your
+mail messages and Notmuch tags across machines.  The protocol is heavily
+pipelined to work efficiently over high-latency networks such as mobile
+broadband.  Muchsync supports arbitrary pairwise synchronization among
+replicas.  A version-vector-based algorithm allows it to exchange only the
+minimum information necessary to bring replicas up to date regardless of which
+pairs have previously synchronized.")
+    (license gpl2+)))
+
 (define-public getmail
   (package
     (name "getmail")
@@ -1263,6 +1254,10 @@ which can add many functionalities to the base client.")
                (install-file (string-append msmtpq "/msmtp-queue") bin)
                (install-file (string-append msmtpq "/README.msmtpq") doc)
                (install-file "scripts/vim/msmtp.vim" vimfiles)
+               ;; Don't rely on netcat being in the PATH to test for a
+               ;; connection, instead try tp ing debian.org.
+               (substitute* (string-append bin "/msmtpq")
+                 (("EMAIL_CONN_TEST=n") "EMAIL_CONN_TEST=p"))
                #t))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
@@ -1396,6 +1391,11 @@ facilities for checking incoming mail.")
     (inputs
      `(("bzip2" ,bzip2)
        ("libsodium" ,libsodium)         ; extra password algorithms
+       ;; FIXME: The 'test-backtrace' tests fail on arm when using glibc's
+       ;; backtrace_symbol() function so fallback to using libunwind.
+       ,@(if (target-arm?)
+          `(("libunwind" ,libunwind))
+          '())
        ("linux-pam" ,linux-pam)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
@@ -1919,26 +1919,26 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.15.1")
+    (version "0.16.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "18ba2xgfq8sw0bg6xmlfjpizid1hkzgswcfcc54gl21y2dwfda2w"))))
+                "0fg4qh5gzki5wg958wlpc8a2icnk74gzg33lqxjm755cfnjng7qd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-doc
+         (add-after 'install 'install-completions
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (doc (string-append out "/share/doc/khard")))
-               (copy-recursively "misc/khard" doc)
+                    (zsh (string-append out "/share/zsh/site-functions")))
+               (copy-recursively "misc/zsh" zsh)
                #t))))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (propagated-inputs
+    (inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
        ("python-pyyaml" ,python-pyyaml)
@@ -2964,8 +2964,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "6653e2d525b945fcd671dbfbf7b42cc588a1cf4b")
-        (revision "7"))
+  (let ((commit "9175199e9039b9a1dbc5e1eafa05b9c618416f3b")
+        (revision "16"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2977,7 +2977,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0h1q61yl01hm7wygv1bv47ncg7l7gcw7aq8ny61g3hr1acsqysjf"))))
+                  "1v0i9h3dw0irc92flmk3wk72l0kiymf82fashklbyhk7mr968zx3"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3008,12 +3008,16 @@ replacement for the @code{urlview} program.")
       (inputs
        `(("guile-debbugs" ,guile-debbugs)
          ("guile-email" ,guile-email)
+         ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-3)
+         ("guile-redis" ,guile-redis)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
+         ("guile-webutils" ,guile-webutils)
+         ("guile-xapian" ,guile-xapian)
          ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
          ("guile" ,guile-2.2)
-         ("mumimu" ,mumimu)))   ;'mumimu' executable recorded in (mumi config)
+         ("mailutils" ,mailutils)))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
@@ -3132,3 +3136,35 @@ related tools to process winmail.dat files.")
 complement or replace traditional mailing lists.  Readers may read via NNTP,
 Atom feeds or HTML archives.")
      (license agpl3+))))
+
+(define-public sylpheed
+  (package
+    (name "sylpheed")
+    (version "3.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sylpheed.sraoss.jp/sylpheed/v3.7/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0j9y5vdzch251s264diw9clrn88dn20bqqkwfmis9l7m8vmwasqd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bogofilter" ,bogofilter)
+       ("compface" ,compface)
+       ("gnupg" ,gnupg-1)
+       ("gpgme" ,gpgme)
+       ("gtk+-2.0" ,gtk+-2)
+       ("gtkspell" ,gtkspell3)
+       ("libnsl" ,libnsl)
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)))
+    (home-page "https://sylpheed.sraoss.jp/en/")
+    (synopsis "Lightweight GTK+ email client")
+    (description
+     "Sylpheed is a simple, lightweight but featureful, and easy-to-use e-mail
+client.  Sylpheed provides intuitive user-interface.  Sylpheed is also
+designed for keyboard-oriented operation.")
+    (license gpl2+)))

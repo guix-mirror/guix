@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -286,7 +286,8 @@ of a package, and INPUT-NAMES, a list of package specifications such as
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
   ;; native inputs.
-  (let ((inputs (package-inputs package))
+  (let ((inputs (append (package-inputs package)
+                        (package-propagated-inputs package)))
         (input-names
          '("pkg-config"
             "autoconf"
@@ -308,6 +309,7 @@ of a package, and INPUT-NAMES, a list of package specifications such as
             "intltool"
             "itstool"
             "libtool"
+            "m4"
             "qttools"
             "yasm" "nasm" "fasm"
             "python-coverage" "python2-coverage"
@@ -684,7 +686,7 @@ patch could not be found."
 
      ;; Check whether we're reaching tar's maximum file name length.
      (let ((prefix (string-length (%distro-directory)))
-           (margin (string-length "guix-0.13.0-10-123456789/"))
+           (margin (string-length "guix-2.0.0rc3-10000-1234567890/"))
            (max    99))
        (filter-map (match-lambda
                      ((? string? patch)

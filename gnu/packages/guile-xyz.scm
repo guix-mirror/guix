@@ -5,14 +5,14 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2016, 2019 Eraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019, 2020 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -24,6 +24,7 @@
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -416,6 +417,7 @@ and then run @command{scm example.scm}.")
 library for GNU Guile based on the actor model.
 
 Note that 8sync is only available for Guile 2.2.")
+    (properties '((upstream-name . "8sync")))
     (license license:lgpl3+)))
 
 (define-public guile-daemon
@@ -1041,7 +1043,7 @@ format.")
 (define-public guile-newt
   (package
     (name "guile-newt")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1050,20 +1052,7 @@ format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1w7qy4dw1f4bx622l6hw8mv49sf1ha8kch8j4nganyk8fj0wn695"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-
-                  ;; Remove "guile.m4" since it contains an obsolete version
-                  ;; of 'GUILE_PKG' that doesn't work with development
-                  ;; versions such as 2.9.
-                  (delete-file "m4/guile.m4")
-                  #t))))
+                "1gksd1lzgjjh1p9vczghg8jw995d22hm34kbsiv8rcryirv2xy09"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1122,7 +1111,7 @@ microblogging service.")
 (define-public guile-parted
   (package
     (name "guile-parted")
-    (version "0.0.2")
+    (version "0.0.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1131,20 +1120,8 @@ microblogging service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01qmv6xnbbq3wih0dl9bscvca2d7zx7bjiqf35y6dkaqsp8nvdxf"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-
-                  ;; Remove "guile.m4" since it contains an obsolete version
-                  ;; of 'GUILE_PKG' that doesn't work with development
-                  ;; versions such as 2.9.
-                  (delete-file "m4/guile.m4")
-                  #t))))
+                "0b7h8psfm9gmmwb65pp5zwzglvwnfmw5j40g09hhf3f7kwxc0mv2"))
+              (modules '((guix build utils)))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
@@ -1662,6 +1639,84 @@ capabilities.")
     (home-page "https://dthompson.us/projects/sly.html")
     (license license:gpl3+)))
 
+(define-public g-golf
+  (let ((commit "4a4edf25e4877df9182c77843bdd98ab59e13ef7"))
+    (package
+      (name "g-golf")
+      (version (git-version "1" "683" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/g-golf.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "09p0gf71wbmlm9kri693a8fvr9hl3hhlmlidyadwjdh7853xg0h8"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ("gettext" ,gettext-minimal)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-lib" ,guile-lib)
+         ("clutter" ,clutter)
+         ("gtk" ,gtk+)
+         ("glib" ,glib)))
+      (propagated-inputs
+       `(("gobject-introspection" ,gobject-introspection)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'tests-work-arounds
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; In build environment, There is no /dev/tty
+               (substitute*
+                   "test-suite/tests/gobject.scm"
+                 (("/dev/tty") "/dev/null"))))
+           (add-before 'configure 'substitute-libs
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((get (lambda (key lib)
+                             (string-append (assoc-ref inputs key) "/lib/" lib)))
+                      (libgi      (get "gobject-introspection" "libgirepository-1.0"))
+                      (libglib    (get "glib" "libglib-2.0"))
+                      (libgobject (get "glib" "libgobject-2.0"))
+                      (libgdk     (get "gtk" "libgdk-3")))
+                 (substitute* "configure"
+                   (("SITEDIR=\"\\$datadir/g-golf\"")
+                    "SITEDIR=\"$datadir/guile/site/$GUILE_EFFECTIVE_VERSION\"")
+                   (("SITECCACHEDIR=\"\\$libdir/g-golf/")
+                    "SITECCACHEDIR=\"$libdir/"))
+                 (substitute* "g-golf/init.scm"
+                   (("libgirepository-1.0") libgi)
+                   (("libglib-2.0") libglib)
+                   (("libgdk-3") libgdk)
+                   (("libgobject-2.0") libgobject)
+                   (("\\(dynamic-link \"libg-golf\"\\)")
+                    (format #f "~s"
+                            `(dynamic-link
+                              (format #f "~alibg-golf"
+                                      (if (getenv "GUILE_GGOLF_UNINSTALLED")
+                                          ""
+                                          ,(format #f "~a/lib/"
+                                                   (assoc-ref outputs "out"))))))))
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+                 (setenv "GUILE_GGOLF_UNINSTALLED" "1")
+                 #t))))))
+      (home-page "https://www.gnu.org/software/g-golf/")
+      (synopsis "Guile bindings for GObject Introspection")
+      (description
+       "G-Golf (Gnome: (Guile Object Library for)) is a library for developing
+modern applications in Guile Scheme.  It comprises a direct binding to the
+GObject Introspection API and higher-level functionality for importing Gnome
+libraries and making GObject classes (and methods) available in Guile's
+object-oriented programming system, GOOPS.")
+      (license license:lgpl3+))))
+
 (define-public g-wrap
   (package
     (name "g-wrap")
@@ -2141,22 +2196,17 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "00kv7fgllzjpis0g1m9csycp4f6l11774m09dqy255cvmim2g743"))))
+                "1521w3h33bhdlg6qc66sq4dwv3qsx8r8x6srq4ca6kaahy6dszw8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-finding-guile
-                    (lambda _
-                      (substitute* "configure"
-                        (("2\\.0") "3.0 2.2 2.0"))
-                      #t))
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (substitute* "tests/job-specifier.scm"
@@ -2190,10 +2240,6 @@ format is also supported.")
     (inherit mcron)
     (name "guile3.0-mcron")
     (inputs `(("guile" ,guile-3.0)))))
-
-(define-public mcron2
-  ;; This was mthl's mcron development branch, and it became mcron 1.1.
-  (deprecated-package "mcron2" mcron))
 
 (define-public guile-picture-language
   (let ((commit "91d10c96708d732145006dd2802acc4de08b632e")
@@ -2542,7 +2588,7 @@ list of components.  This module takes care of that for you.")
              (setenv "DISPLAY" ":1")
              #t)))))
     (native-inputs
-     `(("gettext" ,gnu-gettext)
+     `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
@@ -2619,7 +2665,7 @@ more expressive and flexible than the traditional @code{format} procedure.")
        ("automake" ,automake)
        ("bzip2" ,bzip2)
        ("guile" ,guile-2.2)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("libtool" ,libtool)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
@@ -2683,11 +2729,11 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "f3bf0dbd803d7805b6ae8303253507ad13922293"))
+  (let ((commit "d459ca1d3d09e7624e662bc4cfc3596850796fc6"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "19" commit))
+      (version (git-version "v0.4.1" "28" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2696,7 +2742,7 @@ in C using Gtk+-3 and WebKitGtk.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ivy28km1p7nlrf63xx3hvrpxf5ld5amk1wcan3k7sqv1kq9mqdb"))))
+                  "1ps15w8cxj9kc18gmvys9jv9xa1qqa7m43ismv34l3cmhddrn0sr"))))
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
@@ -3135,42 +3181,40 @@ over, or update a value in arbitrary data structures.")
       (license license:gpl3+))))
 
 (define-public guile-xapian
-  (let ((commit "ede26b808188eb4d14c6b4181c933dfc09c0a22e")
-        (revision "0"))
-    (package
-      (name "guile-xapian")
-      (version (git-version "0" revision commit))
-      (home-page "https://git.systemreboot.net/guile-xapian")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference (url home-page)
-                             (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "07a9fmqi3pm6mbbpzi01mjwrqwnljs2rnc3603sq49dz4lf663gb"))))
-      (build-system gnu-build-system)
-      (arguments
-       '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
-      (inputs
-       `(("guile" ,guile-2.2)
-         ("xapian" ,xapian)
-         ("zlib" ,zlib)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("autoconf-archive" ,autoconf-archive)
-         ("automake" ,automake)
-         ("libtool" ,libtool)
-         ("pkg-config" ,pkg-config)
-         ("swig" ,swig)))
-      (synopsis "Guile bindings for Xapian")
-      (description "@code{guile-xapian} provides Guile bindings for Xapian, a
+  (package
+    (name "guile-xapian")
+    (version "0.1.0")
+    (home-page "https://git.systemreboot.net/guile-xapian")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16k61f1jn3g48jaf3730b9l0izr5j933jzyri73nmcnjd09gm35i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("xapian" ,xapian)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (synopsis "Guile bindings for Xapian")
+    (description "@code{guile-xapian} provides Guile bindings for Xapian, a
 search engine library.  Xapian is a highly adaptable toolkit which allows
 developers to easily add advanced indexing and search facilities to their own
 applications.  It has built-in support for several families of weighting
 models and also supports a rich set of boolean query operators.")
-      (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public guile3.0-xapian
   (package
@@ -3241,3 +3285,48 @@ according to Bitorrent BEP003.")
 Relay Chat} (IRC).")
       ;; Some file headers incorrectly say LGPLv2+.
       (license license:lgpl2.1+))))
+
+(define-public guile3.0-websocket
+  (let ((commit "c854e0f84a40d972cbd532bbb89c97ca0126a7cf"))
+    (package
+      (name "guile3.0-websocket")
+      (version "0.1")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://dthompson.us/guile-websocket.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1hymvsfrmq9qxr5cxnsgdz7y757yp1cpsgxmdp3f5wxxxpqgsmzx"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags
+         '("GUILE_AUTO_COMPILE=0")
+         #:phases
+         (modify-phases %standard-phases
+           ;; The package was developed for Guile 2.0 and has this version
+           ;; hardcoded in the configure.ac and Makefile.am files. Substitute
+           ;; 3.0 instead so it can support Guile 3.0.
+           (add-after 'unpack 'update-guile-version
+             (lambda _
+               (substitute* "configure.ac"
+                 (("2.0.9") "3.0.0"))
+               (substitute* "Makefile.am"
+                 (("2.0") "3.0")
+
+                 ;; Install .go files where they belong.
+                 (("/ccache") "/site-ccache"))
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)))
+      (inputs
+       `(("guile" ,guile-next)))
+      (synopsis "Websocket server/client for Guile")
+      (description "Guile-websocket provides an implementation of the
+WebSocket protocol as defined by RFC 6455.")
+      (home-page "https://git.dthompson.us/guile-websocket.git")
+      (license license:lgpl3+))))

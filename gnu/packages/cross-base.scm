@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -70,12 +70,6 @@
         `(cons ,(string-append "--target=" target)
                ,flags))))))
 
-(define (package-with-patch original patch)
-  "Return package ORIGINAL with PATCH applied."
-  (package (inherit original)
-    (source (origin (inherit (package-source original))
-              (patches (list patch))))))
-
 (define (cross-binutils target)
   "Return a cross-Binutils for TARGET."
   (let ((binutils (package (inherit binutils)
@@ -97,11 +91,16 @@
                         `(cons "--with-sysroot=/" ,flags)))))))
 
     ;; For Xtensa, apply Qualcomm's patch.
-    (cross (if (string-prefix? "xtensa-" target)
-               (package-with-patch binutils
-                                   (search-patch
-                                    "ath9k-htc-firmware-binutils.patch"))
-               binutils)
+    (cross (cond ((string-prefix? "xtensa-" target)
+                  (package-with-patches binutils
+                                        (search-patches
+                                         "ath9k-htc-firmware-binutils.patch")))
+                 ((target-mingw? target)
+                  (package-with-extra-patches
+                   binutils
+                   (search-patches "binutils-mingw-w64-timestamp.patch"
+                                   "binutils-mingw-w64-deterministic.patch")))
+                 (else binutils))
            target)))
 
 (define (cross-gcc-arguments target xgcc libc)
@@ -457,59 +456,69 @@ and the cross tool chain."
       (native-libc target libc
                    #:xgcc xgcc
                    #:xbinutils xbinutils)
-      (let ((libc libc))
-        (package (inherit libc)
-          (name (string-append "glibc-cross-" target))
-          (arguments
-           (substitute-keyword-arguments
-               `(;; Disable stripping (see above.)
-                 #:strip-binaries? #f
+      (package
+        (inherit libc)
+        (name (string-append "glibc-cross-" target))
+        (arguments
+         (substitute-keyword-arguments
+             `( ;; Disable stripping (see above.)
+               #:strip-binaries? #f
 
-                 ;; This package is used as a target input, but it should not have
-                 ;; the usual cross-compilation inputs since that would include
-                 ;; itself.
-                 #:implicit-cross-inputs? #f
+               ;; This package is used as a target input, but it should not have
+               ;; the usual cross-compilation inputs since that would include
+               ;; itself.
+               #:implicit-cross-inputs? #f
 
-                 ;; We need SRFI 26.
-                 #:modules ((guix build gnu-build-system)
-                            (guix build utils)
-                            (srfi srfi-26))
+               ;; We need SRFI 26.
+               #:modules ((guix build gnu-build-system)
+                          (guix build utils)
+                          (srfi srfi-26))
 
-                 ,@(package-arguments libc))
-             ((#:configure-flags flags)
-              `(cons ,(string-append "--host=" target)
-                     ,(if (hurd-triplet? target)
-                          `(cons "--disable-werror" ,flags)
-                          flags)))
-             ((#:phases phases)
-              `(modify-phases ,phases
-                 (add-before 'configure 'set-cross-kernel-headers-path
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let* ((kernel (assoc-ref inputs "kernel-headers"))
-                            (cpath (string-append kernel "/include")))
-                       (for-each (cut setenv <> cpath)
-                                 ',%gcc-cross-include-paths)
-                       (setenv "CROSS_LIBRARY_PATH"
-                               (string-append kernel "/lib")) ; for Hurd's libihash
-                       #t)))))))
+               ,@(package-arguments libc))
+           ((#:configure-flags flags)
+            `(cons ,(string-append "--host=" target)
+                   ,(if (hurd-triplet? target)
+                        `(cons "--disable-werror" ,flags)
+                        flags)))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-before 'configure 'set-cross-kernel-headers-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let* ((kernel (assoc-ref inputs "kernel-headers"))
+                          (cpath (string-append kernel "/include")))
+                     (for-each (cut setenv <> cpath)
+                               ',%gcc-cross-include-paths)
+                     (setenv "CROSS_LIBRARY_PATH"
+                             (string-append kernel "/lib")) ; for Hurd's libihash
+                     #t)))
+               ,@(if (hurd-triplet? target)
+                     '((add-after 'install 'augment-libc.so
+                         (lambda* (#:key outputs #:allow-other-keys)
+                           (let* ((out (assoc-ref outputs "out")))
+                             (substitute* (string-append out "/lib/libc.so")
+                               (("/[^ ]+/lib/libc.so.0.3")
+                                (string-append out "/lib/libc.so.0.3"
+                                               " libmachuser.so libhurduser.so"))))
+                           #t)))
+                     '())))))
 
-          ;; Shadow the native "kernel-headers" because glibc's recipe expects the
-          ;; "kernel-headers" input to point to the right thing.
-          (propagated-inputs `(("kernel-headers" ,xheaders)))
+        ;; Shadow the native "kernel-headers" because glibc's recipe expects the
+        ;; "kernel-headers" input to point to the right thing.
+        (propagated-inputs `(("kernel-headers" ,xheaders)))
 
-          ;; FIXME: 'static-bash' should really be an input, not a native input, but
-          ;; to do that will require building an intermediate cross libc.
-          (inputs '())
+        ;; FIXME: 'static-bash' should really be an input, not a native input, but
+        ;; to do that will require building an intermediate cross libc.
+        (inputs '())
 
-          (native-inputs `(("cross-gcc" ,xgcc)
-                           ("cross-binutils" ,xbinutils)
-                           ,@(if (hurd-triplet? target)
-                                 `(("cross-mig"
-                                    ,@(assoc-ref (package-native-inputs xheaders)
-                                                 "cross-mig")))
-                                 '())
-                           ,@(package-inputs libc)     ;FIXME: static-bash
-                           ,@(package-native-inputs libc)))))))
+        (native-inputs `(("cross-gcc" ,xgcc)
+                         ("cross-binutils" ,xbinutils)
+                         ,@(if (hurd-triplet? target)
+                               `(("cross-mig"
+                                  ,@(assoc-ref (package-native-inputs xheaders)
+                                               "cross-mig")))
+                               '())
+                         ,@(package-inputs libc)  ;FIXME: static-bash
+                         ,@(package-native-inputs libc))))))
 
 (define* (native-libc target
                      #:optional

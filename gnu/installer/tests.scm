@@ -296,8 +296,13 @@ file, actually starting the installation process."
          encrypted
          not-encrypted))
     ((list-selection (title "Disk") (multiple-choices? #f)
-                     (items (,disk _ ...)))
-     disk)
+                     (items (,disks ...)))
+     ;; When running the installation from an ISO image, the CD/DVD drive
+     ;; shows up in the list.  Avoid it.
+     (find (lambda (disk)
+             (not (or (string-contains disk "DVD")
+                      (string-contains disk "CD-ROM"))))
+           disks))
 
     ;; The "Partition table" dialog pops up only if there's not already a
     ;; partition table.

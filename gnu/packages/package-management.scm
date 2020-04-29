@@ -109,9 +109,9 @@
   ;; Latest version of Guix, which may or may not correspond to a release.
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
-  (let ((version "1.0.1")
-        (commit "09844816c77caaa60f4149f99a34733966724627")
-        (revision 15))
+  (let ((version "1.1.0")
+        (commit "619f9181a363576894a433206008b139255062dd")
+        (revision 2))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1fciffls6cw9zz13vig5x37r73qxc0irzyh0caimciddlksvabf7"))
+                  "1lk0h9zgry7m78nv70gxwb57pw1d5yzay477gxsc43v1aa7zg8sp"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -400,9 +400,6 @@ the Nix package manager.")
              (lambda* (#:key outputs #:allow-other-keys)
                (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
-
-(define-public guile2.0-guix
-  (deprecated-package "guile2.0-guix" guix))
 
 (define-public guile3.0-guix
   (package
@@ -990,7 +987,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2020.2")
+    (version "2020.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -998,7 +995,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "0bbk0sg4m38g7j00hy358p2azxas87minpgz3avwma6jsylj1qjg"))))
+                "01cch4as23xspq6pck59al7x5jj60wl21g8p3iqbdxcjl1p3jxsq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1068,7 +1065,7 @@ the boot loader configuration.")
                                         (assoc-ref %build-inputs "bubblewrap")
                                         "/bin/bwrap"))))
    (native-inputs `(("bison" ,bison)
-                    ("gettext" ,gnu-gettext)
+                    ("gettext" ,gettext-minimal)
                     ("glib:bin" ,glib "bin") ; for glib-mkenums + gdbus-codegen
                     ("gobject-introspection" ,gobject-introspection)
                     ("libcap" ,libcap)
