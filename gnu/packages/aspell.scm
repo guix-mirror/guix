@@ -8,6 +8,7 @@
 ;;; Copyright © 2016, 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -297,6 +298,13 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "0w2k5l5rbqpliripgqwiqixz5ghnjf7i9ggbrc4ly4vy1ia10rmc")))
+
+(define-public aspell-dict-pl
+  (aspell-dictionary "pl" "Polish"
+                     #:version "0.51-0"
+                     #:sha256
+                     (base32
+                      "1a3ccji6k5gys7l3ilr2lh5pzxgzb7ipc5vb737svl6nqgdy8757")))
 
 (define-public aspell-dict-pt-br
   (aspell-dictionary "pt_BR" "Brazilian Portuguese"
