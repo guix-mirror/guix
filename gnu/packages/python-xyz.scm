@@ -7506,20 +7506,39 @@ complexity of Python source code.")
          ("python2-typing" ,python2-typing)
           ,@(package-propagated-inputs base))))))
 
-;; python-hacking requires flake8 <2.6.0.
-(define-public python-flake8-2.5
+;; python-hacking requires flake8 <2.7.0.
+(define-public python-flake8-2.6
   (package
     (inherit python-flake8)
-    (version "2.5.5")
+    (version "2.6.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flake8" version))
               (sha256
                (base32
-                "1snylqwbmrylbx3r1wpz8ggk98f6bcag4441ag8mm2l7wyn58sij"))))
+                "0y57hzal0j84dh9i1g1g6dc4aywvrnhy2fjmmbglpv5ajihxh713"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-later-pycodestyles
+           (lambda __
+             (substitute* '("flake8.egg-info/requires.txt"
+                            "setup.py")
+               (("pycodestyle >= 2.0, < 2.1")
+                "pycodestyle >= 2.0"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-v")
+             #t)))))
     (propagated-inputs
      `(("python-pep8" ,python-pep8)
-       ,@(package-propagated-inputs python-flake8)))))
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-entrypoints" ,python-entrypoints)
+       ("python-pyflakes" ,python-pyflakes-1.2)
+       ("python-mccabe" ,python-mccabe)))))
 
 (define-public python-flake8-polyfill
   (package
