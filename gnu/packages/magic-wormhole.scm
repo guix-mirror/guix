@@ -68,14 +68,14 @@ connection, or through a transit-relay.")
 (define-public magic-wormhole-transit-relay
   (package
     (name "magic-wormhole-transit-relay")
-    (version "0.1.2")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "magic-wormhole-transit-relay" version))
         (sha256
          (base32
-          "11w5gdc6am2ph5rns60x0694sx4zrlzxj540jljhn5cmnbx1ngxi"))))
+          "0ppsx2s1ysikns1h053x67z2zmficbn3y3kf52bzzslhd2s02j6b"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
