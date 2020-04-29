@@ -1074,7 +1074,7 @@ build (current-guix) and then store a couple of full system images.")
                    %base-user-accounts))
     ;; The installer does not create a swap device in guided mode with
     ;; encryption support.
-    (swap-devices (if encrypted? '() '("/dev/vdb2")))
+    (swap-devices (if encrypted? '() '("/dev/vda2")))
     (services (cons (service dhcp-client-service-type)
                     (operating-system-user-services %minimal-os)))))
 
