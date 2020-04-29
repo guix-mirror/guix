@@ -68,6 +68,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
+;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7311,6 +7312,30 @@ of its name.")
      "This minor mode sets background color to strings that match color
 names, e.g. #0000ff is displayed in white with a blue background.")
     (license license:gpl3+)))
+
+(define-public emacs-ryo-modal
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "3a54312eea7023a86ca3f8eb3c03c872554bff2f")
+        (revision "0"))
+    (package
+      (name "emacs-ryo-modal")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Kungsgeten/ryo-modal.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
+      (build-system emacs-build-system)
+      (home-page "http://github.com/Kungsgeten/ryo-modal")
+      (synopsis "Emacs minor mode for defining modal editing environments")
+      (description "RYO modal provides a convenient way of defining modal
+keybindings in Emacs, and does not come with any predefined bindings.")
+      (license license:expat))))
 
 (define-public emacs-visual-fill-column
   (package
