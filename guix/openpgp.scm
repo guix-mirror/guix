@@ -55,7 +55,8 @@
             lookup-key-by-fingerprint
             get-openpgp-keyring
 
-            read-radix-64)
+            read-radix-64
+            string->openpgp-packet)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -1067,3 +1068,9 @@ end-of-file object if the Radix-64 sequence was truncated."
                         (values #f kind)))
                      (loop (cons str lines))))))))
         (values #f #f))))
+
+(define (string->openpgp-packet str)
+  "Read STR, an ASCII-armored OpenPGP packet, and return the corresponding
+OpenPGP record."
+  (get-packet
+   (open-bytevector-input-port (call-with-input-string str read-radix-64))))

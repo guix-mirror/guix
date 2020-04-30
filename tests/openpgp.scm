@@ -194,10 +194,7 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
 (test-equal "verify-openpgp-signature, missing key"
   `(missing-key ,%rsa-key-fingerprint)
   (let* ((keyring   (get-openpgp-keyring (%make-void-port "r")))
-         (signature (get-openpgp-packet
-                     (open-bytevector-input-port
-                      (call-with-input-string %hello-signature/rsa
-                        read-radix-64)))))
+         (signature (string->openpgp-packet %hello-signature/rsa)))
     (let-values (((status key)
                   (verify-openpgp-signature signature keyring
                                             (open-input-string "Hello!\n"))))
@@ -214,10 +211,7 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
                 (keyring   (get-openpgp-keyring
                             (open-bytevector-input-port
                              (call-with-input-file key read-radix-64))))
-                (signature (get-openpgp-packet
-                            (open-bytevector-input-port
-                             (call-with-input-string signature
-                               read-radix-64)))))
+                (signature (string->openpgp-packet signature)))
            (let-values (((status key)
                          (verify-openpgp-signature signature keyring
                                                    (open-input-string "Hello!\n"))))
@@ -246,10 +240,7 @@ Pz7oopeN72xgggYUNT37ezqN3MeCqw0=
                          "tests/ed25519.key" "tests/ed25519.key"
                          "tests/ed25519.key"))))
     (map (lambda (signature)
-           (let ((signature (get-openpgp-packet
-                             (open-bytevector-input-port
-                              (call-with-input-string signature
-                                read-radix-64)))))
+           (let ((signature (string->openpgp-packet signature)))
              (let-values (((status key)
                            (verify-openpgp-signature signature keyring
                                                      (open-input-string "What?!"))))
