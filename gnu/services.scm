@@ -93,6 +93,8 @@
             activation-service-type
             activation-service->script
             %linux-bare-metal-service
+            %hurd-rc-script
+            %hurd-startup-service
             special-files-service-type
             extra-special-file
             etc-service-type
@@ -605,6 +607,39 @@ ACTIVATION-SCRIPT-TYPE."
                   activation-service-type
                   %linux-kernel-activation))
 
+(define %hurd-rc-script
+  ;; The RC script to be started upon boot.
+  (program-file "rc"
+                (with-imported-modules (source-module-closure
+                                        '((guix build utils)
+                                          (gnu build hurd-boot)
+                                          (guix build syscalls)))
+                  #~(begin
+                      (use-modules (guix build utils)
+                                   (gnu build hurd-boot)
+                                   (guix build syscalls)
+                                   (ice-9 match)
+                                   (system repl repl)
+                                   (srfi srfi-1)
+                                   (srfi srfi-26))
+                      (boot-hurd-system)))))
+
+(define (hurd-rc-entry rc)
+  "Return, as a monadic value, an entry for the RC script in the system
+directory."
+  (mlet %store-monad ((rc (lower-object rc)))
+    (return `(("rc" ,rc)))))
+
+(define hurd-startup-service-type
+  ;; The service that creates the initial SYSTEM/rc startup file.
+  (service-type (name 'startup)
+                (extensions
+                 (list (service-extension system-service-type hurd-rc-entry)))
+                (default-value %hurd-rc-script)))
+
+(define %hurd-startup-service
+  ;; The service that produces the RC script.
+  (service hurd-startup-service-type %hurd-rc-script))
 
 (define special-files-service-type
   ;; Service to install "special files" such as /bin/sh and /usr/bin/env.

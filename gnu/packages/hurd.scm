@@ -310,35 +310,6 @@ Hurd-minimal package which are needed for both glibc and GCC.")
      (base32
       "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
 
-(define (hurd-rc-script)
-  "Return a script to be installed as /libexec/rc in the 'hurd' package.  The
-script takes care of installing the relevant passive translators on the first
-boot, since this cannot be done from GNU/Linux.  Then, it runs system
-activation; starting the Shepherd."
-
-  (define rc
-    (with-imported-modules '((guix build utils)
-                             (gnu build hurd-boot)
-                             (guix build syscalls))
-      #~(begin
-          (use-modules (guix build utils)
-                       (gnu build hurd-boot)
-                       (guix build syscalls)
-                       (ice-9 match)
-                       (system repl repl)
-                       (srfi srfi-1)
-                       (srfi srfi-26))
-
-          ;; "@HURD@" and "@COREUTILS@" are placeholders.
-          (setenv "PATH" "@HURD@/bin:@HURD@/sbin:@COREUTILS@/bin")
-
-          (boot-hurd-system))))
-
-  ;; FIXME: We want the program to use the cross-compiled Guile when
-  ;; cross-compiling.  But why do we need to be explicit here?
-  (with-parameters ((%current-target-system "i586-pc-gnu"))
-    (program-file "rc" rc)))
-
 (define dde-sources
   ;; This is the current tip of the dde branch
   (let ((commit "ac1c7eb7a8b24b7469bed5365be38a968d59a136"))
@@ -422,11 +393,19 @@ fsysopts / --writable
 
 # Note: this /hurd/ gets substituted
 settrans --create /servers/socket/1 /hurd/pflocal
-echo Starting /libexec/rc ...
-exec /libexec/rc \"$@\"
-")))
-             ))
 
+# parse multiboot arguments
+for i in \"$@\"; do
+    case $i in
+        (--system=*)
+            system=${i#--system=}
+            ;;
+    esac
+done
+
+echo Starting ${system}/rc...
+exec ${system}/rc \"$@\"
+")))))
          (add-before 'build 'set-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -502,18 +481,6 @@ exec /libexec/rc \"$@\"
                (mkdir-p datadir)
                (copy-file "unifont"
                           (string-append datadir "/vga-system.bdf"))
-               #t)))
-         (add-after 'install 'install-rc-file
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (file (string-append out "/libexec/rc"))
-                    (rc   (assoc-ref inputs "hurd-rc"))
-                    (coreutils (assoc-ref inputs "coreutils")))
-               (delete-file file)
-               (copy-file rc file)
-               (substitute* file
-                 (("@HURD@") out)
-                 (("@COREUTILS@") coreutils))
                #t))))
        #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               %output "/lib")
@@ -528,7 +495,6 @@ exec /libexec/rc \"$@\"
     (build-system gnu-build-system)
     (inputs
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
-       ("hurd-rc" ,(hurd-rc-script))
 
        ("libgcrypt" ,libgcrypt)                  ;for /hurd/random
        ("libdaemon" ,libdaemon)                  ;for /bin/console --daemonize

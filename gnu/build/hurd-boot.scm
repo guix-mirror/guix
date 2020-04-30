@@ -153,26 +153,29 @@ XXX TODO: use settrans/setxattr instead of MAKEDEV
          (lambda ()
            (with-error-to-port (%make-void-port "w")
              (lambda ()
-               (zero? (system* "showtrans" "-s" node)))))))
-
-     (for-each (match-lambda
-                 ((node command)
-                  (unless (translated? node)
-                    (mkdir-p (dirname node))
-                    (apply invoke "settrans" "-c" node command))))
-               translators)
-
-     (format #t "Creating essential device nodes...\n")
-     (with-directory-excursion "/dev"
-       (invoke "MAKEDEV" "--devdir=/dev" "std")
-       (invoke "MAKEDEV" "--devdir=/dev" "vcs")
-       (invoke "MAKEDEV" "--devdir=/dev" "tty1""tty2" "tty3" "tty4" "tty5" "tty6")
-       (invoke "MAKEDEV" "--devdir=/dev" "ptyp0" "ptyp1" "ptyp2")
-       (invoke "MAKEDEV" "--devdir=/dev" "console"))
+               (zero? (system* "showtrans" "--silent" node)))))))
 
      (let* ((args    (command-line))
             (system  (find-long-option "--system" args))
             (to-load (find-long-option "--load" args)))
+
+       (format #t "Creating essential servers...\n")
+       (setenv "PATH" (string-append system "/profile/bin"
+                                     ":" system "/profile/sbin"))
+       (for-each (match-lambda
+                   ((node command)
+                    (unless (translated? node)
+                      (mkdir-p (dirname node))
+                      (apply invoke "settrans" "--create" node command))))
+                 translators)
+
+       (format #t "Creating essential device nodes...\n")
+       (with-directory-excursion "/dev"
+         (invoke "MAKEDEV" "--devdir=/dev" "std")
+         (invoke "MAKEDEV" "--devdir=/dev" "vcs")
+         (invoke "MAKEDEV" "--devdir=/dev" "tty1""tty2" "tty3" "tty4" "tty5" "tty6")
+         (invoke "MAKEDEV" "--devdir=/dev" "ptyp0" "ptyp1" "ptyp2")
+         (invoke "MAKEDEV" "--devdir=/dev" "console"))
 
        (false-if-exception (delete-file "/hurd"))
        (let ((hurd/hurd (readlink* (string-append system "/profile/hurd"))))
