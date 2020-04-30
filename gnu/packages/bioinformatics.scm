@@ -4942,14 +4942,24 @@ files and writing bioinformatics applications.")
          "1agfz6zqa8nc6cw47yh0s3y14gkpa9wqazwcj7mwwj3ffnw39p3j"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))  ; requires Python 2.7
+     `(#:python ,python-2  ; requires Python 2.7
+       #:tests? #f ; test data are not included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-weave
+           (lambda _
+             (substitute* "warpedlmm/util/linalg.py"
+               (("from scipy import linalg, weave")
+                "from scipy import linalg\nimport weave"))
+             #t)))))
     (propagated-inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
        ("python-matplotlib" ,python2-matplotlib)
        ("python-fastlmm" ,python2-fastlmm)
        ("python-pandas" ,python2-pandas)
-       ("python-pysnptools" ,python2-pysnptools)))
+       ("python-pysnptools" ,python2-pysnptools)
+       ("python-weave" ,python2-weave)))
     (native-inputs
      `(("python-mock" ,python2-mock)
        ("python-nose" ,python2-nose)
