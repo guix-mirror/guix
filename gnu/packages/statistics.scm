@@ -4957,16 +4957,16 @@ groupings.")
 (define-public r-vgam
   (package
     (name "r-vgam")
-    (version "1.1-2")
+    (version "1.1-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VGAM" version))
        (sha256
-        (base32 "0kyan3a4ys2xbg9kf167cyf1gk7g963id62cjm2ij4i7y4wi61zq"))))
+        (base32 "1hwlrdx3nhdp83pvy1h23i16vbbhi4kizdhr58c8nvg7kqdzb7qc"))))
     (properties `((upstream-name . "VGAM")))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "https://www.stat.auckland.ac.nz/~yee/VGAM")
     (synopsis "Vector generalized linear and additive models")
