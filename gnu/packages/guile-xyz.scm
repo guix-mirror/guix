@@ -23,7 +23,7 @@
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
 ;;; Copyright © 2019, 2020 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
-;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1833,7 +1833,13 @@ many readers as needed).")
               ("guile" ,guile-2.2)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:configure-flags (list "--with-ncursesw"  ; Unicode support
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  (guix build utils))
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:configure-flags (list "--with-ncursesw" ; Unicode support
                                "--with-gnu-filesystem-hierarchy")
        #:phases
        (modify-phases %standard-phases
@@ -1848,8 +1854,8 @@ many readers as needed).")
                     (files (find-files dir ".scm")))
                (substitute* files
                  (("\"libguile-ncurses\"")
-                  (format #f "\"~a/lib/guile/2.2/libguile-ncurses\""
-                          out)))
+                  (format #f "\"~a/lib/guile/~a/libguile-ncurses\""
+                          out (target-guile-effective-version))))
                #t))))))
     (home-page "https://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
@@ -1857,6 +1863,14 @@ many readers as needed).")
      "guile-ncurses provides Guile language bindings for the ncurses
 library.")
     (license license:lgpl3+)))
+
+(define-public guile3.0-ncurses
+  (package
+    (inherit guile-ncurses)
+    (name "guile3.0-ncurses")
+    (version "3.0")
+    (inputs `(("ncurses" ,ncurses)
+              ("guile" ,guile-3.0)))))
 
 (define-public guile-ncurses/gpm
   (package
