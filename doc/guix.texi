@@ -26599,7 +26599,7 @@ like
 
 @lisp
 (bootloader
- (grub-configuration
+ (bootloader-configuration
  ;; @dots{}
  (theme (grub-theme
          (inherit %default-theme)
