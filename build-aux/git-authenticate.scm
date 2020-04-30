@@ -23,8 +23,9 @@
 
 (use-modules (git)
              (guix git)
-             (guix gnupg)
-             (guix utils)
+             (guix openpgp)
+             ((guix utils) #:select (config-directory))
+             (guix base16)
              ((guix build utils) #:select (mkdir-p))
              (guix i18n)
              (guix progress)
@@ -215,7 +216,8 @@
   ;; Fingerprint of authorized signing keys.
   (map (match-lambda
          ((name fingerprint)
-          (string-filter char-set:graphic fingerprint)))
+          (base16-string->bytevector
+           (string-downcase (string-filter char-set:graphic fingerprint)))))
        %committers))
 
 (define %commits-with-bad-signature
@@ -226,75 +228,63 @@
   ;; Commits lacking a signature.
   '())
 
-(define-syntax-rule (with-temporary-files file1 file2 exp ...)
-  (call-with-temporary-output-file
-   (lambda (file1 port1)
-     (call-with-temporary-output-file
-      (lambda (file2 port2)
-        exp ...)))))
-
-(define (commit-signing-key repo commit-id)
-  "Return the OpenPGP key ID that signed COMMIT-ID (an OID).  Raise an
-exception if the commit is unsigned or has an invalid signature."
+(define (commit-signing-key repo commit-id keyring)
+  "Return the OpenPGP key that signed COMMIT-ID (an OID).  Raise an exception
+if the commit is unsigned, has an invalid signature, or if its signing key is
+not in KEYRING."
   (let-values (((signature signed-data)
                 (catch 'git-error
                   (lambda ()
                     (commit-extract-signature repo commit-id))
                   (lambda _
                     (values #f #f)))))
-    (if (not signature)
-        (raise (condition
-                (&message
-                 (message (format #f (G_ "commit ~a lacks a signature")
-                                  commit-id)))))
-        (begin
-          (with-fluids ((%default-port-encoding "UTF-8"))
-            (with-temporary-files data-file signature-file
-              (call-with-output-file data-file
-                (cut display signed-data <>))
-              (call-with-output-file signature-file
-                (cut display signature <>))
+    (unless signature
+      (raise (condition
+              (&message
+               (message (format #f (G_ "commit ~a lacks a signature")
+                                commit-id))))))
 
-              (let-values (((status data)
-                            (with-error-to-port (%make-void-port "w")
-                              (lambda ()
-                                (gnupg-verify* signature-file data-file
-                                               #:key-download 'always)))))
-                (match status
-                  ('invalid-signature
-                   ;; There's a signature but it's invalid.
-                   (raise (condition
-                           (&message
-                            (message (format #f (G_ "signature verification failed \
+    (let ((signature (string->openpgp-packet signature)))
+      (with-fluids ((%default-port-encoding "UTF-8"))
+        (let-values (((status data)
+                      (verify-openpgp-signature signature keyring
+                                                (open-input-string signed-data))))
+          (match status
+            ('bad-signature
+             ;; There's a signature but it's invalid.
+             (raise (condition
+                     (&message
+                      (message (format #f (G_ "signature verification failed \
 for commit ~a")
-                                             (oid->string commit-id)))))))
-                  ('missing-key
-                   (raise (condition
-                           (&message
-                            (message (format #f (G_ "could not authenticate \
+                                       (oid->string commit-id)))))))
+            ('missing-key
+             (raise (condition
+                     (&message
+                      (message (format #f (G_ "could not authenticate \
 commit ~a: key ~a is missing")
-                                             (oid->string commit-id)
-                                             data))))))
-                  ('valid-signature
-                   (match data
-                     ((fingerprint . user)
-                      fingerprint)))))))))))
+                                       (oid->string commit-id)
+                                       data))))))
+            ('good-signature data)))))))
 
-(define (authenticate-commit repository commit)
+(define (authenticate-commit repository commit keyring)
   "Authenticate COMMIT from REPOSITORY and return the signing key fingerprint.
 Raise an error when authentication fails."
   (define id
     (commit-id commit))
 
   (define signing-key
-    (commit-signing-key repository id))
+    (commit-signing-key repository id keyring))
 
-  (unless (member signing-key %authorized-signing-keys)
+  (unless (member (openpgp-public-key-fingerprint signing-key)
+                  %authorized-signing-keys)
     (raise (condition
             (&message
              (message (format #f (G_ "commit ~a not signed by an authorized \
 key: ~a")
-                              (oid->string id) signing-key))))))
+                              (oid->string id)
+                              (openpgp-format-fingerprint
+                               (openpgp-public-key-fingerprint
+                                signing-key))))))))
 
   signing-key)
 
@@ -302,17 +292,21 @@ key: ~a")
                                #:key (report-progress (const #t)))
   "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
 each of them.  Return an alist showing the number of occurrences of each key."
-  (parameterize ((current-keyring (string-append (config-directory)
-                                                 "/keyrings/channels/guix.kbx")))
-    (fold (lambda (commit stats)
-            (report-progress)
-            (let ((signer (authenticate-commit repository commit)))
-              (match (assoc signer stats)
-                (#f          (cons `(,signer . 1) stats))
-                ((_ . count) (cons `(,signer . ,(+ count 1))
-                                   (alist-delete signer stats))))))
-          '()
-          commits)))
+  (define keyring-file
+    (string-append (config-directory) "/keyrings/channels/guix.kbx"))
+
+  (define keyring
+    (call-with-input-file keyring-file get-openpgp-keyring))
+
+  (fold (lambda (commit stats)
+          (report-progress)
+          (let ((signer (authenticate-commit repository commit keyring)))
+            (match (assq signer stats)
+              (#f          (cons `(,signer . 1) stats))
+              ((_ . count) (cons `(,signer . ,(+ count 1))
+                                 (alist-delete signer stats))))))
+        '()
+        commits))
 
 (define commit-short-id
   (compose (cut string-take <> 7) oid->string commit-id))
@@ -409,7 +403,10 @@ COMMIT-ID is written to cache, though)."
            (format #t (G_ "Signing statistics:~%"))
            (for-each (match-lambda
                        ((signer . count)
-                        (format #t "  ~a ~10d~%" signer count)))
+                        (format #t "  ~a ~10d~%"
+                                (openpgp-format-fingerprint
+                                 (openpgp-public-key-fingerprint signer))
+                                count)))
                      (sort stats
                            (match-lambda*
                              (((_ . count1) (_ . count2))
@@ -423,7 +420,3 @@ COMMIT-ID is written to cache, though)."
                (G_ "Usage: git-authenticate START [END]
 
 Authenticate commits START to END or the current head.\n"))))))
-
-;;; Local Variables:
-;;; eval: (put 'with-temporary-files 'scheme-indent-function 2)
-;;; End:
