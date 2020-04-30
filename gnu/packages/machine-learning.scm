@@ -1326,7 +1326,7 @@ exec ~a ~a/~a \"$@\"~%"
          ("python" ,python-wrapper)
          ("python-pygobject" ,python-pygobject)
          ("python-pyyaml" ,python-pyyaml)
-         ("python-tornado" ,python-tornado)))
+         ("python-tornado" ,python-tornado-6)))
       (home-page "https://github.com/alumae/kaldi-gstreamer-server")
       (synopsis "Real-time full-duplex speech recognition server")
       (description "This is a real-time full-duplex speech recognition server,
