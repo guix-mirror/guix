@@ -55,7 +55,7 @@
   \"dependencies\": [
      {
        \"crate_id\": \"bar\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      }
   ]
 }")
@@ -87,20 +87,20 @@
   \"dependencies\": [
      {
        \"crate_id\": \"intermediate-1\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      },
      {
        \"crate_id\": \"intermediate-2\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      }
      {
        \"crate_id\": \"leaf-alice\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      },
      {
        \"crate_id\": \"leaf-bob\",
-       \"kind\": \"normal\",
-     },
+       \"kind\": \"normal\"
+     }
   ]
 }")
 
@@ -131,15 +131,15 @@
   \"dependencies\": [
      {
        \"crate_id\": \"intermediate-2\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      },
      {
        \"crate_id\": \"leaf-alice\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      },
      {
        \"crate_id\": \"leaf-bob\",
-       \"kind\": \"normal\",
+       \"kind\": \"normal\"
      }
   ]
 }")
@@ -171,8 +171,8 @@
   \"dependencies\": [
      {
        \"crate_id\": \"leaf-bob\",
-       \"kind\": \"normal\",
-     },
+       \"kind\": \"normal\"
+     }
   ]
 }")
 
@@ -233,6 +233,7 @@
 (define test-source-hash
   "")
 
+
 (test-begin "crate")
 
 (test-equal "guix-package->crate-name"

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -597,3 +597,49 @@ to be able to read and render the Doxygen xml output.")
      "A utility tool that provides several features that make it easy to
 translate and to apply translation to Sphinx generated document.")
     (license license:bsd-2)))
+
+(define-public python-sphinx-autobuild
+  (package
+    (name "python-sphinx-autobuild")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-autobuild" version))
+       (sha256
+        (base32
+         "0kn753dyh3b1s0h77lbk704niyqc7bamvq6v3s1f6rj6i20qyf36"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See https://github.com/GaretJax/sphinx-autobuild/pull/72
+         (add-after 'unpack 'use-later-port-for
+           (lambda _
+             (substitute* "requirements.txt"
+               (("port_for==.*") "port_for\n"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v"))
+             #t)))))
+    (propagated-inputs
+     `(("python-argh" ,python-argh)
+       ("python-livereload" ,python-livereload)
+       ("python-pathtools" ,python-pathtools)
+       ("python-port-for" ,python-port-for)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-tornado" ,python-tornado)
+       ("python-watchdog" ,python-watchdog)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/GaretJax/sphinx-autobuild")
+    (synopsis "Rebuild Sphinx documentation when a change is detected")
+    (description
+     "This package lets you watch a Sphinx directory and rebuild the
+documentation when a change is detected.  It also includes a livereload
+enabled web server.")
+    (license license:expat)))

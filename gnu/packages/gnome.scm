@@ -8073,13 +8073,14 @@ desktop.  It supports world clock, stop watch, alarms, and count down timer.")
        ("glib-bin" ,glib "bin")         ; For glib-compile-schemas
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("evolution-data-server" ,evolution-data-server)
-       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+     `(("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("libdazzle" ,libdazzle)
        ("libedataserverui" ,evolution-data-server)
        ("libgweather" ,libgweather)
        ("geoclue" ,geoclue)))
+    (propagated-inputs
+     `(("evolution-data-server" ,evolution-data-server)))
     (home-page "https://wiki.gnome.org/Apps/Calendar")
     (synopsis "GNOME's calendar application")
     (description

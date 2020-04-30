@@ -11,10 +11,11 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix git-download)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
@@ -64,6 +66,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
@@ -986,6 +989,42 @@ de-duplicated before it is actually written to the storage back end to save
 precious backup space.
 @end itemize")
     (license license:bsd-2)))
+
+(define-public zbackup
+  (package
+    (name "zbackup")
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zbackup/zbackup.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14l1kyxg7pccpax3d6qcpmdycb70kn3fxp1a59w64hqy2493hngl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test
+    (inputs
+     `(("lzo" ,lzo)
+       ("libressl" ,libressl)
+       ("protobuf" ,protobuf)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "http://zbackup.org")
+    (synopsis "Versatile deduplicating backup tool")
+    (description
+     "ZBackup is a globally-deduplicating backup tool, based on the
+ideas found in Rsync.  Feed a large @file{.tar} into it, and it will
+store duplicate regions of it only once, then compress and optionally
+encrypt the result.  Feed another @file{.tar} file, and it will also
+re-use any data found in any previous backups.  This way only new
+changes are stored, and as long as the files are not very different,
+the amount of storage required is very low.  Any of the backup files
+stored previously can be read back in full at any time.  The program
+is format-agnostic, so you can feed virtually any files to it.")
+    (license license:gpl2+)))
 
 (define-public burp
   (package

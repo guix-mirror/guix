@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2019 Christopher Howard <christopher@librehacker.com>
+;;; Copyright © 2019, 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -266,7 +267,6 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("ghostscript" ,ghostscript)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)
        ("python-cheetah" ,python-cheetah)
        ("python-mako" ,python-mako)
        ("python-pyzmq" ,python-pyzmq)
@@ -293,6 +293,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("log4cpp" ,log4cpp)
        ("pango" ,pango)
        ("portaudio" ,portaudio)
+       ("python" ,python)
        ("python-click" ,python-click)
        ("python-click-plugins" ,python-click-plugins)
        ("python-lxml" ,python-lxml)
@@ -363,6 +364,17 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                (wrap-program (string-append out "/bin/gnuradio-companion")
                  `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
              #t)))))
+    (native-search-paths
+     ;; Variables required to find third-party plugins at runtime.
+     (list (search-path-specification
+            (variable "GRC_BLOCKS_PATH")
+            (files '("share/gnuradio/grc/blocks")))
+           (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list (string-append "lib/python"
+                                        (version-major+minor
+                                         (package-version python))
+                                        "/site-packages"))))))
     (synopsis "Toolkit for software-defined radios")
     (description
      "GNU Radio is a development toolkit that provides signal processing blocks
@@ -399,8 +411,8 @@ environment.")
        ("fftwf" ,fftwf)
        ("gmp" ,gmp)
        ("gnuradio" ,gnuradio)
+       ("hackrf" ,hackrf)
        ("log4cpp" ,log4cpp)
-       ;; TODO: Add more drivers.
        ("rtl-sdr" ,rtl-sdr)
        ("volk" ,volk)))
     (synopsis "GNU Radio block for interfacing with various radio hardware")
@@ -537,14 +549,14 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.11")
+    (version "4.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1y62xn1pim38ibaf2mbl8b7aq20jdaac6lgggb9r402w9bj5b196"))))
+        (base32 "1yjjv2ss84xfiaidypp476mhrbpnw4zf7mb5cdqwhdh604x0svr1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -654,6 +666,73 @@ for correctness.")
     (home-page "http://www.w1hkj.com/")
     (license license:gpl3+)))
 
+(define-public hackrf
+  ;; Using a git commit because there have been many many commits
+  ;; since the relase two years ago, but no sign of a promised
+  ;; release for many months now.
+  (let ((commit "43e6f99fe8543094d18ff3a6550ed2066c398862")
+        (revision "0"))
+    (package
+     (name "hackrf")
+     (version (git-version "2018.01.1" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mossmann/hackrf.git")
+             (commit commit)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0avnv693xi0zsnrvkbfn0ln1r3s1iyj0bz7sc3gxay909av0pvbc"))))
+     (build-system cmake-build-system)
+     (arguments
+      '(#:configure-flags
+        (list "-DUDEV_RULES_GROUP=dialout"
+              (string-append "-DUDEV_RULES_PATH="
+                             (assoc-ref %outputs "out")
+                             "/lib/udev/rules.d"))
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'enter-source-directory
+            (lambda _
+              (chdir "host")
+              #t))
+          (add-after 'install 'delete-static-library
+            (lambda* (#:key outputs #:allow-other-keys)
+              (delete-file (string-append (assoc-ref outputs "out")
+                                          "/lib/libhackrf.a"))
+              #t))
+          (add-before 'install-license-files 'leave-source-directory
+            (lambda _
+              (chdir "..")
+              #t)))
+        #:tests? #f)) ; no test suite
+     (native-inputs
+      `(("pkg-config" ,pkg-config)))
+     (inputs
+      `(("fftw" ,fftw)
+        ("fftwf" ,fftwf)
+        ("libusb" ,libusb)))
+     (home-page "https://greatscottgadgets.com/hackrf/")
+     (synopsis "User-space library and utilities for HackRF SDR")
+     (description
+      "Command line utilities and a C library for controlling the HackRF
+Software Defined Radio (SDR) over USB.  Installing this package installs
+the userspace hackrf utilities and C library.  To install the hackrf
+udev rules, you must add this package as a system service via
+modify-services.  E.g.:
+
+@lisp
+(services
+ (modify-services
+  %desktop-services
+  (udev-service-type config =>
+   (udev-configuration (inherit config)
+    (rules (cons hackrf
+            (udev-configuration-rules config)))))))
+@end lisp")
+     (license license:gpl2))))
+
 (define-public hamlib
   (package
     (name "hamlib")
@@ -762,3 +841,52 @@ modes were all designed for making reliable, confirmed QSOs under extreme
 weak-signal conditions.")
     (home-page "https://www.physics.princeton.edu/pulsar/k1jt/wsjtx.html")
     (license license:gpl3)))
+
+(define-public xnec2c
+  (package
+    (name "xnec2c")
+    (version "4.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.5b4az.org/pkg/nec2/xnec2c/xnec2c-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1myvlkfybb2ha8l0h96ca3iz206zzy9z5iizm0sbab2zzp78n1r9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("Makefile.am" "Makefile.in")
+               ;; The DESTDIR variable does not get replaced the prefix
+               ;; in the final Makefile, so let's do here.
+               (("\\$\\(DESTDIR\\)/usr")
+                (assoc-ref outputs "out")))
+             #t))
+         (add-after 'fix-makefile 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Increase the max length of the path to the glade file,
+             ;; so that the '/gnu/store/...' path can fit in.
+             (substitute* '("src/shared.c" "src/shared.h")
+               (("char xnec2c_glade\\[64\\];")
+                "char xnec2c_glade[256];"))
+             ;; Fix hard coded references to '/usr/...'.
+             (substitute* '("src/geom_edit.c" "src/main.c")
+               (("\"/usr")
+                (string-append "\"" (assoc-ref outputs "out"))))
+             #t)))))
+    (synopsis "Antenna modeling software")
+    (description
+     "Xnec2c is a GTK3-based graphical version of nec2c, a translation to the
+C language of NEC2, the FORTRAN Numerical Electromagnetics Code commonly used
+for antenna simulation and analysis.  It can be used to define the geometry of
+an antenna, and then plot the radiation pattern or frequency-related data like
+gain and standing wave ratio.")
+    (home-page "http://www.5b4az.org/")
+    (license license:gpl3+)))

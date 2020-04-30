@@ -2670,10 +2670,11 @@ relational database engine.")
   (sbcl-package->cl-source-package sbcl-cl-sqlite))
 
 (define-public sbcl-parenscript
-  (let ((commit "061d8e286c81c3f45c84fb2b11ee7d83f590a8f8"))
+  ;; Source archives are overwritten on every release, we use the Git repo instead.
+  (let ((commit "7a1ac46353cecd144fc91915ba9f122aafcf4766"))
     (package
       (name "sbcl-parenscript")
-      (version (git-version "2.6" "1" commit))
+      (version (git-version "2.7.1" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -2683,7 +2684,7 @@ relational database engine.")
          (file-name (git-file-name "parenscript" version))
          (sha256
           (base32
-           "1kbhgsjbikc73m5cwdp4d4fdafyqcr1b7b630qjrziql0nh6mi3k"))))
+           "0c22lqarrpbq82dg1sb3y6mp6w2faczp34ymzhnmff88yfq1xzsf"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("cl-ppcre" ,sbcl-cl-ppcre)
@@ -2916,7 +2917,20 @@ is a library for creating graphical user interfaces.")
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "gobject/gobject.init.lisp"
                (("libgobject" all) (string-append
-                                    (assoc-ref inputs "glib") "/lib/" all))))))))))
+                                    (assoc-ref inputs "glib") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gobject")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gio
   (package
@@ -2936,7 +2950,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gio/gio.init.lisp"
                (("libgio" all)
                 (string-append
-                 (assoc-ref inputs "glib") "/lib/" all))))))))))
+                 (assoc-ref inputs "glib") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gio")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-cairo
   (package
@@ -2955,7 +2982,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "cairo/cairo.init.lisp"
                (("libcairo" all)
                 (string-append
-                 (assoc-ref inputs "cairo") "/lib/" all))))))))))
+                 (assoc-ref inputs "cairo") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-cairo")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-pango
   (package
@@ -2976,7 +3016,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "pango/pango.init.lisp"
                (("libpango" all)
                 (string-append
-                 (assoc-ref inputs "pango") "/lib/" all))))))))))
+                 (assoc-ref inputs "pango") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-pango")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk-pixbuf
   (package
@@ -2985,6 +3038,7 @@ is a library for creating graphical user interfaces.")
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
      `(#:asd-file "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
@@ -2995,7 +3049,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gdk-pixbuf/gdk-pixbuf.init.lisp"
                (("libgdk_pixbuf" all)
                 (string-append
-                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all))))))))))
+                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gdk-pixbuf")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk
   (package
@@ -3003,6 +3070,7 @@ is a library for creating graphical user interfaces.")
     (name "sbcl-cl-cffi-gtk-gdk")
     (inputs
      `(("gtk" ,gtk+)
+       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
        ("cl-cffi-gtk-gdk-pixbuf" ,sbcl-cl-cffi-gtk-gdk-pixbuf)
@@ -3022,7 +3090,20 @@ is a library for creating graphical user interfaces.")
              (substitute* "gdk/gdk.package.lisp"
                (("libgtk" all)
                 (string-append
-                 (assoc-ref inputs "gtk") "/lib/" all))))))))))
+                 (assoc-ref inputs "gtk") "/lib/" all)))))
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk-gdk")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public sbcl-cl-cffi-gtk
   (package
@@ -3041,7 +3122,22 @@ is a library for creating graphical user interfaces.")
        #:test-asd-file "test/cl-cffi-gtk-test.asd"
        ;; TODO: Tests fail with memory fault.
        ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
-       #:tests? #f))))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'link-source
+           ;; Since source is particularly heavy (16MiB+), let's reuse it
+           ;; across the different components of cl-ffi-gtk.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                               "/share/common-lisp/sbcl-source/"
+                                               "cl-cffi-gtk-glib"))
+                   (out-source (string-append (assoc-ref outputs "out")
+                                              "/share/common-lisp/sbcl-source/"
+                                              "cl-cffi-gtk")))
+               (delete-file-recursively out-source)
+               (symlink glib-source out-source)
+               #t))))))))
 
 (define-public cl-cffi-gtk
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
@@ -11443,21 +11539,19 @@ MOP easier to use.")
       (arguments
        `(#:phases
          (modify-phases %standard-phases
-           (add-before 'validate-runpath 'cleanup-files
+           ;; The cleanup phase moves files around but we need to keep the
+           ;; directory structure for the grovel-generated library.
+           (replace 'cleanup
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
-                      (lib (string-append out "/lib/sbcl")))
-                 (for-each
-                  delete-file
-                  (filter (lambda (file)
-                            (not (member (basename file)
-                                         '("basic-unixint__grovel"
-                                           "libosicat.so"
-                                           "osicat--system.fasl"
-                                           "osicat.asd"
-                                           "unixint__grovel"))))
-                          (find-files lib ".*")))
-                 #t))))))
+                      (lib (string-append out "/lib/sbcl/")))
+                 (delete-file-recursively (string-append lib "src"))
+                 (delete-file-recursively (string-append lib "tests"))
+                 (for-each delete-file
+                           (filter (lambda (file)
+                                     (not (member (basename file) '("libosicat.so"))))
+                                   (find-files (string-append lib "posix") ".*"))))
+               #t)))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("cffi" ,sbcl-cffi)

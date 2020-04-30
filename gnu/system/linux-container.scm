@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -53,9 +53,7 @@ from OS that are needed on the bare metal and not in a container."
             (operating-system-default-essential-services os)))
 
   (cons (service system-service-type
-                 (let ((locale (operating-system-locale-directory os)))
-                   (with-monad %store-monad
-                     (return `(("locale" ,locale))))))
+                 `(("locale" ,(operating-system-locale-directory os))))
         ;; If network is to be shared with the host, remove network
         ;; configuration files from etc-service.
         (if shared-network?

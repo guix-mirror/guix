@@ -136,14 +136,6 @@ Shepherd (PID 1) by unloading obsolete services and loading new services."
                       (stop #~(const #t))
                       (respawn? #f)))
 
-  ;; Return the Shepherd service file for SERVICE, after ensuring that it
-  ;; exists in the store.
-  (define (ensure-service-file service)
-    (let ((file (shepherd-service-file service)))
-      (mlet* %store-monad ((store-object (lower-object file))
-                           (_ (built-derivations (list store-object))))
-        (return file))))
-
   (define (test enable-dummy disable-dummy)
     (with-imported-modules '((gnu build marionette))
       #~(begin
@@ -187,10 +179,12 @@ Shepherd (PID 1) by unloading obsolete services and loading new services."
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
-  (mlet* %store-monad ((file (ensure-service-file dummy-service)))
-    (let ((enable (upgrade-services-program (list file) '(dummy) '() '()))
+  (gexp->derivation
+   "upgrade-services"
+   (let* ((file (shepherd-service-file dummy-service))
+          (enable (upgrade-services-program (list file) '(dummy) '() '()))
           (disable (upgrade-services-program '() '() '(dummy) '())))
-      (gexp->derivation "upgrade-services" (test enable disable)))))
+     (test enable disable))))
 
 (define* (run-install-bootloader-test)
   "Run a test of an OS running INSTALL-BOOTLOADER-PROGRAM, which installs a

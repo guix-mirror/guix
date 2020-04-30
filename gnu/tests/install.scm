@@ -254,7 +254,7 @@ packages defined in installation-os."
               (make-marionette
                `(,(which #$(qemu-command system))
                  "-no-reboot"
-                 "-m" "800"
+                 "-m" "1200"
                  #$@(cond
                      ((string=? "ext4" installation-disk-image-file-system-type)
                       #~("-drive"
@@ -389,6 +389,7 @@ per %test-installed-os, this test is expensive in terms of CPU and storage.")
     (services (cons (service marionette-service-type
                              (marionette-configuration
                               (imported-modules '((gnu services herd)
+                                                  (guix build utils)
                                                   (guix combinators)))))
                     %base-services))))
 
@@ -1060,7 +1061,7 @@ build (current-guix) and then store a couple of full system images.")
 (define* (installation-target-os-for-gui-tests
           #:key (encrypted? #f))
   (operating-system
-    (inherit %minimal-os)
+    (inherit %minimal-os-on-vda)
     (users (append (list (user-account
                           (name "alice")
                           (comment "Bob's sister")
@@ -1076,9 +1077,9 @@ build (current-guix) and then store a couple of full system images.")
                    %base-user-accounts))
     ;; The installer does not create a swap device in guided mode with
     ;; encryption support.
-    (swap-devices (if encrypted? '() '("/dev/vdb2")))
+    (swap-devices (if encrypted? '() '("/dev/vda2")))
     (services (cons (service dhcp-client-service-type)
-                    (operating-system-user-services %minimal-os)))))
+                    (operating-system-user-services %minimal-os-on-vda)))))
 
 (define* (installation-target-desktop-os-for-gui-tests
           #:key (encrypted? #f))

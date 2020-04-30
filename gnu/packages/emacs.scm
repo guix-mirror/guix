@@ -401,6 +401,17 @@ editor (without an X toolkit)" )
            ((#:configure-flags cf)
             `(cons "--with-x-toolkit=no" ,cf)))))))
 
+(define-public emacs-wide-int
+  (package
+    (inherit emacs)
+    (name "emacs-wide-int")
+    (synopsis "The extensible, customizable, self-documenting text
+editor (with wide ints)" )
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:configure-flags flags)
+        `(cons "--with-wide-int" ,flags))))))
+
 (define-public guile-emacs
   (let ((commit "41120e0f595b16387eebfbf731fff70481de1b4b")
         (revision "0"))

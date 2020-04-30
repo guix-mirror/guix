@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018 Raoul Bonnal <ilpuccio.febo@gmail.com>
@@ -2333,6 +2333,62 @@ file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
      "dnaio is a Python library for fast parsing of FASTQ and also FASTA
 files.  The code was previously part of the cutadapt tool.")
     (license license:expat)))
+
+(define-public python-deeptoolsintervals
+  (package
+    (name "python-deeptoolsintervals")
+    (version "0.1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "deeptoolsintervals" version))
+              (sha256
+               (base32
+                "1xnl80nblysj6dylj4683wgrfa425rkx4dp5k65hvwdns9pw753x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/deeptools/deeptools_intervals")
+    (synopsis "Create GTF-based interval trees with associated meta-data")
+    (description
+     "This package provides a Python module creating/accessing GTF-based
+interval trees with associated meta-data.  It is primarily used by the
+@code{deeptools} package.")
+    (license license:expat)))
+
+(define-public python-deeptools
+  (package
+    (name "python-deeptools")
+    (version "3.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "deepTools" version))
+              (sha256
+               (base32
+                "1azgjniss5ff6a90nicdjkxyjwqmi3gzfn09gra42hwlz19hipxb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-numpydoc" ,python-numpydoc)
+       ("python-py2bit" ,python-py2bit)
+       ("python-pybigwig" ,python-pybigwig)
+       ("python-pysam" ,python-pysam)
+       ("python-scipy" ,python-scipy)
+       ("python-deeptoolsintervals" ,python-deeptoolsintervals)
+       ("python-plotly" ,python-plotly)))
+    (home-page "https://pypi.org/project/deepTools/")
+    (synopsis "Useful tools for exploring deep sequencing data")
+    (description "This package addresses the challenge of handling large amounts
+of data that are now routinely generated from DNA sequencing centers.
+@code{deepTools} contains useful modules to process the mapped reads data for
+multiple quality checks, creating normalized coverage files in standard bedGraph
+and bigWig file formats, that allow comparison between different files.  Finally,
+using such normalized and standardized files, deepTools can create many
+publication-ready visualizations to identify enrichments and for functional
+annotations of the genome.")
+    ;; The file deeptools/cm.py is licensed under the BSD license.  The
+    ;; remainder of the code is licensed under the MIT license.
+    (license (list license:bsd-3 license:expat))))
 
 (define-public cutadapt
   (package
@@ -4886,14 +4942,24 @@ files and writing bioinformatics applications.")
          "1agfz6zqa8nc6cw47yh0s3y14gkpa9wqazwcj7mwwj3ffnw39p3j"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))  ; requires Python 2.7
+     `(#:python ,python-2  ; requires Python 2.7
+       #:tests? #f ; test data are not included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-weave
+           (lambda _
+             (substitute* "warpedlmm/util/linalg.py"
+               (("from scipy import linalg, weave")
+                "from scipy import linalg\nimport weave"))
+             #t)))))
     (propagated-inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
        ("python-matplotlib" ,python2-matplotlib)
        ("python-fastlmm" ,python2-fastlmm)
        ("python-pandas" ,python2-pandas)
-       ("python-pysnptools" ,python2-pysnptools)))
+       ("python-pysnptools" ,python2-pysnptools)
+       ("python-weave" ,python2-weave)))
     (native-inputs
      `(("python-mock" ,python2-mock)
        ("python-nose" ,python2-nose)
@@ -9102,6 +9168,46 @@ samples into a single report.  It contains modules for a large number of
 common bioinformatics tools.")
     (license license:gpl3+)))
 
+(define-public variant-tools
+  (package
+    (name "variant-tools")
+    (version "3.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vatlab/varianttools.git")
+             ;; There is no tag corresponding to version 3.1.2
+             (commit "813ae4a90d25b69abc8a40f4f70441fe09015249")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "12ibdmksj7icyqhks4xyvd61bygk4pjmxn618kp6vgk1af01y34g"))))
+    (build-system python-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("c-blosc" ,c-blosc)
+       ("gsl" ,gsl)
+       ("hdf5" ,hdf5)
+       ("hdf5-blosc" ,hdf5-blosc)
+       ("python-cython" ,python-cython)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pycurl" ,python-pycurl)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-scipy" ,python-scipy)
+       ("python-tables" ,python-tables)))
+    (home-page "https://vatlab.github.io/vat-docs/")
+    (synopsis "Analyze genetic variants from Next-Gen sequencing studies")
+    (description
+     "Variant tools is a tool for the manipulation, annotation,
+selection, simulation, and analysis of variants in the context of next-gen
+sequencing analysis.  Unlike some other tools used for next-gen sequencing
+analysis, variant tools is project based and provides a whole set of tools to
+manipulate and analyze genetic variants.")
+    (license license:gpl3+)))
+
 (define-public r-chipseq
   (package
     (name "r-chipseq")
@@ -9660,13 +9766,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.4")
+    (version "3.1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0lhjbjhv1hnx5i3gkx41k68i8ykay3f24708h30wx9xywww9lsvi"))))
+                "1lbq2pqhb6ih6iqawlnzdh05zff71pwbw1cpfv2sld3pd7kz0zkm"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9688,7 +9794,6 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
-       ("r-metap" ,r-metap)
        ("r-patchwork" ,r-patchwork)
        ("r-pbapply" ,r-pbapply)
        ("r-plotly" ,r-plotly)
@@ -10634,14 +10739,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.14.3")
+    (version "1.14.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "1z153a7nxmlml72pl1saasj2il9g5ahpynkpv3mkhhsvl5kbwbh6"))))
+         "0ib0grhd9zbrn0dkrm4aa7qj7h0y6z1dvyx1ab3w6vczw7xghsfb"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -13152,7 +13257,7 @@ version does count multisplits.")
 (define-public minimap2
   (package
     (name "minimap2")
-    (version "2.10")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
@@ -13161,7 +13266,7 @@ version does count multisplits.")
                            "minimap2-" version ".tar.bz2"))
        (sha256
         (base32
-         "080w9066irkbhbyr4nmf19pzkdd2s4v31hpzlajgq2y0drr6zcsj"))))
+         "0hi7i9pzxhvjj44khzzzj1lrn5gb5837arr4wgln7k1k5n4ci2mn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are none
@@ -13207,6 +13312,42 @@ cases include:
   divergence below ~15%.
 @end enumerate\n")
     (license license:expat)))
+
+(define-public miniasm
+  (package
+   (name "miniasm")
+   (version "0.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/lh3/miniasm/archive/v"
+                  version ".tar.gz"))
+            (file-name (string-append name "-" version ".tar.gz"))
+            (sha256
+               (base32
+                "0g89pa98dvh34idv7w1zv12bsbyr3a11c4qb1cdcz68gyda88s4v"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("zlib" ,zlib)))
+   (arguments
+    `(#:tests? #f ; There are no tests.
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (replace 'install
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "miniasm" bin)
+              (install-file "minidot" bin)))))))
+   (home-page "https://github.com/lh3/miniasm")
+   (synopsis "Ultrafast de novo assembly for long noisy reads")
+   (description "Miniasm is a very fast OLC-based de novo assembler for noisy
+long reads.  It takes all-vs-all read self-mappings (typically by minimap) as
+input and outputs an assembly graph in the GFA format.  Different from
+mainstream assemblers, miniasm does not have a consensus step.  It simply
+concatenates pieces of read sequences to generate the final unitig sequences.
+Thus the per-base error rate is similar to the raw input reads.")
+   (license license:expat)))
 
 (define-public r-circus
   (package
@@ -13366,14 +13507,14 @@ in RNA-seq data.")
 (define-public python-scanpy
   (package
     (name "python-scanpy")
-    (version "1.4.5.1")
+    (version "1.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scanpy" version))
        (sha256
         (base32
-         "14kh1ji70xxhmri5q8sgcibsidhr6f221wxrcw8a5xvibj5da17j"))))
+         "0s2b6cvaigx4wzw3850qb93sjwwxbzh22kpbp498zklc5rjpbz4l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13383,6 +13524,7 @@ in RNA-seq data.")
              ;; These tests require Internet access.
              (delete-file-recursively "scanpy/tests/notebooks")
              (delete-file "scanpy/tests/test_clustering.py")
+             (delete-file "scanpy/tests/test_datasets.py")
 
              ;; TODO: I can't get the plotting tests to work, even with Xvfb.
              (delete-file "scanpy/tests/test_plotting.py")
@@ -13399,8 +13541,8 @@ in RNA-seq data.")
        ("python-h5py" ,python-h5py)
        ("python-igraph" ,python-igraph)
        ("python-joblib" ,python-joblib)
-       ("python-louvain" ,python-louvain)
        ("python-legacy-api-wrap" ,python-legacy-api-wrap)
+       ("python-louvain" ,python-louvain)
        ("python-matplotlib" ,python-matplotlib)
        ("python-natsort" ,python-natsort)
        ("python-networkx" ,python-networkx)
@@ -13413,6 +13555,7 @@ in RNA-seq data.")
        ("python-seaborn" ,python-seaborn)
        ("python-statsmodels" ,python-statsmodels)
        ("python-tables" ,python-tables)
+       ("python-tqdm" ,python-tqdm)
        ("python-umap-learn" ,python-umap-learn)))
     (native-inputs
      `(("python-pytest" ,python-pytest)

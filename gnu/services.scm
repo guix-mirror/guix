@@ -318,11 +318,10 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
 ;;; Core services.
 ;;;
 
-(define (system-derivation mentries mextensions)
+(define (system-derivation entries mextensions)
   "Return as a monadic value the derivation of the 'system' directory
 containing the given entries."
-  (mlet %store-monad ((entries    mentries)
-                      (extensions (mapm/accumulate-builds identity
+  (mlet %store-monad ((extensions (mapm/accumulate-builds identity
                                                           mextensions)))
     (lower-object
      (file-union "system"
@@ -691,10 +690,10 @@ executables, making them setuid-root.")))
 
 (define (packages->profile-entry packages)
   "Return a system entry for the profile containing PACKAGES."
-  (mlet %store-monad ((profile (profile-derivation
-                                (packages->manifest
-                                 (delete-duplicates packages eq?)))))
-    (return `(("profile" ,profile)))))
+  (with-monad %store-monad
+    (return `(("profile" ,(profile
+                           (content (packages->manifest
+                                     (delete-duplicates packages eq?)))))))))
 
 (define profile-service-type
   ;; The service that populates the system's profile---i.e.,

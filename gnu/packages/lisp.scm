@@ -223,7 +223,7 @@ interface to the Tk widget system.")
 (define-public ecl
   (package
     (name "ecl")
-    (version "16.1.3")
+    (version "20.4.24")
     (source
      (origin
        (method url-fetch)
@@ -231,26 +231,22 @@ interface to the Tk widget system.")
              "https://common-lisp.net/project/ecl/static/files/release/"
              name "-" version ".tgz"))
        (sha256
-        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; Adjust for ABI change in LibFFI 3.3.  See:
-           ;; https://gitlab.com/embeddable-common-lisp/ecl/-/issues/302
-           ;; https://gitlab.com/embeddable-common-lisp/ecl/-/merge_requests/171
-           (substitute* "src/c/ffi.d"
-             (("FFI_SYSV") "FFI_UNIX64"))
-           #t))))
+        (base32 "01qgdmr54wkj854f69qdm9sybrvd6gd21dpx4askdaaqybnkh237"))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
-    (native-inputs `(("cl-asdf" ,cl-asdf)
-                     ("which" ,which)))
-    (inputs `(("gmp" ,gmp)
-              ("libatomic-ops" ,libatomic-ops)
-              ("libgc" ,libgc)
-              ("libffi" ,libffi)))
+    (native-inputs
+     `(("cl-asdf" ,cl-asdf)
+       ("which" ,which)
+       ("texinfo" ,texinfo)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("libatomic-ops" ,libatomic-ops)
+       ("libgc" ,libgc)
+       ("libffi" ,libffi)))
     (arguments
      `(#:configure-flags '("--without-rt")
+       ;; FIXME: As of version 20.4.24, we pass 17995 tests and fail 7.
+       ;; 2-3 tests may be due to FHS assumptions.
        #:tests? #t
        #:parallel-tests? #f
        #:phases
@@ -311,9 +307,10 @@ bytecode compiler and interpreter, being able to compile Common Lisp with any
 C/C++ compiler, being able to build standalone executables and libraries, and
 supporting ASDF, Sockets, Gray streams, MOP, and other useful components.")
     ;; Note that the file "Copyright" points to some files and directories
-    ;; which aren't under the lgpl2.0+ and instead contain many different,
+    ;; which aren't under the lgpl2.1+ and instead contain many different,
     ;; non-copyleft licenses.
-    (license license:lgpl2.0+)))
+    ;; See https://common-lisp.net/project/ecl/posts/ECL-license.html.
+    (license license:lgpl2.1+)))
 
 (define-public clisp
   (package
@@ -375,14 +372,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.3")
+    (version "2.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "001gckyw8hl842nk7nwf5kcspzkc1g8dycpwylzh5chl6893ym5m"))))
+        (base32 "1lc2i4qq1kfdybmxnj2zq2hn3hfx0vvlqim4gvlgvs3bfr0lcaqj"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -401,7 +398,7 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;
      ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
      ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
-     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last updated
+     ;; 2019-09-05, ECL was last updated in 2020 while CLISP was last updated
      ;; in 2010.
      ;;
      ;; For now we stick to CLISP for all systems.  We keep the `match' here to

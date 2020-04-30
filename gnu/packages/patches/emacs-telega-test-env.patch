@@ -1,0 +1,14 @@
+Test Emacs environment on startup.
+
+Patch by Diego N. Barbato
+
+--- a/telega.el	2020-02-07 17:07:18.549970090 +0100
++++ b/telega.el	2020-02-07 17:10:08.383499765 +0100
+@@ -82,6 +82,7 @@
+   "Start telegramming.
+ If prefix ARG is given, then will not pop to telega root buffer."
+   (interactive "P")
++  (telega-test-env t)
+   (telega--create-hier)
+ 
+   (unless (telega-server-live-p)

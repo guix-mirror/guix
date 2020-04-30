@@ -33,6 +33,8 @@
 ;;; Copyright © 2019, 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Boris A. Dekshteyn <harlequin78@gmail.com>
+;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,7 +151,7 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.7.2")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -157,9 +159,9 @@ the leaves of a full binary tree.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1kc18aj9j3nfz6fj4qxg9s3gg4jvn6kzi3ii24hfm0vqdpy17xnz"))
+         "0c1lf82z6a56g8asin91cmqhzk3anw0xwc44b31bpjixadmns57y"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (inputs
      `(("dzen"        ,dzen)
        ("dmenu"       ,dmenu)
@@ -169,13 +171,20 @@ the leaves of a full binary tree.")
        ("xsetroot"    ,xsetroot)
        ("libx11"      ,libx11)
        ("libxext"     ,libxext)
-       ("libxinerama" ,libxinerama)))
+       ("libxinerama" ,libxinerama)
+       ("libxrandr"   ,libxrandr)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("asciidoc"   ,asciidoc)
+       ("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     '(#:tests? #f
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "-DCC=gcc"
+               (string-append "-DCMAKE_INSTALL_SYSCONF_PREFIX=" out "/etc")
+               (string-append "-DBASHCOMPLETIONDIR=" out "/etc/bash_completion.d")))
+       #:phases
        (modify-phases %standard-phases
-         (delete 'configure)            ; no configure script
          (add-after 'install 'install-xsession
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -190,17 +199,7 @@ the leaves of a full binary tree.")
                      Comment=Manual tiling window manager~@
                      Exec=~a/bin/herbstluftwm~@
                      Type=XSession~%" out)))
-               #t))))
-       #:tests? #f
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list "CC=gcc"
-               (string-append "PREFIX=''")
-               (string-append "DESTDIR=" out)
-               (string-append "FISHCOMPLETIONDIR="
-                              "/share/fish/vendor_completions.d")
-               (string-append "BASHCOMPLETIONDIR=" out
-                              "/etc/bash_completion.d")))))
+               #t))))))
     (synopsis "Tiling window manager for X11")
     (description "herbstluftwm is a manual tiling window manager for X11 using
 Xlib and GLib.  Its main features are:
@@ -1732,6 +1731,36 @@ productive, customizable lisp based systems.")
 rendering.")
       (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
+(define-public sbcl-stumpwm-pass
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-pass")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/pass"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Integrate @code{pass} wih StumpWM")
+      (description "This package provides an interface which integrates
+password-store into StumpWM.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+
 (define-public sbcl-stumpwm-globalwindows
   (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
         (revision "1"))
@@ -1760,6 +1789,36 @@ rendering.")
       (synopsis "Manipulate all windows in the current X session")
       (description "This package provides a StumpWM module to manipulate all
 windows in the current X session.")
+      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+
+(define-public sbcl-stumpwm-swm-gaps
+  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
+        (revision "1"))
+    (package
+      (name "sbcl-swm-gaps")
+      (version (git-version "0.0.1" revision commit)) ;no upstream release
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/stumpwm/stumpwm-contrib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+      (inputs
+       `(("stumpwm" ,stumpwm "lib")))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'chdir
+             (lambda _
+               (chdir "util/swm-gaps"))))))
+      (home-page "https://github.com/stumpwm/stumpwm-contrib")
+      (synopsis "Gaps between windows for StumpWM")
+      (description "This package provides a StumpWM module which adds gaps
+between windows.")
       (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
 (define-public lemonbar

@@ -1777,7 +1777,7 @@ that parenthetically inclined game developers need to make 2D (and eventually
 (define-public guile3.0-chickadee
   (package
     (inherit guile-chickadee)
-    (name "guile-chickadee")
+    (name "guile3.0-chickadee")
     (version "0.4.0")
     (source (origin
               (method url-fetch)

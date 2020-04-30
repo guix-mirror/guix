@@ -410,6 +410,7 @@ including media capture, encoding and decoding, and rendering.")
                        "/linphone-" version ".tar.gz"))
        (sha256
         (base32 "0phhkx55xdyg28d4wn8l8q4yvsmdgzmjiw584d4s190sq1azm91x"))))
+    (outputs '("out" "doc" "tester"))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
@@ -430,41 +431,60 @@ including media capture, encoding and decoding, and rendering.")
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'glib-or-gtk-compile-schemas
-           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
-         (add-after 'install 'glib-or-gtk-wrap
-           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
          (add-after 'unpack 'patch
            (lambda _
              (substitute* "gtk/main.c"
                (("#include \"liblinphone_gitversion.h\"")
                 ""))
-             #t)))))
+             #t))
+         (add-after 'install 'separate-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (tester (assoc-ref outputs "tester"))
+                    (tester-name (string-append ,name "_tester")))
+               ;; Copy the tester executable.
+               (mkdir-p (string-append tester "/bin"))
+               (rename-file (string-append out "/bin/" tester-name)
+                            (string-append tester "/bin/" tester-name))
+               ;; Copy the tester data files.
+               (mkdir-p (string-append tester "/share/"))
+               (rename-file (string-append out "/share/" tester-name)
+                            (string-append tester "/share/" tester-name))
+               ;; Copy the HTML and XML documentation.
+               (copy-recursively
+                (string-append out "/share/doc/linphone-" ,version)
+                (string-append doc "/share/doc/" ,name "-" ,version))
+               (delete-file-recursively
+                (string-append out "/share/doc/linphone-" ,version))
+               #t)))
+         (add-after 'separate-outputs 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'glib-or-gtk-compile-schemas 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
-     `(("dot" ,graphviz)
+     `(("gettext" ,gettext-minimal)
+       ("udev" ,eudev)                  ;for libudev.h
+       ;; For generating the C++ wrappers.
+       ("dot" ,graphviz)
        ("doxygen" ,doxygen)
-       ("gettext" ,gettext-minimal)
-       ("iconv" ,libiconv)
        ("python" ,python)
-       ("xml2" ,libxml2)
-       ("zlib" ,zlib)))
+       ("pystache" ,python-pystache)
+       ("six" ,python-six)))
     (inputs
      `(("bctoolbox" ,bctoolbox)
        ("belcard" ,belcard)
        ("bellesip" ,belle-sip)
        ("bzrtp", bzrtp)
-       ("hicolor-icon-theme" ,hicolor-icon-theme) ; Hard-coded for GTK UI
+       ("iconv" ,libiconv)
        ("glib" ,glib)
        ("gtk2" ,gtk+-2)
        ("mediastreamer2" ,mediastreamer2)
        ("notify" ,libnotify)
        ("ortp" ,ortp)
-       ("pystache" ,python-pystache)
-       ("six" ,python-six)
        ("sqlite" ,sqlite)
-       ("udev" ,eudev)))
-    (propagated-inputs
-     `(("murrine" ,murrine)))           ; Required for GTK UI
+       ("xml2" ,libxml2)
+       ("zlib" ,zlib)))
     (synopsis "Belledonne Communications Softphone Library")
     (description "Liblinphone is a high-level SIP library integrating
 all calling and instant messaging features into an unified

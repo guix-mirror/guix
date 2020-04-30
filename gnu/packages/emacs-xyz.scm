@@ -34,7 +34,7 @@
 ;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
@@ -69,6 +69,7 @@
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -475,6 +476,31 @@ setting options and then invoking an Emacs command which does something with
 these arguments.  The prototypical use is for the command to call an external
 process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
+
+(define-public emacs-magit-annex
+  (let ((commit "ef5dce6267e9118a5eca82a22bcad0b67826c23a")
+        (revision "1"))
+    (package
+      (name "emacs-magit-annex")
+      (version (git-version "1.7.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/magit/magit-annex.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0vzkydgl889cq173zjl89g2vrddb9abc4a8gljiz3b4a7n5b1nrd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("magit" ,emacs-magit)
+         ("transient" ,emacs-transient)))
+      (home-page "https://github.com/magit/magit-annex/")
+      (synopsis "Git-annex support for Magit")
+      (description
+       "Magit-annex adds a few git-annex operations to the Magit interface.")
+      (license license:gpl3+))))
 
 (define-public emacs-minions
   (package
@@ -2462,6 +2488,37 @@ create an Extempore REPL, connect the current @code{extempore-mode} buffer to a
 running Extempore process, and more.")
       (license license:bsd-2))))
 
+(define-public emacs-kakoune
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "d73d14e69ea38076af50cc69f846808383ff539d")
+        (revision "0"))
+    (package
+      (name "emacs-kakoune")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jmorag/kakoune.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nk6jdy1y5mc3ryd0smiqghrk6iv34d5grc7f7migmshlbq0np92"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-expand-region"    ,emacs-expand-region)
+         ("emacs-multiple-cursors" ,emacs-multiple-cursors)
+         ("emacs-ryo-modal"        ,emacs-ryo-modal)))
+      (home-page "https://github.com/jmorag/kakoune.el")
+      (synopsis "Emacs simple simulation, but not emulation, of Kakoune")
+      (description "This package provides many, but not all of the editing
+primitives in the Kakoune editor.  Unlike Evil mode for Vim, this is a very
+shallow emulation, which seeks to do as little work as possible, leveraging
+Emacs native editing commmands and the work of other packages wherever
+possible.")
+      (license license:expat))))
+
 (define-public emacs-keyfreq
   (package
     (name "emacs-keyfreq")
@@ -2567,9 +2624,9 @@ strings.")
     (license license:gpl2+)))
 
 (define-public emacs-sx
-  (let ((version "20180212")
-        (revision "1")
-        (commit "833435fbf90d1c9e927d165b155f3b1ef39271de"))
+  (let ((version "20191229")
+        (revision "0")
+        (commit "e9d1093c97507a6d7b4f4710ef65200dae725e5f"))
     (package
       (name "emacs-sx")
       (version (git-version version revision commit))
@@ -2581,8 +2638,7 @@ strings.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "1369xaxq1vy3d9yh862ddnhddikdpg2d0wv1ly00pnvdp9v4cqgd"))))
+          (base32 "0m90ddwm8j0y6d1ppqhd2gil1107k202blw6mzm5bdambn4nfqkf"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-markdown-mode" ,emacs-markdown-mode)))
@@ -2592,6 +2648,54 @@ strings.")
        "Emacs StackExchange client.  Ask and answer questions on
 Stack Overflow, Super User, and other StackExchange sites.")
       (license license:gpl3+))))
+
+(define-public emacs-toml-mode
+  (let ((version "0.1.3")
+        (revision "0")
+        (commit "f6c61817b00f9c4a3cab1bae9c309e0fc45cdd06"))
+    (package
+      (name "emacs-toml-mode")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dryman/toml-mode.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "05b4ksay85c8y5ncax0qsvnmplwsfiw24z16a58gkarjz938hb57"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/dryman/toml-mode.el")
+      (synopsis "Emacs major mode for editing TOML files")
+      (description
+       ;; XXX: Ideally we'd use @acronym for "TOML", but Guile's Texinfo
+       ;; parser does not currently support @comma{}, making it impossible
+       ;; to use commas in the @acronym arguments.
+       "This package provides a major mode for editing files in @dfn{TOML}
+(Tom's Obvious, Minimal Language) data format.")
+      (license license:gpl3+))))
+
+(define-public emacs-twittering-mode
+  (package
+    (name "emacs-twittering-mode")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/twmode"
+                           "/twittering-mode-" version
+                           "/twittering-mode-" version ".tar.xz"))
+       (sha256
+        (base32 "02imis1gxz90lah0b5n37j2hlsaw5igss11d85vpsm5d1bgw8j28"))))
+    (build-system emacs-build-system)
+    (home-page "http://twmode.sourceforge.net")
+    (synopsis "Emacs major mode for Twitter")
+    (description
+     "Twittering mode is an Emacs major mode for Twitter.
+You can check timelines, tweet, mark posts as favorites and so on with
+Emacs.")
+    (license license:gpl2+)))
 
 (define-public emacs-f
   (package
@@ -7251,6 +7355,30 @@ of its name.")
      "This minor mode sets background color to strings that match color
 names, e.g. #0000ff is displayed in white with a blue background.")
     (license license:gpl3+)))
+
+(define-public emacs-ryo-modal
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "3a54312eea7023a86ca3f8eb3c03c872554bff2f")
+        (revision "0"))
+    (package
+      (name "emacs-ryo-modal")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Kungsgeten/ryo-modal.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
+      (build-system emacs-build-system)
+      (home-page "http://github.com/Kungsgeten/ryo-modal")
+      (synopsis "Emacs minor mode for defining modal editing environments")
+      (description "RYO modal provides a convenient way of defining modal
+keybindings in Emacs, and does not come with any predefined bindings.")
+      (license license:expat))))
 
 (define-public emacs-visual-fill-column
   (package
@@ -14320,7 +14448,7 @@ notes.")
       (build-system emacs-build-system)
       (home-page "https://github.com/yjwen/org-reveal")
       (synopsis "Org and Reveal.js powered HTML presentation tool")
-      (description "Org-Reveal is a command@{org-mode} extension that allows
+      (description "Org-Reveal is a @command{org-mode} extension that allows
 to create beautiful presentations (slides) with 3D effects from simple but
 powerful Org contents.")
       (license license:gpl3+))))
@@ -15864,10 +15992,10 @@ provide an incremental search that moves all fake cursors in sync.")
       (license license:expat))))
 
 (define-public emacs-evil-org
-  (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
+  (let ((commit "9d4be14118bf27094a30dbff349b815f098aacbf"))
     (package
       (name "emacs-evil-org")
-      (version (git-version "0.1.1" "1" commit))
+      (version (git-version "1.0.2" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -15877,7 +16005,7 @@ provide an incremental search that moves all fake cursors in sync.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "176hrw7y7nczffbyhsa167b8rvfacsmcafm2gpkrdjqlrikbmrhl"))))
+           "1fxxfkinb0gq4p5b686r7z4jrkv98zfgh5z889zkjacncv8ibswn"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
       (home-page
@@ -18122,7 +18250,7 @@ stored playlists.")
 (define-public emacs-vterm
   (let ((version "0")
         (revision "1")
-        (commit "7d7381fa8104b55b70148cf147523d9ab7f01fcd"))
+        (commit "e63bd65eece7c5de3a534b7e2fdbe58256ec2da0"))
     (package
       (name "emacs-vterm")
       (version (git-version version revision commit))
@@ -18134,7 +18262,7 @@ stored playlists.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "04a2jlhmr20ipgzpnba3yryw3ly7qdxjgaw10dwn9wxy1yqmapz1"))))
+                  "0iq857w54qmazxh23fipz85fb9i6dav3f63g0ghpmi6mybfp6i5v"))))
       (build-system emacs-build-system)
       (arguments
        `(#:modules ((guix build emacs-build-system)
@@ -18145,14 +18273,11 @@ stored playlists.")
                              (guix build cmake-build-system))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'add-source-to-load-path 'remove-vterm-module-make
+           (add-before 'add-source-to-load-path 'substitute-vterm-module-path
              (lambda* (#:key outputs #:allow-other-keys)
-               ;; Remove the Emacs Lisp file.
-               (delete-file "vterm-module-make.el")
-               ;; Remove references to the removed file.
-               (make-file-writable "vterm.el")
+               (chmod "vterm.el" #o644)
                (emacs-substitute-sexps "vterm.el"
-                 ("(or (require 'vterm-module nil t)"
+                 ("(require 'vterm-module nil t)"
                   `(module-load
                     ,(string-append (assoc-ref outputs "out")
                                     "/lib/vterm-module.so"))))
@@ -21334,6 +21459,7 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
          (sha256
           (base32
            "0mv6i80958d9crzspzik5xh5g8326115bvg2frgv0dp9p6rm86m3"))
+         (patches (search-patches "emacs-telega-test-env.patch"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -21425,7 +21551,12 @@ fish-completion.  It can be used in both Eshell and M-x shell.")
       (native-inputs
        `(("tdlib" ,tdlib)
          ("libtgvoip" ,libtgvoip) ; VoIP support.
-         ("emacs" ,emacs)
+         ;; Use Emacs with wide ints on 32-bit architectures.
+         ("emacs" ,(match (%current-system)
+                     ((or "i686-linux" "armhf-linux")
+                      emacs-wide-int)
+                     (_
+                      emacs)))
          ("python" ,python)))
       (synopsis "GNU Emacs client for the Telegram messenger")
       (description
@@ -22591,3 +22722,26 @@ ASCII UML sequence diagrams in Emacs, which can be embedded in source code,
 comments or emails.")
       (license license:gpl3+))))
 
+(define-public emacs-trashed
+  (package
+    (name "emacs-trashed")
+    (version "1.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/shingo256/trashed/")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "13grdi12iwlw4fiphdfmvclfpbr6ajlgfbfyi7v41z8k3rxz4ypz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/shingo256/trashed/")
+    (synopsis "View and edit system trash can in Emacs")
+    (description "Open, view, browse, restore or permanently delete trashed
+files or directories in trash can with Dired-like look and feel.  The trash
+can has to be compliant with freedesktop.org. In Emacs, you can trash files by
+deleting them with @code{(setq delete-by-moving-to-trash t)}.  This package
+provides a simple but convenient user interface to manage those trashed
+files.")
+    (license license:gpl3+)))

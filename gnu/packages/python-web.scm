@@ -879,6 +879,37 @@ connection to each user.")
     (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-tornado))))))
 
+(define-public python-tornado-6
+  (package
+    (name "python-tornado")
+    (version "6.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tornado" version))
+       (sha256
+        (base32
+         "1p5n7sw4580pkybywg93p8ddqdj9lhhy72rzswfa801vlidx9qhg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "tornado.test.runtests")
+             #t)))))
+    (native-inputs
+     `(("python-certifi" ,python-certifi)))
+    (home-page "https://www.tornadoweb.org/")
+    (synopsis "Python web framework and asynchronous networking library")
+    (description
+     "Tornado is a Python web framework and asynchronous networking library,
+originally developed at FriendFeed.  By using non-blocking network I/O,
+Tornado can scale to tens of thousands of open connections, making it ideal
+for long polling, WebSockets, and other applications that require a long-lived
+connection to each user.")
+    (license license:asl2.0)))
+
 (define-public python2-tornado
   (let ((tornado (package-with-python2 (strip-python2-variant python-tornado))))
     (package (inherit tornado)
@@ -3280,32 +3311,6 @@ such as IoT applications or multi-user database-driven business applications.")
 Python.")
     (license license:bsd-3)))
 
-;; kaldi-gstreamer-server does not yet work with python-ws4py > 0.3.2
-(define-public python2-ws4py-for-kaldi-gstreamer-server
-  (package (inherit python-ws4py)
-    (name "python2-ws4py")
-    (version "0.3.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ws4py" version))
-       (sha256
-        (base32
-         "12ys3dv98awhrxd570vla3hqgzq3avjhq4yafhghhq3a942y1928"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; We don't have a package for cherrypy.
-         (add-after 'unpack 'remove-cherrypy-support
-           (lambda _
-             (delete-file "ws4py/server/cherrypyserver.py")
-             #t)))))
-    (propagated-inputs
-     `(("python-gevent" ,python2-gevent)
-       ("python-tornado" ,python2-tornado)))))
-
 (define-public python-slugify
   (package
     (name "python-slugify")
@@ -3633,3 +3638,58 @@ and rendering come directly from GitHub, so you'll know exactly how it will
 appear.  Changes you make to the file will be instantly reflected in the browser
 without requiring a page refresh.")
       (license license:expat))))
+
+(define-public python-port-for
+  (package
+    (name "python-port-for")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "port-for" version))
+       (sha256
+        (base32
+         "1pncxlj25ggw99r0ijfbkq70gd7cbhqdx5ivsxy4jdp0z14cpda7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-urllib3
+           (lambda _
+             (substitute* "port_for/_download_ranges.py"
+               (("urllib2") "urllib3"))
+             #t)))))
+    (propagated-inputs
+     `(("python-urllib3" ,python-urllib3)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/kmike/port-for/")
+    (synopsis "TCP localhost port finder and association manager")
+    (description
+     "This package provides a utility that helps with local TCP ports
+management.  It can find an unused TCP localhost port and remember the
+association.")
+    (license license:expat)))
+
+(define-public python-livereload
+  (package
+    (name "python-livereload")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "livereload" version))
+       (sha256
+        (base32
+         "0rhggz185bxc3zjnfpmhcvibyzi86i624za1lfh7x7ajsxw4y9c9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/lepture/python-livereload")
+    (synopsis "Python LiveReload")
+    (description
+     "Python LiveReload provides a command line utility, @command{livereload},
+for starting a web server in a directory.  It can trigger arbitrary commands
+and serve updated contents upon changes to the directory.")
+    (license license:bsd-3)))

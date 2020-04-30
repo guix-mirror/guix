@@ -39,7 +39,7 @@
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
 ;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2017, 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
@@ -413,16 +413,17 @@ data for video and audio files.")
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.6.5")
+    (version "5.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
-        (base32 "0isil5jxwwd8awz54qk28rpgjg43i5l6yl70g40vxwa4r4m56lfh"))))
+        (base32 "03jykdi3dgf1cdal9bv4fq9zjvzj9l9bs99gi5ar81sdl5nc2pk8"))))
     (build-system python-build-system)
     (arguments
-     ;; FIXME: some tests does not return and times out.
+     ;; FIXME: some tests do not return and time out.  Some tests fail because
+     ;; some processes survive kill().
      '(#:tests? #f))
     (home-page "https://www.github.com/giampaolo/psutil")
     (synopsis "Library for retrieving information on running processes")
@@ -639,6 +640,30 @@ etc. ")
 earlier versions of Python.  The function checks the hostname in the
 certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
+    (license license:psfl)))
+
+(define-public python-bitarray
+  (package
+    (name "python-bitarray")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "bitarray" version))
+              (sha256
+               (base32
+                "1kxrlxfj9nrx512sfwifwl9z4v6ky3qschl0zmk3s3dvc3s7bmif"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/ilanschnell/bitarray")
+    (synopsis "Efficient arrays of booleans")
+    (description "This package provides an object type which efficiently
+represents an array of booleans.  Bitarrays are sequence types and behave very
+much like usual lists.  Eight bits are represented by one byte in a contiguous
+block of memory.  The user can select between two representations:
+little-endian and big-endian.  All of the functionality is implemented in C.
+Methods for accessing the machine representation are provided.  This can be
+useful when bit level access to binary files is required, such as portable
+bitmap image files.  Also, when dealing with compressed data which uses
+variable bit length encoding, you may find this module useful.")
     (license license:psfl)))
 
 (define-public python-boolean.py
@@ -3208,6 +3233,77 @@ reStructuredText.")
                (base32
                 "0x22fs3pdmr42kvz6c654756wja305qv6cx1zbhwlagvxgr4xrji"))))))
 
+(define-public python-restructuredtext-lint
+  (package
+    (name "python-restructuredtext-lint")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "restructuredtext-lint" version))
+       (sha256
+        (base32
+         "026rdy5h82ng4vqxk8fnprii9d6qxf7hkygiv0a8afjvdlsxmcwp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "nosetests" "-v"))
+             #t)))))
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/twolfson/restructuredtext-lint")
+    (synopsis "reStructuredText linter")
+    (description "This package provides a linter for the reStructuredText
+format.")
+    (license license:unlicense)))
+
+(define-public python-doc8
+  (package
+    (name "python-doc8")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "doc8" version))
+       (sha256
+        (base32
+         "0hw5w8mpgsp51qg8nnq28p7y1jiksvz7a0axnn5bkgss3af9zy1d"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (when tests?
+               (add-installed-pythonpath inputs outputs)
+               (invoke "pytest" "-v"))
+             #t)))))
+    (propagated-inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-docutils" ,python-docutils)
+       ("python-restructuredtext-lint" ,python-restructuredtext-lint)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)))
+    (native-inputs
+     `(("python-testtools" ,python-testtools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://launchpad.net/doc8")
+    (synopsis
+     "Style checker for Sphinx (or other) RST documentation")
+    (description
+     "Doc8 is an opinionated style checker for reStructured Text and plain
+text styles of documentation.")
+    (license license:asl2.0)))
+
 (define-public python-pygments
   (package
     (name "python-pygments")
@@ -4794,27 +4890,38 @@ toolkits.")
 three-way Venn diagrams in @code{matplotlib}.")
     (license license:expat)))
 
-(define-public python2-pysnptools
+(define-public python-pysnptools
   (package
-    (name "python2-pysnptools")
-    (version "0.3.13")
+    (name "python-pysnptools")
+    (version "0.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pysnptools" version))
        (sha256
         (base32
-         "0lnis5xsl7bi0hz4f7gbicahzi5zlxkc21nk3g374xv8fb5hb3qm"))))
+         "0gxr0bjix307wvk0qh7vkafbxbzfpdmq0wlswpxyyaymy0fwcypv"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2.7 is supported
-       #:tests? #f))      ; test files (e.g. examples/toydata.bim) not included
+     `(#:tests? #f ; no test data are included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (add-installed-pythonpath inputs outputs)
+                   (invoke "python3" "pysnptools/test.py"))
+                 #t))))))
     (propagated-inputs
-     `(("python2-numpy" ,python2-numpy)
-       ("python2-scipy" ,python2-scipy)
-       ("python2-pandas" ,python2-pandas)))
+     `(("python-dill" ,python-dill)
+       ("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-psutil" ,python-psutil)
+       ("python-scipy" ,python-scipy)))
     (native-inputs
-     `(("python2-cython" ,python2-cython)))
+     `(("python-cython" ,python-cython)))
     (home-page "http://microsoftgenomics.github.io/PySnpTools/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
@@ -4823,6 +4930,9 @@ can, for example, efficiently read whole PLINK *.bed/bim/fam files or parts of
 those files.  It can also efficiently manipulate ranges of integers using set
 operators such as union, intersection, and difference.")
     (license license:asl2.0)))
+
+(define-public python2-pysnptools
+  (package-with-python2 python-pysnptools))
 
 (define-public python-socksipy-branch
   (package
@@ -7328,6 +7438,27 @@ PEP 8.")
 (define-public python2-pyflakes
   (package-with-python2 python-pyflakes))
 
+;; Flake8 2.6 requires an older version of pyflakes.
+;; This should be removed ASAP.
+(define-public python-pyflakes-1.2
+  (package (inherit python-pyflakes)
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyflakes" version))
+       (sha256
+        (base32
+         "17hkw8yd44cr8fz13phy4aih3r5j2p7ild4zlvqdh2c8dmiinjif"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; This one test fails.
+         (replace 'check
+           (lambda _ (invoke "pytest" "-vv" "-k" "not test_f_string"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))))
+
 (define-public python-mccabe
   (package
     (name "python-mccabe")
@@ -7386,25 +7517,6 @@ complexity of Python source code.")
 (define-public python2-pep8-1.5.7
   (package-with-python2 python-pep8-1.5.7))
 
-;; Flake8 2.4.1 requires an older version of pyflakes.
-;; This should be removed ASAP.
-(define-public python-pyflakes-0.8.1
-  (package (inherit python-pyflakes)
-    (version "0.8.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pyflakes" version))
-       (sha256
-        (base32
-         "0sbpq6pqm1i9wqi41mlfrsc5rk92jv4mskvlyxmnhlbdnc80ma1z"))))
-    (arguments
-     ;; XXX Tests not compatible with Python 3.5.
-     '(#:tests? #f))))
-
-(define-public python2-pyflakes-0.8.1
-  (package-with-python2 python-pyflakes-0.8.1))
-
 (define-public python-flake8
   (package
     (name "python-flake8")
@@ -7451,31 +7563,39 @@ complexity of Python source code.")
          ("python2-typing" ,python2-typing)
           ,@(package-propagated-inputs base))))))
 
-;; python-hacking requires flake8 <2.6.0.
-(define-public python-flake8-2.5
+;; python-hacking requires flake8 <2.7.0.
+(define-public python-flake8-2.6
   (package
     (inherit python-flake8)
-    (version "2.5.5")
+    (version "2.6.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "flake8" version))
               (sha256
                (base32
-                "1snylqwbmrylbx3r1wpz8ggk98f6bcag4441ag8mm2l7wyn58sij"))))
+                "0y57hzal0j84dh9i1g1g6dc4aywvrnhy2fjmmbglpv5ajihxh713"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-later-pycodestyles
+           (lambda __
+             (substitute* '("flake8.egg-info/requires.txt"
+                            "setup.py")
+               (("pycodestyle >= 2.0, < 2.1")
+                "pycodestyle >= 2.0"))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-v")
+             #t)))))
     (propagated-inputs
      `(("python-pep8" ,python-pep8)
-       ,@(package-propagated-inputs python-flake8)))
-    (properties `((python2-variant . ,(delay python2-flake8-2.5))))))
-
-(define-public python2-flake8-2.5
-  (package
-    (inherit python2-flake8)
-    (version (package-version python-flake8-2.5))
-    (source (origin
-              (inherit (package-source python-flake8-2.5))))
-    (propagated-inputs
-     `(("python2-pep8" ,python2-pep8)
-       ,@(package-propagated-inputs python2-flake8)))))
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-entrypoints" ,python-entrypoints)
+       ("python-pyflakes" ,python-pyflakes-1.2)
+       ("python-mccabe" ,python-mccabe)))))
 
 (define-public python-flake8-polyfill
   (package
@@ -19695,3 +19815,70 @@ workspace...")
 dependencies.  It implements the @uref{http://opensoundcontrol.org/spec-1_0,
 Open Sound Control 1.0} specification.")
     (license license:unlicense)))
+
+(define-public python-voluptuous
+  (package
+    (name "python-voluptuous")
+    (version "0.11.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "voluptuous" version))
+        (sha256
+          (base32
+            "0mplkcpb5d8wjf8vk195fys4y6a3wbibiyf708imw33lphfk9g1a"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/alecthomas/voluptuous")
+    (synopsis "Python data validation library")
+    (description
+     "Voluptuous is a Python data validation library.  It is primarily
+intended for validating data coming into Python as JSON, YAML, etc.")
+    (license license:bsd-3)))
+
+(define-public python-cmd2
+  (package
+    (name "python-cmd2")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cmd2" version))
+       (sha256
+        (base32
+         "1f18plbc9yyvhn0js3d2bii9yld8zfl775gxsaw9jza5pmlg9ss2"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-attrs" ,python-attrs)
+       ("python-colorama" ,python-colorama)
+       ("python-pyperclip" ,python-pyperclip)
+       ("python-wcwidth" ,python-wcwidth)))
+    (native-inputs
+     `(("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
+       ("python-doc8" ,python-doc8)
+       ("python-flake8" ,python-flake8)
+       ("python-invoke" ,python-invoke)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-autobuild" ,python-sphinx-autobuild)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-tox" ,python-tox)
+       ("python-twine" ,python-twine)
+       ("which" ,which)))
+    (home-page "https://github.com/python-cmd2/cmd2")
+    (synopsis "Tool for building interactive command line applications")
+    (description
+     "Cmd2 is a tool for building interactive command line applications in
+Python.  Its goal is to make it quick and easy for developers to build
+feature-rich and user-friendly interactive command line applications.  It
+provides a simple API which is an extension of Python's built-in @code{cmd}
+module.  @code{cmd2} provides a wealth of features on top of @code{cmd} to
+make your life easier and eliminates much of the boilerplate code which would
+be necessary when using @code{cmd}.")
+    (license license:expat)))

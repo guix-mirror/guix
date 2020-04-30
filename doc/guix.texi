@@ -63,7 +63,7 @@ Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
-Copyright @copyright{} 2019 Diego Nicola Barbato@*
+Copyright @copyright{} 2019, 2020 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
@@ -5118,7 +5118,7 @@ guix pack -f squashfs bash guile emacs geiser
 @noindent
 The result is a SquashFS file system image that can either be mounted or
 directly be used as a file system container image with the
-@uref{https://singularity.lbl.gov, Singularity container execution
+@uref{https://www.sylabs.io/docs/, Singularity container execution
 environment}, using commands like @command{singularity shell} or
 @command{singularity exec}.
 
@@ -8830,7 +8830,7 @@ $ guix environment --no-grafts -C foo --ad-hoc strace gdb
 Here, @command{guix environment -C} creates a container and spawns a new
 shell in it (@pxref{Invoking guix environment}).  The @command{--ad-hoc
 strace gdb} part adds the @command{strace} and @command{gdb} commands to
-the container, which would may find handy while debugging.  The
+the container, which you may find handy while debugging.  The
 @option{--no-grafts} option makes sure we get the exact same
 environment, with ungrafted packages (@pxref{Security Updates}, for more
 info on grafts).
@@ -16288,6 +16288,13 @@ details.
 This is the type for the  @uref{https://www.pulseaudio.org/, PulseAudio}
 sound server.  It exists to allow system overrides of the default settings
 via @code{pulseaudio-configuration}, see below.
+
+@quotation Warning
+This service overrides per-user configuration files.  If you want
+PulseAudio to honor configuraton files in @file{~/.config/pulse} you
+have to unset the environment variables @code{PULSE_CONFIG} and
+@code{PULSE_CLIENTCONFIG} in your @file{~/.bash_profile}.
+@end quotation
 
 @quotation Warning
 This service on its own does not ensure, that the @code{pulseaudio} package
@@ -26592,7 +26599,7 @@ like
 
 @lisp
 (bootloader
- (grub-configuration
+ (bootloader-configuration
  ;; @dots{}
  (theme (grub-theme
          (inherit %default-theme)

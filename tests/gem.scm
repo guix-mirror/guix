@@ -52,7 +52,7 @@
   \"homepage_uri\": \"https://example.com\",
   \"dependencies\": {
     \"runtime\": [
-      { \"name\": \"bundler\" },
+      { \"name\": \"bundler\" }
     ]
   },
   \"licenses\": null

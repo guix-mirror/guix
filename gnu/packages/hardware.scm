@@ -79,6 +79,43 @@ calibrated, and restored when the calibration is applied.")
     (license (list license:bsd-3        ; FindDDCUtil.cmake
                    license:gpl2+))))    ; everything else
 
+(define-public edid-decode
+  (let ((commit "74b64180d67bb009d8d9ea1b6f18ad41aaa16396") ; 2020-04-22
+        (revision "1"))
+    (package
+      (name "edid-decode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (git-file-name name version))
+         (uri (git-reference
+               (url "git://linuxtv.org/edid-decode.git")
+               (commit commit)))
+         (sha256
+          (base32 "0nirp5bza08zj5d8bjgcm0p869hdg3qg3mwa7999pjdrzmn7s2ah"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                     ; No test suite
+         #:make-flags
+         (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+               "bindir=/bin" "mandir=/share/man")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-cross-compilation
+             (lambda* (#:key native-inputs target #:allow-other-keys)
+               (when target
+                 (substitute* "Makefile"
+                   (("\\$\\(CXX\\)")
+                    (string-append target "-g++"))))
+               #t))
+           (delete 'configure))))
+      (home-page "https://git.linuxtv.org/edid-decode.git/")
+      (synopsis "Decode @dfn{EDID} data in human-readable format")
+      (description "edid-decode decodes @dfn{EDID} monitor description data in
+human-readable format and checks if it conforms to the standards.")
+      (license license:expat))))
+
 ;; Distinct from memtest86, which is obsolete.
 (define-public memtest86+
   (package

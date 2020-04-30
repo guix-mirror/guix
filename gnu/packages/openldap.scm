@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,7 @@
 (define-public openldap
   (package
    (name "openldap")
+   (replacement openldap-2.4.50)
    (version "2.4.49")
    (source (origin
             (method url-fetch)
@@ -124,6 +126,19 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "https://www.openldap.org/")))
+
+(define openldap-2.4.50
+  (package
+    (inherit openldap)
+    (version "2.4.50")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.openldap.org/software/download/"
+                                  "OpenLDAP/openldap-release/openldap-" version
+                                  ".tgz"))
+              (sha256
+               (base32
+                "1f46nlfwmys110j36sifm7ah8m8f3s10c3vaiikmmigmifapvdaw"))))))
 
 (define-public nss-pam-ldapd
   (package
