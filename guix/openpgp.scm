@@ -566,21 +566,12 @@ the issuer's OpenPGP public key extracted from KEYRING."
   (if (= (openpgp-signature-type sig) SIGNATURE-BINARY)
       (let* ((id          (openpgp-signature-issuer-key-id sig))
              (fingerprint (openpgp-signature-issuer-fingerprint sig))
-             (key-data    (if fingerprint
+             (key         (if fingerprint
                               (lookup-key-by-fingerprint keyring fingerprint)
                               (lookup-key-by-id keyring id))))
-        ;; Find the primary key or subkey that made the signature.
-        (let ((key (find (lambda (k)
-                           (and (openpgp-public-key? k)
-                                (if fingerprint
-                                    (bytevector=?
-                                     (openpgp-public-key-fingerprint k)
-                                     fingerprint)
-                                    (= (openpgp-public-key-id k) id))))
-                         key-data)))
-          (if key
-              (check key sig)
-              (values 'missing-key (or fingerprint id)))))
+        (if key
+            (check key sig)
+            (values 'missing-key (or fingerprint id))))
       (values 'unsupported-signature sig)))
 
 (define (key-id-matches-fingerprint? key-id fingerprint)
@@ -925,29 +916,33 @@ FINGERPRINT, a bytevector."
   (ids            openpgp-keyring-ids)        ;vhash mapping key id to packets
   (fingerprints   openpgp-keyring-fingerprints)) ;mapping fingerprint to packets
 
-(define* (keyring-insert key keyring #:optional (packets (list key)))
+(define* (keyring-insert key keyring #:optional (packets '()))
   "Insert the KEY/PACKETS association into KEYRING and return the resulting
 keyring.  PACKETS typically contains KEY, an <openpgp-public-key>, alongside
 with additional <openpgp-public-key> records for sub-keys, <openpgp-user-id>
 records, and so on."
-  (openpgp-keyring (vhash-consv (openpgp-public-key-id key) packets
+  (openpgp-keyring (vhash-consv (openpgp-public-key-id key)
+                                (cons key packets)
                                 (openpgp-keyring-ids keyring))
-                   (vhash-cons (openpgp-public-key-fingerprint key) packets
+                   (vhash-cons (openpgp-public-key-fingerprint key)
+                               (cons key packets)
                                (openpgp-keyring-fingerprints keyring))))
 
 (define (lookup-key-by-id keyring id)
-  "Return a list of packets for the key with ID in KEYRING, or #f if ID could
-not be found.  ID must be the 64-bit key ID of the key, an integer."
+  "Return two values: the first key with ID in KEYRING, and a list of
+associated packets (user IDs, signatures, etc.).  Return #f and the empty list
+of ID was not found.  ID must be the 64-bit key ID of the key, an integer."
   (match (vhash-assv id (openpgp-keyring-ids keyring))
-    ((_ . lst) lst)
-    (#f '())))
+    ((_ key packets ...) (values key packets))
+    (#f (values #f '()))))
 
 (define (lookup-key-by-fingerprint keyring fingerprint)
-  "Return a list of packets for the key with FINGERPRINT in KEYRING, or #f if
-FINGERPRINT could not be found.  FINGERPRINT must be a bytevector."
+  "Return two values: the key with FINGERPRINT in KEYRING, and a list of
+associated packets (user IDs, signatures, etc.).  Return #f and the empty list
+of FINGERPRINT was not found.  FINGERPRINT must be a bytevector."
   (match (vhash-assoc fingerprint (openpgp-keyring-fingerprints keyring))
-    ((_ . lst) lst)
-    (#f '())))
+    ((_ key packets ...) (values key packets))
+    (#f (values #f '()))))
 
 ;; Reads a keyring from the binary input port p. It must not be
 ;; ASCII armored.
