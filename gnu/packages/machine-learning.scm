@@ -1269,6 +1269,10 @@ automatically.")
                ;; are reproducible.
                (setenv "PYTHONHASHSEED" "0")
                (with-directory-excursion "kaldigstserver"
+                 ;; See https://github.com/alumae/kaldi-gstreamer-server/issues/232
+                 (substitute* "master_server.py"
+                   (("\\.replace\\('\\\\.*") ")"))
+
                  ;; This is a Python 2 file
                  (delete-file "decoder_test.py")
                  (delete-file "test-buffer.py")
