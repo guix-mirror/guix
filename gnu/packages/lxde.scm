@@ -27,6 +27,7 @@
 
 (define-module (gnu packages lxde)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages disk)
@@ -279,7 +280,6 @@ with freedesktop.org standard.")
      `(("bash" ,bash)
        ("cairo" ,cairo)
        ("curlftpfs" ,curlftpfs)
-       ("dbus" ,dbus)
        ("eudev" ,eudev)
        ("fakeroot" ,fakeroot)
        ("ffmpegthumbnailer" ,ffmpegthumbnailer)
@@ -288,6 +288,7 @@ with freedesktop.org standard.")
        ("gtk+" ,gtk+)
        ("ifuse" ,ifuse)
        ("jmtpfs" ,jmtpfs)
+       ("ktsuss" ,ktsuss)
        ("libx11" ,libx11)
        ("lsof" ,lsof)
        ("pango" ,pango)
@@ -297,12 +298,31 @@ with freedesktop.org standard.")
        ("util-linux" ,util-linux)
        ("wget" ,wget)))
     (arguments
-     `(#:configure-flags (list (string-append "--with-bash-path="
-                                              (assoc-ref %build-inputs "bash")
-                                              "/bin/bash")
-                               (string-append "--sysconfdir="
-                                              (assoc-ref %outputs "out")
-                                              "/etc"))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Patch config file to load programs correctly.
+             (substitute* "etc/spacefm.conf"
+               (("#terminal_su=/bin/su")
+                "terminal_su=/run/setuid-programs/sudo")
+               (("#graphical_su=/usr/bin/gksu")
+                (string-append "graphical_su="
+                               (string-append (assoc-ref inputs "ktsuss")
+                                              "/bin/ktsuss"))))
+             ;; SpaceFM expects udevil to have uid set to root.
+             ;; User has to manually add udevil to setuid-programs.
+             (substitute* "src/settings.c"
+               (("/usr/bin/udevil")
+                "/run/setuid-programs/udevil"))
+             #t)))
+       #:configure-flags (list
+                          (string-append "--with-bash-path="
+                                         (assoc-ref %build-inputs "bash")
+                                         "/bin/bash")
+                          (string-append "--sysconfdir="
+                                         (assoc-ref %outputs "out")
+                                         "/etc"))))
     (home-page "https://ignorantguru.github.io/spacefm/")
     (synopsis "Multi-panel tabbed file manager")
     (description "SpaceFM is a graphical, multi-panel, tabbed file manager
