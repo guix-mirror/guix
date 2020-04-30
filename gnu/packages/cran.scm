@@ -20219,19 +20219,18 @@ estimate parameters given observed data.")
 (define-public r-kutils
   (package
     (name "r-kutils")
-    (version "1.69")
+    (version "1.70")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kutils" version))
        (sha256
         (base32
-         "12pg26a85h0jxlfcyai68dbh4bq1gnq8v1ngi8k9qvafbrpc6gx8"))))
+         "06jk66wbq3jmdf2jdhqns6r3yk36l2x7c907x977zv80sqxa1l37"))))
     (properties `((upstream-name . "kutils")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
-       ("r-lavaan" ,r-lavaan)
        ("r-openxlsx" ,r-openxlsx)
        ("r-plyr" ,r-plyr)
        ("r-runit" ,r-runit)
