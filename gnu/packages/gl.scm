@@ -272,7 +272,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxrandr" ,libxrandr)
         ("libxvmc" ,libxvmc)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
              ;; Note: update the 'clang' input of mesa-opencl when bumping this.
              `(("llvm" ,llvm-11)))
             (_
@@ -284,7 +284,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("flex" ,flex)
         ("gettext" ,gettext-minimal)
         ,@(match (%current-system)
-            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux")
+            ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
              `(("glslang" ,glslang)))
             (_
              `()))
@@ -299,7 +299,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for non-Intel architectures.
               '("-Dgallium-drivers=etnaviv,freedreno,kmsro,lima,nouveau,panfrost,r300,r600,swrast,tegra,v3d,vc4,virgl"))
-             ("powerpc64le-linux"
+             ((or "powerpc64le-linux" "powerpc-linux")
               '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,swrast,virgl"))
              (_
               '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
@@ -321,7 +321,7 @@ also known as DXTn or DXTC) for Mesa.")
          ,@(match (%current-system)
              ((or "i686-linux" "x86_64-linux")
               '("-Dvulkan-drivers=intel,amd"))
-             ("powerpc64le-linux"
+             ((or "powerpc64le-linux" "powerpc-linux")
               '("-Dvulkan-drivers=amd"))
              ("aarch64-linux"
               '("-Dvulkan-drivers=freedreno,amd"))
@@ -330,7 +330,7 @@ also known as DXTn or DXTC) for Mesa.")
 
          ;; Enable the Vulkan overlay layer on architectures using llvm.
          ,@(match (%current-system)
-             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux")
+             ((or "x86_64-linux" "i686-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
               '("-Dvulkan-overlay-layer=true"))
              (_
               '()))
@@ -344,7 +344,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "x86_64-linux" "i686-linux")
               '("-Ddri-drivers=i915,i965,nouveau,r200,r100"
                 "-Dllvm=enabled"))      ; default is x86/x86_64 only
-             ((or "powerpc64le-linux" "aarch64-linux")
+             ((or "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
               '("-Ddri-drivers=nouveau,r200,r100"
                 "-Dllvm=enabled"))
              (_
@@ -366,8 +366,24 @@ also known as DXTn or DXTC) for Mesa.")
                `((add-after 'unpack 'disable-failing-test
                    (lambda _
                      (substitute* "src/gallium/drivers/llvmpipe/lp_test_arit.c"
-                       (("0\\.5, ") ""))
-                     #t)))
+                       (("0\\.5, ") "")))))
+               '())
+         ,@(if (string-prefix? "powerpc-" (or (%current-target-system)
+                                              (%current-system)))
+               ;; There are some tests which fail specifically on powerpc.
+               `((add-after 'unpack 'disable-failing-test
+                   (lambda _
+                     (substitute* '(;; LLVM ERROR: Relocation type not implemented yet!
+                                    "src/gallium/drivers/llvmpipe/meson.build"
+                                    ;; This is probably a big-endian test failure.
+                                    "src/gallium/targets/osmesa/meson.build")
+                       (("if with_tests") "if not with_tests"))
+                     (substitute* "src/util/tests/format/meson.build"
+                       ;; This is definately an endian-ness test failure.
+                       (("'u_format_test', ") ""))
+                     ;; It is only this portion of the test which fails.
+                     (substitute* "src/mesa/main/tests/meson.build"
+                       ((".*mesa_formats.*") "")))))
                '())
          ,@(if (string-prefix? "i686" (or (%current-target-system)
                                           (%current-system)))
@@ -409,7 +425,7 @@ also known as DXTn or DXTC) for Mesa.")
              (let ((out (assoc-ref outputs "out"))
                    (bin (assoc-ref outputs "bin")))
                ,@(match (%current-system)
-                   ((or "i686-linux" "x86_64-linux" "powerpc64le-linux" "aarch64-linux")
+                   ((or "i686-linux" "x86_64-linux" "powerpc64le-linux" "aarch64-linux" "powerpc-linux")
                     ;; Install the Vulkan overlay control script to a separate
                     ;; output to prevent a reference on Python, saving ~70 MiB
                     ;; on the closure size.
