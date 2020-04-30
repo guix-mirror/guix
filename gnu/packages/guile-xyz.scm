@@ -1879,6 +1879,13 @@ library.")
     (inputs `(("ncurses" ,ncurses/gpm)
               ("guile" ,guile-2.2)))))
 
+(define-public guile3.0-ncurses/gpm
+  (package
+    (inherit guile3.0-ncurses)
+    (name "guile3.0-ncurses-with-gpm")
+    (inputs `(("ncurses" ,ncurses/gpm)
+              ("guile" ,guile-3.0)))))
+
 (define-public guile-lib
   (package
     (name "guile-lib")
