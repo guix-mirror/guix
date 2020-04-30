@@ -2660,8 +2660,11 @@ Stack Overflow, Super User, and other StackExchange sites.")
       (home-page "https://github.com/dryman/toml-mode.el")
       (synopsis "Emacs major mode for editing TOML files")
       (description
-       "This package provides a major mode for editing files in @acronym{TOML,
-Tom's Obvious, Minimal Language} data format.")
+       ;; XXX: Ideally we'd use @acronym for "TOML", but Guile's Texinfo
+       ;; parser does not currently support @comma{}, making it impossible
+       ;; to use commas in the @acronym arguments.
+       "This package provides a major mode for editing files in @dfn{TOML}
+(Tom's Obvious, Minimal Language) data format.")
       (license license:gpl3+))))
 
 (define-public emacs-twittering-mode
