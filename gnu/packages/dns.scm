@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -878,22 +879,16 @@ System (HNS) peer-to-peer network.")
 (define-public libmicrodns
   (package
     (name "libmicrodns")
-    (version "0.0.10")
+    (version "0.1.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/videolabs/libmicrodns")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://github.com/videolabs/libmicrodns/"
+                                  "releases/download/" version "/microdns-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1xvl9k49ng35wbsqmnjnyqvkyjf8dcq2ywsq3jp3wh0rgmxhq2fh"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+                "0p4va18zxgmzcdwhlbg2mmjwswlbgqy4ay5vaxrw7cxmhsflnv36"))))
+    (build-system meson-build-system)
     (home-page "https://github.com/videolabs/libmicrodns")
     (synopsis "Minimal mDNS resolver library")
     (description "@code{libmicrodns} provides a minimal implementation of a
