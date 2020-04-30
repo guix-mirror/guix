@@ -4876,27 +4876,38 @@ toolkits.")
 three-way Venn diagrams in @code{matplotlib}.")
     (license license:expat)))
 
-(define-public python2-pysnptools
+(define-public python-pysnptools
   (package
-    (name "python2-pysnptools")
-    (version "0.3.13")
+    (name "python-pysnptools")
+    (version "0.4.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pysnptools" version))
        (sha256
         (base32
-         "0lnis5xsl7bi0hz4f7gbicahzi5zlxkc21nk3g374xv8fb5hb3qm"))))
+         "0gxr0bjix307wvk0qh7vkafbxbzfpdmq0wlswpxyyaymy0fwcypv"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2 ; only Python 2.7 is supported
-       #:tests? #f))      ; test files (e.g. examples/toydata.bim) not included
+     `(#:tests? #f ; no test data are included
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (add-installed-pythonpath inputs outputs)
+                   (invoke "python3" "pysnptools/test.py"))
+                 #t))))))
     (propagated-inputs
-     `(("python2-numpy" ,python2-numpy)
-       ("python2-scipy" ,python2-scipy)
-       ("python2-pandas" ,python2-pandas)))
+     `(("python-dill" ,python-dill)
+       ("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-psutil" ,python-psutil)
+       ("python-scipy" ,python-scipy)))
     (native-inputs
-     `(("python2-cython" ,python2-cython)))
+     `(("python-cython" ,python-cython)))
     (home-page "http://microsoftgenomics.github.io/PySnpTools/")
     (synopsis "Library for reading and manipulating genetic data")
     (description
@@ -4905,6 +4916,9 @@ can, for example, efficiently read whole PLINK *.bed/bim/fam files or parts of
 those files.  It can also efficiently manipulate ranges of integers using set
 operators such as union, intersection, and difference.")
     (license license:asl2.0)))
+
+(define-public python2-pysnptools
+  (package-with-python2 python-pysnptools))
 
 (define-public python-socksipy-branch
   (package
