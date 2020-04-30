@@ -1771,13 +1771,13 @@ processes.  Most of its code is based on the @code{psutil} Python package.")
 (define-public r-pkgbuild
   (package
     (name "r-pkgbuild")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgbuild" version))
        (sha256
-        (base32 "0xnlz6ivhkbmncg9hfw5p69lm4rjy3wn5lyxmygxyf4rrfnnqwxx"))))
+        (base32 "0wd9678yp6yi73n92f58wi9jc19gdq5cmbj65l6pifh2haikifr9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
