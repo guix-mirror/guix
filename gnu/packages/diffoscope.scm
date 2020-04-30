@@ -57,6 +57,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
@@ -69,7 +70,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "141"))
+  (let ((version "143"))
     (package
       (name "diffoscope")
       (version version)
@@ -81,7 +82,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0pls2jryx394ysaz0g8h959lhrsdqak9bkxjd5r6sdckgiikplkj"))))
+                  "0j58dqdk8ln8y0bcnfy37ljs37nkl56lzxqns396300ysln0qiwm"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -96,8 +97,8 @@
                     (add-after 'unpack 'add-known-tools
                       (lambda _
                         (substitute* "diffoscope/external_tools.py"
-                          (("'debian': 'hdf5-tools'")
-                           "'debian': 'hdf5-tools', 'guix': 'hdf5'"))))
+                          (("'debian': 'openssl'")
+                           "'debian': 'openssl', 'guix': 'openssl'"))))
                     ;; This test is broken because our `file` package has a
                     ;; bug in berkeley-db file type detection.
                     (add-after 'unpack 'remove-berkeley-test
@@ -161,6 +162,7 @@
       (native-inputs `(("python-pytest" ,python-pytest)
                        ("python-chardet" ,python-chardet)
                        ("python-binwalk" ,python-binwalk)
+                       ("python-h5py" ,python-h5py)
                        ("python-pypdf2" ,python-pypdf2)
                        ("python-progressbar33" ,python-progressbar33)
                        ;; test suite skips tests when tool is missing
@@ -205,6 +207,7 @@
                        ("ocaml" ,ocaml)
                        ("odt2txt" ,odt2txt)
                        ("openssh" ,openssh)
+                       ("openssl" ,openssl)
                        ("pgpdump" ,pgpdump)
                        ("poppler" ,poppler)
                        ("python-jsbeautifier" ,python-jsbeautifier)
