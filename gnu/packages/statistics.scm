@@ -428,14 +428,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-51.5")
+    (version "7.3-51.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "1k0m7pa4gb5apzrrkb5kx5d7bmkm2pl5g15vwb6j067hrqahck26"))))
+         "1viyxy22qp8abzzzlbck55b0i81rrdygim1dq2pm52s2v13mq0z2"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
