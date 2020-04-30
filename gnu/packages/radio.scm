@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -266,7 +267,6 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("ghostscript" ,ghostscript)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)
        ("python-cheetah" ,python-cheetah)
        ("python-mako" ,python-mako)
        ("python-pyzmq" ,python-pyzmq)
@@ -293,6 +293,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("log4cpp" ,log4cpp)
        ("pango" ,pango)
        ("portaudio" ,portaudio)
+       ("python" ,python)
        ("python-click" ,python-click)
        ("python-click-plugins" ,python-click-plugins)
        ("python-lxml" ,python-lxml)
@@ -364,9 +365,16 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                  `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
              #t)))))
     (native-search-paths
+     ;; Variables required to find third-party plugins at runtime.
      (list (search-path-specification
             (variable "GRC_BLOCKS_PATH")
-            (files '("/share/gnuradio/grc/blocks")))))
+            (files '("share/gnuradio/grc/blocks")))
+           (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list (string-append "lib/python"
+                                        (version-major+minor
+                                         (package-version python))
+                                        "/site-packages"))))))
     (synopsis "Toolkit for software-defined radios")
     (description
      "GNU Radio is a development toolkit that provides signal processing blocks
