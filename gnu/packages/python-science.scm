@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -161,6 +161,39 @@ routines such as routines for numerical integration and optimization.")
        (sha256
         (base32
          "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))))
+
+(define-public python2-weave
+  (package
+    (name "python2-weave")
+    (version "0.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "weave" version))
+       (sha256
+        (base32 "0jnm3584mfichgwgrd1gk5i42ll9c08nkw9716n947n4338f6ghs"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "nosetests" "-v"
+                     "--exclude"
+                     "test_(user|incorrect_ownership|char_fail|obj_fail)"))))))
+    (propagated-inputs
+     `(("python-numpy" ,python2-numpy)))
+    (native-inputs
+     `(("python-nose" ,python2-nose)))
+    (home-page "https://www.scipy.org/")
+    (synopsis "Tools for including C/C++ code within Python code")
+    (description "Weave is the stand-alone version of the obsolete Scipy
+submodule @code{scipy.weave}.  It is Python 2.x only, and is provided for
+users that need new versions of Scipy but have existing code that still
+depends on @code{scipy.weave}.  For new code, users are recommended to use
+Cython.")
+    (license license:bsd-3)))
 
 (define-public python-scikit-image
   (package
