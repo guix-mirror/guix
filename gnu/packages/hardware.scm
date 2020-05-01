@@ -24,6 +24,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
@@ -429,7 +430,6 @@ applications.")
        #:configure-flags
        (list
         "--localstatedir=/var"
-        "--with-bundled-pegtl"
         "--enable-systemd=no"
         "--with-ldap"
         "--with-dbus"
@@ -442,6 +442,7 @@ applications.")
        ("libcap-ng" ,libcap-ng)
        ("libseccomp" ,libseccomp)
        ("libsodium" ,libsodium)
+       ("pegtl" ,pegtl)
        ("polkit" ,polkit)
        ("protobuf" ,protobuf)
        ("libqb" ,libqb)))
