@@ -7519,21 +7519,21 @@ via @code{gitlab-ci-lint}.")
 (define-public emacs-web-mode
   (package
     (name "emacs-web-mode")
-    (version "16")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/fxbois/web-mode.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "17dw6a8d0p304f2sa4f9zwd8r48w2wbkc3fvbmxwlg4w12h7cwf0"))))
+    (version "17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fxbois/web-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jr5a1nzp8nbdng0k2fcaymiiv9ngrbknbrqaswgqn3akvx793jk"))))
     (build-system emacs-build-system)
     (synopsis "Major mode for editing web templates")
-    (description "Web-mode is an Emacs major mode for editing web templates
+    (description "Web mode is an Emacs major mode for editing web templates
 aka HTML files embedding parts (CSS/JavaScript) and blocks (pre rendered by
-client/server side engines).  Web-mode is compatible with many template
+client/server side engines).  Web mode is compatible with many template
 engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
 Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
 Dust.js, React/JSX, Angularjs, ejs, etc.")
