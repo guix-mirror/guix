@@ -25733,7 +25733,7 @@ If true, this must be the name of a file to log messages to.
 @end table
 @end deftp
 
-@subsection Dictionary Services
+@subsubheading Dictionary Service
 @cindex dictionary
 The @code{(gnu services dict)} module provides the following service:
 
