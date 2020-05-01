@@ -3799,7 +3799,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public five-or-more
   (package
     (name "five-or-more")
-    (version "3.32.1")
+    (version "3.32.2")
     (source
      (origin
        (method url-fetch)
@@ -3807,7 +3807,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            (version-major+minor version) "/"
                            "five-or-more-" version ".tar.xz"))
        (sha256
-        (base32 "0xw05dd2dwi9vsph9h158b4n89s5k07xrh6bjz1icm0pdmjwhpgk"))))
+        (base32 "19pf8wzbf3ciqf2k4bj9sddvyhckfd62x86pnqr6s8h4vn9jc6ii"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
