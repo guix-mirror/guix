@@ -1947,7 +1947,7 @@ download times, and other distribution and storage costs.")
 (define-public quazip
   (package
     (name "quazip")
-    (version "0.8.1")
+    (version "0.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1956,7 +1956,7 @@ download times, and other distribution and storage costs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1g473gnsbkvxpsv8lbsmhspn7jnq86b05zzgqh11r581v8ndvz5s"))))
+                "0psvf3d9akyyx3bckc9325nmbp97xiagf8la4vhca5xn2f430fbn"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
