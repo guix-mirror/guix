@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -485,3 +486,24 @@ point and then, after each tween step, plugging back the result.")
 augment the C++ standard library.  The Abseil library code is collected from
 Google's C++ code base.")
     (license license:asl2.0)))
+
+(define-public pegtl
+  (package
+    (name "pegtl")
+    (version "2.8.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/taocpp/PEGTL.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17crgjfdx55imi2dqnz6xpvsxq07390yfgkz5nd2g77ydkvq9db3"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/taocpp/PEGTL")
+    (synopsis "Parsing Expression Grammar template library")
+    (description "The Parsing Expression Grammar Template Library (PEGTL) is
+a zero-dependency C++ header-only parser combinator library for creating
+parsers according to a Parsing Expression Grammar (PEG).")
+    (license license:expat)))
