@@ -36,7 +36,7 @@
   #:use-module ((gnu packages xorg)
                 #:select (console-setup xkeyboard-config))
   #:use-module ((gnu packages make-bootstrap)
-                #:select (%guile-static-stripped))
+                #:select (%guile-3.0-static-stripped))
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:use-module (gnu system keyboard)
@@ -62,7 +62,7 @@
 
 (define* (expression->initrd exp
                              #:key
-                             (guile %guile-static-stripped)
+                             (guile %guile-3.0-static-stripped)
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system)))
