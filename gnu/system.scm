@@ -492,7 +492,8 @@ possible (that is if there's a LINUX keyword argument in the build system)."
 
 (define %default-modprobe-blacklist
   ;; List of kernel modules to blacklist by default.
-  '("usbmouse")) ;see <https://bugs.gnu.org/35574>
+  '("usbmouse" ;races with bcm5974, see <https://bugs.gnu.org/35574>
+    "usbkbd")) ;races with usbhid, see <https://issues.guix.gnu.org/35574#18>
 
 (define %default-kernel-arguments
   ;; Default arguments passed to the kernel.
