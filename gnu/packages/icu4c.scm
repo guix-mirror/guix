@@ -61,8 +61,8 @@
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://download.icu-project.org/files/icu4c/"
-                  version
+                  "https://github.com/unicode-org/icu/releases/download/release-"
+                  (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
