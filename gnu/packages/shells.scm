@@ -780,9 +780,9 @@ Shell (pdksh).")
     (license (list miros
                    isc))))              ; strlcpy.c
 
-(define-public oil-shell
+(define-public oil
   (package
-    (name "oil-shell")
+    (name "oil")
     (version "0.7.0")
     (source (origin
               (method url-fetch)
@@ -825,6 +825,9 @@ is commonly written.")
     (home-page "https://www.oilshell.org/")
     (license (list psfl ; The Oil sources include a patched Python 2 source tree
                    asl2.0))))
+
+(define-public oil-shell
+  (deprecated-package "oil-shell" oil))
 
 (define-public gash
   (package
