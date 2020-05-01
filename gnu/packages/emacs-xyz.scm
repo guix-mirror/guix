@@ -1322,33 +1322,32 @@ incrementally confined in Isearch manner.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/emms/emms-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00hnv7jjgb2simgrf7gf2y1cyg2syk7kj1hkbac146hlgxk8ngj1"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "Makefile"
-                    (("/usr/bin/install-info")
-                     ;; No need to use 'install-info' since it would create a
-                     ;; useless 'dir' file.
-                     "true")
-                    (("^INFODIR=.*")
-                     ;; Install Info files to $out/share/info, not $out/info.
-                     "INFODIR := $(PREFIX)/share/info\n")
-                    (("/site-lisp/emms")
-                     ;; Install directly in share/emacs/site-lisp, not in a
-                     ;; sub-directory.
-                     "/site-lisp")
-                    (("^all: (.*)\n" _ rest)
-                     ;; Build 'emms-print-metadata'.
-                     (string-append "all: " rest " emms-print-metadata\n")))
-                  #t))))
+    (version "5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/emms/emms-" version ".tar.gz"))
+       (sha256
+        (base32 "1nd7sb6pva7qb1ki6w0zhd6zvqzd7742kaqi0f3v4as5jh09l6nr"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Makefile"
+             (("/usr/bin/install-info")
+              ;; No need to use 'install-info' since it would create a
+              ;; useless 'dir' file.
+              "true")
+             (("^INFODIR=.*")
+              ;; Install Info files to $out/share/info, not $out/info.
+              "INFODIR := $(PREFIX)/share/info\n")
+             (("/site-lisp/emms")
+              ;; Install directly in share/emacs/site-lisp, not in a
+              ;; sub-directory.
+              "/site-lisp")
+             (("^all: (.*)\n" _ rest)
+              ;; Build 'emms-print-metadata'.
+              (string-append "all: " rest " emms-print-metadata\n")))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
