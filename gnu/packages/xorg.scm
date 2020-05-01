@@ -23,6 +23,7 @@
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6624,3 +6625,24 @@ Thai).")
 a configuration file reusable by xcursorgen.")
     (home-page "https://github.com/eworm-de/xcur2png")
     (license license:gpl3+)))
+
+(define-public gccmakedep
+  (package
+    (name "gccmakedep")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/util/gccmakedep-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1r1fpy5ni8chbgx7j5sz0008fpb6vbazpy1nifgdhgijyzqxqxdj"))))
+    (build-system gnu-build-system)
+    (synopsis "Create dependencies in makefiles using 'gcc -M'")
+    (description
+     "@command{gccmakedep} is a deprecated program which calls @code{gcc -M}
+to output Makefile rules describing the dependencies of each source file, so
+that Make knows which object files must be recompiled when a dependency has
+changed.")
+    (home-page "https://gitlab.freedesktop.org/xorg/util/gccmakedep")
+    (license license:x11)))
