@@ -4865,7 +4865,7 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4874,7 +4874,7 @@ small robot living in the nano world, repair its maker.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lxdb1k2cdj2421vyz1z0ximzfnpkh2y4y84zpn2gqsa1nzwbryb"))
+                "169dl83q08zl4h813az8hjs4rs3dms9yjn6bnsld4fjcj0imvvc6"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
