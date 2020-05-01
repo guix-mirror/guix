@@ -24,7 +24,6 @@
 (use-modules (git)
              (guix git)
              (guix openpgp)
-             ((guix utils) #:select (config-directory))
              (guix base16)
              ((guix build utils) #:select (mkdir-p))
              (guix i18n)
@@ -323,15 +322,42 @@ key: ~a")
 
   signing-key)
 
-(define* (authenticate-commits repository commits
-                               #:key (report-progress (const #t)))
-  "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
-each of them.  Return an alist showing the number of occurrences of each key."
-  (define keyring-file
-    (string-append (config-directory) "/keyrings/channels/guix.kbx"))
+(define (load-keyring-from-blob repository oid keyring)
+  "Augment KEYRING with the keyring available in the blob at OID, which may or
+may not be ASCII-armored."
+  (let* ((blob (blob-lookup repository oid))
+         (port (open-bytevector-input-port (blob-content blob))))
+    (get-openpgp-keyring (if (port-ascii-armored? port)
+                             (open-bytevector-input-port (read-radix-64 port))
+                             port)
+                         keyring)))
 
+(define (load-keyring-from-reference repository reference)
+  "Load the '.key' files from the tree at REFERENCE in REPOSITORY and return
+an OpenPGP keyring."
+  (let* ((reference (reference-lookup repository reference))
+         (target    (reference-target reference))
+         (commit    (commit-lookup repository target))
+         (tree      (commit-tree commit)))
+    (fold (lambda (name keyring)
+            (if (string-suffix? ".key" name)
+                (let ((entry (tree-entry-bypath tree name)))
+                  (load-keyring-from-blob repository
+                                          (tree-entry-id entry)
+                                          keyring))
+                keyring))
+          %empty-keyring
+          (tree-list tree))))
+
+(define* (authenticate-commits repository commits
+                               #:key
+                               (keyring-reference "refs/heads/keyring")
+                               (report-progress (const #t)))
+  "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
+each of them.  Return an alist showing the number of occurrences of each key.
+The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY."
   (define keyring
-    (call-with-input-file keyring-file get-openpgp-keyring))
+    (load-keyring-from-reference repository keyring-reference))
 
   (fold (lambda (commit stats)
           (report-progress)
