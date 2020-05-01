@@ -2056,7 +2056,7 @@ using a system-independent interface.")
        ("python-pyportmidi" ,python-pyportmidi)
        ("python-pyqt" ,python-pyqt)
        ("python-sip" ,python-sip)))
-    (home-page "http://www.frescobaldi.org/")
+    (home-page "https://www.frescobaldi.org/")
     (synopsis "LilyPond sheet music text editor")
     (description
      "Frescobaldi is a LilyPond sheet music text editor with syntax
