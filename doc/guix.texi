@@ -25491,13 +25491,13 @@ Extra command line options for @code{guix-data-service-process-jobs}.
 @end deftp
 
 @node Linux Services
-@subsubheading Linux Services
+@subsection Linux Services
 
 @cindex oom
 @cindex out of memory killer
 @cindex earlyoom
 @cindex early out of memory daemon
-@subsection Early OOM Service
+@subsubheading Early OOM Service
 
 @uref{https://github.com/rfjakob/earlyoom,Early OOM}, also known as
 Earlyoom, is a minimalist out of memory (OOM) daemon that runs in user
@@ -25557,7 +25557,7 @@ notifications.
 
 @cindex modprobe
 @cindex kernel module loader
-@subsubsection Kernel Module Loader Service
+@subsubheading Kernel Module Loader Service
 
 The kernel module loader service allows one to load loadable kernel
 modules at boot.  This is especially useful for modules that don't
