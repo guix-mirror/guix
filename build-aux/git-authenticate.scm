@@ -34,6 +34,7 @@
              (srfi srfi-26)
              (srfi srfi-34)
              (srfi srfi-35)
+             (rnrs bytevectors)
              (rnrs io ports)
              (ice-9 match)
              (ice-9 format)
@@ -266,6 +267,39 @@ commit ~a: key ~a is missing")
                                        data))))))
             ('good-signature data)))))))
 
+(define (read-authorizations port)
+  "Read authorizations in the '.guix-authorizations' format from PORT, and
+return a list of authorized fingerprints."
+  (match (read port)
+    (('authorizations ('version 0)
+                      (((? string? fingerprints) _ ...) ...)
+                      _ ...)
+     (map (lambda (fingerprint)
+            (base16-string->bytevector
+             (string-downcase (string-filter char-set:graphic fingerprint))))
+          fingerprints))))
+
+(define* (commit-authorized-keys repository commit
+                                 #:optional (default-authorizations '()))
+  "Return the list of OpenPGP fingerprints authorized to sign COMMIT, based on
+authorizations listed in its parent commits.  If one of the parent commits
+does not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
+  (define (commit-authorizations commit)
+    (catch 'git-error
+      (lambda ()
+        (let* ((tree  (commit-tree commit))
+               (entry (tree-entry-bypath tree ".guix-authorizations"))
+               (blob  (blob-lookup repository (tree-entry-id entry))))
+          (read-authorizations
+           (open-bytevector-input-port (blob-content blob)))))
+      (lambda (key error)
+        (if (= (git-error-code error) GIT_ENOTFOUND)
+            default-authorizations
+            (throw key error)))))
+
+  (apply lset-intersection bytevector=?
+         (map commit-authorizations (commit-parents commit))))
+
 (define (authenticate-commit repository commit keyring)
   "Authenticate COMMIT from REPOSITORY and return the signing key fingerprint.
 Raise an error when authentication fails."
@@ -276,7 +310,8 @@ Raise an error when authentication fails."
     (commit-signing-key repository id keyring))
 
   (unless (member (openpgp-public-key-fingerprint signing-key)
-                  %authorized-signing-keys)
+                  (commit-authorized-keys repository commit
+                                          %authorized-signing-keys))
     (raise (condition
             (&message
              (message (format #f (G_ "commit ~a not signed by an authorized \
