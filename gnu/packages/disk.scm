@@ -935,8 +935,8 @@ since they are better handled by external tools.")
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://sourceforge.net/projects/xfe/files/xfe/"
-                       version "/xfe-" version ".tar.gz"))
+        (string-append "mirror://sourceforge/xfe/xfe/" version "/"
+                       "xfe-" version ".tar.gz"))
        (sha256
         (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
     (build-system gnu-build-system)
