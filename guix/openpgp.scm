@@ -31,6 +31,12 @@
             verify-openpgp-signature
             port-ascii-armored?
 
+            openpgp-error?
+            openpgp-unrecognized-packet-error?
+            openpgp-unrecognized-packet-error-port
+            openpgp-invalid-signature-error?
+            openpgp-invalid-signature-error-port
+
             openpgp-signature?
             openpgp-signature-issuer-key-id
             openpgp-signature-issuer-fingerprint
@@ -118,6 +124,19 @@
 
 (define (unixtime n)
   (time-monotonic->date (make-time 'time-monotonic 0 n)))
+
+;; Root of the error hierarchy.
+(define-condition-type &openpgp-error &error
+  openpgp-error?)
+
+;; Error raised when reading an unsupported or unrecognized packet tag.
+(define-condition-type &openpgp-unrecognized-packet-error &openpgp-error
+  openpgp-unrecognized-packet-error?
+  (port openpgp-unrecognized-packet-error-port))
+
+;; Error raised when reading an invalid signature packet.
+(define-condition-type &openpgp-invalid-signature-error &openpgp-error
+  (port openpgp-invalid-signature-error-port))
 
 
 ;;;
@@ -312,7 +331,7 @@ hexadecimal format for fingerprints."
 (define HASH-SHA-512 10)
 (define HASH-SHA-224 11)
 
-(define (openpgp-hash-algorithm id)
+(define (openpgp-hash-algorithm id signature-port)
   (cond ((= id HASH-MD5) 'md5)
         ((= id HASH-SHA-1) 'sha1)
         ((= id HASH-RIPE-MD160) 'rmd160)
@@ -320,7 +339,9 @@ hexadecimal format for fingerprints."
         ((= id HASH-SHA-384) 'sha384)
         ((= id HASH-SHA-512) 'sha512)
         ((= id HASH-SHA-224) 'sha224)
-        (else (error "unknown hash algorithm" id))))
+        (else
+         (raise (condition
+                 (&openpgp-invalid-signature-error (port signature-port)))))))
 
 (define COMPRESSION-UNCOMPRESSED 0)
 (define COMPRESSION-ZIP 1)                      ;deflate
@@ -455,7 +476,7 @@ hexadecimal format for fingerprints."
      ((= tag PACKET-ONE-PASS-SIGNATURE)
       'one-pass-signature)                        ;TODO: implement
      (else
-      (error 'get-data "Unsupported packet type" tag)))))
+      (raise (condition (&openpgp-unrecognized-packet-error (port p))))))))
 
 (define-record-type <openpgp-public-key>
   (make-openpgp-public-key version subkey? time value fingerprint)
@@ -509,7 +530,9 @@ signature."
           ((string=? type "PGP SIGNATURE")
            (get-packet (open-bytevector-input-port data)))
           (else
-           (error "expected PGP SIGNATURE" type)))))
+           (print "expected PGP SIGNATURE" type)
+           (raise (condition
+                   (&openpgp-invalid-signature-error (port port))))))))
 
 (define (hash-algorithm-name algorithm)        ;XXX: should be in Guile-Gcrypt
   "Return the name of ALGORITHM, a 'hash-algorithm' integer, as a symbol."
@@ -626,15 +649,17 @@ FINGERPRINT, a bytevector."
        (let-values (((hmlen type ctime keyid pkalg halg hashl16)
                      (get-integers p u8 u8 u32 u64 u8 u8 u16)))
          (unless (= hmlen 5)
-           (error "invalid signature packet"))
+           (raise (condition
+                   (&openpgp-invalid-signature-error (port p)))))
+
          (print "Signature type: " type " creation time: " (unixtime ctime))
-         (print "Hash algorithm: " (openpgp-hash-algorithm halg))
+         (print "Hash algorithm: " (openpgp-hash-algorithm halg p))
          (let ((value (get-sig p pkalg)))
            (unless (port-eof? p)
              (print "Trailing data in signature: " (get-bytevector-all p)))
            (make-openpgp-signature version type
                                    (public-key-algorithm pkalg)
-                                   (openpgp-hash-algorithm halg) hashl16
+                                   (openpgp-hash-algorithm halg p) hashl16
                                    (list (integers->bytevector u8 type
                                                                u32 ctime))
                                    ;; Emulate hashed subpackets
@@ -651,7 +676,7 @@ FINGERPRINT, a bytevector."
                       (get-bytevector-n p (get-u16 p)))
                      ((hashl16) (get-u16 p)))
          (print "Signature type: " type)
-         (print "Hash algorithm: " (openpgp-hash-algorithm halg))
+         (print "Hash algorithm: " (openpgp-hash-algorithm halg p))
          (let ((value (get-sig p pkalg)))
            (unless (port-eof? p)
              (print "Trailing data in signature: " (get-bytevector-all p)))
@@ -670,8 +695,8 @@ FINGERPRINT, a bytevector."
                                           u8 #xff
                                           u32 (+ 6 subpacket-len))))
                   (unhashed-subpackets
-                   (parse-subpackets unhashed-subpackets))
-                  (hashed-subpackets (parse-subpackets hashed-subpackets))
+                   (parse-subpackets unhashed-subpackets p))
+                  (hashed-subpackets (parse-subpackets hashed-subpackets p))
                   (subpackets        (append hashed-subpackets
                                              unhashed-subpackets))
                   (issuer-key-id     (assoc-ref subpackets 'issuer))
@@ -679,11 +704,14 @@ FINGERPRINT, a bytevector."
                                                 'issuer-fingerprint)))
              (unless (or (not issuer) (not issuer-key-id)
                          (key-id-matches-fingerprint? issuer-key-id issuer))
-               (error "issuer key id does not match fingerprint" issuer))
+               (print "issuer key id does not match fingerprint"
+                      issuer-key-id issuer)
+               (raise (condition
+                       (&openpgp-invalid-signature-error (port p)))))
 
              (make-openpgp-signature version type
                                      (public-key-algorithm pkalg)
-                                     (openpgp-hash-algorithm halg)
+                                     (openpgp-hash-algorithm halg p)
                                      hashl16
                                      append-data
                                      hashed-subpackets
@@ -694,7 +722,7 @@ FINGERPRINT, a bytevector."
        (print "Unsupported signature version: " version)
        'unsupported-signature-version))))
 
-(define (parse-subpackets bv)
+(define (parse-subpackets bv signature-port)
   (define (parse tag data)
     (let ((type (fxbit-field tag 0 7))
           (critical? (fxbit-set? tag 7)))
@@ -740,7 +768,8 @@ FINGERPRINT, a bytevector."
                               value)))))))
        ((= type SUBPACKET-PREFERRED-HASH-ALGORITHMS)
         (cons 'preferred-hash-algorithms
-              (map openpgp-hash-algorithm (bytevector->u8-list data))))
+              (map (cut openpgp-hash-algorithm <> signature-port)
+                   (bytevector->u8-list data))))
        ((= type SUBPACKET-PREFERRED-COMPRESSION-ALGORITHMS)
         (cons 'preferred-compression-algorithms
               (map compression-algorithm (bytevector->u8-list data))))
@@ -785,7 +814,9 @@ FINGERPRINT, a bytevector."
         ;; should be considered invalid.
         (print "Unknown subpacket type: " type)
         (if critical?
-            (error "unrecognized critical signature subpacket" type)
+            (raise (condition
+                    (&openpgp-unrecognized-packet-error
+                     (port signature-port))))
             (list 'unsupported-subpacket type data))))))
 
   (let ((p (open-bytevector-input-port bv)))
