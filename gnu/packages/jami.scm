@@ -194,7 +194,6 @@
     (source (jami-source #:without-daemon #t))
     (build-system gnu-build-system)
     (inputs
-     ;; Missing (optional?) dep: libnatpmp.
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
        ("dbus-c++" ,dbus-c++)
@@ -205,6 +204,7 @@
        ("gsm" ,gsm)
        ("jack" ,jack-1)
        ("jsoncpp" ,jsoncpp)
+       ("libnatpmp" ,libnatpmp)
        ("libogg" ,libogg)
        ("libva" ,libva)
        ("opendht" ,opendht)
