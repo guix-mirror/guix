@@ -65,7 +65,7 @@
 (define* (jami-source #:key without-daemon)
   (origin
     (method url-fetch)
-    (uri (string-append "https://dl.jami.net/ring-release/tarballs/ring_"
+    (uri (string-append "https://dl.jami.net/release/tarballs/jami_"
                         %jami-version
                         ".tar.gz"))
     (modules '((guix build utils)))
