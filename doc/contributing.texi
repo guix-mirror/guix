@@ -1187,6 +1187,16 @@ the OpenPGP key you will use to sign commits, and giving its fingerprint
 (see below).  See @uref{https://emailselfdefense.fsf.org/en/}, for an
 introduction to public-key cryptography with GnuPG.
 
+@c See <https://sha-mbles.github.io/>.
+Set up GnuPG such that it never uses the SHA1 hash algorithm for digital
+signatures, which is known to be unsafe since 2019, for instance by
+adding the following line to @file{~/.gnupg/gpg.conf} (@pxref{GPG
+Esoteric Options,,, gnupg, The GNU Privacy Guard Manual}):
+
+@example
+digest-algo sha512
+@end example
+
 @item
 Maintainers ultimately decide whether to grant you commit access,
 usually following your referrals' recommendation.
