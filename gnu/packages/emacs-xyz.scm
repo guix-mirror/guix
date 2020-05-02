@@ -13273,36 +13273,34 @@ files to be expanded upon opening them.")
     (license license:gpl3+)))
 
 (define-public emacs-ebib
-  (let ((commit "99bd909f47f71e024ce324981109b73a50e82fba"))
-    (package
-      (name "emacs-ebib")
-      (version "2.21")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/joostkremers/ebib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "131vgl4d1j9s4055x88409w19q52x2m0x08b961hylp7yb5ljzgh"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-parsebib" ,emacs-parsebib)))
-      (home-page "https://joostkremers.github.io/ebib/")
-      (synopsis "BibTeX database manager for Emacs")
-      (description
-       "Ebib is a BibTeX database manager that runs in GNU Emacs.
+  (package
+    (name "emacs-ebib")
+    (version "2.22.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/ebib.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0spiz5r2y4pdpyc4d3f9w228giq0j9rm8f5h5akzn5rwiq9pfkwz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-parsebib" ,emacs-parsebib)))
+    (home-page "https://joostkremers.github.io/ebib/")
+    (synopsis "BibTeX database manager for Emacs")
+    (description
+     "Ebib is a BibTeX database manager that runs in GNU Emacs.
 With Ebib you can create, sort and manage your .bib database files,
 all within Emacs.  It supports searching, multi-line field values and
 @@String and @@Preamble definitions.  Ebib integrates with (La)TeX
 mode, Org mode and other Emacs editing modes.")
-      ;; The Ebib source files are released under a BSD license with
-      ;; the exception of org-ebib.el, which is released under the GNU
-      ;; GPL.
-      (license (list license:bsd-3
-                     license:gpl3+)))))
+    ;; The Ebib source files are released under a BSD license with
+    ;; the exception of org-ebib.el, which is released under the GNU
+    ;; GPL.
+    (license (list license:bsd-3
+                   license:gpl3+))))
 
 (define-public emacs-biblio
   (package
