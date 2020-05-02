@@ -4602,6 +4602,37 @@ disks and SD cards.  This package provides the userland utilities.")
     (inputs
      `(("libuuid" ,util-linux)))))
 
+(define-public f2fs-tools/static
+  (static-package
+   (package
+     (inherit f2fs-tools)
+     (name "f2fs-tools-static")
+     (arguments
+     `(#:configure-flags
+       (let ((libuuid-static (assoc-ref %build-inputs "libuuid:static"))
+             (libuuid (assoc-ref %build-inputs "libuuid")))
+         (list
+          (string-append "libuuid_CFLAGS=-I" libuuid "/include")
+          (string-append "libuuid_LIBS=-L" libuuid-static "/lib -luuid")
+          (string-append "libblkid_CFLAGS=-I" libuuid "/include")
+          (string-append "libblkid_LIBS=-L" libuuid-static "/lib -lblkid")))
+       #:disallowed-references (,util-linux)
+       #:phases
+       (modify-phases %standard-phases ; TODO: f2fs phases.
+         (add-after 'unpack 'make-static
+           (lambda _
+             (define (append-to-file name body)
+               (let ((file (open-file name "a")))
+                 (display body file)
+                 (close-port file)))
+             (append-to-file "mkfs/Makefile.am" "\nmkfs_f2fs_LDFLAGS = -all-static\n")
+             (append-to-file "fsck/Makefile.am" "\nfsck_f2fs_LDFLAGS = -all-static\n")
+             (append-to-file "tools/Makefile.am" "\nf2fscrypt_LDFLAGS = -all-static -luuid\n")
+             #t)))))
+     (inputs
+      `(("libuuid:static" ,util-linux "static")
+        ("libuuid" ,util-linux)))))) ; for include files
+
 (define-public freefall
   (package
     (name "freefall")
