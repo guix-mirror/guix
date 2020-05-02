@@ -78,12 +78,31 @@
      (base32
       "0kw172w2ccyz438kf5xqw14nhfm4xk6a2libnzib9j2wvhlpf4q0"))))
 
+;; Savoir-Faire Linux modifies many libraries to add features
+;; to Jami. This procedure makes applying patches to a given
+;; package easy.
+(define jami-apply-dependency-patches
+  '(lambda* (#:key inputs dep-name patches)
+     (let ((patches-directory "sfl-patches"))
+       (mkdir-p patches-directory)
+       (invoke "tar" "-xvf" (assoc-ref inputs "sfl-patches")
+               "-C" patches-directory
+               "--strip-components=5"
+               (string-append "ring-project/daemon/contrib/src/"
+                              dep-name))
+       (for-each
+        (lambda (file)
+          (invoke "patch" "--force" "-p1" "-i"
+                  (string-append patches-directory "/"
+                                 file ".patch")))
+        patches))))
+
 (define-public pjproject-jami
   (package
     (inherit pjproject)
     (name "pjproject-jami")
     (native-inputs
-     `(("savoir-faire-linux-patches" ,(jami-source))
+     `(("sfl-patches" ,(jami-source))
        ,@(package-native-inputs pjproject)))
     (arguments
      `(#:tests? #f
@@ -125,40 +144,31 @@
              #t))
          (add-after 'unpack 'apply-patches
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((savoir-faire-linux-patches-directory "Savoir-faire Linux patches")
-                   ;; Comes from
-                   ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
-                   ;; WARNING: These amount for huge changes in pjproject.
-                   (savoir-faire-linux-patches
-                    '("fix_turn_alloc_failure"
-                      "rfc2466"
-                      "ipv6"
-                      "multiple_listeners"
-                      "pj_ice_sess"
-                      "fix_turn_fallback"
-                      "fix_ioqueue_ipv6_sendto"
-                      "add_dtls_transport"
-                      "rfc6544"
-                      "ice_config"
-                      "sip_config"
-                      "fix_first_packet_turn_tcp"
-                      "fix_ebusy_turn"
-                      "ignore_ipv6_on_transport_check"
-                      "fix_turn_connection_failure"
-                      ;; "uwp_vs" ; for windows
-                      "disable_local_resolution")))
-               (mkdir-p savoir-faire-linux-patches-directory)
-               (invoke "tar" "-xvf" (assoc-ref inputs "savoir-faire-linux-patches")
-                       "-C" savoir-faire-linux-patches-directory
-                       "--strip-components=5"
-                       "ring-project/daemon/contrib/src/pjproject")
-               (for-each
-                (lambda (file)
-                  (invoke "patch" "--force" "-p1" "-i"
-                          (string-append savoir-faire-linux-patches-directory "/"
-                                         file ".patch")))
-                savoir-faire-linux-patches))
-             #t))
+             (let ((jami-apply-dependency-patches ,jami-apply-dependency-patches))
+               ;; Comes from
+               ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
+               ;; WARNING: These amount for huge changes in pjproject.
+               (jami-apply-dependency-patches
+                #:inputs inputs
+                #:dep-name "pjproject"
+                #:patches
+                '("fix_turn_alloc_failure"
+                  "rfc2466"
+                  "ipv6"
+                  "multiple_listeners"
+                  "pj_ice_sess"
+                  "fix_turn_fallback"
+                  "fix_ioqueue_ipv6_sendto"
+                  "add_dtls_transport"
+                  "rfc6544"
+                  "ice_config"
+                  "sip_config"
+                  "fix_first_packet_turn_tcp"
+                  "fix_ebusy_turn"
+                  "ignore_ipv6_on_transport_check"
+                  "fix_turn_connection_failure"
+                  "disable_local_resolution"))
+               #t)))
          ;; TODO: We could use substitute-keyword-arguments instead of
          ;; repeating the phases from pjproject, but somehow it does
          ;; not work.
