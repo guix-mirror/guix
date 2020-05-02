@@ -1,0 +1,20 @@
+Disable locales other than C and POSIX because of a compilation error.
+By Danny Milosavljevic <dannym@scratchpost.org>
+This patch is distributed under BSD-3 license.
+See https://github.com/osresearch/heads/pull/610
+diff -ruN b/source/patches/gcc-5.3.0-locale.diff guix-build-musl-cross-0.1-3.a8a6649.drv-12/source/patches/gcc-5.3.0-locale.diff
+--- a/patches/gcc-5.3.0-locale.diff	1970-01-01 01:00:00.000000000 +0100
++++ b/patches/gcc-5.3.0-locale.diff	2020-05-02 14:20:47.213564509 +0200
+@@ -0,0 +1,12 @@
++--- gcc-5.3.0/libstdc++-v3/config/locale/gnu/ctype_members.cc.orig	2020-05-02 14:16:31.376147000 +0200
+++++ gcc-5.3.0/libstdc++-v3/config/locale/gnu/ctype_members.cc	2020-05-02 14:16:56.716279576 +0200
++@@ -47,7 +47,8 @@
++ 	this->_S_create_c_locale(this->_M_c_locale_ctype, __s); 
++ 	this->_M_toupper = this->_M_c_locale_ctype->__ctype_toupper;
++ 	this->_M_tolower = this->_M_c_locale_ctype->__ctype_tolower;
++-	this->_M_table = this->_M_c_locale_ctype->__ctype_b;
+++	//this->_M_table = this->_M_c_locale_ctype->__ctype_b;
+++	throw 3;
++       }
++   }
++ 
