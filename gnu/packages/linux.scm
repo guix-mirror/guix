@@ -200,9 +200,9 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.4.28"
+   "5.4.37"
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "08ls4gx5vanyiq9rn0869nfq4piw4lx1dl8hh9w9xgkr4ypc1j4k")))
+   (base32 "10qb890is4z58vr8czh3xx69q62l3b3j38y410kgiw8nii3zx5lr")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
