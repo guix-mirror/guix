@@ -33,6 +33,7 @@
 # Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 # Copyright © 2020 Felix Gruber <felgru@posteo.net>
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+# Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 #
 # This file is part of GNU Guix.
 #
@@ -278,6 +279,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ipfs.scm			\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
+  %D%/packages/jami.scm				\
   %D%/packages/java.scm				\
   %D%/packages/java-compression.scm		\
   %D%/packages/java-graphics.scm		\
