@@ -33,7 +33,7 @@
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -425,6 +425,41 @@ between different versions of ØMQ.")
      "This package provides header-only C++ bindings for ØMQ.  The header
 files contain direct mappings of the abstractions provided by the ØMQ C API.")
     (license license:expat)))
+
+(define-public libnatpmp
+  (package
+    (name "libnatpmp")
+    (version "20150609")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://miniupnp.free.fr/files/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c1n8n7mp0amsd6vkz32n8zj3vnsckv308bb7na0dg0r8969rap1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)) ; no tests
+       #:make-flags
+       (let* ((target ,(%current-target-system))
+              (gcc (if target
+                       (string-append target "-gcc")
+                       "gcc")))
+         (list
+          (string-append "CC=" gcc)
+          (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
+          (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")))))
+    (home-page "http://miniupnp.free.fr/libnatpmp.html")
+    (synopsis "C library implementing NAT-PMP")
+    (description
+     "@code{libnatpmp} is a portable and asynchronous implementation of
+the Network Address Translation - Port Mapping Protocol (NAT-PMP)
+written in the C programming language.")
+    (license license:bsd-3)))
 
 (define-public librdkafka
   (package
@@ -2613,7 +2648,7 @@ communication over HTTP.")
 (define-public restinio
   (package
     (name "restinio")
-    (version "0.6.0.1")
+    (version "0.6.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2622,7 +2657,7 @@ communication over HTTP.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c25kpx652nng8m1sqf5an2c3c4g3k6zj85mkkaxzk88iwfzq1s8"))))
+                "141a96hx8zhcdv121g6cs91n46kb47y040v25pnvz5f54964z7f5"))))
     (build-system cmake-build-system)
     (inputs                             ; TODO: Need to force-keep references on some inputs, e.g. boost.
      `(("zlib" ,zlib)
@@ -2655,7 +2690,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.0.0beta2")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2664,7 +2699,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02ix0rvvyhq22gd5djcq84qz08ji7ln93faf23b27zjzni2klzv5"))))
+                "1q1fwk8wwk9r6bp0indpr60ql668lsk16ykslacyhrh7kg97kvhr"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs

@@ -1,0 +1,140 @@
+Remove build machinery for bundled dependencies.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 89e6125e..c5e90750 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -36,7 +36,7 @@ endif()
+ if(PACKAGE)
+   # this needs to be set before project() is called
+   set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
+-  set(ASSETS ON) # necessary for packaging
++  set(ASSETS OFF) # necessary for packaging
+   message(STATUS "Building Extempore for binary distribution (assets directory will be downloaded)")
+ endif()
+ 
+@@ -134,71 +134,6 @@ else()
+   message(FATAL_ERROR "Sorry, Extempore isn't supported on this platform - macOS, Linux & Windows only.")
+ endif()
+ 
+-########
+-# PCRE #
+-########
+-
+-# current in-tree PCRE version: 8.38
+-
+-add_library(pcre STATIC
+-  # headers
+-  src/pcre/config.h
+-  src/pcre/pcre.h
+-  src/pcre/ucp.h
+-  # source files
+-  src/pcre/pcre_chartables.c
+-  src/pcre/pcre_compile.c
+-  src/pcre/pcre_exec.c
+-  src/pcre/pcre_globals.c
+-  src/pcre/pcre_internal.h
+-  src/pcre/pcre_newline.c
+-  src/pcre/pcre_tables.c
+-  )
+-
+-target_compile_definitions(pcre
+-  PRIVATE -DHAVE_CONFIG_H
+-  )
+-
+-if(PACKAGE)
+-  target_compile_options(pcre
+-    PRIVATE -mtune=generic)
+-endif()
+-
+-#############
+-# portaudio #
+-#############
+-
+-add_library(portaudio STATIC
+-  src/portaudio/src/common/pa_allocation.c
+-  src/portaudio/src/common/pa_allocation.h
+-  src/portaudio/src/common/pa_converters.c
+-  src/portaudio/src/common/pa_converters.h
+-  src/portaudio/src/common/pa_cpuload.c
+-  src/portaudio/src/common/pa_cpuload.h
+-  src/portaudio/src/common/pa_debugprint.c
+-  src/portaudio/src/common/pa_debugprint.h
+-  src/portaudio/src/common/pa_dither.c
+-  src/portaudio/src/common/pa_dither.h
+-  src/portaudio/src/common/pa_endianness.h
+-  src/portaudio/src/common/pa_front.c
+-  src/portaudio/src/common/pa_hostapi.h
+-  src/portaudio/src/common/pa_memorybarrier.h
+-  src/portaudio/src/common/pa_process.c
+-  src/portaudio/src/common/pa_process.h
+-  src/portaudio/src/common/pa_ringbuffer.c
+-  src/portaudio/src/common/pa_ringbuffer.h
+-  src/portaudio/src/common/pa_stream.c
+-  src/portaudio/src/common/pa_stream.h
+-  src/portaudio/src/common/pa_trace.c
+-  src/portaudio/src/common/pa_trace.h
+-  src/portaudio/src/common/pa_types.h
+-  src/portaudio/src/common/pa_util.h
+-  )
+-
+-target_include_directories(portaudio
+-  PRIVATE src/portaudio/include
+-  PRIVATE src/portaudio/src/common)
+-
+ # platform-specific
+ 
+ if(APPLE)
+@@ -224,25 +159,8 @@ if(APPLE)
+ 
+ elseif(UNIX AND NOT APPLE)
+   # use ALSA on Linux
+-  target_sources(portaudio
+-    PRIVATE src/portaudio/src/hostapi/alsa/pa_linux_alsa.c
+-    PRIVATE src/portaudio/src/os/unix/pa_unix_hostapis.c
+-    PRIVATE src/portaudio/src/os/unix/pa_unix_util.c
+-    )
+-  target_include_directories(portaudio
+-    PRIVATE src/portaudio/src/os/unix)
+-  target_compile_definitions(portaudio
+-    PRIVATE -DPA_USE_ALSA)
+-  target_link_libraries(portaudio
+-    PRIVATE asound)
+ 
+   if(JACK)
+-    target_sources(portaudio
+-      PRIVATE src/portaudio/src/hostapi/jack/pa_jack.c)
+-    target_compile_definitions(portaudio
+-      PRIVATE -DPA_USE_JACK)
+-    target_link_libraries(portaudio
+-      PRIVATE jack)
+   endif()
+ 
+ elseif(WIN32)
+@@ -292,8 +210,6 @@ if(ASIO)
+ endif()
+ 
+ if(PACKAGE)
+-  target_compile_options(portaudio
+-    PRIVATE -mtune=generic)
+ endif()
+ 
+ ##############
+@@ -411,8 +327,6 @@ endif()
+ 
+ # dependencies
+ 
+-add_dependencies(extempore pcre portaudio)
+-
+ if(BUILD_LLVM)
+   if(WIN32)
+     add_dependencies(extempore LLVM-install)
+@@ -553,7 +467,7 @@ else()
+   install(TARGETS extempore
+     RUNTIME
+     DESTINATION ".")
+-  install(DIRECTORY assets runtime libs examples tests
++  install(DIRECTORY runtime libs examples
+     DESTINATION "."
+     PATTERN ".DS_Store" EXCLUDE)
+ endif()

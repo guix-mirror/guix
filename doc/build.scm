@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,10 @@
       "guix"))
 
 (define %languages
-  '("de" "en" "es" "fr" "ru" "zh_CN"))
+  ;; The cookbook is currently only translated into German.
+  (if (string=? %manual "guix-cookbook")
+      '("de" "en")
+      '("de" "en" "es" "fr" "ru" "zh_CN")))
 
 (define (texinfo-manual-images source)
   "Return a directory containing all the images used by the user manual, taken
@@ -451,7 +455,9 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                             (lambda (mono)
                               (let ((anchors (collect-anchors mono)))
                                 (process-html mono anchors)))
-                            (find-files #$input "^guix(\\.[a-zA-Z_-]+)?\\.html$"))
+                            (find-files
+                             #$input
+                             "^guix(-cookbook|)(\\.[a-zA-Z_-]+)?\\.html$"))
 
             ;; Next process the multi-node HTML files in two phases: (1)
             ;; collect the list of anchors, and (2) perform

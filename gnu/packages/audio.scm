@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1854,6 +1855,31 @@ designed to improve headphone listening of stereo audio records.  Recommended
 for headphone prolonged listening to disable superstereo fatigue without
 essential distortions.")
     (license license:expat)))
+
+(define-public ladspa-bs2b
+  (package
+    (name "ladspa-bs2b")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/bs2b/plugins/LADSPA%20plugin/"
+                    version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b4aipbj1ba5k99gbc7gmgy14sywyrjd8rpyqj5l905j0mjv8jg2"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("ladspa" ,ladspa)
+              ("libbs2b" ,libbs2b)))
+    (home-page "https://sourceforge.net/projects/bs2b/")
+    (synopsis "Bauer stereophonic-to-binaural DSP - LADSPA plugin")
+    (description "The Bauer stereophonic-to-binaural DSP (bs2b) library and
+plugins is designed to improve headphone listening of stereo audio records.
+Recommended for headphone prolonged listening to disable superstereo fatigue
+without essential distortions.  This package contains a LADSPA plugin for use
+with applications that support them (e.g. PulseAudio).")
+    (license license:gpl2+)))
 
 (define-public liblo
   (package

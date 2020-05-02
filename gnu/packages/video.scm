@@ -1191,7 +1191,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.8")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1200,13 +1200,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                     "/vlc-" version ".tar.xz"))
               (sha256
                (base32
-                "1xmxjpyzdhabchwncz6lvx3kzvl7fz9c42bkv3nbj68albs9w570"))
-              (patches
-               (search-patches
-                ;; TODO: The test "libvlc_slaves" fails.  Applied upstream as
-                ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=4186c94104ee528abd6860611b49515f3e6ec644>.
-                ;; Try removing it in 3.0.9.
-                "vlc-fix-test_libvlc_slaves.patch"))))
+                "0cackl1084hcmg4myf3kvjvd6sjxmzn0c0qkmanz6brvgzyanrm9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -1311,20 +1305,6 @@ videoformats depend on the configuration flags of ffmpeg.")
                ;; which fails in our sandboxed build system
                (substitute* "test/run_vlc.sh"
                  (("./vlc --ignore-config") "echo"))
-
-               ;; modules/text_renderer/freetype/text_layout.c uses a
-               ;; now-deprecated interface 'fribidi_get_par_embedding_levels'
-               ;; from fribidi.h, so for now we enable the use of deprecated
-               ;; fribidi interfaces from this file.
-               ;; FIXME: Try removing this for vlc >= 3.0.3.
-               (substitute* "modules/text_renderer/freetype/text_layout.c"
-                 (("# define FRIBIDI_NO_DEPRECATED 1") ""))
-
-               ;; Fix build with libssh2 > 1.8.0:
-               ;; <https://trac.videolan.org/vlc/ticket/22060>
-               ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=11449b5cd8b415768e010d9b7c1d6ba3cea21f82>
-               (substitute* "modules/access/sftp.c"
-                 (("010801") "010900"))
                #t)))
          (add-after 'strip 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)

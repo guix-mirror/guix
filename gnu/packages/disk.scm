@@ -103,16 +103,34 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--disable-systemd"
-             (string-append "--sysconfdir="
-                            (assoc-ref %outputs "out")
-                            "/etc"))
+       (list
+        "--disable-systemd"
+        (string-append "--sysconfdir="
+                       (assoc-ref %outputs "out")
+                       "/etc")
+        ;; udevil expects these programs to be run with uid set as root.
+        ;; user has to manually add these programs to setuid-programs.
+        ;; mount and umount are default setuid-programs in guix system.
+        "--with-mount-prog=/run/setuid-programs/mount"
+        "--with-umount-prog=/run/setuid-programs/umount"
+        "--with-losetup-prog=/run/setuid-programs/losetup"
+        "--with-setfacl-prog=/run/setuid-programs/setfacl")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-root-reference
            (lambda _
              (substitute* "src/Makefile.in"
                (("-o root -g root") ""))
+             #t))
+         (add-after 'unpack 'patch-udevil-reference
+           ;; udevil expects itself to be run with uid set as root.
+           ;; devmon also expects udevil to be run with uid set as root.
+           ;; user has to manually add udevil to setuid-programs.
+           (lambda _
+             (substitute* "src/udevil.c"
+               (("/usr/bin/udevil") "/run/setuid-programs/udevil"))
+             (substitute* "src/devmon"
+               (("`which udevil 2>/dev/null`") "/run/setuid-programs/udevil"))
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
@@ -919,9 +937,8 @@ since they are better handled by external tools.")
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://sourceforge.net/projects/xfe/files/xfe/"
-                       version
-                       "/xfe-" version ".tar.gz"))
+        (string-append "mirror://sourceforge/xfe/xfe/" version "/"
+                       "xfe-" version ".tar.gz"))
        (sha256
         (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
     (build-system gnu-build-system)
@@ -939,17 +956,29 @@ since they are better handled by external tools.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-xferc-path
+         (add-after 'unpack 'patch-xfe-paths
            (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (xferc   (string-append out "/share/xfe/xferc")))
+             (let*
+                 ((out     (assoc-ref outputs "out"))
+                  (share   (string-append out "/share"))
+                  (xferc   (string-append out "/share/xfe/xferc"))
+                  (xfe-theme   (string-append out "/share/xfe/icons/xfe-theme")))
+               ;; Correct path for xfe registry.
+               (substitute* "src/foxhacks.cpp"
+                 (("/etc:/usr/share:/usr/local/share") share))
+               ;; Correct path for xfe configuration.
                (substitute* "src/XFileExplorer.cpp"
-                 (("/usr/share/xfe/xferc") xferc))
-               #t))))
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "BASH_COMPLETION_DIR=" out
-                              "/share/bash-completion/completions")))))
+                 (("/usr/share/xfe/xferc") xferc)
+                 (("/usr/local/share/xfe/xferc") xferc)
+                 (("/opt/local/share/xfe/xferc") xferc))
+               ;; Correct path for xfe icons.
+               (substitute* "src/xfedefs.h"
+                 (((string-append
+                    "~/.config/xfe/icons/xfe-theme:"
+                    "/usr/local/share/xfe/icons/xfe-theme:"
+                    "/usr/share/xfe/icons/xfe-theme"))
+                  xfe-theme))
+               #t))))))
     (synopsis "File Manager for X-Based Graphical Systems")
     (description"XFE (X File Explorer) is a file manager for X.  It is based on
 the popular but discontinued, X Win Commander.  It aims to be the file manager

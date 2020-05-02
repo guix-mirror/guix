@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,7 +198,7 @@ and dynamically with report tools based on filtering and graphical charts.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.1.3")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -206,16 +207,32 @@ and dynamically with report tools based on filtering and graphical charts.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bfnrqrd6wqgsngfpqi30xh6yy86pwl25iwzrqy44q31r0zl4mm3"))))
+        (base32 "1l5c9jf2wnly6ncm9civ8i7v47xld15g1y7wpl0hqwgbfyffwjci"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:modules (,@%cmake-build-system-modules
+                  ((guix build python-build-system) #:select (python-version)))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:configure-flags
        `("-DBUILD_DOCS:BOOL=ON"
          "-DBUILD_WEB_DOCS:BOOL=ON"
          "-DUSE_PYTHON:BOOL=ON"
          "-DCMAKE_INSTALL_LIBDIR:PATH=lib")
        #:phases
-       (modify-phases %standard-phases
+       (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+         (add-after 'unpack 'fix-python-installation-directory
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; By default the package attempts to install its Python bindings
+             ;; to the Python store directory, which obviously does not work.
+             ;; Passing -DPython_SITEARCH in #:configure-flags has no effect.
+             (let ((python-version (python-version (assoc-ref inputs "python")))
+                   (out (assoc-ref outputs "out")))
+               (substitute* "src/CMakeLists.txt"
+                 (("DESTINATION \\$\\{Python_SITEARCH\\}")
+                  (string-append "DESTINATION " out "/lib/python"
+                                 python-version "/site-packages")))
+               #t)))
          (add-before 'configure 'install-examples
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((examples (string-append (assoc-ref outputs "out")

@@ -33,6 +33,7 @@
 # Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 # Copyright © 2020 Felix Gruber <felgru@posteo.net>
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+# Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 #
 # This file is part of GNU Guix.
 #
@@ -278,6 +279,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ipfs.scm			\
   %D%/packages/irc.scm  			\
   %D%/packages/iso-codes.scm			\
+  %D%/packages/jami.scm				\
   %D%/packages/java.scm				\
   %D%/packages/java-compression.scm		\
   %D%/packages/java-graphics.scm		\
@@ -889,6 +891,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/evolution-data-server-libical-compat.patch	\
   %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
+  %D%/packages/patches/extempore-unbundle-external-dependencies.patch	\
   %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
@@ -1206,7 +1209,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
-  %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lrcalc-includes.patch    		\
   %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
@@ -1552,7 +1554,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/vinagre-newer-freerdp.patch             \
   %D%/packages/patches/vinagre-newer-rdp-parameters.patch      \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
-  %D%/packages/patches/vlc-fix-test_libvlc_slaves.patch \
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\

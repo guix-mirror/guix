@@ -12,6 +12,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -742,30 +743,34 @@ and surfaces, receiving input and events.")
     (license license:zlib)))
 
 (define-public nanovg-for-extempore
-  (package
-    (name "nanovg-for-extempore")
-    (version "0.7.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/extemporelang/nanovg/"
-                                  "archive/"  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ivs1sagq19xiw8jxd9f8w2b39svi0n9hrbmdvckwvqg95r8701g"))))
-    (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; no tests included
-    (inputs
-     `(("mesa" ,mesa)))
-    ;; Extempore refuses to build on architectures other than x86_64
-    (supported-systems '("x86_64-linux"))
-    (home-page "https://github.com/extemporelang/nanovg")
-    (synopsis "2D vector drawing library on top of OpenGL")
-    (description "NanoVG is small antialiased vector graphics rendering
+  (let ((version "0.7.1")
+        (revision "0")
+        (commit "3c60175fcc2e5fe305b04355cdce35d499c80310"))
+    (package
+      (name "nanovg-for-extempore")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/extemporelang/nanovg.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0ddn3d3mxqn8hj9967v3pss7lz1wn08pcdnqzc118g7yjkq7hxzy"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f))        ; no tests included
+      (inputs
+       `(("mesa" ,mesa)))
+      ;; Extempore refuses to build on architectures other than x86_64
+      (supported-systems '("x86_64-linux"))
+      (home-page "https://github.com/extemporelang/nanovg")
+      (synopsis "2D vector drawing library on top of OpenGL")
+      (description "NanoVG is small antialiased vector graphics rendering
 library for OpenGL.  It has lean API modeled after HTML5 canvas API.  It is
 aimed to be a practical and fun toolset for building scalable user interfaces
 and visualizations.")
-    (license license:zlib)))
+      (license license:zlib))))
 
 (define-public gl2ps
   (package

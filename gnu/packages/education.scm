@@ -606,14 +606,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.44.0")
+    (version "5.44.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "13q3b0g1zz885g15gir8fbalvix8sy42v1p429h0751490wq5c3h"))))
+        (base32 "1bji4910v6adhngdh5ajz5bxam9z3yqnh8d1h1xajy6npm6qq3nx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -632,14 +632,14 @@ Portuguese, Spanish and Italian.")
      `(("qtbase" ,qtbase)))
     (home-page "https://www.lalescu.ro/liviu/fet/")
     (synopsis "Timetabling software")
-    (description "FET is a program for automatically scheduling the
-timetable of a school, high-school or university.  It uses a fast and
-efficient timetabling algorithm.
+    (description
+     "FET is a program for automatically scheduling the timetable of a school,
+high-school or university.  It uses a fast and efficient timetabling
+algorithm.
 
-Usually, FET is able to solve a complicated timetable in maximum 5-20
-minutes.  For simpler timetables, it may take a shorter time, under
-5 minutes (in some cases, a matter of seconds).  For extremely
-difficult timetables, it may take a longer time, a matter of hours.")
+Usually, FET is able to solve a complicated timetable in maximum 5-20 minutes.
+For extremely difficult timetables, it may take a longer time, a matter of
+hours.")
     (license license:agpl3+)))
 
 (define-public klavaro

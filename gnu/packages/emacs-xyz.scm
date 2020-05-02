@@ -1323,33 +1323,32 @@ incrementally confined in Isearch manner.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/emms/emms-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00hnv7jjgb2simgrf7gf2y1cyg2syk7kj1hkbac146hlgxk8ngj1"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "Makefile"
-                    (("/usr/bin/install-info")
-                     ;; No need to use 'install-info' since it would create a
-                     ;; useless 'dir' file.
-                     "true")
-                    (("^INFODIR=.*")
-                     ;; Install Info files to $out/share/info, not $out/info.
-                     "INFODIR := $(PREFIX)/share/info\n")
-                    (("/site-lisp/emms")
-                     ;; Install directly in share/emacs/site-lisp, not in a
-                     ;; sub-directory.
-                     "/site-lisp")
-                    (("^all: (.*)\n" _ rest)
-                     ;; Build 'emms-print-metadata'.
-                     (string-append "all: " rest " emms-print-metadata\n")))
-                  #t))))
+    (version "5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/emms/emms-" version ".tar.gz"))
+       (sha256
+        (base32 "1nd7sb6pva7qb1ki6w0zhd6zvqzd7742kaqi0f3v4as5jh09l6nr"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Makefile"
+             (("/usr/bin/install-info")
+              ;; No need to use 'install-info' since it would create a
+              ;; useless 'dir' file.
+              "true")
+             (("^INFODIR=.*")
+              ;; Install Info files to $out/share/info, not $out/info.
+              "INFODIR := $(PREFIX)/share/info\n")
+             (("/site-lisp/emms")
+              ;; Install directly in share/emacs/site-lisp, not in a
+              ;; sub-directory.
+              "/site-lisp")
+             (("^all: (.*)\n" _ rest)
+              ;; Build 'emms-print-metadata'.
+              (string-append "all: " rest " emms-print-metadata\n")))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -2465,7 +2464,7 @@ work with Emacs 24 and 25.")
 
 (define-public emacs-extempore-mode
   ;; Use the latest commit at time of packaging.  There are no releases or tags.
-  (let ((commit "848ad0084f27b92d1cf98dabffbad29f959a642d")
+  (let ((commit "09518ae6650d7be33a4633a4c0f31b7130d04c6e")
         (revision "1"))
     (package
       (name "emacs-extempore-mode")
@@ -2478,7 +2477,7 @@ work with Emacs 24 and 25.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "00wr025php7nl33x541s9rjm99hj0jbdcmnw9ljx5hqpm04aqm7c"))))
+          (base32 "0hfza9lzdsz94gxhmzyp9fwviscv19rmnjgd0q613faayn11sjsp"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/extemporelang/extempore-emacs-mode")
       (synopsis "Emacs major mode for Extempore source files")
@@ -7525,24 +7524,47 @@ special variables.  An interface to GitLab’s CI file linter is also provided
 via @code{gitlab-ci-lint}.")
     (license license:gpl3+)))
 
-(define-public emacs-web-mode
+(define-public emacs-gitlab-snip-helm
   (package
-    (name "emacs-web-mode")
-    (version "16")
+    (name "emacs-gitlab-snip-helm")
+    (version "0.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fxbois/web-mode.git")
-                    (commit (string-append "v" version))))
+                    (url "https://gitlab.com/sasanidas/gitlab-snip-helm.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17dw6a8d0p304f2sa4f9zwd8r48w2wbkc3fvbmxwlg4w12h7cwf0"))))
+                "1c5js19zyb1z61hapvbfcl5jhrjqij46cxldgqij6al0scw44dga"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-helm" ,emacs-helm)))
+    (home-page "https://gitlab.com/sasanidas/gitlab-snip-helm/")
+    (synopsis "GitLab snippet API interaction for Emacs")
+    (description "This package provides GitLab snippet API interaction for
+Emacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-web-mode
+  (package
+    (name "emacs-web-mode")
+    (version "17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fxbois/web-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jr5a1nzp8nbdng0k2fcaymiiv9ngrbknbrqaswgqn3akvx793jk"))))
     (build-system emacs-build-system)
     (synopsis "Major mode for editing web templates")
-    (description "Web-mode is an Emacs major mode for editing web templates
+    (description "Web mode is an Emacs major mode for editing web templates
 aka HTML files embedding parts (CSS/JavaScript) and blocks (pre rendered by
-client/server side engines).  Web-mode is compatible with many template
+client/server side engines).  Web mode is compatible with many template
 engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
 Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
 Dust.js, React/JSX, Angularjs, ejs, etc.")
@@ -13262,7 +13284,7 @@ files to be expanded upon opening them.")
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method git-fetch)
@@ -13271,45 +13293,43 @@ files to be expanded upon opening them.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bnqnxkb9dnl0fjrrjx0xn9jsqki2h8ygw3d5dm4bl79smah3qkh"))))
+        (base32 "0mpgyy9qfb5x4fvlmb274hgayjbwf0bgk65dxyx31zikjwpcd56p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/parsebib")
-    (synopsis "Library for parsing bib files")
+    (synopsis "Library for parsing @file{.bib} files")
     (description
-     "This package provides an Emacs library for parsing bib files.")
+     "This package provides an Emacs library for parsing @file{.bib} files.")
     (license license:gpl3+)))
 
 (define-public emacs-ebib
-  (let ((commit "99bd909f47f71e024ce324981109b73a50e82fba"))
-    (package
-      (name "emacs-ebib")
-      (version "2.21")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/joostkremers/ebib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "131vgl4d1j9s4055x88409w19q52x2m0x08b961hylp7yb5ljzgh"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-parsebib" ,emacs-parsebib)))
-      (home-page "https://joostkremers.github.io/ebib/")
-      (synopsis "BibTeX database manager for Emacs")
-      (description
-       "Ebib is a BibTeX database manager that runs in GNU Emacs.
-With Ebib you can create, sort and manage your .bib database files,
-all within Emacs.  It supports searching, multi-line field values and
-@@String and @@Preamble definitions.  Ebib integrates with (La)TeX
-mode, Org mode and other Emacs editing modes.")
-      ;; The Ebib source files are released under a BSD license with
-      ;; the exception of org-ebib.el, which is released under the GNU
-      ;; GPL.
-      (license (list license:bsd-3
-                     license:gpl3+)))))
+  (package
+    (name "emacs-ebib")
+    (version "2.22.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/ebib.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0spiz5r2y4pdpyc4d3f9w228giq0j9rm8f5h5akzn5rwiq9pfkwz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-parsebib" ,emacs-parsebib)))
+    (home-page "https://joostkremers.github.io/ebib/")
+    (synopsis "BibTeX database manager for Emacs")
+    (description
+     "Ebib is a BibTeX database manager that runs in GNU Emacs.
+With Ebib you can create, sort and manage your @file{.bib} database files, all
+within Emacs.  It supports searching, multi-line field values and
+@samp{@@String} and @samp{@@Preamble} definitions.  Ebib integrates
+with (La)TeX mode, Org mode and other Emacs editing modes.")
+    ;; The Ebib source files are released under a BSD license with
+    ;; the exception of org-ebib.el, which is released under the GNU
+    ;; GPL.
+    (license (list license:bsd-3
+                   license:gpl3+))))
 
 (define-public emacs-biblio
   (package
@@ -19529,9 +19549,9 @@ be used in @code{dired-mode}.")
       (license license:gpl3+))))
 
 (define-public emacs-exwm-edit
-  (let ((commit "961c0f3ea45766b888c73d7353da13d329538034")
+  (let ((commit "bc25ba094b383be3c650ca0b7e1534efe2bb154f")
         (version "0.0.1")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "emacs-exwm-edit")
       (version (git-version version revision commit))
@@ -19544,7 +19564,7 @@ be used in @code{dired-mode}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "087pk5ckx753qrn6xpka9khhlp7iqlz76w7861x90av2f5cgy6fw"))))
+           "1z1ya9xgknka3dy3b3x8zzfkxdx5jqsi8q5aqkvxjxa6n7mmqdwv"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-exwm" ,emacs-exwm)))
@@ -21122,14 +21142,14 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-operandi-theme
   (package
     (name "emacs-modus-operandi-theme")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "modus-operandi-theme-" version ".el"))
        (sha256
-        (base32 "17zvcqplbl3rk39k61v43ganzv06j49rlyickanwll5m1a3iibw2"))))
+        (base32 "09lw556jphrxrmwxkwzfgd4r7ylz99m8awxka4sfj5sa8fbjb3g8"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Accessible light theme (WCAG AAA)")
@@ -21143,14 +21163,14 @@ standard.  This is the highest standard of its kind.")
 (define-public emacs-modus-vivendi-theme
   (package
     (name "emacs-modus-vivendi-theme")
-    (version "0.7.0")
+    (version "0.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "modus-vivendi-theme-" version ".el"))
        (sha256
-        (base32 "1w4vrg39dghghkvll3h4kmzykc3zpp6pbychb39gcc13z2b06v8g"))))
+        (base32 "0hwkzbx7a9scdr589sb7hw90lsm8yxcn3y5xr3bpyxf8rkr2zl4c"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Accessible dark theme (WCAG AAA)")

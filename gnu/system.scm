@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -148,7 +149,8 @@
             %base-packages-linux
             %base-packages-networking
             %base-packages-utils
-            %base-firmware))
+            %base-firmware
+            %default-kernel-arguments))
 
 ;;; Commentary:
 ;;;
@@ -179,7 +181,7 @@
   (kernel-loadable-modules operating-system-kernel-loadable-modules
                     (default '()))                ; list of packages
   (kernel-arguments operating-system-user-kernel-arguments
-                    (default '("quiet")))         ; list of gexps/strings
+                    (default %default-kernel-arguments)) ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
   (label operating-system-label                   ; string
          (thunked)
@@ -487,6 +489,17 @@ possible (that is if there's a LINUX keyword argument in the build system)."
      (substitute-keyword-arguments (package-arguments module-package)
        ((#:linux kernel #f)
         target-kernel)))))
+
+(define %default-modprobe-blacklist
+  ;; List of kernel modules to blacklist by default.
+  '("usbmouse" ;races with bcm5974, see <https://bugs.gnu.org/35574>
+    "usbkbd")) ;races with usbhid, see <https://issues.guix.gnu.org/35574#18>
+
+(define %default-kernel-arguments
+  ;; Default arguments passed to the kernel.
+  (list (string-append "modprobe.blacklist="
+                       (string-join %default-modprobe-blacklist ","))
+        "quiet"))
 
 (define* (operating-system-directory-base-entries os)
   "Return the basic entries of the 'system' directory of OS for use as the
