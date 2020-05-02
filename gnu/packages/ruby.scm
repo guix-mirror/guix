@@ -131,6 +131,49 @@ a focus on simplicity and productivity.")
     (home-page "https://www.ruby-lang.org")
     (license license:ruby)))
 
+(define-public ruby-2.7
+  (package
+    (inherit ruby)
+    (version "2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0674x98f542y02r7n2yv2qhmh97blqhi2mvh2dn5f000vlxlh66l"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags '("--enable-shared") ; dynamic linking
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh-and-remove-libffi
+           (lambda _
+             (substitute* '("configure.ac"
+                            "template/Makefile.in"
+                            "lib/rubygems/installer.rb"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c"
+                            "test/rubygems/test_gem_ext_configure_builder.rb"
+                            "test/rdoc/test_rdoc_parser.rb"
+                            "test/ruby/test_rubyoptions.rb"
+                            "test/ruby/test_process.rb"
+                            "test/ruby/test_system.rb"
+                            "tool/rbinstall.rb")
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))))
+
 (define-public ruby-2.5
   (package
     (inherit ruby)
