@@ -2204,6 +2204,15 @@ Betamax.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; There's a small issue with one test with Python 3.8, this
+             ;; change has been suggested upstream:
+             ;; https://github.com/boto/s3transfer/pull/164
+             (substitute* "tests/unit/test_s3transfer.py"
+               (("super\\(FailedDownloadParts, self\\)\\.submit\\(function\\)")
+                "futures.Future()"))
+             #t))
          (replace 'check
            (lambda _
              ;; Some of the 'integration' tests require network access or
