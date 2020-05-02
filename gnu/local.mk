@@ -774,6 +774,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
   %D%/packages/patches/beancount-disable-googleapis-fonts.patch	\
   %D%/packages/patches/beets-werkzeug-compat.patch		\
+  %D%/packages/patches/behave-skip-a-couple-of-tests.patch	\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\

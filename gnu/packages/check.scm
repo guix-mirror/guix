@@ -2107,7 +2107,9 @@ backported from Python 2.7 for Python 2.4+.")
              (uri (pypi-uri "behave" version))
              (sha256
               (base32
-               "11hsz365qglvpp1m1w16239c3kiw15lw7adha49lqaakm8kj6rmr"))))
+               "11hsz365qglvpp1m1w16239c3kiw15lw7adha49lqaakm8kj6rmr"))
+             (patches (search-patches
+                       "behave-skip-a-couple-of-tests.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
