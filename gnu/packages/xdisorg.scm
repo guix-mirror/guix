@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
+;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2324,3 +2325,34 @@ some kind of chat (in native language).
 @command{kbdd} also supports D-Bus signals, which makes it possible to
 create layout indicator widgets.")
     (license license:bsd-2)))
+
+(define-public j4-dmenu-desktop
+  (package
+    (name "j4-dmenu-desktop")
+    (version "2.17")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/enkore/j4-dmenu-desktop.git")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v23fimkn83dcm5p53y2ymhklff3kwppxhf75sm8xmswrzkixpgc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch2" ,catch-framework2)))
+    (arguments
+     `(#:configure-flags '("-DWITH_GIT_CATCH=off")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./j4-dmenu-tests" "exclude:SearchPath/XDG_DATA_HOME"))))))
+    (synopsis "Fast desktop menu")
+    (description
+     "j4-dmenu-desktop is a replacement for i3-dmenu-desktop.  Its purpose
+is to find @file{.desktop} files and offer you a menu to start an application
+using @command{dmenu}.")
+    (home-page "https://github.com/enkore/j4-dmenu-desktop")
+    (license license:gpl3+)))
