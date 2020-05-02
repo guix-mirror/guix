@@ -13292,10 +13292,10 @@ files to be expanded upon opening them.")
     (synopsis "BibTeX database manager for Emacs")
     (description
      "Ebib is a BibTeX database manager that runs in GNU Emacs.
-With Ebib you can create, sort and manage your .bib database files,
-all within Emacs.  It supports searching, multi-line field values and
-@@String and @@Preamble definitions.  Ebib integrates with (La)TeX
-mode, Org mode and other Emacs editing modes.")
+With Ebib you can create, sort and manage your @file{.bib} database files, all
+within Emacs.  It supports searching, multi-line field values and
+@samp{@@String} and @samp{@@Preamble} definitions.  Ebib integrates
+with (La)TeX mode, Org mode and other Emacs editing modes.")
     ;; The Ebib source files are released under a BSD license with
     ;; the exception of org-ebib.el, which is released under the GNU
     ;; GPL.
