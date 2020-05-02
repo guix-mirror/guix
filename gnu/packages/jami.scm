@@ -310,7 +310,6 @@ This package provides a library common to all Jami clients.")
        ("libnotify" ,libnotify)
        ("clutter" ,clutter)
        ("clutter-gtk" ,clutter-gtk)
-       ("gettext" ,gnu-gettext)
        ("libcanberra" ,libcanberra)
        ("webkitgtk" ,webkitgtk)
        ;; TODO: We must wrap ring-client-gnome to force using the
@@ -327,6 +326,7 @@ This package provides a library common to all Jami clients.")
        ("sqlite" ,sqlite-with-column-metadata)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gettext" ,gnu-gettext)
        ("glib:bin" ,glib "bin")
        ("doxygen" ,doxygen)))
     (propagated-inputs
