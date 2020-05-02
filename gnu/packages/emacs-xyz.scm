@@ -13267,9 +13267,9 @@ files to be expanded upon opening them.")
         (base32 "0mpgyy9qfb5x4fvlmb274hgayjbwf0bgk65dxyx31zikjwpcd56p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/parsebib")
-    (synopsis "Library for parsing bib files")
+    (synopsis "Library for parsing @file{.bib} files")
     (description
-     "This package provides an Emacs library for parsing bib files.")
+     "This package provides an Emacs library for parsing @file{.bib} files.")
     (license license:gpl3+)))
 
 (define-public emacs-ebib
