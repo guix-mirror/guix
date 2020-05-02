@@ -60,7 +60,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils))
 
-(define %jami-version "20191101.3.67671e7")
+(define %jami-version "20200401.1.6f090de")
 
 (define* (jami-source #:key without-daemon)
   (origin
@@ -76,7 +76,7 @@
          #f))
     (sha256
      (base32
-      "0kw172w2ccyz438kf5xqw14nhfm4xk6a2libnzib9j2wvhlpf4q0"))))
+      "0lryx9n1jn0jsw7s10pbwivqv0d5m3jdzhdhdyg5n02v72mjvkmh"))))
 
 ;; Savoir-Faire Linux modifies many libraries to add features
 ;; to Jami. This procedure makes applying patches to a given
@@ -152,22 +152,15 @@
                 #:inputs inputs
                 #:dep-name "pjproject"
                 #:patches
-                '("fix_turn_alloc_failure"
-                  "rfc2466"
-                  "ipv6"
-                  "multiple_listeners"
-                  "pj_ice_sess"
-                  "fix_turn_fallback"
-                  "fix_ioqueue_ipv6_sendto"
-                  "add_dtls_transport"
-                  "rfc6544"
-                  "ice_config"
-                  "sip_config"
-                  "fix_first_packet_turn_tcp"
-                  "fix_ebusy_turn"
-                  "ignore_ipv6_on_transport_check"
-                  "fix_turn_connection_failure"
-                  "disable_local_resolution"))
+                '("0001-rfc6544"
+                  "0002-rfc2466"
+                  "0003-add-tcp-keep-alive"
+                  "0004-multiple_listeners"
+                  "0005-fix_ebusy_turn"
+                  "0006-ignore_ipv6_on_transport_check"
+                  "0007-pj_ice_sess"
+                  "0008-fix_ioqueue_ipv6_sendto"
+                  "0009-add-config-site"))
                #t)))
          ;; TODO: We could use substitute-keyword-arguments instead of
          ;; repeating the phases from pjproject, but somehow it does

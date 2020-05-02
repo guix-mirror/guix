@@ -651,13 +651,17 @@ calls and messages")
 (define-public pjproject
   (package
     (name "pjproject")
-    (version "2.9")
+    (version "2.10")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/pjsip/pjproject.git")
-             (commit "5dfa75be7d69047387f9b0436dd9492bbbf03fe4")))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -686,11 +690,7 @@ calls and messages")
               (lambda (dirs)
                 (substitute* "third_party/build/os-linux.mak"
                   (((string-append "DIRS += " dirs)) "")))
-              third-party-dirs))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1ayj6n7zd5wvd1nzj2k9s57fb4ckc2fv92k5sjvhd87yg69k3393"))))
+              third-party-dirs))))))
     (build-system gnu-build-system)
     (inputs
      `(("portaudio" ,portaudio)))
