@@ -1914,6 +1914,14 @@ shell scripts.  Example of how to use @code{yad} can be consulted at
                          "/lib/girepository-1.0"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'do-not-treat-warnings-as-errors
+           (lambda _
+             ;; Prevent the build from failing due to deprecation warnings
+             ;; from newer GLib and GTK versions.
+             (substitute* (find-files "." "^Makefile.in$")
+               ((" -Werror")
+                ""))
+             #t))
          (add-before 'configure 'set-environment
            (lambda _
              (setenv "HAVE_VALGRIND_TRUE" "")
