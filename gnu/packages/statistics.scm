@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
+;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5786,42 +5787,51 @@ Java package that provides routines for various statistical distributions.")
 (define-public emacs-ess
   (package
     (name "emacs-ess")
-    (version "17.11")
+    (version "18.10.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/emacs-ess/ESS/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-ess/ESS")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "0cbilbsiwvcyf6d5y24mymp57m3ana5dkzab3knfs83w4a3a4c5c"))
-              (file-name (string-append name "-" version ".tar.gz"))
+                "1yq41l2bicwjrc0b731iic20cpcnz6ppigri1jn621qv2qv22vy3"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Stop ESS from trying to bundle an external julia-mode.el.
                   (substitute* "lisp/Makefile"
-                    (("^\tjulia-mode.elc\\\\\n") "")
-                    (("^dist: all julia-mode.el")
-                     "dist: all"))
-                  ;; No need to build docs in so many formats.  Also, skipping
-                  ;; pdf lets us not pull in texlive.
+                    (("^ess-julia.elc: julia-mode.elc") "")
+                    (("^all: julia-mode.el")
+                     "all:"))
+                  ;; Include *.el files in install target.
+                  (substitute* "lisp/Makefile"
+                    (("\t\\$\\(INSTALL) \\$\\(ELC\\) \\$\\(LISPDIR\\)" elc)
+                     (string-append "\t$(INSTALL) $(ELS) ess-autoloads.el "
+                                    "$(LISPDIR)\n" elc)))
+                  ;; Only build docs in info format.
                   (substitute* "doc/Makefile"
-                    (("all  : info text html pdf")
+                    (("all  : info text")
                      "all  : info")
                     (("install: install-info install-other-docs")
                      "install: install-info"))
-                  ;; Test fails upstream
+                  ;; Stop install-info from trying to update the info directory.
+                  (substitute* "doc/Makefile"
+                    ((".*\\$\\(INFODIR\\)/dir.*") ""))
+                  ;; Fix roxygen preview test.
                   (substitute* "test/ess-r-tests.el"
-                    (("ert-deftest ess-r-namespaced-eval-no-srcref-in-errors ()")
-                     "ert-deftest ess-r-namespaced-eval-no-srcref-in-errors () :expected-result :failed"))
+                               (("Add together two numbers.\n")
+                                "Add together two numbers. ")
+                               (("##' add\\(10, 1\\)") "add(10, 1)"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
      (let ((base-directory "/share/emacs/site-lisp"))
        `(#:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "ETCDIR=" %output "/"
+                            (string-append "ETCDIR=" %output
                                            ,base-directory "/etc")
-                            (string-append "LISPDIR=" %output "/"
+                            (string-append "LISPDIR=" %output
                                            ,base-directory))
          #:phases
          (modify-phases %standard-phases
@@ -5840,6 +5850,7 @@ Java package that provides routines for various statistical distributions.")
        ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
+       ("r-roxygen2" ,r-roxygen2)
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("emacs-julia-mode" ,emacs-julia-mode)))
