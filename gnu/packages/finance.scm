@@ -258,7 +258,7 @@ and dynamically with report tools based on filtering and graphical charts.")
        ("gmp" ,gmp)
        ("libedit" ,libedit)
        ("mpfr" ,mpfr)
-       ("python" ,python-2)
+       ("python" ,python)
        ("utfcpp" ,utfcpp)))
     (native-inputs
      `(("groff" ,groff)
