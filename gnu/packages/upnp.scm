@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages python)
@@ -92,15 +94,21 @@ over IRC, instant messaging, network games, and most server software.")
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.6.25")
+    (version "1.8.6")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://sourceforge/pupnp/pupnp/libUPnP%20"
-                          version "/" name "-" version ".tar.bz2"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/pupnp/pupnp.git")
+            (commit (string-append "release-" version))))
       (sha256
        (base32
-        "0hzsd7rvfa87b4hxg9yj4xhdfxx9sp09r9sqdl3mqhvmcyw018y5"))))
+        "1jlb6qh47513h2simy0zxia5q61w1c31mnwmjqpr2nf832lmnpk4"))))
+       (native-inputs
+        `(("autoconf" ,autoconf)
+          ("automake" ,automake)
+          ("libtool" ,libtool)
+          ("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is
