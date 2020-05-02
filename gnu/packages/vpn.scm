@@ -258,7 +258,8 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
       ("gnutls" ,gnutls-3.6.13)
       ("zlib" ,zlib)))
    (inputs
-    `(("vpnc-scripts" ,vpnc-scripts)))
+    `(("lz4" ,lz4)
+      ("vpnc-scripts" ,vpnc-scripts)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("pkg-config" ,pkg-config)))
