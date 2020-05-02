@@ -319,7 +319,7 @@ This package provides a library common to all Jami clients.")
        ("sqlite" ,sqlite-with-column-metadata)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gettext" ,gnu-gettext)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("doxygen" ,doxygen)))
     (propagated-inputs
