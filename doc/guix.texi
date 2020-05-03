@@ -4777,6 +4777,7 @@ additionally includes Git and strace:
 guix environment --pure guix --ad-hoc git strace
 @end example
 
+@cindex container
 Sometimes it is desirable to isolate the environment as much as
 possible, for maximal purity and reproducibility.  In particular, when
 using Guix on a host distro that is not Guix System, it is desirable to
@@ -4792,6 +4793,22 @@ guix environment --ad-hoc --container guile -- guile
 @quotation Note
 The @code{--container} option requires Linux-libre 3.19 or newer.
 @end quotation
+
+@cindex certificates
+Another typical use case for containers is to run security-sensitive
+applications such as a web browser.  To run Eolie, we must expose and
+share some files and directories; we include @code{nss-certs} and expose
+@file{/etc/sll/certs/} for HTTPS authentication; finally we preserve the
+the @code{DISPLAY} environment variable since containerized graphical
+applications won't display without it.
+
+@example
+guix environment --preserve='^DISPLAY$' --container --network \
+  --expose=/etc/machine-id \
+  --expose=/etc/ssl/certs/ \
+  --share=$HOME/.local/share/eolie/=$HOME/.local/share/eolie/ \
+  --ad-hoc eolie nss-certs dbus --  eolie
+@end example
 
 The available options are summarized below.
 
