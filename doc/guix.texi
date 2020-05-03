@@ -11484,9 +11484,21 @@ configuration (@pxref{Using the Configuration System}).
 
 @table @asis
 @item @code{kernel} (default: @code{linux-libre})
-The package object of the operating system kernel to use@footnote{Currently
-only the Linux-libre kernel is supported.  In the future, it will be
-possible to use the GNU@tie{}Hurd.}.
+The package object of the operating system kernel to
+use@footnote{Currently only the Linux-libre kernel is fully supported.
+Using GNU@tie{}mach with the GNU@tie{}Hurd is experimental and only
+available when building a virtual machine disk image.}.
+
+@cindex hurd
+@item @code{hurd} (default: @code{#f})
+The package object of the hurd to be started by the kernel.  When this
+field is set, produce a GNU/Hurd operating system.  In that case,
+@code{kernel} must also be set to the @code{gnumach} package---the
+microkernel the Hurd runs on.
+
+@quotation Warning
+This feature is experimental and only supported for disk images.
+@end quotation
 
 @item @code{kernel-loadable-modules} (default: '())
 A list of objects (usually packages) to collect loadable kernel modules

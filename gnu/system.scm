@@ -83,6 +83,7 @@
             operating-system-packages
             operating-system-host-name
             operating-system-hosts-file
+            operating-system-hurd
             operating-system-kernel
             operating-system-kernel-file
             operating-system-kernel-arguments
@@ -187,6 +188,8 @@
                     (default '()))                ; list of packages
   (kernel-arguments operating-system-user-kernel-arguments
                     (default %default-kernel-arguments)) ; list of gexps/strings
+  (hurd operating-system-hurd
+        (default #f))                             ; package
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
   (label operating-system-label                   ; string
          (thunked)
