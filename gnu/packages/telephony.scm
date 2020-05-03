@@ -61,6 +61,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages linphone)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -654,59 +655,57 @@ Mumble consists of two applications for separate usage:
   (package
     (name "twinkle")
     (version "1.10.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/LubosD/twinkle")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0s0gi03xwvzp02ah4q6j33r9jx9nbayr6dxlg2ck9pwbay1nq1hx"))))
-    (build-system cmake-build-system)
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/LubosD/twinkle")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (patches
+        (search-patches "twinkle-bcg729.patch")) ; To support new BCG729 API.
+       (sha256
+        (base32
+         "0s0gi03xwvzp02ah4q6j33r9jx9nbayr6dxlg2ck9pwbay1nq1hx"))))
+    (build-system qt-build-system)
     (arguments
-     `(#:tests? #f                                ; no test target
-       #:configure-flags '("-DWITH_SPEEX=On")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/twinkle")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtdeclarative")))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/qml"))
-                         '("qtdeclarative" "qtquickcontrols"))))
-               #t))))))
+     `(#:tests? #f                      ; no test target
+       #:configure-flags
+       (list
+        ;; FIX-ME: Make Twinkle compatible with libre version of iLBC.
+        ;; "-DWITH_ILBC=On"                ; For iLBC Codec Support
+        "-DWITH_ZRTP=On"                ; For ZRTP Support
+        "-DWITH_G729=On"                ; For G729 Codec Support
+        "-DWITH_SPEEX=On")))            ; For Speex Codec Support
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
-       ("readline" ,readline)
-       ("file" ,file)
-       ("ucommon" ,ucommon)
-       ("ccrtp" ,ccrtp)
-       ("libxml2" ,libxml2)
-       ("speex" ,speex)
-       ("speexdsp" ,speexdsp)
-       ("libsndfile" ,libsndfile)
-       ("alsa-lib" ,alsa-lib)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("alsa-lib" ,alsa-lib)
+       ("bcg729" ,bcg729)
+       ("zrtpcpp" ,zrtpcpp)
+       ("ccrtp" ,ccrtp)
+       ("file" ,file)
+       ("libilbc" ,libilbc)
+       ("libsndfile" ,libsndfile)
+       ("libxml2" ,libxml2)
+       ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
-       ("qtquickcontrols" ,qtquickcontrols)))
-    (home-page "http://twinkle.dolezel.info/")
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("readline" ,readline)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("ucommon" ,ucommon)))
     (synopsis "Softphone for voice over IP and instant messaging")
     (description "Twinkle is a softphone for your voice over IP and instant
-messaging communcations using the SIP protocol.  You can use it for direct IP
-phone to IP phone communication or in a network using a SIP proxy to route your
-calls and messages")
+messaging communcations using the SIP protocol.  You can use it for direct
+IP phone to IP phone communication or in a network using a SIP proxy to route
+your calls and messages.")
+    (home-page "http://twinkle.dolezel.info/")
     (license license:gpl2+)))
 
 (define-public pjproject
