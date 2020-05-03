@@ -340,8 +340,8 @@ Libraries with some extra bells and whistles.")
                (substitute* "src/modules/everything/evry_plug_calc.c"
                  (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
-                 (("/bin/mount") (string-append utils "/bin/mount"))
-                 (("/bin/umount") (string-append utils "/bin/umount"))
+                 (("/bin/mount") "/run/setuid-programs/mount")
+                 (("/bin/umount") "/run/setuid-programs/umount")
                  (("/usr/bin/eject") (string-append utils "/bin/eject"))
                  (("/usr/bin/l2ping") (string-append bluez "/bin/l2ling"))
                  (("/bin/rfkill") (string-append utils "/sbin/rfkill"))
