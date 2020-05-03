@@ -601,6 +601,8 @@ bookkeeping."
 
 (define (hurd-default-essential-services os)
   (list (service system-service-type '())
+        %boot-service
+        %activation-service
         (service profile-service-type '())))
 
 (define* (operating-system-services os)
