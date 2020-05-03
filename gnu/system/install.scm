@@ -524,6 +524,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                      mdadm
                      dosfstools         ;mkfs.fat, for the UEFI boot partition
                      btrfs-progs
+                     f2fs-tools
                      jfsutils
                      openssh    ;we already have sshd, having ssh/scp can help
                      wireless-tools iw wpa-supplicant-minimal iproute
