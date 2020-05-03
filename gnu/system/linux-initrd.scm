@@ -245,6 +245,9 @@ FILE-SYSTEMS."
           '())
     ,@(if (find (file-system-type-predicate "jfs") file-systems)
           (list jfs_fsck/static)
+          '())
+    ,@(if (find (file-system-type-predicate "f2fs") file-systems)
+          (list f2fs-fsck/static)
           '())))
 
 (define-syntax vhash                              ;TODO: factorize
