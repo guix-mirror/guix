@@ -9,6 +9,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <jannek@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,6 +127,8 @@
             system-linux-image-file-name
             operating-system-with-gc-roots
             operating-system-with-provenance
+
+            hurd-default-essential-services
 
             boot-parameters
             boot-parameters?
@@ -573,6 +576,10 @@ bookkeeping."
                    (list %linux-bare-metal-service
                          (service firmware-service-type
                                   (operating-system-firmware os)))))))
+
+(define (hurd-default-essential-services os)
+  (list (service system-service-type '())
+        (service profile-service-type '())))
 
 (define* (operating-system-services os)
   "Return all the services of OS, including \"essential\" services."
