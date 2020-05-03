@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -911,6 +912,29 @@ that can store up to 263 elements.")
 Java.  Currently, four types of transforms are available: @dfn{Discrete
 Fourier Transform} (DFT), @dfn{Discrete Cosine Transform} (DCT), @dfn{Discrete
 Sine Transform} (DST) and @dfn{Discrete Hartley Transform} (DHT).")
+    (license license:bsd-2)))
+
+(define-public lmfit
+  (package
+    (name "lmfit")
+    (version "8.2.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://jugit.fz-juelich.de/mlz/lmfit.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00bch77a6qgnw6vzsjn2a42n8n683ih3xm0wpr454jxa15hw78vf"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("perl" ,perl)))                   ; for pod2man
+    (home-page "https://jugit.fz-juelich.de/mlz/lmfit")
+    (synopsis "Levenberg-Marquardt minimization and least-squares fitting")
+    (description "lmfit is a C library for Levenberg-Marquardt least-squares
+minimization and curve fitting.  It is mature code, based on decades-old
+algorithms from the FORTRAN library MINPACK.")
     (license license:bsd-2)))
 
 (define-public eigen
