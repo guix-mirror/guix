@@ -3222,6 +3222,70 @@ memoizing, backtracking, recursive-descent parsing technique that runs in time
 and space linear in the size of the input text.")
     (license license:expat)))
 
+(define-public guile-ac-d-bus
+  (package
+    (name "guile-ac-d-bus")
+    (version "1.0.0-alpha.0")
+    (home-page "https://gitlab.com/weinholt/ac-d-bus/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05cbp7slmzrx4cib2liysk31laknqiycw9ckgn65fylgz6c2y5x9"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:implicit-inputs? #f                      ;needs nothing but Guile
+       #:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'adjust-for-guile
+                    (lambda _
+                      ;; Adjust source file names for Guile.
+                      (define (guile-sls->sls file)
+                        (string-append (string-drop-right
+                                        file (string-length ".guile.sls"))
+                                       ".sls"))
+
+                      ;; Remove files targeting other implementations:
+                      ;; *.mosh.sls, etc.
+                      (for-each delete-file
+                                (find-files
+                                 "compat"
+                                 (lambda (file stat)
+                                   (not (string-contains file ".guile.")))))
+
+                      ;; Rename *.guile.sls to *.sls so the ".guile" bit does
+                      ;; not appear in .go file names.
+                      (for-each (lambda (file)
+                                  (rename-file file (guile-sls->sls file)))
+                                (find-files "compat" "\\.guile\\.sls"))
+
+                      ;; Move directories under d-bus/ to match module names.
+                      (mkdir "d-bus")
+                      (for-each (lambda (directory)
+                                  (rename-file directory
+                                               (string-append "d-bus/"
+                                                              directory)))
+                                '("compat" "protocol"))
+
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (propagated-inputs
+     `(("guile-packrat" ,guile-packrat)))
+    (synopsis "D-Bus protocol implementation in R6RS Scheme")
+    (description
+     "AC/D-Bus is an implementation of the D-Bus wire protocol.  D-Bus is an
+interprocess communication protocol popular on GNU/Linux systems to
+communicate with a variety of services.  Originally designed for desktop
+environments, it is now used by programs like VLC media player, BlueZ,
+NetworkManager, Pulseaudio, systemd (including logind and resolved), Polkit,
+gnome-keyring, and many more.")
+    (license license:expat)))
+
 (define-public guile-webutils
   (let ((commit "8541904f761066dc9c27b1153e9a838be9a55299")
         (revision "0"))
