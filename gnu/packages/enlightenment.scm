@@ -564,7 +564,7 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.2.6")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
@@ -572,22 +572,14 @@ directories.
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
          (base32
-          "1rg3kri6j8nmab0kdljnmcc096c8ibgwzvbhqr0b25xpmrq8bcac"))))
-    (build-system gnu-build-system)
+          "0gh3y2348pgf683sljnfry9k545h42dx75idyigcspsjsk7khisz"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:tests? #f   ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure) ; no configure phase
-         (add-after 'unpack 'set-environmental-variables
-           (lambda _ (setenv "CC" (which "gcc")) #t)))))
+     '(#:tests? #f))    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("efl" ,efl)
-       ("perl" ,perl)))
+     `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL process viewer")
     (description
