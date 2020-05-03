@@ -4628,7 +4628,14 @@ disks and SD cards.  This package provides the userland utilities.")
              (append-to-file "mkfs/Makefile.am" "\nmkfs_f2fs_LDFLAGS = -all-static\n")
              (append-to-file "fsck/Makefile.am" "\nfsck_f2fs_LDFLAGS = -all-static\n")
              (append-to-file "tools/Makefile.am" "\nf2fscrypt_LDFLAGS = -all-static -luuid\n")
-             #t)))))
+             #t))
+          (add-after 'install 'remove-store-references
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Work around bug in our util-linux.
+              ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41019>.
+              (remove-store-references (string-append (assoc-ref outputs "out")
+                                                      "/sbin/mkfs.f2fs"))
+              #t)))))
      (inputs
       `(("libuuid:static" ,util-linux "static")
         ("libuuid" ,util-linux)))))) ; for include files
