@@ -453,25 +453,32 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.6.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.enlightenment.org/rel/apps/edi/"
-                            name "-" version ".tar.xz"))
+        (uri (string-append "https://github.com/Enlightenment/edi/releases/"
+                            "download/v" version "/edi-" version ".tar.xz"))
         (sha256
          (base32
-          "0iqkah327ms5m7k054hcik2l9v68i4mg9yy52brprfqpd5jk7pw8"))))
-    (build-system gnu-build-system)
+          "01k8gp8r2wa6pyg3dkbm35m6hdsbss06hybghg0qjmd4mzswcd3a"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-clang-header
+           (lambda _
+             (substitute* "scripts/clang_include_dir.sh"
+               (("grep clang") "grep clang | head -n1"))
+             #t))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))
        #:tests? #f)) ; tests require running dbus service
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("check" ,check)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
        ("efl" ,efl)))
@@ -482,7 +489,8 @@ the EFL.  It's aim is to create a new, native development environment for Linux
 that tries to lower the barrier to getting involved in Enlightenment development
 and in creating applications based on the Enlightenment Foundation Library suite.")
     (license (list license:public-domain ; data/extra/skeleton
-                   license:gpl2))))      ; edi
+                   license:gpl2          ; edi
+                   license:gpl3))))      ; data/extra/examples/images/mono-runtime.png
 
 (define-public lekha
   (package
