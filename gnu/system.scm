@@ -604,7 +604,7 @@ bookkeeping."
         %boot-service
         %activation-service
         (operating-system-etc-service os)
-        (service profile-service-type '())))
+        (service profile-service-type (operating-system-packages os))))
 
 (define* (operating-system-services os)
   "Return all the services of OS, including \"essential\" services."
