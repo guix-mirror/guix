@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018. 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018. 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -101,7 +101,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
-  #:use-module (srfi srfi-1))
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 (define (qemu-patch commit file-name sha256)
   "Return an origin for COMMIT."
@@ -302,15 +303,43 @@ server and embedded PowerPC, and S390 guests.")
                              '("mips64el-linux" "i586-gnu")))))
 
 (define-public qemu-minimal
-  ;; QEMU without GUI support.
+  ;; QEMU without GUI support, only supporting the host's architecture
   (package (inherit qemu)
     (name "qemu-minimal")
-    (synopsis "Machine emulator and virtualizer (without GUI)")
+    (synopsis
+     "Machine emulator and virtualizer (without GUI) for the host architecture")
     (arguments
      (substitute-keyword-arguments (package-arguments qemu)
        ((#:configure-flags _ '(list))
-        ;; Restrict to the targets supported by Guix.
-        ''("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu,aarch64-softmmu"))))
+        ;; Restrict to the host's architecture.
+        (let ((arch (car (string-split (or (%current-target-system)
+                                           (%current-system))
+                                       #\-))))
+          (cond ((string=? arch "i686")
+                 '(list "--target-list=i386-softmmu"))
+                ((string-prefix? "x86_64" arch)
+                 '(list "--target-list=i386-softmmu,x86_64-softmmu"))
+                ((string-prefix? "mips64" arch)
+                 '(list (string-append "--target-list=mips-softmmu,mipsel-softmmu,"
+                                       "mips64-softmmu,mips64el-softmmu")))
+                ((string-prefix? "mips" arch)
+                 '(list "--target-list=mips-softmmu,mipsel-softmmu"))
+                ((string-prefix? "aarch64" arch)
+                 '(list "--target-list=arm-softmmu,aarch64-softmmu"))
+                ((string-prefix? "arm" arch)
+                 '(list "--target-list=arm-softmmu"))
+                ((string-prefix? "alpha" arch)
+                 '(list "--target-list=alpha-softmmu"))
+                ((string-prefix? "powerpc64" arch)
+                 '(list "--target-list=ppc-softmmu,ppc64-softmmu"))
+                ((string-prefix? "powerpc" arch)
+                 '(list "--target-list=ppc-softmmu"))
+                ((string-prefix? "s390" arch)
+                 '(list "--target-list=s390x-softmmu"))
+                ((string-prefix? "riscv" arch)
+                 '(list "--target-list=riscv32-softmmu,riscv64-softmmu"))
+                (else   ; An empty list actually builds all the targets.
+                  ''()))))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (native-inputs (fold alist-delete (package-native-inputs qemu)
