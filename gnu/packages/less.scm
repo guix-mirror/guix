@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,11 @@
 (define-module (gnu packages less)
   #:use-module (guix licenses)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages file)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public less
@@ -48,3 +52,43 @@ backwards and forwards movement through the document.  It also does not have
 to read the entire input file before starting, so it starts faster than most
 text editors.")
     (license gpl3+))) ; some files are under GPLv2+
+
+(define-public lesspipe
+  (package
+    (name "lesspipe")
+    (version "1.84")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wofr06/lesspipe.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "124ffhzrikr88ab14rk6753n8adxijpmg7q3zx7nmqc52wpkfd8q"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file "Makefile") ; force generating
+                        (invoke "./configure"
+                                (string-append "--prefix=" out)
+                                "--yes")
+                        #t))))))
+    (inputs
+     `(("file" ,file)
+       ("ncurses" ,ncurses)))  ; for tput
+    (native-inputs `(("perl" ,perl)))
+    (home-page "https://github.com/wofr06/lesspipe")
+    (synopsis "Input filter for less")
+    (description "To browse files, the excellent viewer @code{less} can be
+used.  By setting the environment variable @code{LESSOPEN}, less can be
+enhanced by external filters to become more powerful.  The input filter for
+less described here is called @code{lesspipe.sh}.  It is able to process a
+wide variety of file formats.  It enables users to inspect archives and
+display their contents without having to unpack them before.  The filter is
+easily extensible for new formats.")
+    (license gpl2+)))
