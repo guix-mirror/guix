@@ -93,6 +93,35 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system qt))
 
+(define-public libilbc
+  (package
+    (name "libilbc")
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/TimothyGu/libilbc.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32
+         "1j1pn1w1198qvdiq2hgv9hkyq2nqcvmfnwlgppac633idkjnjrqx"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; No target
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Libre iLBC codec")
+    (description "LibiLBC is a packaging friendly copy of the iLBC codec from
+the WebRTC project.  It provides a base for distribution packages and can be
+used as drop-in replacement for the non-free code from RFC 3591.")
+    (home-page "https://github.com/TimothyGu/libilbc")
+    (license license:bsd-3)))
+
 (define-public spandsp
   (package
     (name "spandsp")
