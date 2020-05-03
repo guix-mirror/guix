@@ -48,6 +48,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
@@ -257,6 +258,37 @@ packet-manipulation library.")
    (license license:gpl2+) ; plus runtime exception
    (home-page "https://www.gnu.org/software/ccrtp/")))
 
+(define-public zrtpcpp
+  (package
+    (name "zrtpcpp")
+    (version "4.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/wernerd/ZRTPCPP.git")
+         (commit
+          (string-append "V" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32
+         "06vphvh4dgi7ah5qkq53wqvswv8l273x0xwbc447qmgvamm0x1vs"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; No target
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ccrtp" ,ccrtp)
+       ("ucommon" ,ucommon)))
+    (synopsis "C++ Implementation of ZRTP protocol")
+    (description  "GNU ZRTP C++ provides a library that adds ZRTP support to the
+GNU ccRTP stack and serves as library for other RTP stacks
+(PJSIP, GStreamer).")
+    (home-page "https://www.gnu.org/software/ccrtp/zrtp")
+    (license license:lgpl3+)))
 
 (define-public osip
   (package
