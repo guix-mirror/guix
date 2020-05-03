@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -299,6 +300,41 @@ neutron scattering spectra, but also computes other quantities.  The software
 is currently not actively maintained and works only with Python 2 and
 NumPy < 1.9.")
     (license license:cecill)))
+
+(define-public tng
+  (package
+    (name "tng")
+    (version "1.8.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gromacs/tng.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1apf2n8nb34z09xarj7k4jgriq283l769sakjmj5aalpbilvai4q"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-bundled-zlib
+           (lambda _
+             (delete-file-recursively "external")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "../build/bin/tests/tng_testing")
+             #t)))))
+    (home-page "https://github.com/gromacs/tng")
+    (synopsis "Trajectory Next Generation binary format manipulation library")
+    (description "TRAJNG (Trajectory next generation) is a program library for
+handling molecular dynamics (MD) trajectories.  It can store coordinates, and
+optionally velocities and the H-matrix.  Coordinates and velocities are
+stored with user-specified precision.")
+    (license license:bsd-3)))
 
 (define-public openbabel
   (package
