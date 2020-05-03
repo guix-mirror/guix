@@ -1083,12 +1083,14 @@ guix pull --url=/path/to/your/checkout --profile=/tmp/guix.master
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
-a subject.  You may use your email client or the @command{git
-send-email} command (@pxref{Sending a Patch Series}).  We prefer to get
-patches in plain text messages, either inline or as MIME attachments.
-You are advised to pay attention if your email client changes anything
-like line breaks or indentation which could potentially break the
-patches.
+a subject, if your patch is to be applied on a branch other than
+@code{master}, say @code{core-updates}, specify it in the subject like
+@samp{[PATCH core-updates] @dots{}}.  You may use your email client or
+the @command{git send-email} command (@pxref{Sending a Patch Series}).
+We prefer to get patches in plain text messages, either inline or as
+MIME attachments.  You are advised to pay attention if your email client
+changes anything like line breaks or indentation which could potentially
+break the patches.
 
 When a bug is resolved, please close the thread by sending an email to
 @email{@var{NNN}-done@@debbugs.gnu.org}.
