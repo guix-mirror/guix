@@ -3186,6 +3186,42 @@ SHA-512).")
 (define-public guile3.0-hashing
   (deprecated-package "guile3.0-hashing" guile-hashing))
 
+(define-public guile-packrat
+  (package
+    (name "guile-packrat")
+    (version "0.1.1")
+    (home-page "https://github.com/weinholt/packrat")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1aga17164fkhbgllqc7ni6fk5zl8mkmgkl5zcsy67x7ngpyalbby"))))
+    (build-system guile-build-system)
+    (arguments
+     `(#:implicit-inputs? #f                      ;needs nothing but Guile
+       #:compile-flags '("--r6rs" "-Wunbound-variable" "-Warity-mismatch")
+       #:not-compiled-file-regexp "/extensible\\.scm$"
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'no-srfi-23
+                    (lambda _
+                      (substitute* "packrat.sls"
+                        (("\\(srfi :23 error\\)")
+                         (object->string '(only (guile) error))))
+                      #t)))))
+    (native-inputs
+     `(("guile" ,guile-3.0)))
+    (synopsis "Packrat parser library in R6RS Scheme")
+    (description
+     "This is an R6RS Scheme adaptation of the
+@uref{https://bford.info/packrat/, packrat parsing}.  Packrat parsing is a
+memoizing, backtracking, recursive-descent parsing technique that runs in time
+and space linear in the size of the input text.")
+    (license license:expat)))
+
 (define-public guile-webutils
   (let ((commit "8541904f761066dc9c27b1153e9a838be9a55299")
         (revision "0"))
