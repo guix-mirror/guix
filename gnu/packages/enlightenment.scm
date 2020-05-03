@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
@@ -69,7 +69,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.23.3")
+    (version "1.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -77,7 +77,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "00b9lp3h65254kdb1ys15fv7p3ln7qsvf15jkw4kli5ymagadkjk"))))
+                "1xsbz5kl74cgzyzwmjy3p50m0iigvi53lklkp92v49k4j99zpak7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -93,6 +93,7 @@
        ("libraw" ,libraw)
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
+       ("libtiff" ,libtiff)
        ("libxau" ,libxau)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -102,18 +103,19 @@
        ("libxi" ,libxi)
        ("libxfixes" ,libxfixes)
        ("libxinerama" ,libxinerama)
-       ("libxp" ,libxp)
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxss" ,libxscrnsaver)
        ("libxtst" ,libxtst)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
        ("poppler" ,poppler)
+       ("util-linux" ,util-linux "lib")
        ("wayland-protocols" ,wayland-protocols)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
      `(("avahi" ,avahi)
-       ("bullet" ,bullet)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
        ("eudev" ,eudev)
@@ -122,30 +124,32 @@
        ("fribidi" ,fribidi)
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
-       ("luajit" ,luajit)
        ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
-       ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
+       ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxkbcommon" ,libxkbcommon)
+       ("luajit" ,luajit)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("util-linux" ,util-linux "lib")
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-Dsystemd=false"
+                           "-Delogind=true"
                            "-Dembedded-lz4=false"
                            "-Devas-loaders-disabler=json"
                            "-Dbuild-examples=false"
+                           "-Decore-imf-loaders-disabler=scim"
+                           "-Davahi=true"
+                           "-Dglib=true"
+                           "-Dmount-path=/run/setuid-programs/mount"
+                           "-Dunmount-path=/run/setuid-programs/umount"
                            ;(string-append "-Ddictionaries-hyphen-dir="
                            ;               (assoc-ref %build-inputs "hyphen")
                            ;               "/share/hyphen")
-                           "-Delogind=true"
                            "-Dnetwork-backend=connman"
                            ,@(match (%current-system)
                                ("armhf-linux"
@@ -153,22 +157,27 @@
                                (_
                                 '("-Dopengl=full")))
                            ;; for wayland
-                           "-Dwl-deprecated=true" ; ecore_wayland
-                           "-Ddrm-deprecated=true" ; ecore_drm
                            "-Dwl=true"
                            "-Ddrm=true")
        #:tests? #f ; Many tests fail due to timeouts and network requests.
        #:phases
        (modify-phases %standard-phases
-         ;; If we don't hardcode the location of libcurl.so then we
-         ;; have to wrap the outputs of efl's dependencies in curl.
-         (add-after 'unpack 'hardcode-libcurl-location
+         ;; If we don't hardcode the location of libcurl.so and others then we
+         ;; have to wrap the outputs of efl's dependencies in those libraries.
+         (add-after 'unpack 'hardcode-dynamic-libraries
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((curl (assoc-ref inputs "curl"))
-                    (lib  (string-append curl "/lib/")))
+             (let ((curl    (assoc-ref inputs "curl"))
+                   (pulse   (assoc-ref inputs "pulseaudio"))
+                   (sndfile (assoc-ref inputs "libsndfile"))
+                   (lib     "/lib/"))
                (substitute* "src/lib/ecore_con/ecore_con_url_curl.c"
                  (("libcurl.so.?" libcurl) ; libcurl.so.[45]
-                  (string-append lib libcurl)))
+                  (string-append curl lib libcurl)))
+               (substitute* "src/lib/ecore_audio/ecore_audio.c"
+                 (("libpulse.so.0" libpulse)
+                  (string-append pulse lib libpulse))
+                 (("libsndfile.so.1" libsnd)
+                  (string-append sndfile lib libsnd)))
                #t)))
          (add-after 'unpack 'fix-install-paths
            (lambda _
