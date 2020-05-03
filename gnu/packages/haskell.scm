@@ -14,7 +14,7 @@
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
-;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2018, 2019, 2020 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
@@ -47,6 +47,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages version-control)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -575,6 +576,53 @@ interactive environment for the functional language Haskell.")
                  (("^test\\('T8108'") "# guix skipped: test('T8108'"))
                (substitute* "libraries/unix/tests/libposix/all.T"
                  (("^test\\('posix010'") "# guix skipped: test('posix010'"))
+               #t))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "GHC_PACKAGE_PATH")
+                                (files (list
+                                        (string-append "lib/ghc-" version)))
+                                (file-pattern ".*\\.conf\\.d$")
+                                (file-type 'directory))))))
+
+(define-public ghc-8.8
+  (package (inherit ghc-8.6)
+    (name "ghc")
+    (version "8.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.haskell.org/ghc/dist/"
+                           version "/ghc-" version "-src.tar.xz"))
+       (sha256
+        (base32 "128g932i3wix6ic03v04nh5755vyjiidzri9iybwad72yfmc1p70"))))
+    (native-inputs
+     `(("ghc-bootstrap" ,ghc-8.6)
+       ("ghc-testsuite"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.haskell.org/ghc/dist/"
+                 version "/ghc-" version "-testsuite.tar.xz"))
+           (patches (search-patches "ghc-testsuite-dlopen-pie.patch"))
+           (sha256
+            (base32
+             "1l32mp94ll72skfsq1g2fqax4bkiw8b85gr3wd0bbqsqyi9a9jpr"))))
+       ("git" ,git)                     ; invoked during tests
+       ,@(filter (match-lambda
+                   (("ghc-bootstrap" . _) #f)
+                   (("ghc-testsuite" . _) #f)
+                   (_ #t))
+                 (package-native-inputs ghc-8.6))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ghc-8.6)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (add-after 'unpack-testsuite 'skip-more-tests
+             (lambda _
+               ;; XXX: This test fails because our ld-wrapper script
+               ;; mangles the response file passed to the linker.
+               (substitute* "testsuite/tests/hp2ps/all.T"
+                 (("^test\\('T15904'") "# guix skipped: test('T15904'"))
                #t))))))
     (native-search-paths (list (search-path-specification
                                 (variable "GHC_PACKAGE_PATH")
