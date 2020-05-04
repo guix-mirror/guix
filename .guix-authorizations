@@ -37,6 +37,9 @@
    (name "boskovits"))
   ("DFC0 C7F7 9EE6 0CA7 AE55  5E19 6722 43C4 A03F 0EEE"
    (name "brettgilio"))
+  (;; primary: "8929 BBC5 73CD 9206 3DDD 979D 3D36 CAA0 116F 0F99"
+   "1C9B F005 1A1A 6A44 5257 599A A949 03A1 66A1 8FAE"
+   (name "bricewge"))
   (;; primary: "0401 7A2A 6D9A 0CCD C81D  8EC2 96AB 007F 1A7E D999"
    "09CD D25B 5244 A376 78F6  EEA8 0CC5 2153 1979 91A5"
    (name "carl"))
