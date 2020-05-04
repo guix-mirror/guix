@@ -1594,7 +1594,7 @@ An example configuration can look like this:
 @cindex stumpwm fonts
 By default StumpWM uses X11 fonts, which could be small or pixelated on
 your system.  You could fix this by installing StumpWM contrib Lisp
-module @code{sbcl-stumpwm-ttf-fonts}, adding it to Guix system packages:
+module @code{sbcl-ttf-fonts}, adding it to Guix system packages:
 
 @lisp
 (use-modules (gnu))
@@ -1603,7 +1603,7 @@ module @code{sbcl-stumpwm-ttf-fonts}, adding it to Guix system packages:
 (operating-system
   ;; …
   (packages (append (list sbcl stumpwm `(,stumpwm "lib"))
-                    sbcl-stumpwm-ttf-fonts font-dejavu %base-packages)))
+                    sbcl-ttf-fonts font-dejavu %base-packages)))
 @end lisp
 
 Then you need to add the following code to a StumpWM configuration file
