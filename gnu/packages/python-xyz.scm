@@ -13088,7 +13088,7 @@ Features:
 (define-public python-dulwich
   (package
     (name "python-dulwich")
-    (version "0.18.6")
+    (version "0.19.16")
     (source
       (origin
         (method url-fetch)
@@ -13097,7 +13097,7 @@ Features:
                    (pypi-uri "dulwich" version)))
         (sha256
           (base32
-           "1aa1xfrxkc3j9s4xi0llhf5gndyi9ryprcxsqfa5fcb8ph34981q"))))
+           "0l589jl0lxx59yq0p6vmgw0q0hmfh48iqwyy0x6g1dmz93262igp"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13117,7 +13117,8 @@ Features:
              (setenv "PYTHONHASHSEED" "random")
              #t)))))
     (propagated-inputs
-     `(("python-fastimport" ,python-fastimport)))
+     `(("python-fastimport" ,python-fastimport)
+       ("python-urllib3" ,python-urllib3)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-geventhttpclient" ,python-geventhttpclient)
