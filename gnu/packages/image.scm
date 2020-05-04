@@ -599,10 +599,8 @@ collection of tools for doing simple manipulations of TIFF images.")
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)))
-    (propagated-inputs
-     ;; Linking a program with leptonica also requires these.
-     `(("openjpeg" ,openjpeg)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
