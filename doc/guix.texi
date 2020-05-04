@@ -1768,22 +1768,11 @@ can do so by running Emacs with the @code{--no-site-file} option
 
 @subsection The GCC toolchain
 
-@cindex GCC
-@cindex ld-wrapper
-
-Guix offers individual compiler packages such as @code{gcc} but if you
-are in need of a complete toolchain for compiling and linking source
-code what you really want is the @code{gcc-toolchain} package.  This
-package provides a complete GCC toolchain for C/C++ development,
-including GCC itself, the GNU C Library (headers and binaries, plus
-debugging symbols in the @code{debug} output), Binutils, and a linker
-wrapper.
-
-The wrapper's purpose is to inspect the @code{-L} and @code{-l} switches
-passed to the linker, add corresponding @code{-rpath} arguments, and
-invoke the actual linker with this new set of arguments.  You can instruct the
-wrapper to refuse to link against libraries not in the store by setting the
-@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
+@c XXX: The contents of this section were moved under
+@c ``Development'', since it makes more sense there and is not specific
+@c foreign distros.  Remove it from here eventually?
+@xref{Packages for C Development}, for information on packages for C/C++
+development.
 
 @node Upgrading Guix
 @section Upgrading Guix
@@ -4681,6 +4670,7 @@ easily distributed to users who do not run Guix.
 @menu
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
+* Packages for C Development::  Working with C code with Guix.
 @end menu
 
 @node Invoking guix environment
@@ -5343,6 +5333,27 @@ useful to Guix developers.
 In addition, @command{guix pack} supports all the common build options
 (@pxref{Common Build Options}) and all the package transformation
 options (@pxref{Package Transformation Options}).
+
+@node Packages for C Development
+@section Packages for C Development
+
+@cindex GCC
+@cindex ld-wrapper
+@cindex linker wrapper
+@cindex toolchain, for C development
+
+If you need a complete toolchain for compiling and linking C or C++
+source code, use the @code{gcc-toolchain} package.  This package
+provides a complete GCC toolchain for C/C++ development, including GCC
+itself, the GNU C Library (headers and binaries, plus debugging symbols
+in the @code{debug} output), Binutils, and a linker wrapper.
+
+The wrapper's purpose is to inspect the @code{-L} and @code{-l} switches
+passed to the linker, add corresponding @code{-rpath} arguments, and
+invoke the actual linker with this new set of arguments.  You can instruct the
+wrapper to refuse to link against libraries not in the store by setting the
+@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
+
 
 
 @c *********************************************************************
