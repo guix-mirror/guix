@@ -25,6 +25,8 @@
              (guix git)
              (guix openpgp)
              (guix base16)
+             ((guix utils)
+              #:select (cache-directory with-atomic-file-output))
              ((guix build utils) #:select (mkdir-p))
              (guix i18n)
              (guix progress)
