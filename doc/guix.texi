@@ -26085,10 +26085,10 @@ pointed to by the @code{GIT_SSL_CAINFO} environment variable.  Thus, you
 would typically run something like:
 
 @example
-$ guix install nss-certs
-$ export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
-$ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
-$ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
+guix install nss-certs
+export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
+export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
+export GIT_SSL_CAINFO="$SSL_CERT_FILE"
 @end example
 
 As another example, R requires the @code{CURL_CA_BUNDLE} environment
@@ -26096,8 +26096,8 @@ variable to point to a certificate bundle, so you would have to run
 something like this:
 
 @example
-$ guix install nss-certs
-$ export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
+guix install nss-certs
+export CURL_CA_BUNDLE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 @end example
 
 For other applications you may want to look up the required environment
