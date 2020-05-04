@@ -266,6 +266,51 @@ access to servers running the Discord protocol.")
     (home-page "https://github.com/sm00th/bitlbee-discord/")
     (license license:gpl2+)))
 
+(define-public purple-mattermost
+  (package
+    (name "purple-mattermost")
+    (version "1.2")
+    (home-page "https://github.com/EionRobb/purple-mattermost")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fm49iv58l09qpy8vkca3am642fxiwcrrh6ykimyc2mas210b5g2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Adjust the makefile to install files in the right
+                      ;; place.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("MATTERMOST_DEST = .*")
+                           (string-append "MATTERMOST_DEST = " out
+                                          "/lib/purple-2\n")) ;XXX: hardcoded
+                          (("MATTERMOST_ICONS_DEST = .*")
+                           (string-append "MATTERMOST_ICONS_DEST = "
+                                          out
+                                          "/share/pixmaps/pidgin/protocols\n")))
+                        #t))))
+       #:make-flags (list "CC=gcc"
+                          ,(string-append "PLUGIN_VERSION=" version))
+       #:tests? #f))
+    (inputs `(("glib" ,glib)
+              ("json-glib" ,json-glib)
+              ("discount" ,discount)
+              ("pidgin" ,pidgin)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Purple plug-in to access Mattermost instant messaging")
+    (description
+     "Purple-Mattermost is a plug-in for Purple, the instant messaging library
+used by Pidgin and Bitlbee, among others, to access
+@uref{https://mattermost.com/, Mattermost} servers.")
+    (license license:gpl3+)))
+
 (define-public hexchat
   (package
     (name "hexchat")
