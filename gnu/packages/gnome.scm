@@ -7768,7 +7768,8 @@ associations for GNOME.")
       ("gnome-desktop" ,gnome-desktop)
       ("libgweather" ,libgweather)))
    (arguments
-    `(#:phases
+    `(#:glib-or-gtk? #t
+      #:phases
       (modify-phases %standard-phases
         (add-after 'install 'fix-desktop-file
           ;; FIXME: "gapplication launch org.gnome.Weather" fails for some reason.
@@ -7777,7 +7778,16 @@ associations for GNOME.")
             (let* ((out (assoc-ref outputs "out"))
                    (applications (string-append out "/share/applications")))
               (substitute* (string-append applications "/org.gnome.Weather.desktop")
-                (("Exec=.*") "Exec=gnome-weather\n"))))))))
+                (("Exec=.*") "Exec=gnome-weather\n"))
+              #t)))
+        (add-after 'install 'wrap
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out               (assoc-ref outputs "out"))
+                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+              ;; GNOME Weather needs the typelib files of GTK+, Pango etc at runtime.
+              (wrap-program (string-append out "/bin/gnome-weather")
+                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
+              #t))))))
    (synopsis "Weather monitoring for GNOME desktop")
    (description "GNOME Weather is a small application that allows you to
 monitor the current weather conditions for your city, or anywhere in the
