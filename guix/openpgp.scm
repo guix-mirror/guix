@@ -136,6 +136,7 @@
 
 ;; Error raised when reading an invalid signature packet.
 (define-condition-type &openpgp-invalid-signature-error &openpgp-error
+  openpgp-invalid-signature-error?
   (port openpgp-invalid-signature-error-port))
 
 
