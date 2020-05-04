@@ -210,10 +210,9 @@ topology functions.")
        ("glib" ,glib)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
        ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)))
-    (propagated-inputs
-     `(("gtk+3" ,gtk+)))
     (synopsis "Graphical map viewer and wayfinding program")
     (description "GNOME Maps is a graphical map viewer.  It uses map data from
 the OpenStreetMap project.  It can provide directions for walking, bicycling,
