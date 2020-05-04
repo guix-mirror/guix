@@ -189,8 +189,8 @@ topology functions.")
                                                  ,geocode-glib-path)))
                #t))))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("evolution-data-server" ,evolution-data-server)
