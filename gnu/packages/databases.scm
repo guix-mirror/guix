@@ -3458,7 +3458,8 @@ The drivers officially supported by @code{libdbi} are:
        ("sqlite" ,sqlite)
        ("odbc" ,unixodbc)
        ("boost" ,boost)
-       ("mysql" ,mysql)))
+       ("mariadb:dev" ,mariadb "dev")
+       ("mariadb:lib" ,mariadb "lib")))
     (arguments
      `(#:tests? #f ; Tests may require running database management systems.
        #:phases
