@@ -101,9 +101,7 @@ the context of the caller.  If the directive matches those defaults then,
 (define (directives store)
   "Return a list of directives to populate the root file system that will host
 STORE."
-  `(;; Note: the store's GID is fixed precisely so we can set it here rather
-    ;; than at activation time.
-    (directory ,store 0 30000 #o1775)
+  `((directory ,store 0 0 #o1775)
 
     (directory "/etc")
     (directory "/var/log")                          ; for shepherd
