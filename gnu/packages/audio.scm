@@ -2320,7 +2320,7 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.4")
+    (version "3.11.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2331,11 +2331,15 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xdg1dx0y0agircnkn4bg3jpw184xc5pn28k7rrzgjh1rdnyzz24"))))
+                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))))
     (build-system cmake-build-system)
+    (outputs
+     '("out"   ;core language
+       "ide")) ;qt ide
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
-                           "-DSC_QT=off" "-DCMAKE_BUILD_TYPE=Release"
+                           "-DSC_QT=ON" "-DCMAKE_BUILD_TYPE=Release"
+                           "-DFORTIFY=ON" "-DLIBSCSYNTH=ON"
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
        #:modules ((guix build utils)
@@ -2356,6 +2360,9 @@ background file post-processing.")
                            (lambda (x)
                              (and (eq? (stat:type (stat x)) 'directory)
                                   (not (member (basename x) keep-dirs))))))))
+             (substitute* "lang/CMakeLists.txt"
+               (("include\\(\\.\\./external_libraries/link/AbletonLinkConfig\\.cmake\\)")
+                "find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)"))
              #t))
          ;; Some tests are broken (see:
          ;; https://github.com/supercollider/supercollider/issues/3555 and
@@ -2367,8 +2374,6 @@ background file post-processing.")
                 "")
                (("perf_counter_test.cpp")
                 ""))
-             (delete-file "testsuite/server/supernova/server_test.cpp")
-             (delete-file "testsuite/server/supernova/perf_counter_test.cpp")
              (substitute* "testsuite/CMakeLists.txt"
                (("add_subdirectory\\(sclang\\)")
                 ""))
@@ -2385,9 +2390,20 @@ background file post-processing.")
                     "SC_Filesystem::instance\\(\\)\\.getDirectory"
                     "\\(DirName::Resource\\) / CLASS_LIB_DIR_NAME"))
                   (string-append "Path(\"" scclass-dir "\")")))
+               #t)))
+         (add-before 'install 'install-ide
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (ide (assoc-ref outputs "ide"))
+                    (scide "editors/sc-ide/scide"))
+               (install-file scide
+                             (string-append ide "/bin"))
+               (delete-file scide)
                #t))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("ableton-link" ,ableton-link)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -2400,7 +2416,14 @@ background file post-processing.")
        ("icu4c" ,icu4c)
        ("boost" ,boost)
        ("boost-sync" ,boost-sync)
-       ("yaml-cpp" ,yaml-cpp)))
+       ("yaml-cpp" ,yaml-cpp)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtwebsockets" ,qtwebsockets)))
+    (propagated-inputs                  ;to get native-search-path
+     `(("qtwebengine" ,qtwebengine)))
     (home-page "https://github.com/supercollider/supercollider")
     (synopsis "Synthesis engine and programming language")
     (description "SuperCollider is a synthesis engine (@code{scsynth} or
