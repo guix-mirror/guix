@@ -554,8 +554,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "68.7.0-guix0-preview1")
-(define %icecat-build-id "20200406000000") ;must be of the form YYYYMMDDhhmmss
+(define %icecat-version "68.8.0-guix0-preview1")
+(define %icecat-build-id "20200505000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -577,11 +577,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0w3mad0r4khcd7hfmm3xix9x6mp5yp8g8kyh18vanfnjqdls0gmd"))))
+              "0hp8cc7xk6qj4q1s8n97qv9sdrypkzvphik96m5qv1r5s9k24nzs"))))
 
-         (upstream-icecat-base-version "68.7.0") ; maybe older than base-version
+         (upstream-icecat-base-version "68.8.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "d185c5a67506311e19440fd4b824a822ce840369")
+         (gnuzilla-commit "5358ff2963a6136f8acafdc598cad540231ad23e")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -593,10 +593,12 @@ from forcing GEXP-PROMISE."
                                       (string-take gnuzilla-commit 8)))
             (sha256
              (base32
-              "09skws692qv5kbhj8bvy3prj7v0iyfz68xjck4vbfxkahldfppqx"))))
+              "1bq0qzgkxz9q61g48bc05i0zx1z8k0pklxnmn54ch136aqgsyli4"))))
 
          (makeicecat-patch
-          (local-file (search-patch "icecat-makeicecat.patch"))))
+          (local-file (search-patch "icecat-makeicecat.patch")))
+         (gnuzilla-fixes-patch
+          (local-file (search-patch "icecat-use-older-reveal-hidden-html.patch"))))
 
     (origin
       (method computed-origin-method)
@@ -642,6 +644,8 @@ from forcing GEXP-PROMISE."
                   (make-file-writable "makeicecat")
                   (invoke "patch" "--force" "--no-backup-if-mismatch"
                           "-p1" "--input" #+makeicecat-patch)
+                  (invoke "patch" "--force" "--no-backup-if-mismatch"
+                          "-p1" "--input" #+gnuzilla-fixes-patch)
                   (patch-shebang "makeicecat")
                   (substitute* "makeicecat"
                     (("^FFMAJOR=(.*)" all ffmajor)
