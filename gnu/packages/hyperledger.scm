@@ -188,7 +188,7 @@ link-time.  New implementations can be added as well.")
        ("rxcpp" ,rxcpp)
        ("spdlog" ,spdlog)))
     (inputs
-     `(("boost" ,boost-1.69)
+     `(("boost" ,boost)
        ("gflags" ,gflags)
        ("grpc" ,grpc-1.16.1)
        ("hyperledger-iroha-ed25519" ,hyperledger-iroha-ed25519)
