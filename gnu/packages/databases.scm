@@ -3467,7 +3467,8 @@ The drivers officially supported by @code{libdbi} are:
          (add-after 'unpack 'fix-lib-path
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("set\\(SOCI_LIBDIR \"lib64\"\\)") "")))))))
+               (("set\\(SOCI_LIBDIR \"lib64\"\\)") ""))
+             #t)))))
     (synopsis "C++ Database Access Library")
     (description
      "SOCI is an abstraction layer for several database backends, including
