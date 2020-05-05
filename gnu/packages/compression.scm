@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2019, 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
@@ -2189,3 +2189,39 @@ computations.")
     ;; Blosc itself is released under BSD-3 but it incorporates code under
     ;; other non-copyleft licenses.
     (license license:bsd-3)))
+
+(define-public ecm
+  (package
+    (name "ecm")
+    (version "1.0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alucryd/ecm-tools")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rvyx5gcy8lfklgj80szlz3312x45wzx0d9jsgwyvy8f6m4nnb0c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "DESTDIR=" (assoc-ref %outputs "out"))))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("\\$\\(DESTDIR\\)/usr") "$(DESTDIR)"))
+             #t)))))
+    (home-page "https://github.com/alucryd/ecm-tools")
+    (synopsis "Error code modeler")
+    (description "ECM is a utility that converts ECM files, i.e., CD data files
+with their error correction data losslessly rearranged for better compression,
+to their original, binary CD format.")
+    (license license:gpl3+)))
