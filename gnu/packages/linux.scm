@@ -2171,6 +2171,21 @@ Linux-based operating systems.")
     ;; License is BSD-3 or GPLv2, at the user's choice.
     (license license:gpl2)))
 
+;; libcap 2.31 causes problems for 'fakeroot', so provide this newer variant.
+;; To be merged with libcap on the next rebuild cycle.
+(define-public libcap/next
+  (package
+    (inherit libcap)
+    (version "2.34")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/libs/security/linux-privs/"
+                    "libcap2/libcap-" version ".tar.xz"))
+              (sha256
+               (base32
+                "048n1gy2p48vl9hkrr9wymfxxcpwj2aslz2bv79nhl4m2lhd9kdf"))))))
+
 (define-public bridge-utils
   (package
     (name "bridge-utils")
