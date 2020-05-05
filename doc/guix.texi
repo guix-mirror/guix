@@ -79,6 +79,7 @@ Copyright @copyright{} 2020 Naga Malleswari@*
 Copyright @copyright{} 2020 Brice Waegeneire@*
 Copyright @copyright{} 2020 R Veera Kumar@*
 Copyright @copyright{} 2020 Pierre Langlois@*
+Copyright @copyright{} 2020 pinoaffe@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -14387,6 +14388,80 @@ Whether to allow empty passwords.
 
 @item @code{password-authentication?} (default: @code{#t})
 Whether to enable password-based authentication.
+@end table
+@end deftp
+
+@cindex AutoSSH
+@deffn {Scheme Variable} autossh-service-type
+This is the type for the @uref{https://www.harding.motd.ca/autossh,
+AutoSSH} program that runs a copy of @code{ssh} and monitors it,
+restarting it as necessary should it die or stop passing traffic.
+AutoSSH can be run manually from the commandline by passing arguments to
+the binary @code{autossh} from the package @code{autossh}, but it can
+also be run as a guix service. This latter usecase is documented here.
+
+AutoSSH can be used to forward local traffic to a remote machine using an SSH tunnel,
+and it respects the @file{~/.ssh/config} of the user it is run as.
+
+For example, to specify a service running autossh as the user @code{pino}
+and forwarding all local connections to port @code{8081} to @code{remote:8081}
+using an SSH tunnel, add this call to the operating system's @code{services} field:
+
+@lisp
+(service autossh-service-type
+         (autossh-configuration
+          (user "pino")
+          (ssh-options (list "-T" "-N" "-L" "8081:localhost:8081" "remote.net"))))
+@end lisp
+@end deffn
+
+@deftp {Data Type} autossh-configuration
+This data type represents the configuration of an AutoSSH service.
+
+@table @asis
+
+@item @code{user} (default @code{"autossh"})
+The user as which the AutoSSH service is to be run.
+This assumes that the specified user exists.
+
+@item @code{poll} (default @code{600})
+Specifies the connection poll time in seconds.
+
+@item @code{first-poll} (default @code{#f})
+Specifies how long autossh waits before the first connection test in seconds.
+After this first test, polling is resumed at the pace defined in @code{poll}.
+When set to @code{#f}, the first poll is not treated specially and
+will also use the connection poll specified in @code{poll}
+
+@item @code{gate-time} (default @code{30})
+Specifies (in seconds) how long an SSH connection must be active
+before it is considered successful.
+
+@item @code{log-level} (default @code{1})
+The log level, corresponding to the levels used by syslog
+(so @code{0} is the most silent while @code{7} is the chattiest.)
+
+@item @code{max-start} (default @code{#f})
+The maximum number of times SSH may be (re)started before AutoSSH exits.
+When set to @code{#f}, no maximum is configured and AutoSSH may restart indefinitely.
+
+@item @code{message} (default @code{""})
+The message to append to the echo message sent when testing connections.
+
+@item @code{port} (default @code{"0"})
+The ports used for monitoring the connection. When set to @code{"0"},
+monitoring is disabled. When set to @code{"n"} where @code{n} is a positive integer,
+ports @code{n} and @code{n+1} are used for monitoring the connection, such that
+port @code{n} is the base monitoring port and @code{n+1} is the echo port.
+When set to @code{"n:m"} where @code{n} and @code{m} are positive integers,
+the ports @code{n} and @code{n+1} are used for monitoring the connection, such
+that port @code{n} is the base monitoring port and @code{m} is the echo port.
+
+@item @code{ssh-options} (default @code{'()})
+The list of commandline arguments to pass to ssh when it is run.
+Options @code{-f} and @code{-M ....} are reserved for AutoSSH
+and may cause undefined behaviour.
+
 @end table
 @end deftp
 
