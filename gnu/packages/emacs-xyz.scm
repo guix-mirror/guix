@@ -21157,14 +21157,14 @@ standard.  This is the highest standard of its kind.")
 (define-public emacs-modus-vivendi-theme
   (package
     (name "emacs-modus-vivendi-theme")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "modus-vivendi-theme-" version ".el"))
        (sha256
-        (base32 "0hwkzbx7a9scdr589sb7hw90lsm8yxcn3y5xr3bpyxf8rkr2zl4c"))))
+        (base32 "121nlr5w58j4q47rh9xjjf9wzb97yl2m1n2l6g58ck4vnarwndl1"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Accessible dark theme (WCAG AAA)")
