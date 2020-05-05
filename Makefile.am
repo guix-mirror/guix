@@ -70,6 +70,7 @@ MODULES =					\
   guix/docker.scm	   			\
   guix/json.scm					\
   guix/records.scm				\
+  guix/openpgp.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
   guix/combinators.scm				\
@@ -415,6 +416,7 @@ SCM_TESTS =					\
   tests/nar.scm				\
   tests/networking.scm				\
   tests/opam.scm				\
+  tests/openpgp.scm				\
   tests/packages.scm				\
   tests/pack.scm				\
   tests/pki.scm				\
@@ -565,6 +567,11 @@ EXTRA_DIST +=						\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
   tests/cve-sample.json					\
+  tests/civodul.key					\
+  tests/rsa.key						\
+  tests/dsa.key						\
+  tests/ed25519.key					\
+  tests/ed25519.sec					\
   build-aux/config.rpath				\
   bootstrap						\
   doc/build.scm						\

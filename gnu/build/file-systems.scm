@@ -98,6 +98,47 @@ takes a bytevector and returns #t when it's a valid superblock."
 (define null-terminated-latin1->string
   (cut latin1->string <> zero?))
 
+(define (bytevector-utf16-length bv)
+  "Given a bytevector BV containing a NUL-terminated UTF16-encoded string,
+determine where the NUL terminator is and return its index.  If there's no
+NUL terminator, return the size of the bytevector."
+  (let ((length (bytevector-length bv)))
+    (let loop ((index 0))
+      (if (< index length)
+          (if (zero? (bytevector-u16-ref bv index 'little))
+              index
+              (loop (+ index 2)))
+          length))))
+
+(define* (bytevector->u16-list bv endianness #:optional (index 0))
+  (if (< index (bytevector-length bv))
+      (cons (bytevector-u16-ref bv index endianness)
+            (bytevector->u16-list bv endianness (+ index 2)))
+      '()))
+
+;; The initrd doesn't have iconv data, so do the conversion ourselves.
+(define (utf16->string bv endianness)
+  (list->string
+   (map integer->char
+        (reverse
+         (let loop ((remainder (bytevector->u16-list bv endianness))
+                    (result '()))
+             (match remainder
+              (() result)
+              ((a) (cons a result))
+              ((a b x ...)
+               (if (and (>= a #xD800) (< a #xDC00) ; high surrogate
+                        (>= b #xDC00) (< b #xE000)) ; low surrogate
+                   (loop x (cons (+ #x10000
+                                    (* #x400 (- a #xD800))
+                                    (- b #xDC00))
+                                 result))
+                   (loop (cons b x) (cons a result))))))))))
+
+(define (null-terminated-utf16->string bv endianness)
+  (utf16->string (sub-bytevector bv 0 (bytevector-utf16-length bv))
+                 endianness))
+
 
 ;;;
 ;;; Ext2 file systems.
@@ -377,7 +418,9 @@ if DEVICE does not contain an F2FS file system."
 (define (f2fs-superblock-volume-name sblock)
   "Return the volume name of SBLOCK as a string of at most 512 characters, or
 #f if SBLOCK has no volume name."
-  (utf16->string (sub-bytevector sblock (- (+ #x470 12) #x400) 512) %f2fs-endianness))
+  (null-terminated-utf16->string
+   (sub-bytevector sblock (- (+ #x470 12) #x400) 512)
+   %f2fs-endianness))
 
 (define (check-f2fs-file-system device)
   "Return the health of a F2FS file system on DEVICE."

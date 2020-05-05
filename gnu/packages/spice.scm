@@ -21,6 +21,7 @@
 
 (define-module (gnu packages spice)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages gl)
@@ -31,9 +32,11 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nss)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages security-token)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
@@ -219,6 +222,7 @@ which allows users to view a desktop computing environment.")
       `(("cyrus-sasl" ,cyrus-sasl)
         ("glib" ,glib)
         ("libjpeg-turbo" ,libjpeg-turbo)
+        ("libcacard" ,libcacard)        ; smartcard support
         ("lz4" ,lz4)
         ("opus" ,opus)
         ("orc" ,orc)
@@ -296,6 +300,51 @@ Internet and from a wide variety of machine architectures.")
 resolution scaling on graphical console window resize.")
     (home-page "https://www.spice-space.org")
     (license license:gpl3+)))
+
+(define-public libcacard
+  (package
+    (name "libcacard")
+    (version "2.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://gitlab.freedesktop.org/spice/libcacard/uploads/"
+                    "56cb2499198e78e560a1d4c716cd8ab1"
+                    "/libcacard-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vyvkk4b6xjwq1ccggql13c1x7g4y90clpkqw28257azgn2a1c8n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; TODO Tests require gnutls built with
+                                        ; p11-kit
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/setup-softhsm2.sh"
+               (("\\/usr\\/lib64\\/pkcs11\\/libsofthsm2\\.so")
+                (string-append (assoc-ref inputs "softhsm")
+                               "/lib/softhsm/libsofthsm2.so")))
+             #t)))))
+    (propagated-inputs
+     `(("glib" ,glib)                   ; Requires: in the pkg-config file
+       ("nss" ,nss)))                   ; Requires.private: in the pkg-config
+                                        ; file
+    (native-inputs
+     `(("openssl" ,openssl)
+       ("nss" ,nss "bin")
+       ("opensc" ,opensc)
+       ("softhsm" ,softhsm)
+       ("gnutls" ,gnutls)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (synopsis "Emulate and share smart cards with virtual machines")
+    (description
+     "The @acronym{CAC,Common Access Card} library can be used to emulate and
+share smart cards from client system to local or remote virtual machines.")
+    (home-page "https://gitlab.freedesktop.org/spice/libcacard")
+    (license license:lgpl2.1+)))
 
 (define-public virt-viewer
   (package

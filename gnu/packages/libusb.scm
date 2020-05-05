@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,7 +115,8 @@ version of libusb to run with newer libusb.")
       (sha256
        (base32
         "0i4bacxkyr7xyqxbmb00ypkrv4swkgm0mghbzjsnw6blvvczgxip"))
-      (patches (search-patches "libusb-0.1-disable-tests.patch"))))))
+      (patches (search-patches "libusb-0.1-disable-tests.patch"))))
+    (arguments `(#:configure-flags (list "CFLAGS=-Wno-error")))))
 
 (define-public libusb4java
   ;; There is no public release so we take the latest version from git.

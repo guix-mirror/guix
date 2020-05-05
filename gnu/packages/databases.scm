@@ -3472,7 +3472,8 @@ The drivers officially supported by @code{libdbi} are:
        ("sqlite" ,sqlite)
        ("odbc" ,unixodbc)
        ("boost" ,boost)
-       ("mysql" ,mysql)))
+       ("mariadb:dev" ,mariadb "dev")
+       ("mariadb:lib" ,mariadb "lib")))
     (arguments
      `(#:tests? #f ; Tests may require running database management systems.
        #:phases
@@ -3480,7 +3481,8 @@ The drivers officially supported by @code{libdbi} are:
          (add-after 'unpack 'fix-lib-path
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("set\\(SOCI_LIBDIR \"lib64\"\\)") "")))))))
+               (("set\\(SOCI_LIBDIR \"lib64\"\\)") ""))
+             #t)))))
     (synopsis "C++ Database Access Library")
     (description
      "SOCI is an abstraction layer for several database backends, including

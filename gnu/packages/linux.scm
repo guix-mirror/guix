@@ -200,9 +200,9 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
-   "5.4.28"
+   "5.4.37"
    (base32 "0ckxn7k5zgcqk30dq943bnamr6a6zjbw2aqjl3x30f4kvh5f6k25")
-   (base32 "08ls4gx5vanyiq9rn0869nfq4piw4lx1dl8hh9w9xgkr4ypc1j4k")))
+   (base32 "10qb890is4z58vr8czh3xx69q62l3b3j38y410kgiw8nii3zx5lr")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
@@ -369,50 +369,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.8")
+(define-public linux-libre-5.6-version "5.6.10")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "1pw2q9509jzp84b6qasaais2ws25v2wrjh072q0x3j520zzl5q8r")))
+        (hash (base32 "1f81b0icn0r9gww95rckyxs5d4g8bwf4mmqkrmwxxf4xga19dp3v")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.36")
+(define-public linux-libre-5.4-version "5.4.38")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "13avfvimjyg4lhj9micgib9bb5qpx11cja5liypid0rf2acfmymr")))
+        (hash (base32 "03pks3jx5kk0wnhjkm92wxdbgw8qbdg93sfwchnx88m2wfj9yaz7")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.119")
+(define-public linux-libre-4.19-version "4.19.120")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1klvdzz8sndg2zsr1anfy9p5fc1aapjqvc249myrbndyf55bk91b")))
+        (hash (base32 "03mjng5ws9y56id99619ysarz73qqyylgc3mlknga1yphbhh16qb")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.177")
+(define-public linux-libre-4.14-version "4.14.178")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "04hq0i06mg2yc09jj2xk0vhf5q9yigzjzm55a5bvfy2a6j43r9rk")))
+        (hash (base32 "1pcqxmq9ir4f963aiw5bab9w2mp4vfiwaq2bk7nksbl2bs3k6b7x")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.220")
+(define-public linux-libre-4.9-version "4.9.221")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0bhbkybzbdsbmrjmb5m7hxxl8b3v6n79zhh86cbr95kzg1hcgnfs")))
+        (hash (base32 "1gh1x73xblxkb927igc3shrqnn49lcscwrq2fixmk9n7jb7q2hp6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.220")
+(define-public linux-libre-4.4-version "4.4.221")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1knj3qsl7x3fysdz1h0s980ddbafs3658z2y67w6sn79wp7d8blg")))
+        (hash (base32 "06rpjnvrdp71flz948mfmx7jv8x2vmdg54zz1xpkb2458mwh5hbq")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4707,10 +4707,49 @@ disks and SD cards.  This package provides the userland utilities.")
              (append-to-file "mkfs/Makefile.am" "\nmkfs_f2fs_LDFLAGS = -all-static\n")
              (append-to-file "fsck/Makefile.am" "\nfsck_f2fs_LDFLAGS = -all-static\n")
              (append-to-file "tools/Makefile.am" "\nf2fscrypt_LDFLAGS = -all-static -luuid\n")
-             #t)))))
+             #t))
+          (add-after 'install 'remove-store-references
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Work around bug in our util-linux.
+              ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41019>.
+              (remove-store-references (string-append (assoc-ref outputs "out")
+                                                      "/sbin/mkfs.f2fs"))
+              #t)))))
      (inputs
       `(("libuuid:static" ,util-linux "static")
         ("libuuid" ,util-linux "lib")))))) ; for include files
+
+(define-public f2fs-fsck/static
+  (package
+    (name "f2fs-fsck-static")
+    (version (package-version f2fs-tools/static))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+         (let* ((f2fs-tools (assoc-ref %build-inputs "f2fs-tools-static"))
+                (fsck "fsck.f2fs")
+                (out (assoc-ref %outputs "out"))
+                (sbin (string-append out "/sbin")))
+           (mkdir-p sbin)
+           (with-directory-excursion sbin
+             (install-file (string-append f2fs-tools "/sbin/" fsck)
+                           ".")
+             (remove-store-references fsck)
+             (chmod fsck #o555))
+           #t))))
+    (inputs
+     `(("f2fs-tools-static" ,f2fs-tools/static)))
+    (home-page (package-home-page f2fs-tools/static))
+    (synopsis "Statically-linked fsck.f2fs command from f2fs-tools")
+    (description "This package provides statically-linked fsck.f2fs command taken
+from the f2fs-tools package. It is meant to be used in initrds.")
+    (license (package-license f2fs-tools/static))))
 
 (define-public freefall
   (package

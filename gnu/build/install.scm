@@ -25,7 +25,6 @@
   #:export (install-boot-config
             evaluate-populate-directive
             populate-root-file-system
-            register-closure
             install-database-and-gc-roots
             populate-single-profile-directory))
 
@@ -51,9 +50,14 @@ that the fonts, background images, etc. referred to by BOOTCFG are not GC'd."
     (copy-file bootcfg pivot)
     (rename-file pivot target)))
 
-(define (evaluate-populate-directive directive target)
+(define* (evaluate-populate-directive directive target
+                                      #:key
+                                      (default-gid 0)
+                                      (default-uid 0))
   "Evaluate DIRECTIVE, an sexp describing a file or directory to create under
-directory TARGET."
+directory TARGET.  DEFAULT-UID and DEFAULT-GID are the default UID and GID in
+the context of the caller.  If the directive matches those defaults then,
+'chown' won't be run."
   (let loop ((directive directive))
     (catch 'system-error
       (lambda ()
@@ -63,7 +67,12 @@ directory TARGET."
           (('directory name uid gid)
            (let ((dir (string-append target name)))
              (mkdir-p dir)
-             (chown dir uid gid)))
+             ;; If called from a context without "root" permissions, "chown"
+             ;; to root will fail.  In that case, do not try to run "chown"
+             ;; and assume that the file will be chowned elsewhere (when
+             ;; interned in the store for instance).
+             (or (and (= uid default-uid) (= gid default-gid))
+                 (chown dir uid gid))))
           (('directory name uid gid mode)
            (loop `(directory ,name ,uid ,gid))
            (chmod (string-append target name) mode))
@@ -98,9 +107,7 @@ directory TARGET."
 (define (directives store)
   "Return a list of directives to populate the root file system that will host
 STORE."
-  `(;; Note: the store's GID is fixed precisely so we can set it here rather
-    ;; than at activation time.
-    (directory ,store 0 30000 #o1775)
+  `((directory ,store 0 0 #o1775)
 
     (directory "/etc")
     (directory "/var/log")                          ; for shepherd

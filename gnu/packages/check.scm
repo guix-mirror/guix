@@ -32,6 +32,7 @@
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1457,6 +1458,30 @@ executed.")
 
 (define-public python2-coverage
   (package-with-python2 python-coverage))
+
+(define-public python-pytest-asyncio
+  (package
+    (name "python-pytest-asyncio")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-asyncio" version))
+       (sha256
+        (base32 "1bysy4nii13bm7h345wxf8fxcjhab7l374pqdv7vwv3izl053b4z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-async-generator" ,python-async-generator)
+       ("python-hypothesis" ,python-hypothesis)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pytest-dev/pytest-asyncio")
+    (synopsis "Pytest support for asyncio")
+    (description "Python asyncio code is usually written in the form of
+coroutines, which makes it slightly more difficult to test using normal
+testing tools.  @code{pytest-asyncio} provides useful fixtures and markers
+to make testing async code easier.")
+    (license license:asl2.0)))
 
 (define-public python-cov-core
   (package

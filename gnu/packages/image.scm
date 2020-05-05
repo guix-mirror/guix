@@ -603,10 +603,8 @@ collection of tools for doing simple manipulations of TIFF images.")
        ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)))
-    (propagated-inputs
-     ;; Linking a program with leptonica also requires these.
-     `(("openjpeg" ,openjpeg)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
@@ -618,7 +616,16 @@ collection of tools for doing simple manipulations of TIFF images.")
                 (string-append " " (which "sh") " "))
                (("which gnuplot")
                 "true"))
-             #t)))))
+             #t))
+         (add-after 'install 'provide-absolute-giflib-reference
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (giflib (assoc-ref inputs "giflib")))
+               ;; Add an absolute reference to giflib to avoid propagation.
+               (with-directory-excursion (string-append out "/lib")
+                 (substitute* '("liblept.la" "pkgconfig/lept.pc")
+                   (("-lgif") (string-append "-L" giflib "/lib -lgif"))))
+               #t))))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description

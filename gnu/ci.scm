@@ -38,6 +38,7 @@
                 #:select (lookup-compressor self-contained-tarball))
   #:use-module (gnu bootloader)
   #:use-module (gnu bootloader u-boot)
+  #:use-module (gnu image)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages make-bootstrap)
   #:use-module (gnu packages package-management)
   #:use-module (gnu system)
+  #:use-module (gnu system image)
   #:use-module (gnu system vm)
   #:use-module (gnu system install)
   #:use-module (gnu tests)
@@ -213,32 +215,23 @@ system.")
     (expt 2 20))
 
   (if (member system %guixsd-supported-systems)
-      (if (member system %u-boot-systems)
-          (list (->job 'flash-image
-                       (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (system-disk-image
-                            (operating-system (inherit installation-os)
-                             (bootloader (bootloader-configuration
-                                          (bootloader u-boot-bootloader)
-                                          (target #f))))
-                            #:disk-image-size
-                            (* 1500 MiB))))))
-          (list (->job 'usb-image
-                       (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (system-disk-image installation-os
-                                              #:disk-image-size
-                                              (* 1500 MiB)))))
-                (->job 'iso9660-image
-                       (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (system-disk-image installation-os
-                                              #:file-system-type
-                                              "iso9660"))))))
+      (list (->job 'usb-image
+                   (run-with-store store
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-image
+                        (image
+                         (inherit efi-disk-image)
+                         (size (* 1500 MiB))
+                         (operating-system installation-os))))))
+            (->job 'iso9660-image
+                   (run-with-store store
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-image
+                        (image
+                         (inherit iso9660-image)
+                         (operating-system installation-os)))))))
       '()))
 
 (define channel-build-system

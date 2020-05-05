@@ -35,6 +35,7 @@
 
             read-reference-graph
 
+            file-size
             closure-size
             populate-store))
 

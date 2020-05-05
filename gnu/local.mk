@@ -62,6 +62,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/bootloader/u-boot.scm                     \
   %D%/bootloader/depthcharge.scm                \
   %D%/ci.scm					\
+  %D%/image.scm					\
   %D%/packages.scm				\
   %D%/packages/abduco.scm			\
   %D%/packages/abiword.scm			\
@@ -260,6 +261,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/haskell-crypto.scm		\
   %D%/packages/haskell-web.scm			\
   %D%/packages/haskell-xyz.scm			\
+  %D%/packages/heads.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
@@ -471,6 +473,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/search.scm			\
   %D%/packages/security-token.scm		\
   %D%/packages/selinux.scm			\
+  %D%/packages/sequoia.scm			\
   %D%/packages/serialization.scm		\
   %D%/packages/serveez.scm			\
   %D%/packages/shells.scm			\
@@ -605,6 +608,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/accounts.scm			\
   %D%/system/file-systems.scm			\
   %D%/system/hurd.scm				\
+  %D%/system/image.scm 				\
   %D%/system/install.scm			\
   %D%/system/keyboard.scm			\
   %D%/system/linux-container.scm		\
@@ -625,6 +629,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
   %D%/build/cross-toolchain.scm			\
+  %D%/build/image.scm				\
   %D%/build/file-systems.scm			\
   %D%/build/install.scm				\
   %D%/build/linux-boot.scm			\
@@ -824,6 +829,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/cmake-curl-certificates.patch		\
   %D%/packages/patches/coda-use-system-libs.patch		\
+  %D%/packages/patches/collectd-5.11.0-noinstallvar.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
   %D%/packages/patches/containerd-test-with-go1.13.patch		\
@@ -1024,6 +1030,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grantlee-merge-theme-dirs.patch		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
+  %D%/packages/patches/grocsvs-dont-use-admiral.patch		\
+  %D%/packages/patches/gromacs-tinyxml2.patch			\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
@@ -1265,6 +1273,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-shared-pord.patch			\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
+  %D%/packages/patches/musl-cross-locale.patch			\
   %D%/packages/patches/mutt-store-references.patch		\
   %D%/packages/patches/m4-gnulib-libio.patch			\
   %D%/packages/patches/ncompress-fix-softlinks.patch		\
@@ -1459,6 +1468,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-1.25-accept-more-detailed-gdb-lines.patch \
   %D%/packages/patches/rust-bootstrap-stage0-test.patch		\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
+  %D%/packages/patches/rust-nettle-disable-vendor.patch		 \
+  %D%/packages/patches/rust-nettle-sys-disable-vendor.patch	 \
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rust-openssl-sys-no-vendor.patch	\
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\

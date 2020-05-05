@@ -1187,18 +1187,38 @@ the OpenPGP key you will use to sign commits, and giving its fingerprint
 (see below).  See @uref{https://emailselfdefense.fsf.org/en/}, for an
 introduction to public-key cryptography with GnuPG.
 
+@c See <https://sha-mbles.github.io/>.
+Set up GnuPG such that it never uses the SHA1 hash algorithm for digital
+signatures, which is known to be unsafe since 2019, for instance by
+adding the following line to @file{~/.gnupg/gpg.conf} (@pxref{GPG
+Esoteric Options,,, gnupg, The GNU Privacy Guard Manual}):
+
+@example
+digest-algo sha512
+@end example
+
 @item
 Maintainers ultimately decide whether to grant you commit access,
 usually following your referrals' recommendation.
 
 @item
+@cindex OpenPGP, signed commits
 If and once you've been given access, please send a message to
 @email{guix-devel@@gnu.org} to say so, again signed with the OpenPGP key
 you will use to sign commits (do that before pushing your first commit).
 That way, everyone can notice and ensure you control that OpenPGP key.
 
-@c TODO: Add note about adding the fingerprint to the list of authorized
-@c keys once that has stabilized.
+@quotation Important
+Before you can push for the first time, maintainers must:
+
+@enumerate
+@item
+add your OpenPGP key to the @code{keyring} branch;
+@item
+add your OpenPGP fingerprint to the @file{.guix-authorizations} file of
+the branch(es) you will commit to.
+@end enumerate
+@end quotation
 
 @item
 Make sure to read the rest of this section and... profit!

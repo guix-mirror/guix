@@ -167,6 +167,34 @@ the low-level development kit for the Yubico YubiKey authentication device.")
     (home-page "https://developers.yubico.com/yubico-c/")
     (license license:bsd-2)))
 
+(define-public softhsm
+  (package
+    (name "softhsm")
+    (version "2.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://dist.opendnssec.org/source/"
+                    "softhsm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wkmyi6n3z2pak1cj5yk6v6bv9w0m24skycya48iikab0mrr8931"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-gost"))) ; TODO Missing the OpenSSL
+                                               ; engine for GOST
+    (inputs
+     `(("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("cppunit" ,cppunit)))
+    (synopsis "Software implementation of a generic cryptographic device")
+    (description
+     "SoftHSM 2 is a software implementation of a generic cryptographic device
+with a PKCS #11 Cryptographic Token Interface.")
+    (home-page "https://www.opendnssec.org/softhsm/")
+    (license license:bsd-2)))
+
 (define-public pcsc-lite
   (package
     (name "pcsc-lite")

@@ -31,6 +31,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jonathan Frederickson <jonathan@terracrypt.net>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2320,18 +2321,20 @@ background file post-processing.")
     (name "supercollider")
     (version "3.10.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/supercollider/supercollider"
-                    "/releases/download/Version-" version
-                    "/SuperCollider-" version "-Source-linux.tar.bz2"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/supercollider/supercollider.git")
+                    (commit (string-append "Version-" version))
+                    ;; for nova-simd, nova-tt, hidapi, TLSF, oscpack
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0x11g3pfw11m6v18qfpfl5w99dbmf73g4z7wvwhrj1a4qv2dn084"))))
+                "0xdg1dx0y0agircnkn4bg3jpw184xc5pn28k7rrzgjh1rdnyzz24"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
-                           "-DSC_QT=off"
+                           "-DSC_QT=off" "-DCMAKE_BUILD_TYPE=Release"
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
        #:modules ((guix build utils)
@@ -2369,7 +2372,19 @@ background file post-processing.")
                (("add_subdirectory\\(sclang\\)")
                 ""))
              (delete-file "testsuite/sclang/CMakeLists.txt")
-             #t)))))
+             #t))
+         (add-after 'disable-broken-tests 'patch-scclass-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (scclass-dir
+                     (string-append out
+                                    "/share/SuperCollider/SCClassLibrary")))
+               (substitute* "lang/LangSource/SC_LanguageConfig.cpp"
+                 (((string-append
+                    "SC_Filesystem::instance\\(\\)\\.getDirectory"
+                    "\\(DirName::Resource\\) / CLASS_LIB_DIR_NAME"))
+                  (string-append "Path(\"" scclass-dir "\")")))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

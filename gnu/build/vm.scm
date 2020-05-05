@@ -27,6 +27,7 @@
   #:use-module (guix build store-copy)
   #:use-module (guix build syscalls)
   #:use-module (guix store database)
+  #:use-module (gnu build bootloader)
   #:use-module (gnu build linux-boot)
   #:use-module (gnu build install)
   #:use-module (gnu system uuid)
@@ -57,8 +58,7 @@
             estimated-partition-size
             root-partition-initializer
             initialize-partition-table
-            initialize-hard-disk
-            make-iso9660-image))
+            initialize-hard-disk))
 
 ;;; Commentary:
 ;;;
@@ -439,159 +439,6 @@ system that is passed to 'populate-root-file-system'."
     (mkdir-p directory)
     (symlink bootcfg (string-append directory "/bootcfg"))))
 
-(define (install-efi grub esp config-file)
-  "Write a self-contained GRUB EFI loader to the mounted ESP using CONFIG-FILE."
-  (let* ((system %host-type)
-         ;; Hard code the output location to a well-known path recognized by
-         ;; compliant firmware. See "3.5.1.1 Removable Media Boot Behaviour":
-         ;; http://www.uefi.org/sites/default/files/resources/UEFI%20Spec%202_6.pdf
-         (grub-mkstandalone (string-append grub "/bin/grub-mkstandalone"))
-         (efi-directory (string-append esp "/EFI/BOOT"))
-         ;; Map grub target names to boot file names.
-         (efi-targets (cond ((string-prefix? "x86_64" system)
-                             '("x86_64-efi" . "BOOTX64.EFI"))
-                            ((string-prefix? "i686" system)
-                             '("i386-efi" . "BOOTIA32.EFI"))
-                            ((string-prefix? "armhf" system)
-                             '("arm-efi" . "BOOTARM.EFI"))
-                            ((string-prefix? "aarch64" system)
-                             '("arm64-efi" . "BOOTAA64.EFI")))))
-    ;; grub-mkstandalone requires a TMPDIR to prepare the firmware image.
-    (setenv "TMPDIR" esp)
-
-    (mkdir-p efi-directory)
-    (invoke grub-mkstandalone "-O" (car efi-targets)
-            "-o" (string-append efi-directory "/"
-                                (cdr efi-targets))
-            ;; Graft the configuration file onto the image.
-            (string-append "boot/grub/grub.cfg=" config-file))))
-
-(define* (make-iso9660-image xorriso grub-mkrescue-environment
-                             grub config-file os-drv target
-                             #:key (volume-id "Guix_image") (volume-uuid #f)
-                             register-closures? (closures '()))
-  "Given a GRUB package, creates an iso image as TARGET, using CONFIG-FILE as
-GRUB configuration and OS-DRV as the stuff in it."
-  (define grub-mkrescue
-    (string-append grub "/bin/grub-mkrescue"))
-
-  (define grub-mkrescue-sed.sh
-    (string-append xorriso "/bin/grub-mkrescue-sed.sh"))
-
-  (define target-store
-    (string-append "/tmp/root" (%store-directory)))
-
-  (define items
-    ;; The store items to add to the image.
-    (delete-duplicates
-     (append-map (lambda (closure)
-                   (map store-info-item
-                        (call-with-input-file (string-append "/xchg/" closure)
-                          read-reference-graph)))
-                 closures)))
-
-  (populate-root-file-system os-drv "/tmp/root")
-  (mount (%store-directory) target-store "" MS_BIND)
-
-  (when register-closures?
-    (display "registering closures...\n")
-    (for-each (lambda (closure)
-                (register-closure
-                 "/tmp/root"
-                 (string-append "/xchg/" closure)
-
-                 ;; TARGET-STORE is a read-only bind-mount so we shouldn't try
-                 ;; to modify it.
-                 #:deduplicate? #f
-                 #:reset-timestamps? #f))
-              closures)
-    (register-bootcfg-root "/tmp/root" config-file))
-
-  ;; 'grub-mkrescue' calls out to mtools programs to create 'efi.img', a FAT
-  ;; file system image, and mtools honors SOURCE_DATE_EPOCH for the mtime of
-  ;; those files.  The epoch for FAT is Jan. 1st 1980, not 1970, so choose
-  ;; that.
-  (setenv "SOURCE_DATE_EPOCH"
-          (number->string
-           (time-second
-            (date->time-utc (make-date 0 0 0 0 1 1 1980 0)))))
-
-  ;; Our patched 'grub-mkrescue' honors this environment variable and passes
-  ;; it to 'mformat', which makes it the serial number of 'efi.img'.  This
-  ;; allows for deterministic builds.
-  (setenv "GRUB_FAT_SERIAL_NUMBER"
-          (number->string (if volume-uuid
-
-                              ;; On 32-bit systems the 2nd argument must be
-                              ;; lower than 2^32.
-                              (string-hash (iso9660-uuid->string volume-uuid)
-                                           (- (expt 2 32) 1))
-
-                              #x77777777)
-                          16))
-
-  (setenv "MKRESCUE_SED_MODE" "original")
-  (setenv "MKRESCUE_SED_XORRISO" (string-append xorriso
-                                                "/bin/xorriso"))
-  (setenv "MKRESCUE_SED_IN_EFI_NO_PT" "yes")
-  (for-each (match-lambda
-             ((name . value) (setenv name value)))
-            grub-mkrescue-environment)
-
-  (let ((pipe
-         (apply open-pipe* OPEN_WRITE
-                grub-mkrescue
-                (string-append "--xorriso=" grub-mkrescue-sed.sh)
-                "-o" target
-                (string-append "boot/grub/grub.cfg=" config-file)
-                "etc=/tmp/root/etc"
-                "var=/tmp/root/var"
-                "run=/tmp/root/run"
-                ;; /mnt is used as part of the installation
-                ;; process, as the mount point for the target
-                ;; file system, so create it.
-                "mnt=/tmp/root/mnt"
-                "-path-list" "-"
-                "--"
-
-                ;; Set all timestamps to 1.
-                "-volume_date" "all_file_dates" "=1"
-
-                ;; ‘zisofs’ compression reduces the total image size by ~60%.
-                "-zisofs" "level=9:block_size=128k" ; highest compression
-                ;; It's transparent to our Linux-Libre kernel but not to GRUB.
-                ;; Don't compress the kernel, initrd, and other files read by
-                ;; grub.cfg, as well as common already-compressed file names.
-                "-find" "/" "-type" "f"
-                ;; XXX Even after "--" above, and despite documentation claiming
-                ;; otherwise, "-or" is stolen by grub-mkrescue which then chokes
-                ;; on it (as ‘-o …’) and dies.  Don't use "-or".
-                "-not" "-wholename" "/boot/*"
-                "-not" "-wholename" "/System/*"
-                "-not" "-name" "unicode.pf2"
-                "-not" "-name" "bzImage"
-                "-not" "-name" "*.gz"   ; initrd & all man pages
-                "-not" "-name" "*.png"  ; includes grub-image.png
-                "-exec" "set_filter" "--zisofs"
-                "--"
-
-                "-volid" (string-upcase volume-id)
-                (if volume-uuid
-                    `("-volume_date" "uuid"
-                      ,(string-filter (lambda (value)
-                                        (not (char=? #\- value)))
-                                      (iso9660-uuid->string
-                                       volume-uuid)))
-                    `()))))
-    ;; Pass lines like 'gnu/store/…-x=/gnu/store/…-x' corresponding to the
-    ;; '-path-list -' option.
-    (for-each (lambda (item)
-                (format pipe "~a=~a~%"
-                        (string-drop item 1) item))
-              items)
-    (unless (zero? (close-pipe pipe))
-      (error "oh, my! grub-mkrescue failed" grub-mkrescue))))
-
 (define* (initialize-hard-disk device
                                #:key
                                bootloader-package
@@ -633,30 +480,16 @@ passing it a directory name where it is mounted."
 
     (when esp
       ;; Mount the ESP somewhere and install GRUB UEFI image.
-      (let ((mount-point (string-append target "/boot/efi"))
-            (grub-config (string-append target "/tmp/grub-standalone.cfg")))
+      (let ((mount-point (string-append target "/boot/efi")))
         (display "mounting EFI system partition...\n")
         (mkdir-p mount-point)
         (mount (partition-device esp) mount-point
                (partition-file-system esp))
 
-        ;; Create a tiny configuration file telling the embedded grub
-        ;; where to load the real thing.
-        ;; XXX This is quite fragile, and can prevent the image from booting
-        ;; when there's more than one volume with this label present.
-        ;; Reproducible almost-UUIDs could reduce the risk (not eliminate it).
-        (call-with-output-file grub-config
-          (lambda (port)
-            (format port
-                    "insmod part_msdos~@
-                    search --set=root --label Guix_image~@
-                    configfile /boot/grub/grub.cfg~%")))
-
         (display "creating EFI firmware image...")
-        (install-efi grub-efi mount-point grub-config)
+        (install-efi-loader grub-efi mount-point)
         (display "done.\n")
 
-        (delete-file grub-config)
         (umount mount-point)))
 
     ;; Register BOOTCFG as a GC root.

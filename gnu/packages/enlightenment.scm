@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
@@ -69,7 +69,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.23.3")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -77,7 +77,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "00b9lp3h65254kdb1ys15fv7p3ln7qsvf15jkw4kli5ymagadkjk"))))
+                "1yhck2g4rwlzgnzqa4wjxw3lf6k6rd730hz4bwzajdjy7i26xfdk"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -93,6 +93,7 @@
        ("libraw" ,libraw)
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
+       ("libtiff" ,libtiff)
        ("libxau" ,libxau)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -102,18 +103,18 @@
        ("libxi" ,libxi)
        ("libxfixes" ,libxfixes)
        ("libxinerama" ,libxinerama)
-       ("libxp" ,libxp)
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxss" ,libxscrnsaver)
        ("libxtst" ,libxtst)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
        ("poppler" ,poppler)
        ("wayland-protocols" ,wayland-protocols)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
      `(("avahi" ,avahi)
-       ("bullet" ,bullet)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
        ("eudev" ,eudev)
@@ -122,15 +123,13 @@
        ("fribidi" ,fribidi)
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
-       ("luajit" ,luajit)
        ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
-       ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
+       ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxkbcommon" ,libxkbcommon)
+       ("luajit" ,luajit)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
@@ -139,13 +138,18 @@
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-Dsystemd=false"
+                           "-Delogind=true"
                            "-Dembedded-lz4=false"
                            "-Devas-loaders-disabler=json"
                            "-Dbuild-examples=false"
+                           "-Decore-imf-loaders-disabler=scim"
+                           "-Davahi=true"
+                           "-Dglib=true"
+                           "-Dmount-path=/run/setuid-programs/mount"
+                           "-Dunmount-path=/run/setuid-programs/umount"
                            ;(string-append "-Ddictionaries-hyphen-dir="
                            ;               (assoc-ref %build-inputs "hyphen")
                            ;               "/share/hyphen")
-                           "-Delogind=true"
                            "-Dnetwork-backend=connman"
                            ,@(match (%current-system)
                                ("armhf-linux"
@@ -153,8 +157,8 @@
                                (_
                                 '("-Dopengl=full")))
                            ;; for wayland
-                           "-Dwl-deprecated=true" ; ecore_wayland
-                           "-Ddrm-deprecated=true" ; ecore_drm
+                           "-Dwl-deprecated=true"   ; ecore_wayland
+                           "-Ddrm-deprecated=true"  ; ecore_drm
                            "-Dwl=true"
                            "-Ddrm=true")
        #:tests? #f ; Many tests fail due to timeouts and network requests.
@@ -336,8 +340,8 @@ Libraries with some extra bells and whistles.")
                (substitute* "src/modules/everything/evry_plug_calc.c"
                  (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
-                 (("/bin/mount") (string-append utils "/bin/mount"))
-                 (("/bin/umount") (string-append utils "/bin/umount"))
+                 (("/bin/mount") "/run/setuid-programs/mount")
+                 (("/bin/umount") "/run/setuid-programs/umount")
                  (("/usr/bin/eject") (string-append utils "/bin/eject"))
                  (("/usr/bin/l2ping") (string-append bluez "/bin/l2ling"))
                  (("/bin/rfkill") (string-append utils "/sbin/rfkill"))
@@ -389,7 +393,7 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.23.0")
+    (version "1.24.0")
     (source
       (origin
         (method url-fetch)
@@ -397,7 +401,7 @@ embedded systems.")
                             "python/python-efl-" version ".tar.xz"))
         (sha256
          (base32
-          "16yn6a1b9167nfmryyi44ma40m20ansfpwgrvqzfvwix7qaz9pib"))
+          "1vk1cdd959gia4a9qzyq56a9zw3lqf9ck66k8c9g3c631mp5cfpy"))
         (modules '((guix build utils)))
         ;; Remove files generated by Cython
         (snippet
@@ -449,25 +453,32 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.6.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.enlightenment.org/rel/apps/edi/"
-                            name "-" version ".tar.xz"))
+        (uri (string-append "https://github.com/Enlightenment/edi/releases/"
+                            "download/v" version "/edi-" version ".tar.xz"))
         (sha256
          (base32
-          "0iqkah327ms5m7k054hcik2l9v68i4mg9yy52brprfqpd5jk7pw8"))))
-    (build-system gnu-build-system)
+          "01k8gp8r2wa6pyg3dkbm35m6hdsbss06hybghg0qjmd4mzswcd3a"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-clang-header
+           (lambda _
+             (substitute* "scripts/clang_include_dir.sh"
+               (("grep clang") "grep clang | head -n1"))
+             #t))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))
        #:tests? #f)) ; tests require running dbus service
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("check" ,check)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
        ("efl" ,efl)))
@@ -478,7 +489,8 @@ the EFL.  It's aim is to create a new, native development environment for Linux
 that tries to lower the barrier to getting involved in Enlightenment development
 and in creating applications based on the Enlightenment Foundation Library suite.")
     (license (list license:public-domain ; data/extra/skeleton
-                   license:gpl2))))      ; edi
+                   license:gpl2          ; edi
+                   license:gpl3))))      ; data/extra/examples/images/mono-runtime.png
 
 (define-public lekha
   (package
@@ -560,7 +572,7 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.2.6")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
@@ -568,22 +580,14 @@ directories.
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
          (base32
-          "1rg3kri6j8nmab0kdljnmcc096c8ibgwzvbhqr0b25xpmrq8bcac"))))
-    (build-system gnu-build-system)
+          "0gh3y2348pgf683sljnfry9k545h42dx75idyigcspsjsk7khisz"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:tests? #f   ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure) ; no configure phase
-         (add-after 'unpack 'set-environmental-variables
-           (lambda _ (setenv "CC" (which "gcc")) #t)))))
+     '(#:tests? #f))    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("efl" ,efl)
-       ("perl" ,perl)))
+     `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL process viewer")
     (description

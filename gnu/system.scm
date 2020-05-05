@@ -120,6 +120,7 @@
             operating-system-etc-directory
             operating-system-locale-directory
             operating-system-boot-script
+            operating-system-uuid
 
             system-linux-image-file-name
             operating-system-with-gc-roots
@@ -983,6 +984,55 @@ we're running in the final root."
                (operating-system-initrd-modules os)
                #:mapped-devices mapped-devices
                #:keyboard-layout (operating-system-keyboard-layout os)))
+
+(define* (operating-system-uuid os #:optional (type 'dce))
+  "Compute UUID object with a deterministic \"UUID\" for OS, of the given
+TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
+  ;; Note: For this to be deterministic, we must not hash things that contains
+  ;; (directly or indirectly) procedures, for example.  That rules out
+  ;; anything that contains gexps, thunk or delayed record fields, etc.
+
+  (define service-name
+    (compose service-type-name service-kind))
+
+  (define (file-system-digest fs)
+    ;; Return a hashable digest that does not contain 'dependencies' since
+    ;; this field can contain procedures.
+    (let ((device (file-system-device fs)))
+      (list (file-system-mount-point fs)
+            (file-system-type fs)
+            (file-system-device->string device)
+            (file-system-options fs))))
+
+  (if (eq? type 'iso9660)
+      (let ((pad (compose (cut string-pad <> 2 #\0)
+                          number->string))
+            (h   (hash (map service-name (operating-system-services os))
+                       3600)))
+        (bytevector->uuid
+         (string->iso9660-uuid
+          (string-append "1970-01-01-"
+                         (pad (hash (operating-system-host-name os) 24)) "-"
+                         (pad (quotient h 60)) "-"
+                         (pad (modulo h 60)) "-"
+                         (pad (hash (map file-system-digest
+                                         (operating-system-file-systems os))
+                                    100))))
+         'iso9660))
+      (bytevector->uuid
+       (uint-list->bytevector
+        (list (hash (map file-system-digest
+                         (operating-system-file-systems os))
+                    (- (expt 2 32) 1))
+              (hash (operating-system-host-name os)
+                    (- (expt 2 32) 1))
+              (hash (map service-name (operating-system-services os))
+                    (- (expt 2 32) 1))
+              (hash (map file-system-digest (operating-system-file-systems os))
+                    (- (expt 2 32) 1)))
+        (endianness little)
+        4)
+       type)))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."

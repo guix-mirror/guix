@@ -244,6 +244,7 @@ exec smbd $@")))
        ("gtk+" ,gtk+)
        ("libaio" ,libaio)
        ("libattr" ,attr)
+       ("libcacard" ,libcacard)     ; smartcard support
        ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
        ("libdrm" ,libdrm)
        ("libepoxy" ,libepoxy)
@@ -310,7 +311,8 @@ server and embedded PowerPC, and S390 guests.")
                   '("gettext")))
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl2" "spice" "virglrenderer" "gtk+"
-                    "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2")))))
+                    "usbredir" "libdrm" "libepoxy" "pulseaudio" "vde2"
+                    "libcacard")))))
 
 (define-public libosinfo
   (package

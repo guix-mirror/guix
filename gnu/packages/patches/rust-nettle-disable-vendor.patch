@@ -1,0 +1,13 @@
+Subject: nettle: clear out "vendored" feature cruft from build.rs
+From: Daniel Kahn Gillmor's avatarDaniel Kahn Gillmor <dkg@fifthhorseman.net>
+
+https://salsa.debian.org/rust-team/debcargo-conf/-/commit/b608e6beaa1d38c14fc16ad53780d94954a91900
+https://sources.debian.org/src/rust-nettle/7.0.0-1/debian/patches/disable-vendor.diff/
+--- a/Cargo.toml	1969-12-31 19:00:00.000000000 -0500
++++ b/Cargo.toml	2019-10-23 19:12:01.076181971 -0400
+@@ -35,4 +35,4 @@
+ version = "1"
+ 
+ [features]
+-vendored = ["nettle-sys/vendored"]
++vendored = []

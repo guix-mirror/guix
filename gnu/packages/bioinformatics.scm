@@ -79,6 +79,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graph)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -15854,3 +15855,44 @@ biological processes.  SBML is useful for models of metabolism, cell
 signaling, and more.  It continues to be evolved and expanded by an
 international community.")
     (license license:lgpl2.1+)))
+
+(define-public grocsvs
+  ;; The last release is out of date and new features have been added.
+  (let ((commit "ecd956a65093a0b2c41849050e4512d46fecea5d")
+        (revision "1"))
+    (package
+      (name "grocsvs")
+      (version (git-version "0.2.6.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/grocsvs/grocsvs")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "14505725gr7qxc17cxxf0k6lzcwmgi64pija4mwf29aw70qn35cc"))
+                (patches (search-patches "grocsvs-dont-use-admiral.patch"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f            ; No test suite.
+         #:python ,python-2))   ; Only python-2 supported.
+      (inputs
+       `(("python2-h5py" ,python2-h5py)
+         ("python2-ipython-cluster-helper" ,python2-ipython-cluster-helper)
+         ("python2-networkx" ,python2-networkx)
+         ("python2-psutil" ,python2-psutil)
+         ("python2-pandas" ,python2-pandas)
+         ("python2-pybedtools" ,python2-pybedtools)
+         ("python2-pyfaidx" ,python2-pyfaidx)
+         ("python2-pygraphviz" ,python2-pygraphviz)
+         ("python2-pysam" ,python2-pysam)
+         ("python2-scipy" ,python2-scipy)))
+      (home-page "https://github.com/grocsvs/grocsvs")
+      (synopsis "Genome-wide reconstruction of complex structural variants")
+      (description
+       "@dfn{Genome-wide Reconstruction of Complex Structural Variants}
+(GROC-SVs) is a software pipeline for identifying large-scale structural
+variants, performing sequence assembly at the breakpoints, and reconstructing
+the complex structural variants using the long-fragment information from the
+10x Genomics platform.")
+       (license license:expat))))
