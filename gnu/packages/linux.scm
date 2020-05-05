@@ -6641,13 +6641,21 @@ the superuser to make device nodes.")
             ;; We don't have an /etc/passwd entry for "root" - use numeric IDs.
             (substitute* "test/compare-tar"
              (("tar -tvf") "tar --numeric-owner -tvf"))
+
+            ;; coreutils 8.32 changed 'ls' to use the statx() syscall instead
+            ;; of lstat().  fakeroot 1.24 does not support the former, so
+            ;; adjust these tests to use 'test -b' instead of 'ls' to test for
+            ;; block device.  See <https://bugs.gnu.org/41090>.
+            (substitute* '("test/t.mknod" "test/t.chmod_dev")
+              (("ls -ld? \\$tmp/hda3")
+               "test -b $tmp/hda3 && echo block || echo fail"))
             #t)))))
     (native-inputs
      `(("acl" ,acl)
        ("sharutils" ,sharutils) ; for the tests
        ("xz" ,xz))) ; for the tests
     (inputs
-     `(("libcap" ,libcap)
+     `(("libcap" ,libcap/next)
        ("util-linux" ,util-linux)))
     (synopsis "Provides a fake root environment")
     (description "@command{fakeroot} runs a command in an environment where
