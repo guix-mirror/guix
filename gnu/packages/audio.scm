@@ -88,6 +88,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -4283,3 +4284,104 @@ between 700 and 3200 bit/s.  The main application is low bandwidth HF/VHF
 digital radio.")
     (home-page "https://www.rowetel.com/?page_id=452")
     (license license:lgpl2.1)))
+
+(define-public ableton-link
+  (package
+    (name "ableton-link")
+    (version "3.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Ableton/link.git")
+                    (commit (string-append "Link-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0262vm0v7hmqjhqx5xikh529p3c065p1yld6ymaiz74yq1dnnjir"))
+              (modules '((guix build utils)))
+              (patches
+               (search-patches "ableton-link-system-libraries-debian.patch"))
+              (snippet
+               '(begin
+                  ;; Tests assume that CMake's "build" directory is a
+                  ;; sub-directory of the source tree, so we fix it.
+                  (substitute* "ci/run-tests.py"
+                    (("root_dir,") "root_dir, os.pardir,"))
+                  ;; Unbundle dependencies.
+                  (delete-file-recursively "third_party")
+                  (delete-file-recursively "modules")
+                  #t))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch" ,catch-framework)
+       ("python" ,python)       ;for running tests
+       ("portaudio" ,portaudio) ;for portaudio examples
+       ("qtbase" ,qtbase)       ;for Qt examples
+       ("qtdeclarative" ,qtdeclarative)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("jack" ,jack-1)                       ;for JACK examples
+       ("qtquickcontrols" ,qtquickcontrols))) ;for Qt examples
+    (propagated-inputs
+     ;; This is because include/ableton/platforms/asio/AsioWrapper.hpp
+     ;; contains '#include <asio.hpp>'.
+     `(("asio" ,asio)))
+    (arguments
+     `(#:configure-flags
+       '("-DLINK_BUILD_QT_EXAMPLES=ON"
+         "-DLINK_BUILD_JACK=ON")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((python (string-append (assoc-ref inputs "python")
+                                          "/bin/python3"))
+                   (run-tests (string-append "../ableton-link-"
+                                             ,version
+                                             "-checkout/ci/run-tests.py")))
+               (invoke python run-tests "--target" "LinkCoreTest")
+               (invoke python run-tests "--target" "LinkDiscoveryTest"))))
+         (add-before 'install 'patch-cmake
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((source (string-append "../ableton-link-"
+                                                ,version
+                                                "-checkout/")))
+               (substitute* (string-append source
+                                           "cmake_include/AsioStandaloneConfig.cmake")
+                 (((string-append "\\$\\{CMAKE_CURRENT_LIST_DIR\\}/\\.\\./"
+                                  "modules/asio-standalone/asio/include"))
+                  (string-append (assoc-ref inputs "asio")
+                                 "/include")))
+               (substitute* (string-append source "AbletonLinkConfig.cmake")
+                 (("\\$\\{CMAKE_CURRENT_LIST_DIR\\}/include")
+                  "${CMAKE_CURRENT_LIST_DIR}/../../../include")
+                 (("\\$\\{CMAKE_CURRENT_LIST_DIR\\}/include/ableton/Link\\.hpp")
+                  "${CMAKE_CURRENT_LIST_DIR}/../../../include/ableton/Link.hpp"))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib-cmake (string-append out "/lib/cmake/ableton-link"))
+                    (source (string-append "../ableton-link-" ,version "-checkout")))
+               (for-each (lambda (test-file)
+                           (delete-file test-file))
+                         '("bin/LinkDiscoveryTest" "bin/LinkCoreTest"))
+               (copy-recursively "bin" bin)
+               (copy-recursively (string-append source "/include/ableton")
+                                 (string-append out "/include/ableton"))
+               (install-file (string-append source "/AbletonLinkConfig.cmake")
+                             lib-cmake)
+               (install-file (string-append source
+                                            "/cmake_include/AsioStandaloneConfig.cmake")
+                             (string-append lib-cmake "/cmake_include"))
+               #t))))))
+    (home-page "https://github.com/Ableton/link")
+    (synopsis "Synchronize musical beat, tempo, and phase across multiple applications")
+    (description
+     "Ableton Link is a C++ library that synchronizes musical beat, tempo, and phase
+across multiple applications running on one or more devices.  Applications on devices
+connected to a local network discover each other automatically and form a musical
+session in which each participant can perform independently: anyone can start or stop
+while still staying in time.")
+    (license license:gpl2+)))
