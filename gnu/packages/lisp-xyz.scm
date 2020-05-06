@@ -5995,8 +5995,8 @@ can and/or provide reasonable defaults.")
   (sbcl-package->cl-source-package sbcl-introspect-environment))
 
 (define-public sbcl-type-i
-  (let ((commit "dea233f45f94064105ec09f0767de338f67dcbe2")
-        (revision "1"))
+  (let ((commit "d34440ab4ebf5a46a58deccb35950b15670e3667")
+        (revision "2"))
     (package
       (name "sbcl-type-i")
       (build-system asdf-build-system/sbcl)
@@ -6011,7 +6011,7 @@ can and/or provide reasonable defaults.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "039g5pbrhh65s0bhr9314gmd2nwc2y5lp2377c5qrc2lxky89qs3"))))
+           "12wsga0pwjkkr176lnjwkmmlm3ccp0n310sjj9h20lk53iyd0z69"))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)
          ("introspect-environment" ,sbcl-introspect-environment)
