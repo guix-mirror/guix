@@ -87,6 +87,42 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
+(define-public fsarchiver
+  (package
+    (name "fsarchiver")
+    (version "0.8.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/fdupoux/fsarchiver.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rvwq5v3rl14bqxjm1ibfapyicf0sa44nw7451v10kx39lp56ylp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("e2fsprogs" ,e2fsprogs)
+       ("libgcrypt" ,libgcrypt)
+       ("lz4" ,lz4)
+       ("lzo" ,lzo)
+       ("util-linux" ,util-linux)
+       ("xz" ,xz)
+       ("zlib" ,zlib)
+       ("zstd:lib" ,zstd "lib")))
+    (synopsis "Filesystem Backup/Deployment Tool")
+    (description "FSArchiver allows you to save the contents of a file-system to
+a compressed archive file.  The file-system can be restored on a partition which
+has a different size and it can be restored on a different file-system.")
+    (home-page "http://www.fsarchiver.org/")
+    (license license:gpl2)))
+
 (define-public udevil
   (package
     (name "udevil")
