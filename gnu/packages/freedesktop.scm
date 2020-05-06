@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -1688,3 +1689,74 @@ Its features include:
 @end itemize
 ")
     (license license:expat)))
+
+(define-public plymouth
+  (package
+    (name "plymouth")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freedesktop.org/software/"
+                           "plymouth/releases/" name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0l8kg7b2vfxgz9gnrn0v2w4jvysj2cirp0nxads5sy05397pl6aa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-logo="
+                            "/etc/plymouth/logo.png")
+             (string-append "--with-background-color="
+                            "0x00ff00")
+             (string-append "--with-background-start-color-stop="
+                            "0xff0000")
+             (string-append "--with-background-end-color-stop="
+                            "0x0000ff")
+             "--localstatedir=/var"
+             "--with-boot-tty=/dev/console"
+             "--without-system-root-install"
+             "--without-rhgb-compat-link"
+             "--enable-drm"
+             "--disable-systemd-integration"
+             ;; Disable GTK to dramatically reduce the closure
+             ;; size from ~800 MiB to a little more than 200 MiB
+             "--disable-gtk")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "src/main.c"
+               (("__DATE__") "\"guix\""))
+             #t))
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "docs/Makefile.in"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             (setenv "XML_CATALOG_FILES"
+                     (string-append (assoc-ref inputs "docbook-xml")
+                                    "/xml/dtd/docbook/catalog.xml"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)
+       ("pango" ,pango)
+       ("libdrm" ,libdrm)
+       ("libpng" ,libpng)
+       ("eudev" ,eudev)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml)))
+    (synopsis "Graphical boot animation (splash) and logger")
+    (home-page "https://www.freedesktop.org/wiki/Software/Plymouth/")
+    (description
+     "Plymouth is an application that runs very early in the boot process and
+that provides a graphical boot animation while the boot process happens in the
+background.  You are not supposed to install this on your own, it is only
+useful with system integration.")
+    (license license:gpl2+)))
