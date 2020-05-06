@@ -2273,6 +2273,30 @@ programs @command{djvused}, @command{djview}, @command{ddjvu}, and
 @command{djvm} installed.")
     (license license:gpl3+)))
 
+(define-public emacs-pabbrev
+  (package
+    (name "emacs-pabbrev")
+    (version "4.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "pabbrev-" version ".el"))
+       (sha256
+        (base32 "19v5adk61y8fpigw7k6wz6dj79jwr450hnbi7fj0jvb21cvjmfxh"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/pabbrev.html")
+    (synopsis "Predictive abbreviation expansion")
+    (description
+     "The code provides a abbreviation expansion for Emacs.  It is
+fairly similar to Dabbrev expansion, which works based on the contents
+of the current buffer (or other buffers).
+
+Predictive abbreviation expansion works based on the previously
+written text.  Unlike dynamic abbreviation, the text is analysed
+during idle time, while Emacs is doing nothing else.")
+    (license license:gpl3+)))
+
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
