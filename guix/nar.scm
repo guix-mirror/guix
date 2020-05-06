@@ -138,8 +138,8 @@ held."
 (define-syntax-rule (with-temporary-store-file name body ...)
   "Evaluate BODY with NAME bound to the file name of a temporary store item
 protected from GC."
-  (let loop ((name (temporary-store-file)))
-    (with-store store
+  (with-store store
+    (let loop ((name (temporary-store-file)))
       ;; Add NAME to the current process' roots.  (Opening this connection to
       ;; the daemon allows us to reuse its code that deals with the
       ;; per-process roots file.)
