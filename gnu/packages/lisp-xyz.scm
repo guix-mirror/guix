@@ -201,7 +201,7 @@ support.")
 
 (define-public sbcl-trivial-gray-streams
   (let ((revision "1")
-        (commit "0483ade330508b4b2edeabdb47d16ec9437ee1cb"))
+        (commit "ebd59b1afed03b9dc8544320f8f432fdf92ab010"))
     (package
       (name "sbcl-trivial-gray-streams")
       (version (string-append "0.0.0-" revision "." (string-take commit 7)))
@@ -213,7 +213,7 @@ support.")
            (url "https://github.com/trivial-gray-streams/trivial-gray-streams.git")
            (commit commit)))
          (sha256
-          (base32 "0m3rpf2x0zmdk3nf1qfa01j6a55vj7gkwhyw78qslcgbjlgh8p4d"))
+          (base32 "0b1pxlccmnagk9cbh4cy8s5k66g3x0gwib5shjwr24xvrji6lp94"))
          (file-name
           (string-append "trivial-gray-streams-" version "-checkout"))))
       (build-system asdf-build-system/sbcl)
