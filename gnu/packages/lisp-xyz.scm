@@ -3991,6 +3991,24 @@ PROPER-LIST, ASSOCIATION-LIST, PROPERTY-LIST and TUPLE.")
 (define-public cl-syntax-annot
   (sbcl-package->cl-source-package sbcl-cl-syntax-annot))
 
+(define-public sbcl-cl-syntax-interpol
+  (package
+    (inherit sbcl-cl-syntax)
+    (name "sbcl-cl-syntax-interpol")
+    (arguments
+     '(#:asd-file "cl-syntax-interpol.asd"
+       #:asd-system-name "cl-syntax-interpol"))
+    (inputs
+     `(("sbcl-cl-syntax" ,sbcl-cl-syntax)
+       ("sbcl-cl-interpol" ,sbcl-cl-interpol)))
+    (synopsis "Common Lisp reader Syntax for cl-interpol")
+    (description
+     "CL-SYNTAX provides reader syntax coventions for Common Lisp and
+@code{cl-interpol}.")))
+
+(define-public cl-syntax-interpol
+  (sbcl-package->cl-source-package sbcl-cl-syntax-interpol))
+
 (define-public sbcl-cl-utilities
   (let ((commit "dce2d2f6387091ea90357a130fa6d13a6776884b")
         (revision "1"))
