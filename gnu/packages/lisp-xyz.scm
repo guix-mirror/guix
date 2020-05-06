@@ -4547,7 +4547,7 @@ performance and simplicity in mind.")
   (sbcl-package->cl-source-package sbcl-lack-request))
 
 (define-public sbcl-local-time
-  (let ((commit "beac054eef428552b63d4ae7820c32ffef9a3015")
+  (let ((commit "62792705245168d3fc2e04164b9a143477284142")
         (revision "1"))
     (package
      (name "sbcl-local-time")
@@ -4560,7 +4560,7 @@ performance and simplicity in mind.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xhkmgxh41dg2wwlsp0h2l41jp144xn4gpxhh0lna6kh0560w2cc"))))
+        (base32 "1r5zq4l1lrgprdr2pw7wwry194yknnllyjf6lx7snypb3k4r3yir"))))
      (build-system asdf-build-system/sbcl)
      (arguments
       ;; TODO: Component :STEFIL not found, required by #<SYSTEM
