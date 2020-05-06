@@ -4077,8 +4077,8 @@ addition, removal, and random selection.")
   (sbcl-package->cl-source-package sbcl-map-set))
 
 (define-public sbcl-quri
-  (let ((commit "76b75103f21ead092c9f715512fa82441ef61185")
-        (revision "1"))
+  (let ((commit "b53231c5f19446dd7c24b15a249fefa45ae94f9a")
+        (revision "2"))
     (package
       (name "sbcl-quri")
       (version (git-version "0.1.0" revision commit))
@@ -4090,7 +4090,7 @@ addition, removal, and random selection.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1ccbxsgzdibmzq33mmbmmz9vwl6l03xh6nbpsh1hkdvdcl7q0a60"))))
+          (base32 "0cansr63m690ymvhway419178mq2sqnmxm4rdxclbsrnjwwbi36m"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        ;; Tests fail with: Component QURI-ASD::QURI-TEST not found,
