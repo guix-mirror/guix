@@ -5407,12 +5407,12 @@ formats.")
 
 (define-public sbcl-iolib.asdf
   ;; Latest release is from June 2017.
-  (let ((commit "81e20614c0d27f9605bf9766214e236fd31b99b4")
-        (revision "1"))
+  (let ((commit "7f5ea3a8457a29d224b24653c2b3657fb1898021")
+        (revision "2"))
     (package
       (name "sbcl-iolib.asdf")
       (build-system asdf-build-system/sbcl)
-      (version "0.8.3")
+      (version (git-version "0.8.3" revision commit))
       (home-page "https://github.com/sionescu/iolib")
       (source
        (origin
@@ -5423,7 +5423,7 @@ formats.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1j81r0wm7nfbwl991f26s4npcy7kybzybd3m47rbxy31h0cfcmdm"))))
+           "1bg5w7lm61hqk4b0svmri8a590q36z76jfa0sdgzb39r98c04w12"))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
       (arguments
@@ -5498,7 +5498,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (inputs
      `(("iolib.asdf" ,sbcl-iolib.asdf)
        ("iolib.conf" ,sbcl-iolib.conf)
-       ("iolib.grovel" ,sbcl-iolib.grovel)
+       ("cffi-grovel" ,sbcl-cffi-grovel)
        ("iolib.base" ,sbcl-iolib.base)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("idna" ,sbcl-idna)
@@ -5510,7 +5510,6 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      '(#:asd-file "iolib.asd"
        #:asd-system-name "iolib/syscalls"
-       #:test-asd-file "iolib.tests.asd"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-paths
@@ -5521,7 +5520,7 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
                  "(:default \""
                  (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
              ;; Socket tests need Internet access, disable them.
-             (substitute* "iolib.tests.asd"
+             (substitute* "iolib.asd"
                (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
                 "")))))))
     (synopsis "Common Lisp I/O library")))
@@ -5536,8 +5535,6 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-iolib+syscalls)
        ((#:asd-system-name _) "iolib/multiplex")))))
-
-
 
 (define sbcl-iolib+streams
   (package
