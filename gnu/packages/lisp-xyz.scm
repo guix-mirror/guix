@@ -2827,10 +2827,10 @@ the Common Lisp programming language.")
   (sbcl-package->ecl-package sbcl-trivial-garbage))
 
 (define-public sbcl-closer-mop
-  (let ((commit "fac29ce90e3a46e1fc6cf182190e193526fa9dbc"))
+  (let ((commit "19c9d33f576e10715fd79cc1d4f688dab0f241d6"))
     (package
       (name "sbcl-closer-mop")
-      (version (git-version  "1.0.0" "1" commit))
+      (version (git-version  "1.0.0" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -2838,7 +2838,7 @@ the Common Lisp programming language.")
                (url "https://github.com/pcostanza/closer-mop")
                (commit commit)))
          (sha256
-          (base32 "0hvh77y869h8fg9di5snyg85fxq6fdh9gj1igmx1g6j6j5x915dl"))
+          (base32 "1w3x087wvlwkd6swfdgbvjfs6kazf0la8ax4pjfzikwjch4snn2c"))
          (file-name (git-file-name "closer-mop" version ))))
       (build-system asdf-build-system/sbcl)
       (home-page "https://github.com/pcostanza/closer-mop")
