@@ -730,7 +730,6 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
        ("glib" ,glib "bin")             ; for gtester
        ("emacs" ,emacs-minimal)
        ("tzdata" ,tzdata-for-tests)))   ; for mu/test/test-mu-query.c
-    ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
      `(("xapian" ,xapian)
        ("guile" ,guile-2.2)
