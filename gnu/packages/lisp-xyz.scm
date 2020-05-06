@@ -4348,8 +4348,8 @@ against the last run.")
   (sbcl-package->cl-source-package sbcl-checkl))
 
 (define-public sbcl-fast-io
-  (let ((commit "dc3a71db7e9b756a88781ae9c342fe9d4bbab51c")
-        (revision "1"))
+  (let ((commit "603f4903dd74fb221859da7058ae6ca3853fe64b")
+        (revision "2"))
     (package
      (name "sbcl-fast-io")
      (version (git-version "1.0.0" revision commit))
@@ -4361,7 +4361,7 @@ against the last run.")
              (commit commit)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jsp6xvi26ln6fdy5j5zi05xvan8jsqdhisv552dy6xg6ws8i1yq"))))
+        (base32 "00agvc0xx4w715i6ach05p995zpcpghn04xc06zyci06q677vw3n"))))
      (build-system asdf-build-system/sbcl)
      (arguments
       ;; Error while trying to load definition for system fast-io-test from
