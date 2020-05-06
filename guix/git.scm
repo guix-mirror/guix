@@ -40,6 +40,7 @@
 
             with-repository
             update-cached-checkout
+            url+commit->name
             latest-repository-commit
             commit-difference
 

@@ -199,13 +199,45 @@ description file or its default value."
 channel INSTANCE."
   (channel-metadata-dependencies (channel-instance-metadata instance)))
 
-(define (latest-channel-instance store channel)
+;; Patch to apply to a source tree.
+(define-record-type <patch>
+  (patch predicate application)
+  patch?
+  (predicate    patch-predicate)                  ;procedure
+  (application  patch-application))               ;procedure
+
+(define (apply-patches checkout commit patches)
+  "Apply the matching PATCHES to CHECKOUT, modifying files in place.  The
+result is unspecified."
+  (let loop ((patches patches))
+    (match patches
+      (() #t)
+      ((($ <patch> predicate modify) rest ...)
+       ;; PREDICATE is passed COMMIT so that it can choose to only apply to
+       ;; ancestors.
+       (when (predicate checkout commit)
+         (modify checkout))
+       (loop rest)))))
+
+(define* (latest-channel-instance store channel
+                                  #:key (patches %patches))
   "Return the latest channel instance for CHANNEL."
+  (define (dot-git? file stat)
+    (and (string=? (basename file) ".git")
+         (eq? 'directory (stat:type stat))))
+
   (let-values (((checkout commit)
-                (latest-repository-commit store (channel-url channel)
-                                          #:ref (channel-reference
-                                                 channel))))
-    (channel-instance channel commit checkout)))
+                (update-cached-checkout (channel-url channel)
+                                        #:ref (channel-reference channel))))
+    (when (guix-channel? channel)
+      ;; Apply the relevant subset of PATCHES directly in CHECKOUT.  This is
+      ;; safe to do because 'switch-to-ref' eventually does a hard reset.
+      (apply-patches checkout commit patches))
+
+    (let* ((name     (url+commit->name (channel-url channel) commit))
+           (checkout (add-to-store store name #t "sha256" checkout
+                                   #:select? (negate dot-git?))))
+      (channel-instance channel commit checkout))))
 
 (define* (latest-channel-instances store channels #:optional (previous-channels '()))
   "Return a list of channel instances corresponding to the latest checkouts of
@@ -337,11 +369,17 @@ to '%package-module-path'."
               'guile-2.2.4))
 
 (define %quirks
-  ;; List of predicate/package pairs.  This allows us provide information
+  ;; List of predicate/package pairs.  This allows us to provide information
   ;; about specific Guile versions that old Guix revisions might need to use
   ;; just to be able to build and run the trampoline in %SELF-BUILD-FILE.  See
   ;; <https://bugs.gnu.org/37506>
   `((,syscalls-reexports-local-variables? . ,guile-2.2.4)))
+
+(define %patches
+  ;; Bits of past Guix revisions can become incompatible with newer Guix and
+  ;; Guile.  This variable lists <patch> records for the Guix source tree that
+  ;; apply to the Guix source.
+  '())
 
 (define* (guile-for-source source #:optional (quirks %quirks))
   "Return the Guile package to use when building SOURCE or #f if the default
