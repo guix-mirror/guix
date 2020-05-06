@@ -1242,29 +1242,31 @@ with a focus on interactive development.")
   (sbcl-package->ecl-package sbcl-hu.dwim.stefil))
 
 (define-public sbcl-babel
-  (package
-    (name "sbcl-babel")
-    (version "0.5.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/cl-babel/babel.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name "babel" version))
-       (sha256
-        (base32 "139a8rn2gnhj082n8jg01gc8fyr63hkj57hgrnmb3d1r327yc77f"))))
-    (build-system asdf-build-system/sbcl)
-    (native-inputs
-     `(("tests:cl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
-    (inputs
-     `(("sbcl-alexandria" ,sbcl-alexandria)
-       ("sbcl-trivial-features" ,sbcl-trivial-features)))
-    (home-page "https://common-lisp.net/project/babel/")
-    (synopsis "Charset encoding and decoding library")
-    (description "Babel is a charset encoding and decoding library, not unlike
+  ;; No release since 2014.
+  (let ((commit "aeed2d1b76358db48e6b70a64399c05678a6b9ea"))
+    (package
+      (name "sbcl-babel")
+      (version (git-version "0.5.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cl-babel/babel.git")
+               (commit commit)))
+         (file-name (git-file-name "babel" version))
+         (sha256
+          (base32 "0lkvv4xdpv4cv1y2bqillmabx8sdb2y4l6pbinq6mjh33w2brpvb"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("tests:cl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (inputs
+       `(("sbcl-alexandria" ,sbcl-alexandria)
+         ("sbcl-trivial-features" ,sbcl-trivial-features)))
+      (home-page "https://common-lisp.net/project/babel/")
+      (synopsis "Charset encoding and decoding library")
+      (description "Babel is a charset encoding and decoding library, not unlike
 GNU libiconv, but completely written in Common Lisp.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public cl-babel
   (sbcl-package->cl-source-package sbcl-babel))
