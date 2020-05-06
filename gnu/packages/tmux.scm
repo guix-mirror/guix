@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "3.0a")
+    (version "3.1b")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -46,7 +47,7 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "1fcdbw77nz918f7gqc1ga7zlkp1g112in1h8kkjnkadgnhldzlaa"))))
+               "1fbd93hzaz64h7j0h9nsll29avbq1ikqa438wrgsf1dga0fkagyr"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
