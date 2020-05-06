@@ -5921,8 +5921,8 @@ This library offers macros to deal with symbols from any namespace.")
   (sbcl-package->cl-source-package sbcl-lisp-namespace))
 
 (define-public sbcl-trivial-cltl2
-  (let ((commit "8eec8407df833e8f27df8a388bc10913f16d9e83")
-        (revision "1"))
+  (let ((commit "8a3bda30dc25d2f65fcf514d0eb6e6db75252c61")
+        (revision "2"))
     (package
       (name "sbcl-trivial-cltl2")
       (build-system asdf-build-system/sbcl)
@@ -5937,7 +5937,7 @@ This library offers macros to deal with symbols from any namespace.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1dyyxz17vqv8hlfwq287gl8xxbvcnq798ajb7p5jdjz91wqf4bgk"))))
+           "08cnzb9rnczn4pn2zpf0587ny4wjy1mjndy885fz9pw7xrlx37ip"))))
       (synopsis "Simple CLtL2 compatibility layer for Common Lisp")
       (description "This library is a portable compatibility layer around
 \"Common Lisp the Language, 2nd
