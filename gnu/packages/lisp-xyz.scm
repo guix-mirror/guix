@@ -6582,8 +6582,9 @@ extension-points via the concept of hooks.")
   (sbcl-package->ecl-package sbcl-cl-hooks))
 
 (define-public sbcl-s-sysdeps
-  (let ((commit "d28246b5dffef9e73a0e0e6cfbc4e878006fe34d")
-        (revision "1"))
+  ;; No release since 2013.
+  (let ((commit "9aa23bbdceb24bcdbe0e7c39fa1901858f823106")
+        (revision "2"))
     (package
       (name "sbcl-s-sysdeps")
       (build-system asdf-build-system/sbcl)
@@ -6598,7 +6599,11 @@ extension-points via the concept of hooks.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "14b69b81yrxmjlvmm3lfxk04x5v7hqz4fql121334wh72czznfh9"))))
+           "1fh8r7kf8s3hvqdg6b71b8p7w3v2kkga9bw8j3qqdxhzr6anpm0b"))))
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("usocket" ,sbcl-usocket)
+         ("usocket-server" ,sbcl-usocket-server)))
       (synopsis "Common Lisp abstraction layer over platform dependent functionality")
       (description "@code{s-sysdeps} is an abstraction layer over platform
 dependent functionality.  This simple package is used as a building block in a
