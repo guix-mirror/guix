@@ -1516,6 +1516,29 @@ This package turns this into an O(1) operation.  It does so by assigning a
 letter to each link using avy.")
     (license license:gpl3+)))
 
+(define-public emacs-auto-sudoedit
+  (package
+    (name "emacs-auto-sudoedit")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ncaq/auto-sudoedit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10p0hc95j382km8655pqld9wxg10j1f36czzppkdd6a55cxarv9f"))))
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ncaq/auto-sudoedit")
+    (synopsis "Automatically re-open read-only files with sudo")
+    (description
+     "This package automatically reopens a file or directory with
+@command{sudo} if it cannot write to it.")
+    (license license:expat)))
+
 (define-public emacs-bbdb
   (package
     (name "emacs-bbdb")
