@@ -1746,11 +1746,11 @@ streams, support is included for convenient stream wrappers.")
   (sbcl-package->ecl-package sbcl-ironclad))
 
 (define-public sbcl-named-readtables
-  (let ((commit "4dfb89fa1af6b305b6492b8af042f5190c11e9fc")
-        (revision "1"))
+  (let ((commit "64bd53f37a1694cfde48fc38b8f03901f6f0c05b")
+        (revision "2"))
     (package
       (name "sbcl-named-readtables")
-      (version (string-append "0.9-" revision "." (string-take commit 7)))
+      (version (git-version "0.9" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1758,7 +1758,7 @@ streams, support is included for convenient stream wrappers.")
                (url "https://github.com/melisgl/named-readtables.git")
                (commit commit)))
          (sha256
-          (base32 "083kgh5462iqbb4px6kq8s7sggvpvkm36hx4qi9rnaw53b6ilqkk"))
+          (base32 "01l4831m7k84qvhzyx0qgdl50isr4zmp40qf6dfq2iqcaj8y4h3n"))
          (file-name (git-file-name "named-readtables" version))))
       (build-system asdf-build-system/sbcl)
       (arguments
