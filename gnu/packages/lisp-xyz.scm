@@ -2857,7 +2857,7 @@ Lisp implementations.")
   (sbcl-package->ecl-package sbcl-closer-mop))
 
 (define sbcl-cl-cffi-gtk-boot0
-  (let ((commit "29443c5aaca975709df8025c4649366d882033cb"))
+  (let ((commit "412d17214e092220c65a5660f5cbbd9cb69b8fe4"))
     (package
       (name "sbcl-cl-cffi-gtk-boot0")
       (version (git-version "0.11.2" "1" commit))
@@ -2870,7 +2870,7 @@ Lisp implementations.")
          (file-name (git-file-name "cl-cffi-gtk" version))
          (sha256
           (base32
-           "0f6s92sf8xyzh1yksqx8bsy1sv0zmy0c13j3b8bavaba5hlxpxah"))))
+           "0n997yhcnzk048nalx8ys62ja2ac8iv4mbn3mb55iapl0321hghn"))))
       (build-system asdf-build-system/sbcl)
       (inputs
        `(("iterate" ,sbcl-iterate)
@@ -2889,6 +2889,7 @@ is a library for creating graphical user interfaces.")
     (name "sbcl-cl-cffi-gtk-glib")
     (inputs
      `(("glib" ,glib)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
      `(#:asd-file "glib/cl-cffi-gtk-glib.asd"
@@ -2897,8 +2898,8 @@ is a library for creating graphical user interfaces.")
          (add-after 'unpack 'fix-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "glib/glib.init.lisp"
-               (("libglib|libgthread" all) (string-append
-                                            (assoc-ref inputs "glib") "/lib/" all))))))))))
+               (("libglib|libgthread" all)
+                (string-append (assoc-ref inputs "glib") "/lib/" all))))))))))
 
 (define-public sbcl-cl-cffi-gtk-gobject
   (package
