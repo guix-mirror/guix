@@ -6193,8 +6193,8 @@ This package uses fare-quasiquote with named-readtable.")))
 @code{fare-quasiquote-optima}.")))
 
 (define-public sbcl-trivia.level0
-  (let ((commit "574901ac376ae54c9d37169fd5efab9b3b8fcc63")
-        (revision "1"))
+  (let ((commit "37698b47a14c2007630468de7a993694ef7bd475")
+        (revision "2"))
     (package
       (name "sbcl-trivia.level0")
       (build-system asdf-build-system/sbcl)
@@ -6209,7 +6209,7 @@ This package uses fare-quasiquote with named-readtable.")))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0hf53n71xzr9sjwrxis5fivx3drclf4s39h5ck8vh21ndqj9zvdk"))))
+           "0rsbwbw3ipxxgr6zzhci12nilq8zky475kmhz1rcxy4q8a85vn72"))))
       (inputs
        `(("alexandria" ,sbcl-alexandria)))
       (synopsis "Pattern matching in Common Lisp")
