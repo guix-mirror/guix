@@ -214,11 +214,10 @@
                          ;; This failing test is skipped on PHP's Travis CI as it is
                          ;; supposedly inaccurate.
                          "ext/standard/tests/file/disk_free_space_basic.phpt"
-                         ;; The two following tests erroneously expect the link count
-                         ;; of a sub-directory to increase compared to its
-                         ;; parent.
+                         ;; The following test erroneously expect the link
+                         ;; count of a sub-directory to increase compared to
+                         ;; its parent.
                          "ext/standard/tests/file/lstat_stat_variation8.phpt"
-                         "ext/standard/tests/file/lstat_stat_variation9.phpt"
 
                          ;; XXX: These gd tests fails.  Likely because our version
                          ;; is different from the (patched) bundled one.
