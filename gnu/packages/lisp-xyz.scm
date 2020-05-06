@@ -5807,12 +5807,12 @@ cookie headers, cookie creation, cookie jar creation and more.")
   (sbcl-package->cl-source-package sbcl-cl-cookie))
 
 (define-public sbcl-dexador
-  (let ((commit "a2714d126cc94bc7a9a6e1e3c08de455b3a66378")
+  (let ((commit "953090f04c4d1a9ee6632b90133cdc297b68badc")
         (revision "1"))
     (package
       (name "sbcl-dexador")
       (build-system asdf-build-system/sbcl)
-      (version (git-version "0.9.10" revision commit))
+      (version "0.9.14" )
       (home-page "https://github.com/fukamachi/dexador")
       (source
        (origin
@@ -5823,7 +5823,7 @@ cookie headers, cookie creation, cookie jar creation and more.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0nbqgn4v3l2z6m1k1bdxfnqpfrk84nxdmz7csz11zzcfs4flkv79"))))
+           "0w18fz3301rpmwc3kwb810czcd24mbf7r1z8vdyc0v5crjfpw3mn"))))
       (inputs
        `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)
          ("babel" ,sbcl-babel)
@@ -5849,7 +5849,8 @@ cookie headers, cookie creation, cookie jar creation and more.")
          ("babel" ,sbcl-babel)
          ("alexandria" ,sbcl-alexandria)
          ("cl-ppcre" ,sbcl-cl-ppcre)
-         ("local-time" ,sbcl-local-time)))
+         ("local-time" ,sbcl-local-time)
+         ("trivial-features" ,sbcl-trivial-features)))
       (arguments
        ;; TODO: Circular dependency: tests depend on clack-test which depends on dexador.
        `(#:tests? #f
