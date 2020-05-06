@@ -3548,7 +3548,7 @@ client and server.")
      (home-page "https://common-lisp.net/project/trivial-backtrace/")
      (synopsis "Portable simple API to work with backtraces in Common Lisp")
      (description
-      "On of the many things that didn't quite get into the Common Lisp
+      "One of the many things that didn't quite get into the Common Lisp
 standard was how to get a Lisp to output its call stack when something has
 gone wrong.  As such, each Lisp has developed its own notion of what to
 display, how to display it, and what sort of arguments can be used to
