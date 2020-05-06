@@ -3608,7 +3608,7 @@ RFC 1321 by R. Rivest, published April 1992.")
   (sbcl-package->cl-source-package sbcl-md5))
 
 (define-public sbcl-cl+ssl
-  (let ((commit "141ae91416bc40f1618dc07e48429b84388aa599")
+  (let ((commit "701e645081e6533a3f0f0b3ac86389d6f506c4b5")
         (revision "1"))
     (package
       (name "sbcl-cl+ssl")
@@ -3621,7 +3621,7 @@ RFC 1321 by R. Rivest, published April 1992.")
                (commit commit)))
          (file-name (git-file-name "cl+ssl" version))
          (sha256
-          (base32 "1s0hg1h9sf8q89v0yrxmzg5f5sng29rgx3n21r9h9yql8351myan"))))
+          (base32 "0nfl275nwhff3m25872y388cydz14kqb6zbwywa6nj85r9k8bgs0"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        '(#:phases
