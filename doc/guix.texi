@@ -228,6 +228,7 @@ Development
 
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
+* The GCC toolchain::           Working with languages supported by GCC.
 
 Programming Interface
 
@@ -1773,13 +1774,6 @@ want to avoid auto-loading the Emacs packages installed with Guix, you
 can do so by running Emacs with the @option{--no-site-file} option
 (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
-@subsection The GCC toolchain
-
-@c XXX: The contents of this section were moved under
-@c ``Development'', since it makes more sense there and is not specific
-@c foreign distros.  Remove it from here eventually?
-@xref{Packages for C Development}, for information on packages for C/C++
-development.
 
 @node Upgrading Guix
 @section Upgrading Guix
@@ -3045,6 +3039,7 @@ availability of packages:
 
 @item --search=@var{regexp}
 @itemx -s @var{regexp}
+@anchor{guix-search}
 @cindex searching for packages
 List the available packages whose name, synopsis, or description matches
 @var{regexp} (in a case-insensitive fashion), sorted by relevance.
@@ -4675,9 +4670,9 @@ pack} command allows you to create @dfn{application bundles} that can be
 easily distributed to users who do not run Guix.
 
 @menu
-* Invoking guix environment::   Setting up development environments.
-* Invoking guix pack::          Creating software bundles.
-* Packages for C Development::  Working with C code with Guix.
+* Invoking guix environment::  Setting up development environments.
+* Invoking guix pack::         Creating software bundles.
+* The GCC toolchain::          Working with languages supported by GCC.
 @end menu
 
 @node Invoking guix environment
@@ -5388,13 +5383,15 @@ In addition, @command{guix pack} supports all the common build options
 (@pxref{Common Build Options}) and all the package transformation
 options (@pxref{Package Transformation Options}).
 
-@node Packages for C Development
-@section Packages for C Development
+
+@node The GCC toolchain
+@section The GCC toolchain
 
 @cindex GCC
 @cindex ld-wrapper
 @cindex linker wrapper
 @cindex toolchain, for C development
+@cindex toolchain, for Fortran development
 
 If you need a complete toolchain for compiling and linking C or C++
 source code, use the @code{gcc-toolchain} package.  This package
@@ -5408,7 +5405,9 @@ invoke the actual linker with this new set of arguments.  You can instruct the
 wrapper to refuse to link against libraries not in the store by setting the
 @env{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
 
-
+The package @code{gfortran-toolchain} provides a complete GCC toolchain
+for Fortran development.  For other languages, please use
+@samp{guix search gcc toolchain} (@pxref{guix-search,, Invoking guix package}).
 
 @c *********************************************************************
 @node Programming Interface
