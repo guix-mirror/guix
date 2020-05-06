@@ -4217,8 +4217,8 @@ depending on content size.")
   (sbcl-package->cl-source-package sbcl-smart-buffer))
 
 (define-public sbcl-fast-http
-  (let ((commit "f9e7597191bae380503e20724fd493a24d024935")
-        (revision "1"))
+  (let ((commit "502a37715dcb8544cc8528b78143a942de662c5a")
+        (revision "2"))
     (package
       (name "sbcl-fast-http")
       (version (git-version "0.2.0" revision commit))
@@ -4230,7 +4230,7 @@ depending on content size.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0qdmwv2zm0sizxdb8nnclgwl0nfjcbjaimbakavikijw7lr9b4jp"))))
+          (base32 "0al2g7g219jjljsf7b23pbilpgacxy5as5gs2nqf76b5qni396mi"))))
       (build-system asdf-build-system/sbcl)
       (arguments
        ;; Tests fail with: Component FAST-HTTP-ASD::FAST-HTTP-TEST not found,
@@ -4238,7 +4238,8 @@ depending on content size.")
        `(#:tests? #f))
       (native-inputs
        `(("sbcl-prove-asdf" ,sbcl-prove-asdf)
-         ("sbcl-prove" ,sbcl-prove)))
+         ("sbcl-prove" ,sbcl-prove)
+         ("cl-syntax-interpol" ,sbcl-cl-syntax-interpol)))
       (inputs
        `(("sbcl-alexandria" ,sbcl-alexandria)
          ("sbcl-proc-parse" ,sbcl-proc-parse)
