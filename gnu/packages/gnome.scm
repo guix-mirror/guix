@@ -8110,7 +8110,9 @@ desktop.  It supports multiple calendars, month, week and year view.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08ygqbib72jlf9y0a16k54zz51sncpq2wa18wp81v46q8301ymy7"))))
+                "08ygqbib72jlf9y0a16k54zz51sncpq2wa18wp81v46q8301ymy7"))
+              (patches
+               (search-patches "gnome-todo-delete-esource-duplicate.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t

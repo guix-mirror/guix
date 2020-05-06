@@ -1517,6 +1517,29 @@ This package turns this into an O(1) operation.  It does so by assigning a
 letter to each link using avy.")
     (license license:gpl3+)))
 
+(define-public emacs-auto-sudoedit
+  (package
+    (name "emacs-auto-sudoedit")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ncaq/auto-sudoedit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10p0hc95j382km8655pqld9wxg10j1f36czzppkdd6a55cxarv9f"))))
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ncaq/auto-sudoedit")
+    (synopsis "Automatically re-open read-only files with sudo")
+    (description
+     "This package automatically reopens a file or directory with
+@command{sudo} if it cannot write to it.")
+    (license license:expat)))
+
 (define-public emacs-bbdb
   (package
     (name "emacs-bbdb")
@@ -2249,6 +2272,30 @@ filters, new key bindings and faces.  It can be enabled by
 DjVuLibre, see @url{http://djvu.sourceforge.net/}.  It assumes you have the
 programs @command{djvused}, @command{djview}, @command{ddjvu}, and
 @command{djvm} installed.")
+    (license license:gpl3+)))
+
+(define-public emacs-pabbrev
+  (package
+    (name "emacs-pabbrev")
+    (version "4.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "pabbrev-" version ".el"))
+       (sha256
+        (base32 "19v5adk61y8fpigw7k6wz6dj79jwr450hnbi7fj0jvb21cvjmfxh"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/pabbrev.html")
+    (synopsis "Predictive abbreviation expansion")
+    (description
+     "The code provides a abbreviation expansion for Emacs.  It is
+fairly similar to Dabbrev expansion, which works based on the contents
+of the current buffer (or other buffers).
+
+Predictive abbreviation expansion works based on the previously
+written text.  Unlike dynamic abbreviation, the text is analysed
+during idle time, while Emacs is doing nothing else.")
     (license license:gpl3+)))
 
 (define-public emacs-pdf-tools
@@ -21777,6 +21824,32 @@ display of major and minor modes in the mode line.")
       (description "This package allows Org items to be accessed via the Ivy
 interface.")
       (home-page "https://github.com/akirak/ivy-omni-org")
+      (license license:gpl3+))))
+
+(define-public emacs-ivy-posframe
+  (let ((commit "ae9bafe94fe6b77b6fe45766ae6172646f6a5d50"))
+    (package
+      (name "emacs-ivy-posframe")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tumashu/ivy-posframe.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1j6yns5d7lh2v1nfcznrirl7qicdli9csciqvfgj4gkh72a97pw1"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-posframe" ,emacs-posframe)
+         ("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/tumashu/ivy-posframe")
+      (synopsis "Pop a posframe (a child frame) to show Ivy candidates")
+      (description
+       "This package provides an Emacs Ivy extension, which let Ivy use
+posframe to show its candidate menu.")
       (license license:gpl3+))))
 
 (define-public emacs-shackle

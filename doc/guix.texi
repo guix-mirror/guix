@@ -24325,7 +24325,9 @@ Guix has a separate configuration data type for serving Git repositories
 over HTTP.
 
 @deftp {Data Type} git-http-configuration
-Data type representing the configuration for @code{git-http-service}.
+Data type representing the configuration for a future
+@code{git-http-service-type}; can currently be used to configure Nginx
+trough @code{git-http-nginx-location-configuration}.
 
 @table @asis
 @item @code{package} (default: @var{git})

@@ -6817,7 +6817,7 @@ your score gets higher, you level up and the blocks fall faster.")
 (define-public endless-sky
   (package
     (name "endless-sky")
-    (version "0.9.10")
+    (version "0.9.12")
     (source
       (origin
         (method git-fetch)
@@ -6826,8 +6826,7 @@ your score gets higher, you level up and the blocks fall faster.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1wax9qhxakydg6bs92d1jy2fki1n9r0wkps1np02y0pvm1fl189i"))))
+         (base32 "18nkl4s3r5sy3sd9lhbdg9160c7fggklklprx0d5azifc8g6k0wj"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2

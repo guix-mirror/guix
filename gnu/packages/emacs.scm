@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,6 +70,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public emacs
@@ -242,9 +244,9 @@ languages.")
     (license license:gpl3+)))
 
 (define-public emacs-next
-  (let ((commit "36abf6864604b3061c2e070f8997491fa2bce44c")
+  (let ((commit "c36c5a3dedbb2e0349be1b6c3b7567ea7b594f1c")
         (revision "0")
-        (emacs-version "27.0.50"))
+        (emacs-version "27.0.91"))
     (package
       (inherit emacs)
       (name "emacs-next")
@@ -256,7 +258,7 @@ languages.")
                (url "https://git.savannah.gnu.org/git/emacs.git")
                (commit commit)))
          (sha256
-          (base32 "1ckn607p0clz0dhhlizvv7l03p4nminy48h53xrpz55w4rcrcm2l"))
+          (base32 "0mlrg2npy1r79laahkgzhxd1qassfcdz8qk1cpw7mqgf6y5x505h"))
          (file-name (git-file-name name version))
          (patches (search-patches "emacs27-exec-path.patch"
                                   "emacs-fix-scheme-indent-function.patch"
@@ -321,7 +323,9 @@ languages.")
       (inputs
        `(("jansson" ,jansson)
          ("harfbuzz" ,harfbuzz)
-         ,@(package-inputs emacs)))
+         ;; Emacs no longer uses ImageMagick by default
+         ;; https://git.savannah.gnu.org/cgit/emacs.git/tree/etc/NEWS?h=emacs-27.0.91&id=c36c5a3dedbb2e0349be1b6c3b7567ea7b594f1c#n102
+         ,@(alist-delete "imagemagick" (package-inputs emacs))))
       (native-inputs
        `(("autoconf" ,autoconf)      ; needed when building from trunk
          ,@(package-native-inputs emacs)))

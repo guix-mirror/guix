@@ -842,6 +842,71 @@ weak-signal conditions.")
     (home-page "https://www.physics.princeton.edu/pulsar/k1jt/wsjtx.html")
     (license license:gpl3)))
 
+(define-public js8call
+  (package
+    (inherit wsjtx)
+    (name "js8call")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://files.js8call.com/" version
+                           "/js8call-" version ".tgz"))
+       (sha256
+        (base32 "034jnv6h172znn9ijl6wpmzx0rqibb69ppg52ndvkxhqlgrbsvyc"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled boost to use the shared one.
+           (delete-file-recursively "boost")
+           #t))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("ruby-asciidoctor" ,ruby-asciidoctor)))
+    (inputs
+     `(("boost" ,boost)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("hamlib" ,wsjtx-hamlib)
+       ("libusb" ,libusb)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)))
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION /usr/share")
+                (string-append "DESTINATION "
+                               (assoc-ref outputs "out")
+                               "/share")))
+             #t))
+         (add-after 'unpack 'fix-hamlib
+           (lambda _
+             (substitute* "CMake/Modules/Findhamlib.cmake"
+               (("set \\(ENV\\{PKG_CONFIG_PATH\\}.*\\)")
+                "set (__pc_path $ENV{PKG_CONFIG_PATH})
+  list (APPEND __pc_path \"${__hamlib_pc_path}\")
+  set (ENV{PKG_CONFIG_PATH} \"${__pc_path}\")"))
+             (substitute* "HamlibTransceiver.hpp"
+               (("#ifdef JS8_USE_LEGACY_HAMLIB")
+                "#if 1"))
+             #t)))))
+    (synopsis "Weak-signal ham radio communication program")
+    (description
+     "JS8Call is a software using the JS8 digital mode (a derivative of the FT8
+mode) providing weak signal keyboard to keyboard messaging to amateur radio
+operators.")
+    (home-page "http://js8call.com/")
+    (license license:gpl3)))
+
 (define-public xnec2c
   (package
     (name "xnec2c")

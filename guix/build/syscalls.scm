@@ -23,6 +23,7 @@
 
 (define-module (guix build syscalls)
   #:use-module (system foreign)
+  #:use-module (system base target)
   #:use-module (rnrs bytevectors)
   #:autoload   (ice-9 binary-ports) (get-bytevector-n)
   #:use-module (srfi srfi-1)
@@ -194,9 +195,14 @@
      (* (sizeof* type) n))
     ((_ type)
      (let-syntax ((v (lambda (s)
-                       (let ((val (sizeof type)))
-                         (syntax-case s ()
-                           (_ val))))))
+                       ;; When compiling natively, call 'sizeof' at expansion
+                       ;; time; otherwise, emit code to call it at run time.
+                       (syntax-case s ()
+                         (_
+                          (if (= (target-word-size)
+                                 (with-target %host-type target-word-size))
+                              (sizeof type)
+                              #'(sizeof type)))))))
        v))))
 
 (define-syntax alignof*
@@ -208,9 +214,14 @@
      (alignof* type))
     ((_ type)
      (let-syntax ((v (lambda (s)
-                       (let ((val (alignof type)))
-                         (syntax-case s ()
-                           (_ val))))))
+                       ;; When compiling natively, call 'sizeof' at expansion
+                       ;; time; otherwise, emit code to call it at run time.
+                       (syntax-case s ()
+                         (_
+                          (if (= (target-word-size)
+                                 (with-target %host-type target-word-size))
+                              (alignof type)
+                              #'(alignof type)))))))
        v))))
 
 (define-syntax align                             ;as found in (system foreign)

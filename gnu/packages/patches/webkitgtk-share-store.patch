@@ -1,0 +1,19 @@
+Tell bubblewrap to share the store.  Required for programs that use the
+sandboxing features such as Epiphany.
+
+See <https://bugs.gnu.org/40837>.
+Author: Jack Hill <jackhill@jackhill.us>
+---
+diff --git a/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp b/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
+--- a/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
++++ b/Source/WebKit/UIProcess/Launcher/glib/BubblewrapLauncher.cpp
+@@ -737,6 +737,9 @@ GRefPtr<GSubprocess> bubblewrapSpawn(GSubprocessLauncher* launcher, const Proces
+         "--ro-bind-try", "/usr/local/share", "/usr/local/share",
+         "--ro-bind-try", DATADIR, DATADIR,
+ 
++       // Bind mount the store inside the WebKitGTK sandbox.
++       "--ro-bind", "@storedir@", "@storedir@",
++
+         // We only grant access to the libdirs webkit is built with and
+         // guess system libdirs. This will always have some edge cases.
+         "--ro-bind-try", "/lib", "/lib",

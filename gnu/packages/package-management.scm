@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages libedit)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
@@ -538,18 +541,21 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.0.4")
+    (version "2.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "0ss9svxlh1pvrdmnqjvjyqjmbqmrdbyfarvbb14i9d4bggzl0r8n"))))
+               "03fhbb8088sgz3709zd9n9rydavar79w87l9n4q9iimcw06nlqhw"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("curl" ,curl)
+    (inputs `(("boost" ,boost)
+              ("brotli" ,brotli)
               ("bzip2" ,bzip2)
+              ("curl" ,curl)
+              ("editline" ,editline)
               ("libgc" ,libgc)
               ("libseccomp" ,libseccomp)
               ("libsodium" ,libsodium)

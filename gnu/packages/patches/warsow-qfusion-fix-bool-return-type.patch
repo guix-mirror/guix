@@ -1,0 +1,22 @@
+diff --git a/source/ref_gl/r_imagelib.cpp b/source/ref_gl/r_imagelib.cpp
+index 418028a..f76916b 100644
+--- a/source/ref_gl/r_imagelib.cpp
++++ b/source/ref_gl/r_imagelib.cpp
+@@ -762,7 +762,7 @@ static void q_jpg_noop( j_decompress_ptr cinfo ) {
+
+ static boolean q_jpg_fill_input_buffer( j_decompress_ptr cinfo ) {
+ 	Com_DPrintf( "Premature end of jpeg file\n" );
+-	return 1;
++	return TRUE;
+ }
+
+ static void q_jpg_skip_input_data( j_decompress_ptr cinfo, long num_bytes ) {
+@@ -955,7 +955,7 @@ bool WriteJPG( const char *name, r_imginfo_t *info, int quality ) {
+ 	}
+
+ 	// start compression
+-	qjpeg_start_compress( &cinfo, true );
++	qjpeg_start_compress( &cinfo, TRUE );
+
+ 	// feed scanline data
+ 	w3 = cinfo.image_width * info->samples;

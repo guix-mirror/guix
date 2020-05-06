@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,3 +49,24 @@ library (libedit).  This Berkeley-style licensed command line editor library
 provides generic line editing, history, and tokenization functions, similar to
 those found in GNU Readline.")
     (license bsd-3)))
+
+(define-public editline
+  (package
+    (name "editline")
+    (version "1.17.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://ftp.troglobit.com/editline/editline-" version ".tar.xz"))
+      (sha256
+       (base32 "03pw3z6pz590v8xfnjx0yynnzij2sb9xwjbvqvdzsid56crkn8nz"))))
+    (build-system gnu-build-system)
+    (home-page "https://troglobit.com/projects/editline/")
+    (synopsis "Line editing library")
+    (description
+     "@code{editline} is a small line editing library.  It can be linked into almost
+any program to provide command line editing and history functions.  It is call
+compatible with the GNU Readline library, but at a fraction of the size,
+and as a result fewer features.")
+    (license bsd-4)))

@@ -2,7 +2,7 @@
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
-# Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 # Copyright © 2016, 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
 # Copyright © 2016, 2017 Rene Saavedra <rennes@openmailbox.org>
@@ -726,6 +726,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/a2ps-CVE-2015-8107.patch	\
   %D%/packages/patches/abcl-fix-build-xml.patch	\
+  %D%/packages/patches/ableton-link-system-libraries-debian.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
   %D%/packages/patches/aegis-constness-error.patch         	\
@@ -1017,6 +1018,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-shell-disable-test.patch		\
+  %D%/packages/patches/gnome-todo-delete-esource-duplicate.patch \
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
   %D%/packages/patches/gnupg-default-pinentry.patch		\
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
@@ -1079,6 +1081,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-makeicecat.patch			\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
+  %D%/packages/patches/icecat-use-older-reveal-hidden-html.patch	\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
@@ -1571,7 +1574,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/vsearch-unbundle-cityhash.patch		\
   %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
   %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
+  %D%/packages/patches/warsow-qfusion-fix-bool-return-type.patch	\
   %D%/packages/patches/weasyprint-library-paths.patch		\
+  %D%/packages/patches/webkitgtk-share-store.patch		\
   %D%/packages/patches/websocketpp-fix-for-boost-1.70.patch	\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\

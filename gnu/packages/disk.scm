@@ -48,6 +48,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -942,45 +943,52 @@ since they are better handled by external tools.")
        (sha256
         (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bin-dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (findutils (assoc-ref inputs "findutils"))
+                    (file-prog (assoc-ref inputs "file")))
+               (with-directory-excursion "src"
+                 (substitute* '("FilePanel.cpp" "help.h" "SearchPanel.cpp"
+                                "startupnotification.cpp" "xfeutils.cpp")
+                   (("/bin/sh" file) (string-append bash file))
+                   (("/bin/ls" file) (string-append coreutils file))
+                   (("/usr(/bin/du)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/sort)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/cut)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/xargs)" _ file) (string-append findutils file))
+                   (("/usr(/bin/file)" _ file) (string-append file-prog file))))
+               #t)))
+         (add-after 'unpack 'patch-share-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion "src"
+                 (substitute* '("foxhacks.cpp" "help.h" "xfedefs.h"
+                                "XFileExplorer.cpp")
+                   (("/(usr|opt)(/local)?/share") share)))
+               #t))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("fox" ,fox)
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("file" ,file)
+       ("findutils" ,findutils)
+       ("fox" ,fox)
        ("freetype" ,freetype)
        ("x11" ,libx11)
        ("xcb" ,libxcb)
        ("xcb-util" ,xcb-util)
        ("xft" ,libxft)
        ("xrandr" ,libxrandr)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-xfe-paths
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let*
-                 ((out     (assoc-ref outputs "out"))
-                  (share   (string-append out "/share"))
-                  (xferc   (string-append out "/share/xfe/xferc"))
-                  (xfe-theme   (string-append out "/share/xfe/icons/xfe-theme")))
-               ;; Correct path for xfe registry.
-               (substitute* "src/foxhacks.cpp"
-                 (("/etc:/usr/share:/usr/local/share") share))
-               ;; Correct path for xfe configuration.
-               (substitute* "src/XFileExplorer.cpp"
-                 (("/usr/share/xfe/xferc") xferc)
-                 (("/usr/local/share/xfe/xferc") xferc)
-                 (("/opt/local/share/xfe/xferc") xferc))
-               ;; Correct path for xfe icons.
-               (substitute* "src/xfedefs.h"
-                 (((string-append
-                    "~/.config/xfe/icons/xfe-theme:"
-                    "/usr/local/share/xfe/icons/xfe-theme:"
-                    "/usr/share/xfe/icons/xfe-theme"))
-                  xfe-theme))
-               #t))))))
     (synopsis "File Manager for X-Based Graphical Systems")
-    (description"XFE (X File Explorer) is a file manager for X.  It is based on
+    (description "XFE (X File Explorer) is a file manager for X.  It is based on
 the popular but discontinued, X Win Commander.  It aims to be the file manager
 of choice for all light thinking Unix addicts!")
     (home-page "http://roland65.free.fr/xfe/")
