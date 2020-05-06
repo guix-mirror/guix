@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1205,6 +1206,8 @@ bytes."
 ;;;
 
 (define SIOCGIFCONF                               ;from <bits/ioctls.h>
+                                                  ;     <net/if.h>
+                                                  ;     <hurd/ioctl.h>
   (if (string-contains %host-type "linux")
       #x8912                                      ;GNU/Linux
       #xf00801a4))                                ;GNU/Hurd
@@ -1215,23 +1218,23 @@ bytes."
 (define SIOCSIFFLAGS
   (if (string-contains %host-type "linux")
       #x8914                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #x84804190))                                ;GNU/Hurd
 (define SIOCGIFADDR
   (if (string-contains %host-type "linux")
       #x8915                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #xc08401a1))                                ;GNU/Hurd
 (define SIOCSIFADDR
   (if (string-contains %host-type "linux")
       #x8916                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #x8084018c))                                ;GNU/Hurd
 (define SIOCGIFNETMASK
   (if (string-contains %host-type "linux")
       #x891b                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #xc08401a5))                                ;GNU/Hurd
 (define SIOCSIFNETMASK
   (if (string-contains %host-type "linux")
       #x891c                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #x80840196))                                ;GNU/Hurd
 (define SIOCADDRT
   (if (string-contains %host-type "linux")
       #x890B                                      ;GNU/Linux
