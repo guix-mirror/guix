@@ -329,10 +329,26 @@ boot, since this cannot be done from GNU/Linux."
     (with-imported-modules '((guix build utils))
       #~(begin
           (use-modules (guix build utils)
-                       (ice-9 match))
+                       (ice-9 match)
+                       (system repl repl)
+                       (srfi srfi-1)
+                       (srfi srfi-26))
 
-          ;; "@HURD@" is a placeholder.
-          (setenv "PATH" "@HURD@/bin")
+          (display "Welcome, this is GNU's early boot Guile.\n")
+          (display "Use '--repl' for an initrd REPL.\n\n")
+
+          ;; "@HURD@" and "@COREUTILS@" are a placeholders.
+          (setenv "PATH" "@HURD@/bin:@HURD@/sbin:@COREUTILS@/bin")
+
+          ;; XXX FIXME c&p from linux-boot.scm
+          (define (find-long-option option arguments)
+            "Find OPTION among ARGUMENTS, where OPTION is something like \"--load\".
+Return the value associated with OPTION, or #f on failure."
+            (let ((opt (string-append option "=")))
+              (and=> (find (cut string-prefix? opt <>)
+                           arguments)
+                     (lambda (arg)
+                       (substring arg (+ 1 (string-index arg #\=)))))))
 
           (define (translated? node)
             ;; Return true if a translator is installed on NODE.
@@ -349,10 +365,54 @@ boot, since this cannot be done from GNU/Linux."
                          (apply invoke "settrans" "-c" node command))))
                     '#$translators)
 
-          ;; Start the oh-so-fancy console client.
-          (mkdir-p "/var/run")                    ;for the PID file
-          (invoke "console" "--daemonize" "-c" "/dev/vcs"
-                  "-d" "vga" "-d" "pc_kbd" "-d" "generic_speaker"))))
+          (format #t "Creating essential device nodes...\n")
+          (with-directory-excursion "/dev"
+            (invoke "MAKEDEV" "--devdir=/dev" "std")
+            (invoke "MAKEDEV" "--devdir=/dev" "vcs")
+            (invoke "MAKEDEV" "--devdir=/dev" "tty1""tty2" "tty3" "tty4" "tty5" "tty6")
+            (invoke "MAKEDEV" "--devdir=/dev" "ptyp0" "ptyp1" "ptyp2")
+            (invoke "MAKEDEV" "--devdir=/dev" "console"))
+
+          (let* ((args    (command-line))
+                 (system  (find-long-option "--system" args))
+                 (to-load (find-long-option "--load" args)))
+
+            (false-if-exception (delete-file "/hurd"))
+            (let ((hurd/hurd (string-append system "/profile/hurd")))
+              (symlink hurd/hurd "/hurd"))
+
+            (format #t "Starting pager...\n")
+            (unless (zero? (system* "/hurd/mach-defpager"))
+              (format #t "FAILED...Good luck!\n"))
+
+            (cond ((member "--repl" args)
+                   (format #t "Starting repl...\n")
+                   (start-repl))
+                  (to-load
+                   (format #t "loading '~a'...\n" to-load)
+                   (primitive-load to-load)
+                   (format (current-error-port)
+                           "boot program '~a' terminated, rebooting~%"
+                           to-load)
+                   (let ((shepherd.conf
+                          (if (file-exists? "/etc/shepherd.conf")
+                              "/etc/shepherd.conf"
+                              (let ((files (find-files "/gnu/store" ".*-shepherd.conf")))
+                                (and (pair? files) (car files))))))
+                     (unless shepherd.conf
+                       (format #t "No shepherd.conf found, dropping to a shell...\n")
+                       (invoke "/run/current-system/profile/bin/bash")
+                       (reboot))
+                     (false-if-exception (delete-file "/var/run/shepherd/socket"))
+                     (format #t "Starting the Shepherd... ~a\n" shepherd.conf)
+                     (execl "/run/current-system/profile/bin/shepherd" "shepherd"
+                            "--config" shepherd.conf))
+                   (sleep 2)
+                   (reboot))
+                  (else
+                   (display "no boot file passed via '--load'\n")
+                   (display "entering a warm and cozy REPL\n")
+                   (start-repl)))))))
 
   ;; FIXME: We want the program to use the cross-compiled Guile when
   ;; cross-compiling.  But why do we need to be explicit here?
@@ -425,6 +485,28 @@ boot, since this cannot be done from GNU/Linux."
              (substitute* '("daemons/Makefile" "utils/Makefile")
                (("-o root -m 4755") ""))
              #t))
+         (add-after 'unpack 'create-runsystem
+           (lambda _
+             ;; XXX Work towards having startup.c invoke the Guile rc
+             (delete-file "daemons/runsystem.sh")
+             (with-output-to-file "daemons/runsystem.sh"
+               (lambda _
+                 (display "#! /bin/bash
+
+# XXX Guile needs pipe support for its finalizer thread, to start.
+# Remove this script when Linux and the Hurd have xattr patches.
+PATH=@PATH@
+
+fsck --yes --force /
+fsysopts / --writable
+
+# Note: this /hurd/ gets substituted
+settrans --create /servers/socket/1 /hurd/pflocal
+echo Starting /libexec/rc ...
+exec /libexec/rc \"$@\"
+")))
+             ))
+
          (add-before 'build 'set-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -437,45 +519,39 @@ boot, since this cannot be done from GNU/Linux."
                  (("/bin/login")
                   (string-append out "/bin/login"))
                  (("/bin/bash") (string-append bash "/bin/bash")))
-               (substitute* '("startup/startup.c" "init/init.c" "config/ttys")
+               (substitute* '("startup/startup.c" "config/ttys")
                  (("/libexec/")
                   (string-append out "/libexec/")))
                (substitute* '("utils/uptime.sh")
                  (("/bin/w")
                   (string-append out "/bin/w")))
-               (substitute* "daemons/console-run.c"
+               ;; Upon first boot the /hurd symlink does not exist; it is
+               ;; created during activation: Hard-code the .../hurd store file
+               ;; name.
+               (substitute* '("boot/boot.c"
+                              "daemons/console-run.c"
+                              "startup/startup.c")
                  (("/hurd/")
                   (string-append out "/hurd/")))
-
+               (substitute* '("libdiskfs/boot-start.c"
+                              "libdiskfs/opts-std-startup.c")
+                 (("_HURD_STARTUP")
+                  (string-append "\"" out "/hurd/startup\"")))
                (substitute* '("daemons/runsystem.sh"
-                              "daemons/runsystem.hurd.sh"
-                              "sutils/MAKEDEV.sh")
+                              "utils/fakeroot.sh"
+                              "utils/remap.sh"
+                              "sutils/MAKEDEV.sh"
+                              "sutils/losetup.sh")
                  (("^PATH=.*")
-                  (string-append "PATH=" out "/bin:" out "/sbin:"
-                                 coreutils "/bin:"
-                                 sed "/bin:" grep "/bin:"
-                                 util-linux "/bin\n"))
-                 (("^SHELL=.*")
-                  (string-append "SHELL=" bash "/bin/bash\n"))
+                  (string-append "PATH=" out "/bin"
+                                 ":" out "/sbin"
+                                 ":" coreutils "/bin"
+                                 ":" grep "/bin"
+                                 ":" sed "/bin"
+                                 ":" util-linux "/sbin\n"))
                  (("/sbin/") (string-append out "/sbin/"))
                  (("/libexec/") (string-append out "/libexec/"))
                  (("/hurd/") (string-append out "/hurd/")))
-
-               (substitute* "daemons/runsystem.sh"
-                 (("export PATH")
-                  (string-append "export PATH\n"
-                                 "\
-fsysopts / --writable
-
-# MAKEDEV relies on pipes so this needs to be set up.
-settrans -c /servers/socket/1 /hurd/pflocal
-
-(cd /dev; MAKEDEV -D /dev std vcs tty{1,2,3,4,5,6})\n")))
-
-               (substitute* "daemons/runsystem.hurd.sh"
-                 (("export PATH")
-                  "export PATH
-fsysopts / --writable\n"))
                #t)))
          (add-after 'patch-shebangs 'patch-libexec-shebangs
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -511,11 +587,13 @@ fsysopts / --writable\n"))
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
                     (file (string-append out "/libexec/rc"))
-                    (rc   (assoc-ref inputs "hurd-rc")))
+                    (rc   (assoc-ref inputs "hurd-rc"))
+                    (coreutils (assoc-ref inputs "coreutils")))
                (delete-file file)
                (copy-file rc file)
                (substitute* file
-                 (("@HURD@") out))
+                 (("@HURD@") out)
+                 (("@COREUTILS@") coreutils))
                #t))))
        #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               %output "/lib")
