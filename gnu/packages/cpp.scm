@@ -17,6 +17,8 @@
 ;;; Copyright © 2020, 2021 Greg Hogan <code@greghogan.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Milkey Mouse <milkeymouse@meme.institute>
+;;; Copyright © 2021 Raghav Gururajan <rg@raghavgururajan.name>
+
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -64,7 +67,8 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml))
 
 (define-public range-v3
   (package
@@ -1014,3 +1018,42 @@ Linear Congruential Generator (LCG) with a permutation function to increase
 output randomness while retaining speed, simplicity, and conciseness.")
       (home-page "https://www.pcg-random.org")
       (license (list license:expat license:asl2.0))))) ; dual licensed
+
+(define-public libcutl
+  (package
+    (name "libcutl")
+    (version "1.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://www.codesynthesis.com/download/libcutl/"
+                    (version-major+minor version)
+                    "/libcutl-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "070j2x02m4gm1fn7gnymrkbdxflgzxwl7m96aryv8wp3f3366l8j"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled sources.
+                  (with-directory-excursion "cutl/details"
+                    (for-each delete-file-recursively
+                              ;; FIXME: Boost_RegEx isn't being detected.
+                              (list
+                               ;;"boost"
+                               "expat")))))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--disable-static"
+                               ;;"--with-external-boost"
+                               "--with-external-expat")))
+    (inputs
+     `(;;("boost ,boost)
+       ("expat" ,expat)))
+    (home-page "https://www.codesynthesis.com/projects/libcutl/")
+    (synopsis "C++ utility library with generic and independent components")
+    (description "libcutl is a C++ utility library.  It contains a collection
+of generic and independent components such as meta-programming tests, smart
+pointers, containers, compiler building blocks, etc.")
+    (license (list license:expat        ;everything except...
+                   license:boost1.0)))) ;...the files under cutl/details/boost
