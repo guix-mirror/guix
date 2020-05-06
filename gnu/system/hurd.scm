@@ -66,7 +66,23 @@
         net-base inetutils less shepherd which))
 
 (define %base-services/hurd
-  '())
+  (list (service hurd-console-service-type
+                 (hurd-console-configuration (hurd hurd)))
+        (service hurd-getty-service-type (hurd-getty-configuration
+                                          (tty "tty1")))
+        (service hurd-getty-service-type (hurd-getty-configuration
+                                          (tty "tty2")))
+        (service static-networking-service-type
+                 (list (static-networking (interface "lo")
+                                          (ip "127.0.0.1")
+                                          (requirement '())
+                                          (provision '(loopback))
+                                          (name-servers '("10.0.2.3")))))
+        (syslog-service)
+        (service guix-service-type
+                 (guix-configuration
+                  (extra-options '("--disable-chroot"
+                                   "--disable-deduplication"))))))
 
 (define %hurd-default-operating-system
   (operating-system

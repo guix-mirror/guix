@@ -603,6 +603,17 @@ bookkeeping."
   (list (service system-service-type '())
         %boot-service
         %activation-service
+        %shepherd-root-service
+        (service user-processes-service-type)
+        (account-service (append (operating-system-accounts os)
+                                 (operating-system-groups os))
+                         (operating-system-skeletons os))
+        (root-file-system-service)
+        (service file-system-service-type '())
+        (service fstab-service-type
+                 (filter file-system-needed-for-boot?
+                         (operating-system-file-systems os)))
+        (pam-root-service (operating-system-pam-services os))
         (operating-system-etc-service os)
         (service profile-service-type (operating-system-packages os))))
 
