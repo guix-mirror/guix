@@ -74,11 +74,10 @@
   #:use-module (srfi srfi-19))
 
 (define-public sbcl-alexandria
-  (let ((revision "1")
-        (commit "3b849bc0116ea70f215ee6b2fbf354e862aaa9dd"))
+  (let ((commit "5e5c7d83090cc0fbf32c4628362ac3ce2c50dc59"))
     (package
       (name "sbcl-alexandria")
-      (version (git-version "1.0.0" revision commit))
+      (version "1.0.1")
       (source
        (origin
          (method git-fetch)
@@ -87,7 +86,7 @@
                (commit commit)))
          (sha256
           (base32
-           "04amwvx2vl691f0plcfbqqwxgib9zimih7jrn5zl7mbwvrxy022b"))
+           "010w8829dq28jf8ajfzas9nfvpxa5bal04mg299xq6y9spihc2iz"))
          (file-name (git-file-name name version))))
       (build-system asdf-build-system/sbcl)
       (native-inputs
