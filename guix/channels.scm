@@ -199,6 +199,14 @@ description file or its default value."
 channel INSTANCE."
   (channel-metadata-dependencies (channel-instance-metadata instance)))
 
+(define (latest-channel-instance store channel)
+  "Return the latest channel instance for CHANNEL."
+  (let-values (((checkout commit)
+                (latest-repository-commit store (channel-url channel)
+                                          #:ref (channel-reference
+                                                 channel))))
+    (channel-instance channel commit checkout)))
+
 (define* (latest-channel-instances store channels #:optional (previous-channels '()))
   "Return a list of channel instances corresponding to the latest checkouts of
 CHANNELS and the channels on which they depend.  PREVIOUS-CHANNELS is a list
@@ -224,20 +232,16 @@ of previously processed channels."
                            (G_ "Updating channel '~a' from Git repository at '~a'...~%")
                            (channel-name channel)
                            (channel-url channel))
-                   (let-values (((checkout commit)
-                                 (latest-repository-commit store (channel-url channel)
-                                                           #:ref (channel-reference
-                                                                  channel))))
-                     (let ((instance (channel-instance channel commit checkout)))
-                       (let-values (((new-instances new-channels)
-                                     (latest-channel-instances
-                                      store
-                                      (channel-instance-dependencies instance)
-                                      previous-channels)))
-                         (values (append (cons channel new-channels)
-                                         previous-channels)
-                                 (append (cons instance new-instances)
-                                         instances))))))))
+                   (let ((instance (latest-channel-instance store channel)))
+                     (let-values (((new-instances new-channels)
+                                   (latest-channel-instances
+                                    store
+                                    (channel-instance-dependencies instance)
+                                    previous-channels)))
+                       (values (append (cons channel new-channels)
+                                       previous-channels)
+                               (append (cons instance new-instances)
+                                       instances)))))))
            previous-channels
            '()                                    ;instances
            channels))
