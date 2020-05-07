@@ -123,13 +123,36 @@ mathematical operations, and much more.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags '("-DDETACH_KERNEL_DRIVER=ON")
-       #:tests? #f)) ; No tests
+     `(#:configure-flags '("-DDETACH_KERNEL_DRIVER=ON"
+                           "-DINSTALL_UDEV_RULES=ON")
+       #:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION \"/etc/")
+                (string-append "DESTINATION \""
+                               (assoc-ref outputs "out")
+                               "/etc/")))
+             #t)))))
     (home-page "https://osmocom.org/projects/sdr/wiki/rtl-sdr")
     (synopsis "Software defined radio driver for Realtek RTL2832U")
     (description "DVB-T dongles based on the Realtek RTL2832U can be used as a
 cheap software defined radio, since the chip allows transferring the raw I/Q
-samples to the host.  @code{rtl-sdr} provides drivers for this purpose.")
+samples to the host.  @code{rtl-sdr} provides drivers for this purpose.
+
+To install the rtl-sdr udev rules, you must add this package in the
+configuration of the udev system service. E.g.:
+
+@lisp
+(services
+ (modify-services %desktop-services
+  (udev-service-type config =>
+   (udev-configuration (inherit config)
+    (rules (cons rtl-sdr
+            (udev-configuration-rules config)))))))
+@end lisp")
     (license license:gpl2+)))
 
 (define-public chirp
