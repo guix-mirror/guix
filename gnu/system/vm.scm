@@ -419,13 +419,17 @@ system."
 (define* (system-docker-image os
                               #:key
                               (name "guix-docker-image")
-                              (register-closures? (has-guix-service-type? os)))
+                              (register-closures? (has-guix-service-type? os))
+                              shared-network?)
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
-base name to use for the output file.  When REGISTER-CLOSURES? is true,
-register the closure of OS with Guix in the resulting Docker image.  By
-default, REGISTER-CLOSURES? is set to true only if a service of type
-GUIX-SERVICE-TYPE is present in the services definition of the operating
-system."
+base name to use for the output file.  When SHARED-NETWORK? is true, assume
+that the container will share network with the host and thus doesn't need a
+DHCP client, nscd, and so on.
+
+When REGISTER-CLOSURES? is true, register the closure of OS with Guix in the
+resulting Docker image.  By default, REGISTER-CLOSURES? is set to true only if
+a service of type GUIX-SERVICE-TYPE is present in the services definition of
+the operating system."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -442,7 +446,9 @@ system."
 
 
   (let ((os    (operating-system-with-gc-roots
-                (containerized-operating-system os '())
+                (containerized-operating-system os '()
+                                                #:shared-network?
+                                                shared-network?)
                 (list boot-program)))
         (name  (string-append name ".tar.gz"))
         (graph "system-graph"))

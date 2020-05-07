@@ -700,7 +700,7 @@ checking this by themselves in their 'check' procedure."
        (size image-size)
        (operating-system os))))
     ((docker-image)
-     (system-docker-image os))))
+     (system-docker-image os #:shared-network? container-shared-network?))))
 
 (define (maybe-suggest-running-guix-pull)
   "Suggest running 'guix pull' if this has never been done before."
