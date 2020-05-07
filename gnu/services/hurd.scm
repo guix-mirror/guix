@@ -25,7 +25,9 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:export (hurd-console-configuration
-            hurd-console-service-type))
+            hurd-console-service-type
+            hurd-getty-configuration
+            hurd-getty-service-type))
 
 ;;; Commentary:
 ;;;
@@ -69,5 +71,53 @@
     (list (service-extension shepherd-root-service-type
                              hurd-console-shepherd-service)))
    (default-value (hurd-console-configuration))))
+
+
+;;;
+;;; The Hurd getty service.
+;;;
+
+(define-record-type* <hurd-getty-configuration>
+  hurd-getty-configuration make-hurd-getty-configuration
+  hurd-getty-configuration?
+  (hurd       hurd-getty-configuration-hurd  ;<package>
+              (default hurd))
+  (tty        hurd-getty-configuration-tty)  ;string
+  (baud-rate  hurd-getty-configuration-baud-rate
+              (default 38400)))              ;integer
+
+(define (hurd-getty-shepherd-service config)
+  "Return a <shepherd-service> for a Hurd getty with CONFIG."
+
+  (let ((hurd      (hurd-getty-configuration-hurd config))
+        (tty       (hurd-getty-configuration-tty config))
+        (baud-rate (hurd-getty-configuration-baud-rate config)))
+
+    (define getty-command
+      #~(list
+         (string-append #$hurd "/libexec/getty")
+         #$(number->string baud-rate)
+         #$tty))
+
+    (list
+     (shepherd-service
+      (documentation "Run getty on a tty.")
+      (provision (list (string->symbol (string-append "term-" tty))))
+      (requirement '(user-processes console))
+      (start #~(make-forkexec-constructor #$getty-command))
+      (stop  #~(make-kill-destructor))))))
+
+(define hurd-getty-service-type
+  (service-type
+   (name 'getty)
+   (extensions (list (service-extension shepherd-root-service-type
+                                        hurd-getty-shepherd-service)))
+   (description
+    "Provide console login using the Hurd @command{getty} program.")))
+
+(define* (hurd-getty-service config)
+  "Return a service to run the Hurd getty according to @var{config}, which
+specifies the tty to run, among other things."
+  (service hurd-getty-service-type config))
 
 ;;; hurd.scm ends here

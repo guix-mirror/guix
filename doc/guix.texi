@@ -26059,6 +26059,29 @@ The Hurd package to use.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} hurd-getty-service-type
+This service starts a tty using the Hurd @code{getty} program.
+
+The service's value is a @code{hurd-getty-configuration} record.
+@end defvr
+
+@deftp {Data Type} hurd-getty-configuration
+This is the data type representing the configuration for the
+hurd-getty-service.
+
+@table @asis
+@item @code{hurd} (default: @var{hurd})
+The Hurd package to use.
+
+@item @code{tty}
+The name of the console this Getty runs on---e.g., @code{"tty1"}.
+
+@item @code{baud-rate} (default: @code{38400})
+An integer specifying the baud rate of the tty.
+
+@end table
+@end deftp
+
 @node Miscellaneous Services
 @subsection Miscellaneous Services
 
