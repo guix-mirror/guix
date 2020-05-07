@@ -337,7 +337,9 @@ may not be ASCII-armored."
 (define (load-keyring-from-reference repository reference)
   "Load the '.key' files from the tree at REFERENCE in REPOSITORY and return
 an OpenPGP keyring."
-  (let* ((reference (reference-lookup repository reference))
+  (let* ((reference (branch-lookup repository
+                                   (string-append "origin/" reference)
+                                   BRANCH-REMOTE))
          (target    (reference-target reference))
          (commit    (commit-lookup repository target))
          (tree      (commit-tree commit)))
@@ -353,7 +355,7 @@ an OpenPGP keyring."
 
 (define* (authenticate-commits repository commits
                                #:key
-                               (keyring-reference "refs/heads/keyring")
+                               (keyring-reference "keyring")
                                (report-progress (const #t)))
   "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
 each of them.  Return an alist showing the number of occurrences of each key.
