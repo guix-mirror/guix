@@ -221,7 +221,7 @@ exec_with_proot (const char *store, int argc, char *argv[])
 {
   int proot_specific_argc = 4;
   int proot_argc = argc + proot_specific_argc;
-  char *proot_argv[proot_argc], *proot;
+  char *proot_argv[proot_argc + 1], *proot;
   char bind_spec[strlen (store) + 1 + sizeof "@STORE_DIRECTORY@"];
 
   strcpy (bind_spec, store);
