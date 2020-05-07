@@ -9149,8 +9149,8 @@ should be checked closely.  If Perl is available in the store, then the
 @code{corelist} utility will be used to filter core modules out of the
 list of dependencies.
 
-The command command below imports metadata for the @code{Acme::Boolean}
-Perl module:
+The command command below imports metadata for the Acme::Boolean Perl
+module:
 
 @example
 guix import cpan Acme::Boolean
@@ -9341,7 +9341,7 @@ in Guix.
 @end table
 
 The command below imports metadata for the latest version of the
-@code{HTTP} Haskell package without including test dependencies and
+HTTP Haskell package without including test dependencies and
 specifying the value of the flag @samp{network-uri} as @code{false}:
 
 @example
@@ -9381,7 +9381,7 @@ and generate package expressions for all those packages that are not yet
 in Guix.
 @end table
 
-The command below imports metadata for the @code{HTTP} Haskell package
+The command below imports metadata for the HTTP Haskell package
 included in the LTS Stackage release version 7.18:
 
 @example
