@@ -5641,7 +5641,7 @@ can be partly automated by the @command{guix refresh} command
 
 Behind the scenes, a derivation corresponding to the @code{<package>}
 object is first computed by the @code{package-derivation} procedure.
-That derivation is stored in a @code{.drv} file under @file{/gnu/store}.
+That derivation is stored in a @file{.drv} file under @file{/gnu/store}.
 The build actions it prescribes may then be realized by using the
 @code{build-derivations} procedure (@pxref{The Store}).
 
@@ -6178,7 +6178,7 @@ phase, so that the system which was just built can be used within the
 resulting image.  @code{build-program} requires a list of Common Lisp
 expressions to be passed as the @code{#:entry-program} argument.
 
-If the system is not defined within its own @code{.asd} file of the same
+If the system is not defined within its own @file{.asd} file of the same
 name, then the @code{#:asd-file} parameter should be used to specify
 which file the system is defined in.  Furthermore, if the package
 defines a system for its tests in a separate file, it will be loaded
@@ -7053,7 +7053,7 @@ A list of environment variables to be defined.
 Derivations allow clients of the daemon to communicate build actions to
 the store.  They exist in two forms: as an in-memory representation,
 both on the client- and daemon-side, and as files in the store whose
-name end in @code{.drv}---these files are referred to as @dfn{derivation
+name end in @file{.drv}---these files are referred to as @dfn{derivation
 paths}.  Derivations paths can be passed to the @code{build-derivations}
 procedure to perform the build actions they prescribe (@pxref{The
 Store}).
@@ -9163,10 +9163,9 @@ Import metadata from @uref{https://cran.r-project.org/, CRAN}, the
 central repository for the @uref{https://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
-Information is extracted from the @code{DESCRIPTION} file of the package.
+Information is extracted from the @file{DESCRIPTION} file of the package.
 
-The command command below imports metadata for the @code{Cairo}
-R package:
+The command command below imports metadata for the Cairo R package:
 
 @example
 guix import cran Cairo
@@ -9181,11 +9180,10 @@ When @option{--archive=bioconductor} is added, metadata is imported from
 packages for for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
-Information is extracted from the @code{DESCRIPTION} file contained in the
+Information is extracted from the @file{DESCRIPTION} file contained in the
 package archive.
 
-The command below imports metadata for the @code{GenomicRanges}
-R package:
+The command below imports metadata for the GenomicRanges R package:
 
 @example
 guix import cran --archive=bioconductor GenomicRanges
@@ -15220,8 +15218,8 @@ Defaults to @samp{strict}.
 
 @deftypevr {@code{files-configuration} parameter} file-name server-keychain
 Specifies the location of TLS certificates and private keys.  CUPS will
-look for public and private keys in this directory: a @code{.crt} files
-for PEM-encoded certificates and corresponding @code{.key} files for
+look for public and private keys in this directory: @file{.crt} files
+for PEM-encoded certificates and corresponding @file{.key} files for
 PEM-encoded private keys.
 
 Defaults to @samp{"/etc/cups/ssl"}.
@@ -28331,7 +28329,7 @@ GDB}):
 @end example
 
 From there on, GDB will pick up debugging information from the
-@code{.debug} files under @file{~/.guix-profile/lib/debug}.
+@file{.debug} files under @file{~/.guix-profile/lib/debug}.
 
 In addition, you will most likely want GDB to be able to show the source
 code being debugged.  To do that, you will have to unpack the source
@@ -28613,7 +28611,7 @@ tarball to be unpacked.
 Once @code{guile-bootstrap-2.0.drv} is built, we have a functioning
 Guile that can be used to run subsequent build programs.  Its first task
 is to download tarballs containing the other pre-built binaries---this
-is what the @code{.tar.xz.drv} derivations do.  Guix modules such as
+is what the @file{.tar.xz.drv} derivations do.  Guix modules such as
 @code{ftp-client.scm} are used for this purpose.  The
 @code{module-import.drv} derivations import those modules in a directory
 in the store, using the original layout.  The
