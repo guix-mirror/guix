@@ -130,6 +130,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
+;; This package uses su instead of sudo (because of SpaceFM).
 (define-public ktsuss
   (package
     (name "ktsuss")
@@ -146,17 +147,13 @@
        (file-name (git-file-name name version))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--enable-sudo=yes")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-file-names
            (lambda _
              (substitute* "configure.ac"
                (("supath=`which su 2>/dev/null`")
-                "supath=/run/setuid-programs/su")
-               (("sudopath=`which sudo 2>/dev/null`")
-                "sudopath=/run/setuid-programs/sudo"))
+                "supath=/run/setuid-programs/su"))
              #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
