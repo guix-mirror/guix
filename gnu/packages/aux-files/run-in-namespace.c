@@ -219,6 +219,83 @@ disallow_setgroups (pid_t pid)
   close (fd);
 }
 
+/* Run the wrapper program in a separate mount user namespace.  Return only
+   upon failure.  */
+static void
+exec_in_user_namespace (const char *store, int argc, char *argv[])
+{
+  /* Spawn @WRAPPED_PROGRAM@ in a separate namespace where STORE is
+     bind-mounted in the right place.  */
+  int err;
+  char *new_root = mkdtemp (strdup ("/tmp/guix-exec-XXXXXX"));
+  char *new_store = concat (new_root, "@STORE_DIRECTORY@");
+  char *cwd = get_current_dir_name ();
+
+  /* Create a child with separate namespaces and set up bind-mounts from
+     there.  That way, bind-mounts automatically disappear when the child
+     exits, which simplifies cleanup for the parent.  Note: clone is more
+     convenient than fork + unshare since the parent can directly write
+     the child uid_map/gid_map files.  */
+  pid_t child = syscall (SYS_clone, SIGCHLD | CLONE_NEWNS | CLONE_NEWUSER,
+			 NULL, NULL, NULL);
+  switch (child)
+    {
+    case 0:
+      /* Note: Due to <https://bugzilla.kernel.org/show_bug.cgi?id=183461>
+	 we cannot make NEW_ROOT a tmpfs (which would have saved the need
+	 for 'rm_rf'.)  */
+      bind_mount ("/", new_root);
+      mkdir_p (new_store);
+      err = mount (store, new_store, "none", MS_BIND | MS_REC | MS_RDONLY,
+		   NULL);
+      if (err < 0)
+	assert_perror (errno);
+
+      chdir (new_root);
+      err = chroot (new_root);
+      if (err < 0)
+	assert_perror (errno);
+
+      /* Change back to where we were before chroot'ing.  */
+      chdir (cwd);
+
+      int err = execv ("@WRAPPED_PROGRAM@", argv);
+      if (err < 0)
+	assert_perror (errno);
+      break;
+
+    case -1:
+      /* Failure: user namespaces not supported.  */
+      fprintf (stderr, "%s: error: 'clone' failed: %m\n", argv[0]);
+      rm_rf (new_root);
+      break;
+
+    default:
+      {
+	/* Map the current user/group ID in the child's namespace (the
+	   default is to get the "overflow UID", i.e., the UID of
+	   "nobody").  We must first disallow 'setgroups' for that
+	   process.  */
+	disallow_setgroups (child);
+	write_id_map (child, "uid_map", getuid ());
+	write_id_map (child, "gid_map", getgid ());
+
+	int status;
+	waitpid (child, &status, 0);
+	chdir ("/");			  /* avoid EBUSY */
+	rm_rf (new_root);
+	free (new_root);
+
+	if (WIFEXITED (status))
+	  exit (WEXITSTATUS (status));
+	else
+	  /* Abnormal termination cannot really be reproduced, so exit
+	     with 255.  */
+	  exit (255);
+      }
+    }
+}
+
 
 #ifdef PROOT_PROGRAM
 
@@ -285,81 +362,23 @@ main (int argc, char *argv[])
   if (strcmp (store, "@STORE_DIRECTORY@") != 0
       && lstat ("@WRAPPED_PROGRAM@", &statbuf) != 0)
     {
-      /* Spawn @WRAPPED_PROGRAM@ in a separate namespace where STORE is
-	 bind-mounted in the right place.  */
-      int err;
-      char *new_root = mkdtemp (strdup ("/tmp/guix-exec-XXXXXX"));
-      char *new_store = concat (new_root, "@STORE_DIRECTORY@");
-      char *cwd = get_current_dir_name ();
+      /* Buffer stderr so that nothing's displayed if 'exec_in_user_namespace'
+	 fails but 'exec_with_proot' works.  */
+      static char stderr_buffer[4096];
+      setvbuf (stderr, stderr_buffer, _IOFBF, sizeof stderr_buffer);
 
-      /* Create a child with separate namespaces and set up bind-mounts from
-	 there.  That way, bind-mounts automatically disappear when the child
-	 exits, which simplifies cleanup for the parent.  Note: clone is more
-	 convenient than fork + unshare since the parent can directly write
-	 the child uid_map/gid_map files.  */
-      pid_t child = syscall (SYS_clone, SIGCHLD | CLONE_NEWNS | CLONE_NEWUSER,
-			     NULL, NULL, NULL);
-      switch (child)
-	{
-	case 0:
-	  /* Note: Due to <https://bugzilla.kernel.org/show_bug.cgi?id=183461>
-	     we cannot make NEW_ROOT a tmpfs (which would have saved the need
-	     for 'rm_rf'.)  */
-	  bind_mount ("/", new_root);
-	  mkdir_p (new_store);
-	  err = mount (store, new_store, "none", MS_BIND | MS_REC | MS_RDONLY,
-		       NULL);
-	  if (err < 0)
-	    assert_perror (errno);
-
-	  chdir (new_root);
-	  err = chroot (new_root);
-	  if (err < 0)
-	    assert_perror (errno);
-
-	  /* Change back to where we were before chroot'ing.  */
-	  chdir (cwd);
-	  break;
-
-	case -1:
-	  rm_rf (new_root);
+      exec_in_user_namespace (store, argc, argv);
 #ifdef PROOT_PROGRAM
-	  exec_with_proot (store, argc, argv);
+      exec_with_proot (store, argc, argv);
 #else
-	  fprintf (stderr, "%s: error: 'clone' failed: %m\n", argv[0]);
-	  fprintf (stderr, "\
+      fprintf (stderr, "\
 This may be because \"user namespaces\" are not supported on this system.\n\
 Consequently, we cannot run '@WRAPPED_PROGRAM@',\n\
 unless you move it to the '@STORE_DIRECTORY@' directory.\n\
 \n\
 Please refer to the 'guix pack' documentation for more information.\n");
 #endif
-	  return EXIT_FAILURE;
-
-	default:
-	  {
-	    /* Map the current user/group ID in the child's namespace (the
-	       default is to get the "overflow UID", i.e., the UID of
-	       "nobody").  We must first disallow 'setgroups' for that
-	       process.  */
-	    disallow_setgroups (child);
-	    write_id_map (child, "uid_map", getuid ());
-	    write_id_map (child, "gid_map", getgid ());
-
-	    int status;
-	    waitpid (child, &status, 0);
-	    chdir ("/");			  /* avoid EBUSY */
-	    rm_rf (new_root);
-	    free (new_root);
-
-	    if (WIFEXITED (status))
-	      exit (WEXITSTATUS (status));
-	    else
-	      /* Abnormal termination cannot really be reproduced, so exit
-		 with 255.  */
-	      exit (255);
-	  }
-	}
+      return EXIT_FAILURE;
     }
 
   /* The executable is available under @STORE_DIRECTORY@, so we can now
