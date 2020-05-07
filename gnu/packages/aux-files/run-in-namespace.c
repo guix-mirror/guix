@@ -42,13 +42,21 @@
 #include <dirent.h>
 #include <sys/syscall.h>
 
+/* Like 'malloc', but abort if 'malloc' returns NULL.  */
+static void *
+xmalloc (size_t size)
+{
+  void *result = malloc (size);
+  assert (result != NULL);
+  return result;
+}
+
 /* Concatenate DIRECTORY, a slash, and FILE.  Return the result, which the
    caller must eventually free.  */
 static char *
 concat (const char *directory, const char *file)
 {
-  char *result = malloc (strlen (directory) + 2 + strlen (file));
-  assert (result != NULL);
+  char *result = xmalloc (strlen (directory) + 2 + strlen (file));
 
   strcpy (result, directory);
   strcat (result, "/");
