@@ -2246,7 +2246,13 @@ utilities frequently used in roguelikes.")
                  (base32
                   "0xv2yycr43p3xmq7lm6j6zb3cpcr6w00x7qg918faq0mw9j7v48g"))
                 ;; Issue reported here: https://github.com/Warsow/qfusion/issues/46
-                (patches (search-patches "warsow-qfusion-fix-bool-return-type.patch"))))
+                (patches (search-patches "warsow-qfusion-fix-bool-return-type.patch"))
+                (modules '((guix build utils)))
+                (snippet '(begin
+                            (delete-file-recursively "platforms")
+                            (delete-file-recursively "debian")
+                            (delete-file-recursively "libsrcs")
+                            #t))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f                    ; No tests.
