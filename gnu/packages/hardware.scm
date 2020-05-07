@@ -400,13 +400,16 @@ applications.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'configure 'patch-makefile
-           (lambda _
+         (add-after 'unpack 'patch-build-scripts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+               (("/usr/include/catch")
+                (string-append (assoc-ref inputs "catch") "/include")))
              ;; Do not create log directory.
-             (substitute* "Makefile" ((".*/log/usbguard.*") ""))
+             (substitute* "Makefile.in" ((".*/log/usbguard.*") ""))
              ;; Disable LDAP tests: they use 'sudo'.
-             (substitute* "src/Tests/Makefile.am"
-               (("WITH_LDAP") "FALSE"))
+             (substitute* "src/Tests/Makefile.in"
+               (("\\$\\(am__append_2\\)") ""))
              #t))
          (add-after 'install 'delete-static-library
            (lambda* (#:key outputs #:allow-other-keys)
@@ -448,8 +451,6 @@ applications.")
        ("libqb" ,libqb)))
     (native-inputs
      `(("asciidoc" ,asciidoc)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
        ("bash-completion" ,bash-completion)
        ("gdbus-codegen" ,glib "bin")
        ("umockdev" ,umockdev)
