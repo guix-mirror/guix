@@ -6797,6 +6797,36 @@ have to construct the archives directly, without using the archiver.")
     (home-page "http://freshmeat.sourceforge.net/projects/fakeroot")
     (license license:gpl3+)))
 
+(define-public fakechroot
+  (package
+    (name "fakechroot")
+    (version "2.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dex4er/fakechroot/releases/download/"
+                    version "/fakechroot-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1aijkd0b45wav25v01qhw8zxwa3pl0nnp9fabmmy1nlx7hr09gas"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: The tests heavily assume they run on an FHS system so for now
+     ;; skip them.
+     '(#:tests? #f
+       #:configure-flags '("--disable-static")))
+    (synopsis "Emulate @code{chroot} by overriding file system calls")
+    (description
+     "@command{fakechroot} runs a command in an environment were is additional
+possibility to use @code{chroot} command without root privileges.  This is
+useful for allowing users to create own chrooted environment with possibility
+to install another packages without need for root privileges.
+
+It works by providing @file{libfakechroot.so}, a shared library meant to be
+set as @code{LD_PRELOAD} to override the C library file system functions.")
+    (home-page "https://github.com/dex4er/fakechroot/")
+    (license license:lgpl2.1+)))
+
 (define-public inputattach
   (package
     (name "inputattach")
