@@ -613,7 +613,7 @@ step.)
 Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
 
-The @code{--warning=no-timestamp} option makes sure GNU@tie{}tar does
+The @option{--warning=no-timestamp} option makes sure GNU@tie{}tar does
 not emit warnings about ``implausibly old time stamps'' (such
 warnings were triggered by GNU@tie{}tar 1.26 and older; recent
 versions are fine.)
@@ -801,7 +801,7 @@ When @url{http://www.bzip.org, libbz2} is available,
 @command{guix-daemon} can use it to compress build logs.
 @end itemize
 
-Unless @code{--disable-daemon} was passed to @command{configure}, the
+Unless @option{--disable-daemon} was passed to @command{configure}, the
 following packages are also needed:
 
 @itemize
@@ -814,7 +814,7 @@ C++11 standard.
 @cindex state directory
 When configuring Guix on a system that already has a Guix installation,
 be sure to specify the same state directory as the existing installation
-using the @code{--localstatedir} option of the @command{configure}
+using the @option{--localstatedir} option of the @command{configure}
 script (@pxref{Directory Variables, @code{localstatedir},, standards,
 GNU Coding Standards}).  Usually, this @var{localstatedir} option is
 set to the value @file{/var}.  The @command{configure} script protects
@@ -1017,7 +1017,7 @@ HTTP downloads it performs, be it for fixed-output derivations
 (@pxref{Derivations}) or for substitutes (@pxref{Substitutes}).
 
 If you are installing Guix as an unprivileged user, it is still possible
-to run @command{guix-daemon} provided you pass @code{--disable-chroot}.
+to run @command{guix-daemon} provided you pass @option{--disable-chroot}.
 However, build processes will not be isolated from one another, and not
 from the rest of the system.  Thus, build processes may interfere with
 each other, and may access programs, libraries, and other files
@@ -1338,7 +1338,7 @@ For details on how to set it up, @pxref{Setting Up the Daemon}.
 @cindex reproducible builds
 By default, @command{guix-daemon} launches build processes under
 different UIDs, taken from the build group specified with
-@code{--build-users-group}.  In addition, each build process is run in a
+@option{--build-users-group}.  In addition, each build process is run in a
 chroot environment that only contains the subset of the store that the
 build process depends on, as specified by its derivation
 (@pxref{Programming Interface, derivation}), plus a set of specific
@@ -1377,7 +1377,7 @@ Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries
 (@pxref{Substitutes}).
 
-When the daemon runs with @code{--no-substitutes}, clients can still
+When the daemon runs with @option{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
 
@@ -1410,7 +1410,7 @@ Use @var{n} CPU cores to build each derivation; @code{0} means as many
 as available.
 
 The default value is @code{0}, but it may be overridden by clients, such
-as the @code{--cores} option of @command{guix build} (@pxref{Invoking
+as the @option{--cores} option of @command{guix build} (@pxref{Invoking
 guix build}).
 
 The effect is to define the @code{NIX_BUILD_CORES} environment variable
@@ -1431,7 +1431,7 @@ When the build or substitution process remains silent for more than
 The default value is @code{0}, which disables the timeout.
 
 The value specified here can be overridden by clients (@pxref{Common
-Build Options, @code{--max-silent-time}}).
+Build Options, @option{--max-silent-time}}).
 
 @item --timeout=@var{seconds}
 Likewise, when the build or substitution process lasts for more than
@@ -1440,7 +1440,7 @@ Likewise, when the build or substitution process lasts for more than
 The default value is @code{0}, which disables the timeout.
 
 The value specified here can be overridden by clients (@pxref{Common
-Build Options, @code{--timeout}}).
+Build Options, @option{--timeout}}).
 
 @item --rounds=@var{N}
 Build each derivation @var{n} times in a row, and raise an error if
@@ -1456,7 +1456,7 @@ This makes it easy to look for differences between the two results.
 Produce debugging output.
 
 This is useful to debug daemon start-up issues, but then it may be
-overridden by clients, for example the @code{--verbosity} option of
+overridden by clients, for example the @option{--verbosity} option of
 @command{guix build} (@pxref{Invoking guix build}).
 
 @item --chroot-directory=@var{dir}
@@ -1480,9 +1480,9 @@ account.
 Compress build logs according to @var{type}, one of @code{gzip},
 @code{bzip2}, or @code{none}.
 
-Unless @code{--lose-logs} is used, all the build logs are kept in the
+Unless @option{--lose-logs} is used, all the build logs are kept in the
 @var{localstatedir}.  To save space, the daemon automatically compresses
-them with bzip2 by default.
+them with Bzip2 by default.
 
 @item --disable-deduplication
 @cindex deduplication
@@ -1501,38 +1501,41 @@ derivations.
 
 @cindex GC roots
 @cindex garbage collector roots
-When set to ``yes'', the GC will keep the outputs of any live derivation
-available in the store---the @code{.drv} files.  The default is ``no'',
-meaning that derivation outputs are kept only if they are reachable from a GC
-root.  @xref{Invoking guix gc}, for more on GC roots.
+When set to @code{yes}, the GC will keep the outputs of any live
+derivation available in the store---the @file{.drv} files.  The default
+is @code{no}, meaning that derivation outputs are kept only if they are
+reachable from a GC root.  @xref{Invoking guix gc}, for more on GC
+roots.
 
 @item --gc-keep-derivations[=yes|no]
 Tell whether the garbage collector (GC) must keep derivations
 corresponding to live outputs.
 
-When set to ``yes'', as is the case by default, the GC keeps
-derivations---i.e., @code{.drv} files---as long as at least one of their
+When set to @code{yes}, as is the case by default, the GC keeps
+derivations---i.e., @file{.drv} files---as long as at least one of their
 outputs is live.  This allows users to keep track of the origins of
-items in their store.  Setting it to ``no'' saves a bit of disk space.
+items in their store.  Setting it to @code{no} saves a bit of disk
+space.
 
-In this way, setting @code{--gc-keep-derivations} to ``yes'' causes liveness
-to flow from outputs to derivations, and setting @code{--gc-keep-outputs} to
-``yes'' causes liveness to flow from derivations to outputs.  When both are
-set to ``yes'', the effect is to keep all the build prerequisites (the
-sources, compiler, libraries, and other build-time tools) of live objects in
-the store, regardless of whether these prerequisites are reachable from a GC
-root.  This is convenient for developers since it saves rebuilds or downloads.
+In this way, setting @option{--gc-keep-derivations} to @code{yes} causes
+liveness to flow from outputs to derivations, and setting
+@option{--gc-keep-outputs} to @code{yes} causes liveness to flow from
+derivations to outputs.  When both are set to @code{yes}, the effect is
+to keep all the build prerequisites (the sources, compiler, libraries,
+and other build-time tools) of live objects in the store, regardless of
+whether these prerequisites are reachable from a GC root.  This is
+convenient for developers since it saves rebuilds or downloads.
 
 @item --impersonate-linux-2.6
 On Linux-based systems, impersonate Linux 2.6.  This means that the
-kernel's @code{uname} system call will report 2.6 as the release number.
+kernel's @command{uname} system call will report 2.6 as the release number.
 
 This might be helpful to build programs that (usually wrongfully) depend
 on the kernel version number.
 
 @item --lose-logs
 Do not keep build logs.  By default they are kept under
-@code{@var{localstatedir}/guix/log}.
+@file{@var{localstatedir}/guix/log}.
 
 @item --system=@var{system}
 Assume @var{system} as the current system type.  By default it is the
@@ -1571,13 +1574,13 @@ by setting the @code{GUIX_DAEMON_SOCKET} environment variable
 
 @quotation Note
 The daemon protocol is @emph{unauthenticated and unencrypted}.  Using
-@code{--listen=@var{host}} is suitable on local networks, such as
+@option{--listen=@var{host}} is suitable on local networks, such as
 clusters, where only trusted nodes may connect to the build daemon.  In
 other cases where remote access to the daemon is needed, we recommend
 using Unix-domain sockets along with SSH.
 @end quotation
 
-When @code{--listen} is omitted, @command{guix-daemon} listens for
+When @option{--listen} is omitted, @command{guix-daemon} listens for
 connections on the Unix-domain socket located at
 @file{@var{localstatedir}/guix/daemon-socket/socket}.
 @end table
@@ -1764,7 +1767,7 @@ Additionally, autoload definitions are automatically evaluated at the
 initialization of Emacs, by the Guix-specific
 @code{guix-emacs-autoload-packages} procedure.  If, for some reason, you
 want to avoid auto-loading the Emacs packages installed with Guix, you
-can do so by running Emacs with the @code{--no-site-file} option
+can do so by running Emacs with the @option{--no-site-file} option
 (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
 @subsection The GCC toolchain
@@ -2748,7 +2751,7 @@ a @dfn{garbage-collector root}, which @file{$HOME/.guix-profile} points
 to (@pxref{Invoking guix gc}).  That directory is normally
 @code{@var{localstatedir}/guix/profiles/per-user/@var{user}}, where
 @var{localstatedir} is the value passed to @code{configure} as
-@code{--localstatedir}, and @var{user} is the user name.  The
+@option{--localstatedir}, and @var{user} is the user name.  The
 @file{per-user} directory is created when @command{guix-daemon} is
 started, and the @var{user} sub-directory is created by @command{guix
 package}.
@@ -2790,7 +2793,7 @@ also been explicitly installed by the user.
 
 Besides, packages sometimes rely on the definition of environment
 variables for their search paths (see explanation of
-@code{--search-paths} below).  Any missing or possibly incorrect
+@option{--search-paths} below).  Any missing or possibly incorrect
 environment variable definitions are reported here.
 
 @item --install-from-expression=@var{exp}
@@ -2835,9 +2838,9 @@ the package @code{greeter} after building @code{myhello}:
 @itemx -r @var{package} @dots{}
 Remove the specified @var{package}s.
 
-As for @code{--install}, each @var{package} may specify a version number
+As for @option{--install}, each @var{package} may specify a version number
 and/or output name in addition to the package name.  For instance,
-@code{-r glibc:debug} would remove the @code{debug} output of
+@samp{-r glibc:debug} would remove the @code{debug} output of
 @code{glibc}.
 
 @item --upgrade[=@var{regexp} @dots{}]
@@ -2845,7 +2848,7 @@ and/or output name in addition to the package name.  For instance,
 @cindex upgrading packages
 Upgrade all the installed packages.  If one or more @var{regexp}s are
 specified, upgrade only installed packages whose name matches a
-@var{regexp}.  Also see the @code{--do-not-upgrade} option below.
+@var{regexp}.  Also see the @option{--do-not-upgrade} option below.
 
 Note that this upgrades package to the latest version of packages found
 in the distribution currently installed.  To update your distribution,
@@ -2853,7 +2856,7 @@ you should regularly run @command{guix pull} (@pxref{Invoking guix
 pull}).
 
 @item --do-not-upgrade[=@var{regexp} @dots{}]
-When used together with the @code{--upgrade} option, do @emph{not}
+When used together with the @option{--upgrade} option, do @emph{not}
 upgrade any packages whose name matches a @var{regexp}.  For example, to
 upgrade all packages in the current profile except those containing the
 substring ``emacs'':
@@ -2871,7 +2874,7 @@ returned by the Scheme code in @var{file}.  This option can be repeated
 several times, in which case the manifests are concatenated.
 
 This allows you to @emph{declare} the profile's contents rather than
-constructing it through a sequence of @code{--install} and similar
+constructing it through a sequence of @option{--install} and similar
 commands.  The advantage is that @var{file} can be put under version
 control, copied to different machines to reproduce the same profile, and
 so on.
@@ -2911,7 +2914,7 @@ objects, like this:
 Roll back to the previous @dfn{generation} of the profile---i.e., undo
 the last transaction.
 
-When combined with options such as @code{--install}, roll back occurs
+When combined with options such as @option{--install}, roll back occurs
 before any other actions.
 
 When rolling back from the first generation that actually contains
@@ -2930,11 +2933,11 @@ Switch to a particular generation defined by @var{pattern}.
 @var{pattern} may be either a generation number or a number prefixed
 with ``+'' or ``-''.  The latter means: move forward/backward by a
 specified number of generations.  For example, if you want to return to
-the latest generation after @code{--roll-back}, use
-@code{--switch-generation=+1}.
+the latest generation after @option{--roll-back}, use
+@option{--switch-generation=+1}.
 
-The difference between @code{--roll-back} and
-@code{--switch-generation=-1} is that @code{--switch-generation} will
+The difference between @option{--roll-back} and
+@option{--switch-generation=-1} is that @option{--switch-generation} will
 not make a zeroth generation, so if a specified generation does not
 exist, the current generation will not be changed.
 
@@ -2945,13 +2948,13 @@ needed in order to use the set of installed packages.  These environment
 variables are used to specify @dfn{search paths} for files used by some
 of the installed packages.
 
-For example, GCC needs the @code{CPATH} and @code{LIBRARY_PATH}
+For example, GCC needs the @env{CPATH} and @env{LIBRARY_PATH}
 environment variables to be defined so it can look for headers and
 libraries in the user's profile (@pxref{Environment Variables,,, gcc,
 Using the GNU Compiler Collection (GCC)}).  If GCC and, say, the C
-library are installed in the profile, then @code{--search-paths} will
-suggest setting these variables to @code{@var{profile}/include} and
-@code{@var{profile}/lib}, respectively.
+library are installed in the profile, then @option{--search-paths} will
+suggest setting these variables to @file{@var{profile}/include} and
+@file{@var{profile}/lib}, respectively.
 
 The typical use case is to define these environment variables in the
 shell:
@@ -3168,23 +3171,23 @@ generations.  Valid patterns include:
 
 @itemize
 @item @emph{Integers and comma-separated integers}.  Both patterns denote
-generation numbers.  For instance, @code{--list-generations=1} returns
+generation numbers.  For instance, @option{--list-generations=1} returns
 the first one.
 
-And @code{--list-generations=1,8,2} outputs three generations in the
+And @option{--list-generations=1,8,2} outputs three generations in the
 specified order.  Neither spaces nor trailing commas are allowed.
 
-@item @emph{Ranges}.  @code{--list-generations=2..9} prints the
+@item @emph{Ranges}.  @option{--list-generations=2..9} prints the
 specified generations and everything in between.  Note that the start of
 a range must be smaller than its end.
 
 It is also possible to omit the endpoint.  For example,
-@code{--list-generations=2..}, returns all generations starting from the
+@option{--list-generations=2..}, returns all generations starting from the
 second one.
 
 @item @emph{Durations}.  You can also get the last @emph{N}@tie{}days, weeks,
 or months by passing an integer along with the first letter of the
-duration.  For example, @code{--list-generations=20d} lists generations
+duration.  For example, @option{--list-generations=20d} lists generations
 that are up to 20 days old.
 @end itemize
 
@@ -3196,7 +3199,7 @@ one.
 This command accepts the same patterns as @option{--list-generations}.
 When @var{pattern} is specified, delete the matching generations.  When
 @var{pattern} specifies a duration, generations @emph{older} than the
-specified duration match.  For instance, @code{--delete-generations=1m}
+specified duration match.  For instance, @option{--delete-generations=1m}
 deletes generations that are more than one month old.
 
 If the current generation matches, it is @emph{not} deleted.  Also, the
@@ -3329,10 +3332,10 @@ possible, for future builds.
 
 @cindex substitutes, how to disable
 The substitute mechanism can be disabled globally by running
-@code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
+@code{guix-daemon} with @option{--no-substitutes} (@pxref{Invoking
 guix-daemon}).  It can also be disabled temporarily by passing the
-@code{--no-substitutes} option to @command{guix package}, @command{guix
-build}, and other command-line tools.
+@option{--no-substitutes} option to @command{guix package},
+@command{guix build}, and other command-line tools.
 
 @node Substitute Authentication
 @subsection Substitute Authentication
@@ -3393,16 +3396,16 @@ etc.
 When substitutes are enabled and a substitute for a derivation is
 available, but the substitution attempt fails, Guix will attempt to
 build the derivation locally depending on whether or not
-@code{--fallback} was given (@pxref{fallback-option,, common build
-option @code{--fallback}}).  Specifically, if @code{--fallback} was
+@option{--fallback} was given (@pxref{fallback-option,, common build
+option @option{--fallback}}).  Specifically, if @option{--fallback} was
 omitted, then no local build will be performed, and the derivation is
-considered to have failed.  However, if @code{--fallback} was given,
+considered to have failed.  However, if @option{--fallback} was given,
 then Guix will attempt to build the derivation locally, and the success
 or failure of the derivation depends on the success or failure of the
 local build.  Note that when substitutes are disabled or no substitute
 is available for the derivation in question, a local build will
 @emph{always} be performed, regardless of whether or not
-@code{--fallback} was given.
+@option{--fallback} was given.
 
 To get an idea of how many substitutes are available right now, you can
 try running the @command{guix weather} command (@pxref{Invoking guix
@@ -3539,7 +3542,7 @@ software---e.g., the compiler tool chain.
 
 The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
-files (the @code{--delete} option), to print garbage-collector
+files (the @option{--delete} option), to print garbage-collector
 information, or for more advanced queries.  The garbage collection
 options are as follows:
 
@@ -3696,10 +3699,10 @@ Optimize the store by hard-linking identical files---this is
 @dfn{deduplication}.
 
 The daemon performs deduplication after each successful build or archive
-import, unless it was started with @code{--disable-deduplication}
-(@pxref{Invoking guix-daemon, @code{--disable-deduplication}}).  Thus,
+import, unless it was started with @option{--disable-deduplication}
+(@pxref{Invoking guix-daemon, @option{--disable-deduplication}}).  Thus,
 this option is primarily useful when the daemon was running with
-@code{--disable-deduplication}.
+@option{--disable-deduplication}.
 
 @end table
 
@@ -3756,7 +3759,7 @@ export PATH="$HOME/.config/guix/current/bin:$PATH"
 export INFOPATH="$HOME/.config/guix/current/share/info:$INFOPATH"
 @end example
 
-The @code{--list-generations} or @code{-l} option lists past generations
+The @option{--list-generations} or @option{-l} option lists past generations
 produced by @command{guix pull}, along with details about their provenance:
 
 @example
@@ -3868,8 +3871,8 @@ Switch to a particular generation defined by @var{pattern}.
 @var{pattern} may be either a generation number or a number prefixed
 with ``+'' or ``-''.  The latter means: move forward/backward by a
 specified number of generations.  For example, if you want to return to
-the latest generation after @code{--roll-back}, use
-@code{--switch-generation=+1}.
+the latest generation after @option{--roll-back}, use
+@option{--switch-generation=+1}.
 
 @item --delete-generations[=@var{pattern}]
 @itemx -d [@var{pattern}]
@@ -3879,7 +3882,7 @@ one.
 This command accepts the same patterns as @option{--list-generations}.
 When @var{pattern} is specified, delete the matching generations.  When
 @var{pattern} specifies a duration, generations @emph{older} than the
-specified duration match.  For instance, @code{--delete-generations=1m}
+specified duration match.  For instance, @option{--delete-generations=1m}
 deletes generations that are more than one month old.
 
 If the current generation matches, it is @emph{not} deleted.
@@ -4531,9 +4534,9 @@ guix archive --export -r $(readlink -f ~/.guix-profile) | \
 @noindent
 However, note that, in both examples, all of @code{emacs} and the
 profile as well as all of their dependencies are transferred (due to
-@code{-r}), regardless of what is already available in the store on the
-target machine.  The @code{--missing} option can help figure out which
-items are missing from the target store.  The @command{guix copy}
+@option{-r}), regardless of what is already available in the store on
+the target machine.  The @option{--missing} option can help figure out
+which items are missing from the target store.  The @command{guix copy}
 command simplifies and optimizes this whole process, so this is probably
 what you should use in this case (@pxref{Invoking guix copy}).
 
@@ -4563,20 +4566,20 @@ Export the specified store files or packages (see below.)  Write the
 resulting archive to the standard output.
 
 Dependencies are @emph{not} included in the output, unless
-@code{--recursive} is passed.
+@option{--recursive} is passed.
 
 @item -r
 @itemx --recursive
-When combined with @code{--export}, this instructs @command{guix
-archive} to include dependencies of the given items in the archive.
-Thus, the resulting archive is self-contained: it contains the closure
-of the exported store items.
+When combined with @option{--export}, this instructs @command{guix archive}
+to include dependencies of the given items in the archive.  Thus, the
+resulting archive is self-contained: it contains the closure of the
+exported store items.
 
 @item --import
 Read an archive from the standard input, and import the files listed
 therein into the store.  Abort if the archive has an invalid digital
 signature, or if it is signed by a public key not among the authorized
-keys (see @code{--authorize} below.)
+keys (see @option{--authorize} below.)
 
 @item --missing
 Read a list of store file names from the standard input, one per line,
@@ -4586,9 +4589,9 @@ the store.
 @item --generate-key[=@var{parameters}]
 @cindex signing, archives
 Generate a new key pair for the daemon.  This is a prerequisite before
-archives can be exported with @code{--export}.  Note that this operation
-usually takes time, because it needs to gather enough entropy to
-generate the key pair.
+archives can be exported with @option{--export}.  Note that this
+operation usually takes time, because it needs to gather enough entropy
+to generate the key pair.
 
 The generated key pair is typically stored under @file{/etc/guix}, in
 @file{signing-key.pub} (public key) and @file{signing-key.sec} (private
@@ -4701,23 +4704,23 @@ guix environment guile
 @end example
 
 If the needed dependencies are not built yet, @command{guix environment}
-automatically builds them.  The environment of the new shell is an augmented
-version of the environment that @command{guix environment} was run in.
-It contains the necessary search paths for building the given package
-added to the existing environment variables.  To create a ``pure''
-environment, in which the original environment variables have been unset,
-use the @code{--pure} option@footnote{Users sometimes wrongfully augment
-environment variables such as @code{PATH} in their @file{~/.bashrc}
-file.  As a consequence, when @code{guix environment} launches it, Bash
-may read @file{~/.bashrc}, thereby introducing ``impurities'' in these
-environment variables.  It is an error to define such environment
-variables in @file{.bashrc}; instead, they should be defined in
-@file{.bash_profile}, which is sourced only by log-in shells.
-@xref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}, for
-details on Bash start-up files.}.
+automatically builds them.  The environment of the new shell is an
+augmented version of the environment that @command{guix environment} was
+run in.  It contains the necessary search paths for building the given
+package added to the existing environment variables.  To create
+a ``pure'' environment, in which the original environment variables have
+been unset, use the @option{--pure} option@footnote{Users sometimes
+wrongfully augment environment variables such as @env{PATH} in their
+@file{~/.bashrc} file.  As a consequence, when @command{guix
+environment} launches it, Bash may read @file{~/.bashrc}, thereby
+introducing ``impurities'' in these environment variables.  It is an
+error to define such environment variables in @file{.bashrc}; instead,
+they should be defined in @file{.bash_profile}, which is sourced only by
+log-in shells.  @xref{Bash Startup Files,,, bash, The GNU Bash Reference
+Manual}, for details on Bash start-up files.}.
 
 @vindex GUIX_ENVIRONMENT
-@command{guix environment} defines the @code{GUIX_ENVIRONMENT}
+@command{guix environment} defines the @env{GUIX_ENVIRONMENT}
 variable in the shell it spawns; its value is the file name of the
 profile of this environment.  This allows users to, say, define a
 specific prompt for development environments in their @file{.bashrc}
@@ -4766,8 +4769,8 @@ guix environment --ad-hoc python2-numpy python-2.7 -- python
 Furthermore, one might want the dependencies of a package and also some
 additional packages that are not build-time or runtime dependencies, but
 are useful when developing nonetheless.  Because of this, the
-@code{--ad-hoc} flag is positional.  Packages appearing before
-@code{--ad-hoc} are interpreted as packages whose dependencies will be
+@option{--ad-hoc} flag is positional.  Packages appearing before
+@option{--ad-hoc} are interpreted as packages whose dependencies will be
 added to the environment.  Packages appearing after are interpreted as
 packages that will be added to the environment directly.  For example,
 the following command creates a Guix development environment that
@@ -4791,7 +4794,7 @@ guix environment --ad-hoc --container guile -- guile
 @end example
 
 @quotation Note
-The @code{--container} option requires Linux-libre 3.19 or newer.
+The @option{--container} option requires Linux-libre 3.19 or newer.
 @end quotation
 
 @cindex certificates
@@ -4901,10 +4904,10 @@ specific output---e.g., @code{glib:bin} asks for the @code{bin} output
 of @code{glib} (@pxref{Packages with Multiple Outputs}).
 
 This option may be composed with the default behavior of @command{guix
-environment}.  Packages appearing before @code{--ad-hoc} are interpreted
-as packages whose dependencies will be added to the environment, the
-default behavior.  Packages appearing after are interpreted as packages
-that will be added to the environment directly.
+environment}.  Packages appearing before @option{--ad-hoc} are
+interpreted as packages whose dependencies will be added to the
+environment, the default behavior.  Packages appearing after are
+interpreted as packages that will be added to the environment directly.
 
 @item --pure
 Unset existing environment variables when building the new environment, except
@@ -4941,7 +4944,7 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @cindex container
 Run @var{command} within an isolated container.  The current working
 directory outside the container is mapped inside the container.
-Additionally, unless overridden with @code{--user}, a dummy home
+Additionally, unless overridden with @option{--user}, a dummy home
 directory is created that matches the current user's home directory, and
 @file{/etc/passwd} is configured accordingly.
 
@@ -4957,19 +4960,18 @@ device.
 
 @item --link-profile
 @itemx -P
-For containers, link the environment profile to
-@file{~/.guix-profile} within the container.  This is equivalent to
-running the command @command{ln -s $GUIX_ENVIRONMENT ~/.guix-profile}
-within the container.  Linking will fail and abort the environment if
-the directory already exists, which will certainly be the case if
-@command{guix environment} was invoked in the user's home directory.
+For containers, link the environment profile to @file{~/.guix-profile}
+within the container.  This is equivalent to running the command
+@samp{ln -s $GUIX_ENVIRONMENT ~/.guix-profile} within the container.
+Linking will fail and abort the environment if the directory already
+exists, which will certainly be the case if @command{guix environment}
+was invoked in the user's home directory.
 
-Certain packages are configured to look in
-@code{~/.guix-profile} for configuration files and data;@footnote{For
-example, the @code{fontconfig} package inspects
-@file{~/.guix-profile/share/fonts} for additional fonts.}
-@code{--link-profile} allows these programs to behave as expected within
-the environment.
+Certain packages are configured to look in @file{~/.guix-profile} for
+configuration files and data;@footnote{For example, the
+@code{fontconfig} package inspects @file{~/.guix-profile/share/fonts}
+for additional fonts.}  @option{--link-profile} allows these programs to
+behave as expected within the environment.
 
 @item --user=@var{user}
 @itemx -u @var{user}
@@ -4980,8 +4982,8 @@ contain the name @var{user}, the home directory will be
 the UID and GID inside the container are 1000.  @var{user}
 need not exist on the system.
 
-Additionally, any shared or exposed path (see @code{--share} and
-@code{--expose} respectively) whose target is within the current user's
+Additionally, any shared or exposed path (see @option{--share} and
+@option{--expose} respectively) whose target is within the current user's
 home directory will be remapped relative to @file{/home/USER}; this
 includes the automatic mapping of the current working directory.
 
@@ -5000,15 +5002,15 @@ broader privacy/anonymity solution---not one in and of itself.
 @item --no-cwd
 For containers, the default behavior is to share the current working
 directory with the isolated container and immediately change to that
-directory within the container.  If this is undesirable, @code{--no-cwd}
-will cause the current working directory to @emph{not} be automatically
-shared and will change to the user's home directory within the container
-instead.  See also @code{--user}.
+directory within the container.  If this is undesirable,
+@option{--no-cwd} will cause the current working directory to @emph{not}
+be automatically shared and will change to the user's home directory
+within the container instead.  See also @option{--user}.
 
 @item --expose=@var{source}[=@var{target}]
 @itemx --share=@var{source}[=@var{target}]
-For containers, @code{--expose} (resp. @code{--share}) exposes the file
-system @var{source} from the host system as the read-only
+For containers, @option{--expose} (resp. @option{--share}) exposes the
+file system @var{source} from the host system as the read-only
 (resp. writable) file system @var{target} within the container.  If
 @var{target} is not specified, @var{source} is used as the target mount
 point in the container.
@@ -5086,7 +5088,7 @@ That way, users can happily type @file{/opt/gnu/bin/guile} and enjoy.
 @cindex relocatable binaries, with @command{guix pack}
 What if the recipient of your pack does not have root privileges on
 their machine, and thus cannot unpack it in the root file system?  In
-that case, you will want to use the @code{--relocatable} option (see
+that case, you will want to use the @option{--relocatable} option (see
 below).  This option produces @dfn{relocatable binaries}, meaning they
 they can be placed anywhere in the file system hierarchy: in the example
 above, users can unpack your tarball in their home directory and
@@ -5255,7 +5257,7 @@ docker run @var{image-id}
 Consider the package @var{expr} evaluates to.
 
 This has the same purpose as the same-named option in @command{guix
-build} (@pxref{Additional Build Options, @code{--expression} in
+build} (@pxref{Additional Build Options, @option{--expression} in
 @command{guix build}}).
 
 @item --manifest=@var{file}
@@ -5567,7 +5569,7 @@ make && make check && make install} command sequence.
 The @code{arguments} field specifies options for the build system
 (@pxref{Build Systems}).  Here it is interpreted by
 @var{gnu-build-system} as a request run @file{configure} with the
-@code{--enable-silent-rules} flag.
+@option{--enable-silent-rules} flag.
 
 @cindex quote
 @cindex quoting
@@ -6035,7 +6037,7 @@ store file names.  For instance, this changes @code{#!/bin/sh} to
 
 @item configure
 Run the @file{configure} script with a number of default options, such
-as @code{--prefix=/gnu/store/@dots{}}, as well as the options specified
+as @option{--prefix=/gnu/store/@dots{}}, as well as the options specified
 by the @code{#:configure-flags} argument.
 
 @item build
@@ -6447,19 +6449,20 @@ compile} (@pxref{Compilation,,, guile, GNU Guile Reference Manual}) and
 installs the @file{.scm} and @file{.go} files in the right place.  It also
 installs documentation.
 
-This build system supports cross-compilation by using the @code{--target}
-option of @command{guild compile}.
+This build system supports cross-compilation by using the
+@option{--target} option of @samp{guild compile}.
 
 Packages built with @code{guile-build-system} must provide a Guile package in
 their @code{native-inputs} field.
 @end defvr
 
 @defvr {Scheme Variable} julia-build-system
-This variable is exported by @code{(guix build-system julia)}.  It implements
-the build procedure used by @uref{https://julialang.org/, julia} packages,
-which essentially is similar to running @command{julia -e 'using Pkg;
-Pkg.add(package)'} in an environment where @code{JULIA_LOAD_PATH} contains the
-paths to all Julia package inputs.  Tests are run not run.
+This variable is exported by @code{(guix build-system julia)}.  It
+implements the build procedure used by @uref{https://julialang.org/,
+julia} packages, which essentially is similar to running @samp{julia -e
+'using Pkg; Pkg.add(package)'} in an environment where
+@env{JULIA_LOAD_PATH} contains the paths to all Julia package inputs.
+Tests are run not run.
 
 Julia packages require the source @code{file-name} to be the real name of the
 package, correctly capitalized.
@@ -6772,7 +6775,7 @@ following phases changed to some specific for Meson:
 
 @item configure
 The phase runs @code{meson} with the flags specified in
-@code{#:configure-flags}.  The flag @code{--build-type} is always set to
+@code{#:configure-flags}.  The flag @option{--build-type} is always set to
 @code{plain} unless something else is specified in @code{#:build-type}.
 
 @item build
@@ -6929,9 +6932,9 @@ This setup is suitable on local networks, such as clusters, where only
 trusted nodes may connect to the build daemon at
 @code{master.guix.example.org}.
 
-The @code{--listen} option of @command{guix-daemon} can be used to
+The @option{--listen} option of @command{guix-daemon} can be used to
 instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
-@code{--listen}}).
+@option{--listen}}).
 
 @item ssh
 @cindex SSH access to build daemons
@@ -8256,7 +8259,7 @@ the software distribution such as @code{coreutils} or
 package with the corresponding name (and optionally version) is searched
 for among the GNU distribution modules (@pxref{Package Modules}).
 
-Alternatively, the @code{--expression} option may be used to specify a
+Alternatively, the @option{--expression} option may be used to specify a
 Scheme expression that evaluates to a package; this is useful when
 disambiguating among several same-named packages or package variants is
 needed.
@@ -8366,14 +8369,14 @@ When the build or substitution process remains silent for more than
 @var{seconds}, terminate it and report a build failure.
 
 By default, the daemon's setting is honored (@pxref{Invoking
-guix-daemon, @code{--max-silent-time}}).
+guix-daemon, @option{--max-silent-time}}).
 
 @item --timeout=@var{seconds}
 Likewise, when the build or substitution process lasts for more than
 @var{seconds}, terminate it and report a build failure.
 
 By default, the daemon's setting is honored (@pxref{Invoking
-guix-daemon, @code{--timeout}}).
+guix-daemon, @option{--timeout}}).
 
 @c Note: This option is actually not part of %standard-build-options but
 @c most programs honor it.
@@ -8393,7 +8396,7 @@ value @code{0} means to use as many CPU cores as available.
 @item --max-jobs=@var{n}
 @itemx -M @var{n}
 Allow at most @var{n} build jobs in parallel.  @xref{Invoking
-guix-daemon, @code{--max-jobs}}, for details about this option and the
+guix-daemon, @option{--max-jobs}}, for details about this option and the
 equivalent @command{guix-daemon} option.
 
 @item --debug=@var{level}
@@ -8467,7 +8470,7 @@ the @code{ed} package:
 guix build ed --with-source=mirror://gnu/ed/ed-1.7.tar.gz
 @end example
 
-As a developer, @code{--with-source} makes it easy to test release
+As a developer, @option{--with-source} makes it easy to test release
 candidates:
 
 @example
@@ -8503,7 +8506,7 @@ This is implemented using the @code{package-input-rewriting} Scheme
 procedure (@pxref{Defining Packages, @code{package-input-rewriting}}).
 
 @item --with-graft=@var{package}=@var{replacement}
-This is similar to @code{--with-input} but with an important difference:
+This is similar to @option{--with-input} but with an important difference:
 instead of rebuilding the whole dependency chain, @var{replacement} is
 built and then @dfn{grafted} onto the binaries that were initially
 referring to @var{package}.  @xref{Security Updates}, for more
@@ -8540,8 +8543,8 @@ guix build python-numpy \
   --with-git-url=python=https://github.com/python/cpython
 @end example
 
-This option can also be combined with @code{--with-branch} or
-@code{--with-commit} (see below).
+This option can also be combined with @option{--with-branch} or
+@option{--with-commit} (see below).
 
 @cindex continuous integration
 Obviously, since it uses the latest commit of the given branch, the result of
@@ -8559,7 +8562,7 @@ Build @var{package} from the latest commit of @var{branch}.  If the
 @code{source} field of @var{package} is an origin with the @code{git-fetch}
 method (@pxref{origin Reference}) or a @code{git-checkout} object, the
 repository URL is taken from that @code{source}.  Otherwise you have to use
-@code{--with-git-url} to specify the URL of the Git repository.
+@option{--with-git-url} to specify the URL of the Git repository.
 
 For instance, the following command builds @code{guile-sqlite3} from the
 latest commit of its @code{master} branch, and then builds @code{guix} (which
@@ -8571,7 +8574,7 @@ guix build --with-branch=guile-sqlite3=master cuirass
 @end example
 
 @item --with-commit=@var{package}=@var{commit}
-This is similar to @code{--with-branch}, except that it builds from
+This is similar to @option{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
 Git commit SHA1 identifier or a tag.
 @end table
@@ -8587,7 +8590,7 @@ build}.
 @item --quiet
 @itemx -q
 Build quietly, without displaying the build log; this is equivalent to
-@code{--verbosity=0}.  Upon completion, the build log is kept in @file{/var}
+@option{--verbosity=0}.  Upon completion, the build log is kept in @file{/var}
 (or similar) and can always be retrieved using the @option{--log-file} option.
 
 @item --file=@var{file}
@@ -8655,13 +8658,13 @@ Fetch and return the source of @var{package-or-derivation} and all their
 dependencies, recursively.  This is a handy way to obtain a local copy
 of all the source code needed to build @var{packages}, allowing you to
 eventually build them even without network access.  It is an extension
-of the @code{--source} option and can accept one of the following
+of the @option{--source} option and can accept one of the following
 optional argument values:
 
 @table @code
 @item package
-This value causes the @code{--sources} option to behave in the same way
-as the @code{--source} option.
+This value causes the @option{--sources} option to behave in the same way
+as the @option{--source} option.
 
 @item all
 Build the source derivations of all packages, including any source that
@@ -8701,16 +8704,16 @@ you to repeat this option several times, in which case it builds for all the
 specified systems; other commands ignore extraneous @option{-s} options.
 
 @quotation Note
-The @code{--system} flag is for @emph{native} compilation and must not
-be confused with cross-compilation.  See @code{--target} below for
+The @option{--system} flag is for @emph{native} compilation and must not
+be confused with cross-compilation.  See @option{--target} below for
 information on cross-compilation.
 @end quotation
 
 An example use of this is on Linux-based systems, which can emulate
 different personalities.  For instance, passing
-@code{--system=i686-linux} on an @code{x86_64-linux} system or
-@code{--system=armhf-linux} on an @code{aarch64-linux} system allows you
-to build packages in a complete 32-bit environment.
+@option{--system=i686-linux} on an @code{x86_64-linux} system or
+@option{--system=armhf-linux} on an @code{aarch64-linux} system allows
+you to build packages in a complete 32-bit environment.
 
 @quotation Note
 Building for an @code{armhf-linux} system is unconditionally enabled on
@@ -8792,9 +8795,9 @@ guix build --log-file guile
 guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
 @end example
 
-If a log is unavailable locally, and unless @code{--no-substitutes} is
+If a log is unavailable locally, and unless @option{--no-substitutes} is
 passed, the command looks for a corresponding log on one of the
-substitute servers (as specified with @code{--substitute-urls}.)
+substitute servers (as specified with @option{--substitute-urls}.)
 
 So for instance, imagine you want to see the build log of GDB on MIPS,
 but you are actually on an @code{x86_64} machine:
@@ -8820,7 +8823,7 @@ build daemon uses.
 To that end, the first thing to do is to use the @option{--keep-failed}
 or @option{-K} option of @command{guix build}, which will keep the
 failed build tree in @file{/tmp} or whatever directory you specified as
-@code{TMPDIR} (@pxref{Invoking guix build, @code{--keep-failed}}).
+@env{TMPDIR} (@pxref{Invoking guix build, @option{--keep-failed}}).
 
 From there on, you can @command{cd} to the failed build tree and source
 the @file{environment-variables} file, which contains all the
@@ -8902,18 +8905,18 @@ guix edit gcc@@4.9 vim
 @end example
 
 @noindent
-launches the program specified in the @code{VISUAL} or in the
-@code{EDITOR} environment variable to view the recipe of GCC@tie{}4.9.3
+launches the program specified in the @env{VISUAL} or in the
+@env{EDITOR} environment variable to view the recipe of GCC@tie{}4.9.3
 and that of Vim.
 
 If you are using a Guix Git checkout (@pxref{Building from Git}), or
-have created your own packages on @code{GUIX_PACKAGE_PATH}
+have created your own packages on @env{GUIX_PACKAGE_PATH}
 (@pxref{Package Modules}), you will be able to edit the package
 recipes.  In other cases, you will be able to examine the read-only recipes
 for packages currently in the store.
 
-Instead of @code{GUIX_PACKAGE_PATH}, the command-line option
-@code{--load-path=@var{directory}} (or in short @code{-L
+Instead of @env{GUIX_PACKAGE_PATH}, the command-line option
+@option{--load-path=@var{directory}} (or in short @option{-L
 @var{directory}}) allows you to add @var{directory} to the front of the
 package module search path and so make your own packages visible.
 
@@ -9082,9 +9085,9 @@ Specific command-line options are:
 
 @table @code
 @item --key-download=@var{policy}
-As for @code{guix refresh}, specify the policy to handle missing OpenPGP
-keys when verifying the package signature.  @xref{Invoking guix
-refresh, @code{--key-download}}.
+As for @command{guix refresh}, specify the policy to handle missing
+OpenPGP keys when verifying the package signature.  @xref{Invoking guix
+refresh, @option{--key-download}}.
 @end table
 
 @item pypi
@@ -9169,11 +9172,11 @@ R package:
 guix import cran Cairo
 @end example
 
-When @code{--recursive} is added, the importer will traverse the
+When @option{--recursive} is added, the importer will traverse the
 dependency graph of the given upstream package recursively and generate
 package expressions for all those packages that are not yet in Guix.
 
-When @code{--archive=bioconductor} is added, metadata is imported from
+When @option{--archive=bioconductor} is added, metadata is imported from
 @uref{https://www.bioconductor.org/, Bioconductor}, a repository of R
 packages for for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
@@ -9190,7 +9193,7 @@ guix import cran --archive=bioconductor GenomicRanges
 
 Finally, you can also import R packages that have not yet been published on
 CRAN or Bioconductor as long as they are in a git repository.  Use
-@code{--archive=git} followed by the URL of the git repository:
+@option{--archive=git} followed by the URL of the git repository:
 
 @example
 guix import cran --archive=git https://github.com/immunogenomics/harmony
@@ -9215,10 +9218,10 @@ TeX package:
 guix import texlive fontspec
 @end example
 
-When @code{--archive=DIRECTORY} is added, the source code is downloaded
-not from the @file{latex} sub-directory of the @file{texmf-dist/source}
-tree in the TeX Live SVN repository, but from the specified sibling
-directory under the same root.
+When @option{--archive=@var{directory}} is added, the source code is
+downloaded not from the @file{latex} sub-directory of the
+@file{texmf-dist/source} tree in the TeX Live SVN repository, but from
+the specified sibling @var{directory} under the same root.
 
 The command below imports metadata for the @code{ifxetex} package from
 CTAN while fetching the sources from the directory
@@ -9524,7 +9527,7 @@ to that effect:
     (properties '((upstream-name . "NetworkManager")))))
 @end lisp
 
-When passed @code{--update}, it modifies distribution source files to
+When passed @option{--update}, it modifies distribution source files to
 update the version numbers and source tarball hashes of those package
 recipes (@pxref{Defining Packages}).  This is achieved by downloading
 each package's latest source tarball and its associated OpenPGP
@@ -9648,7 +9651,7 @@ $ ./pre-inst-env guix refresh -u emacs idutils gcc@@4.8
 
 @noindent
 The command above specifically updates the @code{emacs} and
-@code{idutils} packages.  The @code{--select} option would have no
+@code{idutils} packages.  The @option{--select} option would have no
 effect in this case.
 
 When considering whether to upgrade a package, it is sometimes
@@ -9676,7 +9679,7 @@ dependents of a package.
 
 @end table
 
-Be aware that the @code{--list-dependent} option only
+Be aware that the @option{--list-dependent} option only
 @emph{approximates} the rebuilds that would be required as a result of
 an upgrade.  More rebuilds might be required under some circumstances.
 
@@ -9793,7 +9796,7 @@ The @command{guix lint} command is meant to help package developers avoid
 common errors and use a consistent style.  It runs a number of checks on
 a given set of packages in order to find common mistakes in their
 definitions.  Available @dfn{checkers} include (see
-@code{--list-checkers} for a complete list):
+@option{--list-checkers} for a complete list):
 
 @table @code
 @item synopsis
@@ -9921,7 +9924,7 @@ and exit.
 @item --checkers
 @itemx -c
 Only enable the checkers specified in a comma-separated list using the
-names returned by @code{--list-checkers}.
+names returned by @option{--list-checkers}.
 
 @item --load-path=@var{directory}
 @itemx -L @var{directory}
@@ -10304,7 +10307,7 @@ For security, each substitute is signed, allowing recipients to check
 their authenticity and integrity (@pxref{Substitutes}).  Because
 @command{guix publish} uses the signing key of the system, which is only
 readable by the system administrator, it must be started as root; the
-@code{--user} option makes it drop root privileges early on.
+@option{--user} option makes it drop root privileges early on.
 
 The signing key pair must be generated before @command{guix publish} is
 launched, using @command{guix archive --generate-key} (@pxref{Invoking
@@ -10364,9 +10367,9 @@ When @command{guix-daemon} is configured to save compressed build logs,
 as is the case by default (@pxref{Invoking guix-daemon}), @code{/log}
 URLs return the compressed log as-is, with an appropriate
 @code{Content-Type} and/or @code{Content-Encoding} header.  We recommend
-running @command{guix-daemon} with @code{--log-compression=gzip} since
+running @command{guix-daemon} with @option{--log-compression=gzip} since
 Web browsers can automatically decompress it, which is not the case with
-bzip2 compression.
+Bzip2 compression.
 
 The following options are available:
 
@@ -10688,7 +10691,7 @@ of Diffoscope.
 Do not show further details about the differences.
 @end table
 
-Thus, unless @code{--diff=none} is passed, @command{guix challenge}
+Thus, unless @option{--diff=none} is passed, @command{guix challenge}
 downloads the store items from the given substitute servers so that it
 can compare them.
 
@@ -13068,7 +13071,7 @@ An empty list disables compression altogether.
 
 @item @code{nar-path} (default: @code{"nar"})
 The URL path at which ``nars'' can be fetched.  @xref{Invoking guix
-publish, @code{--nar-path}}, for details.
+publish, @option{--nar-path}}, for details.
 
 @item @code{cache} (default: @code{#f})
 When it is @code{#f}, disable caching and instead generate archives on
@@ -24215,7 +24218,7 @@ object} as returned by @code{lookup-qemu-platforms} (see below).
 @item @code{guix-support?} (default: @code{#f})
 When it is true, QEMU and all its dependencies are added to the build
 environment of @command{guix-daemon} (@pxref{Invoking guix-daemon,
-@code{--chroot-directory} option}).  This allows the @code{binfmt_misc}
+@option{--chroot-directory} option}).  This allows the @code{binfmt_misc}
 handlers to be used within the build environment, which in turn means
 that you can transparently build programs for another architecture.
 
@@ -26456,7 +26459,7 @@ here is how to use it and customize it further.
        [#:helper-packages '()] [#:qemu-networking? #f] [#:volatile-root? #f]
 Return a derivation that builds a raw initrd.  @var{file-systems} is
 a list of file systems to be mounted by the initrd, possibly in addition to
-the root file system specified on the kernel command line via @code{--root}.
+the root file system specified on the kernel command line via @option{--root}.
 @var{linux-modules} is a list of kernel modules to be loaded at boot time.
 @var{mapped-devices} is a list of device mappings to realize before
 @var{file-systems} are mounted (@pxref{Mapped Devices}).
@@ -26485,7 +26488,7 @@ to it are lost.
 Return as a file-like object a generic initrd, with kernel
 modules taken from @var{linux}.  @var{file-systems} is a list of file-systems to be
 mounted by the initrd, possibly in addition to the root file system specified
-on the kernel command line via @code{--root}.  @var{mapped-devices} is a list of device
+on the kernel command line via @option{--root}.  @var{mapped-devices} is a list of device
 mappings to realize before @var{file-systems} are mounted.
 
 When true, @var{keyboard-layout} is a @code{<keyboard-layout>} record denoting
@@ -26915,8 +26918,8 @@ Delete system generations, making them candidates for garbage collection
 (@pxref{Invoking guix gc}, for information on how to run the ``garbage
 collector'').
 
-This works in the same way as @command{guix package --delete-generations}
-(@pxref{Invoking guix package, @code{--delete-generations}}).  With no
+This works in the same way as @samp{guix package --delete-generations}
+(@pxref{Invoking guix package, @option{--delete-generations}}).  With no
 arguments, all system generations but the current one are deleted:
 
 @example
@@ -26985,7 +26988,7 @@ $ /gnu/store/@dots{}-run-vm.sh -m 1024 -smp 2 -net user,model=virtio-net-pci
 The VM shares its store with the host system.
 
 Additional file systems can be shared between the host and the VM using
-the @code{--share} and @code{--expose} command-line options: the former
+the @option{--share} and @option{--expose} command-line options: the former
 specifies a directory to be shared with write access, while the latter
 provides read-only access to the shared directory.
 
@@ -27002,10 +27005,10 @@ On GNU/Linux, the default is to boot directly to the kernel; this has
 the advantage of requiring only a very tiny root disk image since the
 store of the host can then be mounted.
 
-The @code{--full-boot} option forces a complete boot sequence, starting
+The @option{--full-boot} option forces a complete boot sequence, starting
 with the bootloader.  This requires more disk space since a root image
 containing at least the kernel, initrd, and bootloader data files must
-be created.  The @code{--image-size} option can be used to specify the
+be created.  The @option{--image-size} option can be used to specify the
 size of the image.
 
 @cindex System images, creation in various formats
@@ -27144,7 +27147,7 @@ When this option is omitted, @command{guix system} uses @code{ext4}.
 @cindex ISO-9660 format
 @cindex CD image format
 @cindex DVD image format
-@code{--file-system-type=iso9660} produces an ISO-9660 image, suitable
+@option{--file-system-type=iso9660} produces an ISO-9660 image, suitable
 for burning on CDs and DVDs.
 
 @item --image-size=@var{size}
@@ -28662,15 +28665,15 @@ for all the following packages.  From there Findutils and Diffutils get
 built.
 
 Then come the first-stage Binutils and GCC, built as pseudo cross
-tools---i.e., with @code{--target} equal to @code{--host}.  They are
+tools---i.e., with @option{--target} equal to @option{--host}.  They are
 used to build libc.  Thanks to this cross-build trick, this libc is
 guaranteed not to hold any reference to the initial tool chain.
 
-From there the final Binutils and GCC (not shown above) are built.
-GCC uses @code{ld}
-from the final Binutils, and links programs against the just-built libc.
-This tool chain is used to build the other packages used by Guix and by
-the GNU Build System: Guile, Bash, Coreutils, etc.
+From there the final Binutils and GCC (not shown above) are built.  GCC
+uses @command{ld} from the final Binutils, and links programs against
+the just-built libc.  This tool chain is used to build the other
+packages used by Guix and by the GNU Build System: Guile, Bash,
+Coreutils, etc.
 
 And voilà!  At this point we have the complete set of build tools that
 the GNU Build System expects.  These are in the @code{%final-inputs}
@@ -28778,7 +28781,7 @@ as well.
 In practice, there may be some complications.  First, it may be that the
 extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
 above) is not recognized by all the GNU tools.  Typically, glibc
-recognizes some of these, whereas GCC uses an extra @code{--with-abi}
+recognizes some of these, whereas GCC uses an extra @option{--with-abi}
 configure flag (see @code{gcc.scm} for examples of how to handle this).
 Second, some of the required packages could fail to build for that
 platform.  Lastly, the generated binaries could be broken for some
