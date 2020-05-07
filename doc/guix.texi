@@ -27066,7 +27066,7 @@ example, if you intend to build software using Guix inside of the Docker
 container, you may need to pass the @option{--privileged} option to
 @code{docker create}.
 
-Last, the @code{--network} option applies to @command{guix system
+Last, the @option{--network} option applies to @command{guix system
 docker-image}: it produces an image where network is supposedly shared
 with the host, and thus without services like nscd or NetworkManager.
 
