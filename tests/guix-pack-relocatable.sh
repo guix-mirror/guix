@@ -94,6 +94,12 @@ case "`uname -m`" in
 	export GUIX_EXECUTION_ENGINE
 	"$test_directory/Bin/sed" --version > "$test_directory/output"
 	grep 'GNU sed' "$test_directory/output"
+
+	# Now with fakechroot.
+	GUIX_EXECUTION_ENGINE="fakechroot"
+	"$test_directory/Bin/sed" --version > "$test_directory/output"
+	grep 'GNU sed' "$test_directory/output"
+
 	chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 	;;
     *)

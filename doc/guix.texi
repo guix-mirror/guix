@@ -5230,6 +5230,10 @@ following execution engines are supported:
 Try user namespaces and fall back to PRoot if user namespaces are not
 supported (see below).
 
+@item performance
+Try user namespaces and fall back to Fakechroot if user namespaces are
+not supported (see below).
+
 @item userns
 Run the program through user namespaces and abort if they are not
 supported.
@@ -5241,6 +5245,15 @@ support for file system virtualization.  It achieves that by using the
 @code{ptrace} system call on the running program.  This approach has the
 advantage to work without requiring special kernel support, but it incurs
 run-time overhead every time a system call is made.
+
+@item fakechroot
+Run through Fakechroot.  @uref{https://github.com/dex4er/fakechroot/,
+Fakechroot} virtualizes file system accesses by intercepting calls to C
+library functions such as @code{open}, @code{stat}, @code{exec}, and so
+on.  Unlike PRoot, it incurs very little overhead.  However, it does not
+always work: for example, some file system accesses made from within the
+C library are not intercepted, and file system accesses made @i{via}
+direct syscalls are not intercepted either, leading to erratic behavior.
 @end table
 
 @vindex GUIX_EXECUTION_ENGINE
