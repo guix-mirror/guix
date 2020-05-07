@@ -4798,7 +4798,7 @@ The @code{--container} option requires Linux-libre 3.19 or newer.
 Another typical use case for containers is to run security-sensitive
 applications such as a web browser.  To run Eolie, we must expose and
 share some files and directories; we include @code{nss-certs} and expose
-@file{/etc/sll/certs/} for HTTPS authentication; finally we preserve the
+@file{/etc/ssl/certs/} for HTTPS authentication; finally we preserve the
 the @code{DISPLAY} environment variable since containerized graphical
 applications won't display without it.
 
