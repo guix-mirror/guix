@@ -633,7 +633,7 @@ where @command{guix pull} will install updates (@pxref{Invoking guix pull}):
          ~root/.config/guix/current
 @end example
 
-Source @file{etc/profile} to augment @code{PATH} and other relevant
+Source @file{etc/profile} to augment @env{PATH} and other relevant
 environment variables:
 
 @example
@@ -1004,15 +1004,15 @@ a writable @file{/tmp} directory.
 @end itemize
 
 You can influence the directory where the daemon stores build trees
-@i{via} the @code{TMPDIR} environment variable.  However, the build tree
+@i{via} the @env{TMPDIR} environment variable.  However, the build tree
 within the chroot is always called @file{/tmp/guix-build-@var{name}.drv-0},
 where @var{name} is the derivation name---e.g., @code{coreutils-8.24}.
-This way, the value of @code{TMPDIR} does not leak inside build
+This way, the value of @env{TMPDIR} does not leak inside build
 environments, which avoids discrepancies in cases where build processes
 capture the name of their build tree.
 
 @vindex http_proxy
-The daemon also honors the @code{http_proxy} environment variable for
+The daemon also honors the @env{http_proxy} environment variable for
 HTTP downloads it performs, be it for fixed-output derivations
 (@pxref{Derivations}) or for substitutes (@pxref{Substitutes}).
 
@@ -1350,7 +1350,7 @@ etc.  This helps achieve reproducible builds (@pxref{Features}).
 
 When the daemon performs a build on behalf of the user, it creates a
 build directory under @file{/tmp} or under the directory specified by
-its @code{TMPDIR} environment variable.  This directory is shared with
+its @env{TMPDIR} environment variable.  This directory is shared with
 the container for the duration of the build, though within the container,
 the build tree is always called @file{/tmp/guix-build-@var{name}.drv-0}.
 
@@ -1413,7 +1413,7 @@ The default value is @code{0}, but it may be overridden by clients, such
 as the @option{--cores} option of @command{guix build} (@pxref{Invoking
 guix build}).
 
-The effect is to define the @code{NIX_BUILD_CORES} environment variable
+The effect is to define the @env{NIX_BUILD_CORES} environment variable
 in the build process, which can then use it to exploit internal
 parallelism---for instance, by running @code{make -j$NIX_BUILD_CORES}.
 
@@ -1569,8 +1569,8 @@ Listen for TCP connections on the network interface corresponding to
 This option can be repeated multiple times, in which case
 @command{guix-daemon} accepts connections on all the specified
 endpoints.  Users can tell client commands what endpoint to connect to
-by setting the @code{GUIX_DAEMON_SOCKET} environment variable
-(@pxref{The Store, @code{GUIX_DAEMON_SOCKET}}).
+by setting the @env{GUIX_DAEMON_SOCKET} environment variable
+(@pxref{The Store, @env{GUIX_DAEMON_SOCKET}}).
 
 @quotation Note
 The daemon protocol is @emph{unauthenticated and unencrypted}.  Using
@@ -1602,7 +1602,7 @@ get everything in place.  Here are some of them.
 @vindex GUIX_LOCPATH
 Packages installed @i{via} Guix will not use the locale data of the
 host system.  Instead, you must first install one of the locale packages
-available with Guix and then define the @code{GUIX_LOCPATH} environment
+available with Guix and then define the @env{GUIX_LOCPATH} environment
 variable:
 
 @example
@@ -1615,19 +1615,19 @@ locales supported by the GNU@tie{}libc and weighs in at around
 917@tie{}MiB.  Alternatively, the @code{glibc-utf8-locales} is smaller but
 limited to a few UTF-8 locales.
 
-The @code{GUIX_LOCPATH} variable plays a role similar to @code{LOCPATH}
-(@pxref{Locale Names, @code{LOCPATH},, libc, The GNU C Library Reference
+The @env{GUIX_LOCPATH} variable plays a role similar to @env{LOCPATH}
+(@pxref{Locale Names, @env{LOCPATH},, libc, The GNU C Library Reference
 Manual}).  There are two important differences though:
 
 @enumerate
 @item
-@code{GUIX_LOCPATH} is honored only by the libc in Guix, and not by the libc
-provided by foreign distros.  Thus, using @code{GUIX_LOCPATH} allows you
+@env{GUIX_LOCPATH} is honored only by the libc in Guix, and not by the libc
+provided by foreign distros.  Thus, using @env{GUIX_LOCPATH} allows you
 to make sure the programs of the foreign distro will not end up loading
 incompatible locale data.
 
 @item
-libc suffixes each entry of @code{GUIX_LOCPATH} with @code{/X.Y}, where
+libc suffixes each entry of @env{GUIX_LOCPATH} with @code{/X.Y}, where
 @code{X.Y} is the libc version---e.g., @code{2.22}.  This means that,
 should your Guix profile contain a mixture of programs linked against
 different libc version, each libc version will only try to load locale
@@ -1760,7 +1760,7 @@ information.
 When you install Emacs packages with Guix, the Elisp files are placed
 under the @file{share/emacs/site-lisp/} directory of the profile in
 which they are installed.  The Elisp libraries are made available to
-Emacs through the @code{EMACSLOADPATH} environment variable, which is
+Emacs through the @env{EMACSLOADPATH} environment variable, which is
 set when installing Emacs itself.
 
 Additionally, autoload definitions are automatically evaluated at the
@@ -2456,7 +2456,7 @@ your system includes the latest security updates (@pxref{Security Updates}).
 @quotation Note
 @cindex sudo vs. @command{guix pull}
 Note that @command{sudo guix} runs your user's @command{guix} command and
-@emph{not} root's, because @command{sudo} leaves @code{PATH} unchanged.  To
+@emph{not} root's, because @command{sudo} leaves @env{PATH} unchanged.  To
 explicitly run root's @command{guix}, type @command{sudo -i guix @dots{}}.
 
 The difference matters here, because @command{guix pull} updates
@@ -2733,7 +2733,7 @@ passes it @i{via} the @option{--manifest} option
 For each user, a symlink to the user's default profile is automatically
 created in @file{$HOME/.guix-profile}.  This symlink always points to the
 current generation of the user's default profile.  Thus, users can add
-@file{$HOME/.guix-profile/bin} to their @code{PATH} environment
+@file{$HOME/.guix-profile/bin} to their @env{PATH} environment
 variable, and so on.
 @cindex search paths
 If you are not using Guix System, consider adding the
@@ -2977,7 +2977,7 @@ $ guix package -p bar -i guile-json
 $ guix package -p foo -p bar --search-paths
 @end example
 
-The last command above reports about the @code{GUILE_LOAD_PATH}
+The last command above reports about the @env{GUILE_LOAD_PATH}
 variable, even though, taken individually, neither @file{foo} nor
 @file{bar} would lead to that recommendation.
 
@@ -3216,7 +3216,7 @@ Options}).  It also supports package transformation options, such as
 @option{--with-source} (@pxref{Package Transformation Options}).
 However, note that package transformations are lost when upgrading; to
 preserve transformations across upgrades, you should define your own
-package variant in a Guile module and add it to @code{GUIX_PACKAGE_PATH}
+package variant in a Guile module and add it to @env{GUIX_PACKAGE_PATH}
 (@pxref{Defining Packages}).
 
 @node Substitutes
@@ -3377,10 +3377,10 @@ authenticating bindings between domain names and public keys.)
 
 @vindex http_proxy
 Substitutes are downloaded over HTTP or HTTPS.
-The @code{http_proxy} environment
+The @env{http_proxy} environment
 variable can be set in the environment of @command{guix-daemon} and is
 honored for downloads of substitutes.  Note that the value of
-@code{http_proxy} in the environment where @command{guix build},
+@env{http_proxy} in the environment where @command{guix build},
 @command{guix package}, and other client commands are run has
 @emph{absolutely no effect}.
 
@@ -4802,7 +4802,7 @@ Another typical use case for containers is to run security-sensitive
 applications such as a web browser.  To run Eolie, we must expose and
 share some files and directories; we include @code{nss-certs} and expose
 @file{/etc/ssl/certs/} for HTTPS authentication; finally we preserve the
-the @code{DISPLAY} environment variable since containerized graphical
+the @env{DISPLAY} environment variable since containerized graphical
 applications won't display without it.
 
 @example
@@ -4927,9 +4927,9 @@ guix environment --pure --preserve=^SLURM --ad-hoc openmpi @dots{} \
 @end example
 
 This example runs @command{mpirun} in a context where the only environment
-variables defined are @code{PATH}, environment variables whose name starts
-with @code{SLURM}, as well as the usual ``precious'' variables (@code{HOME},
-@code{USER}, etc.)
+variables defined are @env{PATH}, environment variables whose name starts
+with @samp{SLURM}, as well as the usual ``precious'' variables (@env{HOME},
+@env{USER}, etc.)
 
 @item --search-paths
 Display the environment variable definitions that make up the
@@ -5372,7 +5372,7 @@ The wrapper's purpose is to inspect the @code{-L} and @code{-l} switches
 passed to the linker, add corresponding @code{-rpath} arguments, and
 invoke the actual linker with this new set of arguments.  You can instruct the
 wrapper to refuse to link against libraries not in the store by setting the
-@code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
+@env{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
 
 
 
@@ -5445,7 +5445,7 @@ names---e.g., @code{(my-packages emacs)}@footnote{Note that the file
 name and module name must match.  For instance, the @code{(my-packages
 emacs)} module must be stored in a @file{my-packages/emacs.scm} file
 relative to the load path specified with @option{--load-path} or
-@code{GUIX_PACKAGE_PATH}.  @xref{Modules and the File System,,,
+@env{GUIX_PACKAGE_PATH}.  @xref{Modules and the File System,,,
 guile, GNU Guile Reference Manual}, for details.}.  There are two ways to make
 these package definitions visible to the user interfaces:
 
@@ -5453,7 +5453,7 @@ these package definitions visible to the user interfaces:
 @item
 By adding the directory containing your package modules to the search path
 with the @code{-L} flag of @command{guix package} and other commands
-(@pxref{Common Build Options}), or by setting the @code{GUIX_PACKAGE_PATH}
+(@pxref{Common Build Options}), or by setting the @env{GUIX_PACKAGE_PATH}
 environment variable described below.
 
 @item
@@ -5463,7 +5463,7 @@ modules.  @xref{Channels}, for more information on how to define and use
 channels.
 @end enumerate
 
-@code{GUIX_PACKAGE_PATH} works similarly to other search path variables:
+@env{GUIX_PACKAGE_PATH} works similarly to other search path variables:
 
 @defvr {Environment Variable} GUIX_PACKAGE_PATH
 This is a colon-separated list of directories to search for additional
@@ -6418,7 +6418,7 @@ The phase @code{glib-or-gtk-wrap} ensures that programs in
 @file{bin/} are able to find GLib ``schemas'' and
 @uref{https://developer.gnome.org/gtk3/stable/gtk-running.html, GTK+
 modules}.  This is achieved by wrapping the programs in launch scripts
-that appropriately set the @code{XDG_DATA_DIRS} and @code{GTK_PATH}
+that appropriately set the @env{XDG_DATA_DIRS} and @env{GTK_PATH}
 environment variables.
 
 It is possible to exclude specific package outputs from that wrapping
@@ -6533,7 +6533,7 @@ Note that most OCaml packages assume they will be installed in the same
 directory as OCaml, which is not what we want in guix.  In particular, they
 will install @file{.so} files in their module's directory, which is usually
 fine because it is in the OCaml compiler directory.  In guix though, these
-libraries cannot be found and we use @code{CAML_LD_LIBRARY_PATH}.  This
+libraries cannot be found and we use @env{CAML_LD_LIBRARY_PATH}.  This
 variable points to @file{lib/ocaml/site-lib/stubslibs} and this is where
 @file{.so} libraries should be installed.
 @end defvr
@@ -6545,7 +6545,7 @@ packages, which consists in running @code{python setup.py build} and
 then @code{python setup.py install --prefix=/gnu/store/@dots{}}.
 
 For packages that install stand-alone Python programs under @code{bin/},
-it takes care of wrapping these programs so that their @code{PYTHONPATH}
+it takes care of wrapping these programs so that their @env{PYTHONPATH}
 environment variable points to all the Python libraries they depend on.
 
 Which Python package is used to perform the build can be specified with
@@ -6619,10 +6619,10 @@ This phase is added after the @code{install} phase.
 @defvr {Scheme Variable} r-build-system
 This variable is exported by @code{(guix build-system r)}.  It
 implements the build procedure used by @uref{https://r-project.org, R}
-packages, which essentially is little more than running @code{R CMD
+packages, which essentially is little more than running @samp{R CMD
 INSTALL --library=/gnu/store/@dots{}} in an environment where
-@code{R_LIBS_SITE} contains the paths to all R package inputs.  Tests
-are run after installation using the R function
+@env{R_LIBS_SITE} contains the paths to all R package inputs.  Tests are
+run after installation using the R function
 @code{tools::testInstalledPackage}.
 @end defvr
 
@@ -6647,7 +6647,7 @@ with @code{#:zef} or removed by passing @code{#f} to the
 @defvr {Scheme Variable} texlive-build-system
 This variable is exported by @code{(guix build-system texlive)}.  It is
 used to build TeX packages in batch mode with a specified engine.  The
-build system sets the @code{TEXINPUTS} variable to find all TeX source
+build system sets the @env{TEXINPUTS} variable to find all TeX source
 files in the inputs.
 
 By default it runs @code{luatex} on all files ending on @code{ins}.  A
@@ -6900,7 +6900,7 @@ The @code{(guix store)} module provides procedures to connect to the
 daemon, and to perform RPCs.  These are described below.  By default,
 @code{open-connection}, and thus all the @command{guix} commands,
 connect to the local daemon or to the URI specified by the
-@code{GUIX_DAEMON_SOCKET} environment variable.
+@env{GUIX_DAEMON_SOCKET} environment variable.
 
 @defvr {Environment Variable} GUIX_DAEMON_SOCKET
 When set, the value of this variable should be a file name or a URI
@@ -6940,7 +6940,7 @@ instruct it to listen for TCP connections (@pxref{Invoking guix-daemon,
 @cindex SSH access to build daemons
 These URIs allow you to connect to a remote daemon over SSH.  This
 feature requires Guile-SSH (@pxref{Requirements}) and a working
-@code{guile} binary in @code{PATH} on the destination machine.  It
+@command{guile} binary in @env{PATH} on the destination machine.  It
 supports public key and GSSAPI authentication.  A typical URL might look
 like this:
 
@@ -8302,7 +8302,7 @@ build issues.
 
 This option implies @option{--no-offload}, and it has no effect when
 connecting to a remote daemon with a @code{guix://} URI (@pxref{The
-Store, the @code{GUIX_DAEMON_SOCKET} variable}).
+Store, the @env{GUIX_DAEMON_SOCKET} variable}).
 
 @item --keep-going
 @itemx -k
@@ -8413,7 +8413,7 @@ derivations)} module.
 
 In addition to options explicitly passed on the command line,
 @command{guix build} and other @command{guix} commands that support
-building honor the @code{GUIX_BUILD_OPTIONS} environment variable.
+building honor the @env{GUIX_BUILD_OPTIONS} environment variable.
 
 @defvr {Environment Variable} GUIX_BUILD_OPTIONS
 Users can define this variable to a list of command line options that
@@ -8949,7 +8949,7 @@ GnuTLS-Guile}, for more information.
 
 @command{guix download} verifies HTTPS server certificates by loading
 the certificates of X.509 authorities from the directory pointed to by
-the @code{SSL_CERT_DIR} environment variable (@pxref{X.509
+the @env{SSL_CERT_DIR} environment variable (@pxref{X.509
 Certificates}), unless @option{--no-check-certificate} is used.
 
 The following options are available:
@@ -9782,7 +9782,7 @@ GitHub will eventually refuse to answer any further API requests.  By
 default 60 API requests per hour are allowed, and a full refresh on all
 GitHub packages in Guix requires more than this.  Authentication with
 GitHub through the use of an API token alleviates these limits.  To use
-an API token, set the environment variable @code{GUIX_GITHUB_TOKEN} to a
+an API token, set the environment variable @env{GUIX_GITHUB_TOKEN} to a
 token procured from @uref{https://github.com/settings/tokens} or
 otherwise.
 
@@ -11098,7 +11098,7 @@ configuration options.
 
 @vindex %base-packages
 The @code{packages} field lists packages that will be globally visible
-on the system, for all user accounts---i.e., in every user's @code{PATH}
+on the system, for all user accounts---i.e., in every user's @env{PATH}
 environment variable---in addition to the per-user profiles
 (@pxref{Invoking guix package}).  The @code{%base-packages} variable
 provides all the tools one would expect for basic user and administrator
@@ -12123,8 +12123,8 @@ The compiled locale definitions are available at
 @file{/run/current-system/locale/X.Y}, where @code{X.Y} is the libc
 version, which is the default location where the GNU@tie{}libc provided
 by Guix looks for locale data.  This can be overridden using the
-@code{LOCPATH} environment variable (@pxref{locales-and-locpath,
-@code{LOCPATH} and locale packages}).
+@env{LOCPATH} environment variable (@pxref{locales-and-locpath,
+@env{LOCPATH} and locale packages}).
 
 The @code{locale-definition} form is provided by the @code{(gnu system
 locale)} module.  Details are given below.
@@ -12182,7 +12182,7 @@ read locale data produced with libc 2.22; worse, that program
 data@footnote{Versions 2.23 and later of GNU@tie{}libc will simply skip
 the incompatible locale data, which is already an improvement.}.
 Similarly, a program linked against libc 2.22 can read most, but not
-all, of the locale data from libc 2.21 (specifically, @code{LC_COLLATE}
+all, of the locale data from libc 2.21 (specifically, @env{LC_COLLATE}
 data is incompatible); thus calls to @code{setlocale} may fail, but
 programs will not abort.
 
@@ -12192,8 +12192,8 @@ be using a libc version different from the one the system administrator
 used to build the system-wide locale data.
 
 Fortunately, unprivileged users can also install their own locale data
-and define @var{GUIX_LOCPATH} accordingly (@pxref{locales-and-locpath,
-@code{GUIX_LOCPATH} and locale packages}).
+and define @env{GUIX_LOCPATH} accordingly (@pxref{locales-and-locpath,
+@env{GUIX_LOCPATH} and locale packages}).
 
 Still, it is best if the system-wide locale data at
 @file{/run/current-system/locale} is built for all the libc versions
@@ -12480,7 +12480,7 @@ A string containing a comma-separated list of one or more baud rates, in
 descending order.
 
 @item @code{term} (default: @code{#f})
-A string containing the value used for the @code{TERM} environment
+A string containing the value used for the @env{TERM} environment
 variable.
 
 @item @code{eight-bits?} (default: @code{#f})
@@ -14313,7 +14313,7 @@ List of strings describing which environment variables may be exported.
 Each string gets on its own line.  See the @code{AcceptEnv} option in
 @code{man sshd_config}.
 
-This example allows ssh-clients to export the @code{COLORTERM} variable.
+This example allows ssh-clients to export the @env{COLORTERM} variable.
 It is set by terminal emulators, which support colors.  You can use it in
 your shell's resource file to enable colors for the prompt and commands
 if this variable is set.
@@ -16405,8 +16405,8 @@ via @code{pulseaudio-configuration}, see below.
 @quotation Warning
 This service overrides per-user configuration files.  If you want
 PulseAudio to honor configuraton files in @file{~/.config/pulse} you
-have to unset the environment variables @code{PULSE_CONFIG} and
-@code{PULSE_CLIENTCONFIG} in your @file{~/.bash_profile}.
+have to unset the environment variables @env{PULSE_CONFIG} and
+@env{PULSE_CLIENTCONFIG} in your @file{~/.bash_profile}.
 @end quotation
 
 @quotation Warning
@@ -22713,7 +22713,7 @@ To add build jobs, you have to set the @code{specifications} field of the
 configuration.  Here is an example of a service that polls the Guix repository
 and builds the packages from a manifest.  Some of the packages are defined in
 the @code{"custom-packages"} input, which is the equivalent of
-@code{GUIX_PACKAGE_PATH}.
+@env{GUIX_PACKAGE_PATH}.
 
 @lisp
 (define %cuirass-specs
@@ -25530,7 +25530,7 @@ for anyone at login:
 
 Some @code{volume} elements must be added to automatically mount volumes
 at login.  Here's an example allowing the user @code{alice} to mount her
-encrypted @code{HOME} directory and allowing the user @code{bob} to mount
+encrypted @env{HOME} directory and allowing the user @code{bob} to mount
 the partition where he stores his data:
 
 @lisp
@@ -26181,10 +26181,10 @@ Unprivileged users, including users of Guix on a foreign distro,
 can also install their own certificate package in
 their profile.  A number of environment variables need to be defined so
 that applications and libraries know where to find them.  Namely, the
-OpenSSL library honors the @code{SSL_CERT_DIR} and @code{SSL_CERT_FILE}
+OpenSSL library honors the @env{SSL_CERT_DIR} and @env{SSL_CERT_FILE}
 variables.  Some applications add their own environment variables; for
 instance, the Git version control system honors the certificate bundle
-pointed to by the @code{GIT_SSL_CAINFO} environment variable.  Thus, you
+pointed to by the @env{GIT_SSL_CAINFO} environment variable.  Thus, you
 would typically run something like:
 
 @example
@@ -26194,7 +26194,7 @@ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
 export GIT_SSL_CAINFO="$SSL_CERT_FILE"
 @end example
 
-As another example, R requires the @code{CURL_CA_BUNDLE} environment
+As another example, R requires the @env{CURL_CA_BUNDLE} environment
 variable to point to a certificate bundle, so you would have to run
 something like this:
 
