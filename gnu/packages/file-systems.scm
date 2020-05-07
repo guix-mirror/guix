@@ -48,6 +48,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nfs)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
@@ -55,6 +56,33 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml))
+
+(define-public gphotofs
+  (package
+    (name "gphotofs")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/gphoto/gphotofs/" version
+                       "/gphotofs-0.5.tar.gz"))
+       (sha256
+        (base32
+         "04slwhr6ap9xcc27wphk22ad8yn79ngyy5z10lxams3k5liahvc2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fuse" ,fuse)
+       ("glib" ,glib)
+       ("libgphoto2" ,libgphoto2)))
+    (synopsis "Virtual filesystem for libgphoto2 using FUSE")
+    (description "GPhotoFS is a FUSE filesystem module to mount your camera as
+a filesystem on Linux.  This allow using your camera with any tool able to read
+from a mounted filesystem.")
+    (home-page "http://www.gphoto.org/proj/gphotofs/")
+    (license license:gpl2+)))
 
 (define-public bcachefs-tools
   (let ((commit "ab2f1ec24f5307b0cf1e3c4ad19bf350d9f54d9f")
