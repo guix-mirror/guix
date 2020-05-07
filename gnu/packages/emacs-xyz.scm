@@ -20149,6 +20149,42 @@ well as an option for visually flashing evaluated s-expressions.")
 SSH servers.")
     (license license:gpl3+)))
 
+(define-public emacs-tramp
+  (package
+    (name "emacs-tramp")
+    (version "2.4.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "tramp-" version ".tar"))
+       (sha256
+        (base32 "01il42xb6s38qnb7bhn9d7gscc5p5y4da5a4dp1i1cyi823sfp8f"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; All but one "/bin/" directory refer to remote
+         ;; environments, which may not be Guix.  Do not patch them
+         ;; blindly.  However, local encoding shell has to be patched.
+         (replace 'patch-el-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((sh (assoc-ref inputs "bash"))
+                   (file "tramp.el"))
+               (emacs-substitute-variables file
+                 ("tramp-encoding-shell" (string-append sh "/bin/sh"))))
+             #t)))))
+    (inputs
+     `(("bash" ,bash)))
+    (home-page "https://savannah.gnu.org/projects/tramp")
+    (synopsis "Remote file editing package for Emacs")
+    (description
+     "Tramp stands for ``Transparent Remote (file) Access, Multiple
+Protocol''.  This package provides remote file editing, using
+a combination of @command{rsh} and @command{rcp} or other work-alike
+programs, such as @command{ssh} and @command{scp}.")
+    (license license:gpl3+)))
+
 (define-public emacs-tramp-auto-auth
   (let ((commit "f15a12dfab651aff60f4a9d70f868030a12344ac"))
     (package
