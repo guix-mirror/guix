@@ -5568,7 +5568,13 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
        ((#:asd-system-name _) "iolib")))))
 
 (define-public cl-iolib
-  (sbcl-package->cl-source-package sbcl-iolib))
+  (let ((parent (sbcl-package->cl-source-package sbcl-iolib)))
+    (package
+      (inherit parent)
+      (propagated-inputs
+       ;; Need header to compile.
+       `(("libfixposix" ,libfixposix)
+         ,@(package-propagated-inputs parent))))))
 
 (define-public sbcl-ieee-floats
   (let ((commit "566b51a005e81ff618554b9b2f0b795d3b29398d")
