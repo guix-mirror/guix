@@ -5,12 +5,27 @@
 
 ;; To build a disk image for a virtual machine, do
 ;;
-;;     ./pre-inst-env guix system disk-image --target=i586-pc-gnu --no-grafts \
+;;     ./pre-inst-env guix system disk-image --target=i586-pc-gnu \
 ;;         gnu/system/examples/bare-hurd.tmpl
 ;;
-;; it boots, but needs activation, more setup and services to be useful.
+;; You may run it like so
+;;
+;;     guix environment --ad-hoc qemu -- qemu-system-i386 -enable-kvm -m 512M \
+;;      -device rtl8139,netdev=net0 -netdev user,id=net0,hostfwd=tcp:127.0.0.1:10022-:2222 \
+;;      -snapshot -hda <the-image>
+;;
+;; and use it like
+;;
+;;     ssh -p 10022 root@localhost
+;;     guix build -e '(@@ (gnu packages commencement) gnu-make-boot0)'
+;;
+;; or even (if you use --image-size=3G)
+;;
+;;     guix build hello
 
 (use-modules (gnu) (gnu system hurd) (guix utils))
+(use-service-modules ssh)
+(use-package-modules ssh)
 
 (define %hurd-os
   (operating-system
@@ -25,7 +40,15 @@
                         %base-file-systems))
     (host-name "guixygnu")
     (timezone "Europe/Amsterdam")
-    (packages %base-packages/hurd)
-    (services %base-services/hurd)))
+    (packages (cons openssh-sans-x %base-packages/hurd))
+    (services (cons (service openssh-service-type
+                             (openssh-configuration
+                              (openssh openssh-sans-x)
+                              (use-pam? #f)
+                              (port-number 2222)
+                              (permit-root-login #t)
+                              (allow-empty-passwords? #t)
+                              (password-authentication? #t)))
+               %base-services/hurd))))
 
 %hurd-os
