@@ -3357,11 +3357,11 @@ with this option:
 
 @noindent
 @cindex reproducible builds
-If the ACL contains only the key for @code{b.example.org}, and if
-@code{a.example.org} happens to serve the @emph{exact same} substitutes,
-then Guix will download substitutes from @code{a.example.org} because it
+If the ACL contains only the key for @samp{b.example.org}, and if
+@samp{a.example.org} happens to serve the @emph{exact same} substitutes,
+then Guix will download substitutes from @samp{a.example.org} because it
 comes first in the list and can be considered a mirror of
-@code{b.example.org}.  In practice, independent build machines usually
+@samp{b.example.org}.  In practice, independent build machines usually
 produce the same binaries, thanks to bit-reproducible builds (see
 below).
 
