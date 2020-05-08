@@ -2598,6 +2598,9 @@ binaries, plus debugging symbols in the @code{debug} output), and Binutils.")
 (define-public gcc-toolchain-9
   (make-gcc-toolchain gcc-9))
 
+(define-public gcc-toolchain-10
+  (make-gcc-toolchain gcc-10))
+
 ;; Provide the Fortran toolchain package only for the version of gfortran that
 ;; is used by Guix internally to build Fortran libraries, because combining
 ;; code compiled with different versions can cause problems.
