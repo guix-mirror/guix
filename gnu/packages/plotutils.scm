@@ -217,6 +217,7 @@ colors, styles, options and details.")
        ;; For the manual and the tests.
        ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-epsf
+                                        texlive-etoolbox
                                         texlive-latex-base
                                         texlive-latex-geometry
                                         texlive-latex-graphics
