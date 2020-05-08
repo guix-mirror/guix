@@ -2876,7 +2876,41 @@ Lisp implementations.")
       (inputs
        `(("iterate" ,sbcl-iterate)
          ("cffi" ,sbcl-cffi)
-         ("trivial-features" ,sbcl-trivial-features)))
+         ("trivial-features" ,sbcl-trivial-features)
+         ("glib" ,glib)
+         ("cairo" ,cairo)
+         ("pango" ,pango)
+         ("gdk-pixbuf" ,gdk-pixbuf)
+         ("gtk" ,gtk+)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "glib/glib.init.lisp"
+                 (("libglib|libgthread" all)
+                  (string-append (assoc-ref inputs "glib") "/lib/" all)))
+               (substitute* "gobject/gobject.init.lisp"
+                 (("libgobject" all)
+                  (string-append (assoc-ref inputs "glib") "/lib/" all)))
+               (substitute* "gio/gio.init.lisp"
+                 (("libgio" all)
+                  (string-append (assoc-ref inputs "glib") "/lib/" all)))
+               (substitute* "cairo/cairo.init.lisp"
+                 (("libcairo" all)
+                  (string-append (assoc-ref inputs "cairo") "/lib/" all)))
+               (substitute* "pango/pango.init.lisp"
+                 (("libpango" all)
+                  (string-append (assoc-ref inputs "pango") "/lib/" all)))
+               (substitute* "gdk-pixbuf/gdk-pixbuf.init.lisp"
+                 (("libgdk_pixbuf" all)
+                  (string-append (assoc-ref inputs "gdk-pixbuf") "/lib/" all)))
+               (substitute* "gdk/gdk.init.lisp"
+                 (("libgdk" all)
+                  (string-append (assoc-ref inputs "gtk") "/lib/" all)))
+               (substitute* "gdk/gdk.package.lisp"
+                 (("libgtk" all)
+                  (string-append (assoc-ref inputs "gtk") "/lib/" all))))))))
       (home-page "https://github.com/Ferada/cl-cffi-gtk/")
       (synopsis "Common Lisp binding for GTK+3")
       (description
@@ -2889,192 +2923,155 @@ is a library for creating graphical user interfaces.")
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-glib")
     (inputs
-     `(("glib" ,glib)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "glib/cl-cffi-gtk-glib.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "glib/glib.init.lisp"
-               (("libglib|libgthread" all)
-                (string-append (assoc-ref inputs "glib") "/lib/" all))))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "glib/cl-cffi-gtk-glib.asd")))))
 
 (define-public sbcl-cl-cffi-gtk-gobject
   (package
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-gobject")
     (inputs
-     `(("glib" ,glib)
-       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("trivial-garbage" ,sbcl-trivial-garbage)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("closer-mop" ,sbcl-closer-mop)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "gobject/cl-cffi-gtk-gobject.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "gobject/gobject.init.lisp"
-               (("libgobject" all) (string-append
-                                    (assoc-ref inputs "glib") "/lib/" all)))))
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk-gobject")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "gobject/cl-cffi-gtk-gobject.asd")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk-gobject")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public sbcl-cl-cffi-gtk-gio
   (package
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-gio")
     (inputs
-     `(("glib" ,glib)
-       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "gio/cl-cffi-gtk-gio.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "gio/gio.init.lisp"
-               (("libgio" all)
-                (string-append
-                 (assoc-ref inputs "glib") "/lib/" all)))))
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk-gio")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "gio/cl-cffi-gtk-gio.asd")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk-gio")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public sbcl-cl-cffi-gtk-cairo
   (package
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-cairo")
     (inputs
-     `(("cairo" ,cairo)
-       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "cairo/cl-cffi-gtk-cairo.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "cairo/cairo.init.lisp"
-               (("libcairo" all)
-                (string-append
-                 (assoc-ref inputs "cairo") "/lib/" all)))))
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk-cairo")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "cairo/cl-cffi-gtk-cairo.asd")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk-cairo")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public sbcl-cl-cffi-gtk-pango
   (package
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-pango")
     (inputs
-     `(("pango" ,pango)
-       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ("cl-cffi-gtk-cairo" ,sbcl-cl-cffi-gtk-cairo)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "pango/cl-cffi-gtk-pango.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "pango/pango.init.lisp"
-               (("libpango" all)
-                (string-append
-                 (assoc-ref inputs "pango") "/lib/" all)))))
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk-pango")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "pango/cl-cffi-gtk-pango.asd")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk-pango")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk-pixbuf
   (package
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-gdk-pixbuf")
     (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
+     `(("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "gdk-pixbuf/gdk-pixbuf.init.lisp"
-               (("libgdk_pixbuf" all)
-                (string-append
-                 (assoc-ref inputs "gdk-pixbuf") "/lib/" all)))))
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk-gdk-pixbuf")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "gdk-pixbuf/cl-cffi-gtk-gdk-pixbuf.asd")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk-gdk-pixbuf")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public sbcl-cl-cffi-gtk-gdk
   (package
     (inherit sbcl-cl-cffi-gtk-boot0)
     (name "sbcl-cl-cffi-gtk-gdk")
     (inputs
-     `(("gtk" ,gtk+)
-       ("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
+     `(("cl-cffi-gtk-glib" ,sbcl-cl-cffi-gtk-glib)
        ("cl-cffi-gtk-gobject" ,sbcl-cl-cffi-gtk-gobject)
        ("cl-cffi-gtk-gio" ,sbcl-cl-cffi-gtk-gio)
        ("cl-cffi-gtk-gdk-pixbuf" ,sbcl-cl-cffi-gtk-gdk-pixbuf)
@@ -3082,32 +3079,23 @@ is a library for creating graphical user interfaces.")
        ("cl-cffi-gtk-pango" ,sbcl-cl-cffi-gtk-pango)
        ,@(package-inputs sbcl-cl-cffi-gtk-boot0)))
     (arguments
-     `(#:asd-file "gdk/cl-cffi-gtk-gdk.asd"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "gdk/gdk.init.lisp"
-               (("libgdk" all)
-                (string-append
-                 (assoc-ref inputs "gtk") "/lib/" all)))
-             (substitute* "gdk/gdk.package.lisp"
-               (("libgtk" all)
-                (string-append
-                 (assoc-ref inputs "gtk") "/lib/" all)))))
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk-gdk")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "gdk/cl-cffi-gtk-gdk.asd")
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk-gdk")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public sbcl-cl-cffi-gtk
   (package
@@ -3122,26 +3110,27 @@ is a library for creating graphical user interfaces.")
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
     (arguments
-     `(#:asd-file "gtk/cl-cffi-gtk.asd"
-       #:test-asd-file "test/cl-cffi-gtk-test.asd"
+     (substitute-keyword-arguments (package-arguments sbcl-cl-cffi-gtk-boot0)
+       ((#:asd-file _ "") "gtk/cl-cffi-gtk.asd")
+       ((#:test-asd-file _ "") "test/cl-cffi-gtk-test.asd")
        ;; TODO: Tests fail with memory fault.
        ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
-       #:tests? #f
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'link-source
-           ;; Since source is particularly heavy (16MiB+), let's reuse it
-           ;; across the different components of cl-ffi-gtk.
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
-                                               "/share/common-lisp/sbcl-source/"
-                                               "cl-cffi-gtk-glib"))
-                   (out-source (string-append (assoc-ref outputs "out")
-                                              "/share/common-lisp/sbcl-source/"
-                                              "cl-cffi-gtk")))
-               (delete-file-recursively out-source)
-               (symlink glib-source out-source)
-               #t))))))))
+       ((#:tests? _ #f) #f)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'install 'link-source
+             ;; Since source is particularly heavy (16MiB+), let's reuse it
+             ;; across the different components of cl-ffi-gtk.
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((glib-source (string-append (assoc-ref inputs "cl-cffi-gtk-glib")
+                                                 "/share/common-lisp/sbcl-source/"
+                                                 "cl-cffi-gtk-glib"))
+                     (out-source (string-append (assoc-ref outputs "out")
+                                                "/share/common-lisp/sbcl-source/"
+                                                "cl-cffi-gtk")))
+                 (delete-file-recursively out-source)
+                 (symlink glib-source out-source)
+                 #t)))))))))
 
 (define-public cl-cffi-gtk
   (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
