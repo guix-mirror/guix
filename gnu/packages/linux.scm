@@ -6954,3 +6954,40 @@ utilities.  Using @code{kexec}, it is possible to boot directly into a new
 kernel from the context of an already-running kernel, bypassing the normal
 system boot process.")
     (license license:gpl2)))
+
+(define-public cachefilesd
+  (package
+    (name "cachefilesd")
+    (version "0.10.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://git.kernel.org/pub/scm/linux/kernel/git/dhowells"
+                    "/cachefilesd.git/snapshot/cachefilesd-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0g40ljjnn3wzh9gp6il21c95f977298qrrkrxfnwfl3k3asfmnbi"))))
+    (build-system gnu-build-system)
+    (outputs '("out"))
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags
+       (let ((prefix-dir (lambda (var dir)
+                           (string-append var "=" %output "/" dir)))
+             (target ,(%current-target-system)))
+         (list (string-append "CC="
+                              (if target
+                                  (string-append target "-gcc")
+                                  "gcc"))
+               (prefix-dir "SBINDIR" "sbin/")
+               (prefix-dir "ETCDIR" "etc/")
+               (prefix-dir "MANDIR" "share/man/")))
+       #:phases (modify-phases %standard-phases (delete 'configure))))
+    (home-page "https://people.redhat.com/~dhowells/cachefs/")
+    (synopsis "CacheFiles userspace management daemon")
+    (description "@code{cachefilesd} is a userspace daemon that manages the
+cache data store that is used by network file systems such as @code{AFS} and
+@code{NFS} to cache data locally on disk.  The content of the cache is
+persistent over reboots.")
+    (license license:gpl2+)))
