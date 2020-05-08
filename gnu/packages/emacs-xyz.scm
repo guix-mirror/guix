@@ -20162,7 +20162,8 @@ SSH servers.")
         (base32 "01il42xb6s38qnb7bhn9d7gscc5p5y4da5a4dp1i1cyi823sfp8f"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
+     `(#:emacs ,emacs                   ;need D-Bus
+       #:phases
        (modify-phases %standard-phases
          ;; All but one "/bin/" directory refer to remote
          ;; environments, which may not be Guix.  Do not patch them
