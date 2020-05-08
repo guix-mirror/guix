@@ -40,7 +40,9 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -541,7 +543,33 @@ WireGuard was added to Linux 5.6.")
        #:phases
        (modify-phases %standard-phases
          ;; No configure script
-         (delete 'configure))))
+         (delete 'configure)
+         (add-after 'install 'install-contrib-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "contrib/"
+                                 (string-append out "/share/doc/wireguard-tools"))
+               #t)))
+         (add-after 'install 'wrap-wg-quick
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (inputs-sbin (map (lambda (input)
+                                        (string-append (assoc-ref inputs input) "/sbin"))
+                                      (list "resolvconf" "iproute" "procps"
+                                            "iptables")))
+                   (coreutils (string-append (assoc-ref inputs "coreutils")
+                                             "/bin")))
+               (wrap-program (string-append out "/bin/wg-quick")
+                 `("PATH" ":" prefix ,(append inputs-sbin
+                                              (list coreutils))))
+               #t))))))
+    (inputs
+     `(("resolvconf" ,openresolv)
+       ("coreutils" ,coreutils)
+       ("bash" ,bash)                   ; for scripts using /dev/tcp
+       ("procps" ,procps)
+       ("iproute" ,iproute)
+       ("iptables" ,iptables)))
     (home-page "https://www.wireguard.com/")
     (synopsis "Tools for configuring WireGuard tunnels")
     (description
