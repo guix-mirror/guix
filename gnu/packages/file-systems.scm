@@ -3,7 +3,7 @@
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -581,6 +581,7 @@ APFS.")
                #t))))))
     (native-inputs
      `(("attr" ,attr)
+       ("kmod" ,kmod)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("eudev" ,eudev)
