@@ -299,7 +299,7 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.4.1")
+    (version "2.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -308,9 +308,9 @@ many more.")
               (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "020gyl8zv83ag6gbcchmqiyx9rh2jca7j8n52zx1gk4rck7kwc01"))
+                "1k50cvi3sk6gf6w713lkk2gv5cvs74vkc7s7k4z6nmyhi4g89w4y"))
               (patches (search-patches "ilmbase-fix-tests.patch"
-                                       "ilmbase-openexr-pkg-config.patch"))))
+                                       "ilmbase-fix-test-arm.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -426,10 +426,7 @@ graphics.")
                    ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
                    (lambda _
                      (substitute* "IlmImfTest/main.cpp"
-                       ((".*testOptimizedInterleavePatterns.*") "")
-                       ;; This test is broken in 2.4.0 and will be fixed in a later
-                       ;; release: <https://github.com/openexr/openexr/issues/571>.
-                       ((".*testLargeDataWindowOffsets.*") ""))
+                       ((".*testOptimizedInterleavePatterns.*") ""))
                      #t)))
                '()))))
     (native-inputs
