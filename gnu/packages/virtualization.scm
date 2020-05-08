@@ -14,6 +14,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,19 +116,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "4.2.0")
+    (version "5.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
-             (patches (search-patches "qemu-CVE-2020-1711.patch"
-                                      "qemu-CVE-2020-7039.patch"
-                                      "qemu-CVE-2020-7211.patch"
-                                      "qemu-CVE-2020-8608.patch"
-                                      "qemu-fix-documentation-build-failure.patch"))
              (sha256
               (base32
-               "1w38hzlw7xp05gcq1nhga7hxvndxy6dfcnzi7q2il8ff110isj6k"))))
+               "1dlcwyshdp94fwd30pddxf9bn2q8dfw5jsvry2gvdj551wmaj4rg"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Running tests in parallel can occasionally lead to failures, like:
@@ -169,6 +165,14 @@
                                               '("include")
                                               input-directories)
                #t)))
+         (add-after 'patch-source-shebangs 'patch-/bin/sh-references
+           (lambda _
+             ;; Ensure the executables created by these source files reference
+             ;; /bin/sh from the store so they work inside the build container.
+             (substitute* '("block/cloop.c" "migration/exec.c"
+                            "net/tap.c" "tests/qtest/libqtest.c")
+               (("/bin/sh") (which "sh")))
+             #t))
          (replace 'configure
            (lambda* (#:key inputs outputs (configure-flags '())
                            #:allow-other-keys)
@@ -178,8 +182,16 @@
                (setenv "SHELL" (which "bash"))
 
                ;; While we're at it, patch for tests.
-               (substitute* "tests/libqtest.c"
-                 (("/bin/sh") (which "sh")))
+               (substitute* "tests/qemu-iotests/check"
+                 (("#!/usr/bin/env python3")
+                  (string-append "#!" (which "python3"))))
+
+               ;; Ensure config.status gets the correct shebang off the bat.
+               ;; The build system gets confused if we change it later and
+               ;; attempts to re-run the whole configury, and fails.
+               (substitute* "configure"
+                 (("#!/bin/sh")
+                  (string-append "#!" (which "sh"))))
 
                ;; The binaries need to be linked against -lrt.
                (setenv "LDFLAGS" "-lrt")
@@ -218,12 +230,6 @@ exec smbd $@")))
                (chmod "samba-wrapper" #o755)
                (install-file "samba-wrapper" libexec))
              #t))
-         (add-before 'configure 'prevent-network-configuration
-           (lambda _
-             ;; Prevent the build from trying to use git to fetch from the net.
-             (substitute* "Makefile"
-               (("@./config.status")
-                "")) #t))
          (add-before 'check 'disable-unusable-tests
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "tests/Makefile.include"
@@ -245,7 +251,7 @@ exec smbd $@")))
        ("libaio" ,libaio)
        ("libattr" ,attr)
        ("libcacard" ,libcacard)     ; smartcard support
-       ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
+       ("libcap-ng" ,libcap-ng)     ; virtfs support requires libcap-ng & libattr
        ("libdrm" ,libdrm)
        ("libepoxy" ,libepoxy)
        ("libjpeg" ,libjpeg-turbo)
