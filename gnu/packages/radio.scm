@@ -131,10 +131,10 @@ mathematical operations, and much more.")
          (add-after 'unpack 'fix-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               (("DESTINATION \"/etc/")
+               (("DESTINATION \"/etc/udev/")
                 (string-append "DESTINATION \""
                                (assoc-ref outputs "out")
-                               "/etc/")))
+                               "/lib/udev/")))
              #t)))))
     (home-page "https://osmocom.org/projects/sdr/wiki/rtl-sdr")
     (synopsis "Software defined radio driver for Realtek RTL2832U")
