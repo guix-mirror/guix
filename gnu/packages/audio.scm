@@ -2773,14 +2773,14 @@ stretching and pitch scaling of audio.  This package contains the library.")
 (define-public wavpack
   (package
     (name "wavpack")
-    (version "5.2.0")
+    (version "5.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.wavpack.com/"
                                   "wavpack-" version ".tar.xz"))
               (sha256
                (base32
-                "1qvpvfx30kvrkw7y1g6r8xj109wszg1z0qmkfm17wf3flb7v3rbp"))))
+                "01r351ggha9pdfk7p601dlxac4ka1q89lgnb6zqk00zf1fd3fi5l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
