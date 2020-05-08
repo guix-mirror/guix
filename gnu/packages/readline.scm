@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,22 +31,32 @@
   #:use-module (guix utils)
   #:use-module (ice-9 format))
 
-(define (patch-url seqno)
-  (format #f "mirror://gnu/readline/readline-7.0-patches/readline70-~3,'0d" seqno))
+(define (patch-url version seqno)
+  (format #f "mirror://gnu/readline/readline-~a-patches/readline~a-~3,'0d"
+          version (string-join (string-split version #\.) "") seqno))
 
-(define (readline-patch seqno sha256)
+(define (readline-patch version seqno sha256)
   "Return the origin of Readline patch SEQNO, with expected hash SHA256"
   (origin
     (method url-fetch)
-    (uri (patch-url seqno))
+    (uri (patch-url version seqno))
     (sha256 sha256)))
 
-(define-syntax-rule (patch-series (seqno hash) ...)
-  (list (readline-patch seqno (base32 hash))
+(define-syntax-rule (patch-series version (seqno hash) ...)
+  (list (readline-patch version seqno (base32 hash))
         ...))
+
+(define %patch-series-8.0
+  (patch-series
+   "8.0"
+   (1 "0sfh7wn0pr743xspnb1zndxndlv9rc0hcg14cbw5cmyg6f4ykrfq")
+   (2 "1xy8mv8xm8hsfixwp3ci9kfx3dii3y92cq27wwd0jq75y6zzxc1n")
+   (3 "1vza7sxjcsr2z295ij12nzgncdil1vb6as3mqy4m7svi1chv5pcl")
+   (4 "0k1rfx9w32lglxg564yvp0mw6jg6883p8ac2f2lxxqpf80m3vami")))
 
 (define %patch-series-7.0
   (patch-series
+   "7.0"
    (1 "0xm3sxvwmss7ddyfb11n6pgcqd1aglnpy15g143vzcf75snb7hcs")
    (2 "0n1dxmqsbjgrfxb1hgk5c6lsraw4ncbnzxlsx7m35nym6lncjiw7")
    (3 "1027kmymniizcy0zbdlrczxfx3clxcdln5yq05q9yzlc6y9slhwy")
@@ -55,7 +66,8 @@
 (define-public readline
   (package
     (name "readline")
-    (version "8.0")
+    (version (string-append "8.0."
+                            (number->string (length %patch-series-8.0))))
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/readline/readline-"
@@ -63,7 +75,8 @@
               (sha256
                (base32
                 "0qg4924hf4hg0r0wbx2chswsr08734536fh5iagkd3a7f4czafg3"))
-              (patches (search-patches "readline-link-ncurses.patch"))
+              (patches (append %patch-series-8.0
+                               (search-patches "readline-link-ncurses.patch")))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("ncurses" ,ncurses)))

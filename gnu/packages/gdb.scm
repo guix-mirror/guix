@@ -92,7 +92,6 @@
        ("readline" ,readline)
        ("ncurses" ,ncurses)
        ("guile" ,guile-2.0)
-       ("python" ,python)
        ("python-wrapper" ,python-wrapper)
        ("dejagnu" ,dejagnu)
        ("source-highlight" ,source-highlight)

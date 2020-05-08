@@ -32,7 +32,7 @@
 (define-public jemalloc
   (package
     (name "jemalloc")
-    (version "5.2.0")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -40,7 +40,7 @@
                     version "/jemalloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1d73a5c5qdrwck0fa5pxz0myizaf3s9alsvhiqwrjahdlr29zgkl"))))
+                "1xl7z0vwbn5iycg7amka9jd6hxd8nmfk7nahi4p9w2bnw9f0wcrl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -59,6 +59,9 @@
            '()
            '(#:configure-flags (list "--disable-thp")))))
     (inputs `(("perl" ,perl)))
+    ;; Install the scripts to a separate output to avoid referencing Perl and
+    ;; Bash in the default output, saving ~75 MiB on the closure.
+    (outputs '("out" "bin"))
     (home-page "http://jemalloc.net/")
     (synopsis "General-purpose scalable concurrent malloc implementation")
     (description

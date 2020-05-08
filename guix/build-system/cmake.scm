@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -43,16 +43,19 @@
   `((guix build cmake-build-system)
     ,@%gnu-build-system-modules))
 
-(define (default-cmake)
+(define (default-cmake target)
   "Return the default CMake package."
 
   ;; Do not use `@' to avoid introducing circular dependencies.
   (let ((module (resolve-interface '(gnu packages cmake))))
-    (module-ref module 'cmake-minimal)))
+    (module-ref module
+                (if target
+                    'cmake-minimal-cross
+                    'cmake-minimal))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                (cmake (default-cmake))
+                (cmake (default-cmake target))
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
@@ -69,6 +72,7 @@
                           '())
                     ,@`(("cmake" ,cmake))
                     ,@native-inputs
+                    ,@(if target '() inputs)
                     ,@(if target
                           ;; Use the standard cross inputs of
                           ;; 'gnu-build-system'.
@@ -76,7 +80,7 @@
                           '())
                     ;; Keep the standard inputs of 'gnu-build-system'.
                     ,@(standard-packages)))
-    (host-inputs inputs)
+    (host-inputs (if target inputs '()))
 
     ;; The cross-libc is really a target package, but for bootstrapping
     ;; reasons, we can't put it in 'host-inputs'.  Namely, 'cross-gcc' is a
@@ -99,7 +103,7 @@
                       (build-type "RelWithDebInfo")
                       (tests? #t)
                       (test-target "test")
-                      (parallel-build? #t) (parallel-tests? #f)
+                      (parallel-build? #t) (parallel-tests? #t)
                       (validate-runpath? #t)
                       (patch-shebangs? #t)
                       (strip-binaries? #t)
@@ -178,7 +182,7 @@ provides a 'CMakeLists.txt' file as its build system."
                             (build-type "RelWithDebInfo")
                             (tests? #f) ; nothing can be done
                             (test-target "test")
-                            (parallel-build? #t) (parallel-tests? #f)
+                            (parallel-build? #t) (parallel-tests? #t)
                             (validate-runpath? #t)
                             (patch-shebangs? #t)
                             (strip-binaries? #t)

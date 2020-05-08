@@ -153,7 +153,7 @@ Java.")
        ("cairo" ,cairo)
        ("fontconfig" ,fontconfig)
        ("libtiff" ,libtiff)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libexif" ,libexif)
        ("libungif" ,libungif)))
     (arguments

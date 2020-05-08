@@ -270,16 +270,14 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
 (define-public bzip2
   (package
     (name "bzip2")
-    (version "1.0.6")
+    (version "1.0.8")
     (source (origin
               (method url-fetch)
-              ;; XXX The bzip.org domain was allowed to expire.
-              (uri (string-append "https://web.archive.org/web/20180624184806/"
-                                  "http://www.bzip.org/"
-                                  version "/bzip2-" version ".tar.gz"))
+              (uri (string-append "https://sourceware.org/pub/bzip2/bzip2-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
+                "0s92986cv0p692icqlw1j42y9nld8zd83qwhzbqd61p1dqbh6nmb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -288,6 +286,22 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-input-bzip2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bzip2 (assoc-ref inputs "bzip2")))
+               (if bzip2
+                   ;; Prevent the build system from retaining a reference to
+                   ;; BZIP2 from INPUTS.
+                   (begin
+                     (setenv "LIBRARY_PATH"
+                             (string-join (delete (string-append bzip2 "/lib")
+                                                  (string-split (getenv "LIBRARY_PATH")
+                                                                #\:))
+                                          ":"))
+                     (format #t "environment variable `LIBRARY_PATH' set to `~a'~%"
+                             (getenv "LIBRARY_PATH")))
+                   (format #t "no bzip2 found, nothing done~%"))
+               #t)))
          (replace 'configure
            (lambda* (#:key target #:allow-other-keys)
              (when ,(%current-target-system)
@@ -1345,18 +1359,18 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.4.2")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "1ja3nrjynmiwwdjrf6crraizkbagp7y414bqqq2ady91nn1hjwqj"))))
+        (base32 "05ckxap00qvc0j51d3ci38150cxsw82w7s9zgd5fgzspnzmp1vsr"))))
     (build-system gnu-build-system)
-    (outputs '("out"                    ;1.1MiB executables and documentation
-               "lib"                    ;1MiB shared library and headers
-               "static"))               ;1MiB static library
+    (outputs '("out"                    ;1.2MiB executables and documentation
+               "lib"                    ;1.2MiB shared library and headers
+               "static"))               ;1.2MiB static library
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1376,12 +1390,10 @@ or junctions, and always follows hard links.")
                            (delete-file ar))
                          (find-files shared-libs "\\.a$"))
 
-               ;; While here, remove prefix= from the pkg-config file because it
-               ;; is unused, and because it contains a needless reference to $out.
-               ;; XXX: It would be great if #:disallow-references worked between
-               ;; outputs.
+               ;; Make sure the pkg-config file refers to the right output.
                (substitute* (string-append shared-libs "/pkgconfig/libzstd.pc")
-                 (("^prefix=.*") ""))
+                 (("^prefix=.*")
+                  (string-append "prefix=" lib "\n")))
 
                #t))))
        #:make-flags
@@ -1558,13 +1570,13 @@ recreates the stored directory structure by default.")
   (package
     (name "zziplib")
     (version "0.13.69")
-    (replacement zziplib/fixed)
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
               (file-name (git-file-name name version))
+              (patches (search-patches "zziplib-CVE-2018-16548.patch"))
               (sha256
                (base32
                 "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
@@ -1595,13 +1607,6 @@ recreates the stored directory structure by default.")
     ;; zziplib is dual licensed under LGPL2.0+ and MPL1.1.  Some example source
     ;; files carry the Zlib license; see "docs/copying.html" for details.
     (license (list license:lgpl2.0+ license:mpl1.1))))
-
-(define zziplib/fixed
-  (package
-    (inherit zziplib)
-    (source (origin
-              (inherit (package-source zziplib))
-              (patches (search-patches "zziplib-CVE-2018-16548.patch"))))))
 
 (define-public libzip
   (package
@@ -1791,17 +1796,7 @@ single-member files which can't be decompressed in parallel.")
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f
-      #:phases (modify-phases %standard-phases
-                 (add-before 'configure 'glibc-is-already-a-system-library
-                   (lambda _
-                     ;; Prevent the build system from passing the glibc
-                     ;; header files to GCC as "system headers", because
-                     ;; it conflicts with the system headers already known
-                     ;; to GCC, causing #include_next failures.
-                     (substitute* "CMakeLists.txt"
-                       (("include_directories\\(SYSTEM \\$\\{iconv")
-                        "include_directories(${iconv"))
-                     #t)))))
+      #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")))
    (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))

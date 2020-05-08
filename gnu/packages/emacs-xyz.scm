@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -68,6 +68,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2427,13 +2428,21 @@ type, for example: packages, buffers, files, etc.")
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))))
+                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Add support for Guile 3.0.  Remove for versions > 0.5.2.
+                  (substitute* "configure"
+                    (("\"2\\.2 2\\.0\"")
+                     "\"3.0 2.2 2.0\""))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("emacs" ,emacs-minimal)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,emacs-geiser)
@@ -10334,15 +10343,12 @@ It should enable you to implement low-level X11 applications.")
                ;; Add a .desktop file to xsessions
                (mkdir-p xsessions)
                (mkdir-p bin)
-               (with-output-to-file
-                   (string-append xsessions "/exwm.desktop")
-                 (lambda _
-                   (format #t "[Desktop Entry]~@
-                     Name=~a~@
-                     Comment=~a~@
-                     Exec=~a~@
-                     TryExec=~:*~a~@
-                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               (make-desktop-entry-file
+                (string-append xsessions "/exwm.desktop")
+                #:name ,name
+                #:comment ,synopsis
+                #:exec exwm-executable
+                #:try-exec exwm-executable)
                ;; Add a shell wrapper to bin
                (with-output-to-file exwm-executable
                  (lambda _

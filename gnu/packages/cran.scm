@@ -1480,7 +1480,7 @@ applications.  That is, compute distances and related measures for angular
         (base32
          "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
     (build-system r-build-system)
-    (inputs `(("libjpeg" ,libjpeg)))
+    (inputs `(("libjpeg" ,libjpeg-turbo)))
     (home-page "https://www.rforge.net/jpeg/")
     (synopsis "Read and write JPEG images with R")
     (description "This package provides a way to read, write and display
@@ -9900,7 +9900,7 @@ redundant complex conjugate when the input is real data.")
     (build-system r-build-system)
     (inputs
      `(("libtiff" ,libtiff)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (home-page "https://www.rforge.net/tiff/")
     (synopsis "Read and write TIFF images")
@@ -18630,7 +18630,7 @@ currently limited to 8 bit greyscale images and 24, 32 bit (A)RGB images.")
     (properties `((upstream-name . "readbitmap")))
     (build-system r-build-system)
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)))
     (propagated-inputs
      `(("r-bmp" ,r-bmp)

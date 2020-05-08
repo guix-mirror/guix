@@ -135,44 +135,48 @@
                    (name 'test)
                    (url "test")))
          (test-dir (channel-instance-checkout instance--simple)))
-    (mock ((guix git) latest-repository-commit
-           (lambda* (store url #:key ref)
+    (mock ((guix git) update-cached-checkout
+           (lambda* (url #:key ref)
              (match url
-               ("test" (values test-dir 'whatever))
-               (_ (values "/not-important" 'not-important)))))
-          (let ((instances (latest-channel-instances #f (list channel))))
-            (and (eq? 2 (length instances))
-                 (lset= eq?
-                        '(test test-channel)
-                        (map (compose channel-name channel-instance-channel)
-                             instances)))))))
+               ("test" (values test-dir "caf3cabba9e"))
+               (_      (values (channel-instance-checkout instance--no-deps)
+                               "abcde1234")))))
+          (with-store store
+            (let ((instances (latest-channel-instances store (list channel))))
+              (and (eq? 2 (length instances))
+                   (lset= eq?
+                          '(test test-channel)
+                          (map (compose channel-name channel-instance-channel)
+                               instances))))))))
 
 (test-assert "latest-channel-instances excludes duplicate channel dependencies"
   (let* ((channel (channel
                    (name 'test)
                    (url "test")))
          (test-dir (channel-instance-checkout instance--with-dupes)))
-    (mock ((guix git) latest-repository-commit
-           (lambda* (store url #:key ref)
+    (mock ((guix git) update-cached-checkout
+           (lambda* (url #:key ref)
              (match url
-               ("test" (values test-dir 'whatever))
-               (_ (values "/not-important" 'not-important)))))
-          (let ((instances (latest-channel-instances #f (list channel))))
-            (and (= 2 (length instances))
-                 (lset= eq?
-                        '(test test-channel)
-                        (map (compose channel-name channel-instance-channel)
-                             instances))
-                 ;; only the most specific channel dependency should remain,
-                 ;; i.e. the one with a specified commit.
-                 (find (lambda (instance)
-                         (and (eq? (channel-name
-                                    (channel-instance-channel instance))
-                                   'test-channel)
-                              (string=? (channel-commit
-                                         (channel-instance-channel instance))
-                                        "abc1234")))
-                       instances))))))
+               ("test" (values test-dir "caf3cabba9e"))
+               (_      (values (channel-instance-checkout instance--no-deps)
+                               "abcde1234")))))
+          (with-store store
+            (let ((instances (latest-channel-instances store (list channel))))
+              (and (= 2 (length instances))
+                   (lset= eq?
+                          '(test test-channel)
+                          (map (compose channel-name channel-instance-channel)
+                               instances))
+                   ;; only the most specific channel dependency should remain,
+                   ;; i.e. the one with a specified commit.
+                   (find (lambda (instance)
+                           (and (eq? (channel-name
+                                      (channel-instance-channel instance))
+                                     'test-channel)
+                                (string=? (channel-commit
+                                           (channel-instance-channel instance))
+                                          "abc1234")))
+                         instances)))))))
 
 (test-assert "channel-instances->manifest"
   ;; Compute the manifest for a graph of instances and make sure we get a

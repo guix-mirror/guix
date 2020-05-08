@@ -37,7 +37,7 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "6.1.2")
+   (version "6.2.0")
    (source (origin
             (method url-fetch)
             (uri
@@ -45,7 +45,7 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "04hrwahdxyqdik559604r7wrj9ffklwvipgfxgj4ys4skbl6bdc7"))
+              "09hmg8k63mbfrx1x3yy6y1yzbbq85kw5avbibhcgrg9z3ganr3i5"))
             (patches (search-patches "gmp-faulty-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))

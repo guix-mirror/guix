@@ -55,7 +55,7 @@
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key target outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (doc (assoc-ref outputs "doc")))
                ;; '--docdir' is not honored, so we need to patch.
@@ -72,6 +72,10 @@
                        ;; Bdb doesn't recognize aarch64 as an architecture.
                        ,@(if (string=? "aarch64-linux" (%current-system))
                              '("--build=aarch64-unknown-linux-gnu")
+                             '())
+
+                       ,@(if (%current-target-system)         ; cross building
+                             '((string-append "--host=" target))
                              '())
 
                        ;; Remove 7 MiB of .a files.
@@ -134,7 +138,8 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
               (sha256
                (base32
                 "1p4ibds6z3ccy65lkmd6lm7js0kwifvl53r0fd759fjxgr917rl6"))))
-    (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
+    (arguments `(#:configure-flags '("--enable-libgdbm-compat"
+                                     "--disable-static")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")
     (synopsis

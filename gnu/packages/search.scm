@@ -59,7 +59,7 @@
                (base32 "1sjhz6vgql801rdgl6vrsjj0vy1mwlkcxjx6nr7h27m031cyjs5i"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)
-              ("util-linux" ,util-linux)))
+              ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

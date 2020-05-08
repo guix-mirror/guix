@@ -477,7 +477,7 @@ capacity is user-selectable.")
        ("eudev" ,eudev)
        ("fontconfig" ,fontconfig)
        ("libexif" ,libexif)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("ffmpeg" ,ffmpeg-3.4)))
     (native-inputs
      `(("pkg-config" ,pkg-config)

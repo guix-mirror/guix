@@ -27,18 +27,17 @@
 
 (define-public fribidi
   (package
-    (replacement fribidi/fixed)
     (name "fribidi")
-    (version "1.0.5")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
         (uri
          (string-append "https://github.com/fribidi/fribidi/releases"
                         "/download/v" version "/fribidi-" version
-                         ".tar.bz2"))
+                         ".tar.xz"))
         (sha256
-          (base32 "1kp4b1hpx2ky20ixgy2xhj5iygfl7ps5k9kglh1z5i7mhykg4r3a"))))
+         (base32 "1iz06r6ha2nrgbzbn4141r58a60a9s5qiaadjjhhvdkg0alpxr65"))))
     (build-system gnu-build-system)
     (synopsis "Implementation of the Unicode bidirectional algorithm")
     (description
@@ -47,13 +46,6 @@ Algorithm.  This algorithm is used to properly display text in left-to-right
 or right-to-left ordering as necessary.")
     (home-page "https://github.com/fribidi/fribidi")
     (license lgpl2.1+)))
-
-(define fribidi/fixed
-  (package
-    (inherit fribidi)
-    (source
-      (origin (inherit (package-source fribidi))
-              (patches (search-patches "fribidi-CVE-2019-18397.patch"))))))
 
 (define-public bidiv
   (package

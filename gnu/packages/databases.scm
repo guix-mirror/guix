@@ -168,7 +168,7 @@
        ("avahi" ,avahi)
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -761,6 +761,20 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         ,@(if (string-prefix? "arm" (%current-system))
+               ;; XXX: Because of the GCC 5 input, we need to hide GCC 7 from
+               ;; CPLUS_INCLUDE_PATH so that its headers do not shadow GCC 5.
+               '((add-after 'set-paths 'hide-default-gcc
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((gcc (assoc-ref inputs "gcc")))
+                       (setenv "CPLUS_INCLUDE_PATH"
+                               (string-join
+                                (delete (string-append gcc "/include/c++")
+                                        (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                      #\:))
+                                ":"))
+                       #t))))
+               '())
          (add-after 'unpack 'fix-pcre-detection
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
@@ -893,7 +907,7 @@ Language.")
      `(("bison" ,bison)
        ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
        ,@(if (string-prefix? "armhf" (%current-system))
-             `(("gcc", gcc-5))
+             `(("gcc@5", gcc-5))
              '())
        ("perl" ,perl)))
     (inputs
@@ -974,7 +988,7 @@ developed in C/C++ to MariaDB and MySQL databases.")
              (invoke "make" "-C" "contrib" "install"))))))
     (inputs
      `(("readline" ,readline)
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")
@@ -2698,7 +2712,7 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.28.0-r1")
+    (version "3.31.1-r1")
     (source
       (origin
         (method url-fetch)
@@ -2706,7 +2720,7 @@ PickleShare.")
                             "/download/" version "/apsw-" version ".zip"))
         (sha256
           (base32
-           "0x62534l5hcgwrc4k2gxpdzc1sxlhm6m4nwlay74rnmr77qh8wly"))))
+           "1gap5lr6c7bp134nzvfwr693i6d0fqyaysg3ms2cayjldv616yfx"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

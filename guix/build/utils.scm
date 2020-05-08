@@ -108,6 +108,8 @@
 
             invoke/quiet
 
+            make-desktop-entry-file
+
             locale-category->string))
 
 
@@ -892,7 +894,7 @@ transferred and the continuation of the transfer as a thunk."
     (x x)))
 
 (define patch-shebang
-  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
+  (let ((shebang-rx (make-regexp "^[[:blank:]]*(/[[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
     (lambda* (file
               #:optional
               (path (search-path-as-string->list (getenv "PATH")))
@@ -1323,6 +1325,105 @@ not supported."
             (raise (condition
                     (&wrap-error (program prog)
                                  (type 'no-interpreter-found)))))))))
+
+(define* (make-desktop-entry-file destination #:key
+                                  (type "Application") ; One of "Application", "Link" or "Directory".
+                                  (version "1.1")
+                                  name
+                                  (generic-name name)
+                                  (no-display #f)
+                                  comment
+                                  icon
+                                  (hidden #f)
+                                  only-show-in
+                                  not-show-in
+                                  (d-bus-activatable #f)
+                                  try-exec
+                                  exec
+                                  path
+                                  (terminal #f)
+                                  actions
+                                  mime-type
+                                  (categories "Application")
+                                  implements
+                                  keywords
+                                  (startup-notify #t)
+                                  startup-w-m-class
+                                  #:rest all-args)
+  "Create a desktop entry file at DESTINATION.
+You must specify NAME.
+
+Values can be booleans, numbers, strings or list of strings.
+
+Additionally, locales can be specified with an alist where the key is the
+locale.  The #f key specifies the default.  Example:
+
+  #:name '((#f \"I love Guix\") (\"fr\" \"J'aime Guix\"))
+
+produces
+
+  Name=I love Guix
+  Name[fr]=J'aime Guix
+
+For a complete description of the format, see the specifications at
+https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html."
+  (define (escape-semicolon s)
+    (string-join (string-split s #\;) "\\;"))
+  (define* (parse key value #:optional locale)
+    (set! value (match value
+                  (#t "true")
+                  (#f "false")
+                  ((?  number? n) n)
+                  ((?  string? s) (escape-semicolon s))
+                  ((?  list? value)
+                   (catch 'wrong-type-arg
+                     (lambda () (string-join (map escape-semicolon value) ";"))
+                     (lambda args (error "List arguments can only contain strings: ~a" args))))
+                  (_ (error "Value must be a boolean, number, string or list of strings"))))
+    (format #t "~a=~a~%"
+            (if locale
+                (format #f "~a[~a]" key locale)
+                key)
+            value))
+
+  (define key-error-message "This procedure only takes key arguments beside DESTINATION")
+
+  (unless name
+    (error "Missing NAME key argument"))
+  (unless (member #:type all-args)
+    (set! all-args (append (list #:type type) all-args)))
+  (mkdir-p (dirname destination))
+
+  (with-output-to-file destination
+    (lambda ()
+      (format #t "[Desktop Entry]~%")
+      (let loop ((args all-args))
+        (match args
+          (() #t)
+          ((_) (error key-error-message))
+          ((key value . ...)
+           (unless (keyword? key)
+             (error key-error-message))
+           (set! key
+                 (string-join (map string-titlecase
+                                   (string-split (symbol->string
+                                                  (keyword->symbol key))
+                                                 #\-))
+                              ""))
+           (match value
+             (((_ . _) . _)
+              (for-each (lambda (locale-subvalue)
+                          (parse key
+                                 (if (and (list? (cdr locale-subvalue))
+                                          (= 1 (length (cdr locale-subvalue))))
+                                     ;; Support both proper and improper lists for convenience.
+                                     (cadr locale-subvalue)
+                                     (cdr locale-subvalue))
+                                 (car locale-subvalue)))
+                        value))
+             (_
+              (parse key value)))
+           (loop (cddr args))))))))
 
 
 ;;;

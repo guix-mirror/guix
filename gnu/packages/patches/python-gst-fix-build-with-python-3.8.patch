@@ -1,0 +1,36 @@
+Fix build with Python 3.8 by also checking for python-3.X-embed.pc. Since
+Python 3.8 the normal checks don't include the Python libraries anymore and
+linking of the gst-python module would fail.
+
+See also https://github.com/mesonbuild/meson/issues/5629
+Fixes https://gitlab.freedesktop.org/gstreamer/gst-python/issues/28
+
+Patch based on upstream commit:
+
+https://gitlab.freedesktop.org/gstreamer/gst-python/-/commit/10707f437f2fc3632067c6a0efa4432f7ebaf362
+
+diff --git a/meson.build b/meson.build
+index 5f13b48..d7c7e66 100644
+--- a/meson.build
++++ b/meson.build
+@@ -23,7 +23,17 @@ pygobject_dep = dependency('pygobject-3.0', fallback: ['pygobject', 'pygobject_d
+ 
+ pymod = import('python')
+ python = pymod.find_installation(get_option('python'))
+-python_dep = python.dependency(required : true)
++pythonver = python.language_version()
++if pythonver.version_compare('<3.0')
++   error('Python2 is not supported anymore, please port your code to python3 (@0@ specified)'.format(python.language_version()))
++endif
++
++# Workaround for https://github.com/mesonbuild/meson/issues/5629
++# https://gitlab.freedesktop.org/gstreamer/gst-python/issues/28
++python_dep = dependency('python-@0@-embed'.format(pythonver), version: '>=3', required: false)
++if not python_dep.found()
++  python_dep = python.dependency(required : true)
++endif
+ 
+ python_abi_flags = python.get_variable('ABIFLAGS', '')
+ pylib_loc = get_option('libpython-dir')
+-- 
+2.26.2

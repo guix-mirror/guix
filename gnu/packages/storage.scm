@@ -200,7 +200,7 @@
        ("python-sphinx" ,python-sphinx)
        ("yasm" ,yasm)))
     (inputs
-     `(("boost" ,boost-with-python3)
+     `(("boost" ,boost)
        ("curl" ,curl)
        ("cryptsetup" ,cryptsetup)
        ("expat" ,expat)
@@ -229,6 +229,7 @@
        ("snappy" ,snappy)
        ("udev" ,eudev)
        ("util-linux" ,util-linux)
+       ("util-linux:lib" ,util-linux "lib")
        ("xfsprogs" ,xfsprogs)
        ("zlib" ,zlib)))
     (home-page "https://ceph.com/")

@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
@@ -359,7 +360,7 @@ written by Paul Haahr and Byron Rakitzis.")
 (define-public tcsh
   (package
     (name "tcsh")
-    (version "6.20.00")
+    (version "6.22.02")
     (source (origin
               (method url-fetch)
               ;; Old tarballs are moved to old/.
@@ -369,9 +370,8 @@ written by Paul Haahr and Byron Rakitzis.")
                                         "old/tcsh-" version ".tar.gz")))
               (sha256
                (base32
-                "17ggxkkn5skl0v1x0j6hbv5l0sgnidfzwv16992sqkdm983fg7dq"))
-              (patches (search-patches "tcsh-fix-autotest.patch"
-                                       "tcsh-fix-out-of-bounds-read.patch"))
+                "0nw8prz1n0lmr82wnpyhrzmki630afn7p9cfgr3vl00vr9c72a7d"))
+              (patches (search-patches "tcsh-fix-autotest.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -382,6 +382,14 @@ written by Paul Haahr and Byron Rakitzis.")
     (arguments
      `(#:phases
         (modify-phases %standard-phases
+          ,@(if (%current-target-system)
+                '((add-before 'configure 'set-cross-cc
+                     (lambda _
+                       (substitute* "configure"
+                         (("CC_FOR_GETHOST=\"cc\"")
+                          "CC_FOR_GETHOST=\"gcc\""))
+                       #t)))
+                '())
           (add-before 'check 'patch-test-scripts
             (lambda _
               ;; Take care of pwd
@@ -871,3 +879,4 @@ designed to be capable of bootstrapping their standard GNU counterparts.
 Underpinning these utilities are many Scheme interfaces for manipulating
 files and text.")
     (license gpl3+)))
+

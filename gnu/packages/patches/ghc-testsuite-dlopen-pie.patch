@@ -1,0 +1,54 @@
+Do not attempt to dlopen PIE objects, which was disallowed with glibc 2.30.
+
+https://gitlab.haskell.org/ghc/ghc/issues/17952
+https://sourceware.org/bugzilla/show_bug.cgi?id=24323
+
+Patch submitted upstream:
+https://gitlab.haskell.org/ghc/ghc/-/merge_requests/2947
+
+diff --git a/testsuite/tests/dynlibs/Makefile b/testsuite/tests/dynlibs/Makefile
+--- a/testsuite/tests/dynlibs/Makefile
++++ b/testsuite/tests/dynlibs/Makefile
+@@ -60,6 +60,4 @@ T5373:
+ .PHONY: T13702
+ T13702:
+ 	'$(TEST_HC)' -v0 -dynamic -rdynamic -fPIC -pie T13702.hs
+-	'$(TEST_HC)' -v0 -dynamic T13702a.hs
+-	./T13702  # first make sure executable itself works
+-	./T13702a # then try dynamically loading it as library
++	./T13702
+diff --git a/testsuite/tests/dynlibs/T13702.hs b/testsuite/tests/dynlibs/T13702.hs
+--- a/testsuite/tests/dynlibs/T13702.hs
++++ b/testsuite/tests/dynlibs/T13702.hs
+@@ -2,8 +2,3 @@
+ 
+ main :: IO ()
+ main = putStrLn "hello world"
+-
+-foreign export ccall "hello" hello :: IO ()
+-
+-hello :: IO ()
+-hello = putStrLn "hello world again"
+diff --git a/testsuite/tests/dynlibs/T13702.stdout b/testsuite/tests/dynlibs/T13702.stdout
+--- a/testsuite/tests/dynlibs/T13702.stdout
++++ b/testsuite/tests/dynlibs/T13702.stdout
+@@ -1,2 +1 @@
+ hello world
+-hello world again
+diff --git a/testsuite/tests/dynlibs/T13702a.hs b/testsuite/tests/dynlibs/T13702a.hs
+deleted file mode 100644
+--- a/testsuite/tests/dynlibs/T13702a.hs
++++ /dev/null
+@@ -1,12 +0,0 @@
+-{-# LANGUAGE ForeignFunctionInterface #-}
+-
+-import Foreign
+-import System.Posix.DynamicLinker
+-
+-main :: IO ()
+-main = do
+-    dl <- dlopen "./T13702" [RTLD_NOW]
+-    funptr <- dlsym dl "hello" :: IO (FunPtr (IO ()))
+-    mkAction funptr
+-
+-foreign import ccall "dynamic" mkAction :: FunPtr (IO ()) -> IO ()

@@ -241,7 +241,7 @@
      `(("expat" ,expat)
        ("freeglut" ,freeglut)
        ("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libogg" ,libogg)
        ("libtiff" ,libtiff)
        ("libvorbis" ,libvorbis)
@@ -863,7 +863,7 @@ effects and music to make a completely free game.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libogg" ,libogg)
        ("libpng" ,libpng)
        ("libvorbis" ,libvorbis)
@@ -2213,7 +2213,7 @@ are primarily in English, however some in other languages are provided.")
        #:make-flags '("CC=gcc" "sharedlib")))
     (inputs
      `(("bzip2" ,bzip2)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxxf86vm" ,libxxf86vm)
@@ -2360,7 +2360,7 @@ match, cannon keep, and grave-itation pit.")
        ("gmp" ,gmp)
        ("irrlicht" ,irrlicht)
        ("jsoncpp" ,jsoncpp)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
@@ -2497,6 +2497,7 @@ Widgets, and allows users to create more.")
               (uri (string-append "https://codeload.github.com/fifengine/"
                                   "fifengine/tar.gz/" version))
               (file-name (string-append name "-" version ".tar.gz"))
+              (patches (search-patches "fifengine-swig-compat.patch"))
               (sha256
                (base32
                 "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
@@ -2513,7 +2514,9 @@ Widgets, and allows users to create more.")
                        "/include/AL")
         (string-append "-DPYTHON_SITE_PACKAGES="
                        (assoc-ref %outputs "out")
-                       "/lib/python3.7/site-packages"))
+                       "/lib/python"
+                       ,(version-major+minor (package-version python))
+                       "/site-packages"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-run_tests.py
@@ -2602,7 +2605,7 @@ games using Python as well as C++.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freetype" ,freetype)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libxml2" ,libxml2)
@@ -2731,7 +2734,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("curl" ,curl)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("openssl" ,openssl)
        ("enet" ,enet)))
     (native-inputs
@@ -2882,20 +2885,7 @@ falling, themeable graphics and sounds, and replays.")
                 "1i8mz6gw3qar09bscczhki0g4scj8pl58v85rp0g55r4bcq41l5v"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ;no check target
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'treat-boost-as-system-header
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((boost (assoc-ref inputs "boost")))
-                        ;; Ensure Boost is treated as "system headers" to
-                        ;; pacify compiler warnings induced by Boost headers.
-                        (for-each (lambda (variable)
-                                    (setenv variable
-                                            (string-append boost "/include:"
-                                                           (or (getenv variable)
-                                                               ""))))
-                                  '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-                        #t))))))
+     `(#:tests? #f))                    ;no check target
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -4391,7 +4381,7 @@ throwing people around in pseudo-randomly generated buildings.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (getenv "CPATH") ":"
+                     (string-append (or (getenv "CPATH") "") ":"
                                     (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
          (replace 'configure
@@ -4800,7 +4790,8 @@ over 100 user-created campaigns.")
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL:"
                                     (assoc-ref inputs "python")
-                                    "/include/python2.7"))
+                                    "/include/python2.7:"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
@@ -5577,7 +5568,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
                                              "/include/SDL2:"
-                                             (getenv "CPATH")))
+                                             (or (getenv "CPATH") "")))
                       #t))
                   (delete 'check)
                   ;; premake doesn't provide install target
@@ -5631,19 +5622,13 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                         (copy-recursively "game" (string-append data "/game"))
                         ;; launcher
                         (mkdir-p applications)
-                        (with-output-to-file (string-append applications "/"
-                                                            ,name ".desktop")
-                          (lambda ()
-                            (display
-                             (string-append
-                              "[Desktop Entry]
-Name=ToME4
-Comment=" ,synopsis "\n"
-"Exec=" ,name "\n"
-"Icon=" icon "\n"
-"Terminal=false
-Type=Application
-Categories=Game;RolePlaying;\n")))))
+                        (make-desktop-entry-file
+                         (string-append applications "/" ,name ".desktop")
+                         #:name "ToME4"
+                         #:comment ,synopsis
+                         #:exec ,name
+                         #:icon icon
+                         #:categories '("Game" "RolePlaying")))
                       #t)))))
     (home-page "https://te4.org")
     (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
@@ -6100,7 +6085,7 @@ You can save humanity and get programming skills!")
               ("fluidsynth" ,fluidsynth)
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("libsndfile" ,libsndfile)
               ("mesa" ,mesa)
               ("mpg123" ,mpg123)
@@ -6557,7 +6542,7 @@ quotation from a collection of quotes.")
      `(("xonotic-data" ,xonotic-data)
        ("alsa-lib" ,alsa-lib)
        ("curl" ,curl)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmodplug" ,libmodplug)
        ("libvorbis" ,libvorbis)
        ("libogg" ,libogg)
@@ -7988,22 +7973,18 @@ on items and player adaptability for character progression.")
            ;; game, so we borrow SCUMMVM's.
            (let ((apps (string-append out "/share/applications")))
              (mkdir-p apps)
-             (with-output-to-file (string-append apps "/drascula.desktop")
-               (lambda _
-                 (format #t
-                         "[Desktop Entry]~@
-                     Name=Drascula: The Vampire Strikes Back~@
-                     GenericName=Drascula~@
-                     Exec=~a/bin/drascula~@
-                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
-                     Categories=AdventureGame;Game;RolePlaying;~@
-                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
-                     Comment=Classic 2D point and click adventure game~@
-                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
-                     Comment[fr]=Jeux classique d'aventure pointer-et-cliquer en 2D~@
-                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
-                     Type=Application~%"
-                         out scummvm))))
+             (make-desktop-entry-file
+              (string-append apps "/drascula.desktop")
+              #:name "Drascula: The Vampire Strikes Back"
+              #:generic-name "Drascula"
+              #:exec (string-append out "/bin/drascula")
+              #:icon (string-append scummvm "/share/icons/hicolor/scalable/apps/scummvm.svg")
+              #:categories '("AdventureGame" "Game" "RolePlaying")
+              #:keywords '("game" "adventure" "roleplaying" "2D" "fantasy")
+              #:comment '((#f "Classic 2D point and click adventure game")
+                          ("de" "Klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier")
+                          ("fr" "Jeu classique d'aventure pointer-et-cliquer en 2D")
+                          ("it" "Gioco classico di avventura punta e clicca 2D"))))
            #t))))
     (native-inputs
      `(("bash" ,bash)
@@ -10246,7 +10227,7 @@ This package is part of the KDE games module.")
      `(("curl" ,curl)
        ("font-dejavu" ,font-dejavu)
        ("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libxdg-basedir" ,libxdg-basedir)
        ("libxml2" ,libxml2)
@@ -10565,7 +10546,7 @@ kingdom.")
       (native-inputs
        `(("gettext" ,gettext-minimal))) ;for msgfmt
       (inputs
-       `(("libjpeg" ,libjpeg)
+       `(("libjpeg" ,libjpeg-turbo)
          ("libpng" ,libpng)
          ("libvorbis" ,libvorbis)
          ("physfs" ,physfs)

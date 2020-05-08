@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,17 +44,18 @@
 (define-public tcl
   (package
     (name "tcl")
-    (version "8.6.9")
+    (version "8.6.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/tcl/Tcl/"
                                   version "/tcl" version "-src.tar.gz"))
               (sha256
                (base32
-                "0kjzj7mkzfnb7ksxanbibibfpciyvsh5ffdlhs0bmfc75kgd435d"))))
+                "1vc7imilx6kcb5319r7hnrp4jn5pqb41an3vr3azhgcfcgvdp5ji"))
+              (patches (search-patches "tcl-fix-cross-compilation.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
                     (lambda _ (chdir "unix") #t))
                  (add-after 'install 'install-private-headers
@@ -73,9 +75,16 @@
        ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
        ;; not able to fix this up because the default install populates both
        ;; PREFIX/man and PREFIX/share/man.
-       #:configure-flags (list (string-append "--mandir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/man"))
+       #:configure-flags
+       (list (string-append "--mandir="
+                            (assoc-ref %outputs "out")
+                            "/share/man")
+             ;; This is needed when cross-compiling, see:
+             ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=719247
+             ,@(if (%current-target-system)
+                   '("tcl_cv_strtod_buggy=1"
+                     "ac_cv_func_strtod=yes")
+                   '()))
 
        ;; XXX: There are a few test failures (related to HTTP, most
        ;; likely related to name resolution), but that doesn't cause
@@ -138,7 +147,7 @@ X11 GUIs.")
 (define-public tk
   (package
     (name "tk")
-    (version "8.6.9.1")
+    (version "8.6.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
@@ -146,7 +155,7 @@ X11 GUIs.")
                                  version "-src.tar.gz"))
              (sha256
               (base32
-               "1d7bfkxpacy33w5nahf73lkwxqpff44w1jplg7i2gmwgiaawvjwg"))
+               "11p3ycqbr5116vpaxv6fl6md6gcav1ffspgr8wrlc2lxhn543pv3"))
              (patches (search-patches "tk-find-library.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -179,9 +188,16 @@ X11 GUIs.")
                                          "/lib -lfontconfig")))
                        #t))))
 
-       #:configure-flags (list (string-append "--with-tcl="
-                                              (assoc-ref %build-inputs "tcl")
-                                              "/lib"))
+       #:configure-flags
+       (list (string-append "--with-tcl="
+                            (assoc-ref %build-inputs "tcl")
+                            "/lib")
+             ;; This is needed when cross-compiling, see:
+             ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=719247
+             ,@(if (%current-target-system)
+                   '("tcl_cv_strtod_buggy=1"
+                     "ac_cv_func_strtod=yes")
+                   '()))
 
        ;; The tests require a running X server, so we just skip them.
        #:tests? #f))
@@ -216,7 +232,7 @@ interfaces (GUIs) in the Tcl language.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libx11" ,libx11)
               ("libpng" ,libpng)
-              ("libjpeg" ,libjpeg)))
+              ("libjpeg" ,libjpeg-turbo)))
     (arguments
      `(#:make-maker-flags `(,(string-append
                               "X11=" (assoc-ref %build-inputs "libx11")))

@@ -259,7 +259,7 @@ where the server is installed.")))
     (inputs
      `(("gnutls" ,gnutls)
        ("libgcrypt" ,libgcrypt)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("lzo" ,lzo)
        ("sdl2" ,sdl2)))

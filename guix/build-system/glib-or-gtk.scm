@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;;
@@ -92,15 +92,15 @@
        (bag
          (name name)
          (system system)
-         (host-inputs `(,@(if source
-                              `(("source" ,source))
-                              '())
-                        ,@inputs))
-         (build-inputs `(("glib:bin" ,glib "bin") ; to compile schemas
+         (host-inputs (if source
+                          `(("source" ,source))
+                          '()))
+         (build-inputs `(,@native-inputs
+                         ,@inputs
+                         ("glib:bin" ,glib "bin") ; to compile schemas
                          ,@(if implicit-inputs?
                                (standard-packages)
-                               '())
-                         ,@native-inputs))
+                               '())))
          (outputs outputs)
          (build glib-or-gtk-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))

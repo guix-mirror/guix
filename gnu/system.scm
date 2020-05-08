@@ -614,17 +614,12 @@ of PROVENANCE-SERVICE-TYPE to its services."
  (cons* procps psmisc which
         (@ (gnu packages admin) shadow) ;for 'passwd'
 
-        ;; XXX: We don't use (canonical-package guile-2.2) here because that
-        ;; would create a collision in the global profile between the GMP
-        ;; variant propagated by 'guile-final' and the GMP variant propagated
-        ;; by 'gnutls', itself propagated by 'guix'.
-        guile-2.2
+        guile-3.0
 
         ;; The packages below are also in %FINAL-INPUTS, so take them from
         ;; there to avoid duplication.
-        (map canonical-package
-             (list bash coreutils findutils grep sed
-                   diffutils patch gawk tar gzip bzip2 xz lzip))))
+        (list bash coreutils findutils grep sed
+              diffutils patch gawk tar gzip bzip2 xz lzip)))
 
 (define %base-packages-linux
   ;; Default set of linux specific packages.

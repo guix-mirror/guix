@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -407,7 +408,7 @@ precision.")
        ("gsl" ,gsl)
        ("lapack" ,lapack)
        ("libao" ,ao)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libsamplerate" ,libsamplerate)
        ("libx11" ,libx11)
@@ -690,15 +691,23 @@ binary.")
              (uri (string-append "mirror://gnu/bc/bc-" version ".tar.gz"))
              (sha256
               (base32
-               "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))))
+               "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))
+             (patches (search-patches "bc-fix-cross-compilation.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ed" ,ed)
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("ed" ,ed)
        ("flex" ,flex)
        ("texinfo" ,texinfo)))
     (arguments
      '(#:configure-flags
-       (list "--with-readline")))
+       (list "--with-readline")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
     (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description
@@ -1240,15 +1249,6 @@ objects.")
        ("libtool" ,libtool)))
     (propagated-inputs
      `(("gmp" ,gmp))) ; gmp++.h includes gmpxx.h
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'setenv
-           ;; Prevent the autogen.sh script to carry out the configure
-           ;; script, which has not yet been patched to replace /bin/sh.
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
     (synopsis "Algebraic computations with exact rings and fields")
     (description
      "Givaro is a C++ library implementing the basic arithmetic of various
@@ -1287,15 +1287,7 @@ compound objects, such as vectors, matrices and univariate polynomials.")
      `(#:configure-flags
        (list (string-append "--with-blas-libs="
                             (assoc-ref %build-inputs "openblas")
-                            "/lib/libopenblas.so"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'setenv
-           ;; Prevent the autogen.sh script to carry out the configure
-           ;; script, which has not yet been patched to replace /bin/sh.
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
+                            "/lib/libopenblas.so"))))
     (synopsis "C++ library for linear algebra over finite fields")
     (description
      "FFLAS-FFPACK is a C++ template library for basic linear algebra
@@ -1331,15 +1323,6 @@ algebra, such as the row echelon form.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("fflas-ffpack" ,fflas-ffpack)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'setenv
-           ;; Prevent the autogen.sh script to carry out the configure
-           ;; script, which has not yet been patched to replace /bin/sh.
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
     (synopsis "C++ library for linear algebra over exact rings")
     (description
      "LinBox is a C++ template library for exact linear algebra computation

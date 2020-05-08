@@ -11995,7 +11995,8 @@ dependency like SeqAn.")
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
+                                    "/include/eigen3:"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
              #t)))))
     (inputs
      `(("boost" ,boost)
@@ -12173,8 +12174,8 @@ The following file formats are supported:
                (("lib/libdivsufsort.a") "/lib/libdivsufsort.so"))
 
              ;; Ensure that all headers can be found
-             (setenv "CPATH"
-                     (string-append (getenv "CPATH")
+             (setenv "CPLUS_INCLUDE_PATH"
+                     (string-append (or (getenv "CPLUS_INCLUDE_PATH") "")
                                     ":"
                                     (assoc-ref inputs "eigen")
                                     "/include/eigen3"))

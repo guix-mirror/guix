@@ -2,6 +2,8 @@
 ;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +24,12 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages base))
 
@@ -37,17 +42,32 @@
               (uri (string-append
                     "mirror://kernel.org/software/utils/pciutils/pciutils-"
                     version ".tar.xz"))
+              (patches (search-patches "pciutils-hurd-configure.patch"))
               (sha256
                (base32
                 "0mb0f2phdcmp4kfiqsszn2k6nlln0w160ffzrjjv4bbfjwrgfzzn"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              ;; There's no 'configure' script, just a raw makefile.
              (substitute* "Makefile"
+               ,@(if (%current-target-system)
+                     `((("^CROSS_COMPILE=.*$")
+                        (string-append "CROSS_COMPILE="
+                                       ,(%current-target-system) "-"
+                                       "\n"))
+                       (("^HOST=.*$")
+                        (string-append "HOST="
+                                       ,(gnu-triplet->nix-system
+                                         (%current-target-system)) "\n"))
+                       ;; Disable 'install' strip option, that would fail when
+                       ;; we are cross-compiling.
+                       (("^STRIP=.*$")
+                        "STRIP=\n"))
+                     '())
                (("^PREFIX=.*$")
                 (string-append "PREFIX := " (assoc-ref outputs "out")
                                "\n"))
@@ -84,7 +104,11 @@
      `(("which" ,which)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("kmod" ,kmod)
+     `(,@(if (member (or (%current-target-system)
+                         (%current-system))
+                     (package-supported-systems kmod))
+             `(("kmod" ,kmod))
+             '())
        ("zlib" ,zlib)))
     (home-page "https://mj.ucw.cz/sw/pciutils/")
     (synopsis "Programs for inspecting and manipulating PCI devices")

@@ -1369,7 +1369,7 @@ streaming protocols.")
        ("libdvdcss" ,libdvdcss)
        ("libdvdnav" ,libdvdnav)         ; ignored without libdvdread
        ("libdvdread" ,libdvdread)       ; ignored without libdvdnav
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmpeg2" ,libmpeg2)
        ("libmpg123" ,mpg123)            ; audio codec for MP3
        ("libpng" ,libpng)
@@ -1467,7 +1467,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libdvdread" ,libdvdread)
        ("libdvdnav" ,libdvdnav)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libx11" ,libx11)
@@ -2408,7 +2408,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libx11" ,libx11)
        ("qtbase" ,qtbase)
        ("eudev" ,eudev)))
@@ -3219,6 +3219,7 @@ programmers to access a standard API to open and decompress media files.")
                (base32
                 "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))
               (patches (search-patches "aegisub-icu59-include-unistr.patch"
+                                       "aegisub-make43.patch"
                                        "aegisub-boost68.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -3410,7 +3411,7 @@ It counts more than 100 plugins.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("libjpeg" ,libjpeg-turbo)
        ("ffmpeg" ,ffmpeg-3.4)
        ("libmicrohttpd" ,libmicrohttpd)
        ("sqlite" ,sqlite)))

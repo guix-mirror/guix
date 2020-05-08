@@ -1,0 +1,34 @@
+From d6d2caef3e44d0713bb6625f697a1ec615abae70 Mon Sep 17 00:00:00 2001
+From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Date: Sun, 5 Apr 2020 16:29:54 +0200
+Subject: [PATCH 4/4] misc: Choose a longer arbitrary line length.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This allows running specifying a `getty' in the GNU Guix store.
+
+* misc/getttyent.c (MAXLINELENGTH): Use 512 (instead of 100) as
+another "great" arbitrary limit.
+
+Co-Authored-By: Ludovic Courtès <ludo@gnu.org>
+---
+ misc/getttyent.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/misc/getttyent.c b/misc/getttyent.c
+index 92d92b026f..508d296291 100644
+--- a/misc/getttyent.c
++++ b/misc/getttyent.c
+@@ -66,7 +66,7 @@ __getttyent (void)
+ 	static struct ttyent tty;
+ 	int c;
+ 	char *p;
+-#define	MAXLINELENGTH	100
++#define	MAXLINELENGTH	512
+ 	static char line[MAXLINELENGTH];
+ 
+ 	if (!tf && !__setttyent())
+-- 
+2.26.0
+

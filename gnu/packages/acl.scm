@@ -48,6 +48,7 @@
     (arguments
      `(#:modules ((ice-9 ftw)
                   ,@%gnu-build-system-modules)
+       #:configure-flags '("--disable-static")
        #:phases
        (modify-phases %standard-phases
          ;; XXX After repacking the sources the timestamps are reset to the

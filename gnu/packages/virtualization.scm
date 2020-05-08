@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -146,8 +147,28 @@
                                "--audio-drv-list=alsa,pa,sdl")
        ;; Make build and test output verbose to facilitate investigation upon failure.
        #:make-flags '("V=1")
+       #:modules ((srfi srfi-1)
+                  (ice-9 match)
+                  ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-glibc
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Work around https://issues.guix.info/issue/36882.  We need to
+             ;; remove glibc from C_INCLUDE_PATH so that the one hardcoded in GCC,
+             ;; at the bottom of GCC include search-path is used.
+             (let* ((filters '("libc"))
+                    (input-directories
+                     (filter-map (lambda (input)
+                                   (match input
+                                     ((name . dir)
+                                      (and (not (member name filters))
+                                           dir))))
+                                 inputs)))
+               (set-path-environment-variable "C_INCLUDE_PATH"
+                                              '("include")
+                                              input-directories)
+               #t)))
          (replace 'configure
            (lambda* (#:key inputs outputs (configure-flags '())
                            #:allow-other-keys)
@@ -271,7 +292,8 @@ server and embedded PowerPC, and S390 guests.")
     (license license:gpl2)
 
     ;; Several tests fail on MIPS; see <http://hydra.gnu.org/build/117914>.
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
+    (supported-systems (fold delete %supported-systems
+                             '("mips64el-linux" "i586-gnu")))))
 
 (define-public qemu-minimal
   ;; QEMU without GUI support.
@@ -385,12 +407,6 @@ all common programming languages.  Vala bindings are also provided.")
                             "/share/doc/" ,name "-" ,version)
              "--sysconfdir=/etc"
              "--localstatedir=/var")
-       #:make-flags
-       ;; Treat the kernel headers as system headers to silence
-       ;; compiler warnings from those.
-       (list (string-append "C_INCLUDE_PATH="
-                            (assoc-ref %build-inputs "kernel-headers")
-                            "/include"))
        #:phases
        (modify-phases %standard-phases
          (replace 'install
@@ -482,7 +498,7 @@ manage system or application containers.")
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
        ("libtirpc" ,libtirpc)           ;for <rpc/rpc.h>
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("lvm2" ,lvm2)                   ;for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
@@ -722,13 +738,7 @@ domains, their live performance and resource utilization statistics.")
              (setenv "C_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "libnl")
                                     "/include/libnl3:"
-                                    ;; Also add the kernel headers here so that GCC
-                                    ;; treats them as "system headers".  Otherwise
-                                    ;; the build fails with -Werror because parasite.c
-                                    ;; includes both <linux/fs.h> and <sys/mount.h>,
-                                    ;; which define some of the same constants.
-                                    (assoc-ref inputs "kernel-headers")
-                                    "/include"))
+                                    (or (getenv "C_INCLUDE_PATH") "")))
              #t))
          (add-after 'configure 'fix-documentation
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -1334,7 +1344,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
        ("pixman" ,pixman)
        ("qemu" ,qemu-minimal)
        ("seabios" ,seabios)
-       ("util-linux" ,util-linux) ; uuid
+       ("util-linux" ,util-linux "lib") ; uuid
        ; TODO: ocaml-findlib, ocaml-nox.
        ("xz" ,xz) ; for liblzma
        ("zlib" ,zlib)))

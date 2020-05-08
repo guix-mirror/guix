@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -40,7 +40,7 @@
 (define-public aspell
   (package
     (name "aspell")
-    (version "0.60.6.1")
+    (version "0.60.8")
     (source
      (origin
       (method url-fetch)
@@ -48,9 +48,8 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qgn5psfyhbrnap275xjfrzppf5a83fb67gpql0kfqv37al869gm"))
-      (patches (search-patches "aspell-default-dict-dir.patch"
-                               "aspell-gcc-compat.patch"))))
+        "1wi60ankalmh8ds7nplz434jd7j94gdvbahdwsr539rlad8pxdzr"))
+      (patches (search-patches "aspell-default-dict-dir.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -67,14 +66,6 @@
                  (("\"filter-path(.*)DICT_DIR" _ middle)
                   (string-append "\"filter-path" middle
                                  "\"" libdir "\"")))
-               #t)))
-         (add-after 'install 'wrap-aspell
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((bin/aspell (string-append (assoc-ref outputs "out")
-                                              "/bin/aspell")))
-               (wrap-program bin/aspell
-                 '("ASPELL_CONF" "" =
-                   ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))
                #t))))))
     (inputs `(("perl" ,perl)))
 

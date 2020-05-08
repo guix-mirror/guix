@@ -4,7 +4,10 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,10 +25,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages texinfo)
+  #:use-module (gnu packages autotools)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -39,17 +44,41 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "6.6")
+    (version "6.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0rixv4c301djr0d0cnsxs8c1wjndi6bf9vi5axz6mwjkv80cmfcv"))))
+                "1aicn1v3czqii08wc91jw089n1x3gfchkf808q2as59dak0h714q"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; When cross-compiling, the package is configured twice: once with the
+     ;; native compiler and once with the cross-compiler. During the configure
+     ;; with the native compiler, the environment is reset. This leads to
+     ;; multiple environment variables missing. Do not reset the environment
+     ;; to prevent that.
+     (if (%current-target-system)
+         '(#:phases
+           (modify-phases %standard-phases
+             (add-before 'configure 'fix-cross-configure
+               (lambda _
+                 (substitute* "configure"
+                   (("env -i")
+                    "env "))
+                 #t))))
+         '()))
     (inputs `(("ncurses" ,ncurses)
-              ("perl" ,perl)))
+              ;; TODO: remove `if' in the next rebuild cycle.
+              ,@(if (%current-target-system)
+                    `(("perl" ,perl))
+                    '())))
+    ;; When cross-compiling, texinfo will build some of its own binaries with
+    ;; the native compiler. This means ncurses is needed both in both inputs
+    ;; and native-inputs.
+    (native-inputs `(("perl" ,perl)
+                     ("ncurses" ,ncurses)))
 
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
@@ -68,18 +97,6 @@ their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
 
-(define-public texinfo-6.7
-  (package
-    (inherit texinfo)
-    (version "6.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/texinfo/texinfo-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1aicn1v3czqii08wc91jw089n1x3gfchkf808q2as59dak0h714q"))))))
-
 (define-public texinfo-5
   (package (inherit texinfo)
     (version "5.2")
@@ -90,8 +107,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (patches (search-patches "texinfo-5-perl-compat.patch"))
               (sha256
                (base32
-                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))
-    (native-inputs '())))
+                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
 
 (define-public texinfo-4
   (package (inherit texinfo)
@@ -105,8 +121,37 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
-    (native-inputs '())
-    (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))))
+    (inputs `(("ncurses" ,ncurses)
+              ("xz" ,xz)))
+    (native-inputs
+      `(("automake" ,automake)
+        ,@(package-native-inputs texinfo)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments texinfo)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-configure
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               ;; Replace outdated config.sub and config.guess.
+               (with-directory-excursion "build-aux"
+                 (for-each
+                  (lambda (file)
+                    (install-file (string-append
+                                   (assoc-ref
+                                    (or native-inputs inputs) "automake")
+                                   "/share/automake-"
+                                   ,(version-major+minor
+                                     (package-version automake))
+                                   "/" file) "."))
+                  '("config.sub" "config.guess")))
+               #t))
+           ;; Build native version of tools before running 'build phase.
+           ,@(if (%current-target-system)
+                 `((add-before 'build 'make-native-gnu-lib
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (invoke "make" "-C" "tools/gnulib/lib")
+                        #t)))
+                 '())))))))
 
 (define-public info-reader
   ;; The idea of this package is to have the standalone Info reader without
@@ -115,32 +160,32 @@ is on expressing the content semantically, avoiding physical markup commands.")
     (inherit texinfo)
     (name "info-reader")
     (arguments
-     `(#:disallowed-references ,(assoc-ref (package-inputs texinfo)
+     `(,@(substitute-keyword-arguments (package-arguments texinfo)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'install 'keep-only-info-reader
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Remove everything but 'bin/info' and associated
+                   ;; files.
+                   (define (files)
+                     (scandir "." (lambda (file)
+                                    (not (member file '("." ".."))))))
+
+                   (let ((out (assoc-ref outputs "out")))
+                     (with-directory-excursion out
+                       (for-each delete-file-recursively
+                                 (fold delete (files) '("bin" "share"))))
+                     (with-directory-excursion (string-append out "/bin")
+                       (for-each delete-file (delete "info" (files))))
+                     (with-directory-excursion (string-append out "/share")
+                       (for-each delete-file-recursively
+                                 (fold delete (files)
+                                       '("info" "locale"))))
+                     #t))))))
+       #:disallowed-references ,(assoc-ref (package-inputs texinfo)
                                            "perl")
-
        #:modules ((ice-9 ftw) (srfi srfi-1)
-                  ,@%gnu-build-system-modules)
-
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'keep-only-info-reader
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Remove everything but 'bin/info' and associated
-                      ;; files.
-                      (define (files)
-                        (scandir "." (lambda (file)
-                                       (not (member file '("." ".."))))))
-
-                      (let ((out (assoc-ref outputs "out")))
-                        (with-directory-excursion out
-                          (for-each delete-file-recursively
-                                    (fold delete (files) '("bin" "share"))))
-                        (with-directory-excursion (string-append out "/bin")
-                          (for-each delete-file (delete "info" (files))))
-                        (with-directory-excursion (string-append out "/share")
-                          (for-each delete-file-recursively
-                                    (fold delete (files)
-                                          '("info" "locale"))))
-                        #t))))))
+                  ,@%gnu-build-system-modules)))
     (synopsis "Standalone Info documentation reader")))
 
 (define-public texi2html

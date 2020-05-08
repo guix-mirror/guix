@@ -58,7 +58,11 @@
                "0fcbcad95wn0q0pdfl0qgycm30f3a7xhskc0r5icldq6v6l4b3is"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch")
+     `(#:configure-flags '("--with-frozenpaths" "--without-gcc-arch"
+
+                           ;; Do not embed the build date in binaries.
+                           "--enable-reproducible-build")
+
        ;; FIXME: The test suite succeeded before version 6.9.6-2.
        ;; Try enabling it again with newer releases.
        #:tests? #f
@@ -101,7 +105,7 @@
               ("libxml2" ,libxml2)
               ("libtiff" ,libtiff)
               ("libpng" ,libpng)
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("pango" ,pango)
               ("freetype" ,freetype)
               ("bzip2" ,bzip2)
@@ -204,7 +208,7 @@ script.")
        ("libxml2" ,libxml2)
        ("libtiff" ,libtiff)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("freetype" ,freetype)
        ("bzip2" ,bzip2)
        ("xz" ,xz)

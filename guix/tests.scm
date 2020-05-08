@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -415,6 +415,9 @@ default values, and with EXTRA-FIELDS set as specified."
         #:implicit-inputs? #f
         #:tests? #f                               ;cannot run "make check"
         ,@(substitute-keyword-arguments (package-arguments gnu-make)
+            ((#:configure-flags flags ''())
+             ;; As in 'gnu-make-boot0', work around a 'config.status' defect.
+             `(cons "--disable-dependency-tracking" ,flags))
             ((#:phases phases)
              `(modify-phases ,phases
                 (replace 'build

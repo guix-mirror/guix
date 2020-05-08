@@ -254,6 +254,17 @@ wrapper.  It provides a backport of the @code{Path} object.")
         ("python-unittest2" ,python2-unittest2)
         ,@(package-native-inputs base))))))
 
+;; This package is used to bootstrap pytest, via importlib-metadata.
+(define-public python2-zipp-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-zipp
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-zipp)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python2-setuptools-scm))))))
+
 (define-public python-zstandard
   (package
     (name "python-zstandard")

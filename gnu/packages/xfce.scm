@@ -290,7 +290,7 @@ merging features essential for loading menus modified with menu editors.")
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("cairo" ,cairo) ;; Needed for pdf thumbnails (poppler-glibc.pc)
        ("freetype" ,freetype)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
        ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails

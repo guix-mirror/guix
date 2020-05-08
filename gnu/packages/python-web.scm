@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -93,7 +93,6 @@
         (base32
          "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))
        (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
-
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -107,6 +106,17 @@
              ;; make sure the timestamp of this file is > 1990, because a few
              ;; tests like test_static_file_if_modified_since_past_date depend on it
              (invoke "touch" "-d" "2020-01-01" "tests/data.unknown_mime_type")
+
+             ;; FIXME: These tests are failing due to deprecation warnings
+             ;; in Python 3.8.  Remove this when updating to aiohttp >= 3.7.
+             ;; https://github.com/aio-libs/aiohttp/issues/4477
+             ;; https://github.com/aio-libs/aiohttp/issues/4525
+             (with-directory-excursion "tests"
+               (for-each delete-file '("test_client_session.py"
+                                       "test_multipart.py"
+                                       "test_web_middleware.py"
+                                       "test_web_protocol.py"
+                                       "test_web_urldispatcher.py")))
              #t)))))
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
@@ -2002,14 +2012,16 @@ library.")
            (lambda _
              (delete-file "src/geventhttpclient/tests/test_client.py")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"  "src/geventhttpclient/tests" "-v"
                      ;; Append the test modules to sys.path to avoid
                      ;; namespace conflict which breaks SSL tests.
-                     "--import-mode=append")
+                     "--import-mode=append"
+                     ;; XXX: Disable test fails with Python 3.8:
+                     ;; https://github.com/gwik/geventhttpclient/issues/119
+                     "-k" (string-append "not test_cookielib_compatibility"))
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -2192,6 +2204,15 @@ Betamax.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; There's a small issue with one test with Python 3.8, this
+             ;; change has been suggested upstream:
+             ;; https://github.com/boto/s3transfer/pull/164
+             (substitute* "tests/unit/test_s3transfer.py"
+               (("super\\(FailedDownloadParts, self\\)\\.submit\\(function\\)")
+                "futures.Future()"))
+             #t))
          (replace 'check
            (lambda _
              ;; Some of the 'integration' tests require network access or

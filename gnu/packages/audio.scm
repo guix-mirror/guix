@@ -1630,7 +1630,7 @@ especially for creating reverb effects.  It supports impulse responses with 1,
     ;; uuid.h is included in the JACK type headers
     ;; db.h is included in the libjack metadata headers
     (propagated-inputs
-     `(("libuuid" ,util-linux)
+     `(("libuuid" ,util-linux "lib")
        ("bdb" ,bdb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2555,13 +2555,6 @@ tempo and pitch of an audio recording independently of one another.")
                (base32
                 "1k962ljpnwyjw9jjiky2372khhri1wqvrj5qsalfpys31xqzw31p"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'noconfigure
-           (lambda _
-             (setenv "NOCONFIGURE" "yes")
-             #t)))))
     (inputs
      `(("jack" ,jack-1)
        ("alsa-lib" ,alsa-lib)))

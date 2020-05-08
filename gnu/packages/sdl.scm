@@ -132,12 +132,6 @@ joystick, and graphics hardware.")
                  ,flags))
        ((#:make-flags flags ''())
         `(cons*
-          ;; Add the Fcitx header files to GCCs "system header" search path
-          ;; in order to suppress compiler warnings induced by those:
-          ;;   .../include/fcitx-utils/utarray.h:178:9: error: ISO C90 forbids
-          ;;   mixed declarations and code [-Werror=declaration-after-statement]
-          (string-append "C_INCLUDE_PATH="
-                         (assoc-ref %build-inputs "fcitx") "/include")
           ;; SDL dlopens libudev, so make sure it is in rpath. This overrides
           ;; the LDFLAG set in sdl’s configure-flags, which isn’t necessary
           ;; as sdl2 includes Mesa by default.
@@ -245,7 +239,7 @@ other supporting functions for SDL.")
     ;; propagated input because the pkg-config file refers to SDL's pkg-config
     ;; file.
     (propagated-inputs `(("sdl" ,sdl)
-                         ("libjpeg" ,libjpeg)
+                         ("libjpeg" ,libjpeg-turbo)
                          ("libpng" ,libpng)
                          ("libtiff" ,libtiff)
                          ("libwebp" ,libwebp)))
@@ -560,7 +554,7 @@ directory.")
      `(("pkg-config" ,pkg-config)
        ;; Required by test suite.
        ("xorg-server" ,xorg-server)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg-turbo)))
     (inputs
      `(("guile" ,guile-2.2)
        ("sdl-union" ,(sdl-union))))

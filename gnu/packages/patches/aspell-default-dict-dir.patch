@@ -8,12 +8,34 @@ However it is necessary for applications that use libaspell since
 
 --- a/common/config.cpp
 +++ b/common/config.cpp
+@@ -651,7 +651,20 @@ namespace acommon {
+ 	  } else { // sep == '|'
+ 	    assert(replace[0] == '$');
+ 	    const char * env = getenv(replace.c_str()+1);
+-	    final_str += env ? env : second;
++	    if (env) {
++	      final_str += env;
++	    } else if (second[0] == '$') {
++	      // Expand the right-hand side of '|', which starts with a
++	      // reference to an environment variable.
++	      auto slash = second.find('/');
++	      String variable = second.substr(1, slash - 1);
++	      const char * env = getenv(variable.c_str());
++	      String value = env ? String(env) : "";
++	      value += second.substr(slash, second.size() - slash);
++	      final_str += value;
++	    } else {
++	      final_str += second;
++	    }
+ 	  }
+ 	  replace = "";
+ 	  in_replace = false;
 @@ -1349,6 +1349,9 @@ namespace acommon {
  #  define REPL     ".aspell.<lang>.prepl"
  #endif
  
 +#undef DICT_DIR
-+#define DICT_DIR "<$ASPELL_DICT_DIR|home-dir/.guix-profile/lib/aspell>"
++#define DICT_DIR "<$ASPELL_DICT_DIR|$HOME/.guix-profile/lib/aspell>"
 +
    static const KeyInfo config_keys[] = {
      // the description should be under 50 chars

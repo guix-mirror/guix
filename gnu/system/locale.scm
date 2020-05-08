@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -86,7 +86,7 @@ or #f on failure."
      #f)))
 
 (define* (single-locale-directory locales
-                                  #:key (libc (canonical-package glibc)))
+                                  #:key (libc glibc))
   "Return a directory containing all of LOCALES for LIBC compiled.
 
 Because locale data formats are incompatible when switching from one libc to
@@ -147,7 +147,8 @@ data format changes between libc versions."
 
 (define %default-locale-libcs
   ;; The libcs for which we build locales by default.
-  (list (canonical-package glibc)))
+  ;; List the previous and current libc to ease transition.
+  (list glibc-2.29 glibc))
 
 (define %default-locale-definitions
   ;; Arbitrary set of locales that are built by default.  They are here mostly

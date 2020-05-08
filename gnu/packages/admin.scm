@@ -29,8 +29,9 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
@@ -91,6 +92,7 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages inkscape)
@@ -257,10 +259,10 @@ and provides a \"top-like\" mode (monitoring).")
      `(("pkg-config" ,pkg-config)
 
        ;; This is the Guile we use as a cross-compiler...
-       ("guile" ,guile-2.2.7)))
+       ("guile" ,guile-3.0)))
     (inputs
      ;; ... and this is the one that appears in shebangs when cross-compiling.
-     `(("guile" ,guile-2.2.7)                ;for <https://bugs.gnu.org/37757>
+     `(("guile" ,guile-3.0)
 
        ;; The 'shepherd' command uses Readline when used interactively.  It's
        ;; an unusual use case though, so we don't propagate it.
@@ -274,15 +276,18 @@ interface and is based on GNU Guile.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/shepherd/")))
 
-(define-public guile3.0-shepherd
+(define-public guile2.2-shepherd
   (package
     (inherit shepherd)
-    (name "guile3.0-shepherd")
+    (name "guile2.2-shepherd")
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("guile" ,guile-next)))
+       ("guile" ,guile-2.2)))
     (inputs
-     `(("guile" ,guile-next)))))
+     `(("guile" ,guile-2.2)))))
+
+(define-public guile3.0-shepherd
+  (deprecated-package "guile3.0-shepherd" shepherd))
 
 (define-public guile2.0-shepherd
   (package
@@ -488,6 +493,7 @@ re-executing them as necessary.")
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
+             (patches (search-patches "inetutils-hurd.patch"))
              (sha256
               (base32
                "05n65k4ixl85dc6rxc51b1b732gnmm8xnqi424dy9f1nz7ppb3xy"))))
@@ -499,13 +505,27 @@ re-executing them as necessary.")
                            ;; cross-compiling (by default it does not.)
                            ,@(if (%current-target-system)
                                  '("--with-path-procnet-dev=/proc/net/dev")
+                                 '())
+                           ,@(if (hurd-target?)
+                                 '("--disable-rcp"
+                                   "--disable-rexec"
+                                   "--disable-rexecd"
+                                   "--disable-rlogin"
+                                   "--disable-rlogind"
+                                   "--disable-rsh"
+                                   "--disable-rshd"
+                                   "--disable-uucpd"
+                                   "--disable-whois")
                                  '()))
        ;; On some systems, 'libls.sh' may fail with an error such as:
        ;; "Failed to tell switch -a apart from -A".
        #:parallel-tests? #f))
     (inputs `(("ncurses" ,ncurses)
               ("readline" ,readline)))        ;for 'ftp'
-    (native-inputs `(("netstat" ,net-tools))) ;for tests
+    (native-inputs (if (member (%current-system)
+                               (package-supported-systems net-tools))
+                       `(("netstat" ,net-tools))  ;for tests
+                       '()))
     (home-page "https://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
@@ -523,6 +543,7 @@ hostname.")
               (uri (string-append
                     "https://github.com/shadow-maint/shadow/releases/"
                     "download/" version "/shadow-" version ".tar.xz"))
+              (patches (search-patches "shadow-hurd-pctrl.patch"))
               (sha256
                (base32
                 "0qmfq50sdhz6xilgxvinblll8j2iqfl7hwk45bq744y4plq4dbd3"))))
@@ -556,11 +577,7 @@ hostname.")
                (for-each delete-file (find-files man "^groups\\."))
                #t))))))
 
-    (inputs  (if (string-contains (or (%current-target-system)
-                                      (%current-system))
-                                  "-linux")
-                 `(("linux-pam" ,linux-pam))
-                 '()))
+    (inputs `(("linux-pam" ,linux-pam)))
     (home-page "https://github.com/shadow-maint/shadow")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
@@ -587,13 +604,17 @@ login, passwd, su, groupadd, and useradd.")
      `(#:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs target #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
                     (man8   (string-append out "/share/man/man8"))
                     (sbin   (string-append out "/sbin"))
                     (shadow (assoc-ref inputs "shadow"))
                     (login  (string-append shadow "/bin/login")))
                (substitute* "Makefile"
+                 ,@(if (%current-target-system)
+                       '((("CC=.*$")
+                          (string-append "CC=" target "-gcc\n")))
+                       '())
                  (("^SBINDIR.*")
                   (string-append "SBINDIR = " out
                                  "/sbin\n"))
@@ -944,8 +965,9 @@ connection alive.")
          ("file" ,file)))
 
       (inputs `(("inetutils" ,inetutils)
-                ("net-tools" ,net-tools)
-                ("iproute" ,iproute)
+                ,@(if (hurd-target?) '()
+                      `(("net-tools" ,net-tools)
+                        ("iproute" ,iproute)))
 
                 ;; isc-dhcp bundles a copy of BIND, which has proved vulnerable
                 ;; in the past.  Use a BIND-VERSION of our choosing instead.
@@ -1767,12 +1789,12 @@ characters can be replaced as well, as can UTF-8 characters.")
     (build-system gnu-build-system)
     (inputs
      `(("ntfs-3g" ,ntfs-3g)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("openssl" ,openssl)
        ;; FIXME: add reiserfs.
        ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("ncurses" ,ncurses)))
     (home-page "https://www.cgsecurity.org/wiki/TestDisk")
     (synopsis "Data recovery tool")
@@ -2897,14 +2919,7 @@ buffers.")
         (base32 "1gpdjs5aj6vsnzwcjvw5bb120lgffvvshi4202phr0bzw3b92ky8"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f              ; many of the tests try to load kernel modules
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             ;; Don't run configure in this phase.
-             (setenv "NOCONFIGURE" "1")
-             (invoke "sh" "autogen.sh"))))))
+     `(#:tests? #f))            ; many of the tests try to load kernel modules
     (inputs
      `(("cairo" ,cairo)
        ("elfutils" ,elfutils)           ; libdw
@@ -3643,6 +3658,7 @@ tcpdump and snoop.")
        ("lvm2" ,lvm2)
        ("openssl" ,openssl)
        ("pcre" ,pcre)
+       ("libmount" ,util-linux "lib")
        ("util-linux" ,util-linux)))
     (arguments
      `(#:configure-flags

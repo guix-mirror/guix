@@ -4,8 +4,9 @@
 ;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,8 +55,11 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
-  '("CPATH"))
+  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
+  '("C_INCLUDE_PATH"
+    "CPLUS_INCLUDE_PATH"
+    "OBJC_INCLUDE_PATH"
+    "OBJCPLUS_INCLUDE_PATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.
@@ -70,8 +74,8 @@
         `(cons ,(string-append "--target=" target)
                ,flags))))))
 
-(define (cross-binutils target)
-  "Return a cross-Binutils for TARGET."
+(define* (cross-binutils target #:optional (binutils binutils))
+  "Return a cross-Binutils for TARGET using BINUTILS."
   (let ((binutils (package (inherit binutils)
                     (arguments
                      (substitute-keyword-arguments (package-arguments
@@ -158,6 +162,13 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-libsanitizer"
                                 ))
 
+                       ;; Install cross-built libraries such as libgcc_s.so in
+                       ;; the "lib" output.
+                       ,@(if libc
+                             `((string-append "--with-toolexeclibdir="
+                                              (assoc-ref %outputs "lib")
+                                              "/" ,target "/lib"))
+                             '())
                        ;; For a newlib (non-glibc) target
                        ,@(if (cross-newlib? target)
                              '("--with-newlib")
@@ -176,19 +187,7 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                      ,flags))
             flags))
        ((#:phases phases)
-        `(cross-gcc-build-phases
-          ,target
-          (modify-phases ,phases
-            (add-before 'configure 'treat-glibc-as-system-header
-              (lambda* (#:key inputs #:allow-other-keys)
-                (let ((libc (assoc-ref inputs "libc")))
-                  (when libc
-                    ;; For GCC6 and later, make sure Glibc is treated as a "system
-                    ;; header" such that #include_next does the right thing.
-                    (for-each (lambda (var)
-                                (setenv var (string-append libc "/include")))
-                              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
-                  #t))))))))))
+        `(cross-gcc-build-phases ,target ,phases))))))
 
 (define (cross-gcc-patches xgcc target)
   "Return GCC patches needed for XGCC and TARGET."
@@ -204,12 +203,19 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
 
 (define (cross-gcc-snippet target)
   "Return GCC snippet needed for TARGET."
-  (cond ((target-mingw? target)
-         '(begin
-            (copy-recursively "libstdc++-v3/config/os/mingw32-w64"
-                              "libstdc++-v3/config/os/newlib")
-            #t))
-        (else #f)))
+  `(begin
+     ,@(if (target-mingw? target)
+           '((copy-recursively "libstdc++-v3/config/os/mingw32-w64"
+                               "libstdc++-v3/config/os/newlib"))
+           '())
+     ;; TOOLDIR_BASE_PREFIX is erroneous when using a separate "lib"
+     ;; output. Specify it correctly, otherwise GCC won't find its shared
+     ;; libraries installed in the "lib" output.  See:
+     ;; https://lists.gnu.org/archive/html/bug-guix/2020-03/msg00196.html.
+     (substitute* "gcc/Makefile.in"
+       (("-DTOOLDIR_BASE_PREFIX=[^ ]*")
+        "-DTOOLDIR_BASE_PREFIX=\\\"../../../../\\\""))
+     #t))
 
 (define* (cross-gcc target
                     #:key
@@ -224,22 +230,26 @@ target that libc."
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
                          target))
-    (source (origin (inherit (package-source xgcc))
-              (patches
-               (append
-                (origin-patches (package-source xgcc))
-                (cons (cond
-                       ((version>=? (package-version xgcc) "8.0") (search-patch "gcc-8-cross-environment-variables.patch"))
-                       ((version>=? (package-version xgcc) "6.0") (search-patch "gcc-6-cross-environment-variables.patch"))
-                       (else  (search-patch "gcc-cross-environment-variables.patch")))
-                      (cross-gcc-patches xgcc target))))
-              (modules '((guix build utils)))
-              (snippet
-               (cross-gcc-snippet target))))
+    (source
+     (origin
+       (inherit (package-source xgcc))
+       (patches
+        (append
+         (origin-patches (package-source xgcc))
+         (append (cond
+                  ((version>=? (package-version xgcc) "8.0")
+                   (search-patches "gcc-8-cross-environment-variables.patch"))
+                  ((version>=? (package-version xgcc) "6.0")
+                   (search-patches "gcc-7-cross-toolexeclibdir.patch"
+                                   "gcc-6-cross-environment-variables.patch"))
+                  (else
+                   (search-patches "gcc-cross-environment-variables.patch")))
+                 (cross-gcc-patches xgcc target))))
+       (modules '((guix build utils)))
+       (snippet
+        (cross-gcc-snippet target))))
 
-    ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
-    ;; found by default, etc.
-    (outputs '("out"))
+    (outputs '("out" "lib"))
 
     (arguments
      `(#:implicit-inputs? #f
@@ -261,27 +271,31 @@ target that libc."
                              #:binutils xbinutils))
        ("binutils-cross" ,xbinutils)
 
-       ;; Call it differently so that the builder can check whether the "libc"
-       ;; input is #f.
-       ("libc-native" ,@(assoc-ref (%final-inputs) "libc"))
-
-       ;; Remaining inputs.
        ,@(let ((inputs (append (package-inputs xgcc)
-                               (alist-delete "libc" (%final-inputs)))))
+                               (fold alist-delete (%final-inputs)
+                                     '("libc" "libc:static"))
+
+                               ;; Call it differently so that the builder can
+                               ;; check whether the "libc" input is #f.
+                               `(("libc-native"
+                                  ,@(assoc-ref (%final-inputs) "libc"))
+                                 ("libc-native:static"
+                                  ,@(assoc-ref (%final-inputs)
+                                               "libc:static"))))))
            (cond
             ((target-mingw? target)
              (if libc
-                 `(("libc" ,libc)
-                   ,@inputs)
-                 `(("mingw-source" ,(package-source mingw-w64))
-                   ,@inputs)))
+                 `(,@inputs
+                   ("libc" ,libc))
+                 `(,@inputs
+                   ("mingw-source" ,(package-source mingw-w64)))))
             (libc
-             `(("libc" ,libc)
+             `(,@inputs
+               ("libc" ,libc)
                ("libc:static" ,libc "static")
                ("xkernel-headers"                ;the target headers
                 ,@(assoc-ref (package-propagated-inputs libc)
-                             "kernel-headers"))
-               ,@inputs))
+                             "kernel-headers"))))
             (else inputs)))))
 
     (inputs '())
@@ -293,7 +307,15 @@ target that libc."
                         (map (lambda (variable)
                                (search-path-specification
                                 (variable variable)
-                                (files '("include"))))
+
+                                ;; Add 'include/c++' here so that <cstdlib>'s
+                                ;; "#include_next <stdlib.h>" finds GCC's
+                                ;; <stdlib.h>, not libc's.
+                                (files (match variable
+                                         ("CROSS_CPLUS_INCLUDE_PATH"
+                                          '("include/c++" "include"))
+                                         (_
+                                          '("include"))))))
                              %gcc-cross-include-paths)))
     (native-search-paths '())))
 
@@ -499,7 +521,16 @@ and the cross tool chain."
                                (("/[^ ]+/lib/libc.so.0.3")
                                 (string-append out "/lib/libc.so.0.3"
                                                " libmachuser.so libhurduser.so"))))
-                           #t)))
+                           #t))
+                       ;; TODO: move to glibc in the next rebuild cycle
+                       (add-after 'unpack 'patch-libc/hurd
+                         (lambda* (#:key inputs #:allow-other-keys)
+                           (for-each
+                            (lambda (name)
+                              (let ((patch (assoc-ref inputs name)))
+                                (invoke "patch" "-p1" "--force" "-i" patch)))
+                            '("hurd-mach-print.patch"
+                              "hurd-gettyent.patch")))))
                      '())))))
 
         ;; Shadow the native "kernel-headers" because glibc's recipe expects the
@@ -515,7 +546,12 @@ and the cross tool chain."
                          ,@(if (hurd-triplet? target)
                                `(("cross-mig"
                                   ,@(assoc-ref (package-native-inputs xheaders)
-                                               "cross-mig")))
+                                               "cross-mig"))
+                                 ;; TODO: move to glibc in the next rebuild cycle
+                                 ("hurd-mach-print.patch"
+                                  ,@(search-patches "glibc-hurd-mach-print.patch"))
+                                 ("hurd-gettyent.patch"
+                                  ,@(search-patches "glibc-hurd-gettyent.patch")))
                                '())
                          ,@(package-inputs libc)  ;FIXME: static-bash
                          ,@(package-native-inputs libc))))))

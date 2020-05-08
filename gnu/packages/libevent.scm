@@ -76,7 +76,7 @@ loop.")
 (define-public libev
   (package
     (name "libev")
-    (version "4.25")
+    (version "4.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
@@ -84,8 +84,10 @@ loop.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1295q0lkkbrlpd5dl5i48bh1rm8mjzh9y795jlvjz3bp4wf7wxbq"))))
+                "0nkfqv69wfyy2bpga4d53iqydycpik8jp8x6q70353hia8mmv1gd"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (home-page "http://software.schmorp.de/pkg/libev.html")
     (synopsis "Event loop loosely modelled after libevent")
     (description
@@ -100,17 +102,18 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.30.1")
+    (version "1.35.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "12s7ifwgbfxblhv46inqa8c2lsnl8cgmvd37y4a4248xhkx1d0s6"))))
+                "0126mfmaw3s92dsga60sydgwjmzwg9cd36n127pydmisah17v50f"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
+     '(#:configure-flags '("--disable-static")
+       ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
        #:tests? #f))
     (native-inputs `(("autoconf" ,autoconf-wrapper)
                      ("automake" ,automake)
@@ -129,20 +132,6 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
     ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
     (license (list expat cc-by4.0))))
-
-;; This newer version of LibUV is required by 'node'.  Package it separately
-;; to avoid massive rebuilds.
-(define-public libuv/latest
-  (package/inherit
-   libuv
-   (version "1.34.2")
-   (source (origin
-             (method url-fetch)
-             (uri (string-append "https://dist.libuv.org/dist/v" version
-                                 "/libuv-v" version ".tar.gz"))
-             (sha256
-              (base32
-               "0inzk8qpw78im3fiazrc54qi1gcapbs8dhf0hk3kwpzg0i2kpnb5"))))))
 
 (define-public perl-anyevent
   (package
@@ -181,14 +170,14 @@ not rely on XS.")
 (define-public perl-ev
   (package
     (name "perl-ev")
-    (version "4.25")
+    (version "4.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/EV-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0slw68zxrkfribf6lhggdhpay3mdng0nqxlglkwrk19myblchr9f"))
+                "1jxlhnvrqim39977zwavjrcbdf9bifb46pwaxvm0s8klq121kjwb"))
               (modules '((guix build utils)))
               (snippet
                '(begin

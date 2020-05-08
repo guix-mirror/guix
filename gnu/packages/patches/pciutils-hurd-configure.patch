@@ -1,0 +1,35 @@
+Add ability to detect GNU/Hurd when configuring.
+
+Adapted from https://git.hadrons.org/cgit/debian/pkgs/pciutils.git/tree/debian/patches/00-configure-hurd.patch
+
+From e39a3af22501234a91cf28e8c57b45f9379f9101 Mon Sep 17 00:00:00 2001
+From: Damien Zammit <damien@zamaudio.com>
+Date: Fri, 26 Oct 2018 09:24:04 -0400
+Subject: [PATCH 2/2] Add ability to detect GNU/Hurd when configuring
+
+---
+ lib/configure |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/lib/configure
++++ b/lib/configure
+@@ -25,7 +25,7 @@ if [ -z "$HOST" ] ; then
+ 		proc=`/usr/sbin/lsdev -C -c processor -S available -F name | head -1`
+ 		cpu=`/usr/sbin/lsattr -F value -l $proc -a type | sed 's/_.*//'`
+ 	else
+-		cpu=`uname -m | sed 's/^i.86$/i386/;s/^sun4u$/sparc64/;s/^i86pc$/i386/;s/^BePC$/i386/;s/^BeMac$/powerpc/;s/^BeBox$/powerpc/'`
++		cpu=`uname -m | sed 's/^i.86-AT386/i386/;s/^i.86$/i386/;s/^sun4u$/sparc64/;s/^i86pc$/i386/;s/^BePC$/i386/;s/^BeMac$/powerpc/;s/^BeBox$/powerpc/'`
+ 	fi
+ 	if [ "$sys" = "DragonFly" ]
+ 	then
+@@ -39,6 +39,10 @@ if [ -z "$HOST" ] ; then
+ 	then
+ 		sys=cygwin
+ 	fi
++	if [ "$sys" = "GNU" ]
++	then
++		sys=gnu
++	fi
+ 	HOST=${3:-$cpu-$sys}
+ fi
+ [ -n "$RELEASE" ] && rel="${RELEASE}"

@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -144,19 +144,17 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                               "-checkout"))
     (sha256
      (base32
-      "1ix8h637hwhz4vrdhilf84kzzdza0wi8fp26nh7iws0bq08sl517"))))
+      "0lk7shx768sxvgr85y8bnmmnj8x4bbkgpxrz3z8jp8avi33prw83"))))
 
 (define (texlive-hyphen-package name code locations hash)
+  "Return a TeX Live hyphenation package with the given NAME, using source
+files from LOCATIONS with expected checksum HASH.  CODE is not currently in use."
   (let ((parent (simple-texlive-package
                  name locations hash #:trivial? #t)))
     (package
       (inherit parent)
       (arguments
        (substitute-keyword-arguments (package-arguments parent)
-         ((#:modules _ '())
-          '((guix build gnu-build-system)
-            (guix build utils)
-            (ice-9 match)))
          ((#:phases phases)
           `(modify-phases ,phases
              (replace 'build
@@ -169,12 +167,8 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                          (string-append root "/tex/generic/hyph-utf8/loadhyph"))
                         (ptex
                          (string-append root "/tex/generic/hyph-utf8/patterns/ptex"))
-                        (filter-expression
-                         (match ',code
-                           ((? string?)
-                            (format #f "\nlanguages.select!{|l| l.code == \"~a\"}\n" ',code))
-                           ((a b ...)
-                            (format #f "\nlanguages.select!{|l| [~{\"~a\",~}].include? l.code }\n" ',code)))))
+                        (quote
+                         (string-append root "/tex/generic/hyph-utf8/patterns/quote")))
                    (mkdir "scripts")
                    (copy-recursively
                     (assoc-ref inputs "hyph-utf8-scripts") "scripts")
@@ -183,74 +177,69 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                    (mkdir-p patterns)
                    (mkdir-p loaders)
                    (mkdir-p ptex)
+                   (mkdir-p quote)
 
                    ;; Generate plain patterns
                    (with-directory-excursion "scripts"
-                     (substitute* "languages.rb"
-                       (("../../../tex/generic/") "../tex/generic/"))
+                     (substitute* "lib/tex/hyphen/path.rb"
+                       (("^([[:blank:]]+)TeXROOT = .*" _ indent)
+                        (string-append indent "TeXROOT = \""
+                                       (getcwd) "/..\"\n")))
+
                      (substitute* "generate-plain-patterns.rb"
                        ;; Ruby 2 does not need this.
                        (("require 'unicode'") "")
-                       (("Unicode.upcase\\(ch\\)") "ch.upcase")
                        ;; Write directly to the output directory
-                       (("\\$path_root=File.*")
-                        (string-append "$path_root=\"" out "/share/texmf-dist/\"\n"))
-                       ;; Create quote directory when needed
-                       (("f = File.open\\(\"#\\{\\$path_quote\\}" m)
-                        (string-append "require 'fileutils'; FileUtils.mkdir_p $path_quote;" m))
-                       ;; Only generate patterns for this language.
-                       (("languages =.*" m)
-                        (string-append m filter-expression)))
+                       (("File\\.join\\(PATH::TXT")
+                        (string-append "File.join(\"" patterns "\""))
+                       (("File\\.join\\(PATH::QUOTE")
+                        (string-append "File.join(\"" quote "\"")))
                      (invoke "ruby" "generate-plain-patterns.rb")
 
                      ;; Build pattern loaders
                      (substitute* "generate-pattern-loaders.rb"
-                       (("\\$path_tex_generic=File.*")
-                        (string-append "$path_tex_generic=\"" root "/tex/generic\"\n"))
-                       ;; Only generate loader for this language.
-                       (("languages =.*" m)
-                        (string-append m filter-expression)))
+                       (("File\\.join\\(PATH::LOADER")
+                        (string-append "File.join(\"" loaders "\"")))
+
                      (invoke "ruby" "generate-pattern-loaders.rb")
 
                      ;; Build ptex patterns
                      (substitute* "generate-ptex-patterns.rb"
-                       (("\\$path_root=File.*")
-                        (string-append "$path_root=\"" root "\"\n"))
-                       ;; Only generate ptex patterns for this language.
-                       (("languages =.*" m)
-                        (string-append m filter-expression)))
+                       (("File\\.join\\(PATH::PTEX")
+                        (string-append "File.join(\"" ptex "\"")))
                      (invoke "ruby" "generate-ptex-patterns.rb")))))))))
       (native-inputs
        `(("ruby" ,ruby)
+         ("ruby-hydra" ,ruby-hydra)
          ("hyph-utf8-scripts" ,hyph-utf8-scripts)))
       (home-page "https://ctan.org/pkg/hyph-utf8"))))
 
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2019/texlive-20190410-extra.tar.xz")
     (sha256 (base32
-             "0a83kymxc8zmlxjb0y1gf6mx7qnf0hxffwkivwh5yh138y2rfhsv"))))
+             "13ncf2an4nlqv18lki6y2p6pcsgs1i54zqkhfwprax5j53bk70j8"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2018/texlive-20180414-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2019/texlive-20190410-texmf.tar.xz")
     (sha256 (base32
-             "1b8zigzg8raxkhhzphcmynf84rbdbj2ym2qkz24v8n0qx82zmqms"))))
+             "00n4qh9fj8v9zzy3y488hpfq1g3dnnh72y4yjsaikfcqpi59gv62"))))
 
 (define-public texlive-bin
   (package
    (name "texlive-bin")
-   (version "20180414")
+   (version "20190410")
    (source
     (origin
       (method url-fetch)
-      (uri (string-append "ftp://tug.org/historic/systems/texlive/2018/"
+      (uri (string-append "ftp://tug.org/historic/systems/texlive/2019/"
                           "texlive-" version "-source.tar.xz"))
       (sha256
        (base32
-        "0khyi6h015r2zfqgg0a44a2j7vmr1cy42knw7jbss237yvakc07y"))
+        "1dfps39q6bdr1zsbp9p74mvalmy3bycihv19sb9c6kg30kprz8nj"))
       (patches
        (let ((arch-patch
               (lambda (name revision hash)
@@ -261,14 +250,29 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                                       "&id=" revision))
                   (file-name (string-append "texlive-bin-" name))
                   (sha256 (base32 hash)))))
-             (arch-revision "c4b99aba97213ea554b6592a4916d3c7394a6d7b"))
-         (append (search-patches  "texlive-bin-CVE-2018-17407.patch"
-                                  "texlive-bin-luatex-poppler-compat.patch")
-                 (list
-                  (arch-patch "pdftex-poppler0.76.patch" arch-revision
-                              "15ypbh21amfsdxy7ca825x28lkmmkklxk1w660gpgvzdi7s70h0b")
-                  (arch-patch "xetex-poppler-fixes.patch" arch-revision
-                              "1jj1p5zkjljb7id9pjv29cw0cf8mwrgrh4ackgzz9c200vaqpsvx")))))))
+             (arch-revision "49d7fe25e5ea63f136ebc20270c1d8fc9b00041c"))
+         (list
+          (arch-patch "pdftex-poppler0.76.patch" arch-revision
+                      "03vc88dz37mjjyaspzv0fik2fp5gp8qv82114869akd1dhszbaax")
+          (search-patch "texlive-bin-poppler-0.83.patch")
+          (arch-patch "texlive-poppler-0.84.patch" arch-revision
+                      "1ia6cr99krk4ipx4hdi2qdb98bh2h26mckjlpxdzrjnfhlnghksa")
+          (search-patch "texlive-bin-poppler-0.86.patch"))))
+      (modules '((guix build utils)
+                 (ice-9 ftw)))
+      (snippet
+       '(begin
+          (with-directory-excursion "libs"
+            (let ((preserved-directories '("." ".." "lua53" "luajit")))
+              ;; Delete bundled software, except Lua which cannot easily be
+              ;; used as an external dependency.
+              (for-each delete-file-recursively
+                        (scandir "."
+                                 (lambda (file)
+                                   (and (not (member file preserved-directories))
+                                        (eq? 'directory (stat:type (stat file)))))))))
+          ;; TODO: Unbundle stuff in texk/dvisvgm/dvisvgm-src/libs too.
+          #t))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -285,7 +289,7 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                                     "-checkout"))
           (sha256
            (base32
-            "0wrjls1y9b4k1z10l9l8w2l3yjcw7v7by2y16kchdpkiyldlkry6"))))
+            "1cj04svl8bpfwjr4gqfcc04rmklz3aggrxvgj7q5bxrh7c7g18xh"))))
       ("cairo" ,cairo)
       ("fontconfig" ,fontconfig)
       ("fontforge" ,fontforge)
@@ -316,7 +320,8 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
    (arguments
     `(#:out-of-source? #t
       #:configure-flags
-       `("--disable-native-texlive-build"
+       '("--disable-static"
+         "--disable-native-texlive-build"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
@@ -363,18 +368,13 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
             (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.76.0.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
             #t))
-        (add-after 'use-code-for-new-poppler 'use-code-for-even-newer-poppler
+        (add-after 'unpack 'patch-dvisvgm-build-files
           (lambda _
-            ;; Adjust for deprecated types in Poppler 0.73 and later.
-            (substitute* (append
-                          (find-files "texk/web2c/luatexdir/" "\\.(cc|w)$")
-                          '("texk/web2c/pdftexdir/pdftosrc.cc"))
-              (("GBool") "bool")
-              (("gFalse") "false")
-              (("gTrue") "true")
-              (("getCString") "c_str")
-              (("Guint") "unsigned int")
-              (("Guchar") "unsigned char"))
+            ;; XXX: Ghostscript is detected, but HAVE_LIBGS is never set, so
+            ;; the appropriate linker flags are not added.
+            (substitute* "texk/dvisvgm/configure"
+              (("^have_libgs=yes" all)
+               (string-append all "\nHAVE_LIBGS=1")))
             #t))
         (add-after 'unpack 'disable-failing-test
           (lambda _
@@ -451,7 +451,7 @@ This package contains the binaries.")
               "texlive-docstrip"
               (list "/tex/latex/base/docstrip.tex")
               (base32
-               "17vdy43d9vknldz7wb69hp33r8awmdvn4xszamvgs5ikcl4cp289")
+               "1f9sx1lp7v34zwm186msf03q2h28rrg0lh65z59zc0cvqffs6dvb")
               #:trivial? #t))
     (home-page "https://www.ctan.org/texlive")
     (synopsis "Utility to strip documentation from TeX files.")
@@ -466,7 +466,7 @@ documentation from TeX files.  It is part of the LaTeX base.")
               (list "/tex/generic/unicode-data/"
                     "/doc/generic/unicode-data/")
               (base32
-               "1j63kz29arfiydb8r1a53q1r4zyk1yjbcq0w9i93zddczgqzgbfb")
+               "0zy4v9y667cka5fi4dnc6x500907812y7pcaf63s5qxi8l7khxxy")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/unicode-data")
     (synopsis "Unicode data and loaders for TeX")
@@ -499,7 +499,7 @@ out to date by @code{unicode-letters.tex}. ")
                     "/tex/generic/hyphen/hypht1.tex"
                     "/tex/generic/hyphen/zerohyph.tex")
               (base32
-               "002g5zhzbj3ikgg8zidagdp605ac9f4qmfl148mp0mbpz1svk0ni")
+               "0f19nml4hdx9lh7accqdk1b9ismwfm2523l5zsc4kb4arysgcakz")
               #:trivial? #t))
     (home-page "https://tug.org/texlive/")
     (synopsis "Core hyphenation support files")
@@ -628,7 +628,7 @@ build fonts using the Metafont system.")
 
                          "/scripts/texlive/fontinst.sh")
                    (base32
-                    "09drlb0krhnizw92xlm5wxzzpgn3shcxd684xlg0zc5p16l47w6h")
+                    "0lprwib7n2ygfxvrw675vhif7ghyip2x6k70kqs9syp8lqxiizf8")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -717,7 +717,7 @@ documents.")
                          "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map"
                          "/doc/fonts/cm/")
                    (base32
-                    "1h0q71paqmg1xjg6k35ni2i6m93kmlq9rdwm913xg9n4qngywl18")
+                    "09mvl94qrwlb9b4pkigi151l256v3djhwl4m5lgvk6yhn5y75zrp")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -1279,7 +1279,7 @@ incorporates the e-TeX extensions.")
               "texlive-tex-plain"
               (list "/tex/plain/")
               (base32
-               "1rrfay4d7lbyj02wlf23mwvbpjd160nwlgryx97hq1vb7dva4swr")
+               "1m4qpaszwfv7j8a85rlwl7rs4iv5nlj67c1vvn6ysly72h9gjydb")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/plain")
     (synopsis "Plain TeX format and supporting files")
@@ -1295,7 +1295,7 @@ discussed in the book).")
               "texlive-hyphen-afrikaans" "af"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-af.tex")
               (base32
-               "1vb3jccqnn1pm0680yqx52kvz595fmxnwa0cbf8qman6zglsssiw")))
+               "1k9k27a27bbrb0gz36191w32l2v6d3zbdh8zhrp4l3ild2pj3n4l")))
     (synopsis "Hyphenation patterns for Afrikaans")
     (description "The package provides hyphenation patterns for the Afrikaans
 language.")
@@ -1309,7 +1309,7 @@ language.")
                     "/tex/generic/hyphen/grahyph5.tex"
                     "/tex/generic/hyphen/ibyhyph.tex")
               (base32
-               "0kwrqsz7wdr1d9kylzwp60ka3wfbj8iad029k5h6y94nb86mf7zv")))
+               "01326lb6z0s8krcfgs8i1pnjfrm4gr33rc53gy80f63qbv4ssxrw")))
     (synopsis "Hyphenation patterns for ancient Greek")
     (description "The package provides hyphenation patterns for ancient
 Greek.")
@@ -1318,33 +1318,11 @@ Greek.")
 (define-public texlive-hyphen-armenian
   (let ((template (texlive-hyphen-package
                    "texlive-hyphen-armenian" "hy"
-                   (list "/source/generic/hyph-utf8/languages/hy/generate_patterns_hy.rb")
+                   (list "/tex/generic/hyph-utf8/patterns/tex/hyph-hy.tex")
                    (base32
-                    "0z666y580w1kpxssdanz67ykq257lf11a1mnp1jrn08zijvfrw9c"))))
+                    "0hzny0npynsb07syxrpbfa5pkpj8r0j51pj64yxyfl1c0bak1fwp"))))
     (package
       (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'build-patterns
-               (lambda _
-                 (let ((target (string-append (getcwd)
-                                              "/tex/generic/hyph-utf8/patterns/tex")))
-                   (mkdir-p target)
-                   (with-directory-excursion "source/generic/hyph-utf8/languages/hy/"
-                     (substitute* "generate_patterns_hy.rb"
-                       (("\\$file = File.new.*")
-                        (string-append "$file = File.new(\"" target
-                                       "/hyph-hy.tex\",\"w\")\n")))
-                     (invoke "ruby" "generate_patterns_hy.rb"))
-                   #t)))
-             (add-after 'install 'install-hyph-hy.tex
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target (string-append out "/share/texmf-dist/tex")))
-                   (copy-recursively "tex" target)
-                   #t)))))))
       (synopsis "Hyphenation patterns for Armenian")
       (description "The package provides hyphenation patterns for the Armenian
 language.")
@@ -1354,39 +1332,17 @@ language.")
 (define-public texlive-hyphen-basque
   (let ((template (texlive-hyphen-package
                     "texlive-hyphen-basque" "eu"
-                    (list "/source/generic/hyph-utf8/languages/eu/generate_patterns_eu.rb")
+                    (list "/tex/generic/hyph-utf8/patterns/tex/hyph-eu.tex")
                     (base32
-                     "1yhsbzf1g9dm70jfixsz51hsfvn26cwfkfxvhg7xv2piynr4v51l"))))
+                     "15w969g1jqzn68l2b2lzf7iv7g3kil02aba3if6cag3qcnq92ra9"))))
     (package
       (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'build-patterns
-               (lambda _
-                 (let ((target (string-append (getcwd)
-                                              "/tex/generic/hyph-utf8/patterns/tex")))
-                   (mkdir-p target)
-                   (with-directory-excursion "source/generic/hyph-utf8/languages/eu/"
-                     (substitute* "generate_patterns_eu.rb"
-                       (("\\$file = File.new.*")
-                        (string-append "$file = File.new(\"" target
-                                       "/hyph-eu.tex\",\"w\")\n")))
-                     (invoke "ruby" "generate_patterns_eu.rb"))
-                   #t)))
-             (add-after 'install 'install-hyph-eu.tex
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target (string-append out "/share/texmf-dist/tex")))
-                   (copy-recursively "tex" target)
-                   #t)))))))
       (synopsis "Hyphenation patterns for Basque")
       (description "The package provides hyphenation patterns for the Basque
 language.")
-      ;; "Free for any purpose".
+      ;; Similar to Unicode license.
       (license (license:fsf-free
-                "/source/generic/hyph-utf8/languages/eu/generate_patterns_eu.rb")))))
+                "/tex/generic/hyph-utf8/patterns/tex/hyph-eu.tex")))))
 
 (define-public texlive-hyphen-belarusian
   (package
@@ -1394,7 +1350,7 @@ language.")
               "texlive-hyphen-belarusian" "be"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-be.tex")
               (base32
-               "1xvffph824rg43gi2xs3ny9gzlp708fyxj9zfhckmg8pzh9vv3n6")))
+               "0ppm12wndaxv9da62dwkbnk7w9nijikn6jkc97m76xis338g2h02")))
     (synopsis "Hyphenation patterns for Belarusian")
     (description "The package provides hyphenation patterns for the Belarusian
 language.")
@@ -1408,7 +1364,7 @@ language.")
                     "/doc/generic/hyph-utf8/bg/azbukaExtended.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex")
               (base32
-               "06dxkk9azsggbri04i6g62lswygzadsx3rpqvbyzvbxc5wxz1dj1")))
+               "0ngrgw2rmipxss76rgfk62x9nnsgwmaxxna2jqxxhybai3q39mx5")))
     (synopsis "Hyphenation patterns for Bulgarian")
     (description "The package provides hyphenation patterns for the Bulgarian
 language in T2A and UTF-8 encodings.")
@@ -1422,7 +1378,7 @@ language in T2A and UTF-8 encodings.")
               "texlive-hyphen-catalan" "ca"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ca.tex")
               (base32
-               "0cisx76jpw8kpd3an37m9h8ppiysnizgfzl48y9d9n3fvx8jyykb")))
+               "10zzlfz5v8d9csg85ibpp2vfvmpqa56vbl85qy5gws099vygpayg")))
     (synopsis "Hyphenation patterns for Catalan")
     (description "The package provides hyphenation patterns for Catalan in
 T1/EC and UTF-8 encodings.")
@@ -1434,7 +1390,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-chinese" "zh-latn-pinyin"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-zh-latn-pinyin.tex")
               (base32
-               "07gbrn5fcl5d3hyg1zpai3zp1ggl73cmvpalwvh7ah313f57gjkk")))
+               "1j68mry2zy91m1kbzwhin5q2jajf6xh48npdds8wvp1sqmzih2a3")))
     (synopsis "Hyphenation patterns for unaccented Chinese pinyin")
     (description "The package provides hyphenation patterns for unaccented
 Chinese pinyin T1/EC and UTF-8 encodings.")
@@ -1446,7 +1402,7 @@ Chinese pinyin T1/EC and UTF-8 encodings.")
               "texlive-hyphen-churchslavonic" "cu"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-cu.tex")
               (base32
-               "0xkqlz3ixyl4fxsnzrbxqrb82p0n67rhgpddbiyv3qwfnbr2b5a4")))
+               "0fhbwaapq2213msbhgr0d1lw06ihmrqirxj092mn73d8ynl13qlh")))
     (synopsis "Hyphenation patterns for Church Slavonic")
     (description "The package provides hyphenation patterns for Church
 Slavonic in UTF-8 encoding.")
@@ -1459,7 +1415,7 @@ Slavonic in UTF-8 encoding.")
               (list "/tex/generic/hyph-utf8/patterns/tex-8bit/copthyph.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-cop.tex")
               (base32
-               "07i03jpdfy4ip7zbg4gnk4hk8zwj8rlni9dgrb1p8mfw2w19d80c")))
+               "1jlxxvyfa2aljizaa3qlcxyhqsrb4dawv3q3fbyp2lxz6ag9fy6m")))
     (synopsis "Hyphenation patterns for Coptic")
     (description "The package provides hyphenation patterns for Coptic in
 UTF-8 encoding as well as in ASCII-based encoding for 8-bit engines.")
@@ -1472,7 +1428,7 @@ UTF-8 encoding as well as in ASCII-based encoding for 8-bit engines.")
               "texlive-hyphen-croatian" "hr"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-hr.tex")
               (base32
-               "129nz2nqilyq2477n2clx20xfbxh1qxm69zg4n2f6c4d4a8711nc")))
+               "12n9r2winai15jc622sqdwclgcs1s68r6vcf7ic8vvq0x9qhwc5v")))
     (synopsis "Hyphenation patterns for Croatian")
     (description "The package provides hyphenation patterns for Croatian in
 T1/EC and UTF-8 encodings.")
@@ -1484,7 +1440,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-czech" "cs"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-cs.tex")
               (base32
-               "1k5516gbfp1d5p97j247byag9sdgds5zwc11bwxfk58i6zq1v0m6")))
+               "1q37s6p8yfyi3rp1azbz421lg4lr4aiki8m631i4x9rmps89m8iq")))
     (synopsis "Hyphenation patterns for Czech")
     (description "The package provides hyphenation patterns for Czech in T1/EC
 and UTF-8 encodings.")
@@ -1496,7 +1452,7 @@ and UTF-8 encodings.")
               "texlive-hyphen-danish" "da"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-da.tex")
               (base32
-               "0zxzs1b1723mav76i0wiyq4w82x8715cykvwa2bc60ldc2amv0vs")))
+               "1vj8nip64rzcrcg3skm4vqad1ggqwgan74znrdns610wjcm1z9qd")))
     (synopsis "Hyphenation patterns for Danish")
     (description "The package provides hyphenation patterns for Danish in
 T1/EC and UTF-8 encodings.")
@@ -1509,7 +1465,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-dutch" "nl"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-nl.tex")
               (base32
-               "0cq46cmgjc4y2x0xs9b0a5zca3jmszv4rkzmrhgjb5z2nm3xkrpi")))
+               "1bg9g790ksq5cn8qihai6pacmkp9vpf35h4771z361nvwa40l8yk")))
     (synopsis "Hyphenation patterns for Dutch")
     (description "The package provides hyphenation patterns for Dutch in T1/EC
 and UTF-8 encodings.")
@@ -1522,7 +1478,7 @@ and UTF-8 encodings.")
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-en-gb.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-en-us.tex")
               (base32
-               "08hyih8hn2w2q12gc4zygz0ckbz00mkzzn9898z2bicky02zg3kc")))
+               "08b3jihjaamcl1pvffi0s47nwavkm66l9mrrmby3l32dfpkprrc5")))
     (synopsis "Hyphenation patterns for American and British English")
     (description "The package provides additional hyphenation patterns for
 American and British English in ASCII encoding.")
@@ -1536,7 +1492,7 @@ American and British English in ASCII encoding.")
               "texlive-hyphen-esperanto" "eo"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-eo.tex")
               (base32
-               "03xbjbzasznsyf4wd45bya6f4snfmzpdzg5zpvqj5q6gjykdg54k")))
+               "1503kzn9bk4mm4ba35cka2hm8rz0v3j5l30v5rrsd4rqgpibcgic")))
     (synopsis "Hyphenation patterns for Esperanto")
     (description "The package provides hyphenation patterns for Esperanto ISO
 Latin 3 and UTF-8 encodings.")
@@ -1548,7 +1504,7 @@ Latin 3 and UTF-8 encodings.")
               "texlive-hyphen-estonian" "et"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-et.tex")
               (base32
-               "0idl6xajkkgxqngjn19jcfd29is5rhfn59v0z8h4sv8yjv6k934m")))
+               "1rdas2450ib02rwy65i69l86nyc9h15bl07xbbwhmhxfnj8zj4v8")))
     (synopsis "Hyphenation patterns for Estonian")
     (description "The package provides hyphenation patterns for Estonian in
 T1/EC and UTF-8 encodings.")
@@ -1558,53 +1514,17 @@ T1/EC and UTF-8 encodings.")
 (define-public texlive-hyphen-ethiopic
   (let ((template (texlive-hyphen-package
                    "texlive-hyphen-ethiopic" "mul-ethi"
-                   (list "/source/generic/hyph-utf8/languages/mul-ethi/generate_patterns_mul-ethi.lua")
+                   (list "/tex/generic/hyph-utf8/patterns/tex/hyph-mul-ethi.tex")
                    (base32
-                    "1dp5qn1mhv62kj27lqc7s0ca65z9bziyavkvif9ds5ivk7aq9drw"))))
+                    "1b93fc6j4aybh0pgq23hsn1njm6asf7sfz803fbj3ai0whsxd10l"))))
     (package
       (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'build-patterns
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((tex (string-append (getcwd)
-                                           "/tex/generic/hyph-utf8/patterns/tex/")))
-                   (mkdir-p tex)
-                   (with-directory-excursion "source/generic/hyph-utf8/languages/mul-ethi/"
-                     (substitute* "generate_patterns_mul-ethi.lua"
-                       (("\"UnicodeData.txt\"")
-                        (string-append "\""
-                                       (assoc-ref inputs "UnicodeData.txt")
-                                       "\"")))
-                     (invoke "texlua" "generate_patterns_mul-ethi.lua")
-                     (rename-file "hyph-mul-ethi.tex"
-                                  (string-append tex "/hyph-mul-ethi.tex"))
-                     #t))))
-             (add-after 'install 'install-hyph-mul-ethi.tex
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target (string-append out "/share/texmf-dist/tex")))
-                   (copy-recursively "tex" target)
-                   #t)))))))
-      (native-inputs
-       `(,@(package-native-inputs template)
-         ("texlive-bin" ,texlive-bin)
-         ("UnicodeData.txt"
-          ,(origin
-             (method url-fetch)
-             (uri (string-append "http://www.unicode.org/Public/10.0.0/ucd/"
-                                 "UnicodeData.txt"))
-             (sha256
-              (base32
-               "1cfak1j753zcrbgixwgppyxhm4w8vda8vxhqymi7n5ljfi6kwhjj"))))))
       (synopsis "Hyphenation patterns for Ethiopic scripts")
       (description "The package provides hyphenation patterns for languages
 written using the Ethiopic script for Unicode engines.  They are not supposed
 to be linguistically relevant in all cases and should, for proper typography,
 be replaced by files tailored to individual languages.")
-      (license license:lppl))))
+      (license license:expat))))
 
 (define-public texlive-hyphen-finnish
   (package
@@ -1612,7 +1532,7 @@ be replaced by files tailored to individual languages.")
               "texlive-hyphen-finnish" "fi"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fi.tex")
               (base32
-               "03n6s8dwwa5vfk9bbyhcdf7p0bc0d1rrr312hpgbz8jfc9fbgd7n")))
+               "1f72b4ydb4zddvw2i004948khmwzigxkdkwfym5v1kkq0183sfpj")))
     (synopsis "Hyphenation patterns for Finnish")
     (description "The package provides hyphenation patterns for Finnish in
 T1/EC and UTF-8 encodings.")
@@ -1624,7 +1544,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-french" "fr"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fr.tex")
               (base32
-               "1q82mmwvy7fdkm42958ajb53w89qkcdwybswxlwcvqngvhpy3zf0")))
+               "0jc3kqys6cxjw8x8pzjln7z78l8s7f5rlyrkv7dzr1kiwnwilk9d")))
     (synopsis "Hyphenation patterns for French")
     (description "The package provides hyphenation patterns for French in
 T1/EC and UTF-8 encodings.")
@@ -1636,7 +1556,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-friulan" "fur"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fur.tex")
               (base32
-               "07m975p0ghzs9sjqqgxy7qdkqmgvg4rx4xp08zwm1parqsdlwd5d")))
+               "1dlnh8slpf50mryxv7zzbx08xp54zkdfs1j7y37ipwbrajvd740f")))
     (synopsis "Hyphenation patterns for Friulan")
     (description "The package provides hyphenation patterns for Friulan in
 ASCII encodings.")
@@ -1645,50 +1565,15 @@ ASCII encodings.")
 (define-public texlive-hyphen-galician
   (let ((template (texlive-hyphen-package
                    "texlive-hyphen-galician" "gl"
-                   (list "/source/generic/hyph-utf8/languages/gl/README"
-                         "/source/generic/hyph-utf8/languages/gl/glhybiox.tex"
-                         "/source/generic/hyph-utf8/languages/gl/glhyextr.tex"
-                         "/source/generic/hyph-utf8/languages/gl/glhymed.tex"
-                         "/source/generic/hyph-utf8/languages/gl/glhyquim.tex"
-                         "/source/generic/hyph-utf8/languages/gl/glhytec.tex"
-                         "/source/generic/hyph-utf8/languages/gl/glhyxeog.tex"
-                         "/source/generic/hyph-utf8/languages/gl/glpatter-utf8.tex")
+                   (list "/tex/generic/hyph-utf8/patterns/tex/hyph-gl.tex")
                    (base32
-                    "1yj1gxhkqqlyaand5gd6ij6xwffskryzlbcigdam3871a9p8x18w"))))
+                    "13zx2r3nrxdr025g2lxrph0ga6wf7cs8dxixn4fhbl6xr1cx028g"))))
     (package
       (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'build-patterns
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((tex (string-append (getcwd)
-                                           "/tex/generic/hyph-utf8/patterns/tex/")))
-                   (mkdir-p tex)
-                   (with-directory-excursion "source/generic/hyph-utf8/languages/gl/"
-                     (setenv "TEXINPUTS"
-                             (string-append (getcwd) "//:"
-                                            (assoc-ref inputs "texlive-mkpattern") "//"))
-                     (invoke "tex" "-ini" "-8bit" "glpatter-utf8.tex")
-                     (rename-file "hyph-gl.tex"
-                                  (string-append tex "/hyph-gl.tex"))
-                     #t))))
-             (add-after 'install 'install-hyph-gl.tex
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target (string-append out "/share/texmf-dist/tex")))
-                   (copy-recursively "tex" target)
-                   #t)))))))
-      (native-inputs
-       `(,@(package-native-inputs template)
-         ("texlive-bin" ,texlive-bin)
-         ("texlive-mkpattern" ,texlive-mkpattern)))
       (synopsis "Hyphenation patterns for Galician")
       (description "The package provides hyphenation patterns for Galician in
 T1/EC and UTF-8 encodings.")
-      ;; glhyextr.tex is the only file in the public domain.
-      (license (list license:lppl1.3 license:public-domain)))))
+      (license license:lppl1.3))))
 
 (define-public texlive-hyphen-georgian
   (package
@@ -1696,7 +1581,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-georgian" "ka"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ka.tex")
               (base32
-               "01zhn6mflpiqw4lyi8dx8syiz5mky9jrxm87cgw31hanis5cml4l")))
+               "0l0hk7ka04fr8x11nnw95x151cxyycy0fph772m3a3p8qk4x9wp7")))
     (synopsis "Hyphenation patterns for Georgian")
     (description "The package provides hyphenation patterns for Georgian in
 T8M, T8K, and UTF-8 encodings.")
@@ -1709,12 +1594,12 @@ T8M, T8K, and UTF-8 encodings.")
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-de-1901.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-de-1996.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-de-ch-1901.tex"
-                    "/tex/generic/hyphen/dehyphn.tex"
-                    "/tex/generic/hyphen/dehypht.tex"
-                    "/tex/generic/hyphen/dehyphtex.tex"
-                    "/tex/generic/hyphen/ghyphen.README")
+                    "/tex/generic/dehyph/dehyphn.tex"
+                    "/tex/generic/dehyph/dehypht.tex"
+                    "/tex/generic/dehyph/dehyphtex.tex"
+                    "/tex/generic/dehyph/README")
               (base32
-               "1g0vhpvl2l69rn2lx7lkw0inrjbcxkj2sjgwd2fq7hdi4yb2ms76")))
+               "0wp5by5kkf4ac6li5mbppqzw11500wa7f22p5vpz3m1kwd15zavw")))
     (synopsis "Hyphenation patterns for German")
     (description "This package provides hyphenation patterns for German in
 T1/EC and UTF-8 encodings, for traditional and reformed spelling, including
@@ -1733,7 +1618,7 @@ Swiss German.")
                     "/tex/generic/hyphen/grmhyph5.tex"
                     "/tex/generic/hyphen/grphyph5.tex")
               (base32
-               "04626jhlrv2flgdygm7sfv6xpqhfwiavi16gy2ac04iliyk4rypg")))
+               "1qyr6m1nh6d4wj68616cfxv4wjpiy1w2rlldxlx2ajzba381w3hf")))
     (synopsis "Hyphenation patterns for Greek")
     (description "This package provides hyphenation patterns for Modern Greek
 in monotonic and polytonic spelling in LGR and UTF-8 encodings.")
@@ -1747,7 +1632,7 @@ in monotonic and polytonic spelling in LGR and UTF-8 encodings.")
                     "/doc/generic/hyph-utf8/hu/"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-hu.tex")
               (base32
-               "0c81w2569cqsi4j56azwz0lfx16541zhiqgmn3m4iwh7mpx3rji8")))
+               "1j1b8kksg9r8nmjyjvvz8fr3hgcrjj6jlybf9p06nwrrwm2r8j8f")))
     (synopsis "Hyphenation patterns for Hungarian")
     (description "This package provides hyphenation patterns for Hungarian in
 T1/EC and UTF-8 encodings.")
@@ -1760,7 +1645,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-icelandic" "is"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-is.tex")
               (base32
-               "1ah1f82lgfhqgid4ngsfiypybx10v8gwxnb12396vfsj3bq6j0ba")))
+               "1m9xj41csj3ldym09d82zjbd3345sg2z10d8pxpvhgibf97mb66h")))
     (synopsis "Hyphenation patterns for Icelandic")
     (description "This package provides hyphenation patterns for Icelandic in
 T1/EC and UTF-8 encodings.")
@@ -1783,7 +1668,7 @@ T1/EC and UTF-8 encodings.")
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-ta.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-te.tex")
               (base32
-               "1v8zc3wdbkhzjrflndmz4gdj11syz8vrcg0vwvm5bwhkx23g91lv")))
+               "02d2kcd3lpk95fykjwhzw9s2a1s2w1skz8h2mmszrz979d1xzhpm")))
     (synopsis "Indic hyphenation patterns")
     (description "This package provides hyphenation patterns for Assamese,
 Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Oriya, Panjabi, Tamil
@@ -1796,7 +1681,7 @@ and Telugu for Unicode engines.")
               "texlive-hyphen-indonesian" "id"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-id.tex")
               (base32
-               "0mf0hr9c952kb2hmzid7fqg5whshwpribbyndb3ba092wh02abh5")))
+               "1r62w02rf0i4z0jgij54d16qjbj0zyfwm9dwdkqka76jrivij83q")))
     (synopsis "Indonesian hyphenation patterns")
     (description "This package provides hyphenation patterns for
 Indonesian (Bahasa Indonesia) in ASCII encoding.  They are probably also
@@ -1809,7 +1694,7 @@ usable for Malay (Bahasa Melayu).")
               "texlive-hyphen-interlingua" "ia"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ia.tex")
               (base32
-               "1aihgma3rix4jkc1z5k1lh6hlfrncn66yj0givd3j6xjqflafr2g")))
+               "0a9na20vjnzhgjbicaxay0jk4rm5zg1rjyiswr377mjhd9mx5cg3")))
     (synopsis "Interlingua hyphenation patterns")
     (description "This package provides hyphenation patterns for Interlingua
 in ASCII encoding.")
@@ -1821,7 +1706,7 @@ in ASCII encoding.")
               "texlive-hyphen-irish" "ga"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ga.tex")
               (base32
-               "02k1fykgj3xamczjq16i9fsjjsh78pp5ypmh93p64izk2vymfwk0")))
+               "1h1l9jzkpsb91nyhz6s6c9jfrbz8jx5ip8vyq3dkz0rl6g960i6b")))
     (synopsis "Irish hyphenation patterns")
     (description "This package provides hyphenation patterns for
 Irish (Gaeilge) in T1/EC and UTF-8 encodings.")
@@ -1834,7 +1719,7 @@ Irish (Gaeilge) in T1/EC and UTF-8 encodings.")
               "texlive-hyphen-italian" "it"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-it.tex")
               (base32
-               "1a65q3hjn2p212cgv6p7wa0wcn34qnxcz2pl3v3ip0xmb16qqsk5")))
+               "03c7jiqslfxvl3gbdx79hggbvrfi2l4z2bnwxc0na8f8lkp1m787")))
     (synopsis "Italian hyphenation patterns")
     (description "This package provides hyphenation patterns for Italian in
 ASCII encoding.  Compliant with the Recommendation UNI 6461 on hyphenation
@@ -1848,7 +1733,7 @@ UNI).")
               "texlive-hyphen-kurmanji" "kmr"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-kmr.tex")
               (base32
-               "1145ykfd0b0hgklindlxdgkqmsnj3cai3cwgllz411yqmrhjc6y9")))
+               "01ylbsi5wymrdrxr9b28nmjmcj72mdhqr657lwsb6m9aj33c9ql6")))
     (synopsis "Kurmanji hyphenation patterns")
     (description "This package provides hyphenation patterns for
 Kurmanji (Northern Kurdish) as spoken in Turkey and by the Kurdish diaspora in
@@ -1863,7 +1748,7 @@ Europe, in T1/EC and UTF-8 encodings.")
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-liturgic.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-la.tex")
               (base32
-               "1d8d6b47r4r000gqgzyl0sy9is0y0dg41jp8fw4gqq8qmcgdxgsg")))
+               "0rxg8a4s5cpj8vlkz5a74a036axda5jqgvr3f9aj2cc2x9f2f3w9")))
     (synopsis "Liturgical Latin hyphenation patterns")
     (description "This package provides hyphenation patterns for Latin in
 T1/EC and UTF-8 encodings, mainly in modern spelling (u when u is needed and v
@@ -1884,7 +1769,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-latvian" "lv"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-lv.tex")
               (base32
-               "1xbh5s6nwfjbv7g4kmcpjkm02a6s767p7jn9qjcnz5ip0ndl5g66")))
+               "00jf8xma4ldz0zpqwma97k9q3j0mqx7qdj6b7baph3n5xgc24aaw")))
     (synopsis "Latvian hyphenation patterns")
     (description "This package provides hyphenation patterns for Latvian in
 L7X and UTF-8 encodings.")
@@ -1897,7 +1782,7 @@ L7X and UTF-8 encodings.")
               "texlive-hyphen-lithuanian" "lt"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-lt.tex")
               (base32
-               "0v9spw0qkygkihj5app2immzqqr98w81pz460bcgvj1ah35jdfsl")))
+               "1kfq7j2ajg6nj952s1ygd520sj9z9kl0bqvd291a36ni2b1frzgd")))
     (synopsis "Lithuanian hyphenation patterns")
     (description "This package provides hyphenation patterns for Lithuanian in
 L7X and UTF-8 encodings.")
@@ -1912,7 +1797,7 @@ L7X and UTF-8 encodings.")
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl-x-lmc.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl.tex")
               (base32
-               "0lqq3jgwgnclb1cn3x99xmk90xra9q51b00ypwy5crssmy023hqc")))
+               "1y1b91ihrdl9bad3rxlsfjpd9wmyd5zzgci3qv9w8qqk33jxhwya")))
     (synopsis "Mongolian hyphenation patterns in Cyrillic script")
     (description "This package provides hyphenation patterns for Mongolian in
 T2A, LMC and UTF-8 encodings.")
@@ -1927,7 +1812,7 @@ T2A, LMC and UTF-8 encodings.")
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-nn.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-no.tex")
               (base32
-               "1fxnf671yz0p3lmdkspna7fjh96br1jy6yf7v17yh4fxwry3s4yz")))
+               "08gbwj64p4fckm199k52yp5lx65h9f4wwdkvl4pv4aa7k370jq9y")))
     (synopsis "Norwegian Bokmal and Nynorsk hyphenation patterns")
     (description "This package provides hyphenation patterns for Norwegian
 Bokmal and Nynorsk in T1/EC and UTF-8 encodings.")
@@ -1941,7 +1826,7 @@ Bokmal and Nynorsk in T1/EC and UTF-8 encodings.")
               "texlive-hyphen-occitan" "oc"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-oc.tex")
               (base32
-               "1y6j6ac9ncn79p7hnp6mdwdsw9ij14zyjby5iwdhpvzzn7yyc7p8")))
+               "0vhjbq2nr58vhqwwky3cwx4dqiwjmmfwp81rb65mfpf0m8yypdfg")))
     (synopsis "Occitan hyphenation patterns")
     (description "This package provides hyphenation patterns for Occitan in
 T1/EC and UTF-8 encodings.  They are supposed to be valid for all the Occitan
@@ -1950,13 +1835,26 @@ It ranges from the Val d'Aran within Catalunya, to the South Western Italian
 Alps encompassing the southern half of the French pentagon.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-pali
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-pali" "pi"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pi.tex")
+              (base32
+               "1fak853s4ijdqgrnhwymaq1lh8jab3qfyxapdmf6qpg6bqd20kxq")))
+    (synopsis "Panjabi hyphenation patterns")
+    (description "This package provides hyphenation patterns for Panjabi in
+T1/EC encoding.")
+    ;; Can be used with either license.
+    (license (list license:expat license:lgpl3+ license:gpl3+))))
+
 (define-public texlive-hyphen-piedmontese
   (package
     (inherit (texlive-hyphen-package
               "texlive-hyphen-piedmontese" "pms"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pms.tex")
               (base32
-               "00fqzymkg374r3dzf1y82k6b18bqrf688vnjv0vkvw5a45srlb5r")))
+               "0xva3l2gwzkqw1sz64k5g5iprhdyr27w1mv8rxp8x62i5y3aqr1k")))
     (synopsis "Piedmontese hyphenation patterns")
     (description "This package provides hyphenation patterns for Piedmontese
 in ASCII encoding.  Compliant with 'Gramatica dla lengua piemonteisa' by
@@ -1969,7 +1867,7 @@ Camillo Brero.")
               "texlive-hyphen-polish" "pl"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pl.tex")
               (base32
-               "0dzq8ca96q7m5bslh51x8d30pdb86glh2gn3mmvq5ip813ckwh3s")))
+               "1c22g99isxapv4xjrmsw24hhp1xb83wbgcxyd8j24mxdnizywxzm")))
     (synopsis "Polish hyphenation patterns")
     (description "This package provides hyphenation patterns for Polish in QX
 and UTF-8 encodings.")
@@ -1982,7 +1880,7 @@ and UTF-8 encodings.")
               "texlive-hyphen-portuguese" "pt"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pt.tex")
               (base32
-               "1waxrmm33fd2qfc4kiaiblg8kwzasrvgq4j3l14z733d0hlg4rfz")))
+               "00rkjy4p7893zs940bq3s4hp7al0skgxqggj5qfax0bx8karf30b")))
     (synopsis "Portuguese hyphenation patterns")
     (description "This package provides hyphenation patterns for Portuguese in
 T1/EC and UTF-8 encodings.")
@@ -1994,7 +1892,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-romanian" "ro"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ro.tex")
               (base32
-               "12i1vryl51yhdpj163ahfyiy21rjmf4gkqgslpriirdjmyrwrs65")))
+               "1ykb5v7ip6p3n34wq8qypfyrap4gg946by5rsl6ab0k5gv6ypsbf")))
     (synopsis "Romanian hyphenation patterns")
     (description "This package provides hyphenation patterns for Romanian in
 T1/EC and UTF-8 encodings.")
@@ -2007,7 +1905,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-romansh" "rm"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-rm.tex")
               (base32
-               "06wan8i4appc1zfvc0q4cgnfv1nj0qgk02w3sg56zc11hf8sywl9")))
+               "0a1q9p6sp5n6a9w6xhwk03vmkrrmnh2md7g1k4qhnf0dc4h7dy9r")))
     (synopsis "Romansh hyphenation patterns")
     (description "This package provides hyphenation patterns for Romansh in
 ASCII encodings.  They are supposed to comply with the rules indicated by the
@@ -2020,7 +1918,7 @@ Lia Rumantscha (Romansh language society).")
               "texlive-hyphen-russian" "ru"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ru.tex")
               (base32
-               "09s4vq23x4vff08ykmf08dvcdradjzzwvyys8p2wk6jxaqp980s3")))
+               "00sy7qh5f8ryxw36fwbyd1yi2hxhv7hmk99yp7dwh73n4mxv6lpl")))
     (synopsis "Russian hyphenation patterns")
     (description "This package provides hyphenation patterns for Russian in
 T2A and UTF-8 encodings.")
@@ -2033,7 +1931,7 @@ T2A and UTF-8 encodings.")
               (list "/doc/generic/hyph-utf8/sa/hyphenmin.txt"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-sa.tex")
               (base32
-               "0grnn09l4i5yridx10yhm6dg9sbhgc2pmsp1p6hrcy7lzkqwdvs3")))
+               "0gi2qk0wf388h9n25gzhv0cdz67ph83wal8h3iz2sqnpdjsw8kpc")))
     (synopsis "Sanskrit hyphenation patterns")
     (description "This package provides hyphenation patterns for Sanskrit and
 Prakrit in longdesc transliteration, and in Devanagari, Bengali, Kannada,
@@ -2050,7 +1948,7 @@ Malayalam longdesc and Telugu scripts for Unicode engines.")
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-sh-latn.tex"
                     "/tex/generic/hyph-utf8/patterns/tex/hyph-sr-cyrl.tex")
               (base32
-               "0fhdfydyaspb8dwirlf24vn7y9dzwmhsld0mmw0fz1lmcfaj252n")))
+               "0pwc9z0m5y6acq1vqm0da9akg156jbhxzvsfp2f8bsz5b99y5z45")))
     (synopsis "Serbian hyphenation patterns")
     (description "This package provides hyphenation patterns for Serbian in
 T1/EC, T2A and UTF-8 encodings.")
@@ -2063,7 +1961,7 @@ T1/EC, T2A and UTF-8 encodings.")
               "texlive-hyphen-slovak" "sk"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sk.tex")
               (base32
-               "1cgw6fmyci3za3vsa49b6m74wqv582w0rpca7s9xva3hqm1m5qdg")))
+               "0ppp53bbclp5c8wvx748krvrp5y5053khgkjnnv966a90fvp3vgd")))
     (synopsis "Slovak hyphenation patterns")
     (description "This package provides hyphenation patterns for Slovak in
 T1/EC and UTF-8 encodings.")
@@ -2075,7 +1973,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-slovenian" "sl"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sl.tex")
               (base32
-               "1ixf2pxir9xf1gggq9k28xxglsq9bwqlghd9cl4amk5vrn5bjbds")))
+               "02n8l9yf4hqyhbpsc1n6b2mggy09z6lq4dcb8ndiwawb6h0mp7s4")))
     (synopsis "Slovenian hyphenation patterns")
     (description "This package provides hyphenation patterns for Slovenian in
 T1/EC and UTF-8 encodings.")
@@ -2091,7 +1989,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-spanish" "es"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-es.tex")
               (base32
-               "0jgs0zzyk2wwrjbx2hqdh5qggrnik9xmsxygbfhlb7gdrcrs0mbj")))
+               "1h3yg9vcq0lf7hxv0ahkqmyg269dxjs8m2mz8sgz5l1fxmvahvaj")))
     (synopsis "Hyphenation patterns for Spanish")
     (description "The package provides hyphenation patterns for Spanish in
 T1/EC and UTF-8 encodings.")
@@ -2103,7 +2001,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-swedish" "sv"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sv.tex")
               (base32
-               "12sf9f43zwyzb4cn57yry8r4zmwdc7cfdljn3qwxwrny4m3sw4w8")))
+               "1n7incy7n24pix1q2i8c3h7i78zpql5ayhskavlmy6mhd7ayncaw")))
     (synopsis "Swedish hyphenation patterns")
     (description "This package provides hyphenation patterns for Swedish in
 T1/EC and UTF-8 encodings.")
@@ -2115,7 +2013,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-thai" "th"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-th.tex")
               (base32
-               "15k1n4xdw8zzd5nrh76s53z4j95gxa4i2h1av5gx5vrjgblzzl97")))
+               "00gxcs4jfqifd5cnrjipn77m73fmpw2qms4lp216jj3kz4a7h9kf")))
     (synopsis "Thai hyphenation patterns")
     (description "This package provides hyphenation patterns for Thai in LTH
 and UTF-8 encodings.")
@@ -2124,33 +2022,11 @@ and UTF-8 encodings.")
 (define-public texlive-hyphen-turkish
   (let ((template (texlive-hyphen-package
                    "texlive-hyphen-turkish" "tr"
-                   (list "/source/generic/hyph-utf8/languages/tr/generate_patterns_tr.rb")
+                   (list "/tex/generic/hyph-utf8/patterns/tex/hyph-tr.tex")
                    (base32
-                    "0rvlhs2z2sn312lqsf44bzknid5dry7d2sl2q1whfvr0y4qj1g8f"))))
+                    "04sihjgpm31i5bi67rrfp15w3imn7hxwwk70v0vhx053ghxy72vh"))))
     (package
       (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'build-patterns
-               (lambda _
-                 (let ((target (string-append (getcwd)
-                                              "/tex/generic/hyph-utf8/patterns/tex")))
-                   (mkdir-p target)
-                   (with-directory-excursion "source/generic/hyph-utf8/languages/tr/"
-                     (substitute* "generate_patterns_tr.rb"
-                       (("\\$file = File.new.*")
-                        (string-append "$file = File.new(\"" target
-                                       "/hyph-tr.tex\",\"w\")\n")))
-                     (invoke "ruby" "generate_patterns_tr.rb"))
-                   #t)))
-             (add-after 'install 'install-hyph-tr.tex
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target (string-append out "/share/texmf-dist/tex")))
-                   (copy-recursively "tex" target)
-                   #t)))))))
       (synopsis "Hyphenation patterns for Turkish")
       (description "The package provides hyphenation patterns for Turkish in
 T1/EC and UTF-8 encodings.  The patterns for Turkish were first produced for
@@ -2163,37 +2039,15 @@ compatibility with 8-bit engines.")
 (define-public texlive-hyphen-turkmen
   (let ((template (texlive-hyphen-package
                    "texlive-hyphen-turkmen" "tk"
-                   (list "/source/generic/hyph-utf8/languages/tk/generate_patterns_tk.rb")
+                   (list "/tex/generic/hyph-utf8/patterns/tex/hyph-tk.tex")
                    (base32
-                    "1wlqx8wb0wsqhdv823brc3i8w1vf4m4bkb2vg917j5dq8p8p71aw"))))
+                    "0g5ip2lw9g47s61mv3cypswc6qm7zy9c4iqq4h19ysvds81adzkr"))))
     (package
       (inherit template)
-      (arguments
-       (substitute-keyword-arguments (package-arguments template)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'build-patterns
-               (lambda _
-                 (let ((target (string-append (getcwd)
-                                              "/tex/generic/hyph-utf8/patterns/tex")))
-                   (mkdir-p target)
-                   (with-directory-excursion "source/generic/hyph-utf8/languages/tk/"
-                     (substitute* "generate_patterns_tk.rb"
-                       (("\\$file = File.new.*")
-                        (string-append "$file = File.new(\"" target
-                                       "/hyph-tr.tex\",\"w\")\n")))
-                     (invoke "ruby" "generate_patterns_tk.rb"))
-                   #t)))
-             (add-after 'install 'install-hyph-tk.tex
-               (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (let* ((out (assoc-ref outputs "out"))
-                        (target (string-append out "/share/texmf-dist/tex")))
-                   (copy-recursively "tex" target)
-                   #t)))))))
       (synopsis "Hyphenation patterns for Turkmen")
       (description "The package provides hyphenation patterns for Turkmen in
 T1/EC and UTF-8 encodings.")
-      (license license:public-domain))))
+      (license license:expat))))
 
 (define-public texlive-hyphen-ukrainian
   (package
@@ -2201,7 +2055,7 @@ T1/EC and UTF-8 encodings.")
               "texlive-hyphen-ukrainian" "uk"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-uk.tex")
               (base32
-               "17z0gmw5svsf5zlhjkckwk4y21g7prfwj473jlqnwcsr8a941gsf")))
+               "0fbfhx1fmbshxr4ihsjaqgx251h69h7i288p8gh3w6ysgxr53p60")))
     (synopsis "Ukrainian hyphenation patterns")
     (description "This package provides hyphenation patterns for Ukrainian in
 T2A and UTF-8 encodings.")
@@ -2214,7 +2068,7 @@ T2A and UTF-8 encodings.")
               "texlive-hyphen-uppersorbian" "hsb"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-hsb.tex")
               (base32
-               "1q42s32cfbynlnzn9hpcldi77fszi5xkn1c85l8xqjmfydqbqdyi")))
+               "0x0051wph3sqmzzw6prvjy6bp7gn02rbmys1bmbc210jk3pkylfj")))
     (synopsis "Upper Sorbian hyphenation patterns")
     (description "This package provides hyphenation patterns for Upper Sorbian
 in T1/EC and UTF-8 encodings.")
@@ -2226,7 +2080,7 @@ in T1/EC and UTF-8 encodings.")
               "texlive-hyphen-welsh" "cy"
               (list "/tex/generic/hyph-utf8/patterns/tex/hyph-cy.tex")
               (base32
-               "0h8yjj5zdg0hvpb2vx9gi376536nl59hp8w286z1a13diaayg1m2")))
+               "1bpxp3jiifdw7waw2idz5j9xgi3526nkxm8mbmsspr4mlf2xyr76")))
     (synopsis "Welsh hyphenation patterns")
     (description "This package provides hyphenation patterns for Welsh in
 T1/EC and UTF-8 encodings.")
@@ -2255,7 +2109,7 @@ T1/EC and UTF-8 encodings.")
                     "/doc/generic/hyph-utf8/img/miktex-languages.png"
                     "/doc/generic/hyph-utf8/img/texlive-collection.png")
               (base32
-               "10y8svgk68sivmgzrv8gv137r7kv49cs256cq2wja9ms437pxvbj")))
+               "1bar5mc808ch20anhqrdxcwiych359qsvr7mggxpg2l2kq5xdyq0")))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
@@ -2388,7 +2242,7 @@ converters, will completely supplant the older patterns.")
               (list "/tex/generic/dehyph-exptl/"
                     "/doc/generic/dehyph-exptl/")
               (base32
-               "1w2danvvy2f52hcb4acvjks53kcanwxr9s990fap6mj279hpgmh2")
+               "1fnqc63gz8gvdyfz45bx8dxn1r1rwrypahs3bqd2vlc8ff76xp86")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-hyphen-base" ,texlive-hyphen-base)
@@ -2495,7 +2349,7 @@ UCY (Omega Unicode Cyrillic), LCY, LWN (OT2), and koi8-r.")
                     "/web2c/tcvn-t5.tcx"
                     "/web2c/viscii-t5.tcx")
               (base32
-               "0ajfp9kr330lcm2ymr3kl9zn6y2xjkrzpa0c0azc4qdm5jllawb9")
+               "191i8n3g46p53bb9dkx2ggwpzy7skgg0pbklsrpx8x4ayd86wcaf")
               #:trivial? #t))
     (home-page "https://www.tug.org/texlive/")
     (synopsis "Files related to the path searching library for TeX")
@@ -2528,18 +2382,16 @@ formats.")
                          ;; these are not:
                          "/tex/latex/base/idx.tex"
                          "/tex/latex/base/lablst.tex"
-                         "/tex/latex/base/lppl.tex"
                          "/tex/latex/base/ltnews.cls"
                          "/tex/latex/base/ltxcheck.tex"
                          "/tex/latex/base/ltxguide.cls"
                          "/tex/latex/base/minimal.cls"
                          "/tex/latex/base/sample2e.tex"
                          "/tex/latex/base/small2e.tex"
-                         "/tex/latex/base/source2e.tex"
                          "/tex/latex/base/testpage.tex"
                          "/tex/latex/base/texsys.cfg")
                    (base32
-                    "0f8d41wk1gb7i6xq1a10drwhhayc50pg9nwzjkrqnxrv0pcc08w5")
+                    "0m0gjb4hbsf2iqkkx3px4f28r2scjvsjv4zb2whkbnb44apyw1f0")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -2552,6 +2404,13 @@ formats.")
             (srfi srfi-26)))
          ((#:phases phases)
           `(modify-phases ,phases
+             ;; The literal tab in the dtx file is translated to the string
+             ;; "^^I" in the generated Lua file, which causes a syntax error.
+             (add-after 'unpack 'fix-lua-sources
+               (lambda _
+                 (substitute* "source/latex/base/ltluatex.dtx"
+                   (("	") "  "))
+                 #t))
              (replace 'build
                (lambda* (#:key inputs #:allow-other-keys)
                  ;; Find required fonts
@@ -2594,6 +2453,7 @@ formats.")
                         '("aleph aleph" "lamed aleph" "uptex uptex" "euptex euptex"
                           "eptex eptex" "ptex ptex" "pdfxmltex pdftex" "platex eptex"
                           "csplain pdftex" "mf mf-nowin" "mex pdftex" "pdfmex pdftex"
+                          "luacsplain luatex"
                           "cont-en xetex" "cont-en pdftex" "pdfcsplain xetex"
                           "pdfcsplain pdftex" "pdfcsplain luatex" "cslatex pdftex"
                           "mptopdf pdftex" "uplatex euptex" "jadetex pdftex"
@@ -2652,7 +2512,7 @@ formats.")
                   "/tex/generic/config/luatexiniconfig.tex"
                   "/web2c/texmfcnf.lua")
             (base32
-             "0cs67a8wwh4s5p5gn8l49jyccgy7glw8mfq5klgn3dfsl2fdlhk7")))))
+             "1gi87wy12r8w8fhx9ajcid382dmqzf6b9070b5nndvbbjrvhwf23")))))
       (propagated-inputs
        `(("texlive-dehyph-exptl" ,texlive-dehyph-exptl)
          ("texlive-etex" ,texlive-etex)
@@ -2697,6 +2557,7 @@ formats.")
          ("texlive-hyphen-mongolian" ,texlive-hyphen-mongolian)
          ("texlive-hyphen-norwegian" ,texlive-hyphen-norwegian)
          ("texlive-hyphen-occitan" ,texlive-hyphen-occitan)
+         ("texlive-hyphen-pali" ,texlive-hyphen-pali)
          ("texlive-hyphen-piedmontese" ,texlive-hyphen-piedmontese)
          ("texlive-hyphen-polish" ,texlive-hyphen-polish)
          ("texlive-hyphen-portuguese" ,texlive-hyphen-portuguese)
@@ -2738,7 +2599,7 @@ contain.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0swkbxv8vg0yizadfnvrwjb4cj0pn34v9wm6v7wqq903fdav7k7q"))))
+                "1h78zw0vhldx478zs4v86ajg7vpkysd1kg3npc480qqls3q6ba40"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/filecontents"))
     (home-page "https://www.ctan.org/pkg/filecontents")
@@ -2803,19 +2664,13 @@ users, via its Plain TeX version.)")
 
 (define-public texlive-latex-fancyvrb
   (package
-    (name "texlive-latex-fancyvrb")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "fancyvrb"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "03l7140y031rr14h02i4z9zqsfvrbn7wzwxbjsrjcgrk6sdr71wv"))))
-    (build-system texlive-build-system)
-    (arguments
-     '(#:tex-directory "latex/fancyvrb"
-       #:tex-format "latex"))
+    (inherit (simple-texlive-package
+              "texlive-latex-fancyvrb"
+              (list "/doc/latex/fancyvrb/README"
+                    "/tex/latex/fancyvrb/")
+              (base32
+               "1dwkcradz9nwpjwmv1sjzn77lvw25ypr0rrgmf1kd8pd2mw7dxcn")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/fancyvrb")
     (synopsis "Sophisticated verbatim text")
     (description
@@ -2968,7 +2823,7 @@ pdf and HTML backends.  The package is distributed with the @code{backref} and
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1m9fg8ddhpsl1212igr9a9fmj012lv780aghjn6fpidg2wqrffmn"))))
+                "0pi2d6gsddcs9wprdbar46s91kdc5fxl1m79g7xrbccsx8s9xbml"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/oberdiek"
@@ -3001,7 +2856,7 @@ arrows; record information about document class(es) used; and many more.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0vj7h1fgf1396h4qjdc2m07y08i54gbbfrxl8y327cn3r1n093s6"))))
+                "1wqvn4z0s92h5iqzrvxw7hinzp95avjk9v8lnqbqr4kz6nv4xb9l"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/tools"
@@ -3070,7 +2925,7 @@ Live distribution.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0p3fsxap1ilwjz356aq4s5ygwvdscis8bh93g8klf8mhrd8cr2jy"))))
+                "0s77z2cbv841l45qrpf0s8qhzfa4wi689lg7zkw88qg18nzvy0ly"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3kernel"))
@@ -3094,7 +2949,7 @@ that the LaTeX3 conventions can be used with regular LaTeX 2e packages.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0pyx0hffiyss363vv7fkrcdiaf7p099xnq0mngzqc7v8v9q849hs"))))
+                "1cv4fk9pabh7mkxhfsdmh4k8xpmzg1psgcsvd11c869m7n3a629h"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/l3packages"
@@ -3149,7 +3004,7 @@ programming tools and kernel sup­port.  Packages provided in this release are:
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1p0mkn6iywl0k4m9cx3hnhylpi499inisff3f72pcf349baqsnvq"))))
+                "1223cw029n6zff7pqpwbsq1x8v3w63smczkmnybqxkw5h2za8gbz"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/fontspec"
@@ -3332,7 +3187,7 @@ loading fonts by their proper names instead of file names.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0arvk7gn32mshnfdad5qkgf3i1arxq77k3vq7wnpm4nwnrzclxal"))))
+                "0qgk2332dacsxn1z95qzp35gbs7wrzl1ipjdhnmk1r897msm4sf5"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/amsmath"))
     (home-page "https://www.ctan.org/pkg/amsmath")
@@ -3385,7 +3240,7 @@ distribution.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0yhlfiz3fjc8jd46f1zrjj4jig48l8rrzh8cmd8ammml8z9a01z6"))))
+                "1rwqq841i1rxywymzwkw0cw2yhgvxwjx5mgygfasvypwrwll6f6s"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "generic/babel"
@@ -3442,7 +3297,7 @@ for Canadian and USA text.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0h47s67gnhdaxfgbf8pirp5vw4z6rrhxl8zav803yjxka0096i3y"))))
+                "129f9w41cb6yyrr6kpv3zz9ml6334hyq1wcz7j9jn47p0hlxqfk8"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "generic/babel-german"))
     (home-page "https://www.ctan.org/pkg/babel-german")
@@ -3656,7 +3511,7 @@ standard LaTeX packages."
                                          (number->string %texlive-revision)))
                (sha256
                 (base32
-                 "06mwpy5i218g5k3sf4gba0fmxgas82hkzx9fhwn67z5ik37d8apq"))))))
+                 "0faqknqxs80qp9ywk0by5k85s0yalg97c4lja4q56lsyblrr4j7i"))))))
         (home-page (package-home-page texlive-bin))
         (synopsis "Union of TeX Live packages")
         (description "This package provides a subset of the TeX Live
@@ -4131,10 +3986,10 @@ to something that's not a float.")
   (package
     (inherit (simple-texlive-package
               "texlive-doi"
-              (list "/doc/latex/doi/README"
+              (list "/doc/latex/doi/README.md"
                     "/tex/latex/doi/")
               (base32
-               "17lnnhfmb8g4nh4fnyc9616h8xg3vjrzmlvfmlfqwwlfpma9xnnw")
+               "18z9922lqb3hliqn95h883fndqs4lgyi5yqbnq2932ya0imc3j7h")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/doi")
     (synopsis "Create correct hyperlinks for DOI numbers")
@@ -4158,7 +4013,7 @@ hyperlink to the target of the DOI.")
               (list "/doc/latex/etoolbox/"
                     "/tex/latex/etoolbox/")
               (base32
-               "1qg4x5r4ibinl6zy5lq70lv4zcrjsn54n6hwv31k5kl7mwv0mvr3")
+               "1cc1vw1ach55g4ff4x30by8k1mg01w199ccxvn72f5khlnnxial0")
               #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/etoolbox")
     (synopsis "e-TeX tools for LaTeX")
@@ -4260,7 +4115,7 @@ course of the framed/shaded matter.  There is also a command
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0sikazkg0dpkcpzlbqw8qzxr81paf2f443vsrh14jnw7s4gswvc5"))))
+                "1br4kv9y17cvngp83ykpvy7gy3jqfan5plk7sggcgbdfhndi5dsr"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/g-brief"
@@ -4333,7 +4188,7 @@ BibLaTeX, and is considered experimental.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0yw6bjfgsli3s1dldsgb7mkr7lnk329cgdjbgs8z2xn59pmmdsn4"))))
+                "0a8f38c2ds1flxcr0apdpyaaz3k6fyalz6dkbrmcv9srjc40mh3n"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/geometry"))
     (propagated-inputs
@@ -4384,7 +4239,7 @@ array environments; verbatim handling; and syntax diagrams.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "03ma58z3ypsbp7zgkzb1ylpn2ygr27cxzkf042ns0rif4g8s491f"))))
+                "0na7v4hsyx5s67cpjj2dbnq8j67k8lln6b19hmj631gfs27slss1"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/polyglossia"))
     (home-page "https://www.ctan.org/pkg/polyglossia")
@@ -4430,7 +4285,7 @@ situations where longtable has problems.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "06cf821y1j7jdg93pb41ayigrfwgn0y49d7w1025zlijjxi6bvjp"))))
+                "16jy02m089m7n6v9vbfi4xjgngc1fnvsmmppk8axfwzbhdky3c9c"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -4604,7 +4459,7 @@ copy-and-paste functions work properly.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "190pmq8la2rq07xry8bn8z8yywzxv6fqyqaj7yjfj5rgw6x0mas8"))))
+                "16vd99p01a0y30xr5yf1z2j5da9x8gy21vb30wk08jh31zffbaqj"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/colortbl"))
     (home-page "https://www.ctan.org/pkg/colortbl")
@@ -4663,7 +4518,7 @@ floats, center, flushleft, and flushright, lists, and pages.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1xsnzx7vgdfh9zh2m7bjz6bgdpxsgb1kyc19p50vhs34x5nbgsnr"))))
+                "0hrwspqkqfahxyzzsnjyrxlgxj06zw1f3636gx76pvl4xhvdj1cj"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -4741,7 +4596,7 @@ footnotes with symbols rather than numbers.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1nsn9wp3wl12b36c0sqrim33lf33cr5wky0h4ncnw8lvqgm7h8wf"))))
+                "1fbrhqj22vzakn30j71fc41l8nliqbv1dmxm0zlwi2qjjbq6fwav"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/listings"
@@ -4875,7 +4730,7 @@ fonts are available in (traced) Adobe Type 1 format, as part of the
 set, Latin Modern, is not actually a direct development of the EC set, and
 differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
-texlive-2018.2/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
+texlive-2019.3/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
 
 ;; FIXME: the fonts should be built from source, but running "tex aefonts.tex"
 ;; fails with obscure TeX-typical error messages.
@@ -5096,7 +4951,7 @@ one of the packages @code{calrsfs} and @code{mathrsfs}.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1xvmms28mvvfpks9x7lfya2xhh5k8jy3qnlih1mzcnf156xnb89z"))))
+                "0y2y08kr3w6asm9lblj9yywqmhaal36fq71zzcbfsc7cvwf641q7"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/eso-pic"))
     (home-page "https://www.ctan.org/pkg/eso-pic")
@@ -5158,7 +5013,7 @@ splines, and filled circles and ellipses.  The package uses @code{tpic}
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0q24b1bkdi9l6bw787bpggww83jh2vj8955aw2m5yccqbx4vgr5r"))))
+                "1vm9xp67hzif0pqab4r3ialf0cyhi0fa4p8kxgp1ymcf85pqip14"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5190,7 +5045,7 @@ in the form @code{key=value} are available, for example:
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0qlxy47f1f8plgch3jqfsnrdgpyz20sz46yp33i2jwvf9hvfczf0"))))
+                "07vbcp6avdwldr870cwf65av2s9lfyzcpp8gpld53yw6lcxgaipj"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/multirow"))
     (home-page "https://www.ctan.org/pkg/multirow")
@@ -5215,7 +5070,7 @@ entry at the \"natural\" width of its text.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1rpx4ibjncj5416rg19v0xjbj3z9avhfdfn2gzp8r8sz9vz25c6g"))))
+                "1pr6ym3ad7x14ng7gmhsmywh3685d2cnm5qgyrqbigng2r6fcc1k"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5251,7 +5106,7 @@ positions; a grid for orientation is available.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "14r6h9hqb0qgccxj5l1208694fx8sb8avmgzps36lsbbpszl7i7m"))))
+                "0j1fhm1m9k6rz80lmch3x44g20y9nm4abaaf8czb0q8hzwlx5aq5"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5602,7 +5457,7 @@ OT2 encoded fonts, CM bright shaped fonts and Concrete shaped fonts.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0sf18pc6chgy26p9bxxn44xcqhzjrfb53jxjr2y7l3jb6xllhblq"))))
+                "1xyd57c8z1xi0kbqpbad61flcazz68i9ssxrag0gjvci3irxi8xh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -5631,7 +5486,7 @@ than the bitmaps Metafont creates.")
               (uri (texlive-ref "latex" "acmart"))
               (sha256
                (base32
-                "0n62cs8dhcbn29y9ij1nnyigzr76yhk36kyahhqkkmvbafbys9s7"))
+                "18rl67p2zhngskisnhv78mksv8q8q658l6igkswzswldixmkpphq"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system texlive-build-system)
     (arguments '(#:tex-directory "latex/acmart"))
@@ -5869,7 +5724,7 @@ e-TeX.")
            (file-name (string-append name "-map-" version "-checkout"))
            (sha256
             (base32
-             "18jvcm0vwpg6wwzijvnb92xx78la45kkh71k6l44425krp2vnwm0"))))))
+             "03rfif2631pgd8g1ar4xblcdh078kky7fvw3kfsj5a47rxxgicp2"))))))
     (home-page "https://www.ctan.org/pkg/pdftex")
     (synopsis "TeX extension for direct creation of PDF")
     (description
@@ -5880,7 +5735,7 @@ directly generate PDF documents instead of DVI.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "20180414")
+   (version "20190410")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -5957,7 +5812,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "20180414")
+   (version "20190410")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
@@ -6364,7 +6219,7 @@ required: automatic sectioning and pagination, spell checking and so forth.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0lhb2h5hxjq9alpk4r3gvg21pwyifs4ah6hqzp92k55mkp1xv73j"))))
+                "0s86v2b6b1vky1svmmn8pn0l2gz3v280mvjbr2d9l2sjyarlgz9w"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -6404,7 +6259,7 @@ specification.  It replaces the now obsolete @code{movie15} package.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0zp00jg058djx8xp0xqwas92y3j97clkyd8z6pqr890yqy06myqb"))))
+                "1yhp51w8yr10c10pc9196q7hlw80brzqinnqbjw81d0sf2p0llc5"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -6605,7 +6460,7 @@ striking out (line through words) and crossing out (/// over words).")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "1dq8p10pz8wn0vx412m7d7d5gj1syxly3yqdqvf7lv2xl8zndn5h"))))
+         "1dscrgwyr71vgx35mzb316xl669arzagfgq50fdv3nxga63959b3"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("texlive-latex-pgf-generic"
@@ -6619,7 +6474,7 @@ striking out (line through words) and crossing out (/// over words).")
            (file-name (string-append "texlive-latex-pgf-generic" version "-checkout"))
            (sha256
             (base32
-             "0xkxw26sjzr5npjpzpr28yygwdbhzpdd0hsk80gjpidhcxmz393i"))))))
+             "0hk5x2j15n4pps279cmkbjl1dvhasq3mbhna5xdvp2qgh635ahks"))))))
     (propagated-inputs
      `(("texlive-latex-xcolor" ,texlive-latex-xcolor)))
     (arguments
@@ -6663,7 +6518,7 @@ produce either PostScript or PDF output.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0nqwf0sr4mf3v9gqa6apv6ml2xhcdwax0vgyf12a672g7rpdyvgm"))))
+                "1vz9zg7s5w52xr323zgglzprfrvba2zvyzf6b8vrdf4wdghlpv4z"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -6723,7 +6578,7 @@ typearea (which are the main parts of the bundle).")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0hs28fc0v2l92ad9las9b8xcckyrdrwmyhcx1yzmbr6s7s6nvsx8"))))
+                "1x4wnpca97rnbvvg6wjmbkxxvnfva274q9ahzx746b435q93z3i1"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -6912,7 +6767,7 @@ AMS-LaTeX, AMS-TeX, and plain TeX).  The distribution includes Michael Barr's
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0hnbs0s1znbn32hfcsyijl39z81sdb00jf092a4blqz421qs2mbv"))))
+         "1wijqq605cbhn2bdaryby3xpkwmnk9ixcrjn5zwlfrxbgfblzfmz"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -6971,7 +6826,7 @@ Support for use with LaTeX is available in @code{freenfss}, part of
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "0rlx4qqijms1n64gjx475kvip8l322fh7v17zkmwp1l1g0w3vlyz"))))
+                "0d7d74giz5knvj4rj6mbzd6c05mwg9jrxab86jxdqbc3jy7cl4kz"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -6997,7 +6852,7 @@ of support information.")
               (list "/doc/latex/beamer/"
                     "/tex/latex/beamer/")
               (base32
-               "00z1a32wkz1ffif7dc8h3ar2fn2hlvfnljgim2szjam2k14l82x3")
+               "1fqzbkmw2kfxihab8j4dadc3v68xap6v2ghpp2064fna47xlwy1c")
               #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-hyperref" ,texlive-latex-hyperref)
@@ -7056,7 +6911,7 @@ the file to which it applies.")
        (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
-         "0ikxg8yzq78hy5b9x13d4nah46d0yvmwlqmdri06pygbx116dcac"))))
+         "18294h0cr05fs424m3x6aq24z5hf5zmiflalkj4kvpmsyyqqsj74"))))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/pdfx"
@@ -7090,7 +6945,7 @@ the file to which it applies.")
            (file-name (string-append "texlive-tex-latex-pdfx-" version "-checkout"))
            (sha256
             (base32
-             "14j1zsvqc59ims3sk34v6km8db6cimks28y5fcxcr5mi2ykvj4vf"))))))
+             "171ffvpkj2fab4ljcxv3l6l5c8ga8zavdhmhfq07id8zyyr619ip"))))))
     (home-page "https://www.ctan.org/pkg/pdfx")
     (synopsis "PDF/X and PDF/A support for pdfTeX, LuaTeX and XeTeX")
     (description
@@ -7154,7 +7009,7 @@ change.")
                          "/tex/generic/pstricks/"
                          "/tex/latex/pstricks/")
                    (base32
-                    "04566354c77claxl1sznc490cda0m5gaa5ck6ms4q7mm44rj3rzk")
+                    "0sdxdd0qi4sccw9il7d4s7jivs24pq99cdzfnrf0gkqjb1y8s7cl")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -7178,12 +7033,11 @@ or shading the cells of tables.")
   (let ((template (simple-texlive-package
                    "texlive-pst-text"
                    (list "/doc/generic/pst-text/"
-                         "/source/generic/pst-text/Makefile"
                          "/dvips/pst-text/pst-text.pro"
                          "/tex/generic/pst-text/"
                          "/tex/latex/pst-text/")
                    (base32
-                    "0s2bbkdfy0shqrrkjflrn0x0pnvxzbdc38pjbdfw46wnmnxrnasm")
+                    "146fpzd1xlqi94q5r48z8ni8qww713yh6nwkbr9pw27mjrqdadb9")
                    #:trivial? #t)))
     (package
       (inherit template)
@@ -7248,7 +7102,7 @@ LuaTeX (respectively) is not the engine in use.")
                    (list "/doc/latex/tools/"
                          "/source/latex/tools/")
                    (base32
-                    "0v3zqcpy0w5bzy1xdcv1wnxbmxrn1j6x03h3y2af7qmjggph2a09"))))
+                    "1ivhij7171wvrgcjn4wah84wxwpd21d0chh3zxab4pj067c8d0mh"))))
     (package
       (inherit template)
       (arguments
@@ -7391,7 +7245,7 @@ The behaviour in standalone mode may adjusted using a configuration file
              (list "/source/latex/siunitx/siunitx.dtx"
                    "/doc/latex/siunitx/README.md")
              (base32
-              "0dmljnxgv2bwl3mi74iil41q03swvrm1b0ziwxlhc4m9lx31b1q1")))
+              "11kf6znkgw7y5qmw75qk6px6pqf57bwr53q0673zaiyq20lif96c")))
     (build-system texlive-build-system)
     (arguments
      '(#:tex-directory "latex/siunitx"

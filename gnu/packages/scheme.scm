@@ -503,7 +503,7 @@ implementation techniques and as an expository tool.")
        ("glu" ,glu)
        ("gmp" ,gmp)
        ("gtk+" ,gtk+)                   ; propagates gdk-pixbuf+svg
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("mesa" ,mesa)

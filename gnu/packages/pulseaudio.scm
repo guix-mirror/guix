@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,6 +31,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
@@ -43,12 +45,14 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages web)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -108,10 +112,28 @@ for reading and writing new sound file formats.")
                "1ha46i0nbibq0pl0pjwcqiyny4hj8lp1bnl4dpxm64zjw9lb2zha"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("automake" ,automake))) ;For up to date 'config.guess' and 'config.sub'.
     (propagated-inputs
      `(("libsndfile" ,libsndfile)
        ("fftw" ,fftw)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configure
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             ;; Replace outdated config.sub and config.guess:
+             (with-directory-excursion "Cfg"
+               (for-each (lambda (file)
+                           (install-file (string-append
+                                          (assoc-ref
+                                           (or native-inputs inputs) "automake")
+                                          "/share/automake-"
+                                          ,(version-major+minor
+                                            (package-version automake))
+                                          "/" file) "."))
+                         '("config.sub" "config.guess")))
+             #t)))))
     (home-page "http://www.mega-nerd.com/SRC/index.html")
     (synopsis "Audio sample rate conversion library")
     (description
@@ -198,9 +220,11 @@ rates.")
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
      `(("check" ,check)
+       ("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
-       ("intltool" ,intltool)
        ("m4" ,m4)
+       ("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.

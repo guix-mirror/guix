@@ -32,6 +32,7 @@
   #:use-module ((gnu build vm) #:select (qemu-command))
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bootloaders)
+  #:use-module (gnu packages commencement)       ;for 'guile-final'
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ocr)
@@ -230,7 +231,8 @@ packages defined in installation-os."
                        ;; Since the installation system has no network access,
                        ;; we cheat a little bit by adding TARGET to its GC
                        ;; roots.  This way, we know 'guix system init' will
-                       ;; succeed.
+                       ;; succeed.  Also add guile-final, which is pulled in
+                       ;; through provenance.drv and may not always be present.
                        (image
                         (system-image
                          (image
@@ -240,7 +242,7 @@ packages defined in installation-os."
                           (size install-size)
                           (operating-system
                             (operating-system-with-gc-roots
-                             os (list target)))
+                             os (list target guile-final)))
                           ;; Don't provide substitutes; too big.
                           (substitutable? #f)))))
     (define install

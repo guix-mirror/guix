@@ -6,19 +6,19 @@ as well as /etc/ssl/certs.
 
 --- cmake-3.13.1/Source/cmCurl.cxx	2019-09-10 17:27:36.926907260 +0200
 +++ cmake-3.13.1/Source/cmCurl.cxx	2019-09-10 17:52:35.475903919 +0200
-@@ -4,11 +4,8 @@
- 
- #include "cmThirdParty.h"
+@@ -2,11 +2,8 @@
+    file Copyright.txt or https://cmake.org/licensing for details.  */
+ #include "cmCurl.h"
  
 -#if !defined(CMAKE_USE_SYSTEM_CURL) && !defined(_WIN32) &&                    \
 -  !defined(__APPLE__) && !defined(CURL_CA_BUNDLE) && !defined(CURL_CA_PATH)
  #  define CMAKE_FIND_CAFILE
  #  include "cmSystemTools.h"
 -#endif
+ #include "cmStringAlgorithms.h"
  
  // curl versions before 7.21.5 did not provide this error code
- #if defined(LIBCURL_VERSION_NUM) && LIBCURL_VERSION_NUM < 0x071505
-@@ -29,6 +26,19 @@ std::string cmCurlSetCAInfo(::CURL* curl
+@@ -30,6 +27,19 @@
      ::CURLcode res = ::curl_easy_setopt(curl, CURLOPT_CAINFO, cafile);
      check_curl_result(res, "Unable to set TLS/SSL Verify CAINFO: ");
    }

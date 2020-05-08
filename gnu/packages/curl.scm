@@ -4,11 +4,12 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
-  #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libidn)
@@ -45,20 +45,21 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1))
 
 (define-public curl
   (package
    (name "curl")
-   (version "7.65.3")
-   (replacement curl-7.66.0)
+   (version "7.69.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1sjz4fq7jg96mpmpqq82nd61njna6jp3c4m9yrbx2j1rh5a8ingj"))))
+              "0kwxh76iq9fblk7iyv4f75bmcmasarp2bcm1mm07wyvzd7kdbiq3"))
+            (patches (search-patches "curl-use-ssl-cert-env.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -70,27 +71,42 @@
              ("zlib" ,zlib)))
    (native-inputs
      `(("perl" ,perl)
-       ;; to enable the --manual option and make test 1026 pass
-       ("groff" ,groff)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)))
    (native-search-paths
-    ;; Note: This search path is respected by the `curl` command-line tool only.
-    ;; Ideally we would bake this into libcurl itself so other users can benefit,
-    ;; but it's not supported upstream due to thread safety concerns.
+    ;; These variables are introduced by curl-use-ssl-cert-env.patch.
     (list (search-path-specification
+           (variable "SSL_CERT_DIR")
+           (separator #f)                        ;single entry
+           (files '("etc/ssl/certs")))
+          (search-path-specification
+           (variable "SSL_CERT_FILE")
+           (file-type 'regular)
+           (separator #f)                        ;single entry
+           (files '("etc/ssl/certs/ca-certificates.crt")))
+          ;; Note: This search path is respected by the `curl` command-line
+          ;; tool only.  Patching libcurl to read it too would bring no
+          ;; advantages and require maintaining a more complex patch.
+          (search-path-specification
            (variable "CURL_CA_BUNDLE")
            (file-type 'regular)
            (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
-    `(#:configure-flags (list "--with-gnutls"
+    `(#:disallowed-references ("doc")
+      #:configure-flags (list "--with-gnutls"
                               (string-append "--with-gssapi="
                                              (assoc-ref %build-inputs "mit-krb5"))
                               "--disable-static")
-      ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'do-not-record-configure-flags
+          (lambda _
+            ;; Do not save the configure options to avoid unnecessary references.
+            (substitute* "curl-config.in"
+              (("@CONFIGURE_OPTIONS@")
+               "\"not available\""))
+            #t))
         (add-after
          'install 'move-man3-pages
          (lambda* (#:key outputs #:allow-other-keys)
@@ -143,17 +159,14 @@ tunneling, and so on.")
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
 
-(define curl-7.66.0
-  (package
-    (inherit curl)
-    (version "7.66.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://curl.haxx.se/download/curl-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1hcqxpibhknhjy56wcxz5vd6m9ggx3ykwp3wp5wx05ih36481d6v"))))))
+;; This package exists mainly to bootstrap CMake.  It must not depend on
+;; anything that uses cmake-build-system.
+(define-public curl-minimal
+  (hidden-package
+   (package/inherit
+    curl
+    (name "curl-minimal")
+    (inputs (alist-delete "openldap" (package-inputs curl))))))
 
 (define-public kurly
   (package

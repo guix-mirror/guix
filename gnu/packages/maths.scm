@@ -26,7 +26,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Eric Brown <brown@fastmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
@@ -460,23 +460,45 @@ precision floating point numbers.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gsl/gsl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1395y9hlhqadn5g9j8q22224fds5sd92jxi9czfavjj24myasq04"))
-              (patches (search-patches "gsl-test-i686.patch"))))
+                "1a460zj9xmbgvcymkdhqh313c4l29mn9cffbi5vf33x3qygk70mp"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; Currently there are numerous tests that fail on "exotic"
-       ;; architectures such as aarch64 and ppc64le.
-       ,@(if (string-prefix? "aarch64-linux"
-                             (or (%current-target-system) (%current-system)))
-           '(#:tests? #f)
-           '())))
+     (let ((system (%current-system)))
+       (cond
+        ((string-prefix? "aarch64" system)
+         ;; Some sparse matrix tests are failing on AArch64:
+         ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00001.html
+         '(#:phases (modify-phases %standard-phases
+                      (add-before 'check 'disable-failing-tests
+                        (lambda _
+                          (substitute* "spmatrix/test.c"
+                            ((".*test_complex.*") "\n"))
+                          #t)))))
+        ((string-prefix? "i686" system)
+         ;; There are rounding issues with these tests on i686:
+         ;; https://lists.gnu.org/archive/html/bug-gsl/2016-10/msg00000.html
+         ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00000.html
+         '(#:phases (modify-phases %standard-phases
+                      (add-before 'check 'disable-failing-tests
+                        (lambda _
+                          (substitute* "linalg/test.c"
+                            ((".*gsl_test\\(test_LU_decomp.*") "\n")
+                            ((".*gsl_test\\(test_LUc_decomp.*") "\n")
+                            ((".*gsl_test\\(test_cholesky_decomp.*") "\n")
+                            ((".*gsl_test\\(test_COD_lssolve2.*") "\n"))
+                          (substitute* "spmatrix/test.c"
+                            ((".*test_all.*") "\n")
+                            ((".*test_float.*") "\n")
+                            ((".*test_complex.*") "\n"))
+                          #t)))))
+        (else '()))))
     (home-page "https://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
@@ -856,7 +878,7 @@ computations.")
        ("flex" ,flex)))
     (inputs
      `(("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtirpc" ,libtirpc)))
     (arguments
      `(#:parallel-tests? #f
@@ -1096,7 +1118,7 @@ extremely large and complex data collections.")
      `(("hdf4" ,hdf4)
        ("hdf5" ,hdf5)
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("slf4j-api" ,java-slf4j-api)))
     (arguments
      `(#:configure-flags
@@ -1213,7 +1235,7 @@ implemented in C.")
      `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
        ;; XXX: These inputs are really dependencies of hdf4.
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtirpc" ,libtirpc)
 
        ("gctp" ,gctp)))
@@ -1412,7 +1434,7 @@ similar to MATLAB, GNU Octave or SciPy.")
      `(("hdf4" ,hdf4-alt)
        ("hdf5" ,hdf5)
        ("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg-turbo)))
     (arguments
      `(#:configure-flags '("--enable-doxygen" "--enable-dot" "--enable-hdf4")
 
@@ -1685,6 +1707,12 @@ can solve two kinds of problems:
        ("glpk" ,glpk)
        ("glu" ,glu)
        ("graphicsmagick" ,graphicsmagick)
+
+       ;; TODO: libjpeg-turbo is indirectly required through libtiff.  In
+       ;; the next rebuild cycle, add an absolute reference for -ljpeg in
+       ;; libtiff.la instead of having to provide it here.
+       ("libjpeg" ,libjpeg-turbo)
+
        ("hdf5" ,hdf5)
        ("lapack" ,lapack)
        ("libsndfile" ,libsndfile)
@@ -1723,7 +1751,12 @@ can solve two kinds of problems:
      `(#:configure-flags
        (list (string-append "--with-shell="
                             (assoc-ref %build-inputs "bash")
-                            "/bin/sh"))
+                            "/bin/sh")
+
+             ;; XXX: Without this flag, linking octave-cli fails with
+             ;; undefined references to 'logf@GLIBCXX_3.4' et.al. due to
+             ;; not pulling in liboctinterp.la for -lstdc++.
+             "--enable-link-all-dependencies")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'configure-makeinfo
@@ -3282,7 +3315,7 @@ parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.3.7")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
@@ -3291,7 +3324,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0jbdjsi0qsxahdcm42agnn1y7xpmg0hrhwjsxg0zbhs9wwy3p568"))))
+         "14iz9xnrb9xiwgj84j94mc74gg0zn2vsy9fmsijxxma1n7dck4w3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -4872,6 +4905,18 @@ This package contains the basic DUNE grid classes.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; XXX: istl/test/matrixtest.cc includes <fenv.h> and fails to find
+         ;; the stdlib types when the gfortran header is used.  Remove gfortran
+         ;; from CPLUS_INCLUDE_PATH as a workaround.
+         (add-after 'set-paths 'hide-gfortran
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gfortran (assoc-ref inputs "gfortran")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gfortran "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags))))))
@@ -4918,6 +4963,18 @@ aggregation-based algebraic multigrid.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; XXX: localfunctions/test/lagrangeshapefunctiontest.cc includes <fenv.h>
+         ;; and fails to find the stdlib types when the gfortran header is used.
+         ;; Hide gfortran from CPLUS_INCLUDE_PATH to ensure we get the GCC header.
+         (add-after 'set-paths 'hide-gfortran
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gfortran (assoc-ref inputs "gfortran")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gfortran "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          (add-after 'build 'build-tests
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "build_tests" make-flags))))))

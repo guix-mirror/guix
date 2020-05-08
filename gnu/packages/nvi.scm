@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
         (patches (search-patches "nvi-assume-preserve-path.patch"
                                  "nvi-dbpagesize-binpower.patch"
                                  "nvi-db4.patch"))
+        (modules '((guix build utils)))
         (snippet
           ;; Create a wrapper for the configure script, make it executable.
           '(let ((conf-wrap (open-output-file "configure")))
@@ -51,6 +53,12 @@
              (newline conf-wrap)
              (close-output-port conf-wrap)
              (chmod "configure" #o0755)
+
+             ;; Glibc 2.30 removed the deprecated <sys/stropts.h>, so fall back
+             ;; to the internal PTY allocation logic.
+             (substitute* "ex/ex_script.c"
+               (("#ifdef HAVE_SYS5_PTY")
+                "#if defined(HAVE_SYS5_PTY) && !defined(__GLIBC__)"))
              #t))))
 
     (build-system gnu-build-system)

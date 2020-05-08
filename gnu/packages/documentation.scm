@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,6 +34,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
@@ -148,7 +150,7 @@ markup) can be customized and extended by the user.")
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.15")
+    (version "1.8.17")
     (home-page "http://www.doxygen.nl/")
     (source (origin
              (method url-fetch)
@@ -159,8 +161,9 @@ markup) can be customized and extended by the user.")
                                        ".src.tar.gz")))
              (sha256
               (base32
-               "0p94b4yb6bk2dxzs5kyl82xxgq2qakgbx5yy3ssbbadncb20x75x"))
-             (patches (search-patches "doxygen-test.patch"))))
+               "16dmv0gm1x8rvbm82fmjvi213q8fxqxinm75pcf595flya59ific"))
+             (patches (search-patches "doxygen-test.patch"
+                                      "doxygen-1.8.17-runtests.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -170,7 +173,15 @@ markup) can be customized and extended by the user.")
     (inputs
      `(("bash" ,bash-minimal)))
     (arguments
-     `(#:test-target "tests"
+     ;; Force cmake to use iconv header from cross-libc instead of the one
+     ;; from native libc.
+     `(,@(if (%current-target-system)
+             '(#:configure-flags
+               (list (string-append "-DICONV_INCLUDE_DIR="
+                                    (assoc-ref %build-inputs "cross-libc")
+                                    "/include")))
+             '())
+       #:test-target "tests"
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)

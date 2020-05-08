@@ -16,6 +16,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,7 +79,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.36")
+    (version "1.37")
     (source
      (origin
       (method url-fetch)
@@ -86,17 +87,33 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0z696dmhfxm2n6pmr8b857wwljq9h633yi99bhbn7h88f91rigds"))
-      (patches (search-patches "libgpg-error-gawk-compat.patch"))
-      ;; XXX: Remove this snippet with the gawk patch above.  It avoids having
-      ;; to call autoreconf for the Makefile.am change to take effect.
-      (modules '((guix build utils)))
-      (snippet
-       '(begin
-          (substitute* "src/Makefile.in"
-            (("namespace=errnos") "pkg_namespace=errnos"))
-          #t))))
+        "0qwpx8mbc2l421a22l0l1hpzkip9jng06bbzgxwpkkvk5bvnybdk"))))
     (build-system gnu-build-system)
+    (arguments
+     (if (%current-target-system)
+         `(#:modules ((ice-9 match)
+                      (guix build gnu-build-system)
+                      (guix build utils))
+           #:phases
+           (modify-phases %standard-phases
+             ;; When cross-compiling, some platform specific properties cannot
+             ;; be detected. Create a symlink to the appropriate platform
+             ;; file. See Cross-Compiling section at:
+             ;; https://github.com/gpg/libgpg-error/blob/master/README
+             (add-after 'unpack 'cross-symlinks
+               (lambda* (#:key target inputs #:allow-other-keys)
+                 (let ((triplet
+                        (match (string-take target
+                                            (string-index target #\-))
+                          ("armhf" "arm-unknown-linux-gnueabi")
+                          (x
+                           (string-append x "-unknown-linux-gnu")))))
+                   (symlink
+                    (string-append "lock-obj-pub." triplet ".h")
+                    "src/syscfg/lock-obj-pub.linux-gnu.h"))
+                 #t))))
+         '()))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
     (description
@@ -111,15 +128,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.8.4")
-    (replacement libgcrypt-1.8.5)
+    (version "1.8.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "09r27ywj9zplq6n9qw3mn7zmvf6y2jdmwx5d1kg8yqkj0qx18f7n"))))
+                "1hvsazms1bfd769q0ngl0r9g5i4m9mpz9jmvvrdzyzk3rfa2ljiv"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -132,7 +148,10 @@ Daemon and possibly more in the future.")
      ;; the 'gpg-error-config' it runs is the native one---i.e., the wrong one.
      `(#:configure-flags
        (list (string-append "--with-gpg-error-prefix="
-                            (assoc-ref %build-inputs "libgpg-error-host")))))
+                            (assoc-ref %build-inputs "libgpg-error-host"))
+             ;; When cross-compiling, _gcry_mpih_lshift etc are undefined
+             ,@(if (%current-target-system) '("--disable-asm")
+                   '()))))
     (outputs '("out" "debug"))
     (home-page "https://gnupg.org/")
     (synopsis "Cryptographic function library")
@@ -144,18 +163,6 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
-
-(define-public libgcrypt-1.8.5
-  (package
-    (inherit libgcrypt)
-    (version "1.8.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                                  version ".tar.bz2"))
-              (sha256
-               (base32
-                "1hvsazms1bfd769q0ngl0r9g5i4m9mpz9jmvvrdzyzk3rfa2ljiv"))))))
 
 (define-public libassuan
   (package
@@ -478,13 +485,28 @@ gpgpme starting with version 1.7.")
                 "0n232iyayc46f7hywmjw0jr7pbmmz5h4b04jskhkzz9gxz0ci99c"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+     ;; When cross-compiling, the bash script libgcrypt-config provided by
+     ;; libgcrypt must be accessible during configure phase.
+     `(,@(if (%current-target-system)
+             '(#:phases
+               (modify-phases %standard-phases
+                 (add-before 'configure 'add-libgrypt-config
+                   (lambda _
+                     (setenv "PATH" (string-append
+                                     (assoc-ref %build-inputs "libgcrypt")
+                                     "/bin:"
+                                     (getenv "PATH")))
+                     #t))))
+             '())))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo)
+       ("guile" ,guile-3.0)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("libgcrypt" ,libgcrypt)))
     (synopsis "Cryptography library for Guile using Libgcrypt")
     (description
@@ -498,17 +520,26 @@ interface (FFI) of Guile.")
 (define-public guile2.0-gcrypt
   (package (inherit guile-gcrypt)
     (name "guile2.0-gcrypt")
+    (native-inputs
+     `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
     (inputs
      `(("guile" ,guile-2.0)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
 
-(define-public guile3.0-gcrypt
+(define-public guile2.2-gcrypt
   (package
     (inherit guile-gcrypt)
-    (name "guile3.0-gcrypt")
+    (name "guile2.2-gcrypt")
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ,@(alist-delete "guile" (package-native-inputs guile-gcrypt))))
     (inputs
-     `(("guile" ,guile-next)
+     `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
+
+(define-public guile3.0-gcrypt
+  (deprecated-package "guile3.0-gcrypt" guile-gcrypt))
 
 (define-public python-gpg
   (package

@@ -206,7 +206,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
        ("pcre2" ,pcre2)
-       ("sqlite" ,sqlite-with-column-metadata)
+       ("sqlite" ,sqlite)
        ("udev" ,eudev)
        ("unixodbc" ,unixodbc)
        ("wayland" ,wayland)
@@ -223,7 +223,7 @@ system, and the core design of Django is reused in Grantlee.")
      `(;; XXX: The JavaScriptCore engine does not build with the C++11 standard.
        ;; We could build it with -std=gnu++98, but then we'll get in trouble with
        ;; ICU later.  Just keep using GCC 5 for now.
-       ("gcc" ,gcc-5)
+       ("gcc@5" ,gcc-5)
        ("bison" ,bison)
        ("flex" ,flex)
        ("gperf" ,gperf)
@@ -240,6 +240,17 @@ system, and the core design of Django is reused in Grantlee.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-default-gcc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
+               ;; conflicts with the GCC 5 input.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          (replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)
@@ -352,6 +363,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "0pb68d30clksdhgy8n6rrs838bb3qcsfq4pv463yy2nr4p5kk2di"))
              ;; Use TZDIR to avoid depending on package "tzdata".
              (patches (search-patches "qtbase-use-TZDIR.patch"
+                                      "qtbase-moc-ignore-gcc-macro.patch"
                                       "qtbase-QTBUG-81715.patch"))
              (modules '((guix build utils)))
              (snippet
@@ -381,7 +393,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
        ("libinput" ,libinput-minimal)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmng" ,libmng)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
@@ -404,7 +416,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("pcre2" ,pcre2)
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
-       ("sqlite" ,sqlite-with-column-metadata)
+       ("sqlite" ,sqlite)
        ("unixodbc" ,unixodbc)
        ("xcb-util" ,xcb-util)
        ("xcb-util-image" ,xcb-util-image)
@@ -1798,6 +1810,14 @@ message.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'patch-ninja-version-check
+             (lambda _
+               ;; The build system assumes the system Ninja is too old because
+               ;; it only checks for versions 1.7 through 1.9.  We have 1.10.
+               (substitute* "configure.pri"
+                 (("1\\.\\[7-9\\]\\.\\*")
+                  "1.([7-9]|1[0-9]).*"))
+               #t))
            (add-before 'configure 'substitute-source
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
@@ -2396,10 +2416,10 @@ different kinds of sliders, and much more.")
      `(("icu" ,icu4c)
        ("glib" ,glib)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libwebp" ,libwebp)
-       ("sqlite" ,sqlite-with-column-metadata)
+       ("sqlite" ,sqlite)
        ("fontconfig" ,fontconfig)
        ("libxrender" ,libxrender)
        ("qtbase" ,qtbase)

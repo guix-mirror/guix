@@ -28,6 +28,7 @@
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +146,11 @@ changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
     (license license:gpl2+)))
 
+(define git-cross-configure-flags
+  '("ac_cv_fread_reads_directories=yes"
+    "ac_cv_snprintf_returns_bogus=no"
+    "ac_cv_iconv_omits_bom=no"))
+
 (define-public git
   (package
    (name "git")
@@ -159,6 +165,10 @@ as well as the classic centralized workflow.")
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
+      ;; Add bash-minimal explicitly to ensure it comes before bash-for-tests,
+      ;; see <https://bugs.gnu.org/39513>.
+      ("bash" ,bash-minimal)
+      ("bash-for-tests" ,bash)
       ("gettext" ,gettext-minimal)
       ("git-manpages"
        ,(origin
@@ -180,10 +190,6 @@ as well as the classic centralized workflow.")
       ("perl" ,perl)
       ("python" ,python) ; for git-p4
       ("zlib" ,zlib)
-
-      ;; Note: we keep this in inputs rather than native-inputs to work around
-      ;; a problem in 'patch-shebangs'; see <https://bugs.gnu.org/31952>.
-      ("bash-for-tests" ,bash)
 
       ;; For PCRE support in git grep (USE_LIBPCRE2).
       ("pcre" ,pcre2)
@@ -237,23 +243,46 @@ as well as the classic centralized workflow.")
       ;; absolute file name to 'wish'.
       #:configure-flags (list (string-append "--with-tcltk="
                                              (assoc-ref %build-inputs "tk")
-                                             "/bin/wish8.6")) ; XXX
+                                             "/bin/wish8.6")  ; XXX
+                              ,@(if (%current-target-system)
+                                    git-cross-configure-flags
+                                    '()))
 
       #:modules ((srfi srfi-1)
                  (srfi srfi-26)
                  ,@%gnu-build-system-modules)
       #:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'modify-PATH
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((path (string-split (getenv "PATH") #\:))
-                  (bash-full (assoc-ref inputs "bash-for-tests")))
-              ;; Drop the test bash from PATH so that (which "sh") and
-              ;; similar does the right thing.
-              (setenv "PATH" (string-join
-                              (remove (cut string-prefix? bash-full <>) path)
-                              ":"))
-              #t)))
+        ,@(if (%current-target-system)
+              ;; The git build system assumes build == host
+              `((add-after 'unpack  'use-host-uname_S
+                  (lambda _
+                    (substitute* "config.mak.uname"
+                      (("uname_S := .*" all)
+                       (if (equal? ,(%current-target-system) "i586-pc-gnu")
+                         "uname_S := GNU\n"
+                         all)))
+                    #t)))
+              ;; We do not have bash-for-tests when cross-compiling.
+              `((add-after 'unpack 'modify-PATH
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((path (string-split (getenv "PATH") #\:))
+                          (bash-full (assoc-ref inputs "bash-for-tests")))
+                      ;; Drop the test bash from PATH so that (which "sh") and
+                      ;; similar does the right thing.
+                      (setenv "PATH" (string-join
+                                      (remove (cut string-prefix? bash-full <>) path)
+                                      ":"))
+                      #t)))))
+        ;; Add cross curl-config script to PATH when cross-compiling.
+        ,@(if (%current-target-system)
+              '((add-before 'configure 'add-cross-curl-config
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (setenv "PATH"
+                             (string-append (assoc-ref inputs "curl") "/bin:"
+                                            (getenv "PATH")))
+                     #t)))
+              '())
         (add-after 'configure 'patch-makefiles
           (lambda _
             (substitute* "Makefile"
@@ -514,20 +543,24 @@ everything from small to very large projects with speed and efficiency.")
        ((#:make-flags flags)
         `(delete "USE_LIBPCRE2=yes" ,flags))
        ((#:configure-flags flags)
-        ''())
+        `(list
+          ,@(if (%current-target-system)
+                git-cross-configure-flags
+                '())))
        ((#:disallowed-references lst '())
         `(,perl ,@lst))))
     (outputs '("out"))
     (native-inputs
-     `(("native-perl" ,perl)
+     `(("bash" ,bash-minimal)
+       ("bash-for-tests" ,bash)
+       ("native-perl" ,perl)
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("curl" ,curl)                             ;for HTTP(S) access
        ("expat" ,expat)                           ;for 'git push' over HTTP(S)
        ("openssl" ,openssl)
        ("perl" ,perl)
-       ("zlib" ,zlib)
-       ("bash-for-tests" ,bash)))))
+       ("zlib" ,zlib)))))
 
 (define-public gitless
   (package
@@ -617,9 +650,16 @@ on @command{git}, and use any regular Git hosting service.")
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
-     `(#:configure-flags '("-DUSE_NTLMCLIENT=OFF" ;TODO: package this
-                           "-DREGEX_BACKEND=pcre2"
-                           "-DUSE_HTTP_PARSER=system")
+     `(#:configure-flags
+       (list "-DUSE_NTLMCLIENT=OFF" ;TODO: package this
+             "-DREGEX_BACKEND=pcre2"
+             "-DUSE_HTTP_PARSER=system"
+             ,@(if (%current-target-system)
+                   `((string-append
+                      "-DPKG_CONFIG_EXECUTABLE="
+                      (assoc-ref %build-inputs "pkg-config")
+                      "/bin/" ,(%current-target-system) "-pkg-config"))
+                   '()))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-hardcoded-paths
@@ -630,9 +670,13 @@ on @command{git}, and use any regular Git hosting service.")
                (("/bin/cp") (which "cp"))
                (("/bin/rm") (which "rm")))
              #t))
-         ;; Run checks more verbosely.
+         ;; Run checks more verbosely, unless we are cross-compiling.
          (replace 'check
-           (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (invoke "./libgit2_clar" "-v" "-Q")
+                 ;; Tests may be disabled if cross-compiling.
+                 (format #t "Test suite not run.~%")))))))
     (inputs
      `(("libssh2" ,libssh2)
        ("http-parser" ,http-parser)))
@@ -1374,6 +1418,28 @@ also walk each side of a merge and test those changes individually.")
 control to Git repositories.")
     (license license:gpl2)))
 
+(define (mercurial-patch name revision hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "https://www.mercurial-scm.org/repo/hg/raw-rev/" revision))
+    (file-name (string-append "mercurial-" name ".patch"))
+    (sha256 (base32 hash))))
+
+(define %mercurial-patches
+  (list
+   ;; These three patches fixes compatibility with the updated gzip module
+   ;; in Python 3.8.2: <https://bz.mercurial-scm.org/show_bug.cgi?id=6284>.
+   (mercurial-patch "python-mtime" "6c36a521572edf3a79ee567b118469b3192037cc"
+                    "0bmm7y40r8s081ws2sjvn1v8kvyfan4a97jl0fhdh7yc2pzxlzqq")
+   (mercurial-patch "indent-gzip" "a23b859ad17dd0a5b9bb37846b69b5e30f99c44c"
+                    "1spscv9dgqv38m7h1liki93ax6w97gxayg17fr7wr6acjdfccpr9")
+   (mercurial-patch "python-gzip" "b7ca03dff14c63d64ad7bfa36a2d0a36a6b62253"
+                    "0p88ffhx0kk21ssrsb156ffhpcb7g8mkwwkmq49qpmbm5ag2paf0")
+   ;; This fixes an incompatibility with os.isfile in Python 3.8:
+   ;; <https://bz.mercurial-scm.org/show_bug.cgi?id=6287>.
+   (mercurial-patch "os-isfile" "6a8738dc4a019da4c9df5c26961aa09d45ce1c68"
+                    "0lr069m12kzrkmr1pmhaxg5lxmdwxabsza61qp1i1q70g7sy8lvy")))
+
 (define-public mercurial
   (package
     (name "mercurial")
@@ -1382,6 +1448,7 @@ control to Git repositories.")
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
+             (patches %mercurial-patches)
              (sha256
               (base32
                "1nbjpzjrzgql4hrvslpxwbcgn885ikq6ba1yb4w6p78rw9nzkhgp"))))

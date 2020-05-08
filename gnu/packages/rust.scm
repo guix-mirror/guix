@@ -439,8 +439,11 @@ test = { path = \"../libtest\" }
     ;; modules (see <https://bugs.gnu.org/31392>).
     (native-search-paths
      (list (search-path-specification
-            (variable "CPATH")
+            (variable "C_INCLUDE_PATH")
             (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include/c++" "include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
@@ -466,6 +469,10 @@ safety and thread safety guarantees.")
                       (delete-file-recursively "src/llvm")
                       #t))
           (patches '())))
+      (native-inputs
+       `(;; The tests fail with newer versions of GNU Make.
+         ("make" ,gnu-make-4.2)
+         ,@(package-native-inputs base-rust)))
       (outputs '("out" "doc" "cargo"))
       ;; Since rust-1.19 is local, it's quite probable that Hydra
       ;; will build rust-1.19 only as a dependency of rust-1.20.

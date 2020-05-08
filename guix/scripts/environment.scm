@@ -38,8 +38,6 @@
   #:use-module (gnu system file-systems)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages commencement)
-  #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (bootstrap-executable %bootstrap-guile))
   #:use-module (ice-9 format)
@@ -724,7 +722,7 @@ message if any test fails."
                              store
                              (if bootstrap?
                                  %bootstrap-guile
-                                 (canonical-package guile-2.2)))))
+                                 (default-guile)))))
               (run-with-store store
                 ;; Containers need a Bourne shell at /bin/sh.
                 (mlet* %store-monad ((bash       (environment-bash container?

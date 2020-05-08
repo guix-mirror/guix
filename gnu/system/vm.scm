@@ -277,6 +277,9 @@ substitutable."
                      (disk-image-size 'guess)
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
+                     (file-system-options '())
+                     (device-nodes 'linux)
+                     (extra-directives '())
                      file-system-label
                      file-system-uuid
                      os
@@ -290,7 +293,8 @@ substitutable."
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
 partition; likewise FILE-SYSTEM-UUID, if true, specifies the UUID of the root
-partition (a UUID object).
+partition (a UUID object).  FILE-SYSTEM-OPTIONS is an optional list of
+command-line options passed to 'mkfs.ext4' (or similar).
 
 The returned image is a full disk image that runs OS-DERIVATION,
 with a GRUB installation that uses GRUB-CONFIGURATION as its configuration
@@ -301,7 +305,13 @@ all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image.  By default, REGISTER-CLOSURES? is set to true only if a service of
 type GUIX-SERVICE-TYPE is present in the services definition of the operating
-system."
+system.
+
+When DEVICE-NODES is 'linux, create Linux-device block and character devices
+under /dev.  When it is 'hurd, do Hurdish things.
+
+EXTRA-DIRECTIVES is an optional list of directives to populate the root file
+system that is passed to 'populate-root-file-system'."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -319,6 +329,9 @@ system."
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build vm)
+                        ((gnu build linux-boot)
+                         #:select (make-essential-device-nodes
+                                   make-hurd-device-nodes))
                         (guix store database)
                         (guix build utils)
                         (srfi srfi-26)
@@ -350,10 +363,16 @@ system."
                                      (((names . _) ...)
                                       names)))
                     (initialize (root-partition-initializer
+                                 #:extra-directives '#$extra-directives
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
                                  #:system-directory #$os
+
+                                 #:make-device-nodes
+                                 #$(match device-nodes
+                                     ('linux #~make-essential-device-nodes)
+                                     ('hurd #~make-hurd-device-nodes))
 
                                  ;; Disable deduplication to speed things up,
                                  ;; and because it doesn't help much for a
@@ -376,6 +395,7 @@ system."
                              (uuid #$(and=> file-system-uuid
                                             uuid-bytevector))
                              (file-system #$file-system-type)
+                             (file-system-options '#$file-system-options)
                              (flags '(boot))
                              (initializer initialize)))
                       ;; Append a small EFI System Partition for use with UEFI

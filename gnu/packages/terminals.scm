@@ -101,12 +101,6 @@
                (base32
                 "13djibj3s7ig13c57ywy38pxy3qfmqihii2c0g15fy2h9q8xp1gx"))))
     (build-system glib-or-gtk-build-system)
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                 (replace 'bootstrap
-                  (lambda _
-                    (setenv "NOCONFIGURE" "true")
-                    (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -281,10 +275,6 @@ compatibility to existing emulators like xterm, gnome-terminal, konsole, etc.")
          #:disallowed-references (,mesa)
 
          #:phases (modify-phases %standard-phases
-                    (replace 'bootstrap
-                      (lambda _
-                        (setenv "NOCONFIGURE" "indeed")
-                        (invoke "sh" "autogen.sh")))
                     ;; Use elogind instead of systemd.
                     (add-before 'configure 'remove-systemd
                       (lambda _

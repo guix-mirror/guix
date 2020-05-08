@@ -57,7 +57,7 @@
      `(("libftdi" ,libftdi)
        ("libmicrohttpd" ,libmicrohttpd)
        ("libusb" ,libusb)
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("zlib" ,zlib)))
     (propagated-inputs
      ;; Ola 0.10.5 only supports protobuf 2.x, and building it with 3.x breaks.

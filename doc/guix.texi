@@ -26510,7 +26510,7 @@ program.  That gives a lot of flexibility.  The
 program to run in that initrd.
 
 @deffn {Scheme Procedure} expression->initrd @var{exp} @
-       [#:guile %guile-static-stripped] [#:name "guile-initrd"]
+       [#:guile %guile-3.0-static-stripped] [#:name "guile-initrd"]
 Return as a file-like object a Linux initrd (a gzipped cpio archive)
 containing @var{guile} and that evaluates @var{exp}, a G-expression,
 upon booting.  All the derivations referenced by @var{exp} are

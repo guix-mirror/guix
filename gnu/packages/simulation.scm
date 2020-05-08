@@ -479,8 +479,7 @@ FFC is part of the FEniCS Project.")
        ("petsc" ,petsc-openmpi)
        ("slepc" ,slepc-openmpi)))
     (arguments
-     `(#:cmake ,cmake-3.15.5
-       #:configure-flags
+     `(#:configure-flags
        `("-DDOLFIN_ENABLE_DOCS:BOOL=OFF"
          "-DDOLFIN_ENABLE_HDF5:BOOL=ON"
          "-DDOLFIN_ENABLE_MPI:BOOL=ON"

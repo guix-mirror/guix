@@ -1035,7 +1035,7 @@ Create a bundle of PACKAGE.\n"))
                                             store
                                             (if (assoc-ref opts 'bootstrap?)
                                                 %bootstrap-guile
-                                                (canonical-package guile-2.2))
+                                                (default-guile))
                                             (assoc-ref opts 'system)
                                             #:graft? (assoc-ref opts 'graft?))))
             (let* ((derivation? (assoc-ref opts 'derivation-only?))

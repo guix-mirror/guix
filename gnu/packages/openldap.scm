@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+ gpl3+ psfl expat))
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -60,7 +62,7 @@
   (package
    (name "openldap")
    (replacement openldap-2.4.50)
-   (version "2.4.47")
+   (version "2.4.49")
    (source (origin
             (method url-fetch)
 
@@ -77,21 +79,34 @@
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "02sj0p1pq12hqq29b22m3f5zs2rykgvc0q3wlynxjcsjhrvmhk7m"))))
+              "0vp524rsngdcykf6ki7vprsyg7gj8z7hszg8xwxz50219fa1gcg3"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
              ("gnutls" ,gnutls)
-             ("groff" ,groff)
-             ("icu4c" ,icu4c)
              ("libgcrypt" ,libgcrypt)
              ("zlib" ,zlib)))
-   (native-inputs `(("libtool" ,libtool)))
+   (native-inputs `(("libtool" ,libtool)
+                    ("groff" ,groff)
+                    ("bdb" ,bdb-5.3)))
    (arguments
     `(#:tests? #f
-      #:configure-flags '("--disable-static")
+      #:configure-flags
+      '("--disable-static"
+        ,@(if (%current-target-system)
+              '("--with-yielding_select=yes"
+                "ac_cv_func_memcmp_working=yes")
+              '()))
+      ;; Disable install stripping as it breaks cross-compiling.
+      #:make-flags '("STRIP=")
       #:phases
       (modify-phases %standard-phases
+        ,@(if (%current-target-system)
+              '((add-before 'configure 'fix-cross-gcc
+                  (lambda* (#:key target #:allow-other-keys)
+                    (setenv "CC" (string-append target "-gcc"))
+                    #t)))
+              '())
         (add-after 'install 'patch-sasl-path
           ;; Give -L arguments for cyrus-sasl to avoid propagation.
           (lambda* (#:key inputs outputs #:allow-other-keys)

@@ -200,7 +200,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
 (define-public help2man
   (package
     (name "help2man")
-    (version "1.47.10")
+    (version "1.47.13")
     (source
      (origin
       (method url-fetch)
@@ -208,7 +208,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "1yywli520246aba12vpgj7bhr1r13swad3xm49a0cygqcgywnwgk"))))
+        "08q5arxz4j4pyx5q4712c2rn7p7dw7as9xg38yvmsh1c3ynvpy5p"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
                  #:tests? #f))
@@ -218,6 +218,8 @@ Linux kernel and C library interfaces employed by user-space programs.")
        ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
        ;; ("gettext" ,gettext-minimal)
        ))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")
     (description
@@ -225,18 +227,6 @@ Linux kernel and C library interfaces employed by user-space programs.")
 \"--help\" and \"--version\" command-line arguments into a manual page
 automatically.")
     (license gpl3+)))
-
-(define-public help2man/latest
-  (package
-    (inherit help2man)
-    (version "1.47.13")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/help2man/help2man-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "08q5arxz4j4pyx5q4712c2rn7p7dw7as9xg38yvmsh1c3ynvpy5p"))))))
 
 (define-public scdoc
   (package

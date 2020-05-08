@@ -35,7 +35,7 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.43")
+   (version "8.44")
    (source (origin
             (method url-fetch)
             (uri (list
@@ -46,7 +46,7 @@
                                  version "/pcre-" version ".tar.bz2")))
             (sha256
              (base32
-              "0sxg1wlknq05ryq63h21cchjmcjkin9lmnqsmhs3h08301965rwi"))))
+              "0v9nk51wh55pcbnf2jr36yarz8ayajn6d7ywiq2wagivn9c8c40r"))))
    (build-system gnu-build-system)
    (outputs '("out"           ;library & headers
               "bin"           ;depends on Readline (adds 20MiB to the closure)

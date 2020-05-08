@@ -87,7 +87,7 @@
        ("lcms" ,lcms)
        ("libcdr" ,libcdr)
        ("libfreehand" ,libfreehand)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmspub" ,libmspub)
        ("libpagemaker" ,libpagemaker)
        ("librevenge" ,librevenge)

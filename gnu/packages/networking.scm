@@ -1066,12 +1066,6 @@ live network and disk I/O bandwidth monitor.")
                         (("/bin/sh")
                          (which "sh")))
                       #t))
-                  (replace 'bootstrap
-                    (lambda _
-                      ;; Patch shebangs in generated files before running
-                      ;; ./configure.
-                      (setenv "NOCONFIGURE" "please")
-                      (invoke "bash" "./autogen.sh")))
                   (add-after 'build 'absolutize-tools
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((ethtool (string-append (assoc-ref inputs "ethtool")
@@ -2266,12 +2260,6 @@ remotely.")
                (base32
                 "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
     (build-system gnu-build-system)
-    (arguments
-     `(;; Ensure the kernel headers are treated as system headers to suppress
-       ;; harmless -Werror=pedantic warnings.
-       #:make-flags (list (string-append "C_INCLUDE_PATH="
-                                         (assoc-ref %build-inputs "kernel-headers")
-                                         "/include"))))
     (inputs `(("zeromq" ,zeromq)
               ("czmq" ,czmq)
               ("libsodium" ,libsodium)))
@@ -2536,15 +2524,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'set-environment
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "C_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "curl") "/include:"
-                                    (assoc-ref inputs "libpcap") "/include:"
-                                    (assoc-ref inputs "openssl") "/include:"
-                                    (assoc-ref inputs "zlib") "/include"))
-             #t)))))
+         (delete 'configure))))
     (home-page "https://github.com/ZerBea/hcxtools")
     (synopsis "Capture wlan traffic to hashcat and John the Ripper")
     (description

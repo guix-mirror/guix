@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,7 +118,7 @@ provided, as well as a framework to add new color models and data types.")
      `(("cairo" ,cairo)
        ("pango" ,pango)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg-turbo)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")             ; for gtester
@@ -151,9 +152,16 @@ buffers.")
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html")
+
+             ;; Prevent the build system from running 'gtk-update-icon-cache'
+             ;; which is not needed during the build because Guix runs it at
+             ;; profile creation time.
+             "ac_cv_path_GTK_UPDATE_ICON_CACHE=true"
+
              ;; Disable automatic network request on startup to check for
              ;; version updates.
              "--disable-check-update"
+
              ;; ./configure requests not to annoy upstream with packaging bugs.
              "--with-bug-report-url=https://bugs.gnu.org/guix")
        #:phases
@@ -178,7 +186,7 @@ buffers.")
        ("glib-networking" ,glib-networking)
        ("libtiff" ,libtiff)
        ("libwebp" ,libwebp)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("atk" ,atk)
        ("gexiv2" ,gexiv2)
        ("gtk+" ,gtk+-2)

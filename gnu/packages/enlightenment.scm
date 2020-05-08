@@ -124,7 +124,7 @@
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
        ("libinput" ,libinput-minimal)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libsndfile" ,libsndfile)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
@@ -133,7 +133,7 @@
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments

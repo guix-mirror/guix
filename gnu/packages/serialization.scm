@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -40,6 +40,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -296,7 +297,13 @@ that implements both the msgpack and msgpack-rpc specifications.")
                 "037d1b1qdmn3rksmn1j71j26bv4hkjv7sn7da261k853xb5899sg"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")))
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
+                           ,@(if (%current-target-system)
+                                 `("-DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF")
+                                 '()))
+       ,@(if (%current-target-system)
+             '()
+             `(#:cmake ,cmake-bootstrap))))
     (synopsis "C++ library for interacting with JSON")
     (description "JsonCpp is a C++ library that allows manipulating JSON values,
 including serialization and deserialization to and from strings.  It can also

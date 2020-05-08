@@ -30,6 +30,7 @@
 
 (define-module (gnu packages code)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -660,9 +661,24 @@ the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
             ;; overrides this to be in PREFIX/doc.  Fix this.
             (substitute* "doc/Makefile.in"
               (("^docdir = .*$") "docdir = @docdir@\n"))
+            #t))
+        (add-after 'unpack 'fix-configure
+          (lambda* (#:key inputs native-inputs #:allow-other-keys)
+            ;; Replace outdated config.sub and config.guess:
+            (with-directory-excursion "config"
+              (for-each (lambda (file)
+                          (install-file
+                           (string-append (assoc-ref
+                                           (or native-inputs inputs) "automake")
+                                          "/share/automake-"
+                                          ,(version-major+minor
+                                            (package-version automake))
+                                          "/" file) "."))
+                        '("config.sub" "config.guess")))
             #t)))))
    (native-inputs
-    `(("texinfo" ,texinfo)))
+    `(("texinfo" ,texinfo)
+      ("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
    (synopsis "Code reformatter")
    (description
     "Indent is a program that makes source code easier to read by

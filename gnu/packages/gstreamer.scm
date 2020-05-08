@@ -265,7 +265,7 @@ for the GStreamer multimedia library.")
        ("libcaca" ,libcaca)
        ("libdv" ,libdv)
        ("libiec61883" ,libiec61883)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libshout" ,libshout)
        ("libsoup" ,libsoup)
@@ -521,7 +521,9 @@ non-linear editors.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "1a48ca66izmm8hnp608jv5isg3jxb0vlfmhns0bg9nbkilag7390"))))
+                "1a48ca66izmm8hnp608jv5isg3jxb0vlfmhns0bg9nbkilag7390"))
+              (patches
+               (search-patches "python-gst-fix-build-with-python-3.8.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:modules ((guix build meson-build-system)

@@ -31,7 +31,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "3.4.1")
+    (version "3.5.3")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "03c2pmq3bs0drdislnz6gm1rwz3n4pb2rz9navyxydppxg2rl597"))))
+        "1i57hbczvr8674z73775jxdd3y59qggs5lmfd60gmwm5i1gmpy1b"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Building in parallel on many-core systems may cause an error such as

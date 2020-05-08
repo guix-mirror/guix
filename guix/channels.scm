@@ -38,6 +38,7 @@
                 #:select (source-properties->location
                           &error-location
                           &fix-hint))
+  #:use-module ((guix build utils) #:select (substitute*))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
@@ -199,6 +200,46 @@ description file or its default value."
 channel INSTANCE."
   (channel-metadata-dependencies (channel-instance-metadata instance)))
 
+;; Patch to apply to a source tree.
+(define-record-type <patch>
+  (patch predicate application)
+  patch?
+  (predicate    patch-predicate)                  ;procedure
+  (application  patch-application))               ;procedure
+
+(define (apply-patches checkout commit patches)
+  "Apply the matching PATCHES to CHECKOUT, modifying files in place.  The
+result is unspecified."
+  (let loop ((patches patches))
+    (match patches
+      (() #t)
+      ((($ <patch> predicate modify) rest ...)
+       ;; PREDICATE is passed COMMIT so that it can choose to only apply to
+       ;; ancestors.
+       (when (predicate checkout commit)
+         (modify checkout))
+       (loop rest)))))
+
+(define* (latest-channel-instance store channel
+                                  #:key (patches %patches))
+  "Return the latest channel instance for CHANNEL."
+  (define (dot-git? file stat)
+    (and (string=? (basename file) ".git")
+         (eq? 'directory (stat:type stat))))
+
+  (let-values (((checkout commit)
+                (update-cached-checkout (channel-url channel)
+                                        #:ref (channel-reference channel))))
+    (when (guix-channel? channel)
+      ;; Apply the relevant subset of PATCHES directly in CHECKOUT.  This is
+      ;; safe to do because 'switch-to-ref' eventually does a hard reset.
+      (apply-patches checkout commit patches))
+
+    (let* ((name     (url+commit->name (channel-url channel) commit))
+           (checkout (add-to-store store name #t "sha256" checkout
+                                   #:select? (negate dot-git?))))
+      (channel-instance channel commit checkout))))
+
 (define* (latest-channel-instances store channels #:optional (previous-channels '()))
   "Return a list of channel instances corresponding to the latest checkouts of
 CHANNELS and the channels on which they depend.  PREVIOUS-CHANNELS is a list
@@ -224,20 +265,16 @@ of previously processed channels."
                            (G_ "Updating channel '~a' from Git repository at '~a'...~%")
                            (channel-name channel)
                            (channel-url channel))
-                   (let-values (((checkout commit)
-                                 (latest-repository-commit store (channel-url channel)
-                                                           #:ref (channel-reference
-                                                                  channel))))
-                     (let ((instance (channel-instance channel commit checkout)))
-                       (let-values (((new-instances new-channels)
-                                     (latest-channel-instances
-                                      store
-                                      (channel-instance-dependencies instance)
-                                      previous-channels)))
-                         (values (append (cons channel new-channels)
-                                         previous-channels)
-                                 (append (cons instance new-instances)
-                                         instances))))))))
+                   (let ((instance (latest-channel-instance store channel)))
+                     (let-values (((new-instances new-channels)
+                                   (latest-channel-instances
+                                    store
+                                    (channel-instance-dependencies instance)
+                                    previous-channels)))
+                       (values (append (cons channel new-channels)
+                                       previous-channels)
+                               (append (cons instance new-instances)
+                                       instances)))))))
            previous-channels
            '()                                    ;instances
            channels))
@@ -333,11 +370,41 @@ to '%package-module-path'."
               'guile-2.2.4))
 
 (define %quirks
-  ;; List of predicate/package pairs.  This allows us provide information
+  ;; List of predicate/package pairs.  This allows us to provide information
   ;; about specific Guile versions that old Guix revisions might need to use
   ;; just to be able to build and run the trampoline in %SELF-BUILD-FILE.  See
   ;; <https://bugs.gnu.org/37506>
   `((,syscalls-reexports-local-variables? . ,guile-2.2.4)))
+
+
+(define %bug-41028-patch
+  ;; Patch for <https://bugs.gnu.org/41028>.  The faulty code is the
+  ;; 'compute-guix-derivation' body, which uses 'call-with-new-thread' without
+  ;; importing (ice-9 threads).  However, the 'call-with-new-thread' binding
+  ;; is no longer available in the default name space on Guile 3.0.
+  (let ()
+    (define (missing-ice-9-threads-import? source commit)
+      ;; Return true if %SELF-BUILD-FILE is missing an (ice-9 threads) import.
+      (define content
+        (call-with-input-file (string-append source "/" %self-build-file)
+          read-string))
+
+      (and (string-contains content "(call-with-new-thread")
+           (not (string-contains content "(ice-9 threads)"))))
+
+    (define (add-missing-ice-9-threads-import source)
+      ;; Add (ice-9 threads) import in the gexp of 'compute-guix-derivation'.
+      (substitute* (string-append source "/" %self-build-file)
+        (("^ +\\(use-modules \\(ice-9 match\\)\\)")
+         (object->string '(use-modules (ice-9 match) (ice-9 threads))))))
+
+   (patch missing-ice-9-threads-import? add-missing-ice-9-threads-import)))
+
+(define %patches
+  ;; Bits of past Guix revisions can become incompatible with newer Guix and
+  ;; Guile.  This variable lists <patch> records for the Guix source tree that
+  ;; apply to the Guix source.
+  (list %bug-41028-patch))
 
 (define* (guile-for-source source #:optional (quirks %quirks))
   "Return the Guile package to use when building SOURCE or #f if the default

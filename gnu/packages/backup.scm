@@ -14,6 +14,7 @@
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -203,18 +204,18 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.4.0")
+    (version "3.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (list (string-append "https://libarchive.org/downloads/libarchive-"
-                                 version ".tar.gz")
+                                 version ".tar.xz")
                   (string-append "https://github.com/libarchive/libarchive"
                                  "/releases/download/v" version "/libarchive-"
-                                 version ".tar.gz")))
+                                 version ".tar.xz")))
        (sha256
         (base32
-         "0pl25mmz1b1cnwf35kxmygyy9g7z7hslxbx329a9yx8csh7dahw6"))))
+         "18dd01ahs2hv74xm7axjc3yhq839p0x0s4vssvlmm8fknja09qfq"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)
@@ -234,24 +235,34 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                (("/bin/pwd") (which "pwd")))
              #t))
          (replace 'check
-           (lambda _
-             ;; XXX: The test_owner_parse, test_read_disk, and
-             ;; test_write_disk_lookup tests expect user 'root' to exist, but
-             ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
-             ;;
-             ;; XXX: Adjust test that fails with zstd 1.4.1 because the default
-             ;; options compresses two bytes better than this test expects.
-             ;; https://github.com/libarchive/libarchive/issues/1226
-             (substitute* "libarchive/test/test_write_filter_zstd.c"
-               (("compression-level\", \"6\"")
-                "compression-level\", \"7\""))
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+		 ;; XXX: The test_owner_parse, test_read_disk, and
+		 ;; test_write_disk_lookup tests expect user 'root' to
+		 ;; exist, but the chroot's /etc/passwd doesn't have
+		 ;; it.  Turn off those tests.
+		 ;;
+		 ;; XXX: Adjust test that fails with zstd 1.4.1
+		 ;; because the default options compresses two bytes
+		 ;; better than this test expects.
+		 ;; https://github.com/libarchive/libarchive/issues/1226
+                 (begin
+                   (substitute* "libarchive/test/test_write_filter_zstd.c"
+		     (("compression-level\", \"6\"")
+		      "compression-level\", \"7\""))
 
-             ;; The tests allow one to disable tests matching a globbing pattern.
-             (invoke "make" "libarchive_test" "bsdcpio_test" "bsdtar_test")
-             ;; XXX: This glob disables too much.
-             (invoke "./libarchive_test" "^test_*_disk*")
-             (invoke "./bsdcpio_test" "^test_owner_parse")
-             (invoke "./bsdtar_test")))
+		   ;; The tests allow one to disable tests matching a globbing pattern.
+		   (invoke "make"
+			   "libarchive_test"
+			   "bsdcpio_test"
+			   "bsdtar_test")
+
+		   ;; XXX: This glob disables too much.
+		   (invoke "./libarchive_test" "^test_*_disk*")
+		   (invoke "./bsdcpio_test" "^test_owner_parse")
+		   (invoke "./bsdtar_test"))
+                 ;; Tests may be disabled if cross-compiling.
+                 (format #t "Test suite not run.~%"))))
          (add-after 'install 'add--L-in-libarchive-pc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))

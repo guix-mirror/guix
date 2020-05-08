@@ -219,7 +219,7 @@ taxonomic inference capability.")
        ("libxml2" ,libxml2)
        ("mpfr" ,mpfr)
        ("pcre" ,pcre)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (propagated-inputs
      `(("raptor2" ,raptor2))) ; stipulated by rasqal.pc
     (arguments

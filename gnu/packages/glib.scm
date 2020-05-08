@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,6 +105,9 @@
         ;; Install the session bus socket under /tmp.
         "--with-session-socket-dir=/tmp"
 
+        ;; Build shared libraries only.
+        "--disable-static"
+
         ;; Use /etc/dbus-1 for system-wide config.
         ;; Look for configuration file under
         ;; /etc/dbus-1.  This is notably required by
@@ -162,7 +165,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.60.6")
+   (version "2.62.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -170,7 +173,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0v7vpx2md1gn0wwiirn7g4bhf2csfvcr03y96q2zv97ain6sp3zz"))
+              "174bsmbmcvaw69ff9g60q5sx0fn23rkhqcwqz17h5s7sprps4kqh"))
             (patches (search-patches "glib-tests-timer.patch"))
             (modules '((guix build utils)))
             (snippet
@@ -185,11 +188,9 @@ shared NFS home directories.")
     `(("pcre" ,pcre)  ; in the Requires.private field of glib-2.0.pc
       ("libffi" ,libffi) ; in the Requires.private field of gobject-2.0.pc
       ;; These are in the Requires.private field of gio-2.0.pc
-      ("util-linux" ,util-linux)  ; for libmount
+      ("util-linux" ,util-linux "lib")  ;for libmount
       ("libselinux" ,libselinux)
       ("zlib" ,zlib)))
-   (inputs
-    `(("coreutils" ,coreutils)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("m4" ,m4) ; for installing m4 macros
@@ -199,11 +200,26 @@ shared NFS home directories.")
       ("perl" ,perl)                              ; needed by GIO tests
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
-    `(;; TODO: Uncomment on the next rebuild cycle.
-      ;; #:disallowed-references (,tzdata-for-tests)
-
+    `(#:disallowed-references (,tzdata-for-tests)
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'patch-dbus-launch-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((dbus (assoc-ref inputs "dbus")))
+              (substitute* "gio/gdbusaddress.c"
+                (("command_line = g_strdup_printf \\(\"dbus-launch")
+                 (string-append "command_line = g_strdup_printf (\""
+                                dbus "/bin/dbus-launch")))
+              #t)))
+        (add-after 'unpack 'patch-gio-launch-desktop
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; See also <https://gitlab.gnome.org/GNOME/glib/issues/1633>
+              ;; for another future fix.
+              (substitute* "gio/gdesktopappinfo.c"
+               (("gio-launch-desktop")
+                (string-append out "/libexec/gio-launch-desktop")))
+              #t)))
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
@@ -284,7 +300,7 @@ shared NFS home directories.")
                       (;; Requires /etc/machine-id.
                        "/gdbus/codegen-peer-to-peer"))
 
-                     ("gio/tests/gdbus-unix-addresses.c"
+                     ("gio/tests/gdbus-address-get-session.c"
                       (;; Requires /etc/machine-id.
                        "/gdbus/x11-autolaunch"))
 
@@ -312,6 +328,13 @@ shared NFS home directories.")
               (mkdir-p bin)
               (rename-file (string-append out "/bin")
                            (string-append bin "/bin"))
+              ;; This one is an implementation detail of glib.
+              ;; It is wrong that that's in "/bin" in the first place,
+              ;; but that's what upstream is doing right now.
+              ;; See <https://gitlab.gnome.org/GNOME/glib/issues/1633>.
+              (mkdir (string-append out "/libexec"))
+              (rename-file (string-append bin "/bin/gio-launch-desktop")
+                           (string-append out "/libexec/gio-launch-desktop"))
               ;; Do not refer to "bindir", which points to "${prefix}/bin".
               ;; We don't patch "bindir" to point to "$bin/bin", because that
               ;; would create a reference cycle between the "out" and "bin"
@@ -380,14 +403,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.60.2")
+    (version "1.62.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "172ymc1vbg2rclq1rszx4y32vm900nn1mc4qg1a4mqxjiwvf5pzz"))
+              (base32 "18lhglg9v6y83lhqzyifc1z0wrlawzrhzzxx0a3h1g7xaz97xvmi"))
              (patches (search-patches
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
@@ -529,20 +552,10 @@ information in their documents, such as whether a particular element should be
 translated.")
     (license license:gpl3+)))
 
-(define-public itstool/fixed
-  ;; This variant fixes a python-libxml2 crash when processing UTF-8
-  ;; sequences: <https://bugs.gnu.org/37468>.  Since the issue is quite rare,
-  ;; create this variant here to avoid a full rebuild.
-  (package/inherit
-   itstool
-   (inputs
-    `(("python-libxml2" ,python-libxml2/fixed)
-      ,@(alist-delete "python-libxml2" (package-inputs itstool))))))
-
 (define dbus-glib
   (package
     (name "dbus-glib")
-    (version "0.108")
+    (version "0.110")
     (source (origin
              (method url-fetch)
              (uri
@@ -550,7 +563,7 @@ translated.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "0b307hw9j41npzr6niw1bs6ryp87m5yafg492gqwvsaj4dz0qd4z"))))
+               "09g8swvc95bk1z6j8sw463p2v0dqmgm2zjfndf7i8sbcyq67dr3w"))))
     (build-system gnu-build-system)
     (propagated-inputs ; according to dbus-glib-1.pc
      `(("dbus" ,dbus)
@@ -570,7 +583,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.10.2")
+    (version "2.10.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -578,7 +591,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "163s14d1rqp82gc1vsm3q0wzsbdicb9q6307kz0zk5lm6x9h5jmi"))))
+               "11j7j1jv4z58d9s7jvl42fnqa1dzl4idgil9r45cjv1w673dys0b"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
@@ -597,7 +610,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.60.0")
+    (version "2.62.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -605,7 +618,7 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "1g7jxqd270dv2d83r7pf5893mwpz7d5xib0q01na2yalh34v38d3"))))
+               "1ziwx6r7k7wbvg4qq1rgrv8zninapgrmhn1hs6926a3krh9ryr9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -679,7 +692,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.28.3")
+    (version "3.34.0")
     (source
      (origin
        (method url-fetch)
@@ -688,24 +701,20 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1c6h3brzlyvzbpdsammnd957azmp6cbzqrd65r400vnh2l8f5lrx"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-tests
-           (lambda _
-             ;; FIXME: this test freezes and times out.
-             (delete-file "tests/test_mainloop.py")
-             ;; FIXME: this test fails with this kind of error:
-             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
-             (delete-file "tests/test_ossig.py")
+         "06i7ynnbvgpz0gw09zsjbvhgcp5qz4yzdifw27qjwdazg2mckql7"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; We disable these tests in a snippet so that they are inherited
+           ;; by the Python 2 variant which is built differently.
+           (with-directory-excursion "tests"
+             ;; FIXME: These tests require Gdk and/or Gtk 4.
+             (for-each delete-file
+                       '("test_atoms.py" "test_overrides_gtk.py"))
              #t)))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("which" ,which)
-       ;for tests: dbus-run-session and glib-compile-schemas
-       ("dbus" ,dbus)
-       ("glib-bin" ,glib "bin")
+     `(("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("python-pytest" ,python-pytest)))
     (inputs
@@ -728,44 +737,30 @@ useful for C++.")
 (define-public python2-pygobject
   (package (inherit (strip-python2-variant python-pygobject))
     (name "python2-pygobject")
+
+    ;; Note: We use python-build-system here, because Meson only supports
+    ;; Python 3, and needs PYTHONPATH etc set up correctly, which makes it
+    ;; difficult to use for Python 2 projects.
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-broken-tests
+           (lambda _
+             ;; FIXME: this test freezes and times out.
+             (delete-file "tests/test_mainloop.py")
+             ;; FIXME: this test fails with this kind of error:
+             ;; AssertionError: <Handlers.SIG_IGN: 1> != <built-in function default_int_handler
+             (delete-file "tests/test_ossig.py")
+             #t)))))
     (inputs
-     `(("python" ,python-2)
-       ("python-pycairo" ,python2-pycairo)
+     `(("python-pycairo" ,python2-pycairo)
        ("gobject-introspection" ,gobject-introspection)))
     (native-inputs
-     `(("which" ,which)
-       ;for tests: dbus-run-session and glib-compile-schemas
-       ("dbus" ,dbus)
-       ("glib-bin" ,glib "bin")
+     `(("glib-bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("python-pytest" ,python2-pytest)))))
-
-;; Newer version of this core-updates package, for Lollypop.
-(define-public python-pygobject-3.34
-  (package/inherit
-   python-pygobject
-   (version "3.34.0")
-   (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/pygobject/"
-                          (version-major+minor version)
-                          "/pygobject-" version ".tar.xz"))
-      (sha256
-       (base32 "06i7ynnbvgpz0gw09zsjbvhgcp5qz4yzdifw27qjwdazg2mckql7"))))
-   (build-system meson-build-system)
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'delete-broken-tests
-          (lambda _
-            (with-directory-excursion "tests"
-              (for-each
-               delete-file
-               ;; FIXME: these tests require Gdk and/or Gtk 4.
-               '("test_atoms.py"
-                 "test_overrides_gtk.py")))
-            #t)))))))
 
 (define-public perl-glib
   (package
@@ -810,6 +805,7 @@ up the Gnome environment, and are used in many unrelated projects.")
          "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))
        (patches
         (list
+         (search-patch "telepathy-glib-channel-memory-leak.patch")
          ;; Don't use the same test name for multiple tests.
          ;; <https://bugs.freedesktop.org/show_bug.cgi?id=92245>
          (origin
@@ -829,7 +825,18 @@ up the Gnome environment, and are used in many unrelated projects.")
        ;;
        ;;   EOFError: EOF read where object expected
        ;;   make[2]: *** [Makefile:1906: _gen/register-dbus-glib-marshallers-body.h] Error 1
-       #:parallel-build? #f))
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; None of the tests below are able to find the org.gtk.vfs.Daemon
+             ;; service file provided by gvfs.
+             (substitute* "tests/dbus/Makefile.in"
+               (("test-contacts\\$\\(EXEEXT\\)") "")
+               (("test-file-transfer-channel\\$\\(EXEEXT\\)") "")
+               (("test-stream-tube\\$\\(EXEEXT\\)") ""))
+             #t)))))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
@@ -915,7 +922,7 @@ programming language.  It also contains the utility
     (propagated-inputs
      `(("gcab" ,gcab) ; for .pc file
        ("gdk-pixbuf" ,gdk-pixbuf) ; for .pc file
-       ("util-linux" ,util-linux))) ; for .pc file
+       ("libuuid" ,util-linux "lib"))) ; for .pc file
     (inputs
      `(("glib" ,glib)
        ("gperf" ,gperf)

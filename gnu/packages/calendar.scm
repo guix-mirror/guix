@@ -38,6 +38,7 @@
   #:use-module (gnu packages dav)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
@@ -136,7 +137,10 @@ the <tz.h> library for handling time zones and leap seconds.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
-       #:configure-flags '("-DSHARED_ONLY=true")
+       #:configure-flags '("-DSHARED_ONLY=true"
+                           ;; required by evolution-data-server
+                           "-DGOBJECT_INTROSPECTION=true"
+                           "-DICAL_GLIB_VAPI=true")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
@@ -153,9 +157,11 @@ the <tz.h> library for handling time zones and leap seconds.")
                  (("\\\"/usr/share/lib/zoneinfo\\\"") "")))
              #t)))))
     (native-inputs
-     `(("gtk-doc" ,gtk-doc)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
        ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (inputs
      `(("glib" ,glib)
        ("libxml2" ,libxml2)

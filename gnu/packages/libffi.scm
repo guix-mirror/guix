@@ -41,7 +41,7 @@
 (define-public libffi
   (package
     (name "libffi")
-    (version "3.2.1")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -49,21 +49,12 @@
                               name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))
-              (patches (search-patches "libffi-3.2.1-complex-alpha.patch"))))
+                "0mi0cpf8aa40ljjmzxb7im6dbj45bb0kllcd09xgmp834y9agyvj"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Prevent the build system from passing -march and -mtune to the
        ;; compiler.  See "ax_cc_maxopt.m4" and "ax_gcc_archflag.m4".
-       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (define out (assoc-ref outputs "out"))
-             (symlink (string-append out "/lib/libffi-3.2.1/include")
-                      (string-append out "/include"))
-             #t)))))
+       #:configure-flags '("--enable-portable-binary" "--without-gcc-arch")))
     (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description
@@ -85,14 +76,13 @@ conversions for values passed between the two languages.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.11.5")
+    (version "1.13.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "1x3lrj928dcxx1k8k9gf3s4s3jwvzv8mc3kkyg1g7c3a1sc1f3z9"))
-      (patches (search-patches "python-cffi-x87-stack-clean.patch"))))
+       (base32 "0iikq5rn9a405n94c7s2j6kq3jv5qs9q4xyik8657b2py27ix6jr"))))
     (build-system python-build-system)
     (inputs
      `(("libffi" ,libffi)))
@@ -125,7 +115,7 @@ conversions for values passed between the two languages.")
                                "compiler_so='gcc',linker_exe='gcc',"
                                "linker_so='gcc -shared')")))
              (substitute* "testing/cffi0/test_ownlib.py"
-               (("'cc testownlib") "'gcc testownlib"))
+               (("\"cc testownlib") "\"gcc testownlib"))
              (invoke "py.test" "-v" "c/" "testing/")
              #t))
          (add-before 'check 'patch-paths-of-dynamically-loaded-libraries
@@ -151,14 +141,7 @@ conversions for values passed between the two languages.")
                (substitute* "c/test_c.py"
                  (("find_and_load_library\\(['\"]{1}c['\"]{1}")
                   (format #f "find_and_load_library('~a'" libc)))
-               #t)))
-         (add-before 'check 'disable-failing-test
-           ;; This is assumed to be a libffi issue:
-           ;; https://bitbucket.org/cffi/cffi/issues/312/tests-failed-with-armv8
-           (lambda _
-             (substitute* "testing/cffi0/test_ownlib.py"
-               (("ret.left") "ownlib.left"))
-             #t)))))
+               #t))))))
     (home-page "https://cffi.readthedocs.io/")
     (synopsis "Foreign function interface for Python")
     (description "Foreign Function Interface for Python calling C code.")

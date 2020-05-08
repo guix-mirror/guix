@@ -68,7 +68,7 @@
        ;; XXX gstreamer-0.10 builds fail
        ;; ("gstreamer" ,gstreamer-0.10)
        ("gtk" ,gtk+)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmspack" ,libmspack)
        ("libsm" ,libsm)
        ("libtiff" ,libtiff)
@@ -124,7 +124,7 @@ and many other languages.")
         (base32 "1gjs9vfga60mk4j4ngiwsk9h6c7j22pw26m3asxr1jwvqbr8kkqk"))))
     (inputs
      `(("gtk" ,gtk+-2)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("libmspack" ,libmspack)
        ("sdl" ,sdl)

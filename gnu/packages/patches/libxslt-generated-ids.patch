@@ -162,10 +162,10 @@ diff --git a/libxslt/xsltInternals.h b/libxslt/xsltInternals.h
 index 95e8fe6..8eedae4 100644
 --- a/libxslt/xsltInternals.h
 +++ b/libxslt/xsltInternals.h
-@@ -1786,6 +1786,8 @@ struct _xsltTransformContext {
-     int funcLevel;      /* Needed to catch recursive functions issues */
-     int maxTemplateDepth;
+@@ -1782,6 +1782,8 @@ struct _xsltTransformContext {
      int maxTemplateVars;
+     unsigned long opLimit;
+     unsigned long opCount;
 +
 +    unsigned long nextid;/* for generating stable ids */
  };

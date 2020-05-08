@@ -34,6 +34,7 @@
   #:use-module (guix records)
   #:use-module ((guix combinators) #:select (fold2))
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 popen)
@@ -234,6 +235,8 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
   (device      partition-device (default #f))
   (size        partition-size)
   (file-system partition-file-system (default "ext4"))
+  (file-system-options partition-file-system-options ;passed to 'mkfs.FS'
+                       (default '()))
   (label       partition-label (default #f))
   (uuid        partition-uuid (default #f))
   (flags       partition-flags (default '()))
@@ -308,7 +311,7 @@ actual /dev name based on DEVICE."
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
 (define* (create-ext-file-system partition type
-                                 #:key label uuid)
+                                 #:key label uuid (options '()))
   "Create an ext-family file system of TYPE on PARTITION.  If LABEL is true,
 use that as the volume name.  If UUID is true, use it as the partition UUID."
   (format #t "creating ~a partition... ~@[label: ~s~] ~@[uuid: ~s~]\n"
@@ -320,26 +323,29 @@ use that as the volume name.  If UUID is true, use it as the partition UUID."
                  '())
            ,@(if uuid
                  `("-U" ,(uuid->string uuid))
-                 '()))))
+                 '())
+           ,@options)))
 
 (define* (create-fat-file-system partition
-                                 #:key label uuid)
+                                 #:key label uuid (options '()))
   "Create a FAT file system on PARTITION.  The number of File Allocation Tables
 will be determined based on file system size.  If LABEL is true, use that as the
 volume name."
   ;; FIXME: UUID is ignored!
   (format #t "creating FAT partition...\n")
   (apply invoke "mkfs.fat" partition
-         (if label `("-n" ,label) '())))
+         (append (if label `("-n" ,label) '()) options)))
 
 (define* (format-partition partition type
-                           #:key label uuid)
+                           #:key label uuid (options '()))
   "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
-volume name."
+volume name.  Options is a list of command-line options passed to 'mkfs.FS'."
   (cond ((string-prefix? "ext" type)
-         (create-ext-file-system partition type #:label label #:uuid uuid))
+         (create-ext-file-system partition type #:label label #:uuid uuid
+                                 #:options options))
         ((or (string-prefix? "fat" type) (string= "vfat" type))
-         (create-fat-file-system partition #:label label #:uuid uuid))
+         (create-fat-file-system partition #:label label #:uuid uuid
+                                 #:options options))
         (else (error "Unsupported file system."))))
 
 (define (initialize-partition partition)
@@ -349,7 +355,8 @@ it, run its initializer, and unmount it."
    (format-partition (partition-device partition)
                      (partition-file-system partition)
                      #:label (partition-label partition)
-                     #:uuid (partition-uuid partition))
+                     #:uuid (partition-uuid partition)
+                     #:options (partition-file-system-options partition))
    (mkdir-p target)
    (mount (partition-device partition) target
           (partition-file-system partition))
@@ -363,14 +370,20 @@ it, run its initializer, and unmount it."
                                      copy-closures?
                                      (register-closures? #t)
                                      system-directory
-                                     (deduplicate? #t))
+                                     (deduplicate? #t)
+                                     (make-device-nodes
+                                      make-essential-device-nodes)
+                                     (extra-directives '()))
   "Return a procedure to initialize a root partition.
 
 If REGISTER-CLOSURES? is true, register all of CLOSURES in the partition's
 store.  If DEDUPLICATE? is true, then also deduplicate files common to
 CLOSURES and the rest of the store when registering the closures.  If
 COPY-CLOSURES? is true, copy all of CLOSURES to the partition.
-SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
+SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation.
+
+EXTRA-DIRECTIVES is an optional list of directives to populate the root file
+system that is passed to 'populate-root-file-system'."
   (lambda (target)
     (define target-store
       (string-append target (%store-directory)))
@@ -381,7 +394,7 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
                       target))
 
     ;; Populate /dev.
-    (make-essential-device-nodes #:root target)
+    (make-device-nodes target)
 
     ;; Optionally, register the inputs in the image's store.
     (when register-closures?
@@ -403,12 +416,22 @@ SYSTEM-DIRECTORY is the name of the directory of the 'system' derivation."
 
     ;; Add the non-store directories and files.
     (display "populating...\n")
-    (populate-root-file-system system-directory target)
+    (populate-root-file-system system-directory target
+                               #:extras extra-directives)
 
     ;; 'register-closure' resets timestamps and everything, so no need to do it
     ;; once more in that case.
     (unless register-closures?
-      (reset-timestamps target))))
+      ;; 'reset-timestamps' also resets file permissions; do that everywhere
+      ;; except on /dev so that /dev/null remains writable, etc.
+      (for-each (lambda (directory)
+                  (reset-timestamps (string-append target "/" directory)))
+                (scandir target
+                         (match-lambda
+                           ((or "." ".." "dev") #f)
+                           (_ #t))))
+      (reset-timestamps (string-append target "/dev")
+                        #:preserve-permissions? #t))))
 
 (define (register-bootcfg-root target bootcfg)
   "On file system TARGET, register BOOTCFG as a GC root."
