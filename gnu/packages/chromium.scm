@@ -527,6 +527,12 @@ from forcing GEXP-PROMISE."
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-stuff
            (lambda _
+             ;; Fix build with newer re2.  Taken from:
+             ;; https://chromium-review.googlesource.com/c/chromium/src/+/2145261
+             (substitute* "components/autofill/core/browser/address_rewriter.cc"
+               (("options\\.set_utf8\\(true\\)")
+                "options.set_encoding(RE2::Options::EncodingUTF8)"))
+
              (substitute*
                  '("base/process/launch_posix.cc"
                    "base/third_party/dynamic_annotations/dynamic_annotations.c"

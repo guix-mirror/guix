@@ -1810,6 +1810,15 @@ message.")))
      (substitute-keyword-arguments (package-arguments qtsvg)
        ((#:phases phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'fix-build-with-newer-re2
+             (lambda _
+               ;; Adjust for API change in re2, taken from
+               ;; https://chromium-review.googlesource.com/c/chromium/src/+/2145261
+               (substitute* "src/3rdparty/chromium/components/autofill/core\
+/browser/address_rewriter.cc"
+               (("options\\.set_utf8\\(true\\)")
+                "options.set_encoding(RE2::Options::EncodingUTF8)"))
+               #t))
            (add-after 'unpack 'patch-ninja-version-check
              (lambda _
                ;; The build system assumes the system Ninja is too old because
