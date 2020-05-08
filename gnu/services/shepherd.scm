@@ -105,7 +105,11 @@
    (extensions (list (service-extension boot-service-type
                                         shepherd-boot-gexp)
                      (service-extension profile-service-type
-                                        (const (list shepherd)))))))
+                                        (const (list shepherd)))))
+   (description
+    "Run the GNU Shepherd as PID 1---i.e., the operating system's first
+process.  The Shepherd takes care of managing services such as daemons by
+ensuring they are started and stopped in the right order.")))
 
 (define %shepherd-root-service
   ;; The root shepherd service, aka. PID 1.  Its parameter is a list of

@@ -639,7 +639,10 @@
                         (service-extension activation-service-type
                                            knot-activation)
                         (service-extension account-service-type
-                                           (const %knot-accounts))))))
+                                           (const %knot-accounts))))
+                (description
+                 "Run @uref{https://www.knot-dns.cz/, Knot}, an authoritative
+name server for the @acronym{DNS, Domain Name System}.")))
 
 
 ;;;

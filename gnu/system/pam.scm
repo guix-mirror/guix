@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -367,7 +367,13 @@ strings or string-valued gexps."
 
                 ;; Arguments include <pam-service> as well as procedures.
                 (compose concatenate)
-                (extend extend-configuration)))
+                (extend extend-configuration)
+                (description
+                 "Configure the Pluggable Authentication Modules (PAM) for all
+the specified @dfn{PAM services}.  Each PAM service corresponds to a program,
+such as @command{login} or @command{sshd}, and specifies for instance how the
+program may authenticate users or what it should do when opening a new
+session.")))
 
 (define* (pam-root-service base #:key (transform identity))
   "The \"root\" PAM service, which collects <pam-service> instance and turns
