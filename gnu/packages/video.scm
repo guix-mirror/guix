@@ -2928,16 +2928,16 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cisco/"
-                                  name "/releases/download/v"
-                                  version "/Source.Code.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cisco/openh264")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iq802xfsfkskg6q1j0kg90xh04vv1sxf61mrmahgynz5d7hx2ii"))))
+                "1wba260n1932vafd5ni2jqv9kzc7lj6a1asm1cqk8jv690m6zvpi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)
