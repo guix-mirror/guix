@@ -649,7 +649,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "7.4")
+    (version "7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -658,7 +658,7 @@ of the screen selected by mouse.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fgd8a2dqkg64all0f96sca92sdss9r3pzmv5kck46b99z2325z6"))))
+                "1k8xxb4rj2fylr4vj16yvsf73cyywliz9cy78pl4ibmi03jhg837"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
