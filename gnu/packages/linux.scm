@@ -1000,7 +1000,7 @@ It has been modified to remove all non-free binary blobs.")
        "This simple Linux kernel module allows calls from user space to any
 @acronym{ACPI, Advanced Configuration and Power Interface} method provided by
 your computer's firmware, by writing to @file{/proc/acpi/call}.  You can pass
-any number of parameters of types @code{ACPI_INTEGER},  @code{ACPI_STRING},
+any number of parameters of types @code{ACPI_INTEGER}, @code{ACPI_STRING},
 and @code{ACPI_BUFFER}.
 
 It grants direct and undocumented access to your hardware that may cause damage
