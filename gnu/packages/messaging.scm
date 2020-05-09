@@ -20,6 +20,7 @@
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1768,6 +1769,12 @@ building the IRC clients and bots.")
          (delete 'configure)
          (add-before 'build 'enable-python-scripting
            (lambda _
+             ;; XXX: For compatibility with Python 3.8, adjust python3-config
+             ;; invokation to include --embed; see
+             ;; <https://github.com/JFreegman/toxic/issues/533>.
+             (substitute* "cfg/checks/python.mk"
+               (("python3-config --ldflags")
+                "python3-config --ldflags --embed"))
              (setenv "ENABLE_PYTHON" "1")
              #t)))))
     (inputs
