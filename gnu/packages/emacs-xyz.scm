@@ -10675,6 +10675,29 @@ as bold, underscore or italic.")
 Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-eglot
+  (package
+    (name "emacs-eglot")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "eglot-" version ".tar"))
+       (sha256
+        (base32 "15hd6sx7qrpvlvhwwkcgdiki8pswwf4mm7hkm0xvznskfcp44spx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-jsonrpc" ,emacs-jsonrpc)))
+    (home-page "https://github.com/joaotavora/eglot")
+    (synopsis "Client for Language Server Protocol (LSP) servers")
+    (description
+     "Emacs Polyglot, or Eglot, is an Emacs @acronym{Language Server Protocol,
+LSP} client that stays out of the way.  It guesses the LSP program to start
+for the current file, using the major mode as a hint.  It prompts you to enter
+one if it fails.")
+    (license license:gpl3+)))
+
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public emacs-ert-runner
