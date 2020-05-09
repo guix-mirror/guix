@@ -307,6 +307,14 @@ derivation graph")))))))
 ;;; DAG of residual references (aka. run-time dependencies).
 ;;;
 
+(define intern
+  (mlambda (str)
+    "Intern STR, a string denoting a store item."
+    ;; This is necessary for %REFERENCE-NODE-TYPE and %REFERRER-NODE-TYPE
+    ;; because their nodes are strings but the (guix graph) traversal
+    ;; procedures expect to be able to compare nodes with 'eq?'.
+    str))
+
 (define ensure-store-items
   ;; Return a list of store items as a monadic value based on the given
   ;; argument, which may be a store item or a package.
@@ -316,10 +324,10 @@ derivation graph")))))))
      (mlet %store-monad ((drv (package->derivation package)))
        (return (match (derivation->output-paths drv)
                  (((_ . file-names) ...)
-                  file-names)))))
+                  (map intern file-names))))))
     ((? store-path? item)
      (with-monad %store-monad
-       (return (list item))))
+       (return (list (intern item)))))
     (x
      (raise
       (condition (&message (message "unsupported argument for \
@@ -333,18 +341,19 @@ substitutes."
     (guard (c ((store-protocol-error? c)
                (match (substitutable-path-info store (list item))
                  ((info)
-                  (values (substitutable-references info) store))
+                  (values (map intern (substitutable-references info))
+                          store))
                  (()
                   (leave (G_ "references for '~a' are not known~%")
                          item)))))
-      (values (references store item) store))))
+      (values (map intern (references store item)) store))))
 
 (define %reference-node-type
   (node-type
    (name "references")
    (description "the DAG of run-time dependencies (store references)")
    (convert ensure-store-items)
-   (identifier (lift1 identity %store-monad))
+   (identifier (lift1 intern %store-monad))
    (label store-path-package-name)
    (edges references*)))
 
@@ -353,14 +362,14 @@ substitutes."
     (lambda (item)
       "Return the referrers of ITEM, except '.drv' files."
       (mlet %store-monad ((items (referrers item)))
-        (return (remove derivation-path? items))))))
+        (return (map intern (remove derivation-path? items)))))))
 
 (define %referrer-node-type
   (node-type
    (name "referrers")
    (description "the DAG of referrers in the store")
    (convert ensure-store-items)
-   (identifier (lift1 identity %store-monad))
+   (identifier (lift1 intern %store-monad))
    (label store-path-package-name)
    (edges non-derivation-referrers)))
 

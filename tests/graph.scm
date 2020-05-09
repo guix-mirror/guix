@@ -31,6 +31,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages bootstrap)
@@ -357,6 +358,32 @@ edges."
                                              (list p2 p1a p1b p0))))
         (return (lset= eq? (node-transitive-edges (list p2) edges)
                        (list p1a p1b p0)))))))
+
+(test-assert "node-transitive-edges, references"
+  (run-with-store %store
+    (mlet* %store-monad ((d0 (package->derivation %bootstrap-guile))
+                         (d1 (gexp->derivation "d1"
+                                               #~(begin
+                                                   (mkdir #$output)
+                                                   (symlink #$%bootstrap-guile
+                                                            (string-append
+                                                             #$output "/l")))))
+                         (d2 (gexp->derivation "d2"
+                                               #~(begin
+                                                   (mkdir #$output)
+                                                   (symlink #$d1
+                                                            (string-append
+                                                             #$output "/l")))))
+                         (_  (built-derivations (list d2)))
+                         (->node -> (node-type-convert %reference-node-type))
+                         (o2      (->node (derivation->output-path d2)))
+                         (o1      (->node (derivation->output-path d1)))
+                         (o0      (->node (derivation->output-path d0)))
+                         (edges   (node-edges %reference-node-type
+                                              (append o0 o1 o2)))
+                         (reqs    ((store-lift requisites) o2)))
+      (return (lset= string=?
+                     (append o2 (node-transitive-edges o2 edges)) reqs)))))
 
 (test-equal "node-reachable-count"
   '(3 3)
