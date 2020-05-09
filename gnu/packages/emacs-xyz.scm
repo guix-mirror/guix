@@ -21524,7 +21524,7 @@ Google guidelines.")
 (define-public emacs-helm-fish-completion
   (package
     (name "emacs-helm-fish-completion")
-    (version "0.2")
+    (version "0.3")
     (home-page "https://github.com/emacs-helm/helm-fish-completion")
     (source
      (origin
@@ -21534,7 +21534,7 @@ Google guidelines.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "089gp2k22xwn33z8brpyb7r18vpyralq2cwxj1xsc8b2sj9s4896"))))
+        (base32 "1iv0hwr74hzgrvrr31nlnswvi87lvpg24rd1rhkr5kjicr2295fq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("helm" ,emacs-helm)
