@@ -706,7 +706,7 @@ infamous 'Wanda the Fish'.")
 (define-public atril
   (package
     (name "atril")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
@@ -714,7 +714,7 @@ infamous 'Wanda the Fish'.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1xd49j4qwrlg2nh2zvspf91yk033dp8a58dy9azqg2yz4bcvywxb"))))
+         "0967gxw7h2qh2kpwl0jgv58hicz6aa92kr12mnykbpikad25s95y"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-openjpeg="
@@ -758,6 +758,7 @@ infamous 'Wanda the Fish'.")
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
+       ("texlive-bin" ,texlive-bin) ;synctex
        ("xmllint" ,libxml2)
        ("zlib" ,zlib)))
     (inputs
