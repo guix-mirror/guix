@@ -50,6 +50,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -987,3 +988,46 @@ an antenna, and then plot the radiation pattern or frequency-related data like
 gain and standing wave ratio.")
     (home-page "http://www.5b4az.org/")
     (license license:gpl3+)))
+
+(define-public dump1090
+  (package
+    (name "dump1090")
+    (version "3.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flightaware/dump1090.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xg8rzrxqklx1m9ncxsd96dlkbjcsxfi2mrb859v50f07xysdyd8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("ncurses" ,ncurses)
+       ("rtl-sdr" ,rtl-sdr)))
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (setenv "CC" "gcc")
+             (setenv "BLADERF" "no")
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (install-file "dump1090" bin)
+               (install-file "view1090" bin)
+               #t))))))
+    (synopsis "Mode S decoder for rtl-sdr devices")
+    (description
+     "Dump1090 is a Mode S decoder specifically designed for rtl-sdr devices.
+It can be used to decode the ADS-B signals that planes emit to indicate
+their position, altitude, speed, etc.")
+    (home-page "https://github.com/flightaware/dump1090")
+    (license license:bsd-3)))
