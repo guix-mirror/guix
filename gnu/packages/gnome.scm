@@ -52,6 +52,7 @@
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6350,7 +6351,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.18.4")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -6359,7 +6360,7 @@ users.")
               (patches (search-patches "nm-plugin-path.patch"))
               (sha256
                (base32
-                "0pnh1wr2p1fqa5pr945fr3lngfc5ccfrmgddqsg55lxnjpv0ggd3"))
+                "06044fl60bjlj7c6rqqfbm5795h61h6yzp7ch392hzcnm46wwhn3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
