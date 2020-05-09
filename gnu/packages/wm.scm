@@ -1313,7 +1313,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.7.0")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -1322,7 +1322,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jzxa6psbc7ddxli7rbfqxmv1svxnis51l1vch4hb9fdixqm284a"))))
+        (base32 "0j2lh9vc92zhn44rjbia5aw3y1rpgfng1x1h17lcvj5m4i6vj0pc"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
