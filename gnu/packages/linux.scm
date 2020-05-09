@@ -1208,6 +1208,53 @@ at login.  Local and dynamic reconfiguration are its key features.")
 ;;; Miscellaneous.
 ;;;
 
+(define-public powerstat
+  (package
+    (name "powerstat")
+    (version "0.02.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://kernel.ubuntu.com/~cking/tarballs/"
+                           "powerstat/powerstat-" version ".tar.gz"))
+       (sha256
+        (base32 "0r355b9syqa2nhfy8ksvxyy5d58v0isf983842js091s6liy0x7g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let* ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "prefix=" (assoc-ref %outputs "out"))))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'respect-$prefix
+           ;; https://bugs.launchpad.net/ubuntu/+source/powerstat/+bug/1877744
+           (lambda _
+             (substitute* "Makefile"
+               (("DIR=/usr/") "DIR=$(prefix)/"))
+             #t))
+         (delete 'configure))))         ; no configure script
+    (home-page "https://kernel.ubuntu.com/~cking/powerstat/")
+    (synopsis "Measure system power consumption")
+    (description
+     "Powerstat measures and reports your computer's power consumption in real
+time.  On mobile PCs, it uses ACPI battery information to measure the power
+drain of the entire system.
+
+Powerstat can also report @acronym{RAPL, Running Average Power Limit} power
+domain measurements.  These are available only on some hardware such as Intel
+Sandybridge and newer, and cover only part of the machine's components such as
+CPU, DRAM, and graphics.  However, they provide accurate and immediate readings
+and don't require a battery at all.
+
+The output is like @command{vmstat} but also shows power consumption statistics:
+at the end of a run, @command{powerstat} will calculate the average, standard
+deviation, and minimum and maximum values.  It can show a nice histogram too.")
+    (license license:gpl2)))
+
 (define-public psmisc
   (package
     (name "psmisc")
