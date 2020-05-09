@@ -276,8 +276,8 @@ faster window switching.")
 (define-public gnome-shell-extension-gsconnect
   (package
     (name "gnome-shell-extension-gsconnect")
-    ;; v28 is the last version to support GNOME 3.32
-    (version "28")
+    ;; v33 is the last version to support GNOME 3.34
+    (version "33")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -287,7 +287,7 @@ faster window switching.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0grqkzqm7mlkbzin4nx9w7bh5cgygph8pn0cvim4a4gg99nfcp5z"))))
+                "1q03axhn75i864vgmd6myhmgwrmnpf01gsd1wl0di5x9q8mic2zn"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -341,7 +341,6 @@ faster window switching.")
      `(("at-spi2-core" ,at-spi2-core)
        ("caribou" ,caribou)
        ("evolution-data-server" ,evolution-data-server)
-       ("folks" ,folks)
        ("gjs" ,gjs)
        ("glib" ,glib)
        ("glib:bin" ,glib "bin")
