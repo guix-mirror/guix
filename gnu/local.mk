@@ -291,6 +291,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/jrnl.scm				\
   %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
+  %D%/packages/julia-xyz.scm			\
   %D%/packages/jupyter.scm			\
   %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
