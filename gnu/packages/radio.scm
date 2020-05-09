@@ -142,6 +142,15 @@ mathematical operations, and much more.")
 cheap software defined radio, since the chip allows transferring the raw I/Q
 samples to the host.  @code{rtl-sdr} provides drivers for this purpose.
 
+The default Linux driver managing DVB-T dongles as TV devices doesn't work for
+SDR purposes and clashes with this package.  Therefore you must prevent the
+kernel from loading it automatically by adding the following line to your
+system configuration:
+
+@lisp
+(kernel-arguments '(\"modprobe.blacklist=dvb_usb_rtl28xxu\"))
+@end lisp
+
 To install the rtl-sdr udev rules, you must add this package in the
 configuration of the udev system service. E.g.:
 
