@@ -10859,10 +10859,31 @@ a @url{http://json.org/, JSON} file.")
 highlighting.")
     (license license:gpl3+)))
 
+(define-public emacs-jsonrpc
+  (package
+    (name "emacs-jsonrpc")
+    (version "1.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "jsonrpc-" version ".el"))
+       (sha256
+        (base32 "04cy1mqd6y8k5lcpg076szjk9av9345mmsnzzh6vgbcw3dcgbr23"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/jsonrpc.html")
+    (synopsis "JSON-RPC library")
+    (description
+     "This library implements the JSONRPC 2.0 specification as
+described in @url{http://www.jsonrpc.org/}.  As the name suggests,
+JSONRPC is a generic Remote Procedure Call protocol designed around
+JSON objects.")
+    (license license:gpl3+)))
+
 (define-public emacs-restclient
   (let ((commit "422ee8d8b077dffe65706a0f027ed700b84746bc")
         (version "0")
-        (revision "2"))                 ;Guix package revision,
+        (revision "2"))               ;Guix package revision,
                                         ;upstream doesn't have official releases
     (package
       (name "emacs-restclient")
