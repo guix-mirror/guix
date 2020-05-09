@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019, 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
@@ -239,7 +239,7 @@ easier to keep track of apps running in the backround.")
 (define-public gnome-shell-extension-dash-to-dock
   (package
     (name "gnome-shell-extension-dash-to-dock")
-    (version "66")
+    (version "67")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -248,7 +248,7 @@ easier to keep track of apps running in the backround.")
                                            version))))
               (sha256
                (base32
-                "04krl6rxlp1qc97psraf2kwin7h0mx4c7pnfpi7vhplmvasrwkfh"))
+                "1746xm0iyvyzj6m3pvjx11smh9w1s7naz426ki0dlr5l7jh3mpy5"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
