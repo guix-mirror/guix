@@ -1606,10 +1606,6 @@ used to bring up authentication dialogs.")
        ("shared-mime-info"          ,shared-mime-info)
        ("yelp"                      ,yelp)
        ("zenity"                    ,zenity)))
-    ;; FIXME: Propagating glib:bin fixes http://issues.guix.gnu.org/issue/38135
-    ;; The proper fix is in core-updates. So we can remove this after next merge.
-    (propagated-inputs
-     `(("glib:bin" ,glib "bin")))
     (synopsis "The MATE desktop environment")
     (home-page "https://mate-desktop.org/")
     (description
