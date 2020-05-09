@@ -102,10 +102,6 @@
                  `("LUA_PATH" ":" prefix (,LUA_PATH))
                  `("LUA_CPATH" ":" prefix (,LUA_CPATH)))
                #t))))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "VIS_PATH")
-            (files '("share/vis")))))
     (inputs `(("lua" ,lua)
               ("ncurses" ,ncurses)
               ("libtermkey" ,libtermkey)
