@@ -324,6 +324,7 @@ files from LOCATIONS with expected checksum HASH.  CODE is not currently in use.
       #:configure-flags
        '("--disable-static"
          "--disable-native-texlive-build"
+         "--enable-shared"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
