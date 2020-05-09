@@ -457,6 +457,29 @@ package modules, while attempting to retain user package modules."
 
 
 ;;;
+;;; Displaying a path.
+;;;
+
+(define (display-path node1 node2 type)
+  "Display the shortest path from NODE1 to NODE2, of TYPE."
+  (mlet %store-monad ((path (shortest-path node1 node2 type)))
+    (define node-label
+      (let ((label (node-type-label type)))
+        ;; Special-case derivations and store items to print them in full,
+        ;; contrary to what their 'node-type-label' normally does.
+        (match-lambda
+          ((? derivation? drv) (derivation-file-name drv))
+          ((? string? str) str)
+          (node (label node)))))
+
+    (if path
+        (format #t "~{~a~%~}" (map node-label path))
+        (leave (G_ "no path from '~a' to '~a'~%")
+               (node-label node1) (node-label node2)))
+    (return #t)))
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
@@ -465,6 +488,9 @@ package modules, while attempting to retain user package modules."
                  (lambda (opt name arg result)
                    (alist-cons 'node-type (lookup-node-type arg)
                                result)))
+         (option '("path") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'path? #t result)))
          (option '("list-types") #f #f
                  (lambda (opt name arg result)
                    (list-node-types)
@@ -510,6 +536,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   -t, --type=TYPE        represent nodes of the given TYPE"))
   (display (G_ "
       --list-types       list the available graph types"))
+  (display (G_ "
+      --path             display the shortest path between the given nodes"))
   (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (display (G_ "
@@ -566,11 +594,19 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
           (mlet %store-monad ((_     (set-grafting #f))
                               (nodes (mapm %store-monad
                                            (node-type-convert type)
-                                           items)))
-            (export-graph (concatenate nodes)
-                          (current-output-port)
-                          #:node-type type
-                          #:backend backend))
+                                           (reverse items))))
+            (if (assoc-ref opts 'path?)
+                (match nodes
+                  (((node1 _ ...) (node2 _ ...))
+                   (display-path node1 node2 type))
+                  (_
+                   (leave (G_ "'--path' option requires exactly two \
+nodes (given ~a)~%")
+                          (length nodes))))
+                (export-graph (concatenate nodes)
+                              (current-output-port)
+                              #:node-type type
+                              #:backend backend)))
           #:system (assq-ref opts 'system)))))
   #t)
 

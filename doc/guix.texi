@@ -10021,6 +10021,12 @@ In this example we see that the combination of the four packages takes
 102.3@tie{}MiB in total, which is much less than the sum of each closure
 since they have a lot of dependencies in common.
 
+When looking at the profile returned by @command{guix size}, you may
+find yourself wondering why a given package shows up in the profile at
+all.  To understand it, you can use @command{guix graph --path -t
+references} to display the shortest path between the two packages
+(@pxref{Invoking guix graph}).
+
 The available options are:
 
 @table @option
@@ -10081,8 +10087,9 @@ directly to the @command{dot} command of Graphviz.  It can also emit an
 HTML page with embedded JavaScript code to display a ``chord diagram''
 in a Web browser, using the @uref{https://d3js.org/, d3.js} library, or
 emit Cypher queries to construct a graph in a graph database supporting
-the @uref{https://www.opencypher.org/, openCypher} query language.
-The general syntax is:
+the @uref{https://www.opencypher.org/, openCypher} query language.  With
+@option{--path}, it simply displays the shortest path between two
+packages.  The general syntax is:
 
 @example
 guix graph @var{options} @var{package}@dots{}
@@ -10235,6 +10242,29 @@ collected.
 
 @end table
 
+@cindex shortest path, between packages
+Often, the graph of the package you are interested in does not fit on
+your screen, and anyway all you want to know is @emph{why} that package
+actually depends on some seemingly unrelated package.  The
+@option{--path} option instructs @command{guix graph} to display the
+shortest path between two packages (or derivations, or store items,
+etc.):
+
+@example
+$ guix graph --path emacs libunistring
+emacs@@26.3
+mailutils@@3.9
+libunistring@@0.9.10
+$ guix graph --path -t derivation emacs libunistring
+/gnu/store/@dots{}-emacs-26.3.drv
+/gnu/store/@dots{}-mailutils-3.9.drv
+/gnu/store/@dots{}-libunistring-0.9.10.drv
+$ guix graph --path -t references emacs libunistring
+/gnu/store/@dots{}-emacs-26.3
+/gnu/store/@dots{}-libidn2-2.2.0
+/gnu/store/@dots{}-libunistring-0.9.10
+@end example
+
 The available options are the following:
 
 @table @option
@@ -10254,6 +10284,20 @@ Produce a graph using the selected @var{backend}.
 List the supported graph backends.
 
 Currently, the available backends are Graphviz and d3.js.
+
+@item --path
+Display the shortest path between two nodes of the type specified by
+@option{--type}.  The example below shows the shortest path between
+@code{libreoffice} and @code{llvm} according to the references of
+@code{libreoffice}:
+
+@example
+$ guix graph --path -t references libreoffice llvm
+/gnu/store/@dots{}-libreoffice-6.4.2.2
+/gnu/store/@dots{}-libepoxy-1.5.4
+/gnu/store/@dots{}-mesa-19.3.4
+/gnu/store/@dots{}-llvm-9.0.1
+@end example
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
