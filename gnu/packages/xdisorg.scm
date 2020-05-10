@@ -2131,7 +2131,7 @@ Xwrits hides itself until you should take another break.")
                 "env = Environment(
                          ENV = {
                            'PATH': os.environ['PATH'],
-                           'CPATH': os.environ['CPATH'],
+                           'CPATH': os.environ['C_INCLUDE_PATH'],
                            'LIBRARY_PATH': os.environ['LIBRARY_PATH'],
                            'PKG_CONFIG_PATH': os.environ['PKG_CONFIG_PATH']
                          },")
