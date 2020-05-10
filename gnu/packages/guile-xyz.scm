@@ -3470,10 +3470,10 @@ Relay Chat} (IRC).")
       ;; Some file headers incorrectly say LGPLv2+.
       (license license:lgpl2.1+))))
 
-(define-public guile3.0-websocket
+(define-public guile-websocket
   (let ((commit "c854e0f84a40d972cbd532bbb89c97ca0126a7cf"))
     (package
-      (name "guile3.0-websocket")
+      (name "guile-websocket")
       (version "0.1")
       (source
        (origin
@@ -3508,9 +3508,12 @@ Relay Chat} (IRC).")
        `(("autoconf" ,autoconf)
          ("automake" ,automake)))
       (inputs
-       `(("guile" ,guile-next)))
+       `(("guile" ,guile-3.0)))
       (synopsis "Websocket server/client for Guile")
       (description "Guile-websocket provides an implementation of the
 WebSocket protocol as defined by RFC 6455.")
       (home-page "https://git.dthompson.us/guile-websocket.git")
       (license license:lgpl3+))))
+
+(define-public guile3.0-websocket
+  (deprecated-package "guile3.0-websocket" guile-websocket))
