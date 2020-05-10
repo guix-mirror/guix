@@ -13109,14 +13109,14 @@ possible on all supported Python versions.")
 (define-public python-cheetah
   (package
     (name "python-cheetah")
-    (version "3.1.0")
+    (version "3.2.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "Cheetah3" version))
         (sha256
           (base32
-           "1ihag9cxll6b86fc8v5lkhmr3brdbi4yiz16zpgw79yylmv8fgr9"))))
+           "0ar5dqjnqaw0c17mymd6xgd81jn9br9fblawr0x438v1571bkaya"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -13130,6 +13130,12 @@ possible on all supported Python versions.")
                       (substitute* "Cheetah/CheetahWrapper.py"
                         (("#!/usr/bin/env python")
                          (string-append "#!" (which "python"))))
+                      #t))
+                  (add-after 'unpack 'fix-tests
+                    (lambda _
+                      (substitute* "Cheetah/Tests/ImportHooks.py"
+                        (("os.path.dirname\\(__file__\\)")
+                         (string-append "'" (getcwd) "/Cheetah/Tests'")))
                       #t))
                   (replace 'check
                     (lambda _
