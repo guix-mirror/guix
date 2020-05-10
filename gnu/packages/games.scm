@@ -1200,7 +1200,11 @@ such as chess or stockfish.")
         (base32
          "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
     (build-system gnu-build-system)
-    (inputs `(("glib" ,glib)
+    (inputs `(;; XXX: Build with an older Pango for 'pango_font_get_hb_font' and
+              ;; 'pango_coverage_get_type'.  Try removing this for versions > 1.06.002.
+              ("pango" ,pango-1.42)
+
+              ("glib" ,glib)
               ("readline" ,readline)
               ("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
