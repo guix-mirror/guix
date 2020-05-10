@@ -100,7 +100,7 @@
 
 (define (julia-patch-url version name)
   (string-append "https://raw.githubusercontent.com/JuliaLang/julia/v" version
-                 "/deps/patches/" name))
+                 "/deps/patches/" name ".patch"))
 
 (define (julia-patch name sha)
   (let ((version "1.3.1"))
