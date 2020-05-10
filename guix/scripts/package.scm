@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -787,18 +788,26 @@ processed, #f otherwise."
           (display-search-results matches (current-output-port)))
          #t))
 
-      (('show requested-name)
-       (let-values (((name version)
-                     (package-name->name+version requested-name)))
-         (match (remove package-superseded
-                        (find-packages-by-name name version))
-           (()
-            (leave (G_ "~a~@[@~a~]: package not found~%") name version))
-           (packages
-            (leave-on-EPIPE
-             (for-each (cute package->recutils <> (current-output-port))
-                       packages))))
-         #t))
+      (('show _)
+       (let ((requested-names
+              (filter-map (match-lambda
+                            (('query 'show requested-name) requested-name)
+                            (_                            #f))
+                          opts)))
+         (for-each
+          (lambda (requested-name)
+            (let-values (((name version)
+                          (package-name->name+version requested-name)))
+              (match (remove package-superseded
+                             (find-packages-by-name name version))
+                (()
+                 (leave (G_ "~a~@[@~a~]: package not found~%") name version))
+                (packages
+                 (leave-on-EPIPE
+                  (for-each (cute package->recutils <> (current-output-port))
+                            packages))))))
+          requested-names))
+       #t)
 
       (('search-paths kind)
        (let* ((manifests (map profile-manifest profiles))
