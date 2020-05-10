@@ -308,7 +308,8 @@ without requiring the source code to be rewritten.")
             (files '("lib/guile/3.0/site-ccache"
                      "share/guile/site/3.0")))))))
 
-(define-public guile-next guile-3.0)
+(define-public guile-next
+  (deprecated-package "guile-next" guile-3.0))
 
 (define-public guile-3.0/libgc-7
   ;; Using libgc-7 avoid crashes that can occur, particularly when loading
