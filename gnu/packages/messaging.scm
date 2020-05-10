@@ -1881,7 +1881,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
 (define-public nheko
   (package
     (name "nheko")
-    (version "0.6.4")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -1890,7 +1890,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19dkc98l1q4070v6mli4ybqn0ip0za607w39hjf0x8rqdxq45iwm"))))
+        (base32 "12sxibbrn79sxkf9jrm7jrlj7l5vz15claxrrll7pkv9mv44wady"))))
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
@@ -1920,8 +1920,11 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
        ("mtxclient" ,mtxclient)
        ("openssl" ,openssl)
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
        ("spdlog" ,spdlog)
        ("tweeny" ,tweeny)
        ("zlib" ,zlib)))
