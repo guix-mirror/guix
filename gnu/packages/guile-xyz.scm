@@ -1096,7 +1096,7 @@ Scheme by using Guile’s foreign function interface.")
   (package
     (inherit guile-newt)
     (name "guile2.2-newt")
-    (inputs `(("guile" ,guile-next)
+    (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-newt))))))
 
 (define-public guile3.0-newt
@@ -1170,7 +1170,7 @@ written in pure Scheme by using Guile's foreign function interface.")
   (package
     (inherit guile-parted)
     (name "guile2.2-parted")
-    (inputs `(("guile" ,guile-next)
+    (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-parted))))
     (propagated-inputs
      `(("guile-bytestructures" ,guile2.2-bytestructures)))))
@@ -3187,7 +3187,7 @@ SHA-512).")
     (inherit guile-hashing)
     (name "guile2.2-hashing")
     (native-inputs
-     `(("guile" ,guile-next)))))
+     `(("guile" ,guile-2.2)))))
 
 (define-public guile3.0-hashing
   (deprecated-package "guile3.0-hashing" guile-hashing))
