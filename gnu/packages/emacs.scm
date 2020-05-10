@@ -70,7 +70,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix utils)
-  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
 (define-public emacs
