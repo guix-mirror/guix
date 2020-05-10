@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -1252,6 +1252,16 @@ also features an attractive, 3D representation of the playing board.")
        (base32
         "1vlf924mq8hg93bsjj0rzvs0crc6psmlxyc6zn0fr7msnmpx6gib"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'skip-gtk-update-icon-cache
+                    (lambda _
+                      ;; Do not attempt to run 'gtk-update-icon-cache', which is
+                      ;; unnecessary and causes a needless dependency on glib.
+                      (substitute* "Makefile.in"
+                        (("gtk-update-icon-cache")
+                         "true"))
+                      #t)))))
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
               ("glu" ,glu)
