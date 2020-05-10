@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
+;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3702,3 +3703,21 @@ association.")
 for starting a web server in a directory.  It can trigger arbitrary commands
 and serve updated contents upon changes to the directory.")
     (license license:bsd-3)))
+
+(define-public python-vf-1
+  (package
+    (name "python-vf-1")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "VF-1" version))
+       (sha256
+        (base32
+         "0xlqsaxsiayk1sd07kpz8abbcnab582y29a1y4882fq6j4gma5xi"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/solderpunk/VF-1")
+    (synopsis "Command line gopher client")
+    (description "@code{VF-1} is a command line gopher client with
+@acronym{TLS, Transport Layer Security} support.")
+    (license license:bsd-2)))
