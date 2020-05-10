@@ -12,7 +12,7 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018, 2020 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019, 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
@@ -3926,17 +3926,16 @@ in finite element programs.")
 (define-public flann
   (package
     (name "flann")
-    (version "1.8.4")
+    (version "1.9.1")
+    (home-page "https://github.com/mariusmuja/flann/")
     (source
       (origin
-        (method url-fetch)
-        (uri
-          (string-append
-            "http://www.cs.ubc.ca/research/flann/uploads/FLANN/flann-"
-            version "-src.zip"))
+        (method git-fetch)
+        (uri (git-reference (url home-page) (commit version)))
+        (file-name (git-file-name name version))
         (sha256
           (base32
-            "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))
+           "0p56fl2yx1r86ds1mgjq40926jdcgq3hka7p3l1hv2acv9jxp15x"))
         (patches (search-patches "flann-cmake-3.11.patch"))))
     (build-system cmake-build-system)
     (outputs '("out"))
@@ -3970,7 +3969,6 @@ in finite element programs.")
                         #t))))
 
        #:tests? #f)) ; The test data are downloaded from the Internet.
-    (home-page "http://www.cs.ubc.ca/research/flann/")
     (synopsis "Library for approximate nearest neighbors computation")
     (description "FLANN is a library for performing fast approximate
 nearest neighbor searches in high dimensional spaces.  It implements a
