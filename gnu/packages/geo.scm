@@ -745,6 +745,7 @@ utilities for data translation and processing.")
     (inputs
      `(("gdal" ,gdal)
        ("geos" ,geos)
+       ("giflib" ,giflib)
        ("json-c" ,json-c)
        ("libjpeg" ,libjpeg-turbo)
        ("libxml2" ,libxml2)
