@@ -88,10 +88,18 @@
        ("xz" ,xz)
        ("zlib" ,zlib)
        ("zstd:lib" ,zstd "lib")))
-    (synopsis "Filesystem Backup/Deployment Tool")
-    (description "FSArchiver allows you to save the contents of a file-system to
-a compressed archive file.  The file-system can be restored on a partition which
-has a different size and it can be restored on a different file-system.")
+    (synopsis "File system back-up, deployment, and migration tool")
+    (description
+     "FSArchiver saves the contents of a file system to a compressed archive
+file, and restores it to a different file system and/or partition.  This
+partition can be of a different size than the original and FSArchiver will
+create a new file system if none exists.
+
+All standard file attributes supported by the kernel are preserved, including
+file permissions, timestamps, symbolic and hard links, and extended attributes.
+
+Each file in the archive is protected by a checksum.  If part of the archive
+is corrupted you'll lose the affected file(s) but not the whole back-up.")
     (home-page "http://www.fsarchiver.org/")
     (license license:gpl2)))
 
