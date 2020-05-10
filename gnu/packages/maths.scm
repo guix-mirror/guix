@@ -3939,13 +3939,16 @@ in finite element programs.")
             "022w8hph7bli5zbpnk3z1qh1c2sl5hm8fw2ccim651ynn0hr7fyz"))
         (patches (search-patches "flann-cmake-3.11.patch"))))
     (build-system cmake-build-system)
-    (outputs '("out"
-               "octave"))                  ;46 MiB .mex file that pulls Octave
+    (outputs '("out"))
     (native-inputs
      `(("unzip" ,unzip)))
     (inputs
      `(("hdf5" ,hdf5)
-       ("octave" ,octave-cli)
+       ;; FIXME: 'mkoctfile' fails with a linker error:
+       ;;  ld: cannot find -loctinterp
+       ;;  ld: cannot find -loctave
+       ;; Disable it for now.
+       ;;("octave" ,octave-cli)
        ("python" ,python-2) ; print syntax
        ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
        ("zlib" ,zlib)))
@@ -3958,14 +3961,6 @@ in finite element programs.")
        ;; Save 12 MiB by not installing .a files.  Passing
        ;; '-DBUILD_STATIC_LIBS=OFF' has no effect.
        #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-octave-directory
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Install the .mex file in the "octave" output.
-                      (let ((out (assoc-ref outputs "octave")))
-                        (substitute* "src/matlab/CMakeLists.txt"
-                          (("share/flann/octave")
-                           (string-append out "/share/flann/octave")))
-                        #t)))
                   (add-after 'install 'remove-static-libraries
                     (lambda* (#:key outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
