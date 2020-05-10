@@ -148,6 +148,15 @@
                  (("\\ssetup.py\\s+install\\s")
                   " setup.py install --root=/ --single-version-externally-managed "))
                #t)))
+         (add-after 'unpack 'fix-pkgconfig-file-substitutes
+           ;; preempt Makefiles replacing PREFIX by pwd
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "ffi/sequoia.pc.in"
+                 (("PREFIX") out))
+               (substitute* "openpgp-ffi/sequoia-openpgp.pc.in"
+                 (("PREFIX") out))
+               #t)))
          (add-after 'unpack 'set-missing-env-vars
            (lambda* (#:key inputs #:allow-other-keys)
              ;; FIXME: why do we need to set this here?
