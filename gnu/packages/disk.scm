@@ -990,7 +990,8 @@ since they are better handled by external tools.")
                     (file-prog (assoc-ref inputs "file")))
                (with-directory-excursion "src"
                  (substitute* '("FilePanel.cpp" "help.h" "SearchPanel.cpp"
-                                "startupnotification.cpp" "xfeutils.cpp")
+                                "startupnotification.cpp" "xfeutils.cpp"
+                                "../st/config.h")
                    (("/bin/sh" file) (string-append bash file))
                    (("/bin/ls" file) (string-append coreutils file))
                    (("/usr(/bin/du)" _ file) (string-append coreutils file))
@@ -1002,11 +1003,13 @@ since they are better handled by external tools.")
          (add-after 'unpack 'patch-share-dirs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (share (string-append out "/share")))
+                    (share (string-append out "/share"))
+                    (xfe (string-append share "/xfe")))
                (with-directory-excursion "src"
                  (substitute* '("foxhacks.cpp" "help.h" "xfedefs.h"
                                 "XFileExplorer.cpp")
-                   (("/(usr|opt)(/local)?/share") share)))
+                   (("/(usr|opt)(/local)?/share") share)
+                   (("~/.config/xfe") xfe)))
                #t))))))
     (native-inputs
      `(("intltool" ,intltool)
