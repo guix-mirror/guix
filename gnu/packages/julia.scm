@@ -180,6 +180,45 @@
            "-DLLVM_ENABLE_DUMP=ON"
            "-DLLVM_LINK_LLVM_DYLIB=ON"))))))
 
+(define-public libwhich
+  (package
+    (name "libwhich")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vtjnash/libwhich.git")
+             ;; fixes linux-vdso.so related tests
+             (commit "87cffe10080c98e7b5786c5166e420bf1ada1d41")))
+       (sha256
+        (base32
+         "1bpa0fcqpa3ai3hm8mz0p13bf76fsq53wsfcx5qw302zh22108xr"))))
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'set-ld-library-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (assoc-ref inputs "zlib") "/lib"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "libwhich" (string-append out "/bin")))
+             #t)))))
+    (native-inputs
+     ;; used for tests
+     `(("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/vtjnash/libwhich")
+    (synopsis "Like @code{which}, for dynamic libraries")
+    (description "@code{libwhich} is like @code{which}, but for dynamic
+libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
+    (license license:expat)))
+
 (define-public julia
   (package
     (name "julia")
