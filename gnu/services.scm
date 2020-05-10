@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,7 +110,11 @@
 
             %boot-service
             %activation-service
-            etc-service))
+            etc-service)
+  #:re-export (;; Note: Re-export 'delete' to allow for proper syntax matching
+               ;; in 'modify-services' forms.  See
+               ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=26805#16>.
+               delete))
 
 ;;; Comment:
 ;;;
@@ -279,7 +284,11 @@ singleton service type NAME, of which the returned service is an instance."
     (service type value)))
 
 (define-syntax %modify-service
-  (syntax-rules (=>)
+  (syntax-rules (=> delete)
+    ((_ svc (delete kind) clauses ...)
+     (if (eq? (service-kind svc) kind)
+         #f
+         (%modify-service svc clauses ...)))
     ((_ service)
      service)
     ((_ svc (kind param => exp ...) clauses ...)
@@ -309,16 +318,18 @@ TYPE.  Consider this example:
     (mingetty-service-type config =>
                            (mingetty-configuration
                             (inherit config)
-                            (motd (plain-file \"motd\" \"Hi there!\")))))
+                            (motd (plain-file \"motd\" \"Hi there!\"))))
+    (delete udev-service-type))
 
 It changes the configuration of the GUIX-SERVICE-TYPE instance, and that of
-all the MINGETTY-SERVICE-TYPE instances.
+all the MINGETTY-SERVICE-TYPE instances, and it deletes instances of the
+UDEV-SERVICE-TYPE.
 
-This is a shorthand for (map (lambda (svc) ...) %base-services)."
+This is a shorthand for (filter-map (lambda (svc) ...) %base-services)."
     ((_ services clauses ...)
-     (map (lambda (service)
-            (%modify-service service clauses ...))
-          services))))
+     (filter-map (lambda (service)
+                   (%modify-service service clauses ...))
+                 services))))
 
 
 ;;;

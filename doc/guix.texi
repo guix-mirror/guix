@@ -13518,6 +13518,14 @@ following expression returns a list that contains all the services in
         %desktop-services)
 @end lisp
 
+Alternatively, the @code{modify-services} macro can be used:
+
+@lisp
+(modify-services %desktop-services
+  (delete avahi-service-type))
+@end lisp
+
+
 @unnumberedsubsec Instantiating the System
 
 Assuming the @code{operating-system} declaration
@@ -17787,9 +17795,8 @@ and tty8.
                    (service slim-service-type (slim-configuration
                                                (display ":1")
                                                (vt "vt8")))
-                   (remove (lambda (service)
-                             (eq? (service-kind service) gdm-service-type))
-                           %desktop-services))))
+                   (modify-services %desktop-services
+                     (delete gdm-service-type)))))
 @end lisp
 
 @end defvr
