@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -168,14 +168,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.11.6")
+    (version "4.11.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0f7g17zw4nzk1bjnqqrr84hkyq9vn0k7zyim2i177xkigd6qyhwi"))))
+               "1jh0a5ma03kgjcwr22a3jir8gxymn63aljgq2lgvpfyj6ym0q55v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
