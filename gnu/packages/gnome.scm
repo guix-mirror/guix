@@ -5410,13 +5410,7 @@ a secret password store, an adblocker, and a modern UI.")
 
     (build-system meson-build-system)
     (arguments
-     ;; FIXME: tests run under Xvfb, but fail with:
-     ;;   /src/bookmarks/ephy-bookmarks/create:
-     ;;   ** (test-ephy-bookmarks:19591): WARNING **: Unable to start Zeroconf
-     ;;      subsystem
-     ;;   FAIL
-     '(#:tests? #f
-       #:glib-or-gtk? #t
+     '(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
@@ -5424,6 +5418,21 @@ a secret password store, an adblocker, and a modern UI.")
            (lambda _
              (substitute* "post_install.py"
                (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (substitute* "tests/meson.build"
+               ;; embed_shell fails, because webkitgtk apparently no longer supports
+               ;; overriding the ftp schema
+               ;; web_app_utils fails due to missing network access
+               (("(embed_shell|web_app_utils)_test,")
+                "find_program('sh'), args: ['-c', 'exit 77'],"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
              #t)))
        #:configure-flags
        ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
@@ -5437,7 +5446,8 @@ a secret password store, an adblocker, and a modern UI.")
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)))
+       ("xmllint" ,libxml2)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("avahi" ,avahi)
        ("gcr" ,gcr)
