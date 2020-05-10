@@ -54,6 +54,7 @@
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/scribus/scribus-devel/"
                            version "/scribus-" version ".tar.xz"))
+       (patches (search-patches "scribus-1.5.5-poppler-0.86-build-fix.patch"))
        (sha256
         (base32
          "0w9zzsiaq3f7vpxybk01c9z2b4qqg67mzpyfb2gjchz8dhdb423r"))))
