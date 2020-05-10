@@ -2203,7 +2203,7 @@ window).")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("emacs" ,emacs-minimal)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo-5)))               ;fails to build with Texinfo 6.7
     (home-page "https://github.com/purcell/mmm-mode")
     (synopsis "Allow multiple major modes in an Emacs buffer")
     (description
