@@ -1091,9 +1091,13 @@ listed in OS.  The C library expects to find it under
   (locale-directory definitions
                     #:libcs (operating-system-locale-libcs os)))
 
-(define (kernel->boot-label kernel)
+(define* (kernel->boot-label kernel #:key hurd)
   "Return a label for the bootloader menu entry that boots KERNEL."
-  (cond ((package? kernel)
+  (cond ((package? hurd)
+         (string-append "GNU with the "
+                        (string-titlecase (package-name hurd)) " "
+                        (package-version hurd)))
+        ((package? kernel)
          (string-append "GNU with "
                         (string-titlecase (package-name kernel)) " "
                         (package-version kernel)))
@@ -1106,7 +1110,8 @@ listed in OS.  The C library expects to find it under
 (define (operating-system-default-label os)
   "Return the default label for OS, as it will appear in the bootloader menu
 entry."
-  (kernel->boot-label (operating-system-kernel os)))
+  (kernel->boot-label (operating-system-kernel os)
+                      #:hurd (operating-system-hurd os)))
 
 (define (store-file-system file-systems)
   "Return the file system object among FILE-SYSTEMS that contains the store."
