@@ -668,7 +668,7 @@ It has a nice, simple s-expression based syntax.")
       (inputs
        `(("postgresql" ,postgresql)))
       (native-inputs
-       `(("guile" ,guile-2.2)))
+       `(("guile" ,guile-3.0)))
       (home-page "https://notabug.org/cwebber/guile-squee")
       (synopsis "Connect to PostgreSQL using Guile")
       (description
@@ -676,13 +676,16 @@ It has a nice, simple s-expression based syntax.")
 using Guile's foreign function interface.")
       (license license:lgpl3+))))
 
-(define-public guile3.0-squee
+(define-public guile2.2-squee
   (package
     (inherit guile-squee)
-    (name "guile3.0-squee")
-    (native-inputs `(("guile" ,guile-next)
+    (name "guile2.2-squee")
+    (native-inputs `(("guile" ,guile-2.2)
                      ,@(alist-delete "guile"
                                      (package-native-inputs guile-squee))))))
+
+(define-public guile3.0-squee
+  (deprecated-package "guile3.0-squee" guile-squee))
 
 (define-public guile-colorized
   (package
