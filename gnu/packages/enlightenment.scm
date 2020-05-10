@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
@@ -69,7 +69,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.24.0")
+    (version "1.23.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -77,7 +77,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1yhck2g4rwlzgnzqa4wjxw3lf6k6rd730hz4bwzajdjy7i26xfdk"))))
+                "00b9lp3h65254kdb1ys15fv7p3ln7qsvf15jkw4kli5ymagadkjk"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -93,7 +93,6 @@
        ("libraw" ,libraw)
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
-       ("libtiff" ,libtiff)
        ("libxau" ,libxau)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -103,18 +102,18 @@
        ("libxi" ,libxi)
        ("libxfixes" ,libxfixes)
        ("libxinerama" ,libxinerama)
+       ("libxp" ,libxp)
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxss" ,libxscrnsaver)
        ("libxtst" ,libxtst)
-       ("libwebp" ,libwebp)
-       ("openjpeg" ,openjpeg)
        ("poppler" ,poppler)
        ("wayland-protocols" ,wayland-protocols)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
      `(("avahi" ,avahi)
+       ("bullet" ,bullet)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
        ("eudev" ,eudev)
@@ -123,13 +122,15 @@
        ("fribidi" ,fribidi)
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
+       ("luajit" ,luajit)
        ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg-turbo)
-       ("libsndfile" ,libsndfile)
        ("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxkbcommon" ,libxkbcommon)
-       ("luajit" ,luajit)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
@@ -138,18 +139,13 @@
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-Dsystemd=false"
-                           "-Delogind=true"
                            "-Dembedded-lz4=false"
                            "-Devas-loaders-disabler=json"
                            "-Dbuild-examples=false"
-                           "-Decore-imf-loaders-disabler=scim"
-                           "-Davahi=true"
-                           "-Dglib=true"
-                           "-Dmount-path=/run/setuid-programs/mount"
-                           "-Dunmount-path=/run/setuid-programs/umount"
                            ;(string-append "-Ddictionaries-hyphen-dir="
                            ;               (assoc-ref %build-inputs "hyphen")
                            ;               "/share/hyphen")
+                           "-Delogind=true"
                            "-Dnetwork-backend=connman"
                            ,@(match (%current-system)
                                ("armhf-linux"
@@ -157,8 +153,8 @@
                                (_
                                 '("-Dopengl=full")))
                            ;; for wayland
-                           "-Dwl-deprecated=true"   ; ecore_wayland
-                           "-Ddrm-deprecated=true"  ; ecore_drm
+                           "-Dwl-deprecated=true" ; ecore_wayland
+                           "-Ddrm-deprecated=true" ; ecore_drm
                            "-Dwl=true"
                            "-Ddrm=true")
        #:tests? #f ; Many tests fail due to timeouts and network requests.
