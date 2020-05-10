@@ -43,52 +43,52 @@
   #:use-module (gnu packages xorg))
 
 (define-public tigervnc-client
-  (package
-    (name "tigervnc-client")
-    (version "1.10.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/TigerVNC/tigervnc.git")
-         (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "001n189d2f3psn7nxgl8188ml6f7jbk26cxn2835y3mnlk5lmhgr"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f ; Tests that do exists are not automated.
-       #:phases (modify-phases %standard-phases
-                  (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (with-directory-excursion "vncviewer"
-                        (invoke "make" "install")))))))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("gettext-minimal" ,gettext-minimal)
-       ("automake" ,automake)))
-    (inputs
-     `(("zlib" ,zlib)
-       ("gnutls" ,gnutls)
-       ("libjpeg-turbo" ,libjpeg-turbo)
-       ("fltk" ,fltk)
-       ("linux-pam" ,linux-pam)
-       ("libx11" ,libx11)
-       ("libxext" ,libxext)
-       ("libxtst" ,libxtst)
-       ("libxrandr" ,libxrandr)
-       ("libxdamage" ,libxdamage)))
-    (home-page "https://tigervnc.org/")
-    (synopsis "High-performance, platform-neutral
+  (let ((commit "920d9c4d6562ecabf79497bc901d50522d4bc661"))
+    (package
+      (name "tigervnc-client")
+      (version (git-version "1.10.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri
+                 (git-reference
+                  (url "https://github.com/TigerVNC/tigervnc.git")
+                  (commit commit)))
+                (sha256
+                 (base32
+                  "1lp6mxl5dqlkrzx0q145jzgpbwvhsni3fj6x9ngf8v5s63x82q1p"))
+                (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:tests? #f ; Tests that do exists are not automated.
+         #:phases (modify-phases %standard-phases
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (with-directory-excursion "vncviewer"
+                          (invoke "make" "install")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("gettext-minimal" ,gettext-minimal)
+         ("automake" ,automake)))
+      (inputs
+       `(("zlib" ,zlib)
+         ("gnutls" ,gnutls)
+         ("libjpeg-turbo" ,libjpeg-turbo)
+         ("fltk" ,fltk)
+         ("linux-pam" ,linux-pam)
+         ("libx11" ,libx11)
+         ("libxext" ,libxext)
+         ("libxtst" ,libxtst)
+         ("libxrandr" ,libxrandr)
+         ("libxdamage" ,libxdamage)))
+      (home-page "https://tigervnc.org/")
+      (synopsis "High-performance, platform-neutral
 implementation of VNC (client)")
-    (description "TigerVNC is a client/server implementation of VNC (Virtual
+      (description "TigerVNC is a client/server implementation of VNC (Virtual
 Network Computing).  It provides enough performance to run even 3D and video
 applications.  It also provides extensions for advanced authentication methods
 and TLS encryption.  This package installs only the VNC client, the
 application which is needed to connect to VNC servers.")
-    (license license:gpl2)))
+      (license license:gpl2))))
 
 ;; A VNC server is, in fact, an X server so it seems like a good idea
 ;; to build on the work already done for xorg-server package.  This is
@@ -103,17 +103,9 @@ application which is needed to connect to VNC servers.")
   (package
     (inherit xorg-server)
     (name "tigervnc-server")
-    (version "1.10.1")
+    (version (package-version tigervnc-client))
     (native-inputs
-     `(("tigervnc-src" ,(origin
-                          (method git-fetch)
-                          (uri
-                           (git-reference
-                            (url "https://github.com/TigerVNC/tigervnc.git")
-                            (commit "v1.9.0")))
-                          (sha256
-                           (base32
-                            "0b47fg3741qs3zdpl2zr0s6jz46dypp2j6gqrappbzm3ywnnmm1x"))))
+     `(("tigervnc-src" ,(package-source tigervnc-client))
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
@@ -183,9 +175,9 @@ application which is needed to connect to VNC servers.")
                                                           (list-head (string-split xorg-server-version
                                                                                    #\.)
                                                                      2)))
-                                        (fn (format "~a/unix/xserver~a.patch" tvnc-src patch-num)))
+                                        (fn (format #f "~a/unix/xserver~a.patch" tvnc-src patch-num)))
                                      (when (not (file-exists? fn))
-                                       (error (format "Patch file, ~a,
+                                       (error (format #f "Patch file, ~a,
 corresponding to the input xorg-server version, does not exist.  Installation
 will fail.  " fn)))
 
