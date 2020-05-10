@@ -1039,7 +1039,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
      `(("pkg-config" ,pkg-config)
        ("lzip" ,lzip)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
     (home-page "https://guile-email.systemreboot.net")
@@ -1050,12 +1050,15 @@ Extensions) compliant email messages and reading emails from the mbox
 format.")
     (license license:agpl3+)))
 
-(define-public guile3.0-email
+(define-public guile2.2-email
   (package
     (inherit guile-email)
-    (name "guile3.0-email")
-    (inputs `(("guile" ,guile-next)
+    (name "guile2.2-email")
+    (inputs `(("guile" ,guile-2.2)
               ,@(alist-delete "guile" (package-inputs guile-email))))))
+
+(define-public guile3.0-email
+  (deprecated-package "guile3.0-email" guile-email))
 
 (define-public guile-newt
   (package
