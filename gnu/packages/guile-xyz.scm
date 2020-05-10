@@ -3231,7 +3231,7 @@ and space linear in the size of the input text.")
 (define-public guile-ac-d-bus
   (package
     (name "guile-ac-d-bus")
-    (version "1.0.0-alpha.0")
+    (version "1.0.0-beta.0")
     (home-page "https://gitlab.com/weinholt/ac-d-bus/")
     (source (origin
               (method git-fetch)
@@ -3241,7 +3241,7 @@ and space linear in the size of the input text.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05cbp7slmzrx4cib2liysk31laknqiycw9ckgn65fylgz6c2y5x9"))))
+                "0rl809qimhgz6b0rixakb42r2l4g53jr09a2g0s1hxgab0blz0kb"))))
     (build-system guile-build-system)
     (arguments
      `(#:implicit-inputs? #f                      ;needs nothing but Guile
