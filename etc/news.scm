@@ -114,13 +114,20 @@ Ihre Beiträge werden gerne gesehen.  Bitte
 Rezepte mit uns zu teilen!")))
 
  (entry (commit "2ca7af43fe17d9acf082dce85d137a27a8ac4887")
-        (title (en "Further reduced binary seed bootstrap"))
+        (title (en "Further reduced binary seed bootstrap")
+               (de "Bootstrapping jetzt mit noch kleinerem Seed"))
         (body
          (en "The package graph on x86_64 and i686 is now rooted in a further
 @dfn{reduced set of binary seeds}.  The initial set of binaries from which
 packages are built now weighs in at approximately 60 MiB, a quarter of what it
 used to be.  Run @code{info \"(guix) Bootstrapping\"} to learn more, or watch
-the talk at @uref{https://fosdem.org/2020/schedule/event/gnumes/}.")))
+the talk at @uref{https://fosdem.org/2020/schedule/event/gnumes/}.")
+         (de "Der Paketgraph auf x86_64 und i686 hat jetzt eine noch
+@dfn{kleinere Menge an binären Seeds} als Wurzel. Das heißt, die ursprüngliche
+Menge an Binärdateien, aus denen heraus Pakete erstellt werden, machen nun
+ungefähr 60 MiB aus, ein Viertel der früheren Größe. Führen Sie @code{info
+\"(guix.de) Bootstrapping\"} aus, um mehr zu erfahren, oder schauen Sie sich
+den Vortrag auf @uref{https://fosdem.org/2020/schedule/event/gnumes/} an.")))
 
  (entry (commit "0468455e7d279c89ea3ad1b51935efb2b785ec47")
         (title (en "Rottlog service added to @code{%base-services}")
@@ -137,12 +144,19 @@ genannt wurde, sollten Sie ihn jetzt daraus entfernen.  Siehe den Abschnitt
 „Log-Rotation“ im Handbuch für weitere Informationen.")))
 
  (entry (commit "b6bee63bed4f013064c0d902e7c8b83ed7514ade")
-        (title (en "@code{guile} package now refers to version 3.0"))
+        (title (en "@code{guile} package now refers to version 3.0")
+               (de "Das @code{guile}-Paket bezeichnet jetzt Version 3.0"))
         (body (en "The @code{guile} package has been upgraded to version 3.0
  (instead of 2.2).  The @code{guile3.0-} packages have been renamed to their
 original name, and @code{guile2.2-} variants of these packages have been
 defined.  Additionally, derivations are now all built with Guile 3.0, and
-system services also run on 3.0.")))
+system services also run on 3.0.")
+              (de "Das @code{guile}-Paket wurde auf Version 3.0
+ (statt 2.2) aktualisiert. Die Pakete, deren Namen mit @code{guile3.0-}
+beginnen, wurden umbenannt, so dass sie nun den unveränderten Namen tragen,
+während ihre Varianten mit @code{guile2.2-} hinzugefügt wurden.  Des Weiteren
+werden jetzt alle Ableitungen mit Guile 3.0 erstellt und die Systemdienste
+laufen auch auf 3.0.")))
 
  (entry (commit "e3e1a7ba08af2d58c47264c543617e499c239444")
         (title (en "@command{guix pull} now supports SSH authenticated
