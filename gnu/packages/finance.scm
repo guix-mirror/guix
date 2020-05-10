@@ -870,31 +870,21 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.11.3")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "0211m027vlvyqy83kwbjjjxalb04xgf1klv0h0y0f0yhj07516n7"))))
+            "0ycmpwjv5xp25993divjhaq5j766zgcy22xx39xfc1pcvldq5g7n"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-        (modify-phases %standard-phases
-          ;; Default tests run device-specific tests which fail, only run specific tests.
-          (replace 'check
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              ;; Delete tests that require network access.
-              (delete-file "trezorlib/tests/unit_tests/test_tx_api.py")
-              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests"))))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-construct" ,python-construct)
        ("python-ecdsa" ,python-ecdsa)
        ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
-       ("python-pyblake2" ,python-pyblake2)
        ("python-requests" ,python-requests)
        ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs
