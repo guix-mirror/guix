@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 TomZ <tomz@freedommail.ch>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -783,7 +784,18 @@ xmlpatternsvalidator.")))
                "0l0nhc2si6dl9r4s1bs45z90qqigs8jnrsyjjdy38q4pvix63i53"))))
     (arguments
      (substitute-keyword-arguments (package-arguments qtsvg)
-       ((#:tests? _ #f) #f))) ; TODO: Enable the tests
+       ((#:tests? _ #f) #f)             ;TODO: Enable the tests
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'build 'fix-qt5core-install-prefix
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; The Qt5Core install prefix is set to qtbase, but qmlcachegen
+                 ;; is provided by qtdeclarative.
+                 (substitute*
+                     "lib/cmake/Qt5QuickCompiler/Qt5QuickCompilerConfig.cmake"
+                   (("\\$\\{_qt5Core_install_prefix\\}") out)))
+               #t))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
