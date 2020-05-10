@@ -2312,6 +2312,15 @@ full programmatic control over your models.")
        (uri (git-reference
              (url "https://github.com/FreeCAD/FreeCAD.git")
              (commit version)))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fix build with Python 3.8, see
+           ;; <https://tracker.freecadweb.org/view.php?id=4143>.
+           (substitute* "src/Base/swigpyrun.inl"
+             (("PyObject \\*modules = interp->modules;")
+              "PyObject *modules = PyEval_GetBuiltins();"))
+           #t))
        (file-name (git-file-name name version))
        (sha256
         (base32
