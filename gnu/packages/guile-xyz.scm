@@ -3382,7 +3382,7 @@ over, or update a value in arbitrary data structures.")
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("xapian" ,xapian)
        ("zlib" ,zlib)))
     (native-inputs
@@ -3400,13 +3400,16 @@ applications.  It has built-in support for several families of weighting
 models and also supports a rich set of boolean query operators.")
     (license license:gpl2+)))
 
-(define-public guile3.0-xapian
+(define-public guile2.2-xapian
   (package
     (inherit guile-xapian)
-    (name "guile3.0-xapian")
+    (name "guile2.2-xapian")
     (inputs
-     `(("guile" ,guile-next)
+     `(("guile" ,guile-2.2)
        ,@(alist-delete "guile" (package-inputs guile-xapian))))))
+
+(define-public guile3.0-xapian
+  (deprecated-package "guile3.0-xapian" guile-xapian))
 
 (define-public guile-torrent
   (package
