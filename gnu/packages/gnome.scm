@@ -809,7 +809,7 @@ client devices can handle.")
 (define-public libnma
   (package
    (name "libnma")
-   (version "1.8.26")
+   (version "1.8.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -817,7 +817,7 @@ client devices can handle.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1w9lld38risnk1krknfwln24kabdxnj274pyz4jhndphwigrshaf"))))
+              "09mp6k0hfam1vyyv9kcd8j4gb2r58i05ipx2nswb58ris599bxja"))))
    (build-system meson-build-system)
    (arguments
     `(#:glib-or-gtk? #t))
