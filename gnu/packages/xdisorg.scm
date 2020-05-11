@@ -1928,16 +1928,16 @@ binary to setuid-binaries:
 (define-public wl-clipboard
   (package
     (name "wl-clipboard")
-    (version "2.0.0_beta2")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/bugaevc/wl-clipboard.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wyqbaph9v1v6lwfcjf8gjhdl70icpss4wapshzfxcz3l9m1p8hv"))))
+        (base32 "0c4w87ipsw09aii34szj9p0xfy0m00wyjpll0gb0aqmwa60p0c5d"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
