@@ -5187,9 +5187,9 @@ When this option is passed once, the resulting binaries require support for
 @dfn{user namespaces} in the kernel Linux; when passed
 @emph{twice}@footnote{Here's a trick to memorize it: @code{-RR}, which adds
 PRoot support, can be thought of as the abbreviation of ``Really
-Relocatable''.  Neat, isn't it?}, relocatable binaries fall to back to PRoot
-if user namespaces are unavailable, and essentially work anywhere---see below
-for the implications.
+Relocatable''.  Neat, isn't it?}, relocatable binaries fall to back to
+other techniques if user namespaces are unavailable, and essentially
+work anywhere---see below for the implications.
 
 For example, if you create a pack containing Bash with:
 
@@ -5221,14 +5221,32 @@ turn it off.
 
 To produce relocatable binaries that work even in the absence of user
 namespaces, pass @option{--relocatable} or @option{-R} @emph{twice}.  In that
-case, binaries will try user namespace support and fall back to PRoot if user
-namespaces are not supported.
+case, binaries will try user namespace support and fall back to another
+@dfn{execution engine} if user namespaces are not supported.  The
+following execution engines are supported:
 
-The @uref{https://proot-me.github.io/, PRoot} program provides the necessary
+@table @code
+@item default
+Try user namespaces and fall back to PRoot if user namespaces are not
+supported (see below).
+
+@item userns
+Run the program through user namespaces and abort if they are not
+supported.
+
+@item proot
+Run through PRoot.  The @uref{https://proot-me.github.io/, PRoot} program
+provides the necessary
 support for file system virtualization.  It achieves that by using the
 @code{ptrace} system call on the running program.  This approach has the
 advantage to work without requiring special kernel support, but it incurs
 run-time overhead every time a system call is made.
+@end table
+
+@vindex GUIX_EXECUTION_ENGINE
+When running a wrapped program, you can explicitly request one of the
+execution engines listed above by setting the
+@code{GUIX_EXECUTION_ENGINE} environment variable accordingly.
 @end quotation
 
 @cindex entry point, for Docker images

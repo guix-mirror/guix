@@ -337,6 +337,71 @@ exec_with_proot (const char *store, int argc, char *argv[])
 #endif
 
 
+/* Execution engines.  */
+
+struct engine
+{
+  const char *name;
+  void (* exec) (const char *, int, char **);
+};
+
+static void
+buffer_stderr (void)
+{
+  static char stderr_buffer[4096];
+  setvbuf (stderr, stderr_buffer, _IOFBF, sizeof stderr_buffer);
+}
+
+/* The default engine.  */
+static void
+exec_default (const char *store, int argc, char *argv[])
+{
+  /* Buffer stderr so that nothing's displayed if 'exec_in_user_namespace'
+     fails but 'exec_with_proot' works.  */
+  buffer_stderr ();
+
+  exec_in_user_namespace (store, argc, argv);
+#ifdef PROOT_PROGRAM
+  exec_with_proot (store, argc, argv);
+#endif
+}
+
+/* List of supported engines.  */
+static const struct engine engines[] =
+  {
+   { "default", exec_default },
+   { "userns", exec_in_user_namespace },
+#ifdef PROOT_PROGRAM
+   { "proot", exec_with_proot },
+#endif
+   { NULL, NULL }
+  };
+
+/* Return the "execution engine" to use.  */
+static const struct engine *
+execution_engine (void)
+{
+  const char *str = getenv ("GUIX_EXECUTION_ENGINE");
+
+  if (str == NULL)
+    str = "default";
+
+ try:
+  for (const struct engine *engine = engines;
+       engine->name != NULL;
+       engine++)
+    {
+      if (strcmp (engine->name, str) == 0)
+	return engine;
+    }
+
+  fprintf (stderr, "%s: unsupported Guix execution engine; ignoring\n",
+	   str);
+  str = "default";
+  goto try;
+}
+
+
 int
 main (int argc, char *argv[])
 {
@@ -362,22 +427,17 @@ main (int argc, char *argv[])
   if (strcmp (store, "@STORE_DIRECTORY@") != 0
       && lstat ("@WRAPPED_PROGRAM@", &statbuf) != 0)
     {
-      /* Buffer stderr so that nothing's displayed if 'exec_in_user_namespace'
-	 fails but 'exec_with_proot' works.  */
-      static char stderr_buffer[4096];
-      setvbuf (stderr, stderr_buffer, _IOFBF, sizeof stderr_buffer);
+      const struct engine *engine = execution_engine ();
+      engine->exec (store, argc, argv);
 
-      exec_in_user_namespace (store, argc, argv);
-#ifdef PROOT_PROGRAM
-      exec_with_proot (store, argc, argv);
-#else
+      /* If we reach this point, that's because ENGINE failed to do the
+	 job.  */
       fprintf (stderr, "\
 This may be because \"user namespaces\" are not supported on this system.\n\
 Consequently, we cannot run '@WRAPPED_PROGRAM@',\n\
 unless you move it to the '@STORE_DIRECTORY@' directory.\n\
 \n\
 Please refer to the 'guix pack' documentation for more information.\n");
-#endif
       return EXIT_FAILURE;
     }
 
