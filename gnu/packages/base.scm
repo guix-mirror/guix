@@ -384,6 +384,34 @@ standard.")
     (outputs '("out"))
     (inputs '())))
 
+(define-public coreutils-8.30
+  ;; XXX: This version is kept just so we can run PRoot tests.
+  (hidden-package
+   (package
+     (inherit coreutils-minimal)
+     (version "8.30")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnu/coreutils/coreutils-"
+                                   version ".tar.xz"))
+               (sha256
+                (base32
+                 "0mxhw43d4wpqmvg0l4znk1vm10fy92biyh90lzdnqjcic2lb6cg8"))))
+     (arguments
+      (substitute-keyword-arguments (package-arguments coreutils-minimal)
+        ((#:phases phases '%standard-phases)
+         `(modify-phases ,phases
+            (add-before 'check 'disable-broken-test
+              (lambda _
+                ;; This test hits the 127 character shebang limit in the build
+                ;; environment due to the way "env -S" splits arguments into
+                ;; shebangs.  Note that "env-S-script.sh" works around this
+                ;; specific issue, but "env-S.pl" is not adjusted for build
+                ;; environments with long prefixes (/tmp/guix-build-...).
+                (substitute* "Makefile"
+                  (("^.*tests/misc/env-S.pl.*$") ""))
+                #t)))))))))
+
 (define-public gnu-make
   (package
    (name "make")

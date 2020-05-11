@@ -6099,7 +6099,16 @@ userspace queueing component and the logging subsystem.")
     (native-inputs `(("which" ,which)
 
                      ;; For 'mcookie', used by some of the tests.
-                     ("util-linux" ,util-linux)))
+                     ("util-linux" ,util-linux)
+
+                     ;; XXX: Choose the old coreutils because its 'stat'
+                     ;; program does not use statx(2) when running 'stat -c
+                     ;; %a' or similar, which PRoot doesn't properly support.
+                     ("coreutils-old" ,coreutils-8.30)
+
+                     ;; XXX: 'test-c6b77b77.sh' runs 'make' and that leads
+                     ;; make 4.3 to segfault.
+                     ("make-old" ,gnu-make-4.2)))
     (inputs `(("talloc" ,talloc)))
     (home-page "https://github.com/proot-me/PRoot")
     (synopsis "Unprivileged chroot, bind mount, and binfmt_misc")
