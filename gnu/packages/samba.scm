@@ -51,6 +51,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
@@ -168,14 +169,20 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.11.9")
+    (version "4.12.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "1k4dxjspl0xgabdl3nb3wyz714l3df89dj04bf1siwzk9hsyz35d"))))
+               "0l514s2xhsy1lspzgvibbzs80zi84zxr2wx4d40hq85yb2lg5434"))
+                    (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; TODO: also remove the bundled ‘third_party/popt’.
+           (delete-file-recursively "third_party/pyiso8601")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -223,11 +230,12 @@ anywhere.")
        ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
        ("jansson" ,jansson)
-       ("libaio" ,libaio)
        ("libarchive" ,libarchive)
        ("linux-pam" ,linux-pam)
        ("lmdb" ,lmdb)
        ("openldap" ,openldap)
+       ("perl" ,perl)
+       ("python" ,python)
        ("popt" ,popt)
        ("readline" ,readline)
        ("tdb" ,tdb)))
@@ -237,12 +245,15 @@ anywhere.")
        ("talloc" ,talloc)
        ("tevent" ,tevent)))
     (native-inputs
-     `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
-       ("xsltproc" ,libxslt)           ;ditto
-       ("rpcsvc-proto" ,rpcsvc-proto)  ;for 'rpcgen'
-       ("perl" ,perl)
+     `(("perl-parse-yapp" ,perl-parse-yapp)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("python-iso8601" ,python-iso8601)
+       ("rpcsvc-proto" ,rpcsvc-proto)   ; for 'rpcgen'
+
+       ;; For generating man pages.
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xsltproc" ,libxslt)))
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
