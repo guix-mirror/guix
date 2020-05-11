@@ -413,6 +413,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pcre.scm				\
   %D%/packages/pdf.scm				\
   %D%/packages/pem.scm				\
+  %D%/packages/pep.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-compression.scm		\
