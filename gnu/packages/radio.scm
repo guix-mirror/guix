@@ -1031,3 +1031,29 @@ It can be used to decode the ADS-B signals that planes emit to indicate
 their position, altitude, speed, etc.")
     (home-page "https://github.com/flightaware/dump1090")
     (license license:bsd-3)))
+
+(define-public rtl-433
+  (package
+    (name "rtl-433")
+    (version "20.02")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/merbanan/rtl_433.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11991xky9gawkragdyg27qsf7kw5bhlg7ygvf3fn7ng00x4xbh1z"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("rtl-sdr" ,rtl-sdr)))
+    (synopsis "Decoder for radio transmissions in ISM bands")
+    (description
+     "This is a generic data receiver, mainly for decoding radio transmissions
+from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
+    (home-page "https://github.com/merbanan/rtl_433")
+    (license license:gpl2+)))
