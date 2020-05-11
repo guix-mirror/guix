@@ -2216,11 +2216,19 @@ interface for reading articles in any format.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-3.0)))
     (synopsis "Redis client library for Guile")
     (description "Guile-redis provides a Scheme interface to the Redis
 key-value cache and store.")
     (license license:lgpl3+)))
+
+(define-public guile2.2-redis
+  (package
+    (inherit guile-redis)
+    (name "guile2.2-redis")
+    (native-inputs `(("guile" ,guile-2.2)
+                     ,@(alist-delete "guile"
+                                     (package-native-inputs guile-redis))))))
 
 (define-public guile2.0-redis
   (package
