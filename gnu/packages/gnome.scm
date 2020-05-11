@@ -6357,7 +6357,7 @@ users.")
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
                                   (version-major+minor version) "/"
                                   "NetworkManager-" version ".tar.xz"))
-              (patches (search-patches "nm-plugin-path.patch"))
+              (patches (search-patches "network-manager-plugin-path.patch"))
               (sha256
                (base32
                 "06044fl60bjlj7c6rqqfbm5795h61h6yzp7ch392hzcnm46wwhn3"))
@@ -6493,7 +6493,7 @@ users.")
        ("util-linux" ,util-linux)
        ("elogind" ,elogind)))
     (synopsis "Network connection manager")
-    (home-page "https://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (description
      "NetworkManager is a system network service that manages your network
 devices and connections, attempting to keep active network connectivity when
