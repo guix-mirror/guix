@@ -10102,6 +10102,13 @@ The output looks like this:
 
 Nice little graph, no?
 
+You may find it more pleasant to navigate the graph interactively with
+@command{xdot} (from the @code{xdot} package):
+
+@example
+guix graph coreutils | xdot -
+@end example
+
 But there is more than one graph!  The one above is concise: it is the
 graph of package objects, omitting implicit inputs such as GCC, libc,
 grep, etc.  It is often useful to have such a concise graph, but
@@ -10136,7 +10143,7 @@ This is the package DAG, @emph{including} implicit inputs.
 For instance, the following command:
 
 @example
-guix graph --type=bag-emerged coreutils | dot -Tpdf > dag.pdf
+guix graph --type=bag-emerged coreutils
 @end example
 
 ...@: yields this bigger graph:
@@ -10190,7 +10197,7 @@ For example, the following command shows the graph for the package
 module that defines the @code{guile} package:
 
 @example
-guix graph -t module guile | dot -Tpdf > module-graph.pdf
+guix graph -t module guile | xdot -
 @end example
 @end table
 
@@ -27249,10 +27256,10 @@ extensions.)
 The command:
 
 @example
-$ guix system extension-graph @var{file} | dot -Tpdf > services.pdf
+$ guix system extension-graph @var{file} | xdot -
 @end example
 
-produces a PDF file showing the extension relations among services.
+shows the extension relations among services.
 
 @anchor{system-shepherd-graph}
 @item shepherd-graph
@@ -28649,11 +28656,11 @@ package from source.  The command:
 @example
 guix graph -t bag \
   -e '(@@@@ (gnu packages commencement)
-          glibc-final-with-bootstrap-bash)' | dot -Tps > t.ps
+          glibc-final-with-bootstrap-bash)' | xdot -
 @end example
 
 @noindent
-produces the dependency graph leading to the ``final'' C
+displays the dependency graph leading to the ``final'' C
 library@footnote{You may notice the @code{glibc-intermediate} label,
 suggesting that it is not @emph{quite} final, but as a good
 approximation, we will consider it final.}, depicted below.
