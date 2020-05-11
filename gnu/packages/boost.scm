@@ -224,29 +224,6 @@ across a broad spectrum of applications.")
                    (symlink libboost_pythonNN.a "libboost_python.a"))
                  #t)))))))))
 
-(define-public boost-1.69
-  (package
-    (inherit boost)
-    (name "boost")
-    (version "1.69.0")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((version-with-underscores
-                          (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)))
-                     (list (string-append "mirror://sourceforge/boost/boost/" version
-                                          "/boost_" version-with-underscores ".tar.bz2")
-                           (string-append "https://dl.bintray.com/boostorg/release/"
-                                          version "/source/boost_"
-                                          version-with-underscores ".tar.bz2"))))
-              (sha256
-               (base32
-                "01j4n142dz20lcgqji8d8hspp04p1nv7m8i6dz8w5lchfdhx8clg"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments boost)
-       ((#:make-flags flags)
-        `(cons* "cxxflags=-std=c++14" ,flags))))
-    (properties '((hidden? . #t)))))
-
 (define-public boost-for-mysql
   ;; Older version for MySQL 5.7.23.
   (package
