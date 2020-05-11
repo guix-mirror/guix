@@ -808,44 +808,44 @@ client devices can handle.")
 
 (define-public libnma
   (package
-   (name "libnma")
-   (version "1.8.28")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version) "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "09mp6k0hfam1vyyv9kcd8j4gb2r58i05ipx2nswb58ris599bxja"))))
-   (build-system meson-build-system)
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'patch-docbook-xml
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
-                                         "/xml/dtd/docbook")))
-              (substitute* "libnma-docs.xml"
-                (("http://.*/docbookx\\.dtd")
-                 (string-append xmldoc "/docbookx.dtd")))
-              #t))))))
-   (native-inputs
-    `(("docbook-xml" ,docbook-xml-4.3)
-      ("gettext" ,gettext-minimal)
-      ("glib:bin" ,glib "bin")
-      ("gtk-doc" ,gtk-doc)
-      ("gobject-introspection" ,gobject-introspection)
-      ("pkg-config" ,pkg-config)
-      ("vala" ,vala)))
-   (inputs
-    `(("gcr" ,gcr)
-      ("gtk+" ,gtk+)
-      ("iso-codes" ,iso-codes)
-      ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
-      ("network-manager" ,network-manager)))
-   (synopsis "Network Manager's applet library")
-   (description "Libnma is an applet library for Network Manager.  It was
+    (name "libnma")
+    (version "1.8.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09mp6k0hfam1vyyv9kcd8j4gb2r58i05ipx2nswb58ris599bxja"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook")))
+               (substitute* "libnma-docs.xml"
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.3)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("gcr" ,gcr)
+       ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
+       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
+       ("network-manager" ,network-manager)))
+    (synopsis "Network Manager's applet library")
+    (description "Libnma is an applet library for Network Manager.  It was
 initially part of network-manager-applet and has now become a separate
 project.")
     (home-page "https://gitlab.gnome.org/GNOME/libnma")
