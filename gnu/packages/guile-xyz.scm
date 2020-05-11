@@ -1878,7 +1878,7 @@ many readers as needed).")
                "038xbffalhymg26lvmzgf7ljilxz2f2zmqg5r5nfzbipfbprwjhf"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
-              ("guile" ,guile-2.2)))
+              ("guile" ,guile-3.0)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1912,13 +1912,15 @@ many readers as needed).")
 library.")
     (license license:lgpl3+)))
 
-(define-public guile3.0-ncurses
+(define-public guile2.2-ncurses
   (package
     (inherit guile-ncurses)
-    (name "guile3.0-ncurses")
-    (version "3.0")
+    (name "guile2.2-ncurses")
     (inputs `(("ncurses" ,ncurses)
-              ("guile" ,guile-3.0)))))
+              ("guile" ,guile-2.2)))))
+
+(define-public guile3.0-ncurses
+  (deprecated-package "guile3.0-ncurses" guile-ncurses))
 
 (define-public guile-ncurses/gpm
   (package
