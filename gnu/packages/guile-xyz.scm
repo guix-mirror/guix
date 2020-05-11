@@ -3385,7 +3385,7 @@ as signed sessions, multipart message support, etc.")
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
-         ("guile" ,guile-2.2)
+         ("guile" ,guile-3.0)
          ("guile-hall" ,guile-hall)
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)))
@@ -3397,6 +3397,14 @@ currently a re-implementation of the lentes library for Clojure.  Lenses
 provide composable procedures, which can be used to focus, apply functions
 over, or update a value in arbitrary data structures.")
       (license license:gpl3+))))
+
+(define-public guile2.2-lens
+  (package
+    (inherit guile-lens)
+    (name "guile2.2-lens")
+    (native-inputs
+     `(("guile" ,guile-2.2)
+       ,@(alist-delete "guile" (package-native-inputs guile-lens))))))
 
 (define-public guile-xapian
   (package
