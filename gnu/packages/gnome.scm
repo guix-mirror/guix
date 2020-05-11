@@ -820,16 +820,26 @@ client devices can handle.")
               "09mp6k0hfam1vyyv9kcd8j4gb2r58i05ipx2nswb58ris599bxja"))))
    (build-system meson-build-system)
    (arguments
-    `(#:glib-or-gtk? #t))
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'patch-docbook-xml
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                         "/xml/dtd/docbook")))
+              (substitute* "libnma-docs.xml"
+                (("http://.*/docbookx\\.dtd")
+                 (string-append xmldoc "/docbookx.dtd")))
+              #t))))))
    (native-inputs
-    `(("gettext" ,gettext-minimal)
+    `(("docbook-xml" ,docbook-xml-4.3)
+      ("gettext" ,gettext-minimal)
       ("glib:bin" ,glib "bin")
       ("gtk-doc" ,gtk-doc)
       ("gobject-introspection" ,gobject-introspection)
-      ("pkg-config" ,pkg-config)))
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)))
    (inputs
-    `(("adwaita-icon-theme" ,adwaita-icon-theme)
-      ("gcr" ,gcr)
+    `(("gcr" ,gcr)
       ("gtk+" ,gtk+)
       ("iso-codes" ,iso-codes)
       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
@@ -838,11 +848,10 @@ client devices can handle.")
    (description "Libnma is an applet library for Network Manager.  It was
 initially part of network-manager-applet and has now become a separate
 project.")
-   (home-page "https://gitlab.gnome.org/GNOME/libnma")
-
-   ;; Some files carry the "GPL-2.0+" SPDX identifier while others say
-   ;; "LGPL-2.1+".
-   (license license:gpl2+)))
+    (home-page "https://gitlab.gnome.org/GNOME/libnma")
+    ;; Some files carry the "GPL-2.0+" SPDX identifier while others say
+    ;; "LGPL-2.1+".
+    (license license:gpl2+)))
 
 (define-public gnome-menus
   (package
