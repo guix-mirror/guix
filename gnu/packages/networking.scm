@@ -72,6 +72,7 @@
   #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -113,6 +114,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
@@ -127,46 +129,123 @@
 (define-public blueman
   (package
     (name "blueman")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        (uri
-        (string-append "https://github.com/blueman-project/blueman/releases/"
-                       "download/2.1.2/blueman-2.1.2.tar.gz"))
+        (git-reference
+         (url "https://github.com/blueman-project/blueman.git")
+         (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0wamxdw36c8i3aqwmja5q70fajqwd7inpkvlpkldd54wdxbcd38d"))))
+        (base32 "1vb0zfns4q5d65hnja4c0k11lr38xxhdnkpkzfs6xca3mm6jyi1d"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags
-       (list
-        "--enable-polkit"
-        "--disable-appindicator"         ; Deprecated
-        "--with-systemdsystemunitdir=no" ; Not required
-        "--with-systemduserunitdir=no")))  ; Not required
+     `(#:configure-flags (list "--enable-polkit"
+                               "--disable-appindicator" ; Not available
+                               "--without-systemdsystemunitdir" ; Not required
+                               "--without-systemduserunitdir")  ; Not required
+       #:phases
+       (modify-phases %standard-phases
+         ;; Prevent the autogen.sh script to carry out the configure
+         ;; script, which has not yet been patched to replace /bin/sh.
+         (add-before 'bootstrap 'setenv
+           (lambda _
+             (setenv "NOCONFIGURE" "TRUE")
+             #t))
+         ;; Python references are not being patched in patch-phase of build,
+         ;; despite using python-wrapper as input. So we patch them manually.
+         (add-after 'unpack 'patch-python-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "apps"
+               (substitute* '("blueman-adapters.in" "blueman-applet.in"
+                              "blueman-assistant.in" "blueman-manager.in"
+                              "blueman-mechanism.in" "blueman-report.in"
+                              "blueman-rfcomm-watcher.in" "blueman-sendto.in"
+                              "blueman-services.in" "blueman-tray.in")
+                 (("@PYTHON@") (string-append (assoc-ref inputs "python")
+                                              "/bin/python"
+                                              ,(version-major+minor
+                                                (package-version python))))))
+             #t))
+         ;; Fix loading of external programs.
+         (add-after 'unpack 'patch-external-programs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("apps/blueman-report.in" "blueman/main/NetConf.py"
+                            "blueman/main/PPPConnection.py")
+               (("/usr/sbin/bluetoothd")
+                (string-append (assoc-ref inputs "bluez")
+                               "/libexec/bluetooth/bluetoothd"))
+               (("/sbin/iptables")
+                (string-append (assoc-ref inputs "iptables")
+                               "/sbin/iptables"))
+               (("/usr/sbin/pppd")
+                (string-append (assoc-ref inputs "ppp")
+                               "/sbin/pppd")))
+             #t))
+         ;; Fix loading of pulseaudio libraries.
+         (add-after 'unpack 'patch-pulseaudio-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((pulseaudio (assoc-ref inputs "pulseaudio"))
+                    (pulse (string-append pulseaudio "/lib/libpulse.so.0"))
+                    (pulse-glib (string-append pulseaudio
+                                               "/lib/libpulse-mainloop-glib.so.0")))
+               (with-directory-excursion "blueman/main"
+                 (substitute* "PulseAudioUtils.py"
+                   (("libpulse.so.0") pulse)
+                   (("libpulse-mainloop-glib.so.0") pulse-glib)))
+               #t)))
+         ;; Fix running of blueman programs.
+         (add-after 'glib-or-gtk-wrap 'wrap-blueman-progs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/blueman-"))
+                    (libexec (string-append out "/libexec/blueman-"))
+                    (lib (string-append out "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+               (for-each
+                (lambda (program)
+                  (wrap-program program
+                    `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,lib))
+                    `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
+                (append
+                 (map (lambda (prog) (string-append bin prog))
+                      '("adapters" "applet" "assistant" "manager" "report"
+                        "sendto" "services" "tray"))
+                 (map (lambda (prog) (string-append libexec prog))
+                      '("mechanism" "rfcomm-watcher"))))
+               #t))))))
     (native-inputs
-     `(("cython" ,python-cython)
+     `(("autoconf" ,autoconf)
+       ("autogen" ,autogen)
+       ("automake" ,automake)
+       ("cython" ,python-cython)
        ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
        ("intltool" ,intltool)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("bluez" ,bluez)
+     `(("bluez" ,bluez)
        ("dbus" ,dbus)
-       ("gdkpixbuf" ,gdk-pixbuf)
+       ("gdkpixbuf" ,gdk-pixbuf+svg)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("iproute2" ,iproute)
+       ("iptables" ,iptables)
        ("net-tools" ,net-tools)
        ("pango" ,pango)
        ("polkit" ,polkit)
+       ("ppp" ,ppp)
        ("pulseaudio" ,pulseaudio)
        ("pycairo" ,python-pycairo)
        ("pygobject" ,python-pygobject)
        ("python" ,python-wrapper)
-       ("libnm" ,libnma)))
+       ("libnm" ,network-manager)))
     (synopsis "GTK+ Bluetooth manager")
     (description "Blueman is a Bluetooth management utility using the Bluez
 D-Bus backend.  It is designed to be easy to use for most common Bluetooth
