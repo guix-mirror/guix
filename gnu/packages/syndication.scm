@@ -30,6 +30,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
@@ -169,3 +170,29 @@ file system, and many more features.")
      "Tuir provides a simple terminal viewer for Reddit (Terminal UI for Reddit).")
     (license (list license:expat
                    license:gpl3+))))    ; tuir/packages/praw
+
+(define-public rawdog
+  (package
+    (name "rawdog")
+    (version "2.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://offog.org/files/rawdog-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "18nyg19mwxyqdnykplkqmzb4n27vvrhvp639zai8f81gg9vdbsjp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2.7))
+    (inputs
+     `(("python2-feedparser" ,python2-feedparser)
+       ("python2-pytidylib" ,python2-pytidylib)))
+    (home-page "https://offog.org/code/rawdog/")
+    (synopsis "RSS Aggregator Without Delusions Of Grandeur")
+    (description
+     "@command{rawdog} is a feed aggregator, capable of producing a personal
+\"river of news\" or a public \"planet\" page.  It supports all common feed
+formats, including all versions of RSS and Atom.")
+    (license license:gpl2+)))
