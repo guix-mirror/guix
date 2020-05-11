@@ -5157,7 +5157,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.9")
+    (version "6.10")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -5165,18 +5165,22 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "065jf26s8zkicb95zc9ilksjdq9gqrh5vcx3mhi6mypbnamn6w98"))))
+                "0hbml37yxs0fs69g7f2x4ixq61z0029swy99rn7ykma9mi6b7ni9"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
+     `(;; Disable support for various hardware entropy sources as they need
+       ;; dependencies that are not yet in Guix, and would significantly
+       ;; increase closure size.
        #:configure-flags '("--without-nistbeacon"
-                           "--without-pkcs11")))
+                           "--without-pkcs11"
+                           "--without-rtlsdr")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libsysfs" ,sysfsutils)))
+     `(("libsysfs" ,sysfsutils)
+       ("openssl" ,openssl)))
     (synopsis "Random number generator daemon")
     (description
      "Monitor a hardware random number generator, and supply entropy
