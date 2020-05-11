@@ -694,7 +694,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public waylandpp
   (package
     (name "waylandpp")
-    (version "0.2.5")
+    (version "0.2.7")
     (home-page "https://github.com/NilsBrause/waylandpp")
     (source (origin
               (method git-fetch)
@@ -702,7 +702,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16h57hzd688664qcyznzhjp3hxipdkzgv46x82yhkww24av8b55n"))))
+                "1r4m0xhvwpcqxrqvp3hz1bzlkxqj2jiymd5r6hj8xjzz536hyprz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
