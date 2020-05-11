@@ -6367,42 +6367,42 @@ users.")
                   (substitute* "src/devices/wwan/nm-modem-manager.c"
                     (("systemd") "elogind"))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out"))
-             (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-libnm-glib" ; needed by network-manager-applet
-               "--with-systemd-journal=no"
-               "--with-session-tracking=elogind"
-               "--with-suspend-resume=elogind"
-               "--with-consolekit=no"
-               "--with-crypto=gnutls"
-               "--with-iwd=yes"
-               "--with-libaudit=yes"
-               "--with-resolvconf=yes"
-               "--sysconfdir=/etc"
-               "--localstatedir=/var"
-               (string-append "--with-udev-dir="
-                              out "/lib/udev")
-               (string-append "--with-dbus-sys-dir="
-                              out "/etc/dbus-1/system.d")
-               (string-append "--with-html-dir="
-                              doc "/share/gtk-doc/html")
-               (string-append "--with-dhclient=" dhclient)))
+         (list
+          ;; Otherwise, the RUNPATH will lack the final 'NetworkManager' path
+          ;; component.
+          (string-append "-Dc_link_args=-Wl,-rpath="
+                         out "/lib:"
+                         out "/lib/NetworkManager/" ,version)
+          "-Dsystemd_journal=false"
+          "-Dsession_tracking=elogind"
+          "-Dsuspend_resume=elogind"
+          "-Dsystemdsystemunitdir=no"
+          "-Dsession_tracking_consolekit=false"
+          "-Ddhcpcd=no"
+          "-Ddhcpcanon=no"
+          "-Dcrypto=gnutls"
+          "-Diwd=true"
+          "-Dlibaudit=yes"
+          "-Dqt=false"
+          "-Ddocs=true"
+          "--sysconfdir=/etc"
+          "--localstatedir=/var"
+          (string-append "-Dudev_dir="
+                         out "/lib/udev")
+          (string-append "-Ddbus_conf_dir="
+                         out "/etc/dbus-1/system.d")
+
+          (string-append "-Ddhclient=" dhclient)))
        #:phases
        (modify-phases %standard-phases
-         ;; This bare "ls" invocation breaks some tests.
-         (add-after 'unpack 'patch-ls-invocation
-           (lambda _
-             (substitute* "build-aux/ltmain.sh"
-               (("`ls -")
-                (string-append "`" (which "ls") " -")))
-             #t))
          (add-before 'configure 'pre-configure
            (lambda _
              ;; These tests try to test aspects of network-manager's
@@ -6410,61 +6410,64 @@ users.")
              ;; cope with being already in the Guix build jail as that jail
              ;; lacks some features that they would like to proxy over (like
              ;; a /sys mount).
-             (substitute* '("Makefile.in")
-               (("src/platform/tests/test-address-linux") " ")
-               (("src/platform/tests/test-cleanup-linux") " ")
-               (("src/platform/tests/test-link-linux") " ")
-               (("src/platform/tests/test-route-linux") " ")
-               (("src/devices/tests/test-acd") "")
-               (("src/devices/tests/test-arping") " ")
-               (("src/devices/tests/test-lldp") " ")
-               (("src/tests/test-route-manager-linux") " "))
+             (substitute* "src/platform/tests/meson.build"
+               ((".*test-address-linux.*") "")
+               ((".*test-cleanup-linux.*") "")
+               ((".*test-link-linux.*") "")
+               ((".*test-route-linux.*") ""))
+             (substitute* "src/devices/tests/meson.build"
+               ((".*test-acd.*") "")
+               ((".*test-lldp.*") ""))
              #t))
-         (add-after 'unpack 'delete-failing-tests
-           (lambda _
-             ;; FIXME: These three tests fail for unknown reasons.
-             ;; ERROR:libnm-core/tests/test-general.c:5842:
-             ;;   _json_config_check_valid: assertion failed (res == expected): (1 == 0)
-             ;; ERROR:libnm-core/tests/test-keyfile.c:647:
-             ;;   test_team_conf_read_invalid: assertion failed: (nm_setting_team_get_config (s_team) == NULL)
-             ;; ERROR:libnm-core/tests/test-setting.c:907:
-             ;;   _test_team_config_sync: assertion failed: (nm_streq0 (nm_setting_team_get_runner (s_team), runner))
-             (substitute* "Makefile.in"
-               (("libnm-core/tests/test-general") " ")
-               (("libnm-core/tests/test-keyfile") " ")
-               (("libnm-core/tests/test-setting\\$\\(EXEEXT\\)") " "))
-             #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook")))
+               (substitute* (find-files "." ".*\\.(xsl|xml)")
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               #t)))
          (add-before 'check 'pre-check
            (lambda _
              ;; For the missing /etc/machine-id.
              (setenv "DBUS_FATAL_WARNINGS" "0")
              #t))
-         (replace 'install
+         (add-before 'install 'no-polkit-magic
+           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
            (lambda _
-             (invoke "make"
-                     "sysconfdir=/tmp"
-                     "rundir=/tmp"
-                     "statedir=/tmp"
-                     "nmstatedir=/tmp/nm"
-                     "install")
-             #t)))))
+             (setenv "PKEXEC_UID" "something")
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (for-each (lambda (directory)
+                           (copy-recursively (string-append out directory)
+                                             (string-append doc directory))
+                           (delete-file-recursively
+                            (string-append out directory)))
+                         '("/share/doc" "/share/gtk-doc"))
+               #t))))))
     (propagated-inputs
      `(("glib" ,glib)))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for gdbus-codegen
+     `(("glib:bin" ,glib "bin")         ; for gdbus-codegen
+       ("gtk-doc" ,gtk-doc)
        ("gobject-introspection" ,gobject-introspection)
+       ("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("intltool" ,intltool)
        ("libxslt" ,libxslt)
        ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ;; For testing.
        ("python" ,python-wrapper)
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)))
     (inputs
-     `(("coreutils" ,coreutils) ; for ls
-       ("curl" ,curl)
+     `(("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("dbus-glib" ,dbus-glib)
        ("dnsmasq" ,dnsmasq)
@@ -6480,6 +6483,7 @@ users.")
        ("libndp" ,libndp)
        ("libnl" ,libnl)
        ("libsoup" ,libsoup)
+       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
        ("modem-manager" ,modem-manager)
        ("newt" ,newt)                       ;for the 'nmtui' console interface
        ("openresolv" ,openresolv)           ; alternative resolv.conf manager
@@ -6496,7 +6500,11 @@ devices and connections, attempting to keep active network connectivity when
 available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
-    (license license:gpl2+)
+    ;; “This NetworkManager project consists of the daemon, client tools, and
+    ;; libnm. libnm is licensed LGPL-2.1+, while the rest is licensed under
+    ;; GPL-2.0+.”
+    (license (list license:gpl2+
+                   license:lgpl2.1+))
     (properties '((upstream-name . "NetworkManager")))))
 
 (define-public network-manager-openvpn
