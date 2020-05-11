@@ -6583,7 +6583,11 @@ to virtual private networks (VPNs) via OpenVPN.")
                 "1js5lwcsqws4klgypfxl4ikmakv7v7xgddij1fj6b0y0qicx0kyy"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+     `(#:configure-flags '("--enable-absolute-paths"
+                           "--localstatedir=/var"
+                           ;; libnm-glib has been removed from network-manager
+                           ;; 1de8383ad9fdfc8f552117e5d109bdfa7005634b
+                           "--with-libnm-glib=no")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-path
@@ -6607,7 +6611,7 @@ to virtual private networks (VPNs) via OpenVPN.")
        ("kmod" ,kmod)
        ("vpnc" ,vpnc)
        ("network-manager" ,network-manager)
-       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libnma" ,libnma)
        ("libsecret" ,libsecret)))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "VPNC plug-in for NetworkManager")
