@@ -2962,11 +2962,11 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "9175199e9039b9a1dbc5e1eafa05b9c618416f3b")
-        (revision "16"))
+  (let ((commit "75d34d4d9c20b87d637b027900744da976c5f436")
+        (revision "1"))
     (package
       (name "mumi")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2975,7 +2975,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1v0i9h3dw0irc92flmk3wk72l0kiymf82fashklbyhk7mr968zx3"))))
+                  "1f69fiz884lbm93wzfs52xlsg7cwhgvzw1y00fqn9gncvkdwng1y"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3004,8 +3004,7 @@ replacement for the @code{urlview} program.")
                      (,go ,(getenv "GUILE_LOAD_COMPILED_PATH"))))
                  #t))))))
       (inputs
-       `(("guile-debbugs" ,guile-debbugs)
-         ("guile-email" ,guile-email)
+       `(("guile-email" ,guile-email)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-3)
          ("guile-redis" ,guile-redis)
@@ -3013,8 +3012,7 @@ replacement for the @code{urlview} program.")
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("guile-webutils" ,guile-webutils)
          ("guile-xapian" ,guile-xapian)
-         ("gnutls" ,gnutls)         ;needed to talk to https://debbugs.gnu.org
-         ("guile" ,guile-2.2)
+         ("guile" ,guile-3.0)
          ("mailutils" ,mailutils)))
       (native-inputs
        `(("autoconf" ,autoconf)
