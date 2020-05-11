@@ -3322,7 +3322,15 @@ gnome-keyring, and many more.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1s9n3hbxd7lfpdi0x8wr0cfvlsf6g62ird9gbspxdrp5p05rbi64"))))
+                  "1s9n3hbxd7lfpdi0x8wr0cfvlsf6g62ird9gbspxdrp5p05rbi64"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Allow builds with Guile 3.0.
+                    (substitute* "configure.ac"
+                      (("2\\.2 2\\.0")
+                       "3.0 2.2 2.0"))
+                    #t))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -3330,7 +3338,7 @@ gnome-keyring, and many more.")
          ("pkg-config" ,pkg-config)
          ("texinfo" ,texinfo)))
       (inputs
-       `(("guile" ,guile-2.2)))
+       `(("guile" ,guile-3.0)))
       (propagated-inputs
        `(("guile-irregex" ,guile-irregex)
          ("guile-gcrypt" ,guile-gcrypt)))
@@ -3340,6 +3348,16 @@ gnome-keyring, and many more.")
        "This package provides tooling to write web applications in Guile, such
 as signed sessions, multipart message support, etc.")
       (license license:gpl3+))))
+
+(define-public guile2.2-webutils
+  (package
+    (inherit guile-webutils)
+    (name "guile2.2-webutils")
+    (inputs
+     `(("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-irregex" ,guile2.2-irregex)
+       ("guile-gcrypt" ,guile2.2-gcrypt)))))
 
 (define-public guile-lens
   (let ((commit "14b15d07255f9d3f55d40a3b750d13c9ee3a154f")
