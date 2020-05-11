@@ -199,7 +199,7 @@ pre-processors.  Additional features include: a plain-text mode; an option to
 unlit literate code files; and an option to turn off macro-expansion.")
     (license (list license:lgpl2.1+ license:gpl3+))))
 
-;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
+;; Darcs has no https support:
 ;; http://darcs.net/manual/Configuring_darcs.html#SECTION00440070000000000000
 ;; and results of search engines will show that if the protocol is http, https
 ;; is never mentioned.
