@@ -65,6 +65,7 @@
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages man)
   #:use-module (gnu packages nettle)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages patchutils)
   #:use-module (gnu packages perl)
@@ -1113,7 +1114,7 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.4.3")
+   (version "1.6.3")
    (source
     (origin
      (method url-fetch)
@@ -1121,45 +1122,78 @@ the boot loader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "11bfxmv8pxlb5x0lb2rsl45615fzfvq5r6wldf0l6ab2ngryd7i7"))))
+       "17s8nqdxd4xdy7ag9bw06adxccha78jmlsa3zpqnl3qh92pg0hji"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
    (build-system glib-or-gtk-build-system)
 
    (arguments
-    '(#:tests? #f ;; Tests fail due to trying to create files where it can't.
-      #:configure-flags (list
-                         "--enable-documentation=no" ;; FIXME
-                         "--enable-system-helper=no"
-                         "--localstatedir=/var"
-                         (string-append "--with-system-bubblewrap="
-                                        (assoc-ref %build-inputs "bubblewrap")
-                                        "/bin/bwrap"))))
-   (native-inputs `(("bison" ,bison)
-                    ("gettext" ,gettext-minimal)
-                    ("glib:bin" ,glib "bin") ; for glib-mkenums + gdbus-codegen
-                    ("gobject-introspection" ,gobject-introspection)
-                    ("libcap" ,libcap)
-                    ("pkg-config" ,pkg-config)))
+    '(#:configure-flags
+      (list
+       "--enable-documentation=no" ;; FIXME
+       "--enable-system-helper=no"
+       "--localstatedir=/var"
+       (string-append "--with-system-bubblewrap="
+                      (assoc-ref %build-inputs "bubblewrap")
+                      "/bin/bwrap")
+       "--with-system-dbus-proxy")
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'fix-tests
+          (lambda* (#:key inputs #:allow-other-keys)
+            (copy-recursively
+             (string-append (assoc-ref inputs "glibc-utf8-locales")
+                            "/lib/locale/") "/tmp/locale")
+            (for-each make-file-writable (find-files "/tmp"))
+            (substitute* "tests/make-test-runtime.sh"
+              (("cp `which.*") "echo guix\n")
+              (("cp -r /usr/lib/locale/C\\.\\*")
+               (string-append "mkdir ${DIR}/usr/lib/locale/en_US; \
+cp -r /tmp/locale/*/en_US.*")))
+            (substitute* "tests/libtest.sh"
+              (("/bin/kill") (which "kill"))
+              (("/usr/bin/python3") (which "python3")))
+            #t))
+        ;; Many tests fail for unknown reasons, so we just run a few basic
+        ;; tests
+        (replace 'check
+          (lambda _
+            (setenv "HOME" "/tmp")
+            (invoke "make" "check"
+                    "TESTS=tests/test-basic.sh tests/test-config.sh testcommon"))))))
+    (native-inputs
+    `(("bison" ,bison)
+      ("dbus" ,dbus) ; for dbus-daemon
+      ("gettext" ,gettext-minimal)
+      ("glib:bin" ,glib "bin")          ; for glib-mkenums + gdbus-codegen
+      ("glibc-utf8-locales" ,glibc-utf8-locales)
+      ("gobject-introspection" ,gobject-introspection)
+      ("libcap" ,libcap)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python)
+      ("socat" ,socat)
+      ("which" ,which)))
    (propagated-inputs `(("glib-networking" ,glib-networking)
                         ("gnupg" ,gnupg)
                         ("gsettings-desktop-schemas"
                          ,gsettings-desktop-schemas)))
-   (inputs `(("appstream-glib" ,appstream-glib)
-             ("bubblewrap" ,bubblewrap)
-             ("dconf" ,dconf)
-             ("fuse" ,fuse)
-             ("gdk-pixbuf" ,gdk-pixbuf)
-             ("gpgme" ,gpgme)
-             ("json-glib" ,json-glib)
-             ("libarchive" ,libarchive)
-             ("libostree" ,libostree)
-             ("libseccomp" ,libseccomp)
-             ("libsoup" ,libsoup)
-             ("libxau" ,libxau)
-             ("libxml2" ,libxml2)
-             ("util-linux" ,util-linux)))
+   (inputs
+    `(("appstream-glib" ,appstream-glib)
+      ("bubblewrap" ,bubblewrap)
+      ("dconf" ,dconf)
+      ("fuse" ,fuse)
+      ("gdk-pixbuf" ,gdk-pixbuf)
+      ("gpgme" ,gpgme)
+      ("json-glib" ,json-glib)
+      ("libarchive" ,libarchive)
+      ("libostree" ,libostree)
+      ("libseccomp" ,libseccomp)
+      ("libsoup" ,libsoup)
+      ("libxau" ,libxau)
+      ("libxml2" ,libxml2)
+      ("util-linux" ,util-linux)
+      ("xdg-dbus-proxy" ,xdg-dbus-proxy)))
    (home-page "https://flatpak.org")
    (synopsis "System for building, distributing, and running sandboxed desktop
 applications")
