@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>

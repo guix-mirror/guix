@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 nee <nee.git@cock.li>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2018 Nikita <nikita@n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
