@@ -6735,7 +6735,7 @@ Cisco's AnyConnect SSL VPN.")
        ("jansson" ,jansson) ; for team support
        ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
-    (home-page "https://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (description
      "This package contains a systray applet for NetworkManager.  It displays
 the available networks and allows users to easily switch between them.")
