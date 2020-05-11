@@ -482,22 +482,6 @@ visual effects work for film.")
     (home-page "https://www.openimageio.org")
     (license license:bsd-3)))
 
-;; This older version of OpenImageIO is required for Blender 2.79.
-(define-public openimageio-1.7
-  (package
-    (inherit openimageio)
-    (name "openimageio")
-    (version "1.7.19")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OpenImageIO/oiio.git")
-                    (commit (string-append "Release-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0yxxy43l3lllw7maqg42dlkgqms2d4772sxzxk7kmxg4lnhsvndc"))))))
-
 (define-public openscenegraph
   (package
     (name "openscenegraph")
