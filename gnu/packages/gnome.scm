@@ -6649,7 +6649,7 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
-       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libnma" ,libnma)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gcr" ,gcr)
