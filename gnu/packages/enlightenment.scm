@@ -292,7 +292,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.23.1")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -300,27 +300,27 @@ Libraries with some extra bells and whistles.")
                               "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "0d1cyl07w9pvi2pf029kablazks2q9aislzl46b6fq5m1465jc75"))
+                "01053hxdmyjfb6gmz1pqmw0llrgc4356np515h5vsqcn59mhvfz7"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dsystemd=false")
+     `(#:configure-flags
+       (let ((efl (assoc-ref %build-inputs "efl")))
+         (list "-Dsystemd=false"
+               "-Dpackagekit=false"
+               (string-append "-Dedje-cc=" efl "/bin/edje_cc")
+               (string-append "-Deldbus-codegen=" efl "/bin/eldbus-codegen")
+               (string-append "-Deet=" efl "/bin/eet")))
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap) ; We don't want to run the autogen script.
-         (add-after 'unpack 'fix-dot-desktop-creation
-           (lambda _
-             (substitute* "data/session/meson.build"
-               (("HAVE_WAYLAND'.*") "HAVE_WAYLAND') == true\n"))
-             #t))
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "HOME" "/tmp")
+             (setenv "HOME" "/tmp")
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc"))
-                   (bluez     (assoc-ref inputs "bluez"))
                    (bc        (assoc-ref inputs "bc"))
                    (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
@@ -337,23 +337,22 @@ Libraries with some extra bells and whistles.")
                                   "src/modules/conf_intl/e_int_config_intl.c"
                                   "src/modules/wizard/page_010.c")
                  (("locale -a") (string-append libc "/bin/locale -a")))
-               (substitute* "src/bin/e_import_config_dialog.c"
-                 (("%s/edje_cc -v %s %s %s\", e_prefix_bin_get\\(\\)")
-                  (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
+               (substitute* '("src/bin/e_sys_main.c"
+                              "src/bin/e_util_suid.h")
+                 (("PATH=/bin:/usr/bin:/sbin:/usr/sbin")
+                  (string-append "PATH=/run/setuid-programs:"
+                                 "/run/current-system/profile/bin:"
+                                 "/run/current-system/profile/sbin")))
                (substitute* "src/modules/everything/evry_plug_calc.c"
                  (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
                  (("/bin/mount") "/run/setuid-programs/mount")
                  (("/bin/umount") "/run/setuid-programs/umount")
-                 (("/usr/bin/eject") (string-append utils "/bin/eject"))
-                 (("/usr/bin/l2ping") (string-append bluez "/bin/l2ling"))
-                 (("/bin/rfkill") (string-append utils "/sbin/rfkill"))
-                 (("SUSPEND   = ''") "SUSPEND   = '/run/current-system/profile/bin/loginctl suspend'")
-                 (("HIBERNATE = ''") "HIBERNATE = '/run/current-system/profile/bin/loginctl hibernate'")
-                 (("/sbin/shutdown -h now") "/run/current-system/profile/bin/loginctl poweroff now")
-                 (("/sbin/shutdown -r now") "/run/current-system/profile/bin/loginctl reboot now"))
+                 (("/usr/bin/eject") (string-append utils "/bin/eject")))
+               (substitute* "src/bin/system/e_system_power.c"
+                 (("systemctl") "loginctl"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
