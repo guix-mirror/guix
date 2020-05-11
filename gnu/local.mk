@@ -793,6 +793,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/binutils-mingw-w64-timestamp.patch	\
   %D%/packages/patches/binutils-mingw-w64-deterministic.patch	\
+  %D%/packages/patches/bitcoin-core-python-compat.patch		\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/bluez-CVE-2020-0556.patch		\

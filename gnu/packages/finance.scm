@@ -110,7 +110,8 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))))
+               "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))
+             (patches (search-patches "bitcoin-core-python-compat.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
