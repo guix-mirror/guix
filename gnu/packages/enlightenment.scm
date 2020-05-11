@@ -568,7 +568,7 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
       (origin
         (method url-fetch)
@@ -576,7 +576,7 @@ directories.
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
          (base32
-          "0gh3y2348pgf683sljnfry9k545h42dx75idyigcspsjsk7khisz"))))
+          "0c3sgz6g8agig1i6fwn1jv318zsm556l9f3f0dm1jll146dlk2iv"))))
     (build-system meson-build-system)
     (arguments
      '(#:tests? #f))    ; no tests
