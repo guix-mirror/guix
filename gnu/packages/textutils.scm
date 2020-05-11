@@ -476,15 +476,19 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
-    (version "6.9.4")
+    (version "6.9.5-rev1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kkos/"
-                                  "oniguruma/releases/download/v" version
+                                  "oniguruma/releases/download/v"
+                                  ;; If there is a "-" in the version, convert
+                                  ;; to underscore for this part of the URI.
+                                  (string-map (lambda (c) (if (char=? #\- c) #\_ c))
+                                              version)
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "0lvd1rpp49i0k1icblb0i76lj2cwmhf1c5p1jdz2m6g0ywpx4sa6"))))
+                "17m92k1n6bvza6m35fpd5g36zwpwm3hfz3478iwj5bvj2sfq8g6k"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/kkos/oniguruma")
     (synopsis "Regular expression library")
