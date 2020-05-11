@@ -11,6 +11,20 @@
 (channel-news
  (version 0)
 
+ (entry (commit "88a96c568c47c97d05d883ada5afbc4e1200b10f")
+        (title (en "New @option{--path} option for @command{guix graph}"))
+        (body
+         (en "The @command{guix graph} command has a new @option{--path}
+option that instructs it to display the shortest path between two packages,
+derivations, or store items.  For example, the command below displays the
+shortest path from the @code{libreoffice} package to @code{libunistring}:
+
+@example
+guix graph --path libreoffice libunistring
+@end example
+
+Run @code{info \"(guix) Invoking guix graph\"} for more information.")))
+
  (entry (commit "a33eac038a811603c8b9ed106ae405a5f80a0e9d")
         (title (en "GNU C Library upgraded")
                (de "GNU-C-Bibliothek aktualisiert")
