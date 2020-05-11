@@ -3162,7 +3162,7 @@ devices that can inject events directly into the input subsystem.")
 (define-public lvm2
   (package
     (name "lvm2")
-    (version "2.03.08")
+    (version "2.03.09")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "ftp://sourceware.org/pub/lvm2/LVM2."
@@ -3171,7 +3171,7 @@ devices that can inject events directly into the input subsystem.")
                                         version ".tgz")))
               (sha256
                (base32
-                "1j0yis658564rk1ddabkl8vbavp0fdd10gd6qhgyzc3akzf620kf"))
+                "0xdr9qbqw6kja267wmx6ajnfv1nhw056gpxx9v2qmfh3bj6qnfn0"))
               (modules '((guix build utils)))
               (snippet
                '(begin
