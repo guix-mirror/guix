@@ -104,14 +104,14 @@
     (name "bitcoin-core")
     (version "0.19.1")
     (source (origin
-             (method url-fetch)
-             (uri
-              (string-append "https://bitcoincore.org/bin/bitcoin-core-"
-                             version "/bitcoin-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))
-             (patches (search-patches "bitcoin-core-python-compat.patch"))))
+              (method url-fetch)
+              (uri
+               (string-append "https://bitcoincore.org/bin/bitcoin-core-"
+                              version "/bitcoin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))
+              (patches (search-patches "bitcoin-core-python-compat.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -128,35 +128,36 @@
        ("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
-        (list
-          ;; Boost is not found unless specified manually.
-          (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost"))
-          ;; XXX: The configure script looks up Qt paths by
-          ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
-          ;; up executables residing in 'qttools', so we specify them here.
-          (string-append "ac_cv_path_LRELEASE="
-                         (assoc-ref %build-inputs "qttools")
-                         "/bin/lrelease")
-          (string-append "ac_cv_path_LUPDATE="
-                         (assoc-ref %build-inputs "qttools")
-                         "/bin/lupdate"))
+       (list
+        ;; Boost is not found unless specified manually.
+        (string-append "--with-boost="
+                       (assoc-ref %build-inputs "boost"))
+        ;; XXX: The configure script looks up Qt paths by
+        ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
+        ;; up executables residing in 'qttools', so we specify them here.
+        (string-append "ac_cv_path_LRELEASE="
+                       (assoc-ref %build-inputs "qttools")
+                       "/bin/lrelease")
+        (string-append "ac_cv_path_LUPDATE="
+                       (assoc-ref %build-inputs "qttools")
+                       "/bin/lupdate"))
        #:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'make-qt-deterministic
+       (modify-phases %standard-phases
+         (add-before 'configure 'make-qt-deterministic
            (lambda _
-            ;; Make Qt deterministic.
-            (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
-            #t))
-          (add-before 'check 'set-home
+             ;; Make Qt deterministic.
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
-            #t))
-          (add-after 'check 'check-functional
+             (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
+             #t))
+         (add-after 'check 'check-functional
            (lambda _
-            (invoke "python3" "./test/functional/test_runner.py"
-                    (string-append "--jobs=" (number->string (parallel-job-count))))
-            #t)))))
+             (invoke
+              "python3" "./test/functional/test_runner.py"
+              (string-append "--jobs=" (number->string (parallel-job-count))))
+             #t)))))
     (home-page "https://bitcoin.org/en/")
     (synopsis "Bitcoin peer-to-peer client")
     (description
