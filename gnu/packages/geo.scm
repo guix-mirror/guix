@@ -227,6 +227,12 @@ topology functions.")
              (substitute* "meson_post_install.py"
                (("gtk-update-icon-cache") "true"))
              #t))
+         (add-after 'unpack 'patch-dbus-service
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "data/org.gnome.Maps.service.in"
+               (("@pkgdatadir@/org.gnome.Maps")
+                (string-append  (assoc-ref outputs "out") "/bin/gnome-maps")))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
