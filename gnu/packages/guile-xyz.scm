@@ -623,19 +623,33 @@ HTML (via SXML) or any other format for rendering.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1mzmapln79vv10qxaggz9qwcdbag3jnrj19xx8bgkmxss8h03sv3"))))
+                "1mzmapln79vv10qxaggz9qwcdbag3jnrj19xx8bgkmxss8h03sv3"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Allow builds with Guile 3.0.
+                  (substitute* "configure"
+                    (("2\\.2 2\\.0")
+                     "3.0 2.2 2.0"))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (home-page "https://gitlab.com/dustyweb/guile-sjson")
     (synopsis "S-expression based json reader/writer for Guile")
     (description "guile-sjson is a json reader/writer for Guile.
 It has a nice, simple s-expression based syntax.")
     (license license:lgpl3+)))
+
+(define-public guile2.2-sjson
+  (package
+    (inherit guile-sjson)
+    (name "guile2.2-sjson")
+    (inputs `(("guile" ,guile-2.2)))))
 
 (define-public guile-squee
   (let ((commit "a85902a92bf6f58a1d35fd974a01ade163deda8d")
