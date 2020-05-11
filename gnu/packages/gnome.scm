@@ -6702,7 +6702,7 @@ Cisco's AnyConnect SSL VPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.24")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/network-manager-applet/"
@@ -6710,13 +6710,10 @@ Cisco's AnyConnect SSL VPN.")
                                   "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
-                "1gzvz4wfqfsfclqg56y954al8x6fmz71cnxlx1i4nqr7a25bp2qi"))))
+                "1rf3nm0hjcy9f8ajb4vmvwy503w8yj8d4daxkcb7w7i7b92qmyfn"))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       ;; ‘Nobody should be using this’ but network-manager-openvpn 1.8.10 does.
-       (list "-Dlibnm_gtk=true")
-       #:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
@@ -6730,14 +6727,13 @@ Cisco's AnyConnect SSL VPN.")
        ("network-manager" ,network-manager)))
     (inputs
      `(("gcr" ,gcr)
-       ("iso-codes" ,iso-codes)
+       ("libnma" ,libnma)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libselinux" ,libselinux)
        ("jansson" ,jansson) ; for team support
-       ("modem-manager" ,modem-manager)
-       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)))
+       ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
     (home-page "https://www.gnome.org/projects/NetworkManager/")
     (description
