@@ -6382,7 +6382,9 @@ users.")
                "--with-suspend-resume=elogind"
                "--with-consolekit=no"
                "--with-crypto=gnutls"
-               "--disable-config-plugin-ibft"
+               "--with-iwd=yes"
+               "--with-libaudit=yes"
+               "--with-resolvconf=yes"
                "--sysconfdir=/etc"
                "--localstatedir=/var"
                (string-append "--with-udev-dir="
@@ -6436,10 +6438,6 @@ users.")
            (lambda _
              ;; For the missing /etc/machine-id.
              (setenv "DBUS_FATAL_WARNINGS" "0")
-
-             ;; XXX: Regenerate some of the tests that are dependent on Python version.
-             ;; Try removing this variable for newer versions of NetworkManager.
-             (setenv "NM_TEST_REGENERATE" "1")
              #t))
          (replace 'install
            (lambda _
@@ -6474,7 +6472,9 @@ users.")
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("isc-dhcp" ,isc-dhcp)
+       ("iwd" ,iwd)                     ; wpa_supplicant alternative
        ("jansson" ,jansson)
+       ("libaudit" ,audit)
        ("libgcrypt" ,libgcrypt)
        ("libgudev" ,libgudev)
        ("libndp" ,libndp)
@@ -6482,6 +6482,7 @@ users.")
        ("libsoup" ,libsoup)
        ("modem-manager" ,modem-manager)
        ("newt" ,newt)                       ;for the 'nmtui' console interface
+       ("openresolv" ,openresolv)           ; alternative resolv.conf manager
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
