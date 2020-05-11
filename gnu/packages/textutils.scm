@@ -490,6 +490,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                (base32
                 "17m92k1n6bvza6m35fpd5g36zwpwm3hfz3478iwj5bvj2sfq8g6k"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-static")))
     (home-page "https://github.com/kkos/oniguruma")
     (synopsis "Regular expression library")
     (description "Oniguruma is a regular expressions library.  The special
