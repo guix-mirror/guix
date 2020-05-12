@@ -13406,14 +13406,14 @@ tessellation.")
 (define-public r-sf
   (package
     (name "r-sf")
-    (version "0.9-2")
+    (version "0.9-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sf" version))
        (sha256
         (base32
-         "01xplgy5nlwy3ajfch4h1ssa1xhm7q0jzscpz04dmvgqfzwhhdfh"))))
+         "0qh9jxj88rhkwcd95g0l57cdrz5qqjw1b9yysz1hp9cp99485hcx"))))
     (build-system r-build-system)
     (inputs
      `(("gdal" ,gdal)
