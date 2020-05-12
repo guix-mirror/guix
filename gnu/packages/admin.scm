@@ -1296,7 +1296,10 @@ system administrator.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-logpath=/var/log/sudo.log"
+       (list (string-append "--docdir=" (assoc-ref %outputs "out")
+                            "/share/doc/" ,name "-" ,version)
+
+             "--with-logpath=/var/log/sudo.log"
              "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
              "--with-vardir=/var/db/sudo"
              "--with-iologdir=/var/log/sudo-io"
