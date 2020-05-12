@@ -311,18 +311,7 @@ This package provides a library common to all Jami clients.")
        ("clutter-gtk" ,clutter-gtk)
        ("libcanberra" ,libcanberra)
        ("webkitgtk" ,webkitgtk)
-       ;; TODO: We must wrap ring-client-gnome to force using the
-       ;; `sqlite-with-column-metadata' package instead of `sqlite' or else it
-       ;; fails with:
-       ;;
-       ;;   /gnu/store/...-qtbase-5.11.2/lib/qt5/plugins/sqldrivers/libqsqlite.so:
-       ;;   undefined symbol: sqlite3_column_table_name16
-       ;;
-       ;; qtbase is built against sqlite-with-column-metadata but somehow
-       ;; jami-client-gnome ends up with both `sqlite' and
-       ;; `sqlite-with-column-metadata' as inputs and it seems that
-       ;; libqsqlite.so gets confused.
-       ("sqlite" ,sqlite-with-column-metadata)))
+       ("sqlite" ,sqlite)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
@@ -339,13 +328,6 @@ This package provides a library common to all Jami clients.")
          (add-after 'unpack 'change-directory
            (lambda _
              (chdir "client-gnome")
-             #t))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (path (string-append (assoc-ref inputs "sqlite") "/lib")))
-               (wrap-program (string-append out "/bin/jami-gnome")
-                 `("LD_LIBRARY_PATH" ":" prefix (,path))))
              #t)))))
     (synopsis "Distributed, privacy-respecting communication program")
     (description "Jami (formerly GNU Ring) is a secure and distributed voice,
