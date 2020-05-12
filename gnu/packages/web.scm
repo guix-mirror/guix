@@ -1494,7 +1494,7 @@ hash/signatures.")
 (define-public libyaml-0.2
   (package
     (inherit libyaml)
-    (version "0.2.1")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -1503,7 +1503,7 @@ hash/signatures.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1karpcfgacgppa82wm2drcfn2kb6q2wqfykf5nrhy20sci2i2a3q"))))))
+         "0mq5wf17ifcwwxq3kbimhi53jn3fg23vcynqpzxjcz3vfjlfs2nq"))))))
 
 (define-public libquvi-scripts
   (package
