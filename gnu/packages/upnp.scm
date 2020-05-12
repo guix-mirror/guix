@@ -94,21 +94,17 @@ over IRC, instant messaging, network games, and most server software.")
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.8.6")
+    (version "1.12.1")
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/pupnp/pupnp.git")
-            (commit (string-append "release-" version))))
+      (method url-fetch)
+      (uri (string-append "https://github.com/pupnp/pupnp/releases/download"
+                          "/release-" version "/libupnp-" version".tar.bz2"))
       (sha256
        (base32
-        "1jlb6qh47513h2simy0zxia5q61w1c31mnwmjqpr2nf832lmnpk4"))))
-       (native-inputs
-        `(("autoconf" ,autoconf)
-          ("automake" ,automake)
-          ("libtool" ,libtool)
-          ("pkg-config" ,pkg-config)))
+        "02a0dnbk1cla8xlb5l2zp09grv2hsf8n4jbd560mmzj830mn8dpw"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is
