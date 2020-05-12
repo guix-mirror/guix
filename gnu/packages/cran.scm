@@ -179,13 +179,13 @@ respecting the grammar of its graphics paradigm.")
 (define-public r-scales
   (package
     (name "r-scales")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "scales" version))
        (sha256
-        (base32 "00rdbfj5mwc3kr8pskidn3n2zkp4ms6cx36xazz54pxw3pysdr0y"))))
+        (base32 "019ps0njjc0rzrjygqiyn8b9vp0c3c0jd56h1yi19wzi49jvdcj0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-farver" ,r-farver)
