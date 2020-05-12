@@ -3261,14 +3261,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.10")
+    (version "0.1.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "11f96aanrzi2v6cn49fhvf9y4cmhra63wcy6nvpv6hcfaqqmwd2g"))))
+         "0hbnrqgzazg401nk5fhljif7wnspicki179qf215r34y9wm8g3xj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
