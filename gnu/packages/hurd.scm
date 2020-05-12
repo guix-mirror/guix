@@ -377,7 +377,8 @@ boot, since this cannot be done from GNU/Linux."
     (name "hurd")
     (version (package-version hurd-headers))
     (source (origin (inherit (package-source hurd-headers))
-                    (patches (search-patches "hurd-cross.patch"))))
+                    (patches (search-patches "hurd-cross.patch"
+                                             "hurd-xattr.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
