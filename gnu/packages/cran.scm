@@ -6649,18 +6649,19 @@ information are missing.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "1amq7i9sxf0pkxhskqc53xq5wvc9rdxm7cxyb4b6xh6qsskjnlsj"))))
+         "00dnrvwf7zbaq07hkh4rx24pvi5bwkl4npf6ycg101s63633dq5m"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-haven" ,r-haven)
-       ("r-insight" ,r-insight)))
+     `(("r-insight" ,r-insight)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/strengejacke/sjlabelled")
     (synopsis "Labelled data utility functions")
     (description
