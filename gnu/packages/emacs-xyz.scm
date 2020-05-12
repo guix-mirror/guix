@@ -18812,7 +18812,7 @@ the standard @code{Dockerfile} file format.")
 (define-public emacs-lsp-mode
   (package
     (name "emacs-lsp-mode")
-    (version "6.2.1")
+    (version "6.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -18821,7 +18821,7 @@ the standard @code{Dockerfile} file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f9d0zhblcjzrpggqclww2g7fyjky5rzpp7zj424005ahv0zd3xf"))))
+                "125rpmhlyd6wmq7p71j54x3rzmk07vn1hdcvvdjjip5481raxcwx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
