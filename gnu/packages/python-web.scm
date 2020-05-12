@@ -3746,3 +3746,26 @@ in Python with a focus on correctness and simplicity.
 Built on top of @code{asyncio}, Python's standard asynchronous I/O framework,
 it provides an elegant coroutine-based API.")
     (license license:bsd-3)))
+
+(define-public python-selenium
+  (package
+    (name "python-selenium")
+    (version "3.141.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "selenium" version))
+       (sha256
+        (base32
+         "039hf9knvl4s3hp21bzwsp1g5ri9gxsh504dp48lc6nr1av35byy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-urllib3" ,python-urllib3)))
+    (home-page
+     "https://github.com/SeleniumHQ/selenium/")
+    (synopsis "Python bindings for Selenium")
+    (description "Selenium enables web browser automation.
+Selenium specifically provides infrastructure for the W3C WebDriver specification
+— a platform and language-neutral coding interface compatible with all
+major web browsers.")
+    (license license:asl2.0)))
