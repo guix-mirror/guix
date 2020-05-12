@@ -750,14 +750,6 @@ using Guile's foreign function interface.")
     (arguments
      '(#:source-directory "src"
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'work-around-guile-bug
-                    (lambda _
-                      ;; See bug #39210.
-                      (substitute* '("fingertrees.sls"
-                                     "queues/private/condition.sls"
-                                     "deques/private/condition.sls")
-                        (("&assertion") "&violation"))
-                      #t))
                   (add-after 'unpack 'move-files-around
                     (lambda _
                       ;; Move files under a pfds/ directory to reflect the
