@@ -126,6 +126,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages openstack)
@@ -3716,6 +3717,35 @@ instead of making an HTTP request.")
 except that when you use it to get a web page but run into a
 possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
 and retry a few times.")
+    (license license:perl-license)))
+
+(define-public perl-lwpx-paranoidagent
+  (package
+    (name "perl-lwpx-paranoidagent")
+    (version "1.12")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/S/SA/SAXJAZMAN/lwp/LWPx-ParanoidAgent-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0gfhw3jbs25yya2dryv8xvyn9myngcfcmsybj7gkq62fnznil16c"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ;; Users should instead make sure SSL_ca_path is set properly.
+       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-net-dns" ,perl-net-dns)))
+    (home-page "https://metacpan.org/release/LWPx-ParanoidAgent")
+    (synopsis "Security enhanced subclass of LWP::UserAgent")
+    (description "@code{LWPx::ParanoidAgent} is a class subclassing
+@code{LWP::UserAgent} but paranoid against attackers.  Its purpose is
+to vet requests for a remote resource on behalf of a possibly
+malicious user.  The class can do the same as @code{LWP::UserAgent},
+except that proxy support has been removed.  Support for URI schemes
+is limited to http and https.")
     (license license:perl-license)))
 
 (define-public perl-net-amazon-s3
