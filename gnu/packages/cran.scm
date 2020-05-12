@@ -12898,14 +12898,14 @@ plotting functions are available for analyzing clustering results.")
 (define-public r-valr
   (package
     (name "r-valr")
-    (version "0.5.0")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "valr" version))
        (sha256
         (base32
-         "14jhrwkiwmha3vlmm7b50n2xxyizj6ddmy89gb20mpzq7qhz1ika"))))
+         "1qxw6h63i2vfb2w6q453zzwk0ypma3xdwwpj15i06669vzgyy3bb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
@@ -12916,6 +12916,8 @@ plotting functions are available for analyzing clustering results.")
        ("r-rlang" ,r-rlang)
        ("r-stringr" ,r-stringr)
        ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://github.com/rnabioco/valr")
     (synopsis "Genome interval arithmetic in R")
     (description
