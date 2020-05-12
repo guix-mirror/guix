@@ -9188,14 +9188,14 @@ users.")
 (define-public r-lsei
   (package
     (name "r-lsei")
-    (version "1.2-0")
+    (version "1.2-0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lsei" version))
        (sha256
         (base32
-         "1xl06fb3is744pxlh42wx5hn1h0ab1k31wnmsmh0524kxzcyp0a7"))))
+         "1rvzdb33x9ykl5qfwxkps1iylxqzlf1qla3l88420nbq7pxp7m87"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
