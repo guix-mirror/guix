@@ -10848,14 +10848,14 @@ and manipulating sets of ontological terms.")
 (define-public r-gargle
   (package
     (name "r-gargle")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gargle" version))
        (sha256
         (base32
-         "08zhfk2sl342w35i5n2c93ayypg3z0kbl0020l3y9adqka1vazgx"))))
+         "1fykmiv3x8c9ai31r9wr7qcca51h6kqn9cgwbxvxfj15fhwskh4n"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fs" ,r-fs)
@@ -10864,6 +10864,8 @@ and manipulating sets of ontological terms.")
        ("r-jsonlite" ,r-jsonlite)
        ("r-rlang" ,r-rlang)
        ("r-withr" ,r-withr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://gargle.r-lib.org")
     (synopsis "Utilities for working with Google APIs")
     (description
