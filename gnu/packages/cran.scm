@@ -16133,14 +16133,14 @@ emphasize hidden group structures in networks or focus on specific nodes.")
 (define-public r-tidygraph
   (package
     (name "r-tidygraph")
-    (version "1.1.2")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidygraph" version))
        (sha256
         (base32
-         "1zpsarm74afbc7p5dlyb0whc09670qdcddw1ckb25cfc9hfh0hjn"))))
+         "17qjns33zcj82jcsl7bn7i4zxcm7ric50zyf7agi0i01zi16qz85"))))
     (properties `((upstream-name . "tidygraph")))
     (build-system r-build-system)
     (propagated-inputs
