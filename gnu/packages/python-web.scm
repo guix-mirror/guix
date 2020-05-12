@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
 ;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3721,3 +3722,27 @@ and serve updated contents upon changes to the directory.")
     (description "@code{VF-1} is a command line gopher client with
 @acronym{TLS, Transport Layer Security} support.")
     (license license:bsd-2)))
+
+(define-public python-websockets
+  (package
+    (name "python-websockets")
+    (version "8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "websockets" version))
+        (sha256
+         (base32
+          "03s3ml6sbki24aajllf8aily0xzrn929zxi84p50zkkbikdd4raw"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; Tests not included in release tarball.
+    (home-page "https://github.com/aaugustin/websockets")
+    (synopsis
+     "Python implementation of the WebSocket Protocol (RFC 6455 & 7692)")
+    (description
+     "@code{websockets} is a library for building WebSocket servers and clients
+in Python with a focus on correctness and simplicity.
+
+Built on top of @code{asyncio}, Python's standard asynchronous I/O framework,
+it provides an elegant coroutine-based API.")
+    (license license:bsd-3)))
