@@ -16917,14 +16917,14 @@ package.")
 (define-public r-showtext
   (package
     (name "r-showtext")
-    (version "0.7-1")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "showtext" version))
        (sha256
         (base32
-         "0a5gg72bfrc7wm0phj1aflj1wc08kfi81ac32na6ya9s2ivyimw5"))))
+         "15v90s061iz9i655xin7kqb6ahnski55pgz3329wcz60bnbjb82x"))))
     (properties `((upstream-name . "showtext")))
     (build-system r-build-system)
     (inputs
@@ -16934,7 +16934,9 @@ package.")
     (propagated-inputs
      `(("r-showtextdb" ,r-showtextdb)
        ("r-sysfonts" ,r-sysfonts)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://github.com/yixuan/showtext")
     (synopsis "Using fonts more easily in R graphs")
     (description
