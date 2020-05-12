@@ -5636,19 +5636,21 @@ additional external tools on any platform.")
 (define-public r-openxlsx
   (package
     (name "r-openxlsx")
-    (version "4.1.4")
+    (version "4.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openxlsx" version))
        (sha256
         (base32
-         "1mwxldw9i9nfksx1i6h1kfs7vmsz9fgyllbsipar4vnfyqhqp8q7"))))
+         "0wkpa3wsd8rs0pib7cp67iv0s6jn99frcrw7clypqxmvvdwyb9kq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("r-stringi" ,r-stringi)
        ("r-zip" ,r-zip)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/awalker89/openxlsx")
     (synopsis "Read, write and edit XLSX files")
     (description
