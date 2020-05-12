@@ -4246,18 +4246,20 @@ including:
 (define-public r-rocr
   (package
     (name "r-rocr")
-    (version "1.0-7")
+    (version "1.0-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ROCR" version))
        (sha256
         (base32
-         "1jay8cm7lgq56i967vm5c2hgaxqkphfpip0gn941li3yhh7p3vz7"))))
+         "0amvvrkiflmr3qygrsgrsja4gaf2v6r6h6i2bgpsm8r069vmlf2p"))))
     (properties `((upstream-name . "ROCR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gplots" ,r-gplots)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rocr.bioinf.mpi-sb.mpg.de/")
     (synopsis "Visualizing the performance of scoring classifiers")
     (description
