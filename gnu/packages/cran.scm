@@ -5843,16 +5843,18 @@ Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
 (define-public r-renv
   (package
     (name "r-renv")
-    (version "0.9.3")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "renv" version))
        (sha256
         (base32
-         "02ayfgbpw4b58148dcxz31anaxncwczmxs1zzkskwj0rzhb2x60r"))))
+         "0yy24kq60dh9n68my132xhhkbnbs7q91z55b1yd6ymr7rxj32mif"))))
     (properties `((upstream-name . "renv")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rstudio.github.io/renv")
     (synopsis "Project environments")
     (description
