@@ -1277,7 +1277,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.31p1")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1287,7 +1287,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1n0mdmgcs92af34xxsnsh1arrngymhdmwd9srjgjbk65q7xzsg67"))
+                "0p7r3cl16pjwbc48ff1gbhjw51lngrghvwblxz5lxpyzqlwi88xb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1321,17 +1321,20 @@ system administrator.")
                ;; prematurely.
                (("@CONFIGURE_ARGS@") "\"\""))
              (substitute* (find-files "." "Makefile\\.in")
+               ;; Allow installation as non-root.
                (("-o [[:graph:]]+ -g [[:graph:]]+")
-                ;; Allow installation as non-root.
                 "")
+               ;; Don't try to create /etc/sudoers.
                (("^install: (.*)install-sudoers(.*)" _ before after)
-                ;; Don't try to create /etc/sudoers.
                 (string-append "install: " before after "\n"))
+               ;; Don't try to create /run/sudo.
                (("\\$\\(DESTDIR\\)\\$\\(rundir\\)")
-                ;; Don't try to create /run/sudo.
                 "$(TMPDIR)/dummy")
+               ;; Install example sudo{,_logsrvd}.conf to the right place.
+               (("\\$\\(DESTDIR\\)\\$\\(sysconfdir\\)")
+                "$(DESTDIR)/$(docdir)/examples")
+               ;; Don't try to create /var/db/sudo.
                (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
-                ;; Don't try to create /var/db/sudo.
                 "$(TMPDIR)/dummy"))
 
              ;; ‘Checking existing [/etc/]sudoers file for syntax errors’ is
