@@ -448,16 +448,16 @@ you send to a FIFO file.")
 (define-public guile-dsv
   (package
     (name "guile-dsv")
-    (version "0.2.1")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/guile-dsv")
-                    (commit "bdc5267d007478abc20ea96d7c459b7dd9560b3d")))
+                    (commit "6c867915dc4198eacc548a4834ef0e1aef852795")))
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1irw6mz8998nwyhzrw9g94jcz60b9zljgqfmipaz1ybn8579qjx0"))))
+                "1mxbbcsmbjfnh4yydqz44ihbkdnzdwz38xanaam128arlb7hwr8n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -465,7 +465,7 @@ you send to a FIFO file.")
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
     (inputs `(("guile" ,guile-2.2)))
-    (propagated-inputs `(("guile-lib" ,guile-lib)))
+    (propagated-inputs `(("guile2.2-lib" ,guile2.2-lib)))
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'set-guilesitedir
