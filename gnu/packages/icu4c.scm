@@ -6,6 +6,8 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,7 @@
 
 (define-module (gnu packages icu4c)
   #:use-module (gnu packages)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (guix licenses)
@@ -133,22 +136,56 @@ C/C++ part.")
 (define-public java-icu4j
   (package
     (name "java-icu4j")
-    (version "59.1")
+    (version "66.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.icu-project.org/files/icu4j/"
-                                  version "/icu4j-"
-                                  (string-map (lambda (x)
-                                                (if (char=? x #\.) #\_ x))
-                                              version)
-                                  "-src.jar"))
+              (uri (string-append
+                    "https://github.com/unicode-org/icu/releases/download/release-"
+                    (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
+                    "/icu4j-"
+                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
+                    ".tgz"))
               (sha256
-               (base32
-                "0bgxsvgi0qcwj60pvcxrf7a3fbk7aksyxnfwpbzavyfrfzixqh0c"))))
+               (base32 "1ahdyz9209lwl7knb2l3gmnkkby221p0vpgx70fj4j02rdzgvw0d"))))
     (build-system ant-build-system)
     (arguments
-     `(#:tests? #f                      ; no tests included
-       #:jar-name "icu4j.jar"))
+     `(#:make-flags
+       (list (string-append "-Djunit.core.jar="
+                            (car (find-files
+                                   (assoc-ref %build-inputs "java-junit")
+                                   ".*.jar$")))
+             (string-append "-Djunit.junitparams.jar="
+                            (car (find-files
+                                   (assoc-ref %build-inputs "java-junitparams")
+                                   ".*.jar$")))
+             (string-append "-Djunit.hamcrest.jar="
+                            (car (find-files
+                                   (assoc-ref %build-inputs "java-hamcrest-core")
+                                   ".*.jar$"))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "..")
+             #t))
+         (add-before 'build 'remove-ivy
+           (lambda _
+             ;; This target wants to download ivy and use it to download
+             ;; junit.
+             (substitute* "build.xml"
+               (("depends=\"test-init-junit-dependency\"") ""))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/java/")))
+               (mkdir-p share)
+               (install-file "icu4j.jar" share)
+               #t))))))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("java-junitparams" ,java-junitparams)
+       ("java-hamcrest-core" ,java-hamcrest-core)))
     (home-page "http://site.icu-project.org/")
     (synopsis "International Components for Unicode")
     (description
