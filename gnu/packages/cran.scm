@@ -5359,14 +5359,14 @@ specific S3-method.")
 (define-public r-vim
   (package
     (name "r-vim")
-    (version "5.1.1")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VIM" version))
        (sha256
         (base32
-         "0w22ir0gvym7gqd6nw2j7w5ivlb3az1dkfxv33imimkb7c83056a"))))
+         "0ddhca4v912q82rjpf1qld6i6g2c381g0v5b4hbnygr3lm6a7wiv"))))
     (properties `((upstream-name . "VIM")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5383,6 +5383,8 @@ specific S3-method.")
        ("r-robustbase" ,r-robustbase)
        ("r-sp" ,r-sp)
        ("r-vcd" ,r-vcd)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/alexkowa/VIM")
     (synopsis "Visualization and imputation of missing values")
     (description
