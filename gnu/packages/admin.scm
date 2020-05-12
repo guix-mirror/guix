@@ -1299,6 +1299,8 @@ system administrator.")
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version)
 
+             "--enable-python"          ; for plug-ins written in ~
+
              "--with-logpath=/var/log/sudo.log"
              "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
              "--with-vardir=/var/db/sudo"
@@ -1353,9 +1355,10 @@ system administrator.")
     (native-inputs
      `(("groff" ,groff)))
     (inputs
-     `(("linux-pam" ,linux-pam)
-       ("zlib" ,zlib)
-       ("coreutils" ,coreutils)))
+     `(("coreutils" ,coreutils)
+       ("linux-pam" ,linux-pam)
+       ("python" ,python)
+       ("zlib" ,zlib)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
     (description
