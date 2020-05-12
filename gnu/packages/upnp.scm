@@ -111,7 +111,7 @@ over IRC, instant messaging, network games, and most server software.")
      ;; not available in the build environment. See
      ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00312.html.
      `(#:tests? #f
-       #:configure-flags '("--enable-ipv6")))
+       #:configure-flags '("--disable-static")))
     (home-page "http://pupnp.sourceforge.net")
     (synopsis "Portable SDK for UPnP Devices")
     (description
