@@ -3760,16 +3760,43 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.6")
+    (version "0.9.9.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/g-truc/glm/releases/download/"
                            version  "/glm-" version ".zip"))
        (sha256
-        (base32 "1l0pi1qi37mk6s0yrkrw07lspv4gcqnr9ryg3521hrl77ff37dwx"))
-       (patches (search-patches "glm-restore-install-target.patch"))))
+        (base32 "0k6yk9v46h690rshdx49x98y5qspkzibld1wb51jwcm35vba7qip"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Since version 0.9.9.6, 'make install' is not supported
+                      ;; and we have to do it "manually".  Upstream discussion:
+                      ;; <https://github.com/g-truc/glm/pull/968>.
+                      (let* ((source (string-append "../glm"))
+                             (out (assoc-ref outputs "out"))
+                             (inc (string-append out "/include"))
+                             (lib (string-append out "/lib"))
+                             (pkgconfig (string-append lib "/pkgconfig")))
+                        (with-directory-excursion source
+                          (mkdir-p inc)
+                          (mkdir-p pkgconfig)
+                          (copy-recursively "glm" (string-append inc "/glm"))
+                          (copy-recursively "cmake" (string-append lib "/cmake"))
+                          (call-with-output-file (string-append pkgconfig "/glm.pc")
+                            (lambda (port)
+                              (format port
+                                      "prefix=~a
+includedir=${prefix}/include
+
+Name: GLM
+Description: OpenGL Mathematics
+Version: ~a
+Cflags: -I${includedir}~%" out ,(version-prefix version 3)))))
+                        #t))))))
     (native-inputs
      `(("unzip" ,unzip)))
     (home-page "https://glm.g-truc.net/")
