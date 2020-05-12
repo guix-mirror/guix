@@ -1974,19 +1974,21 @@ validation and filtering on the values, making options invisible or private.")
 (define-public r-circlize
   (package
     (name "r-circlize")
-    (version "0.4.8")
+    (version "0.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "circlize" version))
        (sha256
         (base32
-         "0jvr9hmxyhg0zx101iiqkrg8wfaj86kp62xpv42n2j9fkn5r1mi2"))))
+         "14944vn0n5d095mpjyag4fz8vy04m6wxb6mmyygi8q813akikm3h"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-colorspace" ,r-colorspace)
        ("r-globaloptions" ,r-globaloptions)
        ("r-shape" ,r-shape)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/jokergoo/circlize")
     (synopsis "Circular visualization")
     (description
