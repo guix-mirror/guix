@@ -18701,14 +18701,14 @@ number embedded in the file rather than the file extension.")
 (define-public r-imager
   (package
     (name "r-imager")
-    (version "0.42.1")
+    (version "0.42.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "imager" version))
        (sha256
         (base32
-         "1d7a49lcna77wyfjf5q1b89jck3p3vnysnkgz4drb0qkpy6hz76b"))))
+         "1wxvbv803222gjrf1ys6a349xlnmmdw3kqgi93piq9gq7lahihvg"))))
     (properties `((upstream-name . "imager")))
     (build-system r-build-system)
     (inputs
@@ -18726,7 +18726,9 @@ number embedded in the file rather than the file extension.")
        ("r-rcpp" ,r-rcpp)
        ("r-readbitmap" ,r-readbitmap)
        ("r-stringr" ,r-stringr)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://dahtah.github.io/imager/")
     (synopsis "Image processing library")
     (description
