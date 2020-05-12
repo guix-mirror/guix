@@ -6057,6 +6057,42 @@ single layer that takes the groups for comparison and the test as arguments
 and adds the annotation to the plot.")
     (license license:gpl3)))
 
+(define-public r-rstatix
+  (package
+    (name "r-rstatix")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rstatix" version))
+       (sha256
+        (base32
+         "0ikbjmr58ah39rlwyiix50kl3yk9j7jngsvl6hh973392qdvmch6"))))
+    (properties `((upstream-name . "rstatix")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-broom" ,r-broom)
+       ("r-car" ,r-car)
+       ("r-corrplot" ,r-corrplot)
+       ("r-dplyr" ,r-dplyr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-tidyselect" ,r-tidyselect)))
+    (home-page "https://rpkgs.datanovia.com/rstatix/")
+    (synopsis "Pipe-friendly framework for basic statistical tests")
+    (description
+     "This package provides a simple and intuitive pipe-friendly framework,
+coherent with the @code{tidyverse} design philosophy, for performing basic
+statistical tests, including t-test, Wilcoxon test, ANOVA, Kruskal-Wallis and
+correlation analyses.  The output of each test is automatically transformed
+into a tidy data frame to facilitate visualization.  Additional functions are
+available for reshaping, reordering, manipulating and visualizing correlation
+matrix.")
+    (license license:gpl2)))
+
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
