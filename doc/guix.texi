@@ -1012,9 +1012,11 @@ environments, which avoids discrepancies in cases where build processes
 capture the name of their build tree.
 
 @vindex http_proxy
-The daemon also honors the @env{http_proxy} environment variable for
-HTTP downloads it performs, be it for fixed-output derivations
-(@pxref{Derivations}) or for substitutes (@pxref{Substitutes}).
+@vindex https_proxy
+The daemon also honors the @env{http_proxy} and @env{https_proxy}
+environment variables for HTTP and HTTPS downloads it performs, be it
+for fixed-output derivations (@pxref{Derivations}) or for substitutes
+(@pxref{Substitutes}).
 
 If you are installing Guix as an unprivileged user, it is still possible
 to run @command{guix-daemon} provided you pass @option{--disable-chroot}.
@@ -3376,13 +3378,13 @@ authenticating bindings between domain names and public keys.)
 @subsection Proxy Settings
 
 @vindex http_proxy
-Substitutes are downloaded over HTTP or HTTPS.
-The @env{http_proxy} environment
-variable can be set in the environment of @command{guix-daemon} and is
-honored for downloads of substitutes.  Note that the value of
-@env{http_proxy} in the environment where @command{guix build},
-@command{guix package}, and other client commands are run has
-@emph{absolutely no effect}.
+@vindex https_proxy
+Substitutes are downloaded over HTTP or HTTPS.  The @env{http_proxy} and
+@env{https_proxy} environment variables can be set in the environment of
+@command{guix-daemon} and are honored for downloads of substitutes.
+Note that the value of those environment variables in the environment
+where @command{guix build}, @command{guix package}, and other client
+commands are run has @emph{absolutely no effect}.
 
 @node Substitution Failure
 @subsection Substitution Failure
