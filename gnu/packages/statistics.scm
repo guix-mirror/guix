@@ -3670,14 +3670,14 @@ more complete @code{viridis} package.")
 (define-public r-tidyselect
   (package
     (name "r-tidyselect")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyselect" version))
        (sha256
         (base32
-         "1bwwsljkg1bxh7xnqxv7n0n1s9y8x407i6lsv826vy1ss1k1fxpy"))))
+         "14rqx4dq574hilmdwrr34wyjg8rlw4rvndpsqd9plgxm3wwfsdg6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -3685,6 +3685,8 @@ more complete @code{viridis} package.")
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/tidyselect")
     (synopsis "Select from a set of strings")
     (description
