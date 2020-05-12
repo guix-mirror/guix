@@ -1018,7 +1018,7 @@ using S-expressions.")
     (propagated-inputs
      `(("guile-email" ,guile-email)))
     (native-inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("pkg-config" ,pkg-config)))
     (home-page "https://savannah.gnu.org/projects/guile-debbugs/")
     (synopsis "Guile interface to the Debbugs bug tracking service")
