@@ -4278,13 +4278,13 @@ mechanism.")
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.8-7")
+    (version "1.8-8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "1w4542zs53bm261g95086a60576v334g1jrhnbgdqni4izf2s1wy"))))
+                "1rrw431jwaxd9xljp73f15rhcxvwc0xlyrmr0ghi5fj7a03c932f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
