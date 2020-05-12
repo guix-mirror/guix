@@ -6096,14 +6096,14 @@ matrix.")
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
-    (version "0.2.5")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpubr" version))
        (sha256
         (base32
-         "0kb3hpmnhj4mkbx1kx0kv5y22himr8dijqx7ra0h8hi0pf2l2ha7"))))
+         "1dly74cnn8iq7vsgmcz0czszdsmg5cgzm4w3s0v30k4psmmzqbxq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
@@ -6119,6 +6119,8 @@ matrix.")
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
+       ("r-rstatix" ,r-rstatix)
+       ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)))
     (home-page "http://www.sthda.com/english/rpkgs/ggpubr")
     (synopsis "ggplot2-based publication-ready plots")
