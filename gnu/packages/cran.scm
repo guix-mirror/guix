@@ -596,14 +596,14 @@ the embedded @code{RapidXML} C++ library.")
 (define-public r-modelr
   (package
     (name "r-modelr")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modelr" version))
        (sha256
         (base32
-         "1x2m34m4qirb401krmgc5wg3g7ndbcglfab2l0655rmky3fz7rfp"))))
+         "1nln33ajad0c917hmal4v6fbw8rncsch9xz5sifqfw6wgqjx9yy6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
