@@ -2962,8 +2962,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "75d34d4d9c20b87d637b027900744da976c5f436")
-        (revision "1"))
+  (let ((commit "5a578328199bab51a147fbadbce12c8d06959ed6")
+        (revision "2"))
     (package
       (name "mumi")
       (version (git-version "0.0.1" revision commit))
@@ -2975,7 +2975,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1f69fiz884lbm93wzfs52xlsg7cwhgvzw1y00fqn9gncvkdwng1y"))))
+                  "0hngv82gd19l4q7nnbf97r120z1yagsmkp0x3lc8haza5q4mc12c"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -3005,10 +3005,10 @@ replacement for the @code{urlview} program.")
                  #t))))))
       (inputs
        `(("guile-email" ,guile-email)
+         ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
          ("guile-json" ,guile-json-3)
          ("guile-redis" ,guile-redis)
-         ("guile-sqlite3" ,guile-sqlite3)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("guile-webutils" ,guile-webutils)
          ("guile-xapian" ,guile-xapian)
