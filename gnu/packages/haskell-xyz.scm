@@ -6628,7 +6628,7 @@ compiler versions.")
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
-       ("libyaml" ,libyaml-0.2)))
+       ("libyaml" ,libyaml)))
     (home-page "https://github.com/snoyberg/yaml#readme")
     (synopsis "Low-level, streaming YAML interface.")
     (description "This package provides a Haskell wrapper over the

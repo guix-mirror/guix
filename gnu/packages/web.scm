@@ -1474,26 +1474,6 @@ hash/signatures.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.1.7")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://pyyaml.org/download/libyaml/yaml-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "0a87931cx5m14a1x8rbjix3nz7agrcgndf4h392vm62a4rby9240"))))
-    (build-system gnu-build-system)
-    (home-page "http://pyyaml.org/wiki/LibYAML")
-    (synopsis "YAML 1.1 parser and emitter written in C")
-    (description
-     "LibYAML is a YAML 1.1 parser and emitter written in C.")
-    (license license:expat)))
-
-(define-public libyaml-0.2
-  (package
-    (inherit libyaml)
     (version "0.2.4")
     (source
      (origin
@@ -1503,7 +1483,13 @@ hash/signatures.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0mq5wf17ifcwwxq3kbimhi53jn3fg23vcynqpzxjcz3vfjlfs2nq"))))))
+         "0mq5wf17ifcwwxq3kbimhi53jn3fg23vcynqpzxjcz3vfjlfs2nq"))))
+    (build-system gnu-build-system)
+    (home-page "http://pyyaml.org/wiki/LibYAML")
+    (synopsis "YAML 1.1 parser and emitter written in C")
+    (description
+     "LibYAML is a YAML 1.1 parser and emitter written in C.")
+    (license license:expat)))
 
 (define-public libquvi-scripts
   (package
