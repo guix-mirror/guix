@@ -1955,16 +1955,16 @@ There is support for:
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.4c")
+    (version "0.0.9.4e")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/QMatrixClient/Quaternion")
+              (url "https://github.com/quotient-im/Quaternion")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gpv6b3nn3lsyym8809kiqkpdszfasldqjpk5s542zyn41gdlql4"))))
+        (base32 "0hqhg7l6wpkdbzrdjvrbqymmahziri07ba0hvbii7dd2p0h248fv"))))
     (build-system qt-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
