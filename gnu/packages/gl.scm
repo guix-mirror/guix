@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system waf)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -1013,3 +1015,62 @@ the glProgramViewportFlip before it was replaced with glProgramViewportInfo.")
 The C# wrapper was written to be used for FNA's platform support.  However, this
 is written in a way that can be used for any general C# application.")
       (license license:zlib))))
+
+(define-public glmark2
+  (package
+    (name "glmark2")
+    (version "2020.04")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/glmark2/glmark2")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ywpzp0imi3f8iyp7d1739576zx2nsr3db5hp2as4yhflfyq1as2"))
+              (modules '((guix build utils)))
+              ;; Fix Python 3 incompatibility.
+              (snippet
+               '(begin
+                  (substitute* "wscript"
+                    (("(sorted\\()FLAVORS\\.keys\\(\\)(.*)" _ beginning end)
+                     (string-append beginning "list(FLAVORS)" end)))
+                  #t))))
+    (build-system waf-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target
+       #:configure-flags
+       (list (string-append "--with-flavors="
+                            (string-join '("x11-gl" "x11-glesv2"
+                                           "drm-gl" "drm-glesv2"
+                                           "wayland-gl" "wayland-glesv2")
+                                         ",")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((mesa (assoc-ref inputs "mesa")))
+               (substitute* (find-files "src" "gl-state-.*\\.cpp$")
+                 (("libGL.so") (string-append mesa "/lib/libGL.so"))
+                 (("libEGL.so") (string-append mesa "/lib/libEGL.so"))
+                 (("libGLESv2.so") (string-append mesa "/lib/libGLESv2.so")))
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("eudev" ,eudev)
+       ("libdrm" ,libdrm)
+       ("libjpeg-turbo" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/glmark2/glmark2")
+    (synopsis "OpenGL 2.0 and OpenGL ES 2.0 benchmark")
+    (description
+     "glmark2 is an OpenGL 2.0 and OpenGL ES 2.0 benchmark based on the
+original glmark benchmark by Ben Smith.")
+    (license license:gpl3+)))
