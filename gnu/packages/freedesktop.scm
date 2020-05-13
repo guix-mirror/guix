@@ -934,7 +934,6 @@ Analysis and Reporting Technology) functionality.")
        #:disallowed-references ("doc")            ;enforce separation of "doc"
        #:configure-flags
        (list "--enable-man"
-             "--enable-gtk-doc" ; Without this the HTML doc does not seem to build automatically.
              "--enable-available-modules" ; Such as lvm2, btrfs, etc.
              "--localstatedir=/var"
              "--enable-fhs-media"     ;mount devices in /media, not /run/media
