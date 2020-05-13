@@ -897,7 +897,7 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.7.7")
+    (version "2.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -905,7 +905,7 @@ Analysis and Reporting Technology) functionality.")
                     version "/udisks-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dnlxqgy9v0mjdknv3b1s64szdykyk3hk0rxj3chwhpd415lrwgs"))))
+                "06cq52kp1nyy15qzylywy9s7hhhqc45k0s3y68crf0zsmjyng0yj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3) ; to build the manpages
