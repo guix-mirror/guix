@@ -4004,3 +4004,23 @@ changed the process is restarted.")
      "Pyramid makes it easy to write web applications.  From minimal
 request/response web apps to larger, grown applications.")
     (license license:repoze)))
+
+(define-public python-random-user-agent
+  (package
+    (name "python-random-user-agent")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "random_user_agent" version))
+       (sha256
+        (base32
+         "04nhzdh2ki7ybhjrmghxci6hcm6i03vvin2q2ynj87fbr1pa534g"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Luqman-Ud-Din/random_user_agent")
+    (synopsis "List of user agents")
+    (description
+     "This package provides a list of user agents, from a collection of more
+than 326,000 known user-agents.  Users can pick a random one, or select one
+based on filters.")
+    (license license:expat)))
