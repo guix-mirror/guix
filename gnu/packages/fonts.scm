@@ -259,7 +259,7 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
                            (otf-font-dir (string-append %output
                                                         "/share/fonts/opentype"))
                            (woff-font-dir (string-append %output
-                                                         "/share/fonts/woff")))
+                                                         "/share/fonts/webfonts")))
                        (mkdir-p doc-dir)
                        (substitute* "Makefile"
                          (("\\$\\(TMPDIR\\)") doc-dir)
