@@ -1803,16 +1803,16 @@ notifications, and Python scripting support.")
 (define-public libqmatrixclient
   (package
     (name "libqmatrixclient")
-    (version "0.5.2")
+    (version "0.5.3.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/QMatrixClient/libqmatrixclient")
+              (url "https://github.com/quotient-im/libQuotient")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bhlqfs7251fss4icx794ka614npr6zyrpp4qwc4q5408ykfm7lr"))))
+        (base32 "0gkwr3yw6k2m0j8cc085b5p2q788rf5nhp1p5hc5d55pc7mci2qs"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
