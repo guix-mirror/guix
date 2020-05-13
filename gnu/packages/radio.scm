@@ -152,17 +152,8 @@ system configuration:
 (kernel-arguments '(\"modprobe.blacklist=dvb_usb_rtl28xxu\"))
 @end lisp
 
-To install the rtl-sdr udev rules, you must add this package in the
-configuration of the udev system service. E.g.:
-
-@lisp
-(services
- (modify-services %desktop-services
-  (udev-service-type config =>
-   (udev-configuration (inherit config)
-    (rules (cons rtl-sdr
-            (udev-configuration-rules config)))))))
-@end lisp")
+To install the rtl-sdr udev rules, you must extend 'udev-service-type' with
+this package.  E.g.: @code{(udev-rules-service 'rtl-sdr rtl-sdr)}")
     (license license:gpl2+)))
 
 (define-public chirp
