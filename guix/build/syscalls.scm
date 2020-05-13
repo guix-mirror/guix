@@ -79,6 +79,7 @@
             fdatasync
             pivot-root
             scandir*
+            setxattr
 
             fcntl-flock
             lock-file
@@ -722,6 +723,23 @@ backend device."
       (throw 'system-error "ioctl" "~A"
              (list (strerror err))
              (list err))))))
+
+(define setxattr
+  (let ((proc (syscall->procedure int "setxattr"
+                                  `(* * * ,size_t ,int))))
+    (lambda* (file key value #:optional (flags 0))
+      "Set extended attribute KEY to VALUE on FILE."
+      (let*-values (((bv) (string->utf8 value))
+                    ((ret err)
+                     (proc (string->pointer/utf-8 file)
+                           (string->pointer key)
+                           (bytevector->pointer bv)
+                           (bytevector-length bv)
+                           flags)))
+        (unless (zero? ret)
+          (throw 'system-error "setxattr" "~S: ~A"
+                 (list file key value (strerror err))
+                 (list err)))))))
 
 
 ;;;
