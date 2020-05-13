@@ -929,8 +929,7 @@ programming language.  It also contains the utility
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
-       ("libsoup" ,libsoup)
-       ("libyaml" ,libyaml)))
+       ("libsoup" ,libsoup)))
     (arguments
      `(#:configure-flags
        (list "-Ddep11=false"
