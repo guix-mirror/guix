@@ -1491,7 +1491,7 @@ hash/signatures.")
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license license:expat)))
 
-(define-public libyaml-2.1
+(define-public libyaml-0.2
   (package
     (inherit libyaml)
     (version "0.2.1")
