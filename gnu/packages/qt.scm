@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Mike Rosset <mike.rosset@gmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2698,3 +2699,47 @@ generate Python bindings for your C or C++ code.")
     (description
      "Contains lupdate, rcc and uic tools for PySide2")
     (license license:gpl2)))
+
+(define-public libqglviewer
+  (package
+    (name "libqglviewer")
+    (version "2.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://libqglviewer.com/src/libQGLViewer-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "023w7da1fyn2z69nbkp2rndiv886zahmc5cmira79zswxjfpklp2"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; no check target
+       #:make-flags
+       (list (string-append "PREFIX="
+                            (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke (cons "qmake" make-flags)))))))
+    (native-inputs
+     `(("qtbase" ,qtbase)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("glu" ,glu)))
+    (home-page "http://libqglviewer.com")
+    (synopsis "Qt-based C++ library for the creation of OpenGL 3D viewers")
+    (description
+     "@code{libQGLViewer} is a C++ library based on Qt that eases the creation
+of OpenGL 3D viewers.
+
+It provides some of the typical 3D viewer functionalities, such as the
+possibility to move the camera using the mouse, which lacks in most of the
+other APIs.  Other features include mouse manipulated frames, interpolated
+keyFrames, object selection, stereo display, screenshot saving and much more.
+It can be used by OpenGL beginners as well as to create complex applications,
+being fully customizable and easy to extend.")
+    ;; According to LICENSE, either version 2 or version 3 of the GNU GPL may
+    ;; be used.
+    (license (list license:gpl2 license:gpl3))))
