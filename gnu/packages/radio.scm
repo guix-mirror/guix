@@ -741,20 +741,10 @@ for correctness.")
      (synopsis "User-space library and utilities for HackRF SDR")
      (description
       "Command line utilities and a C library for controlling the HackRF
-Software Defined Radio (SDR) over USB.  Installing this package installs
-the userspace hackrf utilities and C library.  To install the hackrf
-udev rules, you must add this package as a system service via
-modify-services.  E.g.:
-
-@lisp
-(services
- (modify-services
-  %desktop-services
-  (udev-service-type config =>
-   (udev-configuration (inherit config)
-    (rules (cons hackrf
-            (udev-configuration-rules config)))))))
-@end lisp")
+Software Defined Radio (SDR) over USB.  Installing this package installs the
+userspace hackrf utilities and C library.  To install the hackrf udev rules,
+you must extend 'udev-service-type' with this package.  E.g.:
+@code{(udev-rules-service 'hackrf hackrf #:groups '(\"dialout\"))}.")
      (license license:gpl2))))
 
 (define-public hamlib
