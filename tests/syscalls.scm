@@ -271,6 +271,14 @@
            (scandir directory (const #t) string<?))))
 
 (false-if-exception (delete-file temp-file))
+(test-assert "getxattr, setxattr"
+  (let ((key "user.translator")
+        (value "/hurd/pfinet\0")
+        (file (open-file temp-file "w0")))
+    (setxattr temp-file key value)
+    (string=? (getxattr temp-file key) value)))
+
+(false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"
   42                                              ; the child's exit status
   (let ((file (open-file temp-file "w0b")))

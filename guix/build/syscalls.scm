@@ -79,6 +79,7 @@
             fdatasync
             pivot-root
             scandir*
+            getxattr
             setxattr
 
             fcntl-flock
@@ -723,6 +724,32 @@ backend device."
       (throw 'system-error "ioctl" "~A"
              (list (strerror err))
              (list err))))))
+
+(define getxattr
+  (let ((proc (syscall->procedure ssize_t "getxattr"
+                                  `(* * * ,size_t))))
+    (lambda (file key)
+      "Get the extended attribute value for KEY on FILE."
+      (let-values (((size err)
+                    ;; Get size of VALUE for buffer.
+                    (proc (string->pointer/utf-8 file)
+                          (string->pointer key)
+                          (string->pointer "")
+                          0)))
+        (cond ((< size 0) #f)
+              ((zero? size) "")
+              ;; Get VALUE in buffer of SIZE.  XXX actual size can race.
+              (else (let*-values (((buf) (make-bytevector size))
+                                  ((size err)
+                                   (proc (string->pointer/utf-8 file)
+                                         (string->pointer key)
+                                         (bytevector->pointer buf)
+                                         size)))
+                      (if (>= size 0)
+                          (utf8->string buf)
+                          (throw 'system-error "getxattr" "~S: ~A"
+                                 (list file key (strerror err))
+                                 (list err))))))))))
 
 (define setxattr
   (let ((proc (syscall->procedure int "setxattr"
