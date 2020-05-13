@@ -802,6 +802,14 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                (base32
                 "15c7g2gbkahmy8c6677pvbvblan5h8jxcqqmn6nlvqwqynq2mkjm"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configuration-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+              (substitute* "src/lib/blockdev.c"
+               (("/etc/libblockdev/conf.d/" path) (string-append out path)))))))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
