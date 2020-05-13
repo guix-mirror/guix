@@ -84,9 +84,32 @@
 
 (define (optimization-options file)
   "Return the default set of optimizations options for FILE."
-  (if (string-contains file "gnu/packages/")
-      (optimizations-for-level 1)                 ;build faster
-      (optimizations-for-level 3)))
+  (define (strip-option option lst)
+    (let loop ((lst lst)
+               (result '()))
+      (match lst
+        (()
+         (reverse result))
+        ((kw value rest ...)
+         (if (eq? kw option)
+             (append (reverse result) rest)
+             (loop rest (cons* value kw result)))))))
+
+  (define (override-option option value lst)
+    `(,option ,value ,@(strip-option option lst)))
+
+  (cond ((string-contains file "gnu/packages/")
+         ;; Level 0 is good enough but partial evaluation helps preserve the
+         ;; "macro writer's bill of rights".
+         (override-option #:partial-eval? #t
+                          (optimizations-for-level 0)))
+        ((string-contains file "gnu/services/")
+         ;; '-O2 -Ono-letrectify' compiles about ~20% faster than '-O2' for
+         ;; large files like gnu/services/mail.scm.
+         (override-option #:letrectify? #f
+                          (optimizations-for-level 2)))
+        (else
+         (optimizations-for-level 3))))
 
 (define (scm->go file)
   "Strip the \".scm\" suffix from FILE, and append \".go\"."
