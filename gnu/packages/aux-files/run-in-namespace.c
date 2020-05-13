@@ -42,6 +42,10 @@
 #include <dirent.h>
 #include <sys/syscall.h>
 
+/* The original store, "/gnu/store" by default.  */
+static const char original_store[] = "@STORE_DIRECTORY@";
+
+
 /* Like 'malloc', but abort if 'malloc' returns NULL.  */
 static void *
 xmalloc (size_t size)
@@ -228,7 +232,7 @@ exec_in_user_namespace (const char *store, int argc, char *argv[])
      bind-mounted in the right place.  */
   int err;
   char *new_root = mkdtemp (strdup ("/tmp/guix-exec-XXXXXX"));
-  char *new_store = concat (new_root, "@STORE_DIRECTORY@");
+  char *new_store = concat (new_root, original_store);
   char *cwd = get_current_dir_name ();
 
   /* Create a child with separate namespaces and set up bind-mounts from
@@ -307,11 +311,11 @@ exec_with_proot (const char *store, int argc, char *argv[])
   int proot_specific_argc = 4;
   int proot_argc = argc + proot_specific_argc;
   char *proot_argv[proot_argc + 1], *proot;
-  char bind_spec[strlen (store) + 1 + sizeof "@STORE_DIRECTORY@"];
+  char bind_spec[strlen (store) + 1 + sizeof original_store];
 
   strcpy (bind_spec, store);
   strcat (bind_spec, ":");
-  strcat (bind_spec, "@STORE_DIRECTORY@");
+  strcat (bind_spec, original_store);
 
   proot = concat (store, PROOT_PROGRAM);
 
@@ -413,8 +417,7 @@ main (int argc, char *argv[])
   /* SELF is something like "/home/ludo/.local/gnu/store/…-foo/bin/ls" and we
      want to extract "/home/ludo/.local/gnu/store".  */
   size_t index = strlen (self)
-    - strlen ("@WRAPPED_PROGRAM@")
-    + strlen ("@STORE_DIRECTORY@");
+    - strlen ("@WRAPPED_PROGRAM@") + strlen (original_store);
   char *store = strdup (self);
   store[index] = '\0';
 
@@ -424,7 +427,7 @@ main (int argc, char *argv[])
      @WRAPPED_PROGRAM@ right away.  This is not just an optimization: it's
      needed when running one of these wrappers from within an unshare'd
      namespace, because 'unshare' fails with EPERM in that context.  */
-  if (strcmp (store, "@STORE_DIRECTORY@") != 0
+  if (strcmp (store, original_store) != 0
       && lstat ("@WRAPPED_PROGRAM@", &statbuf) != 0)
     {
       const struct engine *engine = execution_engine ();
