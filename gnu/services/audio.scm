@@ -24,6 +24,7 @@
   #:use-module (gnu packages mpd)
   #:use-module (guix records)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:export (mpd-output
             mpd-output?
             mpd-configuration
