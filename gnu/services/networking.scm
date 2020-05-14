@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services base)
   #:use-module (gnu services configuration)
+  #:use-module (gnu services linux)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
@@ -1442,10 +1444,10 @@ simulation."
   (append (hostapd-shepherd-services config
                                      #:requirement
                                      '(unblocked-wifi
-                                       mac-simulation-module))
+                                       kernel-module-loader))
           (list (shepherd-service
                  (provision '(unblocked-wifi))
-                 (requirement '(file-systems mac-simulation-module))
+                 (requirement '(file-systems kernel-module-loader))
                  (documentation
                   "Unblock WiFi devices for use by mac80211_hwsim.")
                  (start #~(lambda _
@@ -1453,21 +1455,6 @@ simulation."
                                     "unblock" "0")
                             (invoke #$(file-append util-linux "/sbin/rfkill")
                                     "unblock" "1")))
-                 (one-shot? #t))
-                (shepherd-service
-                 (provision '(mac-simulation-module))
-                 (requirement '(file-systems))
-                 (modules '((guix build utils)))
-                 (documentation
-                  "Load the mac80211_hwsim Linux kernel module.")
-                 (start (with-imported-modules '((guix build utils))
-                          #~(lambda _
-                              ;; XXX: We can't use 'load-linux-module*' here because it
-                              ;; expects a flat module directory.
-                              (setenv "LINUX_MODULE_DIRECTORY"
-                                      "/run/booted-system/kernel/lib/modules")
-                              (invoke #$(file-append kmod "/bin/modprobe")
-                                      "mac80211_hwsim"))))
                  (one-shot? #t)))))
 
 (define simulated-wifi-service-type
@@ -1475,7 +1462,9 @@ simulation."
    (name 'simulated-wifi)
    (extensions
     (list (service-extension shepherd-root-service-type
-                             simulated-wifi-shepherd-services)))
+                             simulated-wifi-shepherd-services)
+          (service-extension kernel-module-loader-service-type
+                             (const '("mac80211_hwsim")))))
    (default-value (hostapd-configuration
                    (interface "wlan1")
                    (ssid "Test Network")))
