@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,6 +214,19 @@ to share commonly used Xfce widgets among the Xfce applications.")
                (base32
                 "1dp5s64g6572h9zvx9js7qc72s728qsd9y7hl7hg6rwaq0cjb2gc"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; exo won't find URI::Escape otherwise
+         (add-after 'install 'wrap-exo-compose-mail
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perl5lib (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/lib/xfce4/exo/exo-compose-mail")
+                 `("PERL5LIB" ":" prefix
+                   (,(string-append perl5lib ":" out
+                                    "/lib/perl5/site_perl")))))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
