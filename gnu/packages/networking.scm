@@ -148,12 +148,6 @@
                                "--without-systemduserunitdir")  ; Not required
        #:phases
        (modify-phases %standard-phases
-         ;; Prevent the autogen.sh script to carry out the configure
-         ;; script, which has not yet been patched to replace /bin/sh.
-         (add-before 'bootstrap 'setenv
-           (lambda _
-             (setenv "NOCONFIGURE" "TRUE")
-             #t))
          ;; Python references are not being patched in patch-phase of build,
          ;; despite using python-wrapper as input. So we patch them manually.
          (add-after 'unpack 'patch-python-references
