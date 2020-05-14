@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
@@ -1808,9 +1808,8 @@ new Date();"))
               (modules '((guix build utils)))
               (snippet
                 `(begin
-                   (for-each delete-file (find-files "." ".*.bin$"))
-                   (for-each delete-file (find-files "." ".*.exe$"))
-                   (for-each delete-file (find-files "." ".*.jar$"))
+                   (for-each delete-file
+                             (find-files "." ".*.(bin|exe|jar)$"))
                    #t))))
     (build-system gnu-build-system)
     (outputs '("out" "jdk" "doc"))
