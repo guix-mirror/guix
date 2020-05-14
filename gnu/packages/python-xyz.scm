@@ -13533,13 +13533,13 @@ instead of servers and network commands.")
 (define-public python-automat
   (package
     (name "python-automat")
-    (version "0.7.0")
+    (version "20.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Automat" version))
               (sha256
                (base32
-                "03ivg70n3b1cbcd2zvjhk8y4kmqxcvhmili39lmgx09dza1qpmyb"))))
+                "0cyzrcqiibwdsp4y0djkllnzab8m5faa4s0d1kpi23k1fhy80ybr"))))
     (build-system python-build-system)
     ;; We disable the tests because they require python-twisted, while
     ;; python-twisted depends on python-automat.  Twisted is optional, but the
