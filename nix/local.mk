@@ -155,7 +155,17 @@ noinst_HEADERS =						\
 
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system
-nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service
+nodist_systemdservice_DATA =			\
+  etc/gnu-store.mount				\
+  etc/guix-daemon.service			\
+  etc/guix-publish.service
+
+etc/%.mount: etc/%.mount.in	\
+			 $(top_builddir)/config.status
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
+	$(SED) -e 's|@''storedir''@|$(storedir)|' <	\
+	       "$<" > "$@.tmp";		\
+	mv "$@.tmp" "$@"
 
 etc/guix-%.service: etc/guix-%.service.in	\
 			 $(top_builddir)/config.status
