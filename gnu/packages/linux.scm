@@ -4243,7 +4243,7 @@ arrays when needed.")
        ("pkg-config" ,pkg-config)
        ("valgrind" ,valgrind)))
     (inputs
-     `(("json-c" ,json-c)
+     `(("json-c" ,json-c-0.13)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)

@@ -768,7 +768,7 @@ data.")
 (define-public json-c
   (package
     (name "json-c")
-    (version "0.13.1")
+    (version "0.14")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -776,17 +776,8 @@ data.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0ws8dz9nk8q2c0gbf66kg2r6mrkl7kamd3gpdv9zsyrz9n6n0zmq"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; Somehow 'config.h.in' is older than
-                 ;; 'aclocal.m4', which would trigger a rule to
-                 ;; run 'autoheader'.
-                 (set-file-time "config.h.in"
-                                (stat "aclocal.m4"))
-                 #t))))
-    (build-system gnu-build-system)
+               "0w381krr99q5a2rypx4g437fa7gzgl82i64sgnrs6g5jr44dwxxk"))))
+    (build-system cmake-build-system)
     (home-page "https://github.com/json-c/json-c/wiki")
     (synopsis "JSON implementation in C")
     (description
@@ -796,10 +787,32 @@ parse JSON-formatted strings back into the C representation of JSON objects.
 It aims to conform to RFC 7159.")
     (license license:x11)))
 
-;; TODO: remove this old version when all dependents have been updated.
-(define-public json-c-0.12
+;; TODO: Remove these old versions when all dependents have been updated.
+(define-public json-c-0.13
   (package
     (inherit json-c)
+    (version "0.13.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://s3.amazonaws.com/json-c_releases/releases/json-c-"
+                   version ".tar.gz"))
+             (sha256
+              (base32 "0ws8dz9nk8q2c0gbf66kg2r6mrkl7kamd3gpdv9zsyrz9n6n0zmq"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Somehow 'config.h.in' is older than
+                 ;; 'aclocal.m4', which would trigger a rule to
+                 ;; run 'autoheader'.
+                 (set-file-time "config.h.in"
+                                (stat "aclocal.m4"))
+                 #t))))
+    (build-system gnu-build-system)))
+
+(define-public json-c-0.12
+  (package
+    (inherit json-c-0.13)
     (version "0.12.1")
     (source (origin
              (method url-fetch)

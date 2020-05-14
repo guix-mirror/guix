@@ -357,7 +357,7 @@ and other operations.  It includes a library and a command-line tool.")
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))))
     (inputs
-     `(("json-c" ,json-c)
+     `(("json-c" ,json-c-0.13)
        ("libusb" ,libusb)
        ;; The library "libyubikey" is also known as "yubico-c".
        ("libyubikey" ,libyubikey)))
@@ -457,7 +457,7 @@ PCSC API Python wrapper module.")
                                "/xml/dtd/docbook/docbookx.dtd")))
              #t)))))
     (inputs
-     `(("json-c" ,json-c)
+     `(("json-c" ,json-c-0.13)
        ("hidapi" ,hidapi)))
     (native-inputs
      `(("help2man" ,help2man)
@@ -497,7 +497,7 @@ operations.")
        (list "--enable-gtk-doc"
              "--enable-tests")))
     (inputs
-     `(("json-c" ,json-c)
+     `(("json-c" ,json-c-0.13)
        ("libressl" ,libressl)))
     (native-inputs
      `(("autoconf" ,autoconf)
