@@ -1016,13 +1016,15 @@ gain and standing wave ratio.")
        ("rtl-sdr" ,rtl-sdr)))
     (arguments
      `(#:test-target "test"
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               "BLADERF=no"))
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (setenv "CC" "gcc")
-             (setenv "BLADERF" "no")
-             #t))
+         (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
