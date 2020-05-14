@@ -1299,7 +1299,11 @@ system administrator.")
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
                             "/share/doc/" ,name "-" ,version)
 
-             "--enable-python"          ; for plug-ins written in ~
+             ;; XXX: Disable Python support when cross-compiling because
+             ;; 'configure' tries to run 'python', which fails.
+             ,(if (%current-target-system)
+                  "--disable-python"
+                  "--enable-python")              ; for plug-ins written in ~
 
              "--with-logpath=/var/log/sudo.log"
              "--with-rundir=/var/run/sudo" ; must be cleaned up at boot time
@@ -1357,7 +1361,9 @@ system administrator.")
     (inputs
      `(("coreutils" ,coreutils)
        ("linux-pam" ,linux-pam)
-       ("python" ,python)
+       ,@(if (%current-target-system)
+             '()
+             `(("python" ,python)))
        ("zlib" ,zlib)))
     (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
