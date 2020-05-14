@@ -659,9 +659,10 @@ with these commands:
 @c https://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
 
 @example
-# cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
+# cp ~root/.config/guix/current/lib/systemd/system/gnu-store.mount \
+     ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
      /etc/systemd/system/
-# systemctl enable --now guix-daemon
+# systemctl enable --now gnu-store.mount guix-daemon
 @end example
 
 If your host distro uses the Upstart init system:

@@ -342,7 +342,13 @@ sys_enable_guix_daemon()
                 _msg "${PAS}enabled Guix daemon via upstart"
             ;;
         systemd)
-            { cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
+            { # systemd .mount units must be named after the target directory.
+              # Here we assume a hard-coded name of /gnu/store.
+              cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" \
+                 /etc/systemd/system/;
+              chmod 664 /etc/systemd/system/gnu-store.mount;
+
+              cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
 
@@ -357,8 +363,8 @@ sys_enable_guix_daemon()
 	      fi;
 
               systemctl daemon-reload &&
-                  systemctl start guix-daemon &&
-                  systemctl enable guix-daemon; } &&
+                  systemctl start  gnu-store.mount guix-daemon &&
+                  systemctl enable gnu-store.mount guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via systemd"
             ;;
         sysv-init)
