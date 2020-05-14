@@ -959,14 +959,14 @@ developed in C/C++ to MariaDB and MySQL databases.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.12")
+    (version "10.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1rsab4zf4rx7pvvhlwhb04kb95aiad9cwazc4ksbvg2gij47z3rq"))
+                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
