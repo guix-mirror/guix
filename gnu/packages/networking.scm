@@ -132,14 +132,11 @@
     (version "2.1.3")
     (source
      (origin
-       (method git-fetch)
-       (uri
-        (git-reference
-         (url "https://github.com/blueman-project/blueman.git")
-         (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/blueman-project/blueman/releases"
+                           "/download/" version "/blueman-" version ".tar.xz"))
        (sha256
-        (base32 "1vb0zfns4q5d65hnja4c0k11lr38xxhdnkpkzfs6xca3mm6jyi1d"))))
+        (base32 "1pngqbwapbvywhkmflapqvs0wa0af7d1a87wy56l5hg2r462xl1v"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
@@ -213,15 +210,11 @@
                       '("mechanism" "rfcomm-watcher"))))
                #t))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("autogen" ,autogen)
-       ("automake" ,automake)
-       ("cython" ,python-cython)
+     `(("cython" ,python-cython)
        ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
        ("intltool" ,intltool)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("bluez" ,bluez)
