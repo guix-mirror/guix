@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
@@ -4405,6 +4405,28 @@ features:
 completion backends according to mode, and integrates with
 @code{use-package}.")
       (license license:gpl3+))))
+
+(define-public emacs-icomplete-vertical
+  (package
+    (name "emacs-icomplete-vertical")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oantolin/icomplete-vertical.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1bqnlvv1gvrjriazvzd3bq98r8ii6fqax0zznhvkl1ij5pf55a90"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/oantolin/icomplete-vertical")
+    (synopsis "Display icomplete candidates vertically")
+    (description
+     "This package defines a global minor mode to display Icomplete
+completion candidates vertically.")
+    (license license:gpl3+)))
 
 (define-public emacs-handle
   (let ((commit "51c050bc1c6e5caf0eb47ecd985daea1db7241ab")
