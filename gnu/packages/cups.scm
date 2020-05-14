@@ -59,7 +59,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.27.1")
+    (version "1.27.4")
     (source(origin
               (method url-fetch)
               (uri
@@ -67,7 +67,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0dpn4rkmrdprkhlnpih5dzrn4fxzj20k42d516kx4qx0g5l74lrm"))
+                "110b1xhb5vfpcx0zq9kkas7pj281skx5dpnnr22idx509jfdzj8b"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output
@@ -125,12 +125,6 @@
                           (("/usr/local/lib/cups/filter")
                            (string-append out "/lib/cups/filter")))
                         #t)))
-                  (add-after 'unpack 'patch-for-poppler
-                    (lambda _
-                      (substitute* "filter/pdf.cxx"
-                        (("GooString \\*field_name;" m)
-                         (string-append "const " m)))
-                      #t))
                   (add-after 'install 'wrap-filters
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       ;; Some filters expect to find 'gs' in $PATH.  We cannot
