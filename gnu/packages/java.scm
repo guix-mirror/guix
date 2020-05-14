@@ -2013,11 +2013,6 @@ new Date();"))
         ,@%gnu-build-system-modules)
        #:tests? #f; requires jtreg
        ;; TODO package jtreg
-       ;; disable parallel builds, as the openjdk build system does not like -j
-       #:parallel-build? #f
-       #:parallel-tests? #f
-       ;; reenable parallel builds and tests by adding the flags manually
-       #:make-flags (list (string-append "JOBS=" (number->string (parallel-job-count))))
        #:configure-flags
        `("--disable-option-checking" ; --enable-fast-install default flag errors otherwise
          "--disable-warnings-as-errors"
@@ -2034,7 +2029,6 @@ new Date();"))
                          (assoc-ref %build-inputs "freetype") "/include")
          ,(string-append "--with-freetype-lib="
                          (assoc-ref %build-inputs "freetype") "/lib"))
-       ;; TODO
        #:phases
        (modify-phases %standard-phases
          (add-after 'patch-source-shebangs 'fix-java-shebangs
@@ -2044,22 +2038,32 @@ new Date();"))
              (substitute* "make/data/blacklistedcertsconverter/blacklisted.certs.pem"
                (("^#!.*") "#! java BlacklistedCertsConverter SHA-256\n"))
              #t))
-         (replace 'build
+         (add-before 'build 'write-source-revision-file
            (lambda _
              (with-output-to-file ".src-rev"
                (lambda _
                  (display ,version)))
-             (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "yes")
-             (invoke "make" "all")
              #t))
+         (replace 'build
+           (lambda* (#:key parallel-build? make-flags #:allow-other-keys)
+             (apply invoke "make" "all"
+                    `(,@(if parallel-build?
+                            (list (string-append "JOBS="
+                                                 (number->string (parallel-job-count))))
+                            '())
+                      ,@make-flags))))
          ;; jdk 11 does not build jre by default any more
          ;; building it anyways
          ;; for further information see:
          ;; https://github.com/AdoptOpenJDK/openjdk-build/issues/356
          (add-after 'build 'build-jre
-           (lambda _
-             (invoke "make" "legacy-jre-image")
-             #t))
+           (lambda* (#:key parallel-build? make-flags #:allow-other-keys)
+             (apply invoke "make" "legacy-jre-image"
+                    `(,@(if parallel-build?
+                            (list (string-append "JOBS="
+                                                 (number->string (parallel-job-count))))
+                            '())
+                      ,@make-flags))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
