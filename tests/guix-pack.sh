@@ -40,6 +40,14 @@ trap 'chmod -Rf +w "$test_directory"; rm -rf "$test_directory"' EXIT
 drv="`guix pack coreutils -d --no-grafts`"
 guix gc -R "$drv" | grep "`guix build coreutils -d --no-grafts`"
 
+# Compute the derivation of a cross-compiled pack.  Make sure it refers to the
+# cross-compiled package and not to the native package.
+drv="`guix pack idutils -d --no-grafts --target=arm-linux-gnueabihf`"
+guix gc -R "$drv" | \
+    grep "`guix build idutils --target=arm-linux-gnueabihf -d --no-grafts`"
+if guix gc -R "$drv" | grep "`guix build idutils -d --no-grafts`";
+then false; else true; fi
+
 # Build a tarball with no compression.
 guix pack --compression=none --bootstrap guile-bootstrap
 

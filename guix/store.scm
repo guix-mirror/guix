@@ -1899,7 +1899,9 @@ coalesce them into a single call."
     (values (map/accumulate-builds store
                                    (lambda (obj)
                                      (run-with-store store
-                                       (mproc obj)))
+                                       (mproc obj)
+                                       #:system (%current-system)
+                                       #:target (%current-target-system)))
                                    lst)
             store)))
 
