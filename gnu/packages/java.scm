@@ -1815,6 +1815,7 @@ new Date();"))
     (outputs '("out" "jdk" "doc"))
     (arguments
      `(#:tests? #f; require jtreg
+       #:make-flags '("all")
        #:imported-modules
        ((guix build syscalls)
         ,@%gnu-build-system-modules)
@@ -1839,14 +1840,20 @@ new Date();"))
                      "--with-libjpeg=system"
                      (string-append "--prefix=" (assoc-ref outputs "out")))
              #t))
-         (replace 'build
+         (add-before 'build 'write-source-revision-file
            (lambda _
              (with-output-to-file ".src-rev"
                (lambda _
                  (display ,version)))
-             (setenv "GUIX_LD_WRAPPER_ALLOW_IMPURITIES" "yes")
-             (invoke "make" "all")
              #t))
+         (replace 'build
+           (lambda* (#:key make-flags parallel-build? #:allow-other-keys)
+             (apply invoke "make"
+                    `(,@(if parallel-build?
+                            (list (string-append "JOBS="
+                                                 (number->string (parallel-job-count))))
+                            '())
+                      ,@make-flags))))
          ;; Some of the libraries in the lib/ folder link to libjvm.so.
          ;; But that shared object is located in the server/ folder, so it
          ;; cannot be found.  This phase creates a symbolic link in the
@@ -1919,8 +1926,7 @@ new Date();"))
     (native-inputs
      `(("icedtea-8" ,icedtea-8)
        ("icedtea-8:jdk" ,icedtea-8 "jdk")
-       ;; XXX: The build system is not particularly parallel safe and
-       ;; fails with newer versions of GNU Make.
+       ;; XXX: The build system fails with newer versions of GNU Make.
        ("make@4.2" ,gnu-make-4.2)
        ("unzip" ,unzip)
        ("which" ,which)
