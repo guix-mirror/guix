@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -2533,3 +2535,59 @@ without any changes.  And programmers that are familiar with the magellan API
 can continue using it with a free library without the restrictions of the
 official SDK.")
     (license license:bsd-3)))
+
+(define-public openctm
+  (let ((revision 603))
+    ;; Previous versions don't compile, they need to link libGL and libGLU.
+    ;; Fixed in this revision.
+    (package
+      (name "openctm")
+      (version (string-append "1.0.3." (number->string revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "https://svn.code.sf.net/p/openctm/code/trunk")
+               (revision revision)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "01wb70m48xh5gwhv60a5brv4sxl0i0rh038w32cgnlxn5x86s9f1"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("mesa" ,mesa)
+         ("glu" ,glu)
+         ("glut" ,freeglut)
+         ("gtk" ,gtk+-2)
+         ("pkg-config" ,pkg-config)))
+      (arguments
+       `(#:tests? #f                              ;no tests
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (rename-file "Makefile.linux" "Makefile")
+               (let ((out (assoc-ref outputs "out")))
+                 ;; Create output directories.
+                 (mkdir-p (string-append out "/lib"))
+                 (mkdir-p (string-append out "/include"))
+                 (mkdir-p (string-append out "/bin"))
+                 ;; Fix rpath.
+                 (substitute* "tools/Makefile.linux"
+                   (("-rpath,\\.")
+                    (string-append "-rpath," out "/lib/"))
+                   (("/usr/local")
+                    out))
+                 ;; Set right output.
+                 (substitute* "Makefile"
+                   (("/usr/lib")
+                    (string-append out "/lib"))
+                   (("\\/usr\\/local")
+                    out))
+                 #t))))))
+      (synopsis "3D triangle mesh format and related tools and libraries")
+      (description "OpenCTM is a file format, a software library and a tool set
+for compression of 3D triangle meshes.  The geometry is compressed to a
+fraction of comparable file formats (3DS, STL, COLLADA...), and the format is
+accessible through a simple API")
+      (license license:zlib)
+      (home-page "http://openctm.sourceforge.net/"))))
