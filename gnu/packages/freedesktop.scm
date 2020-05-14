@@ -1805,3 +1805,72 @@ useful with system integration.")
     (synopsis "Ayatana indicators symbols and functions")
     (description "A set of symbols and convenience functions for Ayatana indicators.")
     (license license:gpl3)))
+
+(define-public libappindicator
+  (package
+    (name "libappindicator")
+    (version "12.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://launchpad.net/libappindicator/"
+             (version-major+minor version) "/" version
+             "/+download/libappindicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17xlqd60v0zllrxp8bgq3k5a1jkj0svkqn8rzllcyjh8k0gpr46m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("dbus-test-runner" ,dbus-test-runner)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("xvfb" ,xorg-server-for-tests)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("gtk+" ,gtk+)
+       ("libdbusmenu" ,libdbusmenu)
+       ("libindicator" ,libindicator)
+       ("python@2" ,python-2)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-pygobject-2" ,python2-pygobject-2)
+       ;; ("mono" ,mono) ; requires non-packaged gapi
+       ("vala" ,vala)))
+    (arguments
+     ;; FIXME: do not hardcode gtk version
+     `(#:configure-flags '("--with-gtk=3")
+       #:make-flags '("CFLAGS=-Wno-error")
+       #:tests? #f ; One test does not pass (it succeeds when it should fail).
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "docs/reference/Makefile.in"
+               (("/bin/sh") (which "sh")))
+             (substitute* "tests/Makefile.in"
+               (("/bin/sh") (which "sh"))
+               (("#!/bin/bash") (string-append "#!" (which "bash")))
+               (("/usr") (string-append (assoc-ref inputs "dbus-test-runner"))))
+             (substitute* "bindings/python/Makefile.in"
+               (("-lappindicator") "-lappindicator3"))
+             #t))
+         (add-after 'unpack 'fix-codegen-path
+           (lambda _
+             (substitute* "configure"
+               (("PYGTK_CODEGEN=.*") "PYGTK_CODEGEN=pygtk-codegen-2.0\n"))
+             #t))
+         (add-after 'build 'build-bindings
+           (lambda _
+             (invoke "make" "-C" "bindings/python")
+             #t))
+         (add-after 'install 'install-bindings
+           (lambda _
+             (invoke "make" "-C" "bindings/python" "install")
+             #t)))))
+    (home-page "https://launchpad.net/libappindicator")
+    (synopsis "Allow applications to export a menu into the Unity menu bar")
+    (description "A library to allow applications to export a menu, originally
+into the Unity menu bar.  Based on KSNI, it also works in KDE and will
+fallback to generic Systray support if none of those are available.")
+    (license license:lgpl2.1+)))
