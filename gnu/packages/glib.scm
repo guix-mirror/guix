@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -1074,3 +1076,49 @@ simple methods via GObject-Introspection.")
 used to create D-Bus sockets inside a Linux container that forwards requests
 to the host system, optionally with filters applied.")
     (license license:lgpl2.1+)))
+
+(define-public dbus-test-runner
+  (package
+    (name "dbus-test-runner")
+    (version "19.04.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://launchpad.net/dbus-test-runner/"
+                    (version-major+minor version) "/" version
+                    "/+download/dbus-test-runner-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xnbay58xn0hav208mdsg8dd176w57dcpw1q2k0g5fh9v7xk4nk4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-test-paths
+           ;; add missing space
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile.in"
+               (("#!/bin/bash") (string-append "#!" (which "bash"))))
+             (substitute* "tests/Makefile.in"
+               (("/bin/sh") (which "sh"))
+               (("#!/bin/bash") (string-append "#!" (which "bash")))
+               (("echo cat") (string-append "echo " (which "cat")))
+               (("/bin/true") (which "true")))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("dbus-glib" ,dbus-glib)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ;; following used for tests
+       ("python" ,python)
+       ("python-dbusmock" ,python-dbusmock)
+       ("xvfb" ,xorg-server-for-tests)))
+    (home-page "https://launchpad.net/dbus-test-runner")
+    (synopsis "Run a executables under a new DBus session for testing")
+    (description "A small little utility to run a couple of executables under a
+new DBus session for testing.")
+    (license license:gpl3)))
