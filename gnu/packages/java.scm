@@ -2231,9 +2231,7 @@ new Date();"))
               (modules '((guix build utils)))
               (snippet
                `(begin
-                  (for-each delete-file (find-files "." ".*.bin$"))
-                  (for-each delete-file (find-files "." ".*.exe$"))
-                  (for-each delete-file (find-files "." ".*.jar$"))
+                  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
                   #t))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
