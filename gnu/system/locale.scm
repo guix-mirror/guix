@@ -106,7 +106,7 @@ of LIBC."
 
          ;; 'localedef' executes 'gzip' to access compressed locale sources.
          (setenv "PATH"
-                 (string-append #$gzip "/bin:" #$libc "/bin"))
+                 (string-append #+gzip "/bin:" #+libc "/bin"))
 
          (setvbuf (current-output-port) 'line)
          (setvbuf (current-error-port) 'line)
