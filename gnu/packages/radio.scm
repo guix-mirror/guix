@@ -845,7 +845,20 @@ users.")
        ("qtmultimedia" ,qtmultimedia)
        ("qtserialport" ,qtserialport)))
     (arguments
-     `(#:tests? #f)) ; No test suite
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'work-around-runtime-bug
+           (lambda _
+             ;; Some of the programs in this package fail to find symbols
+             ;; in libm at runtime. Adding libm manually at the end of the
+             ;; library lists when linking the programs seems to help.
+             ;; TODO: find exactly what is wrong in the way the programs
+             ;; are built.
+             (substitute* "CMakeLists.txt"
+               (("target_link_libraries \\((.*)\\)" all libs)
+                (string-append "target_link_libraries (" libs " m)")))
+             #t)))))
     (synopsis "Weak-signal ham radio communication program")
     (description
      "WSJT-X implements communication protocols or modes called FT4, FT8,
