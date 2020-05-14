@@ -19,6 +19,7 @@
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1759,3 +1760,48 @@ that provides a graphical boot animation while the boot process happens in the
 background.  You are not supposed to install this on your own, it is only
 useful with system integration.")
     (license license:gpl2+)))
+
+(define-public libindicator
+  (package
+    (name "libindicator")
+    (version "12.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://launchpad.net/libindicator/"
+             (version-major+minor version) "/" version
+             "/+download/libindicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zs4z7l9b57jldwz0ban77f3c2zq43ambd0dssf5qg9i216f9lmj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("dbus-test-runner" ,dbus-test-runner)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("xvfb" ,xorg-server-for-tests)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)))
+    (arguments
+     `(#:make-flags '("CFLAGS=-Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-missing-space-for-libm
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("LIBM=\"-lm\"") "LIBM=\" -lm\""))
+             #t))
+         (add-before 'configure 'fix-test-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/Makefile.in"
+               (("/bin/sh") (which "sh"))
+               (("#!/bin/bash") (string-append "#!" (which "bash")))
+               (("/usr/share")
+                (string-append (assoc-ref inputs "dbus-test-runner") "/share")))
+             #t)))))
+    (home-page "https://launchpad.net/libindicator")
+    (synopsis "Ayatana indicators symbols and functions")
+    (description "A set of symbols and convenience functions for Ayatana indicators.")
+    (license license:gpl3)))
