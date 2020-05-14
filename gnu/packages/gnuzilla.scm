@@ -1344,6 +1344,32 @@ standards of the IceCat project.")
            (lambda _ (invoke "./mach" "build")))
          (replace 'install
            (lambda _ (invoke "./mach" "install")))
+         ;; Thunderbird doesn't provide any .desktop file.
+         ;; See https://bugzilla.mozilla.org/show_bug.cgi?id=1637575
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file (string-append apps "/icedove.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                            Name=Icedove~@
+                            Exec=~a/bin/icedove~@
+                            Icon=icedove~@
+                            GenericName=Mail/News Client~@
+                            Categories=Network;Email;~@
+                            Terminal=false~@
+                            StartupNotify=true~@
+                            MimeType=x-scheme-handler/mailto;~@
+                            Type=Application~@
+                            Actions=ComposeMessage;~@
+                            [Desktop Action ComposeMessage]~@
+                            Name=Write new message~@
+                            Exec=~@*~a/bin/icedove -compose~%"
+                           out))))
+             #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
