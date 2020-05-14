@@ -11,6 +11,28 @@
 (channel-news
  (version 0)
 
+ (entry (commit "6456232164890dbf5aa20394ee24637feb4b7b9e")
+        (title (en "@command{guix pack -RR} introduces a new execution
+engine"))
+        (body
+         (en "The @command{guix pack -RR} command allows you to create a
+tarball containing @dfn{relocatable binaries}.  Until now, those would rely
+either on Linux ``unprivileged user namespaces'' or on PRoot, when
+unprivileged user namespaces are not supported.  However, PRoot introduces
+significant overhead for some workloads.
+
+To address that, @command{guix pack -RR} introduces a third option based on an
+extension to the GNU run-time linker (ld.so) and on Fakechroot, which incurs
+very little overhead.  You can select the fastest option when executing a
+relocatable binary like this:
+
+@example
+GUIX_EXECUTION_ENGINE=performance
+export GUIX_EXECUTION_ENGINE
+@end example
+
+Run @command{info \"(guix) Invoking guix pack\"} for more information.")))
+
  (entry (commit "88a96c568c47c97d05d883ada5afbc4e1200b10f")
         (title (en "New @option{--path} option for @command{guix graph}")
                (de "Neue Option @option{--path} für @command{guix graph}"))
