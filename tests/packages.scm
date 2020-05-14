@@ -1000,6 +1000,19 @@
       (("dep" package)
        (eq? package dep)))))
 
+(test-assert "package->bag, sensitivity to %current-target-system"
+  (let* ((dep (dummy-package "dep"
+                (propagated-inputs (if (%current-target-system)
+                                       `(("libxml2" ,libxml2))
+                                       '()))))
+         (pkg (dummy-package "foo"
+                (native-inputs `(("dep" ,dep)))))
+         (bag (package->bag pkg (%current-system) "foo86-hurd")))
+    (equal? (parameterize ((%current-target-system "foo64-gnu"))
+              (bag-transitive-inputs bag))
+            (parameterize ((%current-target-system #f))
+              (bag-transitive-inputs bag)))))
+
 (test-assert "bag->derivation"
   (parameterize ((%graft? #f))
     (let ((bag (package->bag gnu-make))

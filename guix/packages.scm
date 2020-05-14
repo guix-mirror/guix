@@ -814,11 +814,13 @@ dependencies are known to build on SYSTEM."
 
 (define (bag-transitive-inputs bag)
   "Same as 'package-transitive-inputs', but applied to a bag."
-  (transitive-inputs (bag-direct-inputs bag)))
+  (parameterize ((%current-target-system #f))
+    (transitive-inputs (bag-direct-inputs bag))))
 
 (define (bag-transitive-build-inputs bag)
   "Same as 'package-transitive-native-inputs', but applied to a bag."
-  (transitive-inputs (bag-build-inputs bag)))
+  (parameterize ((%current-target-system #f))
+    (transitive-inputs (bag-build-inputs bag))))
 
 (define (bag-transitive-host-inputs bag)
   "Same as 'package-transitive-target-inputs', but applied to a bag."
@@ -827,7 +829,8 @@ dependencies are known to build on SYSTEM."
 
 (define (bag-transitive-target-inputs bag)
   "Return the \"target inputs\" of BAG, recursively."
-  (transitive-inputs (bag-target-inputs bag)))
+  (parameterize ((%current-target-system (bag-target bag)))
+    (transitive-inputs (bag-target-inputs bag))))
 
 (define* (package-closure packages #:key (system (%current-system)))
   "Return the closure of PACKAGES on SYSTEM--i.e., PACKAGES and the list of
