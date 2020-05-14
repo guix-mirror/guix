@@ -95,6 +95,7 @@ MODULES =					\
   guix/repl.scm					\
   guix/inferior.scm				\
   guix/describe.scm				\
+  guix/quirks.scm				\
   guix/channels.scm				\
   guix/gnu-maintenance.scm			\
   guix/self.scm					\

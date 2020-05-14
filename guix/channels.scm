@@ -38,7 +38,6 @@
                 #:select (source-properties->location
                           &error-location
                           &fix-hint))
-  #:use-module ((guix build utils) #:select (substitute*))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
@@ -48,6 +47,7 @@
   #:use-module (srfi srfi-35)
   #:autoload   (guix self) (whole-package make-config.scm)
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
+  #:autoload   (guix quirks) (%quirks %patches applicable-patch? apply-patch)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module ((ice-9 rdelim) #:select (read-string))
@@ -200,24 +200,15 @@ description file or its default value."
 channel INSTANCE."
   (channel-metadata-dependencies (channel-instance-metadata instance)))
 
-;; Patch to apply to a source tree.
-(define-record-type <patch>
-  (patch predicate application)
-  patch?
-  (predicate    patch-predicate)                  ;procedure
-  (application  patch-application))               ;procedure
-
 (define (apply-patches checkout commit patches)
   "Apply the matching PATCHES to CHECKOUT, modifying files in place.  The
 result is unspecified."
   (let loop ((patches patches))
     (match patches
       (() #t)
-      ((($ <patch> predicate modify) rest ...)
-       ;; PREDICATE is passed COMMIT so that it can choose to only apply to
-       ;; ancestors.
-       (when (predicate checkout commit)
-         (modify checkout))
+      ((patch rest ...)
+       (when (applicable-patch? patch checkout commit)
+         (apply-patch patch checkout))
        (loop rest)))))
 
 (define* (latest-channel-instance store channel
@@ -345,66 +336,6 @@ to '%package-module-path'."
             scm)))
 
     (gexp->derivation-in-inferior name build core)))
-
-(define (syscalls-reexports-local-variables? source)
-  "Return true if (guix build syscalls) contains the bug described at
-<https://bugs.gnu.org/36723>."
-  (catch 'system-error
-    (lambda ()
-      (define content
-        (call-with-input-file (string-append source
-                                             "/guix/build/syscalls.scm")
-          read-string))
-
-      ;; The faulty code would use the 're-export' macro, causing the
-      ;; 'AT_SYMLINK_NOFOLLOW' local variable to be re-exported when using
-      ;; Guile > 2.2.4.
-      (string-contains content "(re-export variable)"))
-    (lambda args
-      (if (= ENOENT (system-error-errno args))
-          #f
-          (apply throw args)))))
-
-(define (guile-2.2.4)
-  (module-ref (resolve-interface '(gnu packages guile))
-              'guile-2.2.4))
-
-(define %quirks
-  ;; List of predicate/package pairs.  This allows us to provide information
-  ;; about specific Guile versions that old Guix revisions might need to use
-  ;; just to be able to build and run the trampoline in %SELF-BUILD-FILE.  See
-  ;; <https://bugs.gnu.org/37506>
-  `((,syscalls-reexports-local-variables? . ,guile-2.2.4)))
-
-
-(define %bug-41028-patch
-  ;; Patch for <https://bugs.gnu.org/41028>.  The faulty code is the
-  ;; 'compute-guix-derivation' body, which uses 'call-with-new-thread' without
-  ;; importing (ice-9 threads).  However, the 'call-with-new-thread' binding
-  ;; is no longer available in the default name space on Guile 3.0.
-  (let ()
-    (define (missing-ice-9-threads-import? source commit)
-      ;; Return true if %SELF-BUILD-FILE is missing an (ice-9 threads) import.
-      (define content
-        (call-with-input-file (string-append source "/" %self-build-file)
-          read-string))
-
-      (and (string-contains content "(call-with-new-thread")
-           (not (string-contains content "(ice-9 threads)"))))
-
-    (define (add-missing-ice-9-threads-import source)
-      ;; Add (ice-9 threads) import in the gexp of 'compute-guix-derivation'.
-      (substitute* (string-append source "/" %self-build-file)
-        (("^ +\\(use-modules \\(ice-9 match\\)\\)")
-         (object->string '(use-modules (ice-9 match) (ice-9 threads))))))
-
-   (patch missing-ice-9-threads-import? add-missing-ice-9-threads-import)))
-
-(define %patches
-  ;; Bits of past Guix revisions can become incompatible with newer Guix and
-  ;; Guile.  This variable lists <patch> records for the Guix source tree that
-  ;; apply to the Guix source.
-  (list %bug-41028-patch))
 
 (define* (guile-for-source source #:optional (quirks %quirks))
   "Return the Guile package to use when building SOURCE or #f if the default
