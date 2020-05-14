@@ -2950,9 +2950,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("xz" ,xz)
        ("zlib" ,zlib)))
@@ -2964,7 +2962,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
          (add-after 'unpack 'disable-tests
            (lambda _
              ;; XXX: These tests need '--sysconfdir=/etc' to pass.
-             (substitute* "Makefile.am"
+             (substitute* "Makefile.in"
                (("testsuite/test-modprobe") "")
                (("testsuite/test-depmod") "")
                (("testsuite/test-blacklist") ""))
