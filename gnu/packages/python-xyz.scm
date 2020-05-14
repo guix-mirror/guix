@@ -3767,21 +3767,21 @@ Server (PLS).")
 (define-public python-language-server
   (package
     (name "python-language-server")
-    (version "0.31.7")
+    (version "0.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-language-server" version))
        (sha256
         (base32
-         "0f8rljff4h2ay9m2n9ang7axai37nzd39zd7m6c90rci5wh8cmxh"))))
+         "0j5swacmjps9sas1gfwg0xi84rmjhfhz20cwg3k4058d20rs20ip"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pluggy" ,python-pluggy)
        ("python-jsonrpc-server" ,python-jsonrpc-server)
        ;; Note: Remove the special versions of Jedi and Parso when updating
        ;; this package.
-       ("python-jedi" ,python-jedi-0.15)
+       ("python-jedi" ,python-jedi)
        ("python-yapf" ,python-yapf)
        ("python-pyflakes" ,python-pyflakes)
        ("python-pydocstyle" ,python-pydocstyle)
@@ -12149,20 +12149,6 @@ well.")
 (define-public python2-jedi
   (package-with-python2 python-jedi))
 
-;; python-language-server requires 0.15 specifically.  Remove once unused.
-(define-public python-jedi-0.15
-  (package
-    (inherit python-jedi)
-    (version "0.15.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "jedi" version))
-              (sha256
-               (base32
-                "01zqasl690x1i6dq4mvh13pz0cw8i276xsivsrnn00x90iqm42g9"))))
-    (propagated-inputs
-     `(("python-parso" ,python-parso-0.5)))))
-
 (define-public ptpython
   (package
     (name "ptpython")
@@ -16511,19 +16497,6 @@ Parso is also able to list multiple syntax errors in your Python file.")
 
 (define-public python2-parso
   (package-with-python2 python-parso))
-
-;; This version is required for Jedi@0.15, which in turn is needed for
-;; python-language-server.
-(define-public python-parso-0.5
-  (package
-    (inherit python-parso)
-    (version "0.5.2")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "parso" version))
-              (sha256
-               (base32
-                "1qgvrkpma7vylrk047mxxvqd66nwqk978n3ig2w8iz9m3bgjbksm"))))))
 
 (define-public python-async-generator
   (package
