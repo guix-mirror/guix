@@ -448,14 +448,15 @@ risk.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2019.3.9")
+    (version "2020.4.5.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1bnpw7hrf9i1l9gfxjnzi45hkrvzz0pyn9ia8m4mw7sxhgb08qdj"))))
+                "06b5gfs7wmmipln8f3z928d2mmx2j4b3x7pnqmj6cvmyfh8v7z2i"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
     (description
