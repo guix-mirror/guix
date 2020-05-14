@@ -286,6 +286,7 @@ added to the pack."
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
+                    #:target target
                     #:references-graphs `(("profile" ,profile))))
 
 (define (singularity-environment-file profile)
@@ -384,7 +385,7 @@ added to the pack."
                      ;; Reset all UIDs and GIDs.
                      "-force-uid" "0" "-force-gid" "0")))
 
-          (setenv "PATH" (string-append #$archiver "/bin"))
+          (setenv "PATH" #+(file-append archiver "/bin"))
 
           ;; We need an empty file in order to have a valid file argument when
           ;; we reparent the root file system.  Read on for why that's
@@ -484,6 +485,7 @@ added to the pack."
                                    (compressor-extension compressor)
                                    ".squashfs")
                     build
+                    #:target target
                     #:references-graphs `(("profile" ,profile))))
 
 (define* (docker-image name profile
@@ -558,7 +560,7 @@ the image."
                         ((_) str)
                         ((names ... _) (loop names))))))) ;drop one entry
 
-            (setenv "PATH" (string-append #$archiver "/bin"))
+            (setenv "PATH" #+(file-append archiver "/bin"))
 
             (build-docker-image #$output
                                 (map store-info-item
@@ -574,12 +576,13 @@ the image."
                                        #~(list (string-append #$profile "/"
                                                               #$entry-point)))
                                 #:extra-files directives
-                                #:compressor '#$(compressor-command compressor)
+                                #:compressor '#+(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
+                    #:target target
                     #:references-graphs `(("profile" ,profile))))
 
 
