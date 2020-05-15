@@ -51,24 +51,28 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.4.2.7")
+    (version "0.4.3.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://dist.torproject.org/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0v82ngwwmmcb7i9563bgsmrjy6xp83xyhqhaljygd0pkvlsxi886"))))
+               "0s6qspi102drn1nk3gfxs51x992xarc44gkfsi8y3l48wr50wsk1"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-lzma"
+             "--enable-zstd")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))           ; for tests
+       ("python" ,python)))             ; for tests
     (inputs
-     `(("zlib" ,zlib)
-       ("openssl" ,openssl)
-       ("libevent" ,libevent)
+     `(("libevent" ,libevent)
        ("libseccomp" ,libseccomp)
+       ("openssl" ,openssl)
        ("xz" ,xz)
+       ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
