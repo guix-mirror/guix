@@ -1456,17 +1456,12 @@ TARGET, a GNU triplet."
                          (ungexp (* total 2))
                          entry)
 
-                 (ungexp-splicing
-                  (if target
-                      (gexp ((with-target (ungexp target)
-                               (lambda ()
-                                 (compile-file entry
-                                               #:output-file output
-                                               #:opts
-                                               %auto-compilation-options)))))
-                      (gexp ((compile-file entry
-                                           #:output-file output
-                                           #:opts %auto-compilation-options)))))
+                 (with-target (ungexp (or target (gexp %host-type)))
+                   (lambda ()
+                     (compile-file entry
+                                   #:output-file output
+                                   #:opts
+                                   %auto-compilation-options)))
 
                  (+ 1 processed))))
 
