@@ -175,7 +175,7 @@ numbers of user-defined menu items efficiently.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "spoon-" version ".tar.gz"))
        (sha256
         (base32
          "1jpmg9k9f4f3lpz0k3cphqjswlyf8lz2sm8ccifiip93kd4rrdj0"))))
@@ -356,7 +356,7 @@ few minutes.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "xbattmon-" version ".tar.gz"))
        (sha256
         (base32
          "1zr6y8lml9xkx0a3dbbsds2qz1bjxvskp7wsckkf8mlsqrbb3xsg"))))
@@ -381,7 +381,7 @@ few minutes.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "wificurse-" version ".tar.gz"))
        (sha256
         (base32
          "067ghr1xly5ca41kc83xila1p5hpq0bxfcmc8jvxi2ggm6wrhavn"))))
@@ -414,7 +414,7 @@ drivers capable of injecting packets in wireless networks.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "skroll-" version ".tar.gz"))
        (sha256
         (base32
          "0km6bjfz4ssb1z0xwld6iiixnn7d255ax8yjs3zkdm42z8q9yl0f"))))
@@ -442,7 +442,7 @@ left.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "sbm-" version ".tar.gz"))
        (sha256
         (base32
          "1nks5mkh5wn30kyjzlkjlgi31bv1wq52kbp0r6nzbyfnvfdlywik"))))
@@ -468,7 +468,7 @@ left.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "prout-" version ".tar.gz"))
        (sha256
         (base32
          "1s6c3ygg1h1fyxkh8gd7nzjk6qhnwsb4535d2k780kxnwns5fzas"))))
@@ -564,7 +564,7 @@ environment variable.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "fortify-headers-" version ".tar.gz"))
        (sha256
         (base32
          "0nvplfg4y4a10x2j12qwmxzlk2q4j6287j0v5f9bfsdayb04qvh2"))))
@@ -605,7 +605,7 @@ initially intended to be used on musl-based Linux distributions.
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "colors-" version ".tar.gz"))
        (sha256
         (base32
          "1lckmqpgj89841splng0sszbls2ag71ggkgr1wsv9y3v6y87589z"))))
@@ -732,7 +732,7 @@ chat output in the background.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "scron-" version ".tar.gz"))
        (sha256
         (base32
          "066fwa55kqcgfrsqgxh94sqbkxfsr691360xg4ljxr4i75d25s2a"))))
