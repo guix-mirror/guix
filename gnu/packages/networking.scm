@@ -87,6 +87,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -140,7 +141,6 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
-                               "--disable-appindicator" ; Not available
                                "--without-systemdsystemunitdir" ; Not required
                                "--without-systemduserunitdir")  ; Not required
        #:phases
@@ -232,6 +232,7 @@
        ("pycairo" ,python-pycairo)
        ("pygobject" ,python-pygobject)
        ("python" ,python-wrapper)
+       ("libappindicator" ,libappindicator)
        ("libnm" ,network-manager)))
     (synopsis "GTK+ Bluetooth manager")
     (description "Blueman is a Bluetooth management utility using the Bluez
