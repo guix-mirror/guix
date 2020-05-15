@@ -2595,3 +2595,25 @@ fraction of comparable file formats (3DS, STL, COLLADA...), and the format is
 accessible through a simple API")
       (license license:zlib)
       (home-page "http://openctm.sourceforge.net/"))))
+
+(define-public lib3ds
+  (package
+    (name "lib3ds")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://storage.googleapis.com/google-code-archive-downloads"
+             "/v2/code.google.com/lib3ds/lib3ds-" version ".zip"))
+       (sha256
+        (base32 "1qr9arfdkjf7q11xhvxwzmhxqz3nhcjkyb8zzfjpz9jm54q0rc7m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://code.google.com/archive/p/lib3ds")
+    (synopsis "3DS format file toolkit")
+    (description "Lib3ds is a toolkit for handling the 3DS format for 3D
+model files.  Its main goal is to simplify the creation of 3DS import and
+export filters.")
+    (license license:lgpl2.1+)))
