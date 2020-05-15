@@ -315,8 +315,8 @@ structure and layout algorithms.")
     (synopsis "Interactive viewer for graphviz dot files")
     (description "Xdot is an interactive viewer for graphs written in
 @code{graphviz}’s dot language.  Internally, it uses the xdot output format as
-an intermediate format,and @code{gtk} and @code{cairo} for rendering.  Xdot can
-be used either as a standalone application, or as a python library.")
+an intermediate format, and @code{gtk} and @code{cairo} for rendering.  Xdot
+can be used either as a standalone application, or as a Python library.")
     (license license:lgpl3+)))
 
 (define-public python-pydot
