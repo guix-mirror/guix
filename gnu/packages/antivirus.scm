@@ -59,7 +59,8 @@
                             '("win32"                  ; unnecessary
                               "libclamav/c++/llvm"     ; use system llvm
                               "libclamav/tomsfastmath" ; use system tomsfastmath
-                              "libclamunrar"))))       ; non-free license
+                              "libclamunrar"))         ; non-free license
+                  #t))
               (patches
                (search-patches "clamav-system-tomsfastmath.patch"
                                "clamav-config-llvm-libs.patch"))))
