@@ -1229,7 +1229,7 @@ at once based on a Perl regular expression.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
+     `(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
                                "--localstatedir=/var")
 
        ;; Install example config files in OUT/etc.
@@ -1242,6 +1242,20 @@ at once based on a Perl regular expression.")
                     (lambda _
                       (substitute* "rc/rc"
                         (("/usr/sbin/sendmail") "sendmail"))
+                      #t))
+                  (add-after 'unpack 'fix-configure
+                    (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                      ;; Replace outdated config.sub and config.guess:
+                      (for-each (lambda (file)
+                                  (install-file
+                                   (string-append
+                                    (assoc-ref
+                                     (or native-inputs inputs) "automake")
+                                    "/share/automake-"
+                                    ,(version-major+minor
+                                      (package-version automake))
+                                    "/" file) "."))
+                                '("config.sub" "config.guess"))
                       #t))
                   (add-after 'build 'set-packdir
                     (lambda _
@@ -1263,6 +1277,7 @@ at once based on a Perl regular expression.")
                     (lambda _
                       (invoke "make" "install-info"))))))
     (native-inputs `(("texinfo" ,texinfo)
+                     ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
