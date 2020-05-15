@@ -2192,14 +2192,14 @@ without a complete in-memory representation of the data.")
 (define-public ocaml-ocurl
   (package
     (name "ocaml-ocurl")
-    (version "0.8.2")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ygrek.org.ua/p/release/ocurl/ocurl-"
                                   version ".tar.gz"))
               (sha256
                 (base32
-                  "1ax3xdlzgb1zg7d0wr9nwgmh6a45a764m0wk8p6mx07ad94hz0q9"))))
+                  "0n621cxb9012pj280c7821qqsdhypj8qy9qgrah79dkh6a8h2py6"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
