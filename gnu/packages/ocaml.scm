@@ -4429,7 +4429,7 @@ storage of large amounts of data.")
 (define-public ocaml-octavius
   (package
     (name "ocaml-octavius")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4438,8 +4438,17 @@ storage of large amounts of data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ck6yj6z5rvqyl39rz87ca1bnk0f1dpgvlk115631hjh8bwpfvfq"))))
+                "1c5m51xcn2jv42kjjpklr6g63sgx1k885wfdp1yr4wrmiaj9cbpx"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'make-writable
+           (lambda _
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files "." "."))
+             #t)))))
     (properties `((upstream-name . "octavius")))
     (home-page "https://github.com/ocaml-doc/octavius")
     (synopsis "Ocamldoc comment syntax parser")
