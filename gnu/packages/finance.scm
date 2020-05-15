@@ -1472,14 +1472,14 @@ a Qt GUI.")
 (define-public fulcrum
   (package
     (name "fulcrum")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.com/FloweeTheHub/fulcrum/-/archive/v"
                            version "/fulcrum-v" version ".tar.gz"))
        (sha256
-        (base32 "1xywwgsdhkiblv6la0pfhvn2s9q8vnz6pjg35647rlwzi6ybf0ak"))))
+        (base32 "04w5gw02d39caa8a0l6wkn87kc43zzad2prqsyrcq97vlbkdx6x6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
