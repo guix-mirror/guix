@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -197,7 +197,7 @@ upon error."
      #~(begin
          (use-modules (gnu build linux-boot)
                       (gnu system file-systems)
-                      (guix build utils)
+                      ((guix build utils) #:hide (delete))
                       (guix build bournish)   ;add the 'bournish' meta-command
                       (srfi srfi-26)
 
@@ -213,18 +213,19 @@ upon error."
              (set-path-environment-variable "PATH" '("bin" "sbin")
                                             '#$helper-packages)))
 
-         (boot-system #:mounts
-                      (map spec->file-system
-                           '#$(map file-system->spec file-systems))
-                      #:pre-mount (lambda ()
-                                    (and #$@device-mapping-commands))
-                      #:linux-modules '#$linux-modules
-                      #:linux-module-directory '#$kodir
-                      #:keymap-file #+(and=> keyboard-layout
-                                             keyboard-layout->console-keymap)
-                      #:qemu-guest-networking? #$qemu-networking?
-                      #:volatile-root? '#$volatile-root?
-                      #:on-error '#$on-error)))
+         (parameterize ((current-warning-port (%make-void-port "w")))
+           (boot-system #:mounts
+                        (map spec->file-system
+                             '#$(map file-system->spec file-systems))
+                        #:pre-mount (lambda ()
+                                      (and #$@device-mapping-commands))
+                        #:linux-modules '#$linux-modules
+                        #:linux-module-directory '#$kodir
+                        #:keymap-file #+(and=> keyboard-layout
+                                               keyboard-layout->console-keymap)
+                        #:qemu-guest-networking? #$qemu-networking?
+                        #:volatile-root? '#$volatile-root?
+                        #:on-error '#$on-error))))
    #:name "raw-initrd"))
 
 (define* (file-system-packages file-systems #:key (volatile-root? #f))
