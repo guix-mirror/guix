@@ -490,18 +490,21 @@ a character other than '@'."
   (and target
        (string-suffix? "-mingw32" target)))
 
-(define (target-arm32?)
-  (string-prefix? "arm" (or (%current-target-system) (%current-system))))
+(define* (target-arm32? #:optional (target (or (%current-target-system)
+                                               (%current-system))))
+  (string-prefix? "arm" target))
 
-(define (target-aarch64?)
-  (string-prefix? "aarch64" (or (%current-target-system) (%current-system))))
+(define* (target-aarch64? #:optional (target (or (%current-target-system)
+                                                 (%current-system))))
+  (string-prefix? "aarch64" target))
 
-(define (target-arm?)
-  (or (target-arm32?) (target-aarch64?)))
+(define* (target-arm? #:optional (target (or (%current-target-system)
+                                             (%current-system))))
+  (or (target-arm32? target) (target-aarch64? target)))
 
-(define (target-64bit?)
-  (let ((system (or (%current-target-system) (%current-system))))
-    (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "ppc64"))))
+(define* (target-64bit? #:optional (system (or (%current-target-system)
+                                               (%current-system))))
+  (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "ppc64")))
 
 (define version-compare
   (let ((strverscmp
