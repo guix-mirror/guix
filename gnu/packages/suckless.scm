@@ -559,15 +559,14 @@ environment variable.")
 (define-public fortify-headers
   (package
     (name "fortify-headers")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
                            "fortify-headers-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nvplfg4y4a10x2j12qwmxzlk2q4j6287j0v5f9bfsdayb04qvh2"))))
+        (base32 "1dhz41jq1azcf7rbvga8w6pnx19l1j9r6jwj8qrlrfnjl9hdi9bb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
