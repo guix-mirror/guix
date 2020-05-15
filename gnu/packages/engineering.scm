@@ -890,7 +890,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
 (define kicad-i18n
   (package
     (name "kicad-i18n")
-    (version "5.1.5")
+    (version "5.1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -899,7 +899,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rfpifl8vky1gba2angizlb2n7mwmsiai3r6ip6qma60wdj8sbd3"))))
+                "0qryi8xjm23ka363zfl7bbga0v5c31fr3d4nyxp3m168vkv9zhha"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
