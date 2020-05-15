@@ -881,21 +881,21 @@ supports type hints, definition-jumping, completion, and more.")
       (license license:gpl3+))))
 
 (define-public emacs-flycheck
-  ;; last release version was more than 300 commits ago
-  (let ((commit "0006a59259ebd02c9199ddc87f0e3ce22793a2ea")
-        (revision "1"))
+  ;; Last release version was more than 500 commits ago.
+  (let ((commit "9bcf6b665e15db94870bebc81dc8248c3eec20d3")
+        (revision "2"))
     (package
       (name "emacs-flycheck")
       (version (git-version "31" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/flycheck/flycheck/")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "09q3h6ldpg528cfbmsbb1x2vf5hmzgm3fshqn6kdy144jxcdjlf1"))
-                (file-name (git-file-name name version))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flycheck/flycheck/")
+               (commit commit)))
+         (sha256
+          (base32 "015ixss5bjr7gvhj8mkw5x2x1hy6fvvsjarr2xpv0gskkkngs7pg"))
+         (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)))
