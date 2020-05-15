@@ -3759,7 +3759,7 @@ for Flow files.")
 (define-public emacs-flycheck-grammalecte
   (package
     (name "emacs-flycheck-grammalecte")
-    (version "1.0")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -3767,30 +3767,31 @@ for Flow files.")
                            "flycheck-grammalecte/snapshot/"
                            "flycheck-grammalecte-" version ".tar.xz"))
        (sha256
-        (base32 "02wxaw228dia8cps0v02327hrrribfqb4601qggjpi4l4ms1lf8b"))))
+        (base32 "1mzmzyik843r4j0ibpwqrxmb0g4xmirrf3lxr010bddkmmxf749a"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.(el|py)$")
+       #:exclude '("^test-profile.el$")
+       #:emacs ,emacs                   ;need libxml support
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-external-executables
-           ;; Hardcode python3 and curl executables in the Emacs library.
+         (add-after 'unpack 'fix-python-executable
+           ;; Hardcode python3 executable in the Emacs library.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
-                                           "/bin/python3"))
-                   (curl (string-append (assoc-ref inputs "curl")
-                                        "/bin/curl")))
+                                           "/bin/python3")))
                (substitute* "flycheck-grammalecte.el"
-                 (("\"python3?") (string-append "\"" python3))
-                 (("\"curl") (string-append "\"" curl)))
+                 (("\"python3") (string-append "\"" python3)))
                #t)))
-         (add-after 'install 'link-to-grammalecte
-           ;; The package expects grammalecte to be in a sub-directory.
-           ;; Symlink it there from the store.
+         (add-before 'build 'link-to-grammalecte
+           ;; XXX: The Python part of the package requires grammalecte, but
+           ;; the library is not specified in PYTHONPATH, since we're not
+           ;; using Python build system.  As a workaround, we symlink
+           ;; grammalecte libraries here.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((grammalecte (assoc-ref inputs "grammalecte"))
-                   (out (assoc-ref outputs "out"))
-                   (version ,(version-major+minor (package-version python))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (grammalecte (assoc-ref inputs "grammalecte"))
+                    (version ,(version-major+minor (package-version python))))
                (with-directory-excursion
                    (string-append out "/share/emacs/site-lisp")
                  (symlink (string-append grammalecte "/lib/"
@@ -3799,17 +3800,17 @@ for Flow files.")
                           "grammalecte"))
                #t))))))
     (inputs
-     `(("curl" ,curl)
-       ("grammalecte" ,grammalecte)
+     `(("grammalecte" ,grammalecte)
        ("python" ,python)))
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)))
     (home-page "https://git.deparis.io/flycheck-grammalecte/")
     (synopsis "Integrate Grammalecte with Flycheck")
-    (description "Integrate the French grammar and typography checker
-Grammalecte with Flycheck to automatically look for mistakes in your writings.
-It also provides an easy way to find synonyms and antonyms for a given
-word (to avoid repetitions for example).")
+    (description
+     "Integrate the French grammar and typography checker Grammalecte with
+Flycheck to automatically look for mistakes in your writings.  It also
+provides an easy way to find synonyms and antonyms for a given word (to avoid
+repetitions for example).")
     (license license:gpl3+)))
 
 (define-public emacs-flycheck-rust
