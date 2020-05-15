@@ -226,14 +226,14 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.suckless.org/st/st-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0ddz2mdp1c7q67rd5vrvws9r0493ln0mlqyc3d73dv8im884xdxf"))))
+        (base32 "0ll5wbw1szs70wdf8zy1y2ig5mfbqw2w4ls8d64r8z3y4gdf76lk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
