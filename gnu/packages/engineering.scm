@@ -920,7 +920,7 @@ translations for KiCad.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.1.5")
+    (version "5.1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -929,7 +929,7 @@ translations for KiCad.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "048b07ffsaav1ssrchw2p870lvb4rsyb5vnniy670k7q9p16qq6h"))))
+                "12w3rdy085drlikkpb27n9ni7cyg9l0pqy7hnr86cxjcw3l5wcx6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests exist
