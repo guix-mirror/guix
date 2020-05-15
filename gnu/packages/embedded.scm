@@ -1073,8 +1073,7 @@ the Raspberry Pi chip."))))
                (chdir "src")
                (setenv "PYDEV" (string-append python
                                "/include/python"
-                               ,(version-major+minor (package-version python))
-                               "m"))
+                               ,(version-major+minor (package-version python))))
                #t)))
          (replace 'install
            (lambda* (#:key inputs outputs make-flags #:allow-other-keys #:rest args)
