@@ -50,6 +50,7 @@
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3228,7 +3229,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.58.3")
+    (version "0.60.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vte/"
@@ -3236,8 +3237,11 @@ libraries written in C.")
                                   "vte-" version ".tar.xz"))
               (sha256
                (base32
-                "0xa9ipwic4jnhhbzlnqbhssz10xkzv61cpkl1ammc6mdq95bbp12"))))
+                "19ccbw0yca78h5qcnm8claj4fg1pj68nj1fsjqqfpzhj7w72i81m"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-D_systemd=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
