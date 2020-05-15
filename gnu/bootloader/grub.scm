@@ -176,7 +176,7 @@ system string---e.g., \"x86_64-linux\"."
     (if (memq 'gfxterm (bootloader-configuration-terminal-outputs config))
         #~(format #f "if loadfont ~a; then
   setup_gfxterm
-fi~%" #$font-file)
+fi~%" #+font-file)
         ""))
 
   (define (theme-colors type)
@@ -237,7 +237,7 @@ the 'share/X11/xkb/symbols/' directory of 'xkeyboard-config'."
 
           ;; 'grub-kbdcomp' passes all its arguments but '-o' to 'ckbcomp'
           ;; (from the 'console-setup' package).
-          (invoke #$(file-append grub "/bin/grub-mklayout")
+          (invoke #+(file-append grub "/bin/grub-mklayout")
                   "-i" #+(keyboard-layout->console-keymap layout)
                   "-o" #$output))))
 
