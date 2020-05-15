@@ -13,7 +13,9 @@
 
  (entry (commit "6456232164890dbf5aa20394ee24637feb4b7b9e")
         (title (en "@command{guix pack -RR} introduces a new execution
-engine"))
+engine")
+               (de "@command{guix pack -RR} führt neuen Ausführungstreiber
+ein"))
         (body
          (en "The @command{guix pack -RR} command allows you to create a
 tarball containing @dfn{relocatable binaries}.  Until now, those would rely
@@ -31,7 +33,28 @@ GUIX_EXECUTION_ENGINE=performance
 export GUIX_EXECUTION_ENGINE
 @end example
 
-Run @command{info \"(guix) Invoking guix pack\"} for more information.")))
+Run @command{info \"(guix) Invoking guix pack\"} for more information.")
+         (de "Mit dem Befehl @command{guix pack -RR} können Sie einen Tarball
+mit @dfn{verschieblichen Binärdateien} erzeugen (englisch „Relocatable
+Binaries“).  Bisher wurden diese entweder in „unprivilegierten
+Benutzernamensräumen“ ohne Berechtigungen ausgeführt, oder in PRoot, wenn
+keine unprivilegierten Benutzernamensräume unterstützt wurden.  Allerdings
+fällt bei der Ausführung mit PRoot bei manchen Anwendungen deutlich mehr
+Rechenaufwand an.
+
+Um dem entgegenzuwirken, stellt @command{guix pack -RR} nun eine dritte Option
+zur Verfügung, die sich eine Erweiterung des GNU-Laufzeit-Binders („Run-Time
+Linker“, ld.so) und Fakechroot zu Nutze macht.  Dadurch entsteht fast kein
+Mehraufwand.  Sie können sich die schnellste Option aussuchen, wenn Sie eine
+verschiebliche Binärdatei ausführen, zum Beispiel so:
+
+@example
+GUIX_EXECUTION_ENGINE=performance
+export GUIX_EXECUTION_ENGINE
+@end example
+
+Führen Sie @command{info \"(guix.de) Aufruf von guix pack\"} aus, wenn Sie
+mehr wissen wollen.")))
 
  (entry (commit "88a96c568c47c97d05d883ada5afbc4e1200b10f")
         (title (en "New @option{--path} option for @command{guix graph}")
