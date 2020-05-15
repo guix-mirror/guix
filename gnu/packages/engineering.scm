@@ -800,16 +800,16 @@ language.")
 (define-public kicad
   (package
     (name "kicad")
-    (version "5.1.5")
+    (version "5.1.6")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.xz"))
-       (uri (string-append
-             "https://launchpad.net/kicad/" (version-major version)
-             ".0/" version "/+download/kicad-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/kicad/code/kicad.git")
+             (commit version)))
        (sha256
-        (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
+        (base32 "1pa3z0h0679jmgxlzc833h6q85b5paxdp69kf2h93vkaryj58622"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #t
