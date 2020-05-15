@@ -347,6 +347,21 @@ to '%package-module-path'."
       (((predicate . guile) rest ...)
        (if (predicate source) (guile) (loop rest))))))
 
+(define (call-with-guile guile thunk)
+  (lambda (store)
+    (values (parameterize ((%guile-for-build
+                            (if guile
+                                (package-derivation store guile)
+                                (%guile-for-build))))
+              (run-with-store store (thunk)))
+            store)))
+
+(define-syntax-rule (with-guile guile exp ...)
+  "Set GUILE as the '%guile-for-build' parameter for the dynamic extent of
+EXP, a series of monadic expressions."
+  (call-with-guile guile (lambda ()
+                           (mbegin %store-monad exp ...))))
+
 (define (with-trivial-build-handler mvalue)
   "Run MVALUE, a monadic value, with a \"trivial\" build handler installed
 that unconditionally resumes the continuation."
@@ -385,10 +400,7 @@ package modules under SOURCE using CORE, an instance of Guix."
         ;; Note: BUILD can return #f if it does not support %PULL-VERSION.  In
         ;; the future we'll fall back to a previous version of the protocol
         ;; when that happens.
-        (mbegin %store-monad
-          (mwhen guile
-            (set-guile-for-build guile))
-
+        (with-guile guile
           ;; BUILD is usually quite costly.  Install a "trivial" build handler
           ;; so we don't bounce an outer build-accumulator handler that could
           ;; cause us to redo half of the BUILD computation several times just
@@ -750,3 +762,7 @@ NEW.  When OLD is omitted or is #f, return all the news entries of CHANNEL."
       (if (= GIT_ENOTFOUND (git-error-code error))
           '()
           (apply throw key error rest)))))
+
+;;; Local Variables:
+;;; eval: (put 'with-guile 'scheme-indent-function 1)
+;;; End:
