@@ -949,7 +949,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-footprints")
-    (version "5.1.5")
+    (version "5.1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -958,7 +958,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c4whgn14qhz4yqkl46w13p6rpv1k0hsc9s9h9368fxfcz9knb2j"))))
+                "1kmf91a5mmvj9izrv40mkaw1w36yjgn8daczd9rq2wlmd0rdp1zx"))))
     (synopsis "Official KiCad footprint libraries")
     (description "This package contains the official KiCad footprint libraries.")))
 
