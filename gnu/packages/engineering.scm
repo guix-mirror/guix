@@ -890,7 +890,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
 (define kicad-i18n
   (package
     (name "kicad-i18n")
-    (version "5.1.6")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -908,7 +908,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
          (delete 'check))))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
-    (home-page "https://kicad-pcb.org/")
+    (home-page (package-home-page kicad))
     (synopsis "KiCad GUI translations")
     (description "This package contains the po files that are used for the GUI
 translations for KiCad.")
@@ -920,7 +920,7 @@ translations for KiCad.")
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.1.6")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -933,7 +933,7 @@ translations for KiCad.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests exist
-    (home-page "https://kicad-pcb.org/")
+    (home-page (package-home-page kicad))
     (synopsis "Official KiCad schematic symbol libraries")
     (description "This package contains the official KiCad schematic symbol
 libraries.")
@@ -949,7 +949,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-footprints")
-    (version "5.1.6")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -966,7 +966,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-packages3d")
-    (version "5.1.6")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -983,7 +983,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-templates")
-    (version "5.1.6")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
