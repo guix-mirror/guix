@@ -199,6 +199,10 @@ substitutable."
                       (sync)
                       (reboot))))
 
+  (define-syntax-rule (check predicate)
+    (let-system (system target)
+      (predicate (or target system))))
+
   (let ((initrd (or initrd
                     (base-initrd file-systems
                                  #:on-error 'backtrace
@@ -229,7 +233,8 @@ substitutable."
                      (graphs  '#$(match references-graphs
                                    (((graph-files . _) ...) graph-files)
                                    (_ #f)))
-                     (target  #$(or (%current-target-system) (%current-system)))
+                     (target  #$(let-system (system target)
+                                  (or target system)))
                      (size    #$(if (eq? 'guess disk-image-size)
                                     #~(+ (* 70 (expt 2 20)) ;ESP
                                          (estimated-partition-size graphs))
@@ -244,12 +249,8 @@ substitutable."
                                   #:memory-size #$memory-size
                                   #:make-disk-image? #$make-disk-image?
                                   #:single-file-output? #$single-file-output?
-                                  ;; FIXME: ‘target-arm32?’ and
-                                  ;; ‘target-aarch64?’ may not operate on the
-                                  ;; right system/target values.  Rewrite
-                                  ;; using ‘let-system’ when available.
-                                  #:target-arm32? #$(target-arm32?)
-                                  #:target-aarch64? #$(target-aarch64?)
+                                  #:target-arm32? #$(check target-arm32?)
+                                  #:target-aarch64? #$(check target-aarch64?)
                                   #:disk-image-format #$disk-image-format
                                   #:disk-image-size size
                                   #:references-graphs graphs))))))
