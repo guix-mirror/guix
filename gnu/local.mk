@@ -403,6 +403,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
   %D%/packages/package-management.scm		\
+  %D%/packages/pantheon.scm			\
   %D%/packages/parallel.scm			\
   %D%/packages/password-utils.scm		\
   %D%/packages/patchutils.scm			\
