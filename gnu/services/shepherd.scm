@@ -146,7 +146,7 @@ DEFAULT is given, use it as the service's default value."
   ;; Default set of modules visible in a service's file.
   `((shepherd service)
     (oop goops)
-    (guix build utils)
+    ((guix build utils) #:hide (delete))
     (guix build syscalls)))
 
 (define-record-type* <shepherd-service>
@@ -315,7 +315,9 @@ and return the resulting '.go' file."
           (call-with-error-handling
             (lambda ()
               (apply register-services
-                     (map load-compiled '#$(map scm->go files)))))
+                     (parameterize ((current-warning-port
+                                     (%make-void-port "w")))
+                       (map load-compiled '#$(map scm->go files))))))
 
           (format #t "starting services...~%")
           (for-each (lambda (service)
