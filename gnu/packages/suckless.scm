@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -677,21 +677,20 @@ as -1, to be used instead of U+FFFD.
 
 ;; No release tarballs so far.
 (define-public lchat
-  (let ((revision "3")
-        (commit "f95191970fd59c52a8b09cff32bd8d2135cbfc6b"))
+  (let ((revision "4")
+        (commit "e3b64e67b9b9d832462382246474ce1e7d92217c"))
     (package
       (name "lchat")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/younix/lchat")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
-          (base32
-           "07pxzziczhzprmjy61k7nl9i1kxpgnad37qkjf5fn4wf06nqdxpl"))))
+          (base32 "1qcjqbgmsskc04j2r6xl3amkwj05n520sq1wv2mqyqncz42qrxm0"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
