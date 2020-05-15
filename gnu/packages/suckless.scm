@@ -61,10 +61,13 @@
                 "0nncvzyipvkkd7zlgzwbjygp82frzs2hvbnk71gxf671np607y94"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       #:make-flags (list
-                     "CC=gcc"
-                     (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -147,12 +150,16 @@ optimising the environment for the application in use and the task performed.")
                 "0ia9nqr83bv6x247q30bal0v42chcj9qcjgv59xs6xj46m7iz5xk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output)
-                          (string-append "FREETYPEINC="
-                                         (assoc-ref %build-inputs "freetype")
-                                         "/include/freetype2"))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)
+               (string-append "FREETYPEINC="
+                              (assoc-ref %build-inputs "freetype")
+                              "/include/freetype2")))
        #:phases
        (modify-phases %standard-phases (delete 'configure))))
     (inputs
@@ -182,8 +189,12 @@ numbers of user-defined menu items efficiently.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))))
     (inputs
      `(("libx11" ,libx11)
        ("libxkbfile" ,libxkbfile)
@@ -208,9 +219,13 @@ numbers of user-defined menu items efficiently.")
                 "0sif752303dg33f14k6pgwq2jp1hjyhqv6x4sy3sj281qvdljf5m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)
@@ -236,9 +251,13 @@ numbers of user-defined menu items efficiently.")
         (base32 "0ll5wbw1szs70wdf8zy1y2ig5mfbqw2w4ls8d64r8z3y4gdf76lk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -277,9 +296,13 @@ drawing.")
          "07cmajyafljigy10d21kkyvv5jf3hxkx06pz3rwwk3y3c9x4rvps"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -323,15 +346,18 @@ point surf to another URI by setting its XProperties.")
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configuration
        #:tests? #f                      ; no test suite
-       #:make-flags (let ((pkg-config (lambda (flag)
-                                        (string-append
-                                         "$(shell pkg-config " flag " "
-                                         "xft fontconfig x11 libpng)"))))
-                      (list
-                       "CC=gcc"
-                       (string-append "PREFIX=" %output)
-                       (string-append "INCS=-I. " (pkg-config "--cflags"))
-                       (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
+       #:make-flags
+       (let ((target ,(%current-target-system))
+             (pkg-config (lambda (flag)
+                           (string-append
+                            "$(shell pkg-config " flag " "
+                            "xft fontconfig x11 libpng)"))))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)
+               (string-append "INCS=-I. " (pkg-config "--cflags"))
+               (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -362,9 +388,13 @@ few minutes.")
          "1zr6y8lml9xkx0a3dbbsds2qz1bjxvskp7wsckkf8mlsqrbb3xsg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))))
     (inputs
      `(("libx11" ,libx11)))
     (home-page "https://git.2f30.org/xbattmon/")
@@ -420,12 +450,16 @@ drivers capable of injecting packets in wireless networks.")
          "0km6bjfz4ssb1z0xwld6iiixnn7d255ax8yjs3zkdm42z8q9yl0f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://2f30.org/")
     (synopsis "Commandline utility which scrolls text")
     (description
@@ -448,12 +482,16 @@ left.")
          "1nks5mkh5wn30kyjzlkjlgi31bv1wq52kbp0r6nzbyfnvfdlywik"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/sbm/")
     (synopsis "Simple bandwidth monitor")
     (description
@@ -474,12 +512,16 @@ left.")
          "1s6c3ygg1h1fyxkh8gd7nzjk6qhnwsb4535d2k780kxnwns5fzas"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("cups-minimal" ,cups-minimal)
        ("zlib" ,zlib)))
@@ -507,8 +549,12 @@ cups server to be installed.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -541,8 +587,12 @@ cups server to be installed.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -570,8 +620,12 @@ environment variable.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -610,12 +664,16 @@ initially intended to be used on musl-based Linux distributions.
          "1lckmqpgj89841splng0sszbls2ag71ggkgr1wsv9y3v6y87589z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("libpng" ,libpng)))
     (home-page "https://git.2f30.org/colors/")
@@ -647,12 +705,16 @@ colormap to stdout.")
            "1ih5vjavilzggyr1j1z6w1z12c2fs5fg77cfnv7ami5ivsy3kg3d"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; No tests
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output))
+       `(#:tests? #f                    ; no tests
+         #:make-flags
+         (let ((target ,(%current-target-system)))
+           (list (string-append "CC=" (if target
+                                          (string-append target "-gcc")
+                                          "gcc"))
+                 (string-append "PREFIX=" %output)))
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)))) ; No configure script
+           (delete 'configure))))       ; no configure script
       (inputs
        `(("gawk" ,gawk)))
       (home-page "https://github.com/cls/libutf")
@@ -693,8 +755,12 @@ as -1, to be used instead of U+FFFD.
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output))
+         #:make-flags
+         (let ((target ,(%current-target-system)))
+           (list (string-append "CC=" (if target
+                                          (string-append target "-gcc")
+                                          "gcc"))
+                 (string-append "PREFIX=" %output)))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)          ; no configure script
@@ -737,12 +803,16 @@ chat output in the background.")
          "066fwa55kqcgfrsqgxh94sqbkxfsr691360xg4ljxr4i75d25s2a"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/scron/")
     (synopsis "Simple cron daemon")
     (description
