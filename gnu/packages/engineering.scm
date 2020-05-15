@@ -966,7 +966,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-packages3d")
-    (version "5.1.5")
+    (version "5.1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -975,7 +975,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cff2ms1bsw530kqb1fr1m2pjixyxzwa81mxgac3qpbcf8fnpvaz"))))
+                "0b9jglf77fy0n0r8xs4yqkv6zvipyfvp0z5dnqlzp32csy5aqpi1"))))
     (synopsis "Official KiCad 3D model libraries")
     (description "This package contains the official KiCad 3D model libraries.")))
 
