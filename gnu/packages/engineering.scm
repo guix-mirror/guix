@@ -823,7 +823,7 @@ language.")
        (modify-phases %standard-phases
          (add-after 'install 'install-translations
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "kicad-i18l")
+             (copy-recursively (assoc-ref inputs "kicad-i18n")
                                (assoc-ref outputs "out"))
              #t))
          (add-after 'install 'wrap-program
@@ -861,7 +861,7 @@ language.")
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
-       ("kicad-i18l" ,kicad-i18l)
+       ("kicad-i18n" ,kicad-i18n)
        ("pkg-config" ,pkg-config)
        ("swig" ,swig)
        ("zlib" ,zlib)))
@@ -887,9 +887,9 @@ perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
 electrical diagrams), gerbview (viewing Gerber files) and others.")
     (license license:gpl3+)))
 
-(define kicad-i18l
+(define kicad-i18n
   (package
-    (name "kicad-i18l")
+    (name "kicad-i18n")
     (version "5.1.5")
     (source (origin
               (method git-fetch)
@@ -913,6 +913,9 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
     (description "This package contains the po files that are used for the GUI
 translations for KiCad.")
     (license license:gpl3+)))
+
+(define-public kicad-i18l
+  (deprecated-package "kicad-i18l" kicad-i18n))
 
 (define-public kicad-symbols
   (package
