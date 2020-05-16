@@ -66,6 +66,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux) ;alsa
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages maven-parent-pom)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages web)
@@ -5359,43 +5360,24 @@ included:
 (define-public java-commons-lang3
   (package
     (name "java-commons-lang3")
-    (version "3.4")
+    (version "3.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://apache/commons/lang/source/"
                            "commons-lang3-" version "-src.tar.gz"))
        (sha256
-        (base32 "0xpshb9spjhplq5a7mr0y1bgfw8190ik4xj8f569xidfcki1d6kg"))))
+        (base32 "0s4ffbvsyl16c90l45ximsg4dwd8hmz7wsza3p308fw43h6mwhb6"))))
     (build-system ant-build-system)
-    (outputs '("out" "doc"))
     (arguments
-     `(#:test-target "test"
-       #:make-flags
-       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-all"))
-             (junit    (assoc-ref %build-inputs "java-junit"))
-             (easymock (assoc-ref %build-inputs "java-easymock"))
-             (io       (assoc-ref %build-inputs "java-commons-io")))
-         (list (string-append "-Djunit.jar="
-                              (car (find-files junit "jar$")))
-               (string-append "-Dhamcrest.jar="
-                              (car (find-files hamcrest ".*.jar$")))
-               (string-append "-Dcommons-io.jar=" io
-                              "/share/java/commons-io-"
-                              ,(package-version java-commons-io)
-                              "-SNAPSHOT.jar")
-               (string-append "-Deasymock.jar=" easymock
-                              "/share/java/easymock.jar")))
+     `(#:jar-name "commons-lang3.jar"
+       #:source-dir "src/main/java"
+       #:tests? #f; require junit5
        #:phases
        (modify-phases %standard-phases
-         (add-after 'build 'build-javadoc ant-build-javadoc)
-         (replace 'install (install-jars "target"))
-         (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
-    (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-commons-io" ,java-commons-io)
-       ("java-hamcrest-all" ,java-hamcrest-all)
-       ("java-easymock" ,java-easymock)))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("apache-commons-parent-pom" ,apache-commons-parent-pom-48)))
     (home-page "https://commons.apache.org/lang/")
     (synopsis "Extension of the java.lang package")
     (description "The Commons Lang components contains a set of Java classes
