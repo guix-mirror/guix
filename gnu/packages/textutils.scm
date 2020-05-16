@@ -140,7 +140,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "2.4.0")
+    (version "2.5.0")
     (source
      (origin
        (method git-fetch)
@@ -149,10 +149,10 @@ libenca and several charset conversion libraries and tools.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i42hqwc8znqii9brangwkxk5cyc2lk95ip405fg88zr7z2ncr34"))))
+        (base32 "1xlkazhdnja4lksn5c9nf4bln5gjqa35a8gwlam5r0728w0h83qq"))))
     (build-system gnu-build-system)
     (native-inputs
-     (let ((UNICODE_VERSION "12.1.0"))  ; defined in data/Makefile
+     (let ((UNICODE_VERSION "13.0.0"))  ; defined in data/Makefile
        ;; Test data that is otherwise downloaded with curl.
        `(("NormalizationTest.txt"
           ,(origin
@@ -160,7 +160,7 @@ libenca and several charset conversion libraries and tools.")
              (uri (string-append "https://www.unicode.org/Public/"
                                  UNICODE_VERSION "/ucd/NormalizationTest.txt"))
              (sha256
-              (base32 "0hb97k9xv1lr847hwz0719ksqy39s47xw6k01dgs1368jdibvawc"))))
+              (base32 "07g0ya4f6zfzvpp24ccxkb2yq568kh83gls85rjl950nv5fya3nn"))))
          ("GraphemeBreakTest.txt"
           ,(origin
              (method url-fetch)
@@ -168,7 +168,7 @@ libenca and several charset conversion libraries and tools.")
                                  UNICODE_VERSION
                                  "/ucd/auxiliary/GraphemeBreakTest.txt"))
              (sha256
-              (base32 "0qc90ppmrwfn3y9cdn8jcjrn7qpdf0fhxkwh945yp4rvh37mbgcm"))))
+              (base32 "07f8rrvcsq4pibdz6zxggxy8w7zjjqyw2ggclqlhalyv45yv7prj"))))
 
          ;; For tests.
          ("perl" ,perl))))
