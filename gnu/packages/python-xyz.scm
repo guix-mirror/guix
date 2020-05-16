@@ -19862,3 +19862,36 @@ module.  @code{cmd2} provides a wealth of features on top of @code{cmd} to
 make your life easier and eliminates much of the boilerplate code which would
 be necessary when using @code{cmd}.")
     (license license:expat)))
+
+(define-public python-pytidylib
+  (package
+    (name "python-pytidylib")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytidylib" version))
+              (sha256
+               (base32
+                "1wqa9dv5d7swka14rnky862hc7dgk2g3dhlrz57hdn3hb7bwic92"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'qualify-libtidy
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libtidy (string-append (assoc-ref inputs "tidy")
+                                           "/lib/libtidy.so")))
+               (substitute* "tidylib/tidy.py"
+                 (("ctypes\\.util\\.find_library\\('tidy'\\)")
+                  (format #f "'~a'" libtidy)))
+               #t))))))
+    (inputs `(("tidy" ,tidy)))
+    (home-page "https://github.com/countergram/pytidylib")
+    (synopsis "Python wrapper for HTML Tidy library")
+    (description
+     "PyTidyLib is a Python package that wraps the HTML Tidy library.  This
+allows you, from Python code, to “fix” invalid (X)HTML markup.")
+    (license license:expat)))
+
+(define-public python2-pytidylib
+  (package-with-python2 python-pytidylib))
