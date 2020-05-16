@@ -4471,6 +4471,9 @@ produce a list of channel specifications in JSON format;
 produce a list of channel specifications in Recutils format.
 @end table
 
+@item --list-formats
+Display available formats for @option{--format} option.
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Display information about @var{profile}.
