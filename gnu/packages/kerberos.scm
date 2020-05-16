@@ -170,7 +170,7 @@ After installation, the system administrator should generate keys using
 (define-public heimdal
   (package
     (name "heimdal")
-    (version "7.5.0")
+    (version "7.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -178,14 +178,14 @@ After installation, the system administrator should generate keys using
                     "heimdal-" version "/" "heimdal-" version ".tar.gz"))
               (sha256
                (base32
-                "1bdc682in55ygrxmhncs7cf4s239apcblci3z8i80wnc1w1s18n5"))
+                "06vx3cb01s4lv3lpv0qzbbj97cln1np1wjphkkmmbk1lsqa36bgh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* "configure"
                     (("User=.*$") "User=Guix\n")
                     (("Host=.*$") "Host=GNU")
-                    (("Date=.*$") "Date=2017\n"))
+                    (("Date=.*$") "Date=2019\n"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
