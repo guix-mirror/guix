@@ -46,18 +46,18 @@
 (define-public matcha-theme
   (package
     (name "matcha-theme")
-    (version "2019-11-02")
+    (version "2020-05-09")
     (source
       (origin
         (method git-fetch)
         (uri
           (git-reference
-            (url "https://github.com/vinceliuice/matcha")
+            (url "https://github.com/vinceliuice/Matcha-gtk-theme")
             (commit version)))
         (file-name (git-file-name name version))
         (sha256
           (base32
-            "0wci9ahap8kynq8cbyxr7aba9ndb1d4kiq42xvzr34vw1rhcahrr"))))
+            "0fp3ijynyvncy2byjjyba573p81x2pl2hdzv17mg40r8d5mjlkww"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -73,9 +73,9 @@
                    (string-append coreutils "/bin:"
                                   (string-append bash "/bin:")))
            (copy-recursively source (getcwd))
-           (patch-shebang "Install")
+           (patch-shebang "install.sh")
            (mkdir-p themesdir)
-           (invoke "./Install" "-d" themesdir)
+           (invoke "./install.sh" "-d" themesdir)
            #t))))
     (inputs
      `(("gtk-engines" ,gtk-engines)))
