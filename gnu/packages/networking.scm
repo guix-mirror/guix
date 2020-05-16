@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
@@ -94,6 +94,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -3137,3 +3138,50 @@ thousands of connections is clearly realistic with today's hardware.")
     (license (list license:gpl2+
                    license:lgpl2.1
                    license:lgpl2.1+))))
+
+(define-public lldpd
+  (package
+    (name "lldpd")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "16fbqrs3l976gdslx647nds8x7sz4h5h3h4l4yxzrayvyh9b5lrd"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Drop bundled library.
+           (delete-file-recursively "libevent")
+           #t))))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--with-privsep-user=nobody"
+        "--with-privsep-group=nogroup"
+        "--localstatedir=/var"
+        "--enable-pie"
+        "--without-embedded-libevent"
+        (string-append "--with-systemdsystemunitdir="
+                       (assoc-ref %outputs "out")
+                       "/lib/systemd/system"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libevent" ,libevent)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://vincentbernat.github.io/lldpd/")
+    (synopsis "Locate neighbors of your network equipment")
+    (description
+     "The @dfn{Link Layer Discovery Protocol} (LLDP) is an industry standard
+protocol designed to supplant proprietary Link-Layer protocols such as EDP or
+CDP.  The goal of LLDP is to provide an inter-vendor compatible mechanism to
+deliver Link-Layer notifications to adjacent network devices.  @code{lldpd} is
+an implementation of LLDP.  It also supports some proprietary protocols.")
+    (license license:isc)))
