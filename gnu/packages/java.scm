@@ -3881,6 +3881,20 @@ Plexus framework to ease working with strings, files, command lines, XML and
 more.")
     (license license:asl2.0)))
 
+(define-public java-plexus-utils-3.3.0
+  (package
+    (inherit java-plexus-utils)
+    (version "3.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/codehaus-plexus/plexus-utils")
+                     (commit (string-append "plexus-utils-" version))))
+              (file-name (git-file-name "java-plexus-utils" version))
+              (sha256
+               (base32
+                "0d0fq21rzjy0j55kcp8w9k1rbq9rwr0r7cc8239p9jbz54vihp0g"))))))
+
 (define-public java-plexus-interpolation
   (package
     (name "java-plexus-interpolation")
