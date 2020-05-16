@@ -4132,7 +4132,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.6.1.1")
+   (version "0.6.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -4141,7 +4141,7 @@ with the \"Stamp\" tool within Tux Paint.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "0n36qxwjlkdlksximz4s729az6pry2sdjavwgm7m65vfgdiz139f"))
+              "167m3z4m8n76dvbv42m1fnvabpbpsxvr28zk9641916jl9pfba96"))
             (patches
              (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
