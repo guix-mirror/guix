@@ -3976,28 +3976,52 @@ components.")
      `(#:jar-name "container-default.jar"
        #:source-dir "plexus-container-default/src/main/java"
        #:test-dir "plexus-container-default/src/test"
-       #:jdk ,icedtea-8
        #:tests? #f; requires plexus-archiver, which depends on this package
        #:phases
        (modify-phases %standard-phases
+         (add-before 'build 'fix-google-collections
+           (lambda _
+             ;; Google collections are now replaced with guava
+             (substitute* "plexus-container-default/pom.xml"
+               (("google-collections") "guava")
+               (("com.google.collections") "com.google.guava"))
+             #t))
          (add-before 'build 'copy-resources
            (lambda _
              (copy-recursively
                "plexus-container-default/src/main/resources/"
                "build/classes")
-             #t)))))
-    (inputs
-     `(("worldclass" ,java-plexus-classworlds)
-       ("xbean" ,java-geronimo-xbean-reflect)
-       ("utils" ,java-plexus-utils)
-       ("junit" ,java-junit)
-       ("guava" ,java-guava)))
+             #t))
+         (replace 'install
+           (install-from-pom "plexus-container-default/pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-worldclass" ,java-plexus-classworlds)
+       ("java-geronimo-xbean-reflect" ,java-geronimo-xbean-reflect)
+       ("java-plexus-utils" ,java-plexus-utils)
+       ("java-junit" ,java-junit)
+       ("java-guava" ,java-guava)
+       ("java-plexus-containers-parent-pom" ,java-plexus-containers-parent-pom)))
     (home-page "https://github.com/codehaus-plexus/plexus-containers")
     (synopsis "Inversion-of-control container")
     (description "Plexus-default-container is Plexus' inversion-of-control
 (@dfn{IoC}) container.  It is composed of its public API and its default
 implementation.")
     (license license:asl2.0)))
+
+(define java-plexus-containers-parent-pom
+  (package
+    (inherit java-plexus-container-default-bootstrap)
+    (name "java-plexus-containers-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("plexus-parent-pom" ,plexus-parent-pom-4.0)))))
 
 (define-public java-plexus-io
   (package
@@ -4050,19 +4074,18 @@ reusing it in maven.")
 (define-public java-plexus-archiver
   (package
     (name "java-plexus-archiver")
-    (version "4.1.0")
+    (version "4.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/codehaus-plexus/plexus-archiver"
                                   "/archive/plexus-archiver-" version ".tar.gz"))
               (sha256
                (base32
-                "0ry6i92gli0mvdmfih2vgs0lkf9yvx18h2ajxim66yg6yipnp0hg"))))
+                "144n971r3lfrx3l12nf2scm80x4xdvgbkk4bjpa4vcvvdrll6qys"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-archiver.jar"
        #:source-dir "src/main/java"
-       #:jdk ,icedtea-8
        #:test-dir "src/test"
        #:test-exclude (list "**/Abstract*.java" "**/Base*.java")
        #:phases
@@ -4080,19 +4103,22 @@ reusing it in maven.")
              #t))
          (add-before 'build 'copy-resources
            (lambda _
-             (mkdir-p "build/classes/META-INF/plexus")
-             (copy-file "src/main/resources/META-INF/plexus/components.xml"
-                        "build/classes/META-INF/plexus/components.xml")
-             #t)))))
+             (mkdir-p "build/classes")
+             (copy-recursively "src/main/resources" "build/classes")
+             (mkdir-p "build/test-classes")
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils-3.3.0)
+       ("java-plexus-io" ,java-plexus-io)
+       ("java-iq80-snappy" ,java-iq80-snappy)
+       ("java-commons-compress" ,java-commons-compress)
+       ("plexus-parent-pom" ,plexus-parent-pom-6.1)))
     (inputs
-     `(("utils" ,java-plexus-utils)
-       ("commons-io" ,java-commons-io)
-       ("snappy" ,java-iq80-snappy)
-       ("io" ,java-plexus-io)
-       ("compress" ,java-commons-compress)
-       ("container-default" ,java-plexus-container-default-bootstrap)
-       ("snappy" ,java-snappy)
-       ("java-jsr305" ,java-jsr305)))
+     `(("java-jsr305" ,java-jsr305)
+       ("java-plexus-container-default"
+        ,java-plexus-container-default-bootstrap)))
     (native-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)
        ("junit" ,java-junit)
@@ -5715,22 +5741,23 @@ It provides packages in the @code{javax.annotations} namespace.")
     ;; This is the last release of Guava that can be built with Java 7.
     (version "20.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/google/guava/"
-                                  "releases/download/v" version
-                                  "/guava-" version "-sources.jar"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/guava/")
+                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1gawrs5gi6j5hcfxdgpnfli75vb9pfi4sn09pnc8xacr669yajwr"))))
+                "00h5cawdjic1vind3yivzh1f58flvm1yfmhsyqwyvmbvj1vakysp"))))
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
        #:jar-name "guava.jar"
+       #:source-dir "guava/src"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'trim-sources
            (lambda _
-             (with-directory-excursion "src/com/google/common"
+             (with-directory-excursion "guava/src/com/google/common"
                ;; Remove annotations to avoid extra dependencies:
                ;; * "j2objc" annotations are used when converting Java to
                ;;   Objective C;
@@ -5749,9 +5776,12 @@ It provides packages in the @code{javax.annotations} namespace.")
                  (("@ForOverride") "")
                  (("@J2ObjCIncompatible") "")
                  (("@IgnoreJRERequirement") "")))
-             #t)))))
+             #t))
+         (replace 'install (install-from-pom "guava/pom.xml")))))
     (inputs
      `(("java-jsr305" ,java-jsr305)))
+    (propagated-inputs
+     `(("java-guava-parent-pom" ,java-guava-parent-pom)))
     (home-page "https://github.com/google/guava")
     (synopsis "Google core libraries for Java")
     (description "Guava is a set of core libraries that includes new
@@ -5760,6 +5790,21 @@ graph library, functional types, an in-memory cache, and APIs/utilities for
 concurrency, I/O, hashing, primitives, reflection, string processing, and much
 more!")
     (license license:asl2.0)))
+
+(define java-guava-parent-pom
+  (package
+    (inherit java-guava)
+    (name "java-guava-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("java-sonatype-oss-parent-pom" ,java-sonatype-oss-parent-pom-7)))))
 
 ;; The java-commons-logging package provides adapters to many different
 ;; logging frameworks.  To avoid an excessive dependency graph we try to build
@@ -6084,12 +6129,14 @@ programs.")
                ;; package at this point.
                ;; https://github.com/powermock/powermock
                (delete-file "archivers/sevenz/SevenZNativeHeapTest.java"))
-             #t)))))
-    (inputs
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-xz" ,java-xz)
+       ("apache-commons-parent-pom" ,apache-commons-parent-pom-41)))
+    (native-inputs
      `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)
-       ("java-mockito" ,java-mockito-1)
-       ("java-xz" ,java-xz)))
+       ("java-mockito" ,java-mockito-1)))
     (home-page "https://commons.apache.org/proper/commons-compress/")
     (synopsis "Java library for working with compressed files")
     (description "The Apache Commons Compress library defines an API for
@@ -10274,13 +10321,16 @@ outputting XML data from Java code.")
                ;; org.apache.xbean.asm6 is actually repackaged java-asm
                (substitute* (string-append dir "XbeanAsmParameterNameLoader.java")
                  (("org.apache.xbean.asm5") "org.objectweb.asm"))
-               #t))))))
+               #t)))
+         (replace 'install (install-from-pom "xbean-reflect/pom.xml")))))
     (inputs
      `(("asm" ,java-asm)
        ("log4j" ,java-log4j-api)
        ("log4j-1.2" ,java-log4j-1.2-api)
        ("log4j-core" ,java-log4j-core)
        ("logging" ,java-commons-logging-minimal)))
+    (propagated-inputs
+     `(("java-geronimo-parent-pom" ,java-geronimo-parent-pom)))
     (native-inputs
      `(("junit" ,java-junit)))
     (home-page "https://geronimo.apache.org/maven/xbean/3.6/xbean-reflect/")
@@ -10288,6 +10338,65 @@ outputting XML data from Java code.")
     (description "Xbean-reflect provides very flexible ways to create objects
 and graphs of objects for dependency injection frameworks")
     (license license:asl2.0)))
+
+(define java-geronimo-genesis-2.1
+  (package
+    (name "java-geronimo-genesis")
+    (version "2.1")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                     (url (string-append "https://svn.apache.org/repos/asf/"
+                                         "geronimo/genesis/tags/genesis-"
+                                         version))
+                     (revision 1807396)))
+              (file-name (string-append name "-" version "-source"))
+              (sha256
+               (base32
+                "119yn795jvnjf52si84q192s8wag1k013iabg78b7wnadssnnh31"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml"))
+         (add-after 'install 'install-enforcer-rules
+           (install-pom-file "genesis-enforcer-rules/pom.xml"))
+         (add-after 'install 'install-flava
+           (install-pom-file "genesis-default-flava/pom.xml"))
+         (add-after 'install 'install-packaging
+           (install-pom-file "genesis-packaging/pom.xml"))
+         (add-after 'install-flava 'install-flava-java4
+           (install-pom-file "genesis-default-flava/genesis-java1.4-flava/pom.xml"))
+         (add-after 'install-flava 'install-flava-java5
+           (install-pom-file "genesis-default-flava/genesis-java5-flava/pom.xml"))
+         (add-after 'install-flava 'install-flava-java6
+           (install-pom-file "genesis-default-flava/genesis-java6-flava/pom.xml")))))
+    (propagated-inputs
+     `(("apache-parent-pom" ,apache-parent-pom-13)))
+    (home-page "https://geronimo.apache.org")
+    (synopsis "Collection of maven POM files for the Geronimo project")
+    (description "Apache Geronimo is a server runtime.  This package contains
+only pom files used by other components in the Geronimo project.")
+    (license license:asl2.0)))
+
+(define java-geronimo-parent-pom
+  (package
+    (inherit java-geronimo-xbean-reflect)
+    (name "java-geronimo-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("java-geronimo-genesis" ,java-geronimo-genesis-2.1)))))
 
 (define-public java-geronimo-xbean-bundleutils
   (package
