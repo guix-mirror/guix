@@ -11943,3 +11943,28 @@ involving one or more shared resources having ACID (Atomicity, Consistency,
 Isolation and Durability) properties.")
     ;; either gpl2 only with classpath exception or cddl.
     (license (list license:gpl2 license:cddl1.0))))
+
+(define-public java-picocli
+  (package
+    (name "java-picocli")
+    (version "4.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/remkop/picocli")
+                     (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1sxp6rxjfgjd98ly14b3d15dvxkm5wg4g46w12jyhmr0kmkaca3c"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:jar-name "picocli.jar"
+       #:source-dir "src/main/java"
+       ;; Tests require missing dependencies (junitparams, system-rules)
+       #:tests? #f))
+    (home-page "https://picocli.info")
+    (synopsis "REPL for the JVM")
+    (description "Picocli is a framework for building command line applications
+for the JVM.  It supports colors, autocompletion, subcommands, and more.  Written
+in Java, usable from Groovy, Kotlin, Scala, etc.")
+    (license license:asl2.0)))
