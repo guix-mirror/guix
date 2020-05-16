@@ -1955,14 +1955,14 @@ returns the user name and other information about the connection.")
 (define-public spiped
   (package
     (name "spiped")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tarsnap.com/spiped/spiped-"
                                   version ".tgz"))
               (sha256
                (base32
-                "1r51rdcl7nib1yv3yvgd5alwlkkwmr387brqavaklb0p2bwzixz6"))))
+                "04rpnc53whfky7pp2m9h35gwzwn6788pnl6c1qd576mpknbqjw4d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
