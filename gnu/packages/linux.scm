@@ -4184,13 +4184,14 @@ arrays when needed.")
     (name "multipath-tools")
     (version "0.8.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
-                                  ".git;a=snapshot;h=" version ";sf=tgz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.opensvc.com/multipath-tools/.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c6ay97wlfv1fl0y8hcfpxhkps14hlnw9gzmj7884micsp7pa9yv"))
+                "02kdbk3gv3fx5dg445scz3l4lg0sznlv037qkjgpw9xkw4l50cfd"))
               (modules '((guix build utils)))
               (snippet
                '(begin
