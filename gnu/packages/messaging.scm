@@ -704,7 +704,7 @@ else [])"))
                           ;; FIXME: Cannot use this expression as it would
                           ;; introduce a circular dependency at the top level.
                           ;; (version-major+minor (package-version python))
-                          "3.7"
+                          "3.8"
 
                           "/site-packages"))))))
     (native-inputs
