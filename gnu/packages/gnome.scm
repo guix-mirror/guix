@@ -9198,7 +9198,7 @@ mp3, Ogg Vorbis and FLAC")
 (define-public soundconverter
   (package
     (name "soundconverter")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -9207,10 +9207,7 @@ mp3, Ogg Vorbis and FLAC")
                            "soundconverter-" version ".tar.xz"))
 
        (sha256
-        (base32 "1d6x1yf8psqbd9zbybxivfqg55khcnngp2mn92l161dfdk9512c5"))
-       (patches
-        (search-patches
-         "soundconverter-remove-gconf-dependency.patch"))))
+        (base32 "1jv8m82hi23ilrgdznlc1jhp2jm8bw1yrw0chh3qw2l0sixvkl11"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
