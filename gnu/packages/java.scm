@@ -3997,7 +3997,7 @@ implementation.")
 (define-public java-plexus-io
   (package
     (name "java-plexus-io")
-    (version "3.0.0")
+    (version "3.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4006,25 +4006,28 @@ implementation.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h4q9l2j9sfbscvxpnyy2hazi0r83h3am86y4r959wrl1b24xxwd"))))
+                "1r3wqfpbxq8vp4p914i8p88r0994rmcjw02hz14n11cfb6gsyvlr"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-io.jar"
        #:source-dir "src/main/java"
        #:test-dir "src/test"
-       #:jdk ,icedtea-8
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'copy-resources
            (lambda _
-             (mkdir-p "build/classes/META-INF/plexus")
-             (copy-file "src/main/resources/META-INF/plexus/components.xml"
-                        "build/classes/META-INF/plexus/components.xml")
-             #t)))))
+             (mkdir-p "build/classes")
+             (copy-recursively "src/main/resources" "build/classes")
+             (mkdir-p "build/test-classes")
+             (copy-recursively "src/test/resources" "build/test-classes")
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("java-plexus-utils" ,java-plexus-utils-3.3.0)
+       ("java-commons-io" ,java-commons-io)
+       ("plexus-parent-pom" ,plexus-parent-pom-5.1)))
     (inputs
-     `(("utils" ,java-plexus-utils)
-       ("commons-io" ,java-commons-io)
-       ("java-jsr305" ,java-jsr305)))
+     `(("java-jsr305" ,java-jsr305)))
     (native-inputs
      `(("junit" ,java-junit)
        ("hamcrest" ,java-hamcrest-core)
@@ -5236,11 +5239,13 @@ setter and getter method.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-javadoc ant-build-javadoc)
-         (replace 'install (install-jars "target"))
+         (replace 'install (install-from-pom "pom.xml"))
          (add-after 'install 'install-doc (install-javadoc "target/apidocs")))))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
+    (propagated-inputs
+     `(("apache-commons-parent-pom" ,apache-commons-parent-pom-39)))
     (home-page "https://commons.apache.org/io/")
     (synopsis "Common useful IO related classes")
     (description "Commons-IO contains utility classes, stream implementations,
@@ -5671,7 +5676,28 @@ namespaces.")
     (build-system ant-build-system)
     (arguments
      `(#:tests? #f ; no tests included
-       #:jar-name "jsr305.jar"))
+       #:jar-name "jsr305.jar"
+       #:modules ((guix build ant-build-system)
+                  (guix build java-utils)
+                  (guix build maven pom)
+                  (guix build utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'create-pom
+           (lambda _
+             (with-output-to-file "pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `((project
+                       (modelVersion "4.0.0")
+                       (name "jsr305")
+                       (groupId "com.google.code.findbugs")
+                       (artifactId "jsr305")
+                       (version ,,version))))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "http://findbugs.sourceforge.net/")
     (synopsis "Annotations for the static analyzer called findbugs")
     (description "This package provides annotations for the findbugs package.
