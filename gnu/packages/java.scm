@@ -2301,6 +2301,52 @@ new Date();"))
        ("zip" ,zip)))
     (home-page "https://openjdk.java.net/projects/jdk/13")))
 
+(define-public openjdk14
+  (package
+    (inherit openjdk13)
+    (name "openjdk")
+    (version "14.0")
+    (source (origin
+	      (method url-fetch)
+	      (uri "http://hg.openjdk.java.net/jdk/jdk14/archive/bc54620a3848.tar.bz2")
+	      (file-name (string-append name "-" version ".tar.bz2"))
+	      (sha256
+	       (base32
+	        "0z485pk7r1xpw8004g4nrwrzj17sabgx8yfdbxwfvzkjp8qyajch"))
+	      (modules '((guix build utils)))
+	      (snippet
+	       `(begin
+                  ;; The m4 macro uses 'help' to search for builtins, which is
+                  ;; not available in bash-minimal
+                  (substitute* "make/autoconf/basics.m4"
+                    (("if help") "if command -v"))
+		  (for-each delete-file (find-files "." ".*.(bin|exe|jar)$"))
+		  #t))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("make@4.2" ,gnu-make-4.2)
+       ("openjdk13:jdk" ,openjdk13 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk/14")))
+
 (define-public icedtea icedtea-8)
 
 
