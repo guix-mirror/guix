@@ -3202,11 +3202,10 @@ libraries from the SIS division at ETH Zurich like jHDF5.")
                   (string-append (assoc-ref inputs "java-testng")
                                  "/share/java/java-testng.jar"))
                  (("\\$\\{lib\\}/junit4/junit.jar")
-                  (string-append (assoc-ref inputs "java-junit")
-                                 "/share/java/junit.jar"))
+                  (car (find-files (assoc-ref inputs "java-junit") "jar$")))
                  (("\\$\\{lib\\}/jmock/hamcrest/hamcrest-core.jar")
-                  (string-append (assoc-ref inputs "java-hamcrest-core")
-                                 "/share/java/hamcrest-core.jar")))
+                  (car (find-files (assoc-ref inputs "java-hamcrest-core")
+                                   "jar$"))))
                ;; Remove dependency on ch.rinn.restrictions
                (with-directory-excursion "source/java/ch/systemsx/cisd/hdf5/"
                  (substitute* '("BitSetConversionUtils.java"
@@ -3625,6 +3624,7 @@ an Ant task that extends the built-in @code{jar} task.")
     (arguments
      `(#:tests? #f ; Tests require junit
        #:modules ((guix build ant-build-system)
+                  (guix build java-utils)
                   (guix build utils)
                   (srfi srfi-1))
        #:make-flags (list (string-append "-Dversion=" ,version))
@@ -3678,28 +3678,18 @@ private Method[] allMethods = getSortedMethods();")))
            (lambda _
              (mkdir-p "lib/integration")
              #t))
+         (add-before 'build 'create-pom
+           (lambda _
+             (substitute* "pom/hamcrest-core.pom"
+               (("@VERSION@") ,version))
+             #t))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((target (string-append (assoc-ref outputs "out")
-                                           "/share/java/"))
-                    (version-suffix ,(string-append "-" version ".jar"))
-                    (install-without-version-suffix
-                     (lambda (jar)
-                       (copy-file jar
-                                  (string-append target
-                                                 (basename jar version-suffix)
-                                                 ".jar")))))
-               (mkdir-p target)
-               (for-each
-                install-without-version-suffix
-                (find-files "build"
-                            (lambda (name _)
-                              (and (string-suffix? ".jar" name)
-                                   (not (string-suffix? "-sources.jar" name)))))))
-             #t)))))
+           (install-from-pom "pom/hamcrest-core.pom")))))
     (native-inputs
      `(("java-qdox-1.12" ,java-qdox-1.12)
        ("java-jarjar" ,java-jarjar)))
+    (propagated-inputs
+     `(("java-hamcrest-parent-pom" ,java-hamcrest-parent-pom)))
     (home-page "http://hamcrest.org/")
     (synopsis "Library of matchers for building test expressions")
     (description
@@ -3709,15 +3699,44 @@ declaratively, to be used in other frameworks.  Typical scenarios include
 testing frameworks, mocking libraries and UI validation rules.")
     (license license:bsd-2)))
 
+(define java-hamcrest-parent-pom
+  (package
+    (inherit java-hamcrest-core)
+    (name "java-hamcrest-parent-pom")
+    (propagated-inputs '())
+    (native-inputs '())
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (substitute* "pom/hamcrest-parent.pom"
+               (("@VERSION@") ,(package-version java-hamcrest-core)))
+             #t))
+         (replace 'install
+           (install-pom-file "pom/hamcrest-parent.pom")))))))
+
 (define-public java-hamcrest-library
   (package
     (inherit java-hamcrest-core)
     (name "java-hamcrest-library")
     (arguments
      (substitute-keyword-arguments (package-arguments java-hamcrest-core)
-      ((#:build-target _) "library")))
+      ((#:build-target _) "library")
+      ((#:phases phases)
+       `(modify-phases ,phases
+          (replace 'create-pom
+            (lambda _
+             (substitute* "pom/hamcrest-library.pom"
+               (("@VERSION@") ,(package-version java-hamcrest-core)))
+              #t))
+          (replace 'install
+            (install-from-pom "pom/hamcrest-library.pom"))))))
     (propagated-inputs
-     `(("java-hamcrest-core" ,java-hamcrest-core)))))
+     `(("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-hamcrest-parent-pom" ,java-hamcrest-parent-pom)))))
 
 (define-public java-junit
   (package
@@ -3750,7 +3769,9 @@ testing frameworks, mocking libraries and UI validation rules.")
          (add-before 'check 'copy-test-resources
            (lambda _
              (copy-recursively "src/test/resources" "build/test-classes")
-             #t)))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (propagated-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)))
     (native-inputs
@@ -4874,8 +4895,29 @@ The jMock library
                               (find-files (assoc-ref inputs "java-easymock") "\\.jar$")))
                        ";"))
                      (("build/hamcrest-core-\\$\\{version\\}\\.jar")
-                      (string-append (assoc-ref inputs "java-hamcrest-core")
-                                     "/share/java/hamcrest-core.jar")))
+                      (car (find-files (assoc-ref inputs "java-hamcrest-core")
+                                       "jar$"))))
+                   #t))
+               (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((target (string-append (assoc-ref outputs "out")
+                                                 "/share/java/"))
+                          (version-suffix
+                            ,(string-append
+                               "-" (package-version java-hamcrest-core) ".jar"))
+                          (install-without-version-suffix
+                           (lambda (jar)
+                             (copy-file jar
+                                        (string-append target
+                                                       (basename jar version-suffix)
+                                                       ".jar")))))
+                     (mkdir-p target)
+                     (for-each
+                      install-without-version-suffix
+                      (find-files "build"
+                                  (lambda (name _)
+                                    (and (string-suffix? ".jar" name)
+                                         (not (string-suffix? "-sources.jar" name)))))))
                    #t)))))))
     (inputs
      `(("java-junit" ,java-junit)
@@ -4935,9 +4977,10 @@ overly clever.")
        #:make-flags
        (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
              (junit    (assoc-ref %build-inputs "java-junit")))
-         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
-               (string-append "-Dhamcrest.jar=" hamcrest
-                              "/share/java/hamcrest-core.jar")))
+         (list (string-append "-Djunit.jar="
+                              (car (find-files junit "jar$")))
+               (string-append "-Dhamcrest.jar="
+                              (car (find-files hamcrest ".*.jar$")))))
        #:phases
        (modify-phases %standard-phases
          ;; We want to build the jar in the build phase and run the tests
@@ -5024,9 +5067,10 @@ targeting the JVM.")
        (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
              (junit    (assoc-ref %build-inputs "java-junit"))
              (easymock (assoc-ref %build-inputs "java-easymock")))
-         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
-               (string-append "-Dhamcrest.jar=" hamcrest
-                              "/share/java/hamcrest-core.jar")
+         (list (string-append "-Djunit.jar="
+                              (car (find-files junit "jar$")))
+               (string-append "-Dhamcrest.jar="
+                              (car (find-files hamcrest "jar$")))
                (string-append "-Deasymock.jar=" easymock
                               "/share/java/easymock.jar")))
        #:phases
@@ -5161,8 +5205,8 @@ setter and getter method.")
      `(#:test-target "test"
        #:make-flags
        (list (string-append "-Djunit.jar="
-                            (assoc-ref %build-inputs "java-junit")
-                            "/share/java/junit.jar"))
+                            (car (find-files (assoc-ref %build-inputs "java-junit")
+                                             "jar$"))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-javadoc ant-build-javadoc)
@@ -5194,8 +5238,8 @@ file filters and endian classes.")
      `(#:test-target "test"
        #:make-flags
        (list (string-append "-Dmaven.junit.jar="
-                            (assoc-ref %build-inputs "java-junit")
-                            "/share/java/junit.jar"))
+                            (car (find-files (assoc-ref %build-inputs "java-junit")
+                                             "jar$"))))
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'delete-network-tests
@@ -5230,8 +5274,8 @@ file filters and endian classes.")
      `(#:test-target "test"
        #:make-flags
        (list (string-append "-Dmaven.junit.jar="
-                            (assoc-ref %build-inputs "java-junit")
-                            "/share/java/junit.jar")
+                            (car (find-files (assoc-ref %build-inputs "java-junit")
+                                             "jar$")))
              "-Dmaven.compiler.source=1.7"
              "-Dmaven.compiler.target=1.7")
        #:phases
@@ -5332,9 +5376,10 @@ included:
              (junit    (assoc-ref %build-inputs "java-junit"))
              (easymock (assoc-ref %build-inputs "java-easymock"))
              (io       (assoc-ref %build-inputs "java-commons-io")))
-         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
-               (string-append "-Dhamcrest.jar=" hamcrest
-                              "/share/java/hamcrest-all.jar")
+         (list (string-append "-Djunit.jar="
+                              (car (find-files junit "jar$")))
+               (string-append "-Dhamcrest.jar="
+                              (car (find-files hamcrest ".*.jar$")))
                (string-append "-Dcommons-io.jar=" io
                               "/share/java/commons-io-"
                               ,(package-version java-commons-io)
@@ -6901,9 +6946,8 @@ This is a part of the Apache Commons Project.")
        #:make-flags
        (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
              (junit    (assoc-ref %build-inputs "java-junit")))
-         (list (string-append "-Djunit.jar=" junit "/share/java/junit.jar")
-               (string-append "-Dhamcrest.jar=" hamcrest
-                              "/share/java/hamcrest-core.jar")
+         (list (string-append "-Djunit.jar=" (car (find-files junit "jar$")))
+               (string-append "-Dhamcrest.jar=" (car (find-files hamcrest "jar$")))
                ;; Do not append version to jar.
                "-Dfinal.name=commons-codec"))
        #:phases
@@ -11090,11 +11134,10 @@ from ORO, Inc.")
                ;; so don't fail if we can't find a native library for another architecture.
                (("zipfileset") "zipfileset erroronmissingarchive=\"false\""))
              ;; Copy test dependencies
-             (copy-file (string-append (assoc-ref inputs "java-junit")
-                                       "/share/java/junit.jar")
+             (copy-file (car (find-files (assoc-ref inputs "java-junit") "jar$"))
                         "lib/junit.jar")
-             (copy-file (string-append (assoc-ref inputs "java-hamcrest-core")
-                                       "/share/java/hamcrest-core.jar")
+             (copy-file (car (find-files (assoc-ref inputs "java-hamcrest-core")
+                                         "jar$"))
                         "lib/hamcrest-core.jar")
              ;; FIXME: once reflections.jar is built, copy it to lib/test.
              #t))
@@ -11143,11 +11186,11 @@ Java method invocation.")
                 (string-append (assoc-ref inputs "java-native-access")
                                "/share/java/jna.jar"))
                (("../../lib/hamcrest-core-.*.jar")
-                (string-append (assoc-ref inputs "java-hamcrest-core")
-                               "/share/java/hamcrest-core.jar"))
+                (car (find-files (assoc-ref inputs "java-hamcrest-core")
+                                 "jar$")))
                (("../../lib/junit.jar")
-                (string-append (assoc-ref inputs "java-junit")
-                               "/share/java/junit.jar")))
+                (car (find-files (assoc-ref inputs "java-junit")
+                                 "jar$"))))
              #t))
          (replace 'install
            (install-jars "dist")))))

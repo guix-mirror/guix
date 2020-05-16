@@ -1187,10 +1187,15 @@ extremely large and complex data collections.")
                     (jhdf (string-append lib "/jhdf.jar"))
                     (jhdf5 (string-append lib "/jhdf5.jar"))
                     (testjars
-                     (map (lambda (i)
-                            (string-append (assoc-ref inputs i)
-                                           "/share/java/" i ".jar"))
-                          '("junit" "hamcrest-core" "slf4j-api" "slf4j-simple")))
+                     (append
+                       (map (lambda (i)
+                              (string-append (assoc-ref inputs i)
+                                             "/share/java/" i ".jar"))
+                            '("slf4j-api" "slf4j-simple"))
+                       (list
+                         (car (find-files (assoc-ref inputs "junit") "jar$"))
+                         (car (find-files (assoc-ref inputs "hamcrest-core")
+                                          "jar$")))))
                     (class-path
                      (string-join `("." ,build-dir ,jhdf ,jhdf5 ,@testjars) ":")))
 
