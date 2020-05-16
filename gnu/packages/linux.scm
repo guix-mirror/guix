@@ -4205,7 +4205,7 @@ arrays when needed.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
+     '(#:test-target "test"
        #:parallel-build? #f             ;XXX: broken in 0.8.4
        #:make-flags (list "CC=gcc"
                           (string-append "DESTDIR="
@@ -4242,11 +4242,22 @@ arrays when needed.")
                (("bool is_queueing;")
                 "bool is_queueing = false;"))
              #t))
+         (add-after 'unpack 'fix-linking-tests
+           (lambda _
+             ;; Add missing linker flag for -lmpathcmd.  This should be fixed
+             ;; for versions > 0.8.4.
+             (substitute* "tests/Makefile"
+               (("-lmultipath -lcmocka")
+                "-lmultipath -L$(mpathcmddir) -lmpathcmd -lcmocka"))
+             #t))
          (delete 'configure))))         ; no configure script
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("valgrind" ,valgrind)))
+       ("valgrind" ,valgrind)
+
+       ;; For tests.
+       ("cmocka" ,cmocka)))
     (inputs
      `(("json-c" ,json-c)
        ("libaio" ,libaio)
