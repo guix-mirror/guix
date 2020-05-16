@@ -2557,11 +2557,12 @@ official SDK.")
           (base32 "01wb70m48xh5gwhv60a5brv4sxl0i0rh038w32cgnlxn5x86s9f1"))))
       (build-system gnu-build-system)
       (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
        `(("mesa" ,mesa)
          ("glu" ,glu)
          ("glut" ,freeglut)
-         ("gtk" ,gtk+-2)
-         ("pkg-config" ,pkg-config)))
+         ("gtk" ,gtk+-2)))
       (arguments
        `(#:tests? #f                              ;no tests
          #:phases
