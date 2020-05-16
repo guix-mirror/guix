@@ -4182,7 +4182,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4191,7 +4191,8 @@ arrays when needed.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02kdbk3gv3fx5dg445scz3l4lg0sznlv037qkjgpw9xkw4l50cfd"))
+                "14n8pcgnliicqxzc40xvjxk4cafm4qx7a3rsx5qva74r3ydzx8rn"))
+              (patches (search-patches "multipath-tools-sans-systemd.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4205,9 +4206,12 @@ arrays when needed.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests
+       #:parallel-build? #f             ;XXX: broken in 0.8.4
        #:make-flags (list "CC=gcc"
                           (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
+                          ;; Install Udev rules below this directory, relative
+                          ;; to the prefix.
                           "SYSTEMDPATH=lib"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
@@ -4229,6 +4233,15 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
+         (add-after 'unpack 'fix-maybe-uninitialized-variable
+           (lambda _
+             ;; This variable gets initialized later if needed, but GCC 7
+             ;; fails to notice.  Should be fixed for > 0.8.4.
+             ;; https://www.redhat.com/archives/dm-devel/2020-March/msg00137.html
+             (substitute* "libmultipath/structs_vec.c"
+               (("bool is_queueing;")
+                "bool is_queueing = false;"))
+             #t))
          (delete 'configure))))         ; no configure script
     (native-inputs
      `(("perl" ,perl)
