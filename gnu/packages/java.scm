@@ -3819,7 +3819,8 @@ provides much easier and readable parametrised tests for JUnit.")
 (define-public java-plexus-utils
   (package
     (name "java-plexus-utils")
-    (version "3.2.0")
+    ;; sisu-build-api needs this version, later versions don't work
+    (version "3.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3828,7 +3829,7 @@ provides much easier and readable parametrised tests for JUnit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mlx7xrq7lgqjqcpg7y4hi1ghavf28vvk3har82037dqx61n0f15"))))
+                "1w169glixyk94jbczj8jzg897lsab46jihiaa3dhw0p06g35va8b"))))
     (build-system ant-build-system)
     ;; FIXME: The default build.xml does not include a target to install
     ;; javadoc files.
@@ -3858,11 +3859,21 @@ cli/shell/BourneShell.java"
 
                ;; FIXME: The command line tests fail, maybe because they use
                ;; absolute paths.
-               (delete-file "cli/CommandlineTest.java"))
-             #t)))))
+               (delete-file "cli/CommandlineTest.java")
+
+               ;; These tests require openjdk jmh, which is not packaged yet
+               (for-each delete-file (find-files "." "PerfTest.java$")))
+             #t))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources" "build/classes")
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
     (native-inputs
      `(("java-hamcrest-core" ,java-hamcrest-core)
        ("java-junit" ,java-junit)))
+    (propagated-inputs
+     `(("plexus-parent-pom" ,plexus-parent-pom-5.1)))
     (home-page "https://codehaus-plexus.github.io/plexus-utils/")
     (synopsis "Common utilities for the Plexus framework")
     (description "This package provides various Java utility classes for the
