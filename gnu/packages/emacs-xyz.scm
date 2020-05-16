@@ -12691,7 +12691,7 @@ standard Unix password manager\").")
 (define-public emacs-pass
   (package
     (name "emacs-pass")
-    (version "1.8")
+    (version "2.0")
     (source
      (origin
        (method git-fetch)
@@ -12700,7 +12700,7 @@ standard Unix password manager\").")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05h4hacv3yygyjcjj004qbyqjpkl4pyhwgp25gsz8mw5c66l70cx"))))
+        (base32 "0jc8j421mlflspg24jvrqc2n3y5n3cpk3hjy560il8g36xi1049p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-password-store" ,emacs-password-store)
