@@ -1576,7 +1576,6 @@ recreates the stored directory structure by default.")
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
               (file-name (git-file-name name version))
-;              (patches (search-patches "zziplib-CVE-2018-16548.patch"))
               (sha256
                (base32
                 "109vznm9cxkqbj5r83qdgcdfk0j4kbg96dqr0q085nhwpgkw7viz"))))
