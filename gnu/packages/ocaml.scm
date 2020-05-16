@@ -2975,7 +2975,7 @@ XML and Protocol Buffers formats.")
 (define-public bap
   (package
     (name "bap")
-    (version "1.6.0")
+    (version "2.0.0")
     (home-page "https://github.com/BinaryAnalysisPlatform/bap")
     (source (origin
               (method git-fetch)
@@ -2985,7 +2985,7 @@ XML and Protocol Buffers formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ryf2xb37pj2f9mc3p5prqgqrylph9qgq7q9jnbx8b03nzzpa6h6"))))
+                "0lb9xkfp67wjjqr75p6krivmjra7l5673236v9ny4gp0xi0755bk"))))
    (build-system ocaml-build-system)
    (native-inputs
     `(("ocaml-oasis" ,(package-with-ocaml4.07 ocaml-oasis))
@@ -3003,16 +3003,23 @@ XML and Protocol Buffers formats.")
       ("ocaml-ocurl" ,(package-with-ocaml4.07 ocaml-ocurl))
       ("ocaml-piqi" ,ocaml4.07-piqi)
       ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
+      ("ocaml-utop" ,ocaml4.07-utop)
       ("ocaml-uuidm" ,(package-with-ocaml4.07 ocaml-uuidm))
       ("ocaml-uri" ,ocaml4.07-uri)
       ("ocaml-zarith" ,(package-with-ocaml4.07 ocaml-zarith))))
    (inputs
-    `(("llvm" ,llvm-3.8)
-      ("gmp" ,gmp)))
+    `(("gmp" ,gmp)
+      ("llvm" ,llvm-3.8)
+      ("ncurses" ,ncurses)))
    (arguments
     `(#:use-make? #t
       #:phases
       (modify-phases %standard-phases
+        (add-before 'configure 'fix-ncurses
+          (lambda _
+            (substitute* "oasis/llvm"
+              (("-lcurses") "-lncurses"))
+            #t))
         (replace 'configure
           (lambda* (#:key outputs inputs #:allow-other-keys)
             ;; add write for user, to prevent a failure in the install phase
