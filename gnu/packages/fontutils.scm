@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
@@ -391,14 +391,14 @@ X11-system or any other graphical user interface.")
 (define-public teckit
   (package
     (name "teckit")
-    (version "2.5.9")                   ;signed by key 0xC9183BEA0288CDEE
+    (version "2.5.10")                  ; signed by key 0xC9183BEA0288CDEE
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/silnrsi/teckit/releases/"
                            "download/v" version "/teckit-" version ".tar.gz"))
        (sha256
-        (base32 "0gbxyip4wdibirdg2pvzayzyy927vxyd6dfyfiflx8zg88qzn8v8"))))
+        (base32 "12qnf8nhxyr4d5pc01s3vc6h726506957an4vvmmfz633cqi5796"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static")))
