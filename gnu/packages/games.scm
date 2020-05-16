@@ -987,7 +987,14 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01rygr592ar530qv1flmaiq8icl0qdxgc8lhkcdyn1g09941z47v"))))
+        (base32 "01rygr592ar530qv1flmaiq8icl0qdxgc8lhkcdyn1g09941z47v"))
+       ;; Remove unused bundled libraries.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (with-directory-excursion "ext"
+             (for-each delete-file-recursively '("dirent" "png" "SDL2" "zlib")))
+           #t))))
     (build-system cmake-build-system)
     (inputs
      `(("libpng" ,libpng)
@@ -1001,7 +1008,6 @@ Julius includes some UI enhancements while preserving the logic (including
 bugs) of the original game, so that saved games are compatible.  This package
 does not include game data.")
     (license (list license:agpl3
-                   license:expat        ; ext/dirent
                    license:zlib))))     ; ext/tinyfiledialogs
 
 (define-public meandmyshadow
