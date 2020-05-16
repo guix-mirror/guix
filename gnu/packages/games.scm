@@ -978,7 +978,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -987,10 +987,11 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ws5lmwdhla73676fj0w26v859n47s0wyxa0mgd0dmkx0x91qriy"))))
+        (base32 "01rygr592ar530qv1flmaiq8icl0qdxgc8lhkcdyn1g09941z47v"))))
     (build-system cmake-build-system)
     (inputs
-     `(("sdl2" ,sdl2)
+     `(("libpng" ,libpng)
+       ("sdl2" ,sdl2)
        ("sdl2-mixer" ,sdl2-mixer)))
     (home-page "https://github.com/bvschaik/julius")
     (synopsis "Re-implementation of Caesar III game engine")
