@@ -6913,33 +6913,38 @@ This is a part of the Apache Commons Project.")
 (define-public java-commons-codec
   (package
     (name "java-commons-codec")
-    (version "1.10")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/commons/codec/source/"
                                   "commons-codec-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1w9qg30y4s0x8gnmr2fgj4lyplfn788jqxbcz27lf5kbr6n8xr65"))))
+                "11xr0agckkhm91pb5akf2mbk84yd54gyr178wj57gsm97fi7nkh9"))))
     (build-system ant-build-system)
-    (outputs '("out" "doc"))
     (arguments
-     `(#:test-target "test"
-       #:make-flags
-       (let ((hamcrest (assoc-ref %build-inputs "java-hamcrest-core"))
-             (junit    (assoc-ref %build-inputs "java-junit")))
-         (list (string-append "-Djunit.jar=" (car (find-files junit "jar$")))
-               (string-append "-Dhamcrest.jar=" (car (find-files hamcrest "jar$")))
-               ;; Do not append version to jar.
-               "-Dfinal.name=commons-codec"))
+     `(#:jar-name "java-commons-codec.jar"
+       #:source-dir "src/main/java"
+       #:test-dir "src/test"
+       #:test-exclude (list "**/*AbstractTest.java")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'build 'build-javadoc ant-build-javadoc)
-         (replace 'install (install-jars "dist"))
-         (add-after 'install 'install-doc (install-javadoc "dist/docs/api")))))
+         (add-before 'build 'copy-resources
+           (lambda _
+             (copy-recursively "src/main/resources"
+                               "build/classes")
+             #t))
+         (add-before 'check 'copy-test-resources
+           (lambda _
+             (copy-recursively "src/test/resources"
+                               "build/test-classes")
+             #t))
+         (replace 'install (install-from-pom "pom.xml")))))
     (native-inputs
-     `(("java-junit" ,java-junit)
-       ("java-hamcrest-core" ,java-hamcrest-core)))
+     `(("java-commons-lang3" ,java-commons-lang3)
+       ("java-junit" ,java-junit)))
+    (propagated-inputs
+      `(("apache-commons-parent-pom" ,apache-commons-parent-pom-50)))
     (home-page "https://commons.apache.org/codec/")
     (synopsis "Common encoders and decoders such as Base64, Hex, Phonetic and URLs")
     (description "The codec package contains simple encoder and decoders for
