@@ -2417,7 +2417,7 @@ The picture values can directly be displayed in Geiser.")
          (delete 'configure)
          (delete 'install))))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("guile-picture-language" ,guile-picture-language)
        ("emacs" ,emacs)
        ("emacs-geiser" ,emacs-geiser)
