@@ -3929,7 +3929,7 @@ these two libraries to vary independently of one another.")
 (define-public java-plexus-classworlds
   (package
     (name "java-plexus-classworlds")
-    (version "2.5.2")
+    (version "2.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3938,12 +3938,17 @@ these two libraries to vary independently of one another.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1iv8x55fbni2hg4l7pdpbwfq75xmvq1f25g6nxma8rcdpihsh13r"))))
+                "034k2hgvj1saalwbnzrbg4n0zgzwcpz1lhlb8q4kgglsp9pmm03s"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-classworlds.jar"
        #:source-dir "src/main"
-       #:tests? #f));; FIXME: we need to generate some resources as in pom.xml
+       #:tests? #f;; FIXME: we need to generate some resources as in pom.xml
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("plexus-parent-pom-5.1" ,plexus-parent-pom-5.1)))
     (native-inputs
      `(("java-junit" ,java-junit)))
     (home-page "https://codehaus-plexus.github.io/plexus-classworlds/")
