@@ -1569,26 +1569,26 @@ recreates the stored directory structure by default.")
 (define-public zziplib
   (package
     (name "zziplib")
-    (version "0.13.69")
+    (version "0.13.71")
     (home-page "https://github.com/gdraheim/zziplib")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
               (file-name (git-file-name name version))
-              (patches (search-patches "zziplib-CVE-2018-16548.patch"))
+;              (patches (search-patches "zziplib-CVE-2018-16548.patch"))
               (sha256
                (base32
-                "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
+                "109vznm9cxkqbj5r83qdgcdfk0j4kbg96dqr0q085nhwpgkw7viz"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'make-files-writable
-                    (lambda _
-                      (for-each make-file-writable
-                                (find-files "test" #:directories? #t))
-                      #t)))
-
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable
+                       (find-files "." #:directories? #t))
+             #t)))
        ;; XXX: The default test target attempts to download external resources and
        ;; fails without error: <https://github.com/gdraheim/zziplib/issues/53>.
        ;; To prevent confusing log messages, just run a simple zip test that works.
@@ -1597,9 +1597,7 @@ recreates the stored directory structure by default.")
      `(("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)     ; for the documentation
                      ("pkg-config" ,pkg-config)
-                     ;; for the documentation; Python 3 not supported,
-                     ;; http://forums.gentoo.org/viewtopic-t-863161-start-0.html
-                     ("python" ,python-2)
+                     ("python" ,python)
                      ("zip" ,zip))) ; to create test files
     (synopsis "Library for accessing zip files")
     (description
