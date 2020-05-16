@@ -6615,15 +6615,15 @@ output.")
 (define-public console-setup
   (package
     (name "console-setup")
-    (version "1.194")
+    (version "1.195")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://salsa.debian.org/installer-team/console-setup.git")
-             (commit version)))
+             (commit "38512eb9a97f57ead1f87f6aee6df455f721c645"))) ; no tag
        (sha256
-        (base32 "0fkabv05j5dj10mfrpjyvv7lnxl9qaqkbjhwj72r18i9i4019vgh"))
+        (base32 "0d0xagigs5k3appzz5lzxdjncvnkgz4amz6ks7imiq8kkjixvmfy"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -6631,7 +6631,7 @@ output.")
        (let ((bash (assoc-ref %build-inputs "bash"))
              (out (assoc-ref %outputs "out")))
          (list (string-append "SHELL=" bash "/bin/bash")))
-       #:tests? #f                                ;no tests
+       #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -6665,10 +6665,10 @@ output.")
      `(("pkg-config" ,pkg-config)
        ("bdftopcf" ,bdftopcf)
        ("bdfresize" ,bdfresize)
-       ("sharutils" ,sharutils)                   ;for 'uuencode'
+       ("sharutils" ,sharutils)         ; for 'uuencode'
        ("perl" ,perl)))
     (inputs
-     `(("perl" ,perl)))                           ;used by 'ckbcomp'
+     `(("perl" ,perl)))                 ; used by 'ckbcomp'
     (synopsis "Set up the Linux console font and keyboard")
     (description
      "console-setup provides the console with the same keyboard
