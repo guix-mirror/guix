@@ -282,9 +282,9 @@ It can be used as a replacement for the Apache @code{CBZip2InputStream} /
 @code{CBZip2OutputStream} classes.")
     (license license:expat)))
 
-(define-public java-tukaani-xz
+(define-public java-xz
   (package
-    (name "java-tukaani-xz")
+    (name "java-xz")
     (version "1.6")
     (source (origin
               (method url-fetch)

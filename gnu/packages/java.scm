@@ -3403,34 +3403,6 @@ is implemented.")
               license:mpl2.0
               license:lgpl2.1+))))
 
-(define-public java-xz
-  (package
-   (name "java-xz")
-   (version "1.6")
-   (source (origin
-     (method url-fetch)
-     (uri (string-append "http://tukaani.org/xz/xz-java-" version ".zip"))
-     (sha256
-      (base32
-       "1z3p1ri1gvl07inxn0agx44ck8n7wrzfmvkz8nbq3njn8r9wba8x"))))
-   (build-system ant-build-system)
-   (arguments
-    `(#:tests? #f ; There are no tests to run.
-      #:jar-name ,(string-append "xz-" version  ".jar")
-      #:phases
-      (modify-phases %standard-phases
-        ;; The unpack phase enters the "maven" directory by accident.
-        (add-after 'unpack 'chdir
-          (lambda _ (chdir "..") #t)))))
-   (native-inputs
-    `(("unzip" ,unzip)))
-   (home-page "https://tukaani.org/xz/java.html")
-   (synopsis "Implementation of XZ data compression in pure Java")
-   (description "This library aims to be a complete implementation of XZ data
-compression in pure Java.  Single-threaded streamed compression and
-decompression and random access decompression have been fully implemented.")
-   (license license:public-domain)))
-
 ;; java-hamcrest-core uses qdox version 1.12.  We package this version instead
 ;; of the latest release.
 (define-public java-qdox-1.12
@@ -3957,7 +3929,7 @@ reusing it in maven.")
        ("junit" ,java-junit)
        ("classworld" ,java-plexus-classworlds)
        ("xbean" ,java-geronimo-xbean-reflect)
-       ("xz" ,java-tukaani-xz)
+       ("xz" ,java-xz)
        ("guava" ,java-guava)))
     (home-page "https://github.com/codehaus-plexus/plexus-archiver")
     (synopsis "Archiver component of the Plexus project")
