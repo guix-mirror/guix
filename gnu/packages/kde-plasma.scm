@@ -38,14 +38,14 @@
 (define-public kdecoration
   (package
     (name "kdecoration")
-    (version "5.17.0")
+    (version "5.18.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kdecoration-" version ".tar.xz"))
               (sha256
                (base32
-                "0rljpywpaqmar13jijphkpc9k1crma476j9my0d00hfrjil5xlnn"))))
+                "1j59axgpdbj7nlg06h5gb0pix3s3nll32k6s2f88vc1cbwj5d67h"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -62,14 +62,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public kscreenlocker
   (package
     (name "kscreenlocker")
-    (version "5.17.0")
+    (version "5.18.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/plasma/" version
                                   "/kscreenlocker-" version ".tar.xz"))
               (sha256
                (base32
-                "1jzkq5m0hvcpsl7clai33ndiil8gls7ndir3mfcc5l8gv7df2ir0"))))
+                "1lhq9rxafbbxwpwzq8m25xi9hgcdfdfwl8hafqhygzp14z89q9ml"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -125,14 +125,14 @@ manager which re-parents a Client window to a window decoration frame.")
 (define-public libkscreen
   (package
     (name "libkscreen")
-    (version "5.17.0")
+    (version "5.18.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/plasma/" version "/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32 "0znxfqqyyij6i4dp95gf5g4vrhg4jsshgh2k13ldy294kby2mxw0"))))
+        (base32 "0z18djlfrj510dz3r2n8qx6fswdbp2qmhg5y3bn00hij02832qm9"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -155,7 +155,7 @@ basic needs and easy to configure for those who want special setups.")
 (define-public libksysguard
   (package
     (name "libksysguard")
-    (version "5.17.0")
+    (version "5.18.5")
     (source
      (origin
        (method url-fetch)
@@ -163,7 +163,7 @@ basic needs and easy to configure for those who want special setups.")
                            "/libksysguard-" version ".tar.xz"))
        (sha256
         (base32
-         "1b79qxg6j9lqgyq8i677f00f7cbplqak1r9riyc9wj5s2r60ydw7"))))
+         "02s40ahqp4r9amjshdf0dhw9hdggvica2jl426i4d9b950507myl"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
