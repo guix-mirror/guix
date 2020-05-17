@@ -2681,7 +2681,7 @@ operators and scripters.")
     ;; Upstream doesn't use git tags, but does ‘tag’ their releases in the
     ;; commit message.  Hence the lack of GIT-VERSIONing despite using a commit
     ;; ID below.  Don't forget to update it…
-    (version "2.21.99999")
+    (version "2.22")
     (source
      (origin
        (method git-fetch)
@@ -2691,10 +2691,10 @@ operators and scripters.")
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (git-reference
              (url "http://repo.or.cz/alpine.git")
-             (commit "abeb2c25935ef8c75f1e5deef0f81276754dc975")))
+             (commit "b50297779a4becb9ceca9c6b5b375d526fe3df78")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rqgbw08a5lj41dkp82aq480lqkc4bnxagna7wpqffi821n8gkwz"))
+        (base32 "06js44fvdl7l33hfd4lsxpcd1cz3c0h796cswyzz0lkrzx89yl48"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2720,6 +2720,13 @@ operators and scripters.")
                                "--with-date-stamp=Thu  1 Jan 01:00:01 CET 1970")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'assume-shadow-passwords
+           ;; Alpine's configure script confuses ‘shadow password support’ with
+           ;; ‘/etc/shadow exists in the build environment’.  It does not.
+           (lambda _
+             (substitute* "configure"
+               (("test -f /etc/shadow") "true"))
+             #t))
          (add-after 'unpack 'make-reproducible
            (lambda _
              ;; This removes time-dependent code to make alpine reproducible.
