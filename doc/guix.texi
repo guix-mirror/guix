@@ -6808,8 +6808,9 @@ following phases changed to some specific for Meson:
 
 @item configure
 The phase runs @code{meson} with the flags specified in
-@code{#:configure-flags}.  The flag @option{--build-type} is always set to
-@code{plain} unless something else is specified in @code{#:build-type}.
+@code{#:configure-flags}.  The flag @option{--buildtype} is always set to
+@code{debugoptimized} unless something else is specified in
+@code{#:build-type}.
 
 @item build
 The phase runs @code{ninja} to build the package in parallel by default, but
