@@ -1644,24 +1644,18 @@ games.")
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (desktop (string-append out "/share/applications"))
-                    (icon-dir (string-append out "/share/pixmaps")))
-               (rename-file "icon.png" "godot.png")
-               (install-file "godot.png" icon-dir)
-               (mkdir-p desktop)
-               (with-output-to-file
-                   (string-append desktop "/godot.desktop")
-                 (lambda _
-                   (format #t
-                           "[Desktop Entry]~@
-                           Name=godot~@
-                           Comment=The godot game engine~@
-                           Exec=~a/bin/godot~@
-                           TryExec=~@*~a/bin/godot~@
-                           Icon=godot~@
-                           Type=Application~%"
-                           out)))
-               #t))))))
+                    (applications (string-append out "/share/applications"))
+                    (icons (string-append out "/share/icons/hicolor")))
+               (mkdir-p applications)
+               (copy-file "misc/dist/linux/org.godotengine.Godot.desktop"
+                          (string-append applications "/godot.desktop"))
+               (for-each (lambda (icon dest)
+                           (mkdir-p (dirname dest))
+                           (copy-file icon dest))
+                         '("icon.png" "icon.svg")
+                         `(,(string-append icons "/256x256/apps/godot.png")
+                           ,(string-append icons "/scalable/apps/godot.svg"))))
+             #t)))))
     (outputs '("out" "headless"))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("alsa-lib" ,alsa-lib)
