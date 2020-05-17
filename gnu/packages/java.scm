@@ -9422,19 +9422,38 @@ annotations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0kz3f0xjack6c9syssi4qjw1rbd3q5963sk5pmr143hiibxa9csw"))))
+                "0kz3f0xjack6c9syssi4qjw1rbd3q5963sk5pmr143hiibxa9csw"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled third-party jar archives.
+                  (for-each delete-file (find-files "." ".*.jar$"))
+                  (for-each (lambda (file) (chmod file #o644))
+                            (find-files "." "."))
+                  #t))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "jarall"
        #:test-target "junit-tests-all"
        #:phases
        (modify-phases %standard-phases
+         (add-before 'install 'fix-pom
+           (lambda _
+             (substitute* "pom.xml"
+               (("org.apache-extras.beanshell") "org.beanshell"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out") "/share/java")))
                (mkdir-p share)
                (copy-file "dist/bsh-2.0b6.jar" (string-append share "/bsh-2.0b6.jar"))
                #t))))))
+    (inputs
+     `(("java-classpathx-servletapi" ,java-classpathx-servletapi)
+       ("java-commons-bsf" ,java-commons-bsf)))
+    (native-inputs
+     `(("java-junit" ,java-junit)
+       ("javacc" ,javacc-3)))
     (home-page "http://beanshell.org/")
     (synopsis "Lightweight Scripting for Java")
     (description "BeanShell is a small, free, embeddable Java source
