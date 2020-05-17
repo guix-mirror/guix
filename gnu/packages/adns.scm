@@ -62,7 +62,7 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.16.0")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -70,7 +70,7 @@ scripts.")
                     ".tar.gz"))
               (sha256
                (base32
-                "129sm0wzij0mp8vdv68v18hnykcjb6ivi66wnqnnw598q7bql1fy"))))
+                "1kl6bzlcmxn0524h5qldlbh99wf96whhvk54w3p4igf3xk8150yh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
