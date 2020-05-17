@@ -620,7 +620,7 @@ communicate with each other.  Here's a few things KDE Connect can do:
 (define-public kqtquickcharts
   (package
     (name "kqtquickcharts")
-    (version "19.08.2")
+    (version "19.08.3")
     (source
       (origin
         (method url-fetch)
@@ -628,7 +628,7 @@ communicate with each other.  Here's a few things KDE Connect can do:
                             version "/src/kqtquickcharts-" version ".tar.xz"))
         (sha256
          (base32
-          "1yy9fyd8y4g25ljdsbil19qdf4j3mzmzl489sx7rqpm3lfdzjh9k"))))
+          "0kwrqm7aa74plqkkyigi6b2hic6dzrygkgb6hsgj35ycrfn4rigi"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
