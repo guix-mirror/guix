@@ -264,8 +264,7 @@ device-specific programs to convert and print many types of files.")
          "1vpk0b2vq830f8fvf9z8qjsm5k141i7pi8djbinpnr78pi4dj7r6"))))))
 
 (define-public cups
-  (package (inherit cups-minimal)
-    (replacement cups-2.3.3)
+  (package/inherit cups-minimal
     (name "cups")
     (arguments
      `(;; Three tests fail:
@@ -406,12 +405,6 @@ device-specific programs to convert and print many types of files.")
        ("gnutls" ,gnutls)
        ("cups-filters" ,cups-filters)
        ("zlib"  ,zlib)))))
-
-(define-public cups-2.3.3
-  (package
-    (inherit cups)
-    (version "2.3.3")
-    (source (package-source cups-minimal-2.3.3))))
 
 (define-public cups-pk-helper
   (package
