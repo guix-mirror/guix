@@ -171,7 +171,7 @@ files with a system-specific shebang."
                ,(module-ref (resolve-interface '(gnu packages guile))
                             'guile-2.0))
               ("autoconf" ,autoconf)
-              ("bash" ,bash)))
+              ("bash" ,bash-minimal)))
     (arguments
      '(#:modules ((guix build utils))
        #:builder
