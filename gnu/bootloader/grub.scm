@@ -37,19 +37,13 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
-  #:export (grub-image
-            grub-image?
-            grub-image-aspect-ratio
-            grub-image-file
-
-            grub-theme
+  #:export (grub-theme
             grub-theme?
-            grub-theme-images
+            grub-theme-image
+            grub-theme-resolution
             grub-theme-color-normal
             grub-theme-color-highlight
-
-            %background-image
-            %default-theme
+            grub-theme-gfxmode
 
             grub-bootloader
             grub-efi-bootloader
@@ -77,37 +71,21 @@ denoting a file name."
                  file))))
     (#f file)))
 
-(define-record-type* <grub-image>
-  grub-image make-grub-image
-  grub-image?
-  (aspect-ratio    grub-image-aspect-ratio        ;rational number
-                   (default 4/3))
-  (file            grub-image-file))              ;file-valued gexp (SVG)
-
 (define-record-type* <grub-theme>
+  ;; Default theme contributed by Felipe López.
   grub-theme make-grub-theme
   grub-theme?
-  (images          grub-theme-images
-                   (default '()))                 ;list of <grub-image>
+  (image           grub-theme-image
+                   (default (file-append %artwork-repository
+                                         "/grub/GuixSD-fully-black-4-3.svg")))
+  (resolution      grub-theme-resolution
+                   (default '(1024 . 768)))
   (color-normal    grub-theme-color-normal
-                   (default '((fg . cyan) (bg . blue))))
+                   (default '((fg . light-gray) (bg . black))))
   (color-highlight grub-theme-color-highlight
-                   (default '((fg . white) (bg . blue))))
-  (gfxmode         grub-gfxmode
+                   (default '((fg . yellow) (bg . black))))
+  (gfxmode         grub-theme-gfxmode
                    (default '("auto"))))          ;list of string
-
-(define %background-image
-  (grub-image
-   (aspect-ratio 4/3)
-   (file (file-append %artwork-repository
-                      "/grub/GuixSD-fully-black-4-3.svg"))))
-
-(define %default-theme
-  ;; Default theme contributed by Felipe López.
-  (grub-theme
-   (images (list %background-image))
-   (color-highlight '((fg . yellow) (bg . black)))
-   (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
 
 
 ;;;
@@ -115,32 +93,35 @@ denoting a file name."
 ;;;
 
 (define (bootloader-theme config)
-  "Return user defined theme in CONFIG if defined or %default-theme
+  "Return user defined theme in CONFIG if defined or a default theme
 otherwise."
-  (or (bootloader-configuration-theme config) %default-theme))
+  (or (bootloader-configuration-theme config) (grub-theme)))
 
-(define* (svg->png svg #:key width height)
-  "Build a PNG of HEIGHT x WIDTH from SVG."
+(define* (image->png image #:key width height)
+  "Build a PNG of HEIGHT x WIDTH from IMAGE if its file suffix is \".svg\".
+Otherwise the picture in IMAGE is just copied."
   (computed-file "grub-image.png"
                  (with-imported-modules '((gnu build svg))
                    (with-extensions (list guile-rsvg guile-cairo)
-                     #~(begin
-                         (use-modules (gnu build svg))
-                         (svg->png #+svg #$output
-                                   #:width #$width
-                                   #:height #$height))))))
+                     #~(if (string-suffix? ".svg" #+image)
+                           (begin
+                             (use-modules (gnu build svg))
+                             (svg->png #+image #$output
+                                       #:width #$width
+                                       #:height #$height))
+                           (copy-file #+image #$output))))))
 
-(define* (grub-background-image config #:key (width 1024) (height 768))
-  "Return the GRUB background image defined in CONFIG with a ratio of
-WIDTH/HEIGHT, or #f if none was found."
-  (let* ((ratio (/ width height))
-         (image (find (lambda (image)
-                        (= (grub-image-aspect-ratio image) ratio))
-                      (grub-theme-images
-                       (bootloader-theme config)))))
+(define* (grub-background-image config)
+  "Return the GRUB background image defined in CONFIG or #f if none was found.
+If the suffix of the image file is \".svg\", then it is converted into a PNG
+file with the resolution provided in CONFIG."
+  (let* ((theme (bootloader-theme config))
+         (image (grub-theme-image theme)))
     (and image
-         (svg->png (grub-image-file image)
-                   #:width width #:height height))))
+         (match (grub-theme-resolution theme)
+           (((? number? width) . (? number? height))
+            (image->png image #:width width #:height height))
+           (_ #f)))))
 
 (define* (eye-candy config store-device store-mount-point
                     #:key system port)
@@ -153,7 +134,7 @@ system string---e.g., \"x86_64-linux\"."
   (define setup-gfxterm-body
     (let ((gfxmode
            (or (and-let* ((theme (bootloader-configuration-theme config))
-                          (gfxmode (grub-gfxmode theme)))
+                          (gfxmode (grub-theme-gfxmode theme)))
                  (string-join gfxmode ";"))
                "auto")))
 
