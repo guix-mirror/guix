@@ -77,6 +77,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5895,6 +5896,25 @@ need to use the older and less efficient @code{pkg_resources} package.")
        ("python-configparser" ,python2-configparser)
        ("python-contextlib2" ,python2-contextlib2-bootstrap)
        ("python-importlib-resources" ,python2-importlib-resources-bootstrap))))))
+
+(define-public python-importmagic
+  (package
+    (name "python-importmagic")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "importmagic" version))
+       (sha256
+        (base32
+         "1n7qxa1snj06aw45mcfz7bxc46zp7fxj687140g2k6jcnyjmfxrz"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/alecthomas/importmagic")
+    (synopsis "Library for adding, removing and managing Python imports")
+    (description
+     "Importmagic is a Python library for automatically managing imports by
+finding unresolved symbols in Python code and their corresponding imports.")
+    (license license:bsd-3)))
 
 (define-public python-jaraco-packaging
   (package
