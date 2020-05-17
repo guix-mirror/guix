@@ -578,7 +578,8 @@ different notification systems.")
           "02lr3xx5s2mgddac4n3lkgr7ppf1z5m6ajs90rjix0vs8a271kp5"))))
     (build-system qt-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_TESTING=ON")
+     `(#:configure-flags '("-DBUILD_TESTING=ON"
+                           "-DLIBEXEC_INSTALL_DIR=libexec")
        #:tests? #f)) ; tests fail hard in our build environment
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
