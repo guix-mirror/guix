@@ -1713,12 +1713,14 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
     (home-page "https://acpica.org/")
     (synopsis "Tools for the development and debugging of ACPI tables")
     (description
-     "The ACPI Component Architecture (@dfn{ACPICA}) project provides an
-OS-independent reference implementation of the Advanced Configuration and
-Power Interface Specification (@dfn{ACPI}).  ACPICA code contains those portions
-of ACPI meant to be directly integrated into the host OS as a kernel-resident
-subsystem, and a small set of tools to assist in developing and debugging ACPI
-tables.  This package contains only the user-space tools needed for ACPI table
+     "The @acronym{ACPICA, ACPI Component Architecture} project provides an
+OS-independent reference implementation of the @acronym{ACPI, Advanced
+Configuration and Power Interface} specification.  ACPICA code contains those
+portions of ACPI meant to be directly integrated into the host OS as a
+kernel-resident subsystem, and a small set of tools to assist in developing and
+debugging ACPI tables.
+
+This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
     (license license:gpl2)))            ; dual GPLv2/ACPICA Licence
 
