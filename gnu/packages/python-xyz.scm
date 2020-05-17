@@ -2992,14 +2992,14 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.11.1")
+    (version "2.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "0l72c11n959yzb8d3ankckb6yhjhm6x729zm7rkpk040qzxpy64k"))))
+         "1c1v3djnr0ymp5xpy1h3h60abcaqxdlm4wsqmls9rxby88av5al9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
