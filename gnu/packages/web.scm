@@ -746,7 +746,7 @@ libraries for working with JNLP applets.")
 (define-public jansson
   (package
     (name "jansson")
-    (version "2.12")
+    (version "2.13.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -754,7 +754,7 @@ libraries for working with JNLP applets.")
                              version ".tar.bz2"))
              (sha256
               (base32
-               "1lp1mv8pjp5yziws66cy0dhpcam4bbjqhffk13v4vgdybp674pb4"))))
+               "1g8h18vh8gyxlwfmvdivdp1siad26ywj5zr4j4avgdyjg7wa147f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
