@@ -312,34 +312,34 @@ server and embedded PowerPC, and S390 guests.")
      (substitute-keyword-arguments (package-arguments qemu)
        ((#:configure-flags _ '(list))
         ;; Restrict to the host's architecture.
-        (let ((arch (car (string-split (or (%current-target-system)
-                                           (%current-system))
-                                       #\-))))
-          (cond ((string=? arch "i686")
-                 '(list "--target-list=i386-softmmu"))
-                ((string-prefix? "x86_64" arch)
-                 '(list "--target-list=i386-softmmu,x86_64-softmmu"))
-                ((string-prefix? "mips64" arch)
-                 '(list (string-append "--target-list=mips-softmmu,mipsel-softmmu,"
-                                       "mips64-softmmu,mips64el-softmmu")))
-                ((string-prefix? "mips" arch)
-                 '(list "--target-list=mips-softmmu,mipsel-softmmu"))
-                ((string-prefix? "aarch64" arch)
-                 '(list "--target-list=arm-softmmu,aarch64-softmmu"))
-                ((string-prefix? "arm" arch)
-                 '(list "--target-list=arm-softmmu"))
-                ((string-prefix? "alpha" arch)
-                 '(list "--target-list=alpha-softmmu"))
-                ((string-prefix? "powerpc64" arch)
-                 '(list "--target-list=ppc-softmmu,ppc64-softmmu"))
-                ((string-prefix? "powerpc" arch)
-                 '(list "--target-list=ppc-softmmu"))
-                ((string-prefix? "s390" arch)
-                 '(list "--target-list=s390x-softmmu"))
-                ((string-prefix? "riscv" arch)
-                 '(list "--target-list=riscv32-softmmu,riscv64-softmmu"))
-                (else   ; An empty list actually builds all the targets.
-                  ''()))))))
+        (match (car (string-split (or (%current-target-system)
+                                      (%current-system))
+                                  #\-))
+          ("i686"
+           '(list "--target-list=i386-softmmu"))
+          ("x86_64"
+           '(list "--target-list=i386-softmmu,x86_64-softmmu"))
+          ("mips64"
+           '(list (string-append "--target-list=mips-softmmu,mipsel-softmmu,"
+                                 "mips64-softmmu,mips64el-softmmu")))
+          ("mips"
+           '(list "--target-list=mips-softmmu,mipsel-softmmu"))
+          ("aarch64"
+           '(list "--target-list=arm-softmmu,aarch64-softmmu"))
+          ("arm"
+           '(list "--target-list=arm-softmmu"))
+          ("alpha"
+           '(list "--target-list=alpha-softmmu"))
+          ("powerpc64"
+           '(list "--target-list=ppc-softmmu,ppc64-softmmu"))
+          ("powerpc"
+           '(list "--target-list=ppc-softmmu"))
+          ("s390"
+           '(list "--target-list=s390x-softmmu"))
+          ("riscv"
+           '(list "--target-list=riscv32-softmmu,riscv64-softmmu"))
+          (else   ; An empty list actually builds all the targets.
+            ''())))))
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (native-inputs (fold alist-delete (package-native-inputs qemu)
