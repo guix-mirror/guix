@@ -187,9 +187,8 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
 ;; satisfy this dependency.
 (define-public cups-minimal
   (package
-    (replacement cups-minimal-2.3.3)
     (name "cups-minimal")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
@@ -197,7 +196,7 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
                            version "/cups-" version "-source.tar.gz"))
        (sha256
         (base32
-         "1kkpmj17205j8w9hdff2bfpk6lwdmr3gx0j4r35nhgvya24rvjhv"))))
+         "1vpk0b2vq830f8fvf9z8qjsm5k141i7pi8djbinpnr78pi4dj7r6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -250,22 +249,8 @@ device-specific programs to convert and print many types of files.")
     ;; CUPS is Apache 2.0 with exceptions, see the NOTICE file.
     (license license:asl2.0)))
 
-(define-public cups-minimal-2.3.3
-  (package
-    (inherit cups-minimal)
-    (version "2.3.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/apple/cups/releases/download/v"
-                           version "/cups-" version "-source.tar.gz"))
-       (sha256
-        (base32
-         "1vpk0b2vq830f8fvf9z8qjsm5k141i7pi8djbinpnr78pi4dj7r6"))))))
-
 (define-public cups
   (package (inherit cups-minimal)
-    (replacement cups-2.3.3)
     (name "cups")
     (arguments
      `(;; Three tests fail:
@@ -406,12 +391,6 @@ device-specific programs to convert and print many types of files.")
        ("gnutls" ,gnutls)
        ("cups-filters" ,cups-filters)
        ("zlib"  ,zlib)))))
-
-(define-public cups-2.3.3
-  (package
-    (inherit cups)
-    (version "2.3.3")
-    (source (package-source cups-minimal-2.3.3))))
 
 (define-public cups-pk-helper
   (package
