@@ -449,14 +449,14 @@ features include brush stabilizers, brush engines and wrap-around mode.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "19.08.2")
+    (version "19.08.3")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/applications/" version
                             "/src/libkomparediff2-" version ".tar.xz"))
         (sha256
-         (base32 "1mvihd0xpkl8kryf5dvsfgpbgs9af8c9bzq8mmr74gfsvfb8ywy5"))))
+         (base32 "0p8j24d0lzylv5crdzak87016ppgph5hiyxkvapda1m8zlb5dfm1"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
