@@ -1586,10 +1586,6 @@ games.")
     (arguments
      `(#:scons ,scons-python2
        #:scons-flags (list "platform=x11" "target=release_debug"
-                           ,@(if (string-prefix? "aarch64" (or (%current-target-system)
-                                                               (%current-system)))
-                               `("CCFLAGS=-DNO_THREADS")
-                               '())
                            ;; Avoid using many of the bundled libs.
                            ;; Note: These options can be found in the SConstruct file.
                            "builtin_bullet=no"
