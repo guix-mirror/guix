@@ -723,8 +723,9 @@ synthesis, and on-the-fly re-configuration.")
        ("libuv" ,libuv)
        ("lmdb" ,lmdb)
        ("luajit" ,luajit)
-       ;; TODO: Add optional lua modules: basexx, cqueues and psl.
+       ;; TODO: Add optional lua modules: basexx and psl.
        ("lua-bitop" ,lua5.1-bitop)
+       ("lua-cqueues" ,lua5.1-cqueues)
        ("lua-filesystem" ,lua5.1-filesystem)
        ("lua-sec" ,lua5.1-sec)
        ("lua-socket" ,lua5.1-socket)))
