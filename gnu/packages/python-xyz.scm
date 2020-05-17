@@ -5768,6 +5768,25 @@ them as the version argument or in a SCM managed file.")
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
 
+(define-public python-sexpdata
+  (package
+    (name "python-sexpdata")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sexpdata" version))
+       (sha256
+        (base32
+         "1q4lsjyzzqrdv64l0pv4ij9nd8gqhvxqcrpxc2xpxs652sk2gj0s"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jd-boyd/sexpdata")
+    (synopsis "S-expression parser for Python")
+    (description
+     "Sexpdata is an S-expression parser/serializer.  It has load and dump
+functions like pickle, json or PyYAML module.")
+    (license license:bsd-3)))
+
 (define-public python-pathlib2
   (package
     (name "python-pathlib2")
