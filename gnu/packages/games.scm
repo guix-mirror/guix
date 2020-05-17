@@ -1733,6 +1733,83 @@ can be explored and changed freely.")
                    license:gpl3+
                    license:silofl1.1))))
 
+(define-public superstarfighter
+  (package
+    (name "superstarfighter")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/notapixelstudio/superstarfighter.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fly63yf5ls1xwm15if4lxwy67wi84k4gvjllljpykrl18vw2y0y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "godot")
+             (setenv "HOME" (getcwd))
+             (with-output-to-file "export_presets.cfg"
+               (lambda ()
+                 (display
+                  "[preset.0]
+name=\"Guix\"
+platform=\"Linux/X11\"
+runnable=true
+[preset.0.options]")))
+             #t))
+         (replace 'build
+           (lambda _
+             (let ((godot (assoc-ref %build-inputs "godot-headless")))
+               (invoke (string-append godot "/bin/godot_server")
+                       "--export-pack" "Guix"
+                       "superstarfighter.pck" "project.godot"))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share"))
+                    (data (string-append share "/superstarfighter"))
+                    (icons (string-append share "/icons/hicolor/256x256/apps")))
+               (install-file "superstarfighter.pck" data)
+               (mkdir-p bin)
+               (call-with-output-file (string-append bin "/superstarfighter")
+                 (lambda (port)
+                   (format port
+                           "#!/bin/sh~@
+                            exec ~a/bin/godot --main-pack ~a/superstarfighter.pck~%"
+                           (assoc-ref inputs "godot")
+                           data)
+                   (chmod port #o755)))
+               (mkdir-p icons)
+               (copy-file "icon.png" (string-append icons "/" ,name ".png"))
+               (make-desktop-entry-file
+                (string-append share "/applications/" ,name ".desktop")
+                #:name "SuperStarfighter"
+                #:comment "Fast-paced arcade combat game"
+                #:exec ,name
+                #:icon ,name
+                #:categories '("Game" "ArcadeGame")))
+             #t)))))
+    (native-inputs
+     `(("godot-headless" ,godot "headless")))
+    (inputs
+     `(("godot" ,godot)))
+    (home-page "https://notapixel.itch.io/superstarfighter")
+    (synopsis "Fast-paced local multiplayer arcade game")
+    (description "In SuperStarfighter, up to four local players compete in a
+2D arena with fast-moving ships and missiles.  Different game types are
+available, as well as a single-player mode with AI-controlled ships.")
+    (license (list license:expat         ; game
+                   license:silofl1.1)))) ; fonts
+
 (define-public xshogi
   (package
     (name "xshogi")
