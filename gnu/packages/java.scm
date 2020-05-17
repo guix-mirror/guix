@@ -3927,7 +3927,7 @@ more.")
 (define-public java-plexus-interpolation
   (package
     (name "java-plexus-interpolation")
-    (version "1.23")
+    (version "1.26")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3936,11 +3936,16 @@ more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "005hxxg1adv71a96lz4vp65bk3v1pi76j4c45z29xzizclib16vl"))))
+                "1rahjmhywf6d5m32qzlc9izawyvcd71abfm9k03f13rs2xmfxzlh"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "plexus-interpolation.jar"
-       #:source-dir "src/main"))
+       #:source-dir "src/main"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install (install-from-pom "pom.xml")))))
+    (propagated-inputs
+     `(("plexus-parent-pom-5.1" ,plexus-parent-pom-5.1)))
     (native-inputs
      `(("java-junit" ,java-junit)
        ("java-hamcrest-core" ,java-hamcrest-core)))
@@ -9209,7 +9214,28 @@ this is not a static analysis tool.)")
      `(#:jar-name "java-aopalliance.jar"
        #:jdk ,icedtea-8
        #:tests? #f; no tests
-       #:source-dir "aopalliance/src/main"))
+       #:source-dir "aopalliance/src/main"
+       #:modules ((guix build ant-build-system)
+                  (guix build utils)
+                  (guix build maven pom)
+                  (guix build java-utils)
+                  (sxml simple))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'create-pom
+           (lambda _
+             (with-output-to-file "pom.xml"
+               (lambda _
+                 (sxml->xml
+                   `((project
+                       (modelVersion "4.0.0")
+                       (name "aopalliance")
+                       (groupId "aopalliance")
+                       (artifactId "aopalliance")
+                       (version "1.0"))))))
+             #t))
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "http://aopalliance.sourceforge.net")
     (synopsis "Aspect-Oriented Programming")
     (description "The AOP Alliance project is a joint project between several
@@ -9220,19 +9246,24 @@ software engineering people who are interested in Aspect-Oriented Programming
 (define-public java-javax-inject
   (package
     (name "java-javax-inject")
-    (version "tck-1")
+    (version "1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/javax-inject/javax-inject/"
-                                  "archive/javax.inject-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/javax-inject/javax-inject")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ydrlvh2r7vr1g7lhjwy3w2dggpj9h6pix1lakkkgdywb365n6g0"))))
+                "1rspl0nkvk1jif6nccikw93xic6ljj2b6kpy2mffwi2mnvc13j7x"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-javax-inject.jar"
-       #:jdk ,icedtea-8
-       #:tests? #f)); no tests
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "pom.xml")))))
     (home-page "https://github.com/javax-inject/javax-inject")
     (synopsis "JSR-330: Dependency Injection for Java")
     (description "This package specifies a means for obtaining objects in such
@@ -9269,20 +9300,23 @@ the dependency is said to be unsatisfied, and the application is broken.")
     (arguments
      `(#:jar-name "java-guice.jar"
        #:jdk ,icedtea-8
-       #:tests? #f  ; FIXME: tests are not in a java sub directory
+       #:tests? #f; FIXME: tests are not in a java sub directory
        #:source-dir "core/src"
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-files-writable
            (lambda _
              (for-each make-file-writable (find-files "."))
-             #t)))))
-    (inputs
-     `(("guava" ,java-guava)
+             #t))
+         (replace 'install
+           (install-from-pom "core/pom.xml")))))
+    (propagated-inputs
+     `(("java-aopalliance" ,java-aopalliance)
+       ("java-asm" ,java-asm)
        ("java-cglib" ,java-cglib)
-       ("java-aopalliance" ,java-aopalliance)
+       ("java-guava" ,java-guava)
        ("java-javax-inject" ,java-javax-inject)
-       ("java-asm" ,java-asm)))
+       ("java-guice-parent-pom" ,java-guice-parent-pom)))
     (home-page "https://github.com/google/guice")
     (synopsis "Lightweight dependency injection framework")
     (description "Guice is a lightweight dependency injection framework for
@@ -9308,6 +9342,51 @@ Java 6 and above.")
      `(("guice" ,java-guice)
        ("servlet"  ,java-classpathx-servletapi)
        ,@(package-inputs java-guice)))))
+
+(define java-guice-parent-pom
+  (package
+    (inherit java-guice)
+    (name "java-guice-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (add-after 'install 'install-extensions
+           (install-pom-file "extensions/pom.xml"))
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs
+     `(("java-google-parent-pom" ,java-google-parent-pom-5)))))
+
+(define java-google-parent-pom-5
+  (package
+    (name "java-google-parent-pom")
+    (version "5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/google/google-maven-parents")
+                     (commit (string-append "google-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0zb7hx24p8k8rfdvix2vsbfqn73jhrycdndvhf8j5gbii9wbqibv"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (home-page "https://github.com/google/google-maven-parents")
+    (synopsis "Google parent pom")
+    (description "This package contains the Maven parent POM for other Google
+Java projects.")
+    (license license:asl2.0)))
 
 (define-public java-assertj
   (package
@@ -10484,7 +10563,7 @@ public Bundle getBundle()"))
        ("java-osgi-framework" ,java-osgi-framework)
        ("java-eclipse-osgi" ,java-eclipse-osgi)
        ("java-osgi-service-packageadmin" ,java-osgi-service-packageadmin)))))
- 
+
 (define-public java-geronimo-xbean-asm-util
   (package
     (inherit java-geronimo-xbean-reflect)
@@ -10496,7 +10575,7 @@ public Bundle getBundle()"))
     (inputs
      `(("java-asm" ,java-asm)))
     (native-inputs '())))
- 
+
 (define-public java-geronimo-xbean-finder
   (package
     (inherit java-geronimo-xbean-reflect)
@@ -11627,25 +11706,30 @@ and reporting) project dependencies.  It is characterized by the following:
 (define-public java-eclipse-sisu-inject
   (package
     (name "java-eclipse-sisu-inject")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/eclipse/sisu.inject/")
-                     (commit "releases/0.3.3")))
+                     (commit (string-append "releases/" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gibc9x0bw0f4ls086fx73610fcspz9g2as7kcpcfhvl5znysvg7"))))
+                "16044sizdb0rjbhlfbmcnpds5y7by7dyn9b0c11606aikqi8k3x6"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "eclipse-sisu-inject.jar"
        #:source-dir "org.eclipse.sisu.inject/src"
-       #:jdk ,icedtea-8
-       #:tests? #f)); no tests
-    (inputs
+       #:tests? #f; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (install-from-pom "org.eclipse.sisu.inject/pom.xml")))))
+    (propagated-inputs
      `(("java-guice" ,java-guice)
-       ("java-guice-servlet" ,java-guice-servlet)
+       ("java-sisu-inject-parent-pom" ,java-sisu-inject-parent-pom)))
+    (inputs
+     `(("java-guice-servlet" ,java-guice-servlet)
        ("java-javax-inject" ,java-javax-inject)
        ("java-javaee-servletapi" ,java-javaee-servletapi)
        ("java-junit" ,java-junit)
@@ -11665,6 +11749,20 @@ support, but removes the need to write explicit bindings in Guice modules.
 Integration with other containers via the Eclipse Extension Registry and the
 OSGi Service Registry is a goal of this project.")
     (license license:epl1.0)))
+
+(define java-sisu-inject-parent-pom
+  (package
+    (inherit java-eclipse-sisu-inject)
+    (name "java-sisu-inject-parent-pom")
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (install-pom-file "pom.xml")))))
+    (propagated-inputs '())))
 
 (define-public java-eclipse-sisu-plexus
   (package
