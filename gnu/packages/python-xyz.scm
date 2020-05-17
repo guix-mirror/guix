@@ -8825,6 +8825,29 @@ functions to find and load entry points.")
 (define-public python2-entrypoints
   (package-with-python2 python-entrypoints))
 
+(define-public python-epc
+  (package
+    (name "python-epc")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "epc" version))
+       (sha256
+        (base32
+         "09bx1ln1bwa00917dndlgs4k589h8qx2x080xch5m58p92kjwkd1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sexpdata" ,python-sexpdata)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/tkf/python-epc")
+    (synopsis "Remote procedure call (RPC) stack for Emacs Lisp and Python")
+    (description
+     "Python-EPC can call elisp functions from Python and Python functions
+from elisp.")
+    (license license:gpl3)))
+
 (define-public python-nbconvert
   (package
     (name "python-nbconvert")
