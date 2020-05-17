@@ -360,7 +360,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.2.7.1")
+    (version "4.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -368,14 +368,14 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "0gcwq1w09gmx53i2fir73l222p41299wagvhbvsxwrz0v3crzliy"))))
+                "1a3djmjhnvlp8dpiz68s0lwg71nv3ypq592jfgsnm5zlxa0vp1cz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
        #:configure-flags
        (list "-DBUILD_TESTING=OFF"
              (string-append "-DCMAKE_CXX_FLAGS=-I"
-                            (assoc-ref %build-inputs "ilmbase")
+                            (assoc-ref %build-inputs "openexr")
                             "/include/OpenEXR"))
        #:phases
        (modify-phases %standard-phases
