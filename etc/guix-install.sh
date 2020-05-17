@@ -48,6 +48,7 @@ REQUIRE=(
     "groupadd"
     "tail"
     "tr"
+    "xz"
 )
 
 PAS=$'[ \033[32;1mPASS\033[0m ] '
