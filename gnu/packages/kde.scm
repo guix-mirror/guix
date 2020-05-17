@@ -507,7 +507,7 @@ cards.")
 (define-public kpmcore
   (package
     (name "kpmcore")
-    (version "4.0.1")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -516,9 +516,7 @@ cards.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sslkwcj2cyrn7bpjdjdwikp1q8wrsxpsg2sxxd8hsairgy7ygh3"))
-              (patches (search-patches "kpmcore-fix-tests.patch"
-                                       "kpmcore-remove-broken-test.patch"))))
+                "0jsig7algmab9h0fb09my0axjqzw83zgscamhzl8931lribs6idm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
