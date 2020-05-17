@@ -329,14 +329,14 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
 (define-public kdiagram
   (package
     (name "kdiagram")
-    (version "2.6.1")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/kdiagram/" version
                            "/kdiagram-" version ".tar.xz"))
        (sha256
-        (base32 "1c6dbp9gssjrx59z8yxzq1ay56pnw7h28symjrv0gcvhxyjirrxx"))
+        (base32 "1pgvf2q8b59hw0jg5ajmj5nrn4q8cgnifpvdd0fynk2ml6zym8k3"))
        (patches (search-patches
                  "kdiagram-Fix-missing-link-libraries.patch"))))
     (build-system qt-build-system)
