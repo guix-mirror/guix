@@ -169,7 +169,7 @@ files with a system-specific shebang."
     (inputs `(("guile"
                ;; XXX: Kludge to hide the circular dependency.
                ,(module-ref (resolve-interface '(gnu packages guile))
-                            'guile-2.0))
+                            'guile-3.0/fixed))
               ("autoconf" ,autoconf)
               ("bash" ,bash-minimal)))
     (arguments
