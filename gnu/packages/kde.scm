@@ -645,14 +645,14 @@ charts.")
 (define-public kcachegrind
   (package
     (name "kcachegrind")
-    (version "19.04.1")
+    (version "19.08.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kde/stable/applications/" version
                                   "/src/kcachegrind-" version ".tar.xz"))
               (sha256
                (base32
-                "1hhsk64yp6q2xh8j269j4wp9y24ggmii861r6gf02mj1mbn2p1jb"))))
+                "0sm3085vd79svfql6nqjyrwlknnmdyyvi0yjnmyb09mq7djf1icg"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
