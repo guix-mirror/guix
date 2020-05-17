@@ -481,7 +481,7 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public qca
   (package
     (name "qca")
-    (version "2.2.1")
+    (version "2.3.0")
     (source
       (origin
         (method url-fetch)
@@ -489,7 +489,7 @@ used in KDE development tools Kompare and KDevelop.")
                             "/qca-" version ".tar.xz"))
         (sha256
          (base32
-          "00kv1vsrc8fp556hm8s6yw3240vx3l4067q6vfxrb3gdwgcd45np"))))
+          "1mrj748yz1grgzmfbmffgjkpcqiaj1l3m4pbddwcj7dnl50yys0x"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
