@@ -2703,7 +2703,11 @@ operators and scripters.")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))))
        #:configure-flags (list (string-append "--with-ssl-include-dir="
                                               (assoc-ref %build-inputs "openssl")
                                               "/include/openssl")
