@@ -2696,6 +2696,35 @@ as tree building (via a tool called JJTree included with JavaCC), actions,
 debugging, etc.")
     (license license:bsd-3)))
 
+;; javacc-3, as javacc-4 is not properly bootstrapped: is contains a javacc.jar
+;; in the bootstrap/ directory.
+(define-public javacc-3
+  (package
+    (inherit javacc-4)
+    (version "3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/javacc/javacc.git")
+                    (commit "release_32")))
+              (file-name (string-append "javacc-" version "-checkout"))
+              (sha256
+               (base32
+                "1pyf1xyh8gk83nxqn2v2mdws32l68ydznha41cxa4l2kkbq1v1g3"))))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-java-version
+           (lambda _
+             (for-each
+               (lambda (file)
+                 (substitute* file
+                   (("debug=") "source=\"1.4\" debug=")))
+               (find-files "." "build.xml"))
+             #t))
+         (replace 'install (install-jars "bin/lib")))))))
+
 (define-public javacc
   (package
     (inherit javacc-4)
