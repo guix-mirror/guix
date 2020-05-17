@@ -1711,7 +1711,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
        #:tests? #f                      ; no 'check' target
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://acpica.org/")
-    (synopsis "Tools for the development and debug of ACPI tables")
+    (synopsis "Tools for the development and debugging of ACPI tables")
     (description
      "The ACPI Component Architecture (@dfn{ACPICA}) project provides an
 OS-independent reference implementation of the Advanced Configuration and
