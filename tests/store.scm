@@ -115,6 +115,18 @@
                                 (passwd:name (getpwuid (getuid)))))))
     (list (stat:uid s) (stat:perms s))))
 
+(test-equal "add-to-store"
+  '("sha1" "sha256" "sha512")
+  (let* ((file    (search-path %load-path "guix.scm"))
+         (content (call-with-input-file file get-bytevector-all)))
+    (map (lambda (hash-algo)
+           (let ((file (add-to-store %store "guix.scm" #f hash-algo file)))
+             (and (direct-store-path? file)
+                  (bytevector=? (call-with-input-file file get-bytevector-all)
+                                content)
+                  hash-algo)))
+         '("sha1" "sha256" "sha512"))))
+
 (test-equal "add-data-to-store"
   #vu8(1 2 3 4 5)
   (call-with-input-file (add-data-to-store %store "data" #vu8(1 2 3 4 5))
