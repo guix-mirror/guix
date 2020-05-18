@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -324,20 +324,29 @@
                                  #:hash hash #:hash-algo 'sha256)))
     (fixed-output-derivation? drv)))
 
-(test-assert "fixed-output derivation"
-  (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
-                                        "echo -n hello > $out" '()))
-         (hash       (sha256 (string->utf8 "hello")))
-         (drv        (derivation %store "fixed"
-                                 %bash `(,builder)
-                                 #:sources `(,builder) ;optional
-                                 #:hash hash #:hash-algo 'sha256))
-         (succeeded? (build-derivations %store (list drv))))
-    (and succeeded?
-         (let ((p (derivation->output-path drv)))
-           (and (equal? (string->utf8 "hello")
-                        (call-with-input-file p get-bytevector-all))
-                (bytevector? (query-path-hash %store p)))))))
+(test-equal "fixed-output derivation"
+  '(sha1 sha256 sha512)
+  (map (lambda (hash-algorithm)
+         (let* ((builder (add-text-to-store %store "my-fixed-builder.sh"
+                                            "echo -n hello > $out" '()))
+                (sha256  (sha256 (string->utf8 "hello")))
+                (hash    (bytevector-hash
+                          (string->utf8 "hello")
+                          (lookup-hash-algorithm hash-algorithm)))
+                (drv     (derivation %store
+                                     (string-append
+                                      "fixed-" (symbol->string hash-algorithm))
+                                     %bash `(,builder)
+                                     #:sources `(,builder) ;optional
+                                     #:hash hash
+                                     #:hash-algo hash-algorithm)))
+           (build-derivations %store (list drv))
+           (let ((p (derivation->output-path drv)))
+             (and (bytevector=? (string->utf8 "hello")
+                                (call-with-input-file p get-bytevector-all))
+                  (bytevector? (query-path-hash %store p))
+                  hash-algorithm))))
+       '(sha1 sha256 sha512)))
 
 (test-assert "fixed-output derivation: output paths are equal"
   (let* ((builder1   (add-text-to-store %store "fixed-builder1.sh"
