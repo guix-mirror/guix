@@ -9076,7 +9076,7 @@ Reference Manual}).
 @itemx -f @var{fmt}
 Write the hash in the format specified by @var{fmt}.
 
-Supported formats: @code{nix-base32}, @code{base32}, @code{base16}
+Supported formats: @code{base64}, @code{nix-base32}, @code{base32}, @code{base16}
 (@code{hex} and @code{hexadecimal} can be used as well).
 
 If the @option{--format} option is not specified, @command{guix hash}

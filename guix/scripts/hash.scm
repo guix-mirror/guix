@@ -20,12 +20,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts hash)
-  #:use-module (guix base32)
   #:use-module (gcrypt hash)
   #:use-module (guix serialization)
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix base16)
+  #:use-module (guix base32)
+  #:autoload   (guix base64) (base64-encode)
   #:use-module (ice-9 binary-ports)
   #:use-module (rnrs files)
   #:use-module (ice-9 match)
@@ -47,10 +48,11 @@
 
 (define (show-help)
   (display (G_ "Usage: guix hash [OPTION] FILE
-Return the cryptographic hash of FILE.
-
-Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'
-and 'hexadecimal' can be used as well).\n"))
+Return the cryptographic hash of FILE.\n"))
+  (newline)
+  (display (G_ "\
+Supported formats: 'base64', 'nix-base32' (default), 'base32',
+and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
   (format #t (G_ "
   -x, --exclude-vcs      exclude version control directories"))
   (format #t (G_ "
@@ -83,6 +85,8 @@ and 'hexadecimal' can be used as well).\n"))
                 (lambda (opt name arg result)
                   (define fmt-proc
                     (match arg
+                      ("base64"
+                       base64-encode)
                       ("nix-base32"
                        bytevector->nix-base32-string)
                       ("base32"
