@@ -1353,7 +1353,7 @@ PostgreSQL.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -1362,7 +1362,7 @@ PostgreSQL.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256 (base32
-                "1ax7ifnnmxww6mxc1gfz577axvn6rqy152g3ks576vai88q631pr"))))
+                "1c59ch96d5p4c7si8qp55fdc15375klf2hyh29y3ap8ahqx9pxqj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
