@@ -20717,17 +20717,17 @@ it forcibly
 (define-public emacs-elpher
   (package
     (name "emacs-elpher")
-    (version "1.4.6")
+    (version "2.7.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tgvaughan/elpher")
+             (url "git://thelambdalab.xyz/elpher.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07xansmhn4l0b9ghzf56vyx8cqg0q01aq3pz5ikx2i19v5f0rc66"))))
+         "13ba72sjfyg1xvam131iapzqdf9pkwpn67zlyydmm6bv9pxlr431"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -20737,7 +20737,7 @@ it forcibly
          (add-before 'install 'build-doc
            (lambda _
              (invoke "makeinfo" "elpher.texi"))))))
-    (home-page "https://github.com/tgvaughan/elpher")
+    (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
     (synopsis "Gopher client for Emacs")
     (description "Elpher is a full-featured gopher client for Emacs.  Its
 features include intuitive keyboard and mouse-driven browsing, out-of-the-box
