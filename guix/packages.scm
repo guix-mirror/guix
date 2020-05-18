@@ -28,6 +28,7 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix base32)
+  #:autoload   (guix base64) (base64-decode)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix memoization)
@@ -62,6 +63,7 @@
             origin-snippet
             origin-modules
             base32
+            base64
 
             package
             package?
@@ -197,19 +199,24 @@
 
 (set-record-type-printer! <origin> print-origin)
 
-(define-syntax base32
-  (lambda (s)
-    "Return the bytevector corresponding to the given Nix-base32
+(define-syntax-rule (define-compile-time-decoder name string->bytevector)
+  "Define NAME as a macro that runs STRING->BYTEVECTOR at macro expansion time
+if possible."
+  (define-syntax name
+    (lambda (s)
+      "Return the bytevector corresponding to the given textual
 representation."
-    (syntax-case s ()
-      ((_ str)
-       (string? (syntax->datum #'str))
-       ;; A literal string: do the conversion at expansion time.
-       (with-syntax ((bv (nix-base32-string->bytevector
-                          (syntax->datum #'str))))
-         #''bv))
-      ((_ str)
-       #'(nix-base32-string->bytevector str)))))
+      (syntax-case s ()
+        ((_ str)
+         (string? (syntax->datum #'str))
+         ;; A literal string: do the conversion at expansion time.
+         (with-syntax ((bv (string->bytevector (syntax->datum #'str))))
+           #''bv))
+        ((_ str)
+         #'(string->bytevector str))))))
+
+(define-compile-time-decoder base32 nix-base32-string->bytevector)
+(define-compile-time-decoder base64 base64-decode)
 
 (define (origin-actual-file-name origin)
   "Return the file name of ORIGIN, either its 'file-name' field or the file
