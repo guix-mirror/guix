@@ -9018,6 +9018,11 @@ Certificates}), unless @option{--no-check-certificate} is used.
 The following options are available:
 
 @table @code
+@item --hash=@var{algorithm}
+@itemx -H @var{algorithm}
+Compute a hash using the specified @var{algorithm}.  @xref{Invoking guix
+hash}, for more information.
+
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
 Write the hash in the format specified by @var{fmt}.  For more
@@ -9056,6 +9061,16 @@ hash of data read from standard input.  @command{guix hash} has the
 following options:
 
 @table @code
+
+@item --hash=@var{algorithm}
+@itemx -H @var{algorithm}
+Compute a hash using the specified @var{algorithm}, @code{sha256} by
+default.
+
+@var{algorithm} must the name of a cryptographic hash algorithm
+supported by Libgcrypt @i{via} Guile-Gcrypt---e.g., @code{sha512} or
+@code{sha3-256} (@pxref{Hash Functions,,, guile-gcrypt, Guile-Gcrypt
+Reference Manual}).
 
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
