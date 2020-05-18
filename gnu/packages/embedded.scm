@@ -1040,7 +1040,7 @@ the Raspberry Pi chip."))))
 (define-public python-libmpsse
   (package
     (name "python-libmpsse")
-    (version "1.4")
+    (version "1.4.1")
     (source
       (origin
         (method git-fetch)
@@ -1050,7 +1050,7 @@ the Raspberry Pi chip."))))
         (file-name "libmpsse-checkout")
         (sha256
           (base32
-            "14f1kiiia4kfd9mzwx4h63aa8bpz9aknbrrr7mychnsp3arw0z25"))))
+            "1rypfb96k2szqgygp3jnwg2zq9kwmfz0460dsahn3r2vkzml8wn7"))))
     (build-system gnu-build-system)
     (inputs
      `(("libftdi" ,libftdi)
