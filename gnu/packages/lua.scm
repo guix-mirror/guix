@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Simon South <simon@simonsouth.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
@@ -291,6 +293,65 @@ directory structure and file attributes.")
 
 (define-public lua5.2-filesystem
   (make-lua-filesystem "lua5.2-filesystem" lua-5.2))
+
+(define (make-lua-ossl name lua)
+  (package
+    (name name)
+    (version "20170903")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://25thandclement.com/~william/"
+                                  "projects/releases/luaossl-" version ".tgz"))
+              (sha256
+               (base32
+                "10392bvd0lzyibipblgiss09zlqh3a5zgqg1b9lgbybpqb9cv2k3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (lua-api-version ,(version-major+minor (package-version lua))))
+         (list "CC=gcc"
+               "CFLAGS='-D HAVE_SYS_SYSCTL_H=0'" ; sys/sysctl.h is deprecated
+               (string-append "DESTDIR=" out)
+               (string-append "LUA_APIS=" lua-api-version)
+               "prefix="))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lua-version ,(version-major+minor (package-version lua))))
+               (setenv "LUA_CPATH"
+                       (string-append out "/lib/lua/" lua-version "/?.so;;"))
+               (setenv "LUA_PATH"
+                       (string-append out "/share/lua/" lua-version "/?.lua;;"))
+               (with-directory-excursion "regress"
+                 (for-each (lambda (f)
+                             (invoke "lua" f))
+                           (find-files "." "^[0-9].*\\.lua$"))))
+             #t)))))
+    (inputs
+     `(("lua" ,lua)
+       ("openssl" ,openssl)))
+    (home-page "https://25thandclement.com/~william/projects/luaossl.html")
+    (synopsis "OpenSSL bindings for Lua")
+    (description "The luaossl extension module for Lua provides comprehensive,
+low-level bindings to the OpenSSL library, including support for certificate and
+key management, key generation, signature verification, and deep bindings to the
+distinguished name, alternative name, and X.509v3 extension interfaces.  It also
+binds OpenSSL's bignum, message digest, HMAC, cipher, and CSPRNG interfaces.")
+    (license license:expat)))
+
+(define-public lua-ossl
+  (make-lua-ossl "lua-ossl" lua))
+
+(define-public lua5.1-ossl
+  (make-lua-ossl "lua5.1-ossl" lua-5.1))
+
+(define-public lua5.2-ossl
+  (make-lua-ossl "lua5.2-ossl" lua-5.2))
 
 (define (make-lua-sec name lua)
   (package
