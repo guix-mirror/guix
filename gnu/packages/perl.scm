@@ -3079,6 +3079,34 @@ formats, as defined in RFC 2445.  It can be used to parse these formats in
 order to create the appropriate objects.")
     (license (package-license perl))))
 
+(define-public perl-datetime-format-iso8601
+  (package
+    (name "perl-datetime-format-iso8601")
+    (version "0.08")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/J/JH/JHOBLITT/DateTime-Format-ISO8601-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1syccqd5jlwms8v78ksnf68xijzl97jky5vbwhnyhxi5gvgfx8xk"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-builder" ,perl-datetime-format-builder)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-test-distribution" ,perl-test-distribution)
+       ("perl-test-pod" ,perl-test-pod)))
+    (home-page "https://metacpan.org/release/DateTime-Format-ISO8601")
+    (synopsis "Parse ISO8601 date and time formats")
+    (description "@code{DateTime::Format::ISO8601} is a DateTime
+extension that parses almost all ISO8601 date and time formats.")
+    (license perl-license)))
+
 (define-public perl-datetime-format-natural
   (package
     (name "perl-datetime-format-natural")
