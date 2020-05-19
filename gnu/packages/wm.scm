@@ -9,7 +9,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
+;;; Copyright © 2016, 2017, 2018, 2020 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016 Ivan Vilata i Balaguer <ivan@selidor.net>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -1176,15 +1176,15 @@ It is inspired by Xmonad and dwm.  Its major features include:
 (define-public cwm
   (package
     (name "cwm")
-    (version "6.3")
+    (version "6.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://chneukirchen.org/releases/cwm-"
+       (uri (string-append "https://leahneukirchen.org/releases/cwm-"
                            version ".tar.gz"))
        (sha256
         (base32
-         "17pdp9cfgh2n3n3905l4rl9qk7b722i8psnarhlc2h98qzx7zmac"))))
+         "0p350pbfn92m21jiq4i324sdskxhs71p435g0mgz7cmzprnhhg92"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
@@ -1219,7 +1219,7 @@ It is inspired by Xmonad and dwm.  Its major features include:
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("bison" ,bison)))
-    (home-page "https://github.com/chneukirchen/cwm")
+    (home-page "https://github.com/leahneukirchen/cwm")
     (synopsis "OpenBSD fork of the calmwm window manager")
     (description "Cwm is a stacking window manager for X11.  It is an OpenBSD
 project derived from the original Calm Window Manager.")
