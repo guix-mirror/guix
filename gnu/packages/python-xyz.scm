@@ -3720,18 +3720,17 @@ Language (TOML) configuration files.")
 (define-public python-jsonrpc-server
   (package
     (name "python-jsonrpc-server")
-    (version "0.3.2")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-jsonrpc-server" version))
        (sha256
         (base32
-         "0ddgdp26dfxaz6isjbb12974b3rxavgsqrn2zrmck62cmipg5g05"))))
+         "0dzya99nbi4mw7q85vmyw1wfgbx5dpmysnvm0bwx5m4xbi4zafy7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-future" ,python-future)
-       ("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
        ("python-ujson" ,python-ujson)))
     (home-page
