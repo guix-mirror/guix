@@ -222,32 +222,50 @@ comes with a SOCKS proxy client.")
 (define-public python-falcon
   (package
     (name "python-falcon")
-    (version "1.4.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "falcon" version))
        (sha256
         (base32
-         "1i0vmqsk24z4biirqhpvas9h28wy7nmpy3jvnb6rz2imq04zd09r"))))
+         "1z6mqfv574x6jiawf67ib52g4kk20c2x7xk7wrn1573b8v7r79gf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "falcon/vendor")
+           (substitute* "setup.py"
+             ((".*falcon\\.vendor\\.mimeparse.*") ""))
+           (substitute* '("falcon/media/handlers.py"
+                          "falcon/request.py")
+             (("from falcon\\.vendor ") ""))
+           (substitute* "falcon.egg-info/SOURCES.txt"
+             (("falcon/vendor.*") ""))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest"))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Skip orjson, which requires rust to build.
+             (substitute* "tests/test_media_handlers.py"
+               (("== 'CPython") "!= 'CPython"))
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "--ignore" "falcon"))))))
     (propagated-inputs
-     `(("python-mimeparse" ,python-mimeparse)
-       ("python-six" ,python-six)))
+     `(("python-mimeparse" ,python-mimeparse)))
     (native-inputs
      `(("python-cython" ,python-cython) ;for faster binaries
+       ("python-mujson" ,python-mujson)
+       ("python-msgpack" ,python-msgpack)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-pyyaml" ,python-pyyaml)
+       ("python-rapidjson" ,python-rapidjson)
        ("python-requests" ,python-requests)
        ("python-testtools" ,python-testtools)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-msgpack" ,python-msgpack)))
+       ("python-ujson" ,python-ujson)))
     (home-page "https://falconframework.org")
     (synopsis
      "Web framework for building APIs and application backends")
@@ -267,10 +285,15 @@ classes
 @item Compatible with both CPython and PyPy
 @item Cython support for better performance when used with CPython
 @end itemize")
+    (properties `((python2-variant . ,(delay python2-falcon))))
     (license license:asl2.0)))
 
 (define-public python2-falcon
-  (package-with-python2 python-falcon))
+  (let ((falcon (package-with-python2 (strip-python2-variant python-falcon))))
+    (package
+      (inherit falcon)
+      (native-inputs
+       (alist-delete "python-rapidjson" (package-native-inputs falcon))))))
 
 (define-public python-falcon-cors
   (package
