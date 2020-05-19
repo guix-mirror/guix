@@ -3241,7 +3241,8 @@ libraries written in C.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       '("-D_systemd=false")))
+       '("-Dvapi=true"
+         "-D_systemd=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
