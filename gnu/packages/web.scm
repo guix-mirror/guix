@@ -123,6 +123,7 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
@@ -5467,6 +5468,60 @@ runs in a terminal or through your browser.  It provides fast and valuable
 HTTP statistics for system administrators that require a visual server report
 on the fly.")
     (license license:x11)))
+
+(define-public hitch
+  (package
+    (name "hitch")
+    (version "1.5.2")
+    (home-page "https://hitch-tls.org/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "source/hitch-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nnzqqigfw78nqhp81a72x1s8d6v49ayw4w5df0zzm2cb1jgv95i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'pre-check
+                    (lambda _
+                      ;; Most tests attempts to access hitch-tls.org which is
+                      ;; unavailable in the build container.  Run them against
+                      ;; a dummy local web server instead.
+                      (for-each (lambda (test)
+                                  (substitute* test
+                                    (("\\[hitch-tls\\.org\\]:80")
+                                     "[localhost]:8000")))
+                                (find-files "src/tests" "\\.sh$"))
+                      (system "python3 -m http.server &")
+
+                      ;; The build container does not reap zombie processes,
+                      ;; causing stop_hitch to hang indefinitely while waiting
+                      ;; for the process to terminate because 'kill -0' never
+                      ;; succeeds.  Use a different test to see whether the
+                      ;; process has shut down.
+                      (substitute* "src/tests/hitch_test.sh"
+                        (("kill -0 \"\\$HITCH_PID\"")
+                         "$(ps -p $HITCH_PID -o state= | grep -qv '^Z$')"))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("curl" ,curl)
+       ("egrep" ,grep)
+       ("lsof" ,lsof)
+       ("python" ,python)))
+    (inputs
+     `(("libev" ,libev)
+       ("openssl" ,openssl)))
+    (synopsis "Scalable TLS proxy")
+    (description
+     "Hitch is a performant TLS proxy based on @code{libev}.  It terminates
+SSL/TLS connections and forwards the unencrypted traffic to a backend such
+as a web server.  It is designed to handle many thousand connections on
+multicore machines.")
+    (license license:bsd-2)))
 
 (define-public httptunnel
   (package
