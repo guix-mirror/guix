@@ -18788,7 +18788,8 @@ and cuts down boilerplate code when testing libraries for asyncio.")
        (uri (pypi-uri "shouldbe" version))
        (sha256
         (base32
-         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))))
+         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))
+       (patches (search-patches "python-shouldbe-0.1.2-cpy3.8.patch"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-forbiddenfruit" ,python-forbiddenfruit)))
