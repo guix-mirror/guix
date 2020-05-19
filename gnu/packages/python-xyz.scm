@@ -11410,9 +11410,6 @@ network support library.")
 It uses LR parsing and does extensive error checking.")
     (license license:bsd-3)))
 
-(define-public python2-ply
-  (package-with-python2 python-ply))
-
 (define-public python-tabulate
   (package
     (name "python-tabulate")
