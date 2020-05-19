@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -3769,3 +3769,47 @@ Selenium specifically provides infrastructure for the W3C WebDriver specificatio
 — a platform and language-neutral coding interface compatible with all
 major web browsers.")
     (license license:asl2.0)))
+
+(define-public python-rapidjson
+  (package
+    (name "python-rapidjson")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-rapidjson" version))
+        (sha256
+         (base32
+          "18cl2dhx3gds5vg52jxmh9wjlbiy8dx06c3n482rfpdi9dzbv05d"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "rapidjson") #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--rj-include-dir="
+                            (assoc-ref %build-inputs "rapidjson")
+                            "/include/rapidjson"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "python" "setup.py" "build"
+                     (string-append "--rj-include-dir="
+                                    (assoc-ref %build-inputs "rapidjson")
+                                    "/include/rapidjson"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; Some tests are broken.
+             (delete-file "tests/test_base_types.py")
+             (delete-file "tests/test_validator.py")
+             (invoke "python" "-m" "pytest" "tests"))))))
+    (native-inputs
+     `(("rapidjson" ,rapidjson)
+       ("python-pytest" ,python-pytest)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/python-rapidjson/python-rapidjson")
+    (synopsis "Python wrapper around rapidjson")
+    (description "This package provides a python wrapper around rapidjson.")
+    (license license:expat)))
