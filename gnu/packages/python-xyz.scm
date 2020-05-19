@@ -3732,7 +3732,7 @@ Language (TOML) configuration files.")
     (propagated-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-ujson" ,python-ujson)))
+       ("python-ujson" ,python-ujson-1)))
     (home-page
      "https://github.com/palantir/python-jsonrpc-server")
     (synopsis "JSON RPC 2.0 server library")
@@ -18323,6 +18323,50 @@ services to what you expect in your tests.")
 (define-public python-ujson
   (package
     (name "python-ujson")
+    (version "2.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ujson" version))
+        (sha256
+         (base32
+          "18z9gb9ggy1r464b9q1gqs078mqgrkj6dys5a47529rqk3yfybdx"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "deps") #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-to-system-double-conversion
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((d-c (assoc-ref inputs "double-conversion")))
+               (substitute* "setup.py"
+                 (("./deps/double-conversion/double-conversion\"")
+                  (string-append d-c "/include/double-conversion\""))
+                 (("-lstdc++" stdc)
+                  (string-append "-L" d-c "/lib\","
+                                 " \"-ldouble-conversion\","
+                                 " \"" stdc)))
+               #t)))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest"))))))
+    (native-inputs
+     `(("double-conversion" ,double-conversion)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ultrajson/ultrajson")
+    (synopsis "Ultra fast JSON encoder and decoder for Python")
+    (description
+     "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
+bindings for Python 3.")
+    (license license:bsd-3)))
+
+(define-public python-ujson-1
+  (package
+    (inherit python-ujson)
     (version "1.35")
     (source
      (origin
@@ -18331,17 +18375,16 @@ services to what you expect in your tests.")
        (sha256
         (base32
          "11jz5wi7mbgqcsz52iqhpyykiaasila4lq8cmc2d54bfa3jp6q7n"))))
-    (build-system python-build-system)
+    (arguments
+     '(#:phases %standard-phases))
+    (native-inputs '())
     (home-page "http://www.esn.me")
-    (synopsis
-     "Ultra fast JSON encoder and decoder for Python")
     (description
      "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
- bindings for Python 2.5+ and 3.")
-    (license license:bsd-3)))
+bindings for Python 2.5+ and 3.")))
 
-(define-public python2-ujson
-  (package-with-python2 python-ujson))
+(define-public python2-ujson-1
+  (package-with-python2 python-ujson-1))
 
 (define-public python-iocapture
   ;; The latest release is more than a year older than this commit.
