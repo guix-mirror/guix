@@ -359,7 +359,7 @@ also known as DXTn or DXTC) for Mesa.")
                ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
                `((add-after 'unpack 'disable-failing-test
                    (lambda _
-                     (substitute* "src/gallium/tests/unit/meson.build"
+                     (substitute* "src/util/tests/format/meson.build"
                        (("'u_format_test',") ""))
                      #t)))
                '())
