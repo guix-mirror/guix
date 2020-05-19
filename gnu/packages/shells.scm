@@ -493,21 +493,31 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.6.2")
+    (version "0.9.18")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "0c2bbmdg0n10q54vq9k1z5n53l0mh1hb1q5xprfhilvrbr6hlcwr"))
+            "1h4rrwzwiwkyi9p49sjn97rl39fqq2r23hchzsw0s3fcwa7m8fkj"))
         (modules '((guix build utils)))
         (snippet
          `(begin
-            ;; Delete bundled ply.
+            ;; Delete bundled PLY.
             (delete-file-recursively "xonsh/ply")
-            (substitute* '("setup.py")
-              (("'xonsh\\.ply\\.ply',") ""))
+            (substitute* "setup.py"
+              (("\"xonsh\\.ply\\.ply\",") ""))
+            ;; Use our properly packaged PLY instead.
+            (substitute* (list "setup.py"
+                               "tests/test_lexer.py"
+                               "xonsh/__amalgam__.py"
+                               "xonsh/lexer.py"
+                               "xonsh/parsers/base.py"
+                               "xonsh/xonfig.py")
+              (("from xonsh\\.ply\\.(.*) import" _ module)
+               (format #f "from ~a import" module))
+              (("from xonsh\\.ply import") "import"))
             #t))))
     (build-system python-build-system)
     (arguments
