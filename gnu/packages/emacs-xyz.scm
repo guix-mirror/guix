@@ -14919,6 +14919,29 @@ repository, @code{magit-org-todos} will create a section in your Magit status
 buffer with each of your todos.")
       (license license:gpl3+))))
 
+(define-public emacs-vcsh
+  (package
+    (name "emacs-vcsh")
+    (version "0.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/stepnem/vcsh-el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "183pffdiqb7qqmjq31wxl3fpv8qswqgg99gb716rddiyk15ysri7"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/stepnem/vcsh-el")
+    (synopsis "Emacs VCSH integration")
+    (description
+     "This library provides basic ``enter'' functionality and a few
+convenience commands to initialize a @acronym{VCSH, Version Control System for
+$HOME} repository and add files to it.  It can be used in conjunction with
+Magit.")
+    (license license:public-domain)))
+
 (define-public emacs-f3
   (package
     (name "emacs-f3")
