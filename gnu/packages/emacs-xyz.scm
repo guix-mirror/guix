@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -168,6 +168,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages wordnet)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages uml)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -22941,4 +22942,52 @@ can has to be compliant with freedesktop.org. In Emacs, you can trash files by
 deleting them with @code{(setq delete-by-moving-to-trash t)}.  This package
 provides a simple but convenient user interface to manage those trashed
 files.")
+    (license license:gpl3+)))
+
+(define-public emacs-plantuml-mode
+  (package
+    (name "emacs-plantuml-mode")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skuro/plantuml-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yp41d2dmf3sx7qnl5x0zdjcr9y71b2wwc9m0q31v22xqn938ipc"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-local-plantuml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((plantuml (assoc-ref inputs "plantuml"))
+                   (file "plantuml-mode.el"))
+               (chmod file #o644)
+               (emacs-substitute-variables file
+                 ("plantuml-jar-path"
+                  (string-append plantuml "/share/java/plantuml.jar"))
+                 ("plantuml-executable-path"
+                  (string-append plantuml "/bin/plantuml"))
+                 ("plantuml-server-url" 'nil)
+                 ("plantuml-default-exec-mode" ''executable))
+               (emacs-batch-edit-file file
+                 `(progn (progn
+                          (goto-char (point-min))
+                          (re-search-forward "(defun plantuml-download-jar")
+                          (beginning-of-line)
+                          (kill-sexp))
+                         (basic-save-buffer)))
+               #t))))))
+    (inputs
+     `(("plantuml" ,plantuml)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/skuro/plantuml-mode")
+    (synopsis "Major mode for editing PlantUML sources")
+    (description "This package provides a major mode for editing PlantUML
+sources.  It features syntax highlighting, autocompletion, preview of buffer
+or region and use of locally installed binaries.")
     (license license:gpl3+)))
