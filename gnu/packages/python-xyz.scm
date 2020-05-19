@@ -13070,33 +13070,16 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
 (define-public python-argcomplete
   (package
     (name "python-argcomplete")
-    (version "1.10.3")
+    (version "1.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "argcomplete" version))
        (sha256
         (base32
-         "02jkc44drb0yjz6x28lvg6rj607n8r2irdpdvyylm8xnycn54zx3"))))
+         "0h1przxffrhqvi46k40pzjsvdrq4zc3sl1pc96kkigqppq0vdrss"))
+       (patches (search-patches "python-argcomplete-1.11.1-fish31.patch"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'embed-tool-references
-           (lambda _
-             (substitute* "argcomplete/bash_completion.d/python-argcomplete.sh"
-               ((" grep")
-                (string-append " " (which "grep")))
-               ((" egrep")
-                (string-append " " (which "egrep")))
-               (("elif which")
-                (string-append "elif " (which "which")))
-               (("\\$\\(which")
-                (string-append "$(" (which "which"))))
-             #t)))))
-    (inputs
-     `(("grep" ,grep)
-       ("which" ,which)))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-flake8" ,python-flake8)
