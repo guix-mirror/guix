@@ -19895,3 +19895,21 @@ allows you, from Python code, to “fix” invalid (X)HTML markup.")
 
 (define-public python2-pytidylib
   (package-with-python2 python-pytidylib))
+
+(define-public python-mujson
+  (package
+    (name "python-mujson")
+    (version "1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mujson" version))
+        (sha256
+         (base32
+          "0wbj6r8yzsdx2b0kbldlkznr1a9nn33za2q9x3g0hbg420dwzn97"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mattgiles/mujson")
+    (synopsis "Use the fastest JSON functions available at import time")
+    (description "This packages selects the fastest JSON functions available
+at import time.")
+    (license license:expat)))
