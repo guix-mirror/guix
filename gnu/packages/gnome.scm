@@ -3245,7 +3245,7 @@ libraries written in C.")
          "-D_systemd=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
        ("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
