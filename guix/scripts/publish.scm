@@ -851,6 +851,7 @@ blocking."
                                                                          size)
                                                     client))
                           (output   (response-port response)))
+                     (setsockopt client SOL_SOCKET SO_SNDBUF (* 128 1024))
                      (if (file-port? output)
                          (sendfile output input size)
                          (dump-port input output))
