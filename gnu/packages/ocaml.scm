@@ -582,14 +582,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.33")
+    (version "2.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   "hevea-" version ".tar.gz"))
               (sha256
                (base32
-                "0115bn6n6hhb08rmj0m508wjcsn1mggiagqly6s941pq811wxymb"))))
+                "1pzyszxw90klpcmhjqrjfc8cw6c0gm4w2blim8ydyxb6rq6qml1s"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
