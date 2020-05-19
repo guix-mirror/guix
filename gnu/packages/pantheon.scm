@@ -52,12 +52,12 @@
              (setenv "DESTDIR" "/")
              #t)))))
     (inputs
-     `(("gtk" ,gtk+)))
+     `(("glib" ,glib)
+       ("gtk" ,gtk+)
+       ("libgee" ,libgee)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
-       ("glib" ,glib)
        ("gobject-introspection" ,gobject-introspection)
-       ("libgee" ,libgee)
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (home-page "https://github.com/elementary/granite")
