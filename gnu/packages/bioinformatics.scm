@@ -5723,7 +5723,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "2.9.6")
+    (version "2.10.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5732,7 +5732,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d5k5kabgl15as37kj9x65xc92j4gcqms86hvihw3yb6wag0r0q3"))))
+                "1ix51c25hjn57w93qmwzw80xh2i34wx8j2hn7szh8p6w8i3az5qa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
