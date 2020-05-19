@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -35,12 +35,12 @@
   (format #f "mirror://gnu/readline/readline-~a-patches/readline~a-~3,'0d"
           version (string-join (string-split version #\.) "") seqno))
 
-(define (readline-patch version seqno sha256)
-  "Return the origin of Readline patch SEQNO, with expected hash SHA256"
+(define (readline-patch version seqno sha256-bv)
+  "Return the origin of Readline patch SEQNO, with expected hash SHA256-BV"
   (origin
     (method url-fetch)
     (uri (patch-url version seqno))
-    (sha256 sha256)))
+    (sha256 sha256-bv)))
 
 (define-syntax-rule (patch-series version (seqno hash) ...)
   (list (readline-patch version seqno (base32 hash))

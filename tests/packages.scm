@@ -29,7 +29,7 @@
                 #:renamer (lambda (name)
                             (cond ((eq? name 'location) 'make-location)
                                   (else name))))
-  #:use-module (gcrypt hash)
+  #:use-module ((gcrypt hash) #:hide (sha256))
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix grafts)
@@ -51,6 +51,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
+  #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 regex)
@@ -496,6 +497,31 @@
                  (call-with-input-file
                      (search-path %load-path "guix/base32.scm")
                    get-bytevector-all)))))
+
+(test-equal "package-source-derivation, origin, sha512"
+  "hello"
+  (let* ((bash    (search-bootstrap-binary "bash" (%current-system)))
+         (builder (add-text-to-store %store "my-fixed-builder.sh"
+                                     "echo -n hello > $out" '()))
+         (method  (lambda* (url hash-algo hash #:optional name
+                                #:rest rest)
+                    (and (eq? hash-algo 'sha512)
+                         (raw-derivation name bash (list builder)
+                                         #:sources (list builder)
+                                         #:hash hash
+                                         #:hash-algo hash-algo))))
+         (source  (origin
+                    (method method)
+                    (uri "unused://")
+                    (file-name "origin-sha512")
+                    (hash (content-hash
+                           (bytevector-hash (string->utf8 "hello")
+                                            (hash-algorithm sha512))
+                           sha512))))
+         (drv    (package-source-derivation %store source))
+         (output (derivation->output-path drv)))
+    (build-derivations %store (list drv))
+    (call-with-input-file output get-string-all)))
 
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"

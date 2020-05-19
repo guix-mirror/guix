@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,7 @@
 (define-module (test-challenge)
   #:use-module (guix tests)
   #:use-module (guix tests http)
-  #:use-module (gcrypt hash)
+  #:use-module ((gcrypt hash) #:prefix gcrypt:)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
@@ -135,7 +135,7 @@
     (mlet* %store-monad ((drv (gexp->derivation "something"
                                                 #~(list #$output #$text)))
                          (out -> (derivation->output-path drv))
-                         (hash -> (sha256 #vu8())))
+                         (hash -> (gcrypt:sha256 #vu8())))
       (with-derivation-narinfo* drv (sha256 => hash)
         (>>= (compare-contents (list out) (%test-substitute-urls))
              (match-lambda

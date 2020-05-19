@@ -5966,9 +5966,13 @@ specified in the @code{uri} field as a @code{git-reference} object; a
 @end table
 
 @item @code{sha256}
-A bytevector containing the SHA-256 hash of the source.  Typically the
-@code{base32} form is used here to generate the bytevector from a
-base-32 string.
+A bytevector containing the SHA-256 hash of the source.  This is
+equivalent to providing a @code{content-hash} SHA256 object in the
+@code{hash} field described below.
+
+@item @code{hash}
+The @code{content-hash} object of the source---see below for how to use
+@code{content-hash}.
 
 You can obtain this information using @code{guix download}
 (@pxref{Invoking guix download}) or @code{guix hash} (@pxref{Invoking
@@ -6013,6 +6017,30 @@ this is @code{#f}, a sensible default is used.
 @end table
 @end deftp
 
+@deftp {Data Type} content-hash @var{value} [@var{algorithm}]
+Construct a content hash object for the given @var{algorithm}, and with
+@var{value} as its hash value.  When @var{algorithm} is omitted, assume
+it is @code{sha256}.
+
+@var{value} can be a literal string, in which case it is base32-decoded,
+or it can be a bytevector.
+
+The following forms are all equivalent:
+
+@lisp
+(content-hash "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj")
+(content-hash "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"
+              sha256)
+(content-hash (base32
+               "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))
+(content-hash (base64 "kkb+RPaP7uyMZmu4eXPVkM4BN8yhRd8BTHLslb6f/Rc=")
+              sha256)
+@end lisp
+
+Technically, @code{content-hash} is currently implemented as a macro.
+It performs sanity checks at macro-expansion time, when possible, such
+as ensuring that @var{value} has the right size for @var{algorithm}.
+@end deftp
 
 @node Build Systems
 @section Build Systems

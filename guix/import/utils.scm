@@ -24,7 +24,7 @@
 (define-module (guix import utils)
   #:use-module (guix base32)
   #:use-module ((guix build download) #:prefix build:)
-  #:use-module (gcrypt hash)
+  #:use-module ((gcrypt hash) #:hide (sha256))
   #:use-module (guix http-client)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
