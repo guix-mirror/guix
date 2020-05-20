@@ -3993,6 +3993,70 @@ for select languages.")
     (home-page "http://coderay.rubychan.de")
     (license license:expat)))
 
+(define-public ruby-parallel-tests
+  (package
+    (name "ruby-parallel-tests")
+    (version "2.32.0")
+    (home-page "https://github.com/grosser/parallel_tests")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (string-append name version))
+              (sha256
+               (base32
+                "0l2rjz9fnxv7hvz679v7a75mghsh9x9qpvbyapiavqsx21v42l7m"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "default"
+       #:phases (modify-phases %standard-phases
+                  (add-after 'patch-source-shebangs 'patch-shell-invokations
+                    (lambda _
+                      (substitute* '("lib/parallel_tests/tasks.rb"
+                                     "spec/parallel_tests/tasks_spec.rb")
+                        (("/bin/sh") (which "sh"))
+                        (("/bin/bash") (which "bash")))
+                      #t))
+                  (add-before 'check 'remove-version-constraints
+                    (lambda _
+                      ;; Remove hard coded version constraints, instead just
+                      ;; use whatever versions are available in Guix.
+                      (delete-file "Gemfile.lock")
+                      (substitute* "Gemfile"
+                        (("'minitest',.*")
+                         "'minitest'\n")
+                        (("'cucumber',.*")
+                         "'cucumber'\n"))
+                      #t))
+                  (add-before 'check 'disable-rails-test
+                    (lambda _
+                      ;; XXX: This test attempts to download and run the test
+                      ;; suites of multiple Rails versions(!) directly.
+                      (delete-file "spec/rails_spec.rb")
+                      #t))
+                  (add-before 'check 'set-HOME
+                    (lambda _
+                      ;; Some tests check the output of Bundler, and fail when
+                      ;; Bundler warns that /homeless-shelter does not exist.
+                      (setenv "HOME" "/tmp")
+                      #t)))))
+    (native-inputs
+     `(("ruby-bump" ,ruby-bump)
+       ("ruby-cucumber" ,ruby-cucumber)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-rake" ,ruby-rake)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-spinach" ,ruby-spinach)))
+    (propagated-inputs
+     `(("ruby-parallel" ,ruby-parallel)))
+    (synopsis "Run tests in parallel")
+    (description
+     "This package can speed up @code{Test::Unit}, @code{RSpec},
+@code{Cucumber}, and @code{Spinach} tests by running them concurrently
+across multiple CPU cores.")
+    (license license:expat)))
+
 (define-public ruby-parser
   (package
     (name "ruby-parser")
