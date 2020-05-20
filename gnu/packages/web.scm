@@ -5686,15 +5686,15 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.15.0")
+    (version "0.16.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.varnish-software.com"
-                                  "/varnish-modules/varnish-modules-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/varnish/varnish-modules"
+                                  "/releases/download/varnish-modules-" version
+                                  "/varnish-modules-" version ".tar.gz"))
               (sha256
                (base32
-                "09li9lqa1kb275w1rby2zldyg8r9cfcl4qyv53qyd9xbzilrz751"))))
+                "1ph5bplsip4rycql1c2hgbvmrwbgcrgv2ldgfp7saxxbsv5cpcds"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
