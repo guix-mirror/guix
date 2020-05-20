@@ -43,6 +43,7 @@
             url+commit->name
             latest-repository-commit
             commit-difference
+            commit-relation
 
             git-checkout
             git-checkout?
@@ -404,6 +405,21 @@ that of OLD."
            (loop (append (commit-parents head) tail)
                  (cons head result)
                  (set-insert head visited)))))))
+
+(define (commit-relation old new)
+  "Return a symbol denoting the relation between OLD and NEW, two commit
+objects: 'ancestor (meaning that OLD is an ancestor of NEW), 'descendant, or
+'unrelated, or 'self (OLD and NEW are the same commit)."
+  (if (eq? old new)
+      'self
+      (let ((newest (commit-closure new)))
+        (if (set-contains? newest old)
+            'ancestor
+            (let* ((seen   (list->setq (commit-parents new)))
+                   (oldest (commit-closure old seen)))
+              (if (set-contains? oldest new)
+                  'descendant
+                  'unrelated))))))
 
 
 ;;;
