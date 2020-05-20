@@ -7842,6 +7842,36 @@ is part of Ruby's standard library.  It more closely conforms to RFC 3986,
 RFC 3987, and RFC 6570 (level 4), providing support for IRIs and URI templates.")
     (license license:asl2.0)))
 
+(define-public ruby-colorize
+  (package
+    (name "ruby-colorize")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "colorize" version))
+              (sha256
+               (base32
+                "133rqj85n400qk6g3dhf2bmfws34mak1wqihvh3bgy9jhajw580b"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'remove-codeclimate-dependency
+                    (lambda _
+                      (substitute* "test/test_colorize.rb"
+                        ;; Do not hook the tests into the online CodeClimate
+                        ;; service which is unnecessary for these tests.
+                        (("require 'codeclimate-test-reporter'")
+                         "")
+                        (("CodeClimate.*") ""))
+                      #t)))))
+    (synopsis "Add color effects to the @code{String} class")
+    (description
+     "This package extends the @code{String} class and adds a
+@code{ColorizedString} with methods to set text color, background color,
+and text effects.")
+    (home-page "http://github.com/fazibear/colorize")
+    (license license:gpl2+)))
+
 (define-public ruby-colorator
   (package
     (name "ruby-colorator")
