@@ -5698,6 +5698,25 @@ It is intended be used by all Cucumber implementations to parse
     (home-page "https://github.com/cucumber-attic/gherkin")
     (license license:expat)))
 
+(define-public ruby-gherkin-ruby
+  (package
+    (name "ruby-gherkin-ruby")
+    (version "0.3.2")
+    (home-page "http://github.com/codegram/gherkin-ruby")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "gherkin-ruby" version))
+              (sha256
+               (base32
+                "18ay7yiibf4sl9n94k7mbi4k5zj2igl4j71qcmkswv69znyx0sn1"))))
+    (build-system ruby-build-system)
+    (synopsis "Pure Ruby Gherkin parser")
+    (description
+     "Gherkin-ruby is a Gherkin parser written in pure Ruby and less than
+200 lines of code.")
+    ;; XXX: No license information anywhere but Readme.md.
+    (license license:expat)))
+
 (define-public ruby-aruba
   (package
     (name "ruby-aruba")
