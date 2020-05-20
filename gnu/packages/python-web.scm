@@ -3861,3 +3861,23 @@ actions.  Instead of taking actions when a function (or class) decorator is
 executed at import time, you can defer the action usually taken by the
 decorator until a separate scan phase.")
     (license license:repoze)))
+
+(define-public python-zope-deprecation
+  (package
+    (name "python-zope-deprecation")
+    (version "4.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "zope.deprecation" version))
+              (sha256
+               (base32
+                "1pz2cv7gv9y1r3m0bdv7ks1alagmrn5msm5spwdzkb2by0w36i8d"))))
+    (build-system python-build-system)
+    (native-inputs `())
+    (propagated-inputs `())
+    (home-page "https://zopedeprecation.readthedocs.io/")
+    (synopsis "Function for marking deprecations")
+    (description "The @code{zope.deprecation} module provides a function for
+marking modules, classes, functions, methods and properties as deprecated,
+displaying warnings when usaged in application code.")
+    (license license:zpl2.1)))
