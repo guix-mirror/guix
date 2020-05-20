@@ -1831,7 +1831,7 @@ how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
 link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
 Info}.  Hit @kbd{l} afterwards to come back here.
 
-Alternately, run @command{info info} in another tty to keep the manual
+Alternatively, run @command{info info} in another tty to keep the manual
 available.
 @end quotation
 @end ifinfo
@@ -2021,7 +2021,7 @@ Guix System in a virtual machine (VM).
 @section Preparing for Installation
 
 Once you have booted, you can use the guided graphical installer, which makes
-it easy to get started (@pxref{Guided Graphical Installation}).  Alternately,
+it easy to get started (@pxref{Guided Graphical Installation}).  Alternatively,
 if you are already familiar with GNU/Linux and if you want more control than
 what the graphical installer provides, you can choose the ``manual''
 installation process (@pxref{Manual Installation}).
@@ -9542,7 +9542,7 @@ gnu/packages/gettext.scm:29:13: gettext would be upgraded from 0.18.1.1 to 0.18.
 gnu/packages/glib.scm:77:12: glib would be upgraded from 2.34.3 to 2.37.0
 @end example
 
-Alternately, one can specify packages to consider, in which case a
+Alternatively, one can specify packages to consider, in which case a
 warning is emitted for packages that lack an updater:
 
 @example
@@ -10727,7 +10727,7 @@ guix challenge git \
 This automatically invokes @command{diffoscope}, which displays detailed
 information about files that differ.
 
-Alternately, we can do something along these lines (@pxref{Invoking guix
+Alternatively, we can do something along these lines (@pxref{Invoking guix
 archive}):
 
 @example
@@ -14519,7 +14519,7 @@ subsystem name and a command (with optional arguments) to execute upon
 subsystem request.
 
 The command @command{internal-sftp} implements an in-process SFTP
-server.  Alternately, one can specify the @command{sftp-server} command:
+server.  Alternatively, one can specify the @command{sftp-server} command:
 @lisp
 (service openssh-service-type
          (openssh-configuration
