@@ -3947,3 +3947,31 @@ be registered via an entrypoint.")
 syntax, it provides a plaster @code{Loader} object that can parse ini files
 according to the standard set by PasteDeploy ")
     (license license:expat)))
+
+(define-public python-hupper
+  (package
+    (name "python-hupper")
+    (version "1.10.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hupper" version))
+              (sha256
+               (base32
+                "0am0p6g5cz6xmcaf04xq8q6dzdd9qz0phj6gcmpsckf2mcyza61q"))))
+    (build-system python-build-system)
+    (arguments '(#:test-target "pytest"))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-watchdog" ,python-watchdog)
+       ("python-mock" ,python-mock)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)))
+    (home-page "https://readthedocs.org/projects/hupper")
+    (synopsis "Integrated process monitor tracking changes to imported Python files")
+    (description
+     "Hupper is an integrated process monitor that will track changes to any
+imported Python files in sys.modules as well as custom paths.  When files are
+changed the process is restarted.")
+    (license license:expat)))
