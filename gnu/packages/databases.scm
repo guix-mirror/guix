@@ -2421,9 +2421,6 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
            ;; but not actually needed on platforms currently supported by Guix.
            license:bsd-3))))
 
-(define-public python2-lmdb
-  (package-with-python2 python-lmdb))
-
 (define-public python-orator
   (package
     (name "python-orator")
