@@ -231,10 +231,9 @@ result is unspecified."
                                    #:select? (negate dot-git?))))
       (channel-instance channel commit checkout))))
 
-(define* (latest-channel-instances store channels #:optional (previous-channels '()))
+(define* (latest-channel-instances store channels)
   "Return a list of channel instances corresponding to the latest checkouts of
-CHANNELS and the channels on which they depend.  PREVIOUS-CHANNELS is a list
-of previously processed channels."
+CHANNELS and the channels on which they depend."
   ;; Only process channels that are unique, or that are more specific than a
   ;; previous channel specification.
   (define (ignore? channel others)
@@ -245,38 +244,38 @@ of previously processed channels."
                        (not (or (channel-commit a)
                                 (channel-commit b))))))))
 
-  ;; Accumulate a list of instances.  A list of processed channels is also
-  ;; accumulated to decide on duplicate channel specifications.
-  (define-values (resulting-channels instances)
-    (fold2 (lambda (channel previous-channels instances)
-             (if (ignore? channel previous-channels)
-                 (values previous-channels instances)
-                 (begin
-                   (format (current-error-port)
-                           (G_ "Updating channel '~a' from Git repository at '~a'...~%")
-                           (channel-name channel)
-                           (channel-url channel))
-                   (let ((instance (latest-channel-instance store channel)))
-                     (let-values (((new-instances new-channels)
-                                   (latest-channel-instances
-                                    store
-                                    (channel-instance-dependencies instance)
-                                    previous-channels)))
-                       (values (append (cons channel new-channels)
-                                       previous-channels)
-                               (append (cons instance new-instances)
-                                       instances)))))))
-           previous-channels
-           '()                                    ;instances
-           channels))
+  (let loop ((channels channels)
+             (previous-channels '()))
+    ;; Accumulate a list of instances.  A list of processed channels is also
+    ;; accumulated to decide on duplicate channel specifications.
+    (define-values (resulting-channels instances)
+      (fold2 (lambda (channel previous-channels instances)
+               (if (ignore? channel previous-channels)
+                   (values previous-channels instances)
+                   (begin
+                     (format (current-error-port)
+                             (G_ "Updating channel '~a' from Git repository at '~a'...~%")
+                             (channel-name channel)
+                             (channel-url channel))
+                     (let ((instance (latest-channel-instance store channel)))
+                       (let-values (((new-instances new-channels)
+                                     (loop (channel-instance-dependencies instance)
+                                           previous-channels)))
+                         (values (append (cons channel new-channels)
+                                         previous-channels)
+                                 (append (cons instance new-instances)
+                                         instances)))))))
+             previous-channels
+             '()                                  ;instances
+             channels))
 
-  (let ((instance-name (compose channel-name channel-instance-channel)))
-    ;; Remove all earlier channel specifications if they are followed by a
-    ;; more specific one.
-    (values (delete-duplicates instances
-                               (lambda (a b)
-                                 (eq? (instance-name a) (instance-name b))))
-            resulting-channels)))
+    (let ((instance-name (compose channel-name channel-instance-channel)))
+      ;; Remove all earlier channel specifications if they are followed by a
+      ;; more specific one.
+      (values (delete-duplicates instances
+                                 (lambda (a b)
+                                   (eq? (instance-name a) (instance-name b))))
+              resulting-channels))))
 
 (define* (checkout->channel-instance checkout
                                      #:key commit
