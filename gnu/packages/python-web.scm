@@ -3836,3 +3836,28 @@ major web browsers.")
     (synopsis "Python wrapper around rapidjson")
     (description "This package provides a python wrapper around rapidjson.")
     (license license:expat)))
+
+(define-public python-venusian
+  (package
+    (name "python-venusian")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "venusian" version))
+       (sha256
+        (base32 "0f7f67dkgxxcjfhpdd5frb9pszkf04lyzzpn5069q0xi89r2p17n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-runner" ,python-pytest-runner)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (arguments '(#:test-target "pytest"))
+    (home-page "https://docs.pylonsproject.org/projects/venusian")
+    (synopsis "Library for defering decorator actions")
+    (description
+     "Venusian is a library which allows framework authors to defer decorator
+actions.  Instead of taking actions when a function (or class) decorator is
+executed at import time, you can defer the action usually taken by the
+decorator until a separate scan phase.")
+    (license license:repoze)))
