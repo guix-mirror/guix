@@ -63,16 +63,18 @@
 take the partition metadata size into account, take a 25% margin."
   (* 1.25 (file-size root)))
 
-(define* (make-ext4-image partition target root
-                          #:key
-                          (owner-uid 0)
-                          (owner-gid 0))
-  "Handle the creation of EXT4 partition images. See 'make-partition-image'."
+(define* (make-ext-image partition target root
+                         #:key
+                         (owner-uid 0)
+                         (owner-gid 0))
+  "Handle the creation of EXT2/3/4 partition images. See
+'make-partition-image'."
   (let ((size (partition-size partition))
+        (fs (partition-file-system partition))
         (label (partition-label partition))
         (uuid (partition-uuid partition))
         (options "lazy_itable_init=1,lazy_journal_init=1"))
-    (invoke "mke2fs" "-t" "ext4" "-d" root
+    (invoke "mke2fs" "-t" fs "-d" root
             "-L" label "-U" (uuid->string uuid)
             "-E" (format #f "root_owner=~a:~a,~a"
                          owner-uid owner-gid options)
@@ -105,8 +107,8 @@ ROOT directory to populate the image."
   (let* ((partition (sexp->partition partition-sexp))
          (type (partition-file-system partition)))
     (cond
-     ((string=? type "ext4")
-      (make-ext4-image partition target root))
+     ((string-prefix? "ext" type)
+      (make-ext-image partition target root))
      ((string=? type "vfat")
       (make-vfat-image partition target root))
      (else
