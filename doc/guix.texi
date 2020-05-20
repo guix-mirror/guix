@@ -3900,6 +3900,21 @@ Use @var{profile} instead of @file{~/.config/guix/current}.
 Show which channel commit(s) would be used and what would be built or
 substituted but do not actually do it.
 
+@item --allow-downgrades
+Allow pulling older or unrelated revisions of channels than those
+currently in use.
+
+@cindex downgrade attacks, protection against
+By default, @command{guix pull} protects against so-called ``downgrade
+attacks'' whereby the Git repository of a channel would be reset to an
+earlier or unrelated revision of itself, potentially leading you to
+install older, known-vulnerable versions of software packages.
+
+@quotation Note
+Make sure you understand its security implications before using
+@option{--allow-downgrades}.
+@end quotation
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of

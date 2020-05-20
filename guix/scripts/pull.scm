@@ -81,7 +81,8 @@
     (multiplexed-build-output? . #t)
     (graft? . #t)
     (debug . 0)
-    (verbosity . 1)))
+    (verbosity . 1)
+    (validate-pull . ,ensure-forward-channel-update)))
 
 (define (show-help)
   (display (G_ "Usage: guix pull [OPTION]...
@@ -94,6 +95,8 @@ Download and deploy the latest version of Guix.\n"))
       --commit=COMMIT    download the specified COMMIT"))
   (display (G_ "
       --branch=BRANCH    download the tip of the specified BRANCH"))
+  (display (G_ "
+      --allow-downgrades allow downgrades to earlier channel revisions"))
   (display (G_ "
   -N, --news             display news compared to the previous generation"))
   (display (G_ "
@@ -158,6 +161,10 @@ Download and deploy the latest version of Guix.\n"))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'ref `(branch . ,arg) result)))
+         (option '("allow-downgrades") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'validate-pull warn-about-backward-updates
+                               result)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'profile (canonicalize-profile arg)
@@ -187,6 +194,21 @@ Download and deploy the latest version of Guix.\n"))
                    (show-version-and-exit "guix pull")))
 
          %standard-build-options))
+
+(define (warn-about-backward-updates channel start instance relation)
+  "Warn about non-forward updates of CHANNEL from START to INSTANCE, without
+aborting."
+  (match relation
+    ((or 'ancestor 'self)
+     #t)
+    ('descendant
+     (warning (G_ "rolling back channel '~a' from ~a to ~a~%")
+              (channel-name channel) start
+              (channel-instance-commit instance)))
+    ('unrelated
+     (warning (G_ "moving channel '~a' from ~a to unrelated commit ~a~%")
+              (channel-name channel) start
+              (channel-instance-commit instance)))))
 
 (define* (display-profile-news profile #:key concise?
                                current-is-newer?)
@@ -749,7 +771,9 @@ Use '~/.config/guix/channels.scm' instead."))
             (substitutes? (assoc-ref opts 'substitutes?))
             (dry-run?     (assoc-ref opts 'dry-run?))
             (channels     (channel-list opts))
-            (profile      (or (assoc-ref opts 'profile) %current-profile)))
+            (profile      (or (assoc-ref opts 'profile) %current-profile))
+            (current-channels (profile-channels profile))
+            (validate-pull    (assoc-ref opts 'validate-pull)))
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
              ((assoc-ref opts 'generation)
@@ -766,7 +790,12 @@ Use '~/.config/guix/channels.scm' instead."))
                       (ensure-default-profile)
                       (honor-x509-certificates store)
 
-                      (let ((instances (latest-channel-instances store channels)))
+                      (let ((instances
+                             (latest-channel-instances store channels
+                                                       #:current-channels
+                                                       current-channels
+                                                       #:validate-pull
+                                                       validate-pull)))
                         (format (current-error-port)
                                 (N_ "Building from this channel:~%"
                                     "Building from these channels:~%"

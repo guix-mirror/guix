@@ -246,25 +246,29 @@ This procedure implements a channel update policy meant to be used as a
     ('ancestor #t)
     ('self #t)
     (_
-     (raise (apply make-compound-condition
-                   (condition
-                    (&message (message
-                               (format #f (G_ "\
+     (raise (make-compound-condition
+             (condition
+              (&message (message
+                         (format #f (G_ "\
 aborting update of channel '~a' to commit ~a, which is not a descendant of ~a")
-                                       (channel-name channel)
-                                       (channel-instance-commit instance)
-                                       start))))
+                                 (channel-name channel)
+                                 (channel-instance-commit instance)
+                                 start))))
 
-                   ;; Don't show the hint when the user explicitly specified a
-                   ;; commit in CHANNEL.
-                   (if (channel-commit channel)
-                       '()
-                       (list (condition
-                              (&fix-hint
-                               (hint (G_ "This could indicate that the channel has
+             ;; If the user asked for a specific commit, they might want
+             ;; that to happen nevertheless, so tell them about the
+             ;; relevant 'guix pull' option.
+             (if (channel-commit channel)
+                 (condition
+                  (&fix-hint
+                   (hint (G_ "Use @option{--allow-downgrades} to force
+this downgrade."))))
+                 (condition
+                  (&fix-hint
+                   (hint (G_ "This could indicate that the channel has
 been tampered with and is trying to force a roll-back, preventing you from
 getting the latest updates.  If you think this is not the case, explicitly
-allow non-forward updates.")))))))))))
+allow non-forward updates."))))))))))
 
 (define* (latest-channel-instances store channels
                                    #:key
