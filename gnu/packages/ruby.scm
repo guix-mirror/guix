@@ -1542,6 +1542,50 @@ a Ruby object.")
     (home-page "https://github.com/rails/execjs")
     (license license:expat)))
 
+(define-public ruby-fakefs
+  (package
+    (name "ruby-fakefs")
+    (version "1.2.2")
+    (home-page "https://github.com/fakefs/fakefs")
+    (source (origin
+              ;; The Rubygems release does not contain tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "008dq9knyip2bfbl0mrk8b8r7bv0k3bf128wcfqsgy1rqal4mgwk"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'replace-git-ls-files
+                    (lambda _
+                      (substitute* "fakefs.gemspec"
+                        (("`git ls-files lib README.md LICENSE`")
+                         "`find lib README.md LICENSE -type f | sort`"))
+                      #t))
+                  (add-before 'check 'remove-version-constraints
+                    (lambda _
+                      ;; Drop hard version requirements for test dependencies.
+                      (substitute* "fakefs.gemspec"
+                        (("(.*add_development_dependency .*), .*" _ dep)
+                         (string-append dep "\n")))
+                      #t))
+                  )))
+    (native-inputs
+     `(("ruby-bump" ,ruby-bump)
+       ("ruby-maxitest" ,ruby-maxitest)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Fake file system for Ruby")
+    (description
+     "This package provides a fake file system for use in test suites.  It
+avoids the need for manually creating temporary directories, or dealing
+with platform intricacies in @code{File} and @code{FileUtils}.")
+    (license license:expat)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
