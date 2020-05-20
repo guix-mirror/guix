@@ -218,7 +218,7 @@ result is unspecified."
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
-  (let-values (((checkout commit)
+  (let-values (((checkout commit relation)
                 (update-cached-checkout (channel-url channel)
                                         #:ref (channel-reference channel))))
     (when (guix-channel? channel)

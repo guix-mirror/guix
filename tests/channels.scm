@@ -136,11 +136,11 @@
                    (url "test")))
          (test-dir (channel-instance-checkout instance--simple)))
     (mock ((guix git) update-cached-checkout
-           (lambda* (url #:key ref)
+           (lambda* (url #:key ref starting-commit)
              (match url
-               ("test" (values test-dir "caf3cabba9e"))
+               ("test" (values test-dir "caf3cabba9e" #f))
                (_      (values (channel-instance-checkout instance--no-deps)
-                               "abcde1234")))))
+                               "abcde1234" #f)))))
           (with-store store
             (let ((instances (latest-channel-instances store (list channel))))
               (and (eq? 2 (length instances))
@@ -155,11 +155,11 @@
                    (url "test")))
          (test-dir (channel-instance-checkout instance--with-dupes)))
     (mock ((guix git) update-cached-checkout
-           (lambda* (url #:key ref)
+           (lambda* (url #:key ref starting-commit)
              (match url
-               ("test" (values test-dir "caf3cabba9e"))
+               ("test" (values test-dir "caf3cabba9e" #f))
                (_      (values (channel-instance-checkout instance--no-deps)
-                               "abcde1234")))))
+                               "abcde1234" #f)))))
           (with-store store
             (let ((instances (latest-channel-instances store (list channel))))
               (and (= 2 (length instances))
