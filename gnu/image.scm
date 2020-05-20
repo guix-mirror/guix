@@ -22,6 +22,7 @@
             partition?
             partition-device
             partition-size
+            partition-offset
             partition-file-system
             partition-label
             partition-uuid
@@ -47,6 +48,7 @@
   partition?
   (device      partition-device (default #f))
   (size        partition-size)
+  (offset      partition-offset (default #f))
   (file-system partition-file-system (default "ext4"))
   (label       partition-label (default #f))
   (uuid        partition-uuid (default #f))

@@ -243,11 +243,17 @@ used in the image."
       ;; Return the genimage partition configuration for PARTITION.
       (let ((label (partition-label partition))
             (dos-type (partition->dos-type partition))
-            (image (partition-image partition)))
+            (image (partition-image partition))
+            (offset (partition-offset partition)))
         #~(format #f "~/partition ~a {
                                       ~/~/partition-type = ~a
                                       ~/~/image = \"~a\"
-                                      ~/}"  #$label #$dos-type #$image)))
+                                      ~/~/offset = \"~a\"
+                                      ~/}"
+                  #$label
+                  #$dos-type
+                  #$image
+                  #$(or offset 0))))
 
     (let* ((format (image-format image))
            (image-type (format->image-type format))
