@@ -818,8 +818,6 @@ server, collect the answer, and finally decoding the XML to Perl.")
                (base32
                 "1z1a88bpy64j42bbyl8acbfl3dn9iaz47gx6clkgy5sbn4kr0kgk"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:tests? #f))                    ; tests require internet connection
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-uri" ,perl-uri)
