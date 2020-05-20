@@ -5704,7 +5704,7 @@ configuration language.")
     (synopsis "Collection of Varnish modules")
     (description
      "This package provides a collection of modules (@dfn{vmods}) for the Varnish
-cache server, extending the @dfn{Varnish Configuration Language} (VCL) with
+cache server, extending the @acronym{VCL, Varnish Configuration Language} with
 additional capabilities.")
     (license license:bsd-2)))
 
