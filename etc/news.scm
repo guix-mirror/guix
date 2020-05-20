@@ -3,6 +3,7 @@
 ;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;
 ;; Copying and distribution of this file, with or without modification, are
 ;; permitted in any medium without royalty provided the copyright notice and
