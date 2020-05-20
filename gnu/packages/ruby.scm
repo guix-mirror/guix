@@ -9150,3 +9150,55 @@ which snapshots to consider and what files to include.")
     (home-page
      "https://github.com/hartator/wayback-machine-downloader")
     (license license:expat)))
+
+(define-public ruby-wwtd
+  (package
+    (name "ruby-wwtd")
+    (version "1.4.1")
+    (home-page "http://github.com/grosser/wwtd")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gw7vfnbb41cy67yw82zji3jkhfsgmzcgzaszm99ax77y18wclf2"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled library.
+                  (delete-file "spec/rake-12.3.0.gem")
+                  #t))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; XXX: Tests need multiple versions of ruby, wants to run
+       ;; `bundle install`, etc.
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (replace 'replace-git-ls-files
+                    (lambda _
+                      (substitute* "wwtd.gemspec"
+                        (("git ls-files lib/ bin/`")
+                         "find lib/ bin/ -type f |sort`"))
+                      #t))
+                  (add-before 'check 'remove-version-constraints
+                    (lambda _
+                      (delete-file "Gemfile.lock")
+                      #t))
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "rspec" "spec/")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("ruby-bump" ,ruby-bump)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Run @file{.travis.yml} files locally")
+    (description
+     "WWTD is a @dfn{Travis Simulator} that lets you run test matrices
+defined in @file{.travis.yml} on your local machine, using @code{rvm},
+@code{rbenv}, or @code{chruby} to test different versions of Ruby.")
+    (license license:expat)))
