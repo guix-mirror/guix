@@ -3016,7 +3016,8 @@ Ruby, but can be used for all programs.")
      "Mocha is a mocking and stubbing library with JMock/SchMock syntax, which
 allows mocking and stubbing of methods on real (non-mock) classes.")
     (home-page "http://gofreerange.com/mocha/docs")
-    (license license:expat)))
+    ;; Mocha can be used with either license at the users choice.
+    (license (list license:expat license:ruby))))
 
 (define-public ruby-mocha-on-bacon
   (package
