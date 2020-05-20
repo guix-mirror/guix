@@ -96,6 +96,7 @@
                "0zgp5m3hmc9jh8wpjx6czzkh5id2y8n1k823x2mjvm2sk6b28ag5"))
              (patches (search-patches
                        "grub-efi-fat-serial-number.patch"
+                       "grub-setup-root.patch"
                        "grub-verifiers-Blocklist-fallout-cleanup.patch"))))
     (build-system gnu-build-system)
     (arguments
