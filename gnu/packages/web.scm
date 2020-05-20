@@ -5917,24 +5917,26 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (patches
-               ;; When parsing URLs, treat an empty port (eg
-               ;; `http://hostname:/`) as if it were unspecified.  This patch is
-               ;; applied to Fedora's http-parser and to libgit2's bundled version.
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                         "https://src.fedoraproject.org/rpms/http-parser/raw/"
-                         "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
-                         "f/0001-url-treat-empty-port-as-default.patch"))
-                  (sha256
-                   (base32
-                    "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))))
               (sha256
                (base32
-                "1vda4dp75pjf5fcph73sy0ifm3xrssrmf927qd1x8g3q46z0cv6c"))))
+                "1vda4dp75pjf5fcph73sy0ifm3xrssrmf927qd1x8g3q46z0cv6c"))
+              (file-name (git-file-name name version))
+              (patches
+               (cons*
+                (origin
+                  ;; Treat an empty port (e.g. `http://hostname:/`) when parsing
+                  ;; URLs as if no port were specified.  This patch is applied
+                  ;; to Fedora's http-parser and to libgit2's bundled version.
+                  (method url-fetch)
+                  (uri (string-append
+                        "https://src.fedoraproject.org/rpms/http-parser/raw/"
+                        "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
+                        "f/0001-url-treat-empty-port-as-default.patch"))
+                  (sha256
+                   (base32
+                    "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))
+                ;; A fix for <https://issues.guix.gnu.org/40604>.
+                (search-patches "http-parser-fix-assertion-on-armhf.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
