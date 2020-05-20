@@ -20,12 +20,12 @@
 operating system declaration now takes into account the use of a Btrfs
 subvolume for the partition holding @file{/gnu/store}.  Run the command
 @command{info \"(guix) Btrfs file system\"} for more information and
-examples."
+examples.")
          (fr "La génération du fichier de configuration de GRUB produite à
 partir de la déclaration d'un @code{operating-system} tient maintenant compte
 de l'utilisation d'un sous-volume Btrfs pour la partition contenant
 @file{/gnu/store}.  Exécutez la commande @command{info\"(guix) Btrfs file
-system\"} pour des exemples et plus d'information.")))
+system\"} pour des exemples et plus d'information."))))
 
  (entry (commit "6456232164890dbf5aa20394ee24637feb4b7b9e")
         (title (en "@command{guix pack -RR} introduces a new execution
