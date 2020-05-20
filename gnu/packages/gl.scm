@@ -775,7 +775,7 @@ and visualizations.")
 (define-public gl2ps
   (package
     (name "gl2ps")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -783,15 +783,14 @@ and visualizations.")
              "http://geuz.org/gl2ps/src/gl2ps-"
              version ".tgz"))
        (sha256
-        (base32
-         "1qpidkz8x3bxqf69hlhyz1m0jmfi9kq24fxsp7rq6wfqzinmxjq3"))))
+        (base32 "1sgzv547h7hrskb9qd0x5yp45kmhvibjwj2mfswv95lg070h074d"))))
     (build-system cmake-build-system)
     (inputs
      `(("libpng" ,libpng)
        ("mesa" ,mesa)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f))  ;; no tests
+     `(#:tests? #f))                    ; no tests
     (home-page "http://www.geuz.org/gl2ps/")
     (synopsis "OpenGL to PostScript printing library")
     (description "GL2PS is a C library providing high quality vector
