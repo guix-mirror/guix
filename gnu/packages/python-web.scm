@@ -3923,3 +3923,27 @@ basic API that applications may use to find and load configuration settings.
 Any specific constraints should be implemented in a pluggable loader which can
 be registered via an entrypoint.")
     (license license:repoze)))
+
+(define-public python-plaster-pastedeploy
+  (package
+    (name "python-plaster-pastedeploy")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "plaster_pastedeploy" version))
+              (sha256
+               (base32
+                "1zg7gcsvc1kzay1ry5p699rg2qavfsxqwl17mqxzr0gzw6j9679r"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-plaster" ,python-plaster)
+       ("python-pastedeploy" ,python-pastedeploy)))
+    (home-page "https://github.com/Pylons/plaster_pastedeploy")
+    (synopsis "Plugin for python-plaster adding PasteDeploy syntax")
+    (description
+     "This plugin for @code{python-plaster} adds support for PasteDeploy
+syntax, it provides a plaster @code{Loader} object that can parse ini files
+according to the standard set by PasteDeploy ")
+    (license license:expat)))
