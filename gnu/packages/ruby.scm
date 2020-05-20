@@ -3502,6 +3502,28 @@ URIs using the normal URI.parse method.")
     (home-page "https://github.com/dball/data_uri")
     (license license:expat)))
 
+(define-public ruby-deep-merge
+  (package
+    (name "ruby-deep-merge")
+    (version "1.2.1")
+    (home-page "https://github.com/danielsdeleo/deep_merge")
+    ;; The Rubygem source does not contain the gemspec required for tests.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0c9rk23ilhc0n4489y6lda2wzphpzh6ish6fahlbpjhxn82wb931"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Recursively merge hashes")
+    (description
+     "Deep Merge is a set of utility functions for @code{Hash}.  It permits
+you to merge elements inside a hash together recursively.")
+    (license license:expat)))
+
 (define-public ruby-git
   (package
     (name "ruby-git")
