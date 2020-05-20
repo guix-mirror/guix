@@ -4253,6 +4253,34 @@ file or directories are modified.")
     (home-page "https://guardgem.org/")
     (license license:expat)))
 
+(define-public ruby-spinach
+  (package
+    (name "ruby-spinach")
+    (version "0.11.0")
+    (home-page "http://github.com/codegram/spinach")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "spinach" version))
+              (sha256
+               (base32
+                "1mv053mqz9c8ngqa6wp1ymk2fax6j0yqzax6918akrdr7c3fx3c6"))))
+    (build-system ruby-build-system)
+    (arguments
+       ;; FIXME: Disable tests altogether because they depend on 'capybara'
+       ;; which in turn depends on many other unpackaged gems.  Enable once
+       ;; capybara is available.
+       '(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-colorize" ,ruby-colorize)
+       ("ruby-gherkin-ruby" ,ruby-gherkin-ruby)
+       ("ruby-json" ,ruby-json)))
+    (synopsis "Gherkin-based BDD framework")
+    (description
+     "Spinach is a high-level @acronym{BDD, Behavior-driven development}
+framework that leverages the expressive @code{Gherkin} language to help you
+define executable specifications of your code.")
+    (license license:expat)))
+
 (define-public ruby-tilt
   (package
     (name "ruby-tilt")
