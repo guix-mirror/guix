@@ -54,8 +54,8 @@
        (modify-phases %standard-phases
          (delete 'configure))))
     (synopsis "EFI toolchain")
-    (description "This package provides an EFI (Extensible Firmware
-Interface) toolchain for building programs that can run in the
+    (description "This package provides an @acronym{EFI, Extensible Firmware
+Interface} toolchain for building programs that can run in the
 environment presented by Intel's EFI.")
     (home-page "https://directory.fsf.org/wiki/GNU_EFI")
     ;; Distribution is allowed only when accepting all those licenses.
