@@ -822,7 +822,7 @@ server, collect the answer, and finally decoding the XML to Perl.")
      `(("perl-module-build" ,perl-module-build)
        ("perl-uri" ,perl-uri)
        ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
-    (inputs
+    (propagated-inputs
      `(("perl-class-errorhandler" ,perl-class-errorhandler)
        ("perl-datetime" ,perl-datetime)
        ("perl-datetime-format-flexible" ,perl-datetime-format-flexible)
