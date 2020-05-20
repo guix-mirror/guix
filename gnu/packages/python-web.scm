@@ -3975,3 +3975,32 @@ according to the standard set by PasteDeploy ")
 imported Python files in sys.modules as well as custom paths.  When files are
 changed the process is restarted.")
     (license license:expat)))
+
+(define-public python-pyramid
+  (package
+    (name "python-pyramid")
+    (version "1.10.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyramid" version))
+              (sha256
+               (base32
+                "0rkxs1ajycg2zh1c94xlmls56mx5m161sn8112skj0amza6cn36q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-hupper" ,python-hupper)
+       ("python-plaster-pastedeploy" ,python-plaster-pastedeploy)
+       ("python-translationstring" ,python-translationstring)
+       ("python-venusian" ,python-venusian)
+       ("python-webob" ,python-webob)
+       ("python-zope-deprecation" ,python-zope-deprecation)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-webtest" ,python-webtest)
+       ("python-zope-component" ,python-zope-component)
+       ("python-plaster" ,python-plaster)))
+    (home-page "https://trypyramid.com/")
+    (synopsis "Python web-framework suitable for small and large sites")
+    (description
+     "Pyramid makes it easy to write web applications.  From minimal
+request/response web apps to larger, grown applications.")
+    (license license:repoze)))
