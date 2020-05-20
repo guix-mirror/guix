@@ -37,6 +37,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
+  #:use-module (ice-9 control)
   #:use-module (ice-9 match))
 
 (test-begin "channels")
@@ -177,6 +178,40 @@
                                            (channel-instance-channel instance))
                                           "abc1234")))
                          instances)))))))
+
+(unless (which (git-command)) (test-skip 1))
+(test-equal "latest-channel-instances #:validate-pull"
+  'descendant
+
+  ;; Make sure the #:validate-pull procedure receives the right values.
+  (let/ec return
+    (with-temporary-git-repository directory
+        '((add "a.txt" "A")
+          (commit "first commit")
+          (add "b.scm" "#t")
+          (commit "second commit"))
+      (with-repository directory repository
+        (let* ((commit1 (find-commit repository "first"))
+               (commit2 (find-commit repository "second"))
+               (spec    (channel (url (string-append "file://" directory))
+                                 (name 'foo)))
+               (new     (channel (inherit spec)
+                                 (commit (oid->string (commit-id commit2)))))
+               (old     (channel (inherit spec)
+                                 (commit (oid->string (commit-id commit1))))))
+          (define (validate-pull channel current instance relation)
+            (return (and (eq? channel old)
+                         (string=? (oid->string (commit-id commit2))
+                                   current)
+                         (string=? (oid->string (commit-id commit1))
+                                   (channel-instance-commit instance))
+                         relation)))
+
+          (with-store store
+            ;; Attempt a downgrade from NEW to OLD.
+            (latest-channel-instances store (list old)
+                                      #:current-channels (list new)
+                                      #:validate-pull validate-pull)))))))
 
 (test-assert "channel-instances->manifest"
   ;; Compute the manifest for a graph of instances and make sure we get a

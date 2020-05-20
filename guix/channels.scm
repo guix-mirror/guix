@@ -73,6 +73,7 @@
             channel-instances->manifest
             %channel-profile-hooks
             channel-instances->derivation
+            ensure-forward-channel-update
 
             profile-channels
 
@@ -212,15 +213,18 @@ result is unspecified."
        (loop rest)))))
 
 (define* (latest-channel-instance store channel
-                                  #:key (patches %patches))
-  "Return the latest channel instance for CHANNEL."
+                                  #:key (patches %patches)
+                                  starting-commit)
+  "Return two values: the latest channel instance for CHANNEL, and its
+relation to STARTING-COMMIT when provided."
   (define (dot-git? file stat)
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
   (let-values (((checkout commit relation)
                 (update-cached-checkout (channel-url channel)
-                                        #:ref (channel-reference channel))))
+                                        #:ref (channel-reference channel)
+                                        #:starting-commit starting-commit)))
     (when (guix-channel? channel)
       ;; Apply the relevant subset of PATCHES directly in CHECKOUT.  This is
       ;; safe to do because 'switch-to-ref' eventually does a hard reset.
@@ -229,11 +233,51 @@ result is unspecified."
     (let* ((name     (url+commit->name (channel-url channel) commit))
            (checkout (add-to-store store name #t "sha256" checkout
                                    #:select? (negate dot-git?))))
-      (channel-instance channel commit checkout))))
+      (values (channel-instance channel commit checkout)
+              relation))))
 
-(define* (latest-channel-instances store channels)
+(define (ensure-forward-channel-update channel start instance relation)
+  "Raise an error if RELATION is not 'ancestor, meaning that START is not an
+ancestor of the commit in INSTANCE, unless CHANNEL specifies a commit.
+
+This procedure implements a channel update policy meant to be used as a
+#:validate-pull argument."
+  (match relation
+    ('ancestor #t)
+    ('self #t)
+    (_
+     (raise (apply make-compound-condition
+                   (condition
+                    (&message (message
+                               (format #f (G_ "\
+aborting update of channel '~a' to commit ~a, which is not a descendant of ~a")
+                                       (channel-name channel)
+                                       (channel-instance-commit instance)
+                                       start))))
+
+                   ;; Don't show the hint when the user explicitly specified a
+                   ;; commit in CHANNEL.
+                   (if (channel-commit channel)
+                       '()
+                       (list (condition
+                              (&fix-hint
+                               (hint (G_ "This could indicate that the channel has
+been tampered with and is trying to force a roll-back, preventing you from
+getting the latest updates.  If you think this is not the case, explicitly
+allow non-forward updates.")))))))))))
+
+(define* (latest-channel-instances store channels
+                                   #:key
+                                   (current-channels '())
+                                   (validate-pull
+                                    ensure-forward-channel-update))
   "Return a list of channel instances corresponding to the latest checkouts of
-CHANNELS and the channels on which they depend."
+CHANNELS and the channels on which they depend.
+
+CURRENT-CHANNELS is the list of currently used channels.  It is compared
+against the newly-fetched instances of CHANNELS, and VALIDATE-PULL is called
+for each channel update and can choose to emit warnings or raise an error,
+depending on the policy it implements."
   ;; Only process channels that are unique, or that are more specific than a
   ;; previous channel specification.
   (define (ignore? channel others)
@@ -243,6 +287,13 @@ CHANNELS and the channels on which they depend."
                    (or (channel-commit b)
                        (not (or (channel-commit a)
                                 (channel-commit b))))))))
+
+  (define (current-commit name)
+    ;; Return the current commit for channel NAME.
+    (any (lambda (channel)
+           (and (eq? (channel-name channel) name)
+                (channel-commit channel)))
+         current-channels))
 
   (let loop ((channels channels)
              (previous-channels '()))
@@ -257,7 +308,15 @@ CHANNELS and the channels on which they depend."
                              (G_ "Updating channel '~a' from Git repository at '~a'...~%")
                              (channel-name channel)
                              (channel-url channel))
-                     (let ((instance (latest-channel-instance store channel)))
+                     (let*-values (((current)
+                                    (current-commit (channel-name channel)))
+                                   ((instance relation)
+                                    (latest-channel-instance store channel
+                                                             #:starting-commit
+                                                             current)))
+                       (when relation
+                         (validate-pull channel current instance relation))
+
                        (let-values (((new-instances new-channels)
                                      (loop (channel-instance-dependencies instance)
                                            previous-channels)))
@@ -617,10 +676,20 @@ channel instances."
 (define latest-channel-instances*
   (store-lift latest-channel-instances))
 
-(define* (latest-channel-derivation #:optional (channels %default-channels))
+(define* (latest-channel-derivation #:optional (channels %default-channels)
+                                    #:key
+                                    (current-channels '())
+                                    (validate-pull
+                                     ensure-forward-channel-update))
   "Return as a monadic value the derivation that builds the profile for the
-latest instances of CHANNELS."
-  (mlet %store-monad ((instances (latest-channel-instances* channels)))
+latest instances of CHANNELS.  CURRENT-CHANNELS and VALIDATE-PULL are passed
+to 'latest-channel-instances'."
+  (mlet %store-monad ((instances
+                       (latest-channel-instances* channels
+                                                  #:current-channels
+                                                  current-channels
+                                                  #:validate-pull
+                                                  validate-pull)))
     (channel-instances->derivation instances)))
 
 (define (profile-channels profile)
