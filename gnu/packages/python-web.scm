@@ -3881,3 +3881,21 @@ decorator until a separate scan phase.")
 marking modules, classes, functions, methods and properties as deprecated,
 displaying warnings when usaged in application code.")
     (license license:zpl2.1)))
+
+(define-public python-translationstring
+  (package
+    (name "python-translationstring")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "translationstring" version))
+              (sha256
+               (base32
+                "0bdpcnd9pv0131dl08h4zbcwmgc45lyvq3pa224xwan5b3x4rr2f"))))
+    (build-system python-build-system)
+    (home-page "http://docs.pylonsproject.org/projects/translationstring")
+    (synopsis "Internationalization tooling for the Pylons project")
+    (description "This package provides a library used by various Pylons
+project packages for internationalization (i18n) duties related to
+translation.")
+    (license license:repoze)))
