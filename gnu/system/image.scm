@@ -232,7 +232,7 @@ used in the image."
              (type (partition-file-system partition))
              (image-builder
               (with-imported-modules*
-               (let ((inputs '#$(list e2fsprogs dosfstools mtools)))
+               (let ((inputs '#+(list e2fsprogs dosfstools mtools)))
                  (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
                  (make-partition-image #$(partition->gexp partition)
                                        #$output
@@ -275,7 +275,7 @@ image ~a {
   (let* ((substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
-           (let ((inputs '#$(list genimage coreutils findutils)))
+           (let ((inputs '#+(list genimage coreutils findutils)))
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
              (genimage #$(image->genimage-cfg image) #$output))))
          (image-dir (computed-file "image-dir" builder)))
