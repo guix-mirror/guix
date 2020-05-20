@@ -1884,6 +1884,57 @@ libraries such as Libnotify.")
     (home-page "https://github.com/guard/notiffany")
     (license license:expat)))
 
+(define-public ruby-forking-test-runner
+  (package
+    (name "ruby-forking-test-runner")
+    (version "1.6.0")
+    (home-page "https://github.com/grosser/forking_test_runner")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1mrglzkj2nrgisccf2f30zbfmcs0awv1g3lw994b2az90fl39x8m"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"
+       ;; FIXME: ActiveRecord depends on sqlite3 1.3.6, but Guix has
+       ;; 1.4.1, which in turn breaks the tests that use ActiveRecord.
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (replace 'replace-git-ls-files
+                    (lambda _
+                      (substitute* "forking_test_runner.gemspec"
+                        (("`git ls-files lib/ bin/ MIT-LICENSE`")
+                         "`find lib/ bin/ MIT-LICENSE -type f | sort`"))
+                      #t))
+                  (add-before 'check 'remove-version-constraints
+                    (lambda _
+                      ;; Ignore hard coded version constraints for the tests.
+                      (delete-file "Gemfile.lock")
+                      #t))
+                  (add-before 'check 'set-HOME
+                    (lambda _
+                      ;; Many tests invoke Bundler, and fails when Bundler
+                      ;; warns that /homeless-shelter does not exist.
+                      (setenv "HOME" "/tmp")
+                      #t)))))
+    (native-inputs
+     `(("ruby-activerecord" ,ruby-activerecord)
+       ("ruby-bump" ,ruby-bump)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-sqlite3" ,ruby-sqlite3)
+       ("ruby-wwtd" ,ruby-wwtd)))
+    (propagated-inputs
+     `(("ruby-parallel-tests" ,ruby-parallel-tests)))
+    (synopsis "Run every test in a fork")
+    (description
+     "This package is a wrapper around @code{parallel_tests} that runs every
+test in a fork to avoid pollution and get clean output per test.")
+    (license license:expat)))
+
 (define-public ruby-formatador
   (package
     (name "ruby-formatador")
