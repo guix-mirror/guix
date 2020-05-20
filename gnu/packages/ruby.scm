@@ -2990,53 +2990,27 @@ Ruby, but can be used for all programs.")
 (define-public ruby-mocha
   (package
     (name "ruby-mocha")
-    (version "1.1.0")
+    (version "1.11.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mocha" version))
               (sha256
                (base32
-                "107nmnngbv8lq2g7hbjpn5kplb4v2c8gs9lxrg6vs8gdbddkilzi"))))
+                "0hxmkm8qxd04vwj8mqnpyrf2dwy7g1k9zipdfhl4y71cw7ijm9n4"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'add-test-unit-to-search-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((test-unit (assoc-ref inputs "ruby-test-unit")))
-              (substitute* "Rakefile"
-                (("t\\.libs << 'test'" line)
-                 (string-append line "; t.libs << \""
-                                test-unit "/lib/ruby/vendor_ruby"
-                                "/gems/test-unit-"
-                                ,(package-version ruby-test-unit)
-                                "/lib\""))))
-            #t))
-         (add-before 'check 'use-latest-redcarpet
-          (lambda _
-            (substitute* "mocha.gemspec"
-              (("<redcarpet>.freeze, \\[\"~> 1\"\\]")
-               "<redcarpet>.freeze, [\">= 3\"]"))
-            #t))
-         (add-before 'check 'hardcode-version
-          (lambda _
-            ;; Mocha is undefined at build time
-            (substitute* "Rakefile"
-              (("#\\{Mocha::VERSION\\}") ,version))
-            #t))
-         (add-before 'check 'remove-failing-test
-          ;; FIXME: This test fails for reasons unrelated to Guix packaging.
-          (lambda _
-            (delete-file "test/acceptance/stubbing_nil_test.rb")
-            #t)))))
-    (propagated-inputs
-     `(("ruby-metaclass" ,ruby-metaclass)))
+         (add-before 'check 'remove-rubocop-dependency
+           (lambda _
+             ;; Disable dependency on Rubocop, which is just a linter,
+             ;; and would introduce a circular dependency.
+             (substitute* "mocha.gemspec"
+               ((".*rubocop.*")
+                "true\n"))
+             #t)))))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-introspection" ,ruby-introspection)
-       ("ruby-test-unit" ,ruby-test-unit)
-       ("ruby-redcarpet" ,ruby-redcarpet)))
+     `(("ruby-introspection" ,ruby-introspection)))
     (synopsis "Mocking and stubbing library for Ruby")
     (description
      "Mocha is a mocking and stubbing library with JMock/SchMock syntax, which
