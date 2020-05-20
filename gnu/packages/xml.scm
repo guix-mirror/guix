@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -826,7 +827,10 @@ server, collect the answer, and finally decoding the XML to Perl.")
     (inputs
      `(("perl-class-errorhandler" ,perl-class-errorhandler)
        ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-flexible" ,perl-datetime-format-flexible)
+       ("perl-datetime-format-iso8601" ,perl-datetime-format-iso8601)
        ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-natural" ,perl-datetime-format-natural)
        ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
        ("perl-feed-find" ,perl-feed-find)
        ("perl-html-parser" ,perl-html-parser)
