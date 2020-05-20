@@ -538,6 +538,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/vim.scm				\
   %D%/packages/virtualization.scm		\
   %D%/packages/visidata.scm			\
+  %D%/packages/vlang.scm			\
   %D%/packages/vnc.scm				\
   %D%/packages/vpn.scm				\
   %D%/packages/vulkan.scm			\
