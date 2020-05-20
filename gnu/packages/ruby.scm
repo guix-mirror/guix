@@ -3560,6 +3560,38 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
     (home-page "https://github.com/schacon/ruby-git")
     (license license:expat)))
 
+(define-public ruby-hocon
+  (package
+    (name "ruby-hocon")
+    (version "1.3.0")
+    (home-page "https://github.com/puppetlabs/ruby-hocon")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wz4cswjg3gs1y1bar7j4j88wjimfa9zhvy51jyi177i5dzax416"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key tests? #:allow-other-keys)
+                      (if tests?
+                          (invoke "rspec")
+                          (format #t "test suite not run~%"))
+                      #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "HOCON config library")
+    (description
+     "This package provides Ruby support for the @acronym{HOCON,
+Human-Optimized Config Object Notation} configuration file format.  It
+supports parsing and modifying HOCON and JSON files, and rendering parsed
+objects back to a @code{String}.")
+    (license license:asl2.0)))
+
 (define-public ruby-slop
   (package
     (name "ruby-slop")
