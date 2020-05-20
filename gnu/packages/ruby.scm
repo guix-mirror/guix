@@ -2987,6 +2987,59 @@ Ruby, but can be used for all programs.")
   (home-page "https://github.com/alexch/rerun/")
   (license license:expat)))
 
+(define-public ruby-maxitest
+  (package
+    (name "ruby-maxitest")
+    (version "3.6.0")
+    (home-page "https://github.com/grosser/maxitest")
+    (source (origin
+              ;; Pull from git because the gem does not contain tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07b3j0bv3dx5j42jlvpvl07aaxplyi6wq688y3jl8y528ww2hjz8"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "default"
+       #:phases (modify-phases %standard-phases
+                  (replace 'replace-git-ls-files
+                    (lambda _
+                      (substitute* "maxitest.gemspec"
+                        (("`git ls-files lib/ bin/ MIT-LICENSE Readme.md`")
+                         "`find lib/ bin/ MIT-LICENSE Readme.md -type f | sort`"))
+                      #t))
+                  (add-before 'check 'remove-version-constraints
+                    (lambda _
+                      ;; Don't use specific versions of dependencies, instead
+                      ;; take whatever is available in Guix.
+                      (delete-file "Gemfile.lock")
+                      #t))
+                  (add-before 'check 'add-mtest-on-PATH
+                    (lambda _
+                      ;; Tests use 'mtest' which is not automatically added on
+                      ;; PATH.
+                      (setenv "PATH" (string-append (getcwd) "/bin:"
+                                                    (getenv "PATH")))
+                      #t)))))
+    (native-inputs
+     `(("ps" ,procps)
+       ("ruby-bump" ,ruby-bump)
+       ("ruby-byebug" ,ruby-byebug)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-wwtd" ,ruby-wwtd)))
+    (propagated-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Minitest with extra features")
+    (description
+     "Maxitest is a wrapper around Minitest with extra functionality such
+as timeouts, an @command{mtest} executable that can run tests by line
+number, support for interrupted tests, better backtraces, and more.")
+    (license license:expat)))
+
 (define-public ruby-mocha
   (package
     (name "ruby-mocha")
