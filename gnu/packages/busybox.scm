@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,7 +113,7 @@ any small or embedded system.")
 (define-public toybox
   (package
     (name "toybox")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -121,7 +121,7 @@ any small or embedded system.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1mgya8zxgf30i5w3rhsb3n70kwlhifxbajh6wqdsz6rf8kx609ws"))))
+                "00aw9d809wj1bqlb2fsssdgz7rj0363ya14py0gfdm0rkp98zcpa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
