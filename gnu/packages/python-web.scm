@@ -3899,3 +3899,27 @@ displaying warnings when usaged in application code.")
 project packages for internationalization (i18n) duties related to
 translation.")
     (license license:repoze)))
+
+(define-public python-plaster
+  (package
+    (name "python-plaster")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "plaster" version))
+              (sha256
+               (base32
+                "1hy8k0nv2mxq94y5aysk6hjk9ryb4bsd13g83m60hcyzxz3wflc3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://docs.pylonsproject.org/projects/plaster/en/latest/")
+    (synopsis "Configuration loader for multiple config file formats")
+    (description
+     "Plaster is a loader interface around multiple config file formats.  It
+exists to define a common API for applications to use when they wish to load
+configuration.  The library itself does not aim to handle anything except a
+basic API that applications may use to find and load configuration settings.
+Any specific constraints should be implemented in a pluggable loader which can
+be registered via an entrypoint.")
+    (license license:repoze)))
