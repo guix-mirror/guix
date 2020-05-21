@@ -3518,9 +3518,7 @@ and RDP protocols.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (arguments
-     `(#:tests? #f ; To contact dbus it needs to load /var/lib/dbus/machine-id
-                   ; or /etc/machine-id.
-       #:glib-or-gtk? #t
+     `(#:glib-or-gtk? #t
        #:configure-flags '("-Denable-gtk-doc=true")))
     (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
