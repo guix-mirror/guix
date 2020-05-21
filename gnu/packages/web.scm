@@ -4876,6 +4876,13 @@ NetSurf project.")
              (invoke "find"  "doc" "underlays" "-type" "f" "-exec"
                      "touch" "{}" "+")
              #t))
+         (add-before 'check 'pre-check
+           ;; XDG_DATA_DIRS is needed by the podcast.t test.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "XDG_DATA_DIRS"
+                     (string-append (assoc-ref inputs "shared-mime-info")
+                                    "/share"))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4907,6 +4914,7 @@ NetSurf project.")
        ("perl-lwpx-paranoidagent" ,perl-lwpx-paranoidagent)
        ("perl-mail-sendmail" ,perl-mail-sendmail)
        ("perl-timedate" ,perl-timedate)
+       ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-sax" ,perl-xml-sax)
        ("perl-xml-simple" ,perl-xml-simple)
        ("perl-xml-twig" ,perl-xml-twig)
