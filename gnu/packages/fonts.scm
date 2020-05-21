@@ -196,7 +196,7 @@ itself."))))
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.111")
+    (version "0.201")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -204,11 +204,10 @@ itself."))))
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "05hpnhihwm9sxlq1qn993g03pwkmpjbn0dvnba71r1gfjv0jp2w5"))))
+                "0qwqmkczqy09fdj8l11nr841ks0dwsydqg55qyms12m4yvjn87xn"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("appstream-glib" ,appstream-glib)
-       ("gettext" ,gettext-minimal))) ;for msgfmt
+     `(("gettext" ,gettext-minimal)))   ; for msgfmt
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
     (description "The Cantarell font family is a contemporary Humanist
