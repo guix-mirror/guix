@@ -3436,7 +3436,7 @@ and RDP protocols.")
                    ; or /etc/machine-id.
        #:glib-or-gtk? #t
        #:configure-flags '("-Denable-gtk-doc=true")))
-    (home-page "https://developer.gnome.org/dconf")
+    (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
 is to provide a backend to GSettings on platforms that don't already have
