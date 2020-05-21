@@ -1572,8 +1572,7 @@ a Ruby object.")
                       (substitute* "fakefs.gemspec"
                         (("(.*add_development_dependency .*), .*" _ dep)
                          (string-append dep "\n")))
-                      #t))
-                  )))
+                      #t)))))
     (native-inputs
      `(("ruby-bump" ,ruby-bump)
        ("ruby-maxitest" ,ruby-maxitest)
