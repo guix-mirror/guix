@@ -4671,15 +4671,14 @@ you'd expect.")
 (define-public uhttpmock
   (package
     (name "uhttpmock")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://tecnocode.co.uk/downloads/uhttpmock/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
+        (base32 "0glyx07kxc3s3cx5vp30kfgscl9q6bghcq1zysfyxm24r0h6j58p"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
