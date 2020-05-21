@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3077,7 +3078,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "18.12")
+    (version "20.03")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -3085,10 +3086,10 @@ MPEG-2, MPEG-4, DVD (VOB)...
               ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
                                   name "/" version "/"
-                                  name "_" version ".tar.bz2"))
+                                  name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1ix95ilcjlawcq6phh25cgplm3riqa2ii7ql82g8yagqs4ldqp6a"))))
+                "1f1shnycf0f1fwka9k9s250l228xjkg0k4k73h8bpld8msighgnw"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
