@@ -3042,7 +3042,7 @@ mutex, simply ignore the RLock/RUnlock functions.")
 (define-public go-github-com-marten-seemann-qtls
   (package
     (name "go-github-com-marten-seemann-qtls")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3051,7 +3051,7 @@ mutex, simply ignore the RLock/RUnlock functions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mdymj66qrqy80pfkwy9s9z9ifkg251whngw5lim09zm90wv2q7a"))))
+                "0dz60y98nm7l70hamq0v2vrs2dspyr5yqhnrds2dfh7hchxvq76j"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/marten-seemann/qtls"
