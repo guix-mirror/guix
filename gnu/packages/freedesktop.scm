@@ -140,6 +140,61 @@ tests.")
     (home-page "https://gitlab.gnome.org/pwithnall/libglib-testing")
     (license license:lgpl2.1+)))
 
+(define-public malcontent
+  (package
+    (name "malcontent")
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.freedesktop.org/pwithnall/malcontent.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vnf0pk516fwwh41v96c29l2i7h1pnwhivlkbf53kkx1q35g7lb3"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         ;; AppInfo not available inside build environment.
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "libmalcontent/tests/app-filter.c"
+               (("g_test_add_func \\(\"/app-filter/appinfo\", test_app_filter_appinfo\\);")
+                 ""))
+             #t)))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("itstool" ,itstool)
+       ("libglib-testing" ,libglib-testing)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("appstream-glib" ,appstream-glib)
+       ("dbus" ,dbus)
+       ("flatpak" ,flatpak)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libostree" ,libostree)
+       ("linux-pam" ,linux-pam)
+       ("polkit" ,polkit)))
+    (synopsis "Parental controls support")
+    (description "MalContent implements parental controls support which can
+be used by applications to filter or limit the access of child accounts to
+inappropriate content.")
+    (home-page "https://gitlab.freedesktop.org/pwithnall/malcontent")
+    (license
+     (list
+      license:gpl2+
+      license:lgpl2.1+))))
+
 (define-public xdg-utils
   (package
     (name "xdg-utils")
