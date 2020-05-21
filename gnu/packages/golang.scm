@@ -3065,6 +3065,28 @@ the Go standard library's TLS 1.3 implementation.")
     (home-page "https://github.com/marten-seemann/qtls")
     (license license:bsd-3)))
 
+(define-public go-github-com-marten-seemann-chacha20
+  (package
+    (name "go-github-com-marten-seemann-chacha20")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/marten-seemann/chacha20")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0x1j4cvbap45zk962qkjalc1h3axhzzdy9cdzhcjmprmm1ql4gjm"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/marten-seemann/chacha20"))
+    (synopsis "ChaCha20 in Go")
+    (description "This package is an external copy of the Go standard library's
+internal ChaCha20 package.")
+    (home-page "https://github.com/marten-seemann/chacha20")
+    (license license:bsd-3)))
+
 (define-public go-github-com-cheekybits-genny
   (package
     (name "go-github-com-cheekybits-genny")
