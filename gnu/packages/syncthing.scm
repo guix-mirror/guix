@@ -32,7 +32,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.4.2")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -40,7 +40,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "16dqpbn4saxmmmqd5ya8zdkwvxzz4nim1p4w954zkkdz3cyg86h6"))
+                "1394b8y4nllihnjngc0kjpdy7pvyh6v1h09hkn8rdmwxpsdkqkjb"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -77,7 +77,7 @@
        ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
        ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
        ("go-golang-org-x-time" ,go-golang-org-x-time)
-       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
+       ("go-github-com-go-ldap-ldap" ,go-github-com-go-ldap-ldap)
        ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
        ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)
        ("go-github-com-prometheus-client-golang"
