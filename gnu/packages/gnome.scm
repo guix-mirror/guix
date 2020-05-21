@@ -259,6 +259,39 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public tepl
+  (package
+    (name "tepl")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0mm2z849hnni7597an05mrv0dckrxjngpf2xfa0g5s17i8x6gxp6"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f))                    ; FIX-ME: Requires gvfs
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("amtk" ,amtk)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libxml2" ,libxml2)
+       ("uchardet" ,uchardet)))
+    (synopsis "Text editor product line")
+    (description "Tepl is a library that eases the development of
+GtkSourceView-based text editors and IDEs.")
+    (home-page "https://wiki.gnome.org/Projects/Tepl")
+    (license license:lgpl2.1+)))
+
 (define-public krb5-auth-dialog
   (package
     (name "krb5-auth-dialog")
