@@ -3114,7 +3114,7 @@ implementation of generics.")
 (define-public go-github-com-lucas-clemente-quic-go
   (package
     (name "go-github-com-lucas-clemente-quic-go")
-    (version "0.12.1")
+    (version "0.14.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3123,7 +3123,7 @@ implementation of generics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "156nhq4dvw7mr08j952248v81q7702phbn4mp228319sahnbv65h"))))
+                "04l3gqbc3gh079n8vgnrsf8ypgv8sl63xjf28jqfrb45v2l73vyz"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/lucas-clemente/quic-go"
@@ -3132,6 +3132,7 @@ implementation of generics.")
     (propagated-inputs
      `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-github-com-cheekybits-genny" ,go-github-com-cheekybits-genny)
+       ("go-github-com-marten-seemann-chacha20" ,go-github-com-marten-seemann-chacha20)
        ("go-github-com-marten-seemann-qtls" ,go-github-com-marten-seemann-qtls)
        ("go-github-com-golang-protobuf-proto" ,go-github-com-golang-protobuf-proto)))
     (synopsis "QUIC in Go")
