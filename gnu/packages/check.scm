@@ -2538,6 +2538,7 @@ provides a simple way to achieve this.")
              #t)))))
     (native-inputs
      `(("vala" ,vala)
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)
 
