@@ -1278,6 +1278,14 @@ When pushing a commit on behalf of somebody else, please add a
 with @command{git am --signoff}.  This improves tracking of who did
 what.
 
+When adding channel news entries (@pxref{Channels, Writing Channel
+News}), make sure they are well-formed by running the following command
+right before pushing:
+
+@example
+make check-channel-news
+@end example
+
 For anything else, please post to @email{guix-patches@@gnu.org} and
 leave time for a review, without committing anything (@pxref{Submitting
 Patches}).  If you didn’t receive any reply after two weeks, and if
