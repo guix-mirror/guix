@@ -9495,9 +9495,6 @@ pure Python module that works on virtually all Python versions.")
     (home-page "https://github.com/pytest-dev/apipkg")
     (license license:expat)))
 
-(define-public python2-apipkg
-  (package-with-python2 python-apipkg))
-
 (define-public python-execnet
   (package
     (name "python-execnet")
