@@ -879,73 +879,72 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
 (define-public deja-dup
   (package
     (name "deja-dup")
-    (version "34.3")
+    (version "40.6")
     (source (origin
-             (method url-fetch)
-             (uri "https://launchpadlibrarian.net/295170991/deja-dup-34.3.tar.xz")
-             (sha256
-              (base32
-               "1xqcr61hpbahbla7gdjn4ngjfz7w6f57y7f5pkb77yk05f60j2n9"))
-             (patches
-               (search-patches "deja-dup-use-ref-keyword-for-iter.patch"))))
-    (build-system glib-or-gtk-build-system)
+              (method url-fetch)
+              (uri (string-append "https://gitlab.gnome.org/World/deja-dup/-/archive/"
+                                  version "/deja-dup-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0lwazh6crby5wpy9fg6zvwy4plqbhs2f98bm5lbizjdlbh88n5q0"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  ((guix build cmake-build-system) #:prefix cmake:)
-                  (guix build glib-or-gtk-build-system)
-                  (guix build utils))
-       #:imported-modules (,@%glib-or-gtk-build-system-modules
-                           (guix build cmake-build-system))
-       #:test-target "test"
-       #:configure-flags (list (string-append
-                                "-DCMAKE_INSTALL_FULL_DATADIR=" %output)
-                               (string-append
-                                "-DCMAKE_INSTALL_LIBEXECDIR=" %output))
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       (list
+        ;; Otherwise, the RUNPATH will lack the final path component.
+        (string-append "-Dc_link_args=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib/deja-dup"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-lockfile-deletion
-           (lambda rest
-             (substitute* "libdeja/tools/duplicity/DuplicityInstance.vala"
-               (("/bin/rm")
-                (which "rm")))))
-         (replace 'configure
-           (assoc-ref cmake:%standard-phases 'configure))
-         (delete 'check) ;; Fails due to issues with DBus
-         (add-after 'install 'wrap-deja-dup
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((python      (assoc-ref inputs "python"))
-                   (python-path (getenv "PYTHONPATH"))
-                   (duplicity   (assoc-ref inputs "duplicity"))
-                   (out         (assoc-ref outputs "out")))
-               (for-each
-                (lambda (program)
-                  (wrap-program program
-                    `("PATH" ":" prefix (,(string-append python "/bin")
-                                         ,(string-append duplicity "/bin"))))
-                  (wrap-program program
-                    `("PYTHONPATH" ":" prefix (,python-path))))
-
-                (find-files (string-append out "/bin")))
-               #t))))))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (substitute* '("libdeja/tools/duplicity/DuplicityInstance.vala"
+                              "libdeja/tests/scripts/instance-error.test")
+                 (("/bin/rm")
+                  (which "rm")))
+               (substitute* "libdeja/tests/runner.vala"
+                 (("/bin/sh")
+                  (which "sh")))
+               (substitute* "libdeja/tests/scripts/instance-error.test"
+                 (("`which python3`")
+                  (string-append python "/bin/python3"))))))
+         (add-after 'unpack 'patch-libgpg-error
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libgpg-error (assoc-ref inputs "libgpg-error")))
+               (substitute* "meson.build"
+                 (("(gpgerror_libs = ).*" _ var)
+                  (format #f "~a '-L~a/lib -lgpg-error'\n" var libgpg-error))))
+             #t))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/post-install.sh"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gobject-introspection" ,gobject-introspection)
        ("duplicity" ,duplicity)
-       ("python" ,python-2)
-       ("python-pygobject" ,python2-pygobject)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
        ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
-       ("libpeas" ,libpeas)
+       ("libgpg-error" ,libgpg-error)
        ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
        ("packagekit" ,packagekit)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("vala" ,vala)
+     `(("appstream-glib" ,appstream-glib)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")             ; for glib-compile-schemas.
+       ("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
-       ("intltool" ,intltool)
-       ("cmake" ,cmake-minimal)))
-    (home-page "https://launchpad.net/deja-dup")
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/DejaDup")
     (synopsis "Simple backup tool, for regular encrypted backups")
     (description
      "Déjà Dup is a simple backup tool, for regular encrypted backups.  It
