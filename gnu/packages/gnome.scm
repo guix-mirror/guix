@@ -4159,10 +4159,14 @@ faster results and to avoid unnecessary server load.")
                   #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '( ;; The tests want to contact the system bus, which can't be done in the
-       ;; build environment.  The integration test can run, but the last of
-       ;; the up-self-tests doesn't.  Disable tests for now.
-       #:tests? #f
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((umockdev (string-append (assoc-ref inputs "umockdev")
+                                            "/lib")))
+               (setenv "LD_LIBRARY_PATH" umockdev))
+             #t)))
        #:configure-flags (list "--localstatedir=/var"
                                (string-append "--with-udevrulesdir="
                                               (assoc-ref %outputs "out")
@@ -4172,6 +4176,12 @@ faster results and to avoid unnecessary server load.")
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("python" ,python)
+
+       ;; For tests.
+       ("python-dbus" ,python-dbus)
+       ("python-dbusmock" ,python-dbusmock)
+       ("python-pygobject" ,python-pygobject)
+       ("umockdev" ,umockdev)
 
        ;; For man pages.
        ("libxslt" ,libxslt)                       ;for 'xsltproc'
