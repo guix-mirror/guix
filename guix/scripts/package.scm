@@ -675,12 +675,13 @@ doesn't need it."
 (define (process-query opts)
   "Process any query specified by OPTS.  Return #t when a query was actually
 processed, #f otherwise."
-  (let* ((profiles (match (filter-map (match-lambda
-                                        (('profile . p) p)
-                                        (_              #f))
-                                      opts)
-                     (() (list %current-profile))
-                     (lst (reverse lst))))
+  (let* ((profiles (delete-duplicates
+                    (match (filter-map (match-lambda
+                                         (('profile . p) p)
+                                         (_              #f))
+                                       opts)
+                      (() (list %current-profile))
+                      (lst (reverse lst)))))
          (profile  (match profiles
                      ((head tail ...) head))))
     (match (assoc-ref opts 'query)
@@ -718,7 +719,8 @@ processed, #f otherwise."
 
       (('list-installed regexp)
        (let* ((regexp    (and regexp (make-regexp* regexp regexp/icase)))
-              (manifest  (profile-manifest profile))
+              (manifest  (concatenate-manifests
+                          (map profile-manifest profiles)))
               (installed (manifest-entries manifest)))
          (leave-on-EPIPE
           (for-each (match-lambda
@@ -729,8 +731,8 @@ processed, #f otherwise."
                                  name (or version "?") output path))))
 
                     ;; Show most recently installed packages last.
-                    (reverse installed)))
-         #t))
+                    (reverse installed))))
+       #t)
 
       (('list-available regexp)
        (let* ((regexp    (and regexp (make-regexp* regexp regexp/icase)))
