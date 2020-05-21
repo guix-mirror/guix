@@ -394,7 +394,7 @@ compression format.")
 (define-public go-github-com-jackpal-gateway
   (package
     (name "go-github-com-jackpal-gateway")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -403,7 +403,7 @@ compression format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ird5xmizj632l3dq24s2xgb8w1dn6v8xznlqz252gvngyr2gjl1"))))
+                "1yms2dw4dnz4cvj9vhwh6193d50jhvn5awsp2g3a4lcc3sjrgd6m"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/jackpal/gateway"))
