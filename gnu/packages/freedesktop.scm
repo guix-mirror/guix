@@ -98,6 +98,48 @@
   #:use-module (gnu packages xorg)
   #:use-module (srfi srfi-1))
 
+(define-public libglib-testing
+  (package
+    (name "libglib-testing")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.gnome.org/pwithnall/libglib-testing.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xmycsrlqyji6sc2i4wvp2gxf3897z65a57ygihfnpjpyl7zlwkr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+             'check 'pre-check
+           (lambda _
+             ;; The test suite requires a running dbus-daemon.
+             (system "dbus-daemon &")
+             ;; Don't fail on missing '/etc/machine-id'.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("gtk-doc" ,gtk-doc)))
+    (inputs
+     `(("dbus" ,dbus)
+       ("glib" ,glib)))
+    (synopsis "Glib testing library")
+    (description "Libglib-testing is a test library providing test harnesses and
+mock classes which complement the classes provided by GLib.  It is intended to
+be used by any project which uses GLib and which wants to write internal unit
+tests.")
+    (home-page "https://gitlab.gnome.org/pwithnall/libglib-testing")
+    (license license:lgpl2.1+)))
+
 (define-public xdg-utils
   (package
     (name "xdg-utils")
