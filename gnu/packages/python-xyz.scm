@@ -9478,16 +9478,17 @@ applications.")
 (define-public python-apipkg
   (package
     (name "python-apipkg")
-    (version "1.4")
+    (version "1.5")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "apipkg" version))
              (sha256
               (base32
-               "1iks5701qnp3dlr3q1d9qm68y2plp2m029irhpz92a44psfkjf1f"))))
+               "1xhak74yj3lqflvpijg15rnkklrigvsp5q7s4as4h6a157d8q8ip"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (synopsis "Namespace control and lazy-import mechanism")
     (description "With apipkg you can control the exported namespace of a Python
 package and greatly reduce the number of imports for your users.  It is a small
