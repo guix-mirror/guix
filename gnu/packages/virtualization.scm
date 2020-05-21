@@ -748,7 +748,7 @@ domains, their live performance and resource utilization statistics.")
     (version "3.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.openvz.org/criu/criu-"
+              (uri (string-append "https://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
