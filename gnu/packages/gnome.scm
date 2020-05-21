@@ -4486,6 +4486,17 @@ throughout GNOME for API documentation).")
                                               "/lib/libGL.so"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-mesa-20
+           (lambda _
+             ;; Work around a problem with Mesa 20 where some macros used by
+             ;; Cogl went missing from eglext.h.  This can likely be removed
+             ;; for newer versions of Cogl or Mesa.
+             ;; https://gitlab.gnome.org/GNOME/cogl/-/merge_requests/19
+             (substitute* '("configure"
+                            "cogl/winsys/cogl-winsys-egl-kms.c")
+               (("#include <EGL/eglext.h>" all)
+                (string-append all "\n#include <EGL/eglmesaext.h>\n")))
+             #t))
          (add-before 'check 'start-xorg-server
                      (lambda* (#:key tests? inputs #:allow-other-keys)
                        (if tests?
