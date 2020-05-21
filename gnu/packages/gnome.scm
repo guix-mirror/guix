@@ -4455,7 +4455,7 @@ throughout GNOME for API documentation).")
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ;;("xorg-server" ,xorg-server) ; for the test suite
+       ("xorg-server" ,xorg-server-for-tests)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("glib" ,glib)
@@ -4474,7 +4474,8 @@ throughout GNOME for API documentation).")
        ("gst-plugins-base" ,gst-plugins-base)
        ("wayland" ,wayland)))
     (arguments
-     `(#:configure-flags (list "--enable-cogl-gst"
+     `(#:disallowed-references (,xorg-server-for-tests)
+       #:configure-flags (list "--enable-cogl-gst"
                                "--enable-wayland-egl-platform"
                                "--enable-wayland-egl-server"
 
@@ -4483,19 +4484,18 @@ throughout GNOME for API documentation).")
                                (string-append "--with-gl-libname="
                                               (assoc-ref %build-inputs "mesa")
                                               "/lib/libGL.so"))
-       ;; XXX FIXME: All tests fail, with many warnings printed like this:
-       ;;   _FontTransOpen: Unable to Parse address
-       ;;   ${prefix}/share/fonts/X11/misc/
-       #:tests? #f
-       #; #:phases
-       #;
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       ;; The test suite requires a running X server.
-                       (system (format #f "~a/bin/Xvfb :1 &"
-                                       (assoc-ref inputs "xorg-server")))
-                       (setenv "DISPLAY" ":1")
+                     (lambda* (#:key tests? inputs #:allow-other-keys)
+                       (if tests?
+                           (begin
+                             ;; The test suite requires a running X server.
+                             (system (format #f "~a/bin/Xvfb :1 +extension GLX &"
+                                             (assoc-ref inputs "xorg-server")))
+                             (setenv "DISPLAY" ":1")
+                             #t)
+                           (format #t "test suite not run~%"))
                        #t)))))
     (home-page "https://www.cogl3d.org")
     (synopsis "Object oriented GL/GLES Abstraction/Utility Layer")
