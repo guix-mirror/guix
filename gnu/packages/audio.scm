@@ -2191,7 +2191,7 @@ buffers, and audio capture.")
 (define-public patchage
   (package
     (name "patchage")
-    (version "1.0.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/patchage-"
@@ -2199,10 +2199,10 @@ buffers, and audio capture.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1agdpwwi42176l4mxj0c4fsvdiv1ig56bfnnx0msckxmy57df8bb"))))
+                "0dk3fiac10m83mwss3026yz7ygc47c2iw924cwwnh2fyydc9bsy6"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
