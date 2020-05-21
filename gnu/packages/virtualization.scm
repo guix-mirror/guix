@@ -745,14 +745,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.13")
+    (version "3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1yn9ix9lqvqvjrs3a3g6g1wqfniyf9n7giy0mr3jvijmrcm7y0pa"))))
+                "1jrr3v99g18gc0hriz0avq6ccdvyya0j6wwz888sdsc4icc30gzn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
