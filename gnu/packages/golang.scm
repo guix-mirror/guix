@@ -623,8 +623,8 @@ Go programming language.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto
-  (let ((commit "9756ffdc24725223350eb3266ffb92590d28f278")
-        (revision "4"))
+  (let ((commit "2aa609cf4a9d7d1126360de73b55b6002f9e052a")
+        (revision "5"))
     (package
       (name "go-golang-org-x-crypto")
       (version (git-version "0.0.0" revision commit))
@@ -637,7 +637,7 @@ Go programming language.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0q7hxaaq6lp0v8qqzifvysl47z5rfdlrxkh3d29vsl3wyby3dxl8"))))
+                  "1yvis6fqbsd7f356aqyi18f76vnwj3bry6mxqnkvshq4cwrf92il"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "golang.org/x/crypto"
