@@ -5920,30 +5920,28 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
     (name "http-parser")
     (version "2.9.4")
     (home-page "https://github.com/nodejs/http-parser")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
-              (sha256
-               (base32
-                "1vda4dp75pjf5fcph73sy0ifm3xrssrmf927qd1x8g3q46z0cv6c"))
-              (file-name (git-file-name name version))
-              (patches
-               (cons*
-                (origin
-                  ;; Treat an empty port (e.g. `http://hostname:/`) when parsing
-                  ;; URLs as if no port were specified.  This patch is applied
-                  ;; to Fedora's http-parser and to libgit2's bundled version.
-                  (method url-fetch)
-                  (uri (string-append
-                        "https://src.fedoraproject.org/rpms/http-parser/raw/"
-                        "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
-                        "f/0001-url-treat-empty-port-as-default.patch"))
-                  (sha256
-                   (base32
-                    "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))
-                ;; A fix for <https://issues.guix.gnu.org/40604>.
-                (search-patches "http-parser-fix-assertion-on-armhf.patch")))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (sha256
+        (base32 "1vda4dp75pjf5fcph73sy0ifm3xrssrmf927qd1x8g3q46z0cv6c"))
+       (file-name (git-file-name name version))
+       (patches
+        (list
+         (origin
+           ;; Treat an empty port (e.g. `http://hostname:/`) when parsing
+           ;; URLs as if no port were specified.  This patch is applied
+           ;; to Fedora's http-parser and to libgit2's bundled version.
+           (method url-fetch)
+           (uri (string-append
+                 "https://src.fedoraproject.org/rpms/http-parser/raw/"
+                 "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
+                 "f/0001-url-treat-empty-port-as-default.patch"))
+           (sha256
+            (base32
+             "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -5956,6 +5954,14 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
                    '("CC=gcc")))
        #:phases
        (modify-phases %standard-phases
+         ,@(match (%current-system)
+             ("armhf-linux"
+              '((add-before 'check 'apply-assertion.patch
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((patch (assoc-ref inputs "assertion.patch")))
+                      (invoke "patch" "-p1" "-i" patch)
+                      #t)))))
+             (_ '()))
          ,@(if (%current-target-system)
                '((replace 'configure
                     (lambda* (#:key target #:allow-other-keys)
@@ -5966,6 +5972,14 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
                          (string-append "AR=" target "-ar\n")))
                       #t)))
                '((delete 'configure))))))
+    (native-inputs
+     `(,@(match (%current-system)
+           ("armhf-linux"
+            ;; A fix for <https://issues.guix.gnu.org/40604> which in turn
+            ;; breaks i686-linux builds.
+            `(("assertion.patch"
+               ,@(search-patches "http-parser-fix-assertion-on-armhf.patch"))))
+           (_ '()))))
     (synopsis "HTTP request/response parser for C")
     (description "This is a parser for HTTP messages written in C.  It parses
 both requests and responses.  The parser is designed to be used in
