@@ -137,6 +137,9 @@ header.")
        (sha256
         (base32
          "0ypk1c72q778cixfa52vjxzbd5m4qc6hfjgnipy16sfa7mnspmyf"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
      `(("cfitsio" ,cfitsio)
        ("gsl" ,gsl)
@@ -147,7 +150,6 @@ header.")
     (native-inputs
      `(("libtool" ,libtool)
        ("lzip" ,lzip)))
-    (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/gnuastro/")
     (synopsis "Astronomy utilities")
     (description "The GNU Astronomy Utilities (Gnuastro) is a suite of
