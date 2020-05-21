@@ -39,7 +39,7 @@
 (define-public liblcf
   (package
     (name "liblcf")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -47,7 +47,7 @@
                     "/liblcf-" version ".tar.gz"))
               (sha256
                (base32
-                "1qz387r4shbx48r3z7k8llkzz4b039zmak98wxpiwn6a23cssdn5"))))
+                "0n2k4brd264jg9p6918x7dnb2iimpzjh8q3v1fws58450xbgnkqc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
