@@ -4440,7 +4440,7 @@ throughout GNOME for API documentation).")
 (define-public cogl
   (package
     (name "cogl")
-    (version "1.22.4")
+    (version "1.22.6")
     (source
      (origin
        (method url-fetch)
@@ -4448,7 +4448,7 @@ throughout GNOME for API documentation).")
                            (version-major+minor version) "/"
                            "cogl-" version ".tar.xz"))
        (sha256
-        (base32 "1q0drs82a8f6glg1v29bb6g2nf15fw0rvdx3d0rgcgfarfaby5sj"))))
+        (base32 "0x8v4n61q89qy27v824bqswpz6bmn801403w2q3pa1lcwk9ln4vd"))))
     ;; NOTE: mutter exports a bundled fork of cogl, so when making changes to
     ;; cogl, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
