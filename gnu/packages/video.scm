@@ -3019,15 +3019,15 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "0.7.95")
+    (version "20.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
-                                  name "/" version"/"
-                                  name "_" version ".tar.bz2"))
+                                  name "/" version "/"
+                                  name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1kchh6285b07z5nixv619hc9gml2ysdayicdiv30frrlqiyxqw4b"))))
+                "0wkzj5s34m8dvy7hif4h8f90q8ncrzd930gij1zzw3h5nw732j38"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      `(("autoconf" ,autoconf)
