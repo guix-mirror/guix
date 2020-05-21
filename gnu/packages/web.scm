@@ -4676,7 +4676,7 @@ you'd expect.")
      (origin
        (method url-fetch)
        (uri (string-append "http://tecnocode.co.uk/downloads/uhttpmock/"
-                           name "-" version ".tar.xz"))
+                           "uhttpmock-" version ".tar.xz"))
        (sha256
         (base32 "0glyx07kxc3s3cx5vp30kfgscl9q6bghcq1zysfyxm24r0h6j58p"))))
     (build-system glib-or-gtk-build-system)
