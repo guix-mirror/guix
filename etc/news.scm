@@ -15,6 +15,8 @@
 
  (entry (commit "b460ba7992a0b4af2ddb5927dcf062784539ef7b")
         (title (en "Add support to boot from a Btrfs subvolume")
+               (de "Unterstützung für Systemstart von einem
+Btrfs-Unterlaufwerk hinzugefügt")
                (fr "Ajout du support pour démarrer depuis un sous-volume Btrfs")
                (nl "Nieuwe ondersteuning voor het opstarten vanaf een Btrfs-subvolume"))
         (body
@@ -23,6 +25,11 @@ operating system declaration now takes into account the use of a Btrfs
 subvolume for the partition holding @file{/gnu/store}.  Run the command
 @command{info \"(guix) Btrfs file system\"} for more information and
 examples.")
+         (de "Für die Erzeugung einer GRUB-Konfigurationsdatei aus einer
+Betriebssystemdeklaration kann jetzt ein Btrfs-Unterlaufwerk („Subvolume“) für
+die Partition mit @file{/gnu/store} angegeben werden.  Führen Sie
+@command{info \"(guix) Btrfs file system\"} aus, wenn Sie mehr Informationen
+und Beispiele sehen möchten.")
          (fr "La génération du fichier de configuration de GRUB produite à
 partir de la déclaration d'un @code{operating-system} tient maintenant compte
 de l'utilisation d'un sous-volume Btrfs pour la partition contenant
