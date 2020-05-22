@@ -266,7 +266,8 @@ API.")
          "1kqqvsvib01bsmfbdy3fbwwpvkcdlfb6k71kjvzb3crql7w0rxff"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; FIXME: Tests fail.
+     `(;; FIXME: Skip most of the tests, because enabling system gtest breaks
+       ;; the build: <https://github.com/google/shaderc/issues/470>.
        #:configure-flags '("-DSHADERC_SKIP_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
@@ -275,6 +276,10 @@ API.")
              (substitute* "CMakeLists.txt"
                (("add_subdirectory\\(third_party\\)")
                 ""))
+
+             (substitute* "glslc/test/CMakeLists.txt"
+               (("\\$<TARGET_FILE:spirv-dis>")
+                (which "spirv-dis")))
 
              ;; Do not attempt to use git to encode version information.
              (substitute* "glslc/CMakeLists.txt"
