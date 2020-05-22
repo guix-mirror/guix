@@ -19,9 +19,19 @@
 (define-module (gnu packages pep)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix hg-download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages mail) ; for libetpan
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages sequoia)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
 (define-public yml2
@@ -47,3 +57,99 @@ provides the command line front end yml2c.  As default, it compiles
 your script and outputs to stdout, that usually is the terminal.  Your
 shell provides options to redirect the output into a pipe or a file.")
     (license license:gpl2)))
+
+(define fdik-libetpan
+  ;; pEp Engine requires libetpan with a set of patches that have not been
+  ;; upstreamed yet.
+  (let ((commit "210ba2b3b310b8b7a6ee4a4e35e50f7fa379643f") ; 2020-06-03
+        (checksum "00000nij3ray7nssvq0lzb352wmnab8ffzk7dgff2c68mvjbh1l6")
+        (revision "5"))
+   (package
+    (inherit libetpan)
+    (name "fdik-libetpan")
+    (version (string-append "1.6-" revision "." (string-take commit 8)))
+    (source
+     (origin
+       (inherit (package-source libetpan))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fdik/libetpan")
+             (commit commit)))
+       (file-name (string-append name "-" version))
+       (sha256 (base32 checksum)))))))
+
+(define sequoia4pEp
+  ;; Currently pEp Engine requires sequoia in not-so-current version
+  (package/inherit sequoia
+    (name "sequoia")
+    (version "0.15.0-pEp")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/sequoia-pgp/sequoia.git")
+             (commit "0eb1b6cd846ea8c36b3dfdf01ec88383fc64f2fe")))
+       (sha256
+        (base32 "06dqs9whwp9lfibwp8dqm0aw4nm3s3v4jp2n4fz51zcvsld40nfh"))
+       (file-name (git-file-name name version))))))
+
+(define-public pep-engine
+  (package
+    (name "pep-engine")
+    (version "2.0.6")
+    (source
+     (origin
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://pep.foundation/dev/repos/pEpEngine")
+             (changeset "ebb62ba262dd"))) ;; r4721
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "0ljf79j4ng7l8w6pbdcrfzb4yk51zslypvq0n72ib1d7grqvnagi"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; pEpEngie does not use autotools and configure,
+           ;; but a local.conf. We need to tweak the values there.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (yml2 (assoc-ref inputs "yml2")))
+               (with-output-to-file "local.conf"
+                 (lambda ()
+                   (format #t "
+PREFIX=~a
+PER_MACHINE_DIRECTORY=${PREFIX}/share/pEp
+SYSTEM_DB=~a/share/pEp/system.db
+ASN1C=~a
+YML2_PATH=~a
+OPENPGP=SEQUOIA
+"
+                           out out (which "asn1c")
+                           (string-append yml2 "/bin"))))
+               #t)))
+         (delete 'check)
+         (add-after 'install 'install-db
+           (lambda _
+             (invoke "make" "-C" "db" "install"))))))
+    (native-inputs
+     `(("asn1c" ,asn1c) ; >= 0.9.27
+       ("pkg-config" ,pkg-config)
+       ("yml2" ,yml2)))
+    (inputs
+     `(("libetpan" ,fdik-libetpan)
+       ("libiconv" ,libiconv)
+       ("nettle" ,nettle)
+       ("openssl" ,openssl)
+       ("sequoia" ,sequoia4pEp)
+       ("sqlite3" ,sqlite)
+       ("util-linux" ,util-linux "lib"))) ;; uuid.h
+    (home-page "https://pep.foundation/")
+    (synopsis "Library for automatic key management and encryption of
+messages")
+    (description "The p≡p engine is the core part of p≡p (pretty Easy
+privacy).")
+    (license ;; code: GPL 3, docs: CC-BY-SA
+     (list license:gpl3 license:cc-by-sa3.0))))
