@@ -162,7 +162,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version "1.1.121")
+    (version "1.2.140")
     (source
      (origin
        (method git-fetch)
@@ -172,17 +172,10 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1gbrppfxrncvva30fikgzm7f15xs527sb4lf1sswdyxj3h5cw741"))))
+         "0rhyz0qgp0i7pcx6wlvgwy7j33d4cs0xx39f0b6igpfk0vk70r1w"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-spirv-tools-commit-id
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Remove lines trying to build in a git commit id.
-             (substitute* "CMakeLists.txt" ((".*spirv_tools_commit_id.h.*") ""))
-             #t)))
        #:configure-flags (list
                           "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
                           (string-append "-DCMAKE_INSTALL_LIBDIR="
