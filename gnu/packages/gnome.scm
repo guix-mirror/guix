@@ -141,6 +141,7 @@
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pdf)
@@ -258,6 +259,31 @@
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
+
+(define-public portablexdr
+  (package
+    (name "portablexdr")
+    (version "4.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://people.redhat.com/~rjones/" name "/files/"
+                       name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b77ipvvi520nv7rr6jb1c3xryhc3m2mywhby7m48kfgag8vvx2w"))))
+    (build-system gnu-build-system)
+    (synopsis "External Data Representation Library")
+    (description "PortableXDR is an implementation of External Data
+Representation (XDR) Library.  It is a standard data serialization format, for
+uses such as computer network protocols.  It allows data to be transferred
+between different kinds of computer systems.")
+    (home-page "https://people.redhat.com/~rjones/portablexdr/")
+    (license
+     (list
+      license:gpl2+
+      license:lgpl2.1+))))
 
 (define-public tepl
   (package
