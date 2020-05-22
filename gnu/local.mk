@@ -1439,6 +1439,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
+  %D%/packages/patches/pypy3-7.3.1-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
   %D%/packages/patches/qrcodegen-cpp-make-install.patch		\
   %D%/packages/patches/qt4-ldflags.patch			\
