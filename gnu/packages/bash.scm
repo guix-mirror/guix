@@ -38,8 +38,11 @@
   #:use-module (guix store)
   #:use-module (guix build-system gnu)
   #:autoload   (guix gnupg) (gnupg-verify*)
-  #:autoload   (gcrypt hash) (port-sha256)
   #:autoload   (guix base32) (bytevector->nix-base32-string)
+
+  ;; See <https://bugs.gnu.org/41457> for why not #:autoload here.
+  #:use-module ((gcrypt hash) #:select (port-sha256))
+
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 format))
