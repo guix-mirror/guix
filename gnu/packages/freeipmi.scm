@@ -37,6 +37,8 @@
               (base32
                "1ncf1s84752xaq07h36wrxa5ww1167s2bizkww0igxv8djyddwk1"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
      `(("libgcrypt" ,libgcrypt)))
     (home-page "https://www.gnu.org/software/freeipmi/")
