@@ -5807,6 +5807,14 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                (string-append "LDFLAGS=-Wl,-rpath=" vulkanlib)
                "-CQuake"))
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-for-new-vulkan
+                    (lambda _
+                      ;; Mimic upstream commit a869a22d9b51c68e for
+                      ;; compatibility with newer vulkan-headers.
+                      (substitute* "Quake/gl_rmisc.c"
+                        (("VK_DYNAMIC_STATE_RANGE_SIZE")
+                         "3"))
+                      #t))
                   (delete 'configure)
                   (add-after 'unpack 'fix-makefile-paths
                     (lambda* (#:key outputs #:allow-other-keys)
