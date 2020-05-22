@@ -51,6 +51,7 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10012,6 +10013,37 @@ to.")
               license:public-domain
               ;; snowball
               license:bsd-2))))
+
+(define-public glabels
+  (package
+    (name "glabels")
+    (version "3.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           "glabels-" version ".tar.xz"))
+       (sha256
+        (base32 "0f2rki8i27pkd9r0gz03cdl1g4vnmvp0j49nhxqn275vi8lmgr0q"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)))
+    (home-page "https://glabels.org/")
+    (synopsis "Program for creating labels and business cards")
+    (description
+     "gLabels is a program for creating labels and business cards.  It is
+designed to work with various laser/ink-jet peel-off label and business
+card sheets that you’ll find at most office supply stores.")
+    (license license:gpl3+)))
 
 (define-public libratbag
   (package
