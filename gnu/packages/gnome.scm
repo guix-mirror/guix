@@ -260,6 +260,68 @@ Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
 
+(define-public gnome-music
+  (package
+    (name "gnome-music")
+    (version "3.34.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1r5sfw5cbd6qqh27lzhblazir0bfi3k7nqppw66qw990isqm5psy"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-gnome-music
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let*
+                 ((out (assoc-ref outputs "out"))
+                  (pylib (string-append out "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+               (wrap-program (string-append out "/bin/gnome-music")
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))
+                 `("GST_PLUGIN_SYSTEM_PATH" = (,(getenv "GST_PLUGIN_SYSTEM_PATH")))
+                 `("GRL_PLUGIN_PATH" = (,(getenv "GRL_PLUGIN_PATH")))
+                 `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,pylib))))
+             #t)))))
+    (native-inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("itstools" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("grilo" ,grilo)
+       ("grilo-plugins" ,grilo-plugins)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gstreamer" ,gstreamer)
+       ("gvfs" ,gvfs)
+       ("libdazzle" ,libdazzle)
+       ("libmediaart" ,libmediaart)
+       ("libsoup" ,libsoup)
+       ("pycairo" ,python-pycairo)
+       ("pygobject" ,python-pygobject)
+       ("tracker" ,tracker)
+       ("tracker-miners" ,tracker-miners)))
+    (synopsis "Simple music player for GNOME desktop")
+    (description "GNOME Music is the new GNOME music playing application that
+aims to combine an elegant and immersive browsing experience with simple
+and straightforward controls.")
+    (home-page "https://wiki.gnome.org/Apps/Music")
+    (license license:gpl2+)))
+
 (define-public portablexdr
   (package
     (name "portablexdr")
