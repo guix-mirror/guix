@@ -118,7 +118,8 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
        (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f))                    ;FIXME: requires bundled SPIRV-Tools
+     '(#:tests? #f                      ;FIXME: requires bundled SPIRV-Tools
+       #:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))
