@@ -347,12 +347,6 @@ also known as DXTn or DXTC) for Mesa.")
                   (guix build meson-build-system))
        #:phases
        (modify-phases %standard-phases
-         (add-after
-           'unpack 'patch-create_test_cases
-           (lambda _
-             (substitute* "src/intel/genxml/gen_pack_header.py"
-               (("/usr/bin/env python2") (which "python")))
-             #t))
          ,@(if (string-prefix? "i686" (or (%current-target-system)
                                           (%current-system)))
                ;; Disable new test from Mesa 19 that fails on i686.  Upstream
