@@ -216,7 +216,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version "1.1.121")
+    (version "1.2.140")
     (source
      (origin
        (method git-fetch)
@@ -226,7 +226,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jndlz3n35zlz44p1b4cgl2alvsmgrqnkxdn5mpahg0zb8dgwmm8"))))
+         "08dk0q77kpycn4vv19jh3ig73gbq3psan246a7fss0nfxpiddg0j"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
@@ -238,7 +238,7 @@ and the ICD.")
        ("python" ,python)
        ("vulkan-headers" ,vulkan-headers)))
     (arguments
-     `(#:tests? #f                      ; No tests.
+     `(#:tests? #f                      ;no tests
        #:configure-flags (list (string-append "-DGLSLANG_INSTALL_DIR="
                                (assoc-ref %build-inputs "glslang")))))
     (home-page
