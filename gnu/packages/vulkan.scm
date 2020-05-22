@@ -322,7 +322,16 @@ shader compilation.")
        (file-name (string-append name "-" version "-checkout"))))
      (build-system gnu-build-system)
      (arguments
-      `(#:configure-flags '("--with-spirv-tools")))
+      `(#:configure-flags '("--with-spirv-tools")
+        #:phases (modify-phases %standard-phases
+                   (add-after 'unpack 'patch-for-new-vulkan
+                     (lambda _
+                       ;; Mimic upstream commit 8e7bf8a5c3e0047 for
+                       ;; compatibility with newer vulkan-headers.
+                       (substitute* "libs/vkd3d/vkd3d_private.h"
+                         (("VK_PIPELINE_BIND_POINT_RANGE_SIZE")
+                          "2u"))
+                       #t)))))
      (native-inputs
       `(("autoconf" ,autoconf)
         ("automake" ,automake)
