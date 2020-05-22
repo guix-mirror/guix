@@ -48,9 +48,10 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages perl)
@@ -65,10 +66,44 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config))
+
+(define-public libxmlb
+  (package
+    (name "libxmlb")
+    (version "0.1.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/hughsie/libxmlb.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1mb73pnfwqc4mm0lm16yfn0lj495h8hcciprb2v6wgy3ifnnjxib"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("glib" ,glib)))
+    (synopsis "Library to help create and query binary XML blobs")
+    (description "Libxmlb library takes XML source, and converts it to a
+structured binary representation with a deduplicated string table; where the
+strings have the NULs included.  This allows an application to mmap the binary
+XML file, do an XPath query and return some strings without actually parsing
+the entire document.")
+    (home-page "https://github.com/hughsie/libxmlb")
+    (license license:lgpl2.1+)))
 
 (define-public expat
   (package
