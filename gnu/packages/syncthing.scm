@@ -942,35 +942,26 @@ server tools for Prometheus metrics.")
       (home-page "https://github.com/prometheus/client_golang")
       (license asl2.0)))
 
-(define-public go-gopkg.in-asn1-ber.v1
+(define-public go-github-com-go-asn1-ber-asn1-ber
   (package
-    (name "go-gopkg.in-asn1-ber.v1")
-    (version "1.3")
+    (name "go-github-com-go-asn1-ber-asn1-ber")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://gopkg.in/asn1-ber.v1")
+                     (url "https://github.com/go-asn1-ber/asn1-ber")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00ixms8x3lrhywbvq5v2sagcqsxa1pcnlk17dp5lnwckv3xg4psb"))))
+                "0dxfmgk84fn0p6pz3i0cspynh6rly5pfk9wghm1q07mx99npln02"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/asn1-ber.v1"
-       ;; Tests don't pass "vet" on Go since 1.11.  See
-       ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key import-path #:allow-other-keys)
-             (invoke "go" "test"
-                     "-vet=off"
-                     import-path))))))
+     '(#:import-path "github.com/go-asn1-ber/asn1-ber"))
     (synopsis "ASN.1 BER encoding and decoding in Go")
     (description "This package provides ASN.1 BER encoding and decoding in the
 Go language.")
-    (home-page "https://gopkg.in/asn1-ber.v1")
+    (home-page "https://github.com/go-asn1-ber/asn1-ber")
     (license expat)))
 
 (define-public go-gopkg.in-ldap.v2
