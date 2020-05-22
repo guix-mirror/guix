@@ -964,29 +964,29 @@ Go language.")
     (home-page "https://github.com/go-asn1-ber/asn1-ber")
     (license expat)))
 
-(define-public go-gopkg.in-ldap.v2
+(define-public go-github-com-go-ldap-ldap
   (package
-    (name "go-gopkg.in-ldap.v2")
-    (version "2.5.1")
+    (name "go-github-com-go-ldap-ldap")
+    (version "3.1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://gopkg.in/ldap.v2")
+                     (url "https://github.com/go-ldap/ldap")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wf81wy04nhkqs0dg5zkivr4sh37r83bxrfwjz9vr4jq6vmljr3h"))))
+                "1z6wxia7a1jkmasa9mm6g4n8f0qqbp5rw6vk0zyh4vzk7azklnj2"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/ldap.v2"
-       #:tests? #f)) ; the test suite requires network access
+     '(#:import-path "github.com/go-ldap/ldap/v3"
+       #:tests? #f)) ; test suite requires internet access
     (propagated-inputs
-     `(("go-gopkg.in-asn1-ber.v1" ,go-gopkg.in-asn1-ber.v1)))
+     `(("go-github-com-go-asn1-ber-asn1-ber" ,go-github-com-go-asn1-ber-asn1-ber)))
+    (home-page "https://github.com/go-ldap/ldap")
     (synopsis "LDAP v3 functionality for Go")
     (description "This package provides basic LDAP v3 functionality in the Go
 language.")
-    (home-page "https://gopkg.in/ldap.v2")
     (license expat)))
 
 (define-public go-github-com-flynn-archive-go-shlex
