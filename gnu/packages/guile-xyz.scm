@@ -523,7 +523,10 @@ Unix-style DSV format and RFC 4180 format.")
                     (("#:use-module \\(fibers\\)")
                      (string-append "#:use-module (fibers)\n"
                                     "#:use-module (ice-9 threads)\n")))
-                  #t))))
+                  #t))
+              (patches
+               ;; fixes a resource leak that causes crashes in the tests
+               (search-patches "guile-fibers-destroy-peer-schedulers.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The code uses 'scm_t_uint64' et al., which are deprecated in 3.0.

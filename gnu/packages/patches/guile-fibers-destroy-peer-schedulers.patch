@@ -1,0 +1,24 @@
+Fibers 1.0.0 has a bug in run-fibers in which peer schedulers aren't destroyed -
+so if you had 4 cores, 1 would be destroyed when run-fibers returned, but the
+other 3 would stay around.  Each scheduler uses 3 file descriptors, so for
+machines with many cores, this resource leak adds up quickly - quickly enough
+that the test suite can even fail because of it.
+
+See https://github.com/wingo/fibers/issues/36.
+
+This fixes that.  It should be safe to destroy the peer schedulers at the given
+point because the threads that could be running them are all either dead or the
+current thread.
+
+As of May 21, 2020, this bug still existed in the 1.0.0 (latest) release and in
+git master.
+--- a/fibers.scm	2020-05-21 18:38:06.890690154 -0500
++++ b/fibers.scm	2020-05-21 18:38:56.395686693 -0500
+@@ -137,5 +137,6 @@
+              (%run-fibers scheduler hz finished? affinity))
+            (lambda ()
+              (stop-auxiliary-threads scheduler)))))
++      (for-each destroy-scheduler (scheduler-remote-peers scheduler))
+       (destroy-scheduler scheduler)
+       (apply values (atomic-box-ref ret))))))
+

@@ -1053,6 +1053,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-3.0-relocatable.patch		\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-3.0-linux-syscalls.patch		\
+  %D%/packages/patches/guile-fibers-destroy-peer-schedulers.patch \
   %D%/packages/patches/guile-gdbm-ffi-support-gdbm-1.14.patch	\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
