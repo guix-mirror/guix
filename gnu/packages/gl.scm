@@ -273,7 +273,6 @@ also known as DXTn or DXTC) for Mesa.")
              `(("llvm" ,llvm-10)))
             (_
              `()))
-        ("makedepend" ,makedepend)
         ("wayland" ,wayland)
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
