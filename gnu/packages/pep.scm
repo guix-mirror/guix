@@ -26,6 +26,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail) ; for libetpan
   #:use-module (gnu packages nettle)
@@ -245,5 +247,103 @@ ENGINE_INC_PATH=~a/include
     (home-page "https://pep.foundation/")
     (synopsis "Python adapter for p≡p (pretty Easy Privacy)")
     (description "The p≡p Python adapter is an adaptor interface to the p≡p
+(pretty Easy privacy) engine.")
+    (license license:gpl3)))
+
+(define-public java-pep-adapter
+  (package
+    (name "java-pep-adapter")
+    (version "2.0.5")
+    (source
+     (origin
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://pep.foundation/dev/repos/pEpJNIAdapter")
+             (changeset "534537c9cd50"))) ;; r763
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "107ldpssc80bq8kndn2n000000gphj4lqagaiv3fddlfph4vji48"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags (list "doxy-all")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-includes
+           (lambda _
+             (substitute* "src/jniutils.hh"
+               (("#pragma once\n" line)
+                (string-append line
+                               "#include <mutex>\n"
+                               "#include <cassert>\n"
+                               "#include <cstring>\n")))
+             #t))
+         (add-before 'configure 'pin-shared-lib-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/foundation/pEp/jniadapter/AbstractEngine.java"
+               (("System.loadLibrary\\(\"pEpJNI\"\\);")
+                (string-append "System.load(\""
+                               (assoc-ref outputs "out")
+                               "/lib/libpEpJNI.so" "\");")))
+             #t))
+         (replace 'configure
+           ;; pEpJNIAdapter does not use autotools and configure,
+           ;; but a local.conf. We need to tweak the values there.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (engine (assoc-ref inputs "pep-engine"))
+                   (libadapter (assoc-ref inputs "libpepadapter"))
+                   (openjdk  (assoc-ref inputs "openjdk")))
+               (with-output-to-file "local.conf"
+                 (lambda _ ;()
+                   (format #t "
+PREFIX=~a
+ENGINE_LIB_PATH=~a/lib
+ENGINE_INC_PATH=~a/include
+AD_LIB_PATH=~a/lib
+AD_INC_PATH=~a/include
+YML2_PROC=~a
+JAVA_HOME=~a
+"
+                           out engine engine libadapter libadapter
+                           (which "yml2proc") openjdk)))
+               (substitute* "src/Makefile"  ;; suppress some warnings
+                 (("^\\s+OLD_JAVA=") "    xxx_OLD_JAVA="))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (libout (string-append out "/lib/"))
+                    (javaout (string-append out "/share/java/")))
+               (mkdir-p libout)
+               (mkdir-p javaout)
+               (copy-file "src/libpEpJNI.so"
+                          (string-append libout "/libpEpJNI.so"))
+               (copy-file "src/pEp.jar" (string-append javaout "/pEp.jar"))
+               #t)))
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "doc"))
+                    (docout (string-append out "/share/doc/pEp-JNI-adapter"))
+                    (cxxout (string-append docout "/cxx"))
+                    (javaout (string-append docout "/java")))
+               (mkdir-p cxxout)
+               (mkdir-p javaout)
+               (copy-recursively "doc/doxygen/cxx/html" cxxout)
+               (copy-recursively "doc/doxygen/java/html" javaout)
+               #t))))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("openjdk" ,openjdk9 "jdk")
+       ("which" ,which)
+       ("yml2" ,yml2)))
+    (inputs
+     `(("libpepadapter" ,libpepadapter)
+       ("pep-engine" ,pep-engine)
+       ("util-linux" ,util-linux))) ;; uuid.h
+    (home-page "https://pep.foundation/")
+    (synopsis "Java adapter for p≡p (pretty Easy Privacy)")
+    (description "The p≡p JNI adapter is a Java adapter interface to the p≡p
 (pretty Easy privacy) engine.")
     (license license:gpl3)))
