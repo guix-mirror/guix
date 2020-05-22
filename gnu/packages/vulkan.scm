@@ -138,7 +138,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.121")
+    (version "1.2.141")
     (source
      (origin
        (method git-fetch)
@@ -148,7 +148,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0hbgbdxj7lrm37phb0pkq5zgss3h21znj3mivnyva5f60i2wgr73"))))
+         "10nmx6y4llllfcczyfz76amd0vkqv09dj952d19zkzmmgcval7zq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -162,7 +162,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-loader
   (package
     (name "vulkan-loader")
-    (version (package-version vulkan-headers))
+    (version "1.1.121")
     (source
      (origin
        (method git-fetch)
@@ -210,7 +210,7 @@ and the ICD.")
 (define-public vulkan-tools
   (package
     (name "vulkan-tools")
-    (version (package-version vulkan-headers))
+    (version "1.1.121")
     (source
      (origin
        (method git-fetch)
