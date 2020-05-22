@@ -75,7 +75,7 @@ and for the GLSL.std.450 extended instruction set.
 (define-public spirv-tools
   (package
     (name "spirv-tools")
-    (version "2019.2")
+    (version "2020.2")
     (source
      (origin
       (method git-fetch)
@@ -83,12 +83,11 @@ and for the GLSL.std.450 extended instruction set.
             (url "https://github.com/KhronosGroup/SPIRV-Tools")
             (commit (string-append "v" version))))
       (sha256
-       (base32 "0zwz6qg8g8165h7cw52agryjrdb29gbmsbziw3pwiddfkyma8vvg"))
+       (base32 "00b7xgyrcb2qq63pp3cnw5q1xqx2d9rfn65lai6n6r89s1vh3vg6"))
       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; FIXME: Tests fail.
-       #:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
+     `(#:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
                                (assoc-ref %build-inputs "spirv-headers")))))
     (inputs `(("spirv-headers" ,spirv-headers)))
     (native-inputs `(("pkg-config" ,pkg-config)
