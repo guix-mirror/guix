@@ -175,16 +175,29 @@ interpretation of the specifications for these languages.")
          "0rhyz0qgp0i7pcx6wlvgwy7j33d4cs0xx39f0b6igpfk0vk70r1w"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
-       #:configure-flags (list
-                          "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
-                          (string-append "-DCMAKE_INSTALL_LIBDIR="
-                                         (assoc-ref %outputs "out") "/lib"))))
-    (native-inputs `(("libxrandr" ,libxrandr)
-                     ("pkg-config" ,pkg-config)
-                     ("python" ,python)
-                     ("vulkan-headers" ,vulkan-headers)
-                     ("wayland" ,wayland)))
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'unpack-googletest
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((gtest (assoc-ref inputs "googletest:source")))
+                        (when gtest
+                          (copy-recursively gtest "external/googletest"))
+                        #t)))
+                  (add-after 'unpack 'disable-loader-tests
+                    (lambda _
+                      ;; Many tests require a Vulkan driver.  Skip those.
+                      (substitute* "tests/loader_validation_tests.cpp"
+                        ((".*= vkCreateInstance.*" all)
+                         (string-append "GTEST_SKIP();\n" all))
+                        (("TEST_F.*InstanceExtensionEnumerated.*" all)
+                         (string-append all "\nGTEST_SKIP();\n")))
+                      #t)))))
+    (native-inputs
+     `(("googletest:source" ,(package-source googletest))
+       ("libxrandr" ,libxrandr)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("vulkan-headers" ,vulkan-headers)
+       ("wayland" ,wayland)))
     (home-page
      "https://github.com/KhronosGroup/Vulkan-Loader")
     (synopsis "Khronos official ICD loader and validation layers for Vulkan")
