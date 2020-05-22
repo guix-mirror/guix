@@ -289,6 +289,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("python" ,python-wrapper)
         ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
+    (outputs '("out" "bin"))
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
@@ -381,6 +382,26 @@ also known as DXTn or DXTC) for Mesa.")
                  ;; egl_gallium support.
                  (("\"gbm_dri\\.so")
                   (string-append "\"" out "/lib/dri/gbm_dri.so")))
+               #t)))
+         (add-after 'install 'split-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "bin")))
+               ,@(match (%current-system)
+                   ((or "i686-linux" "x86_64-linux")
+                    ;; Install the Vulkan overlay control script to a separate
+                    ;; output to prevent a reference on Python, saving ~70 MiB
+                    ;; on the closure size.
+                    '((copy-recursively (string-append out "/bin")
+                                        (string-append bin "/bin"))
+                      (delete-file-recursively (string-append out "/bin"))))
+                   (_
+                    ;; XXX: On architectures without the Vulkan overlay layer
+                    ;; just create an empty file because outputs can not be
+                    ;; added conditionally.
+                    '((mkdir-p (string-append bin "/bin"))
+                      (call-with-output-file (string-append bin "/bin/.empty")
+                        (const #t)))))
                #t)))
          (add-after 'install 'symlinks-instead-of-hard-links
            (lambda* (#:key outputs #:allow-other-keys)
