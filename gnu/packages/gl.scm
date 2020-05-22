@@ -357,16 +357,16 @@ also known as DXTn or DXTC) for Mesa.")
                        (("'u_format_test',") ""))
                      #t)))
                '())
-         (add-before
-           'configure 'fix-dlopen-libnames
+         (add-before 'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing
                ;; the substitutions so we're future-safe.
-               (substitute* "src/glx/dri_common.c"
-                 (("dlopen\\(\"libGL\\.so")
-                  (string-append "dlopen(\"" out "/lib/libGL.so")))
-               (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+               (substitute* "src/glx/meson.build"
+                 (("-DGL_LIB_NAME=\"lib@0@\\.so\\.@1@\"")
+                  (string-append "-DGL_LIB_NAME=\"" out
+                                 "/lib/lib@0@.so.@1@\"")))
+               (substitute* "src/gbm/backends/dri/gbm_dri.c"
                  (("\"libglapi\\.so")
                   (string-append "\"" out "/lib/libglapi.so")))
                (substitute* "src/gbm/main/backend.c"
