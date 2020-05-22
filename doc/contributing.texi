@@ -501,7 +501,7 @@ It is a good idea to strip commit identifiers in the @code{version}
 field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
 aesthetics have a role to play here) as well as problems related to OS
 limits such as the maximum shebang length (127 bytes for the Linux
-kernel.)  It is best to use the full commit identifiers in
+kernel).  It is best to use the full commit identifiers in
 @code{origin}s, though, to avoid ambiguities.  A typical package
 definition may look like this:
 
