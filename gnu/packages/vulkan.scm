@@ -105,7 +105,7 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
 (define-public glslang
   (package
     (name "glslang")
-    (version "7.11.3214")
+    (version "8.13.3743")
     (source
      (origin
        (method git-fetch)
@@ -114,21 +114,14 @@ parser,disassembler, validator, and optimizer for SPIR-V.")
              (commit version)))
        (sha256
         (base32
-         "0dqjga0lcza006fhac26zp2plbq4gx8a6nsmrwkqlzji6lw1jins"))
+         "0d20wfpp2fmbnz1hnsjr9xc62lxpj86ik2qyviqbni0pqj212cry"))
        (file-name (string-append name "-" version "-checkout"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;; No tests
-       ;; glslang tries to set CMAKE_INSTALL_PREFIX manually. Remove the
-       ;; offending line.
-       #:phases (modify-phases %standard-phases
-                  (add-after 'patch-source-shebangs 'fix-cmakelists
-                    (lambda _
-                      (substitute* "CMakeLists.txt"
-                        (("set.*CMAKE_INSTALL_PREFIX.*") ""))
-                      #t)))))
-    (native-inputs `(("bison" ,bison)
-                     ("pkg-config" ,pkg-config)))
+     '(#:tests? #f))                    ;FIXME: requires bundled SPIRV-Tools
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
     (home-page "https://github.com/KhronosGroup/glslang")
     (synopsis "OpenGL and OpenGL ES shader front end and validator")
     (description
