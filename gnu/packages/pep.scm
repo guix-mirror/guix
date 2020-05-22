@@ -25,6 +25,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mail) ; for libetpan
   #:use-module (gnu packages nettle)
@@ -194,3 +195,55 @@ ENGINE_INC_PATH=~a/include
     (description "This C++ library provides common structures used in p≡p
 (pretty Easy privacy) adapters.")
     (license license:bsd-3)))
+
+(define-public python-pep-adapter
+  (package
+    (name "python-pep-adapter")
+    (version "2.0.5")
+    (source
+     (origin
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://pep.foundation/dev/repos/pEpPythonAdapter")
+             (changeset "66df0e5b9405"))) ;; r374
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "107i1s8jf8gyhpmqcs64q9csxa3fwc8g7s57iyccqb4czw8gph6d"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Adding configure-flags does not work, running `build_ext`
+       ;; with these flags, neither does adding the options to
+       ;; `setup.cfg`: Either `build` or `install` fails (since
+       ;; flags are given or missing), or "command 'BuildExtCommand'
+       ;; has no such option 'pep_engine"
+       ;; '(#:configure-flags
+       ;;          (list (string-append "--with-pEp-engine="
+       ;;                           (assoc-ref inputs "pEpEngine"))
+       ;;                (string-append "--with-pEp-libadapter="
+       ;;                           (assoc-ref inputs "libpEpAdapter"))
+       ;;                ;;(string-append "--boost="
+       ;;                           (assoc-ref inputs "boost")) not supported
+       ;;                (string-append "--with-asn1c-share="
+       ;;                           (assoc-ref inputs "asn1c") "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               (("^(\\s+SYS_INCLUDES = )\\['/usr.*" _ a)
+                (string-append a "os.getenv('CPATH', '').split(os.pathsep)\n"))
+               (("^(\\s+SYS_LIB_PREFIXES = )\\['/usr.*" _ a)
+                (string-append a "os.getenv('LIBRARY_PATH', '').split(os.pathsep)\n"))
+               (("^(\\s+SYS_SHARES = )\\['/usr.*" _ a)
+                (string-append a "['" (assoc-ref %build-inputs "asn1c") "/share']\n")))
+             #t)))))
+    (inputs
+     `(("asn1c" ,asn1c)
+       ("boost-python" ,boost-with-python3)
+       ("libpepadapter" ,libpepadapter)
+       ("pep-engine" ,pep-engine)))
+    (home-page "https://pep.foundation/")
+    (synopsis "Python adapter for p≡p (pretty Easy Privacy)")
+    (description "The p≡p Python adapter is an adaptor interface to the p≡p
+(pretty Easy privacy) engine.")
+    (license license:gpl3)))
