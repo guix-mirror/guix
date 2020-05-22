@@ -253,7 +253,7 @@ API.")
 (define-public shaderc
   (package
     (name "shaderc")
-    (version "2019.0")
+    (version "2020.0")
     (source
      (origin
        (method git-fetch)
@@ -263,56 +263,37 @@ API.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1l5mmyxhzsbp0a6y2d86i8jmf46c6bjgjkdgkr5l8hmhflmm7gi2"))))
-    (build-system meson-build-system)
+         "1kqqvsvib01bsmfbdy3fbwwpvkcdlfb6k71kjvzb3crql7w0rxff"))))
+    (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests fail.
+       #:configure-flags '("-DSHADERC_SKIP_TESTS=ON")
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Remove various lines and touch build-version.inc or
-               ;; configuring won't work.
-               (invoke "touch" "glslc/src/build-version.inc")
-               (substitute* "CMakeLists.txt" (("..PYTHON_EXE..*") ""))
-               (substitute* "CMakeLists.txt"
-                 ((".*update_build_version.py..*") ""))
-               (substitute* "CMakeLists.txt"
-                 ((".*add_custom_target.build-version.*") ""))
-               (substitute* "CMakeLists.txt"
-                 ((".*spirv-tools_SOURCE_DIR.*glslang_SOURCE_DIR.*")
-                  ""))
-               (substitute* "CMakeLists.txt"
-                 ((".*Update build-version.inc.*") ""))
-               (substitute* "CMakeLists.txt" ((".*--check.*") ""))
-               (substitute* "glslc/src/main.cc" ((".*build-version.inc.*")
-                                                 "\"1\""))
-               (invoke "cmake" "-GNinja" "-DCMAKE_BUILD_TYPE=Release"
-                       "-DSHADERC_SKIP_TESTS=ON"
-                       "-DCMAKE_INSTALL_LIBDIR=lib"
-                       (string-append "-DCMAKE_INSTALL_PREFIX="
-                                      out)))))
-         (add-after 'unpack 'unpack-sources
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((spirv-tools-source (assoc-ref inputs "spirv-tools-source"))
-                   (spirv-headers-source (assoc-ref inputs "spirv-headers-source"))
-                   (glslang-source (assoc-ref inputs "glslang-source")))
-               (copy-recursively spirv-tools-source "third_party/spirv-tools")
-               (copy-recursively spirv-headers-source
-                                 (string-append "third_party/spirv-tools"
-                                                "/external/spirv-headers"))
-               (copy-recursively glslang-source "third_party/glslang")
-               #t))))))
+         (add-after 'unpack 'do-not-look-for-bundled-sources
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("add_subdirectory\\(third_party\\)")
+                ""))
+
+             ;; Do not attempt to use git to encode version information.
+             (substitute* "glslc/CMakeLists.txt"
+               (("add_dependencies\\(glslc_exe build-version\\)")
+                ""))
+             (call-with-output-file "glslc/src/build-version.inc"
+               (lambda (port)
+                 (format port "\"~a\"\n\"~a\"\n\"~a\"~%"
+                         ,version
+                         ,(package-version spirv-tools)
+                         ,(package-version glslang))))
+             #t)))))
     (inputs
-     `(("googletest" ,googletest)
-       ("python" ,python)))
+     `(("glslang" ,glslang)
+       ("python" ,python)
+       ("spirv-headers" ,spirv-headers)
+       ("spirv-tools" ,spirv-tools)))
     (native-inputs
-     `(("cmake" ,cmake-minimal)
-       ("glslang-source" ,(package-source glslang))
-       ("pkg-config" ,pkg-config)
-       ("spirv-headers-source" ,(package-source spirv-headers))
-       ("spirv-tools-source" ,(package-source spirv-tools))))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/google/shaderc")
     (synopsis "Tools for shader compilation")
     (description "Shaderc is a collection of tools, libraries, and tests for
