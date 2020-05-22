@@ -153,3 +153,44 @@ messages")
 privacy).")
     (license ;; code: GPL 3, docs: CC-BY-SA
      (list license:gpl3 license:cc-by-sa3.0))))
+
+(define-public libpepadapter
+  (package
+    (name "libpepadapter")
+    (version "2.0.2")
+    (source
+     (origin
+       (method hg-fetch)
+       (uri (hg-reference
+             (url "https://pep.foundation/dev/repos/libpEpAdapter")
+             (changeset "e8fe371c870a"))) ;; r168
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32 "1mlpavjbnmslvmr5jxcvpjgb2x40nhmxjb10hza3kn4qzj0k1pjz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:tests? #f ;; building the tests fails
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; libpEpAdapter does not use autotools and configure,
+           ;; but a local.conf. We need to tweak the values there.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (engine (assoc-ref inputs "pep-engine")))
+               (with-output-to-file "local.conf"
+                 (lambda _ ;()
+                   (format #t "
+PREFIX=~a
+ENGINE_LIB_PATH=~a/lib
+ENGINE_INC_PATH=~a/include
+" out engine engine))))
+             #t)))))
+    (inputs
+     `(("pep-engine" ,pep-engine)))
+    (home-page "https://pep.foundation/")
+    (synopsis "Library for building p≡p adapters")
+    (description "This C++ library provides common structures used in p≡p
+(pretty Easy privacy) adapters.")
+    (license license:bsd-3)))
