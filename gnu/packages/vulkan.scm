@@ -87,8 +87,10 @@ and for the GLSL.std.450 extended instruction set.
       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
-                               (assoc-ref %build-inputs "spirv-headers")))))
+     `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"
+                               (string-append
+                                "-DSPIRV-Headers_SOURCE_DIR="
+                                (assoc-ref %build-inputs "spirv-headers")))))
     (inputs `(("spirv-headers" ,spirv-headers)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python)))
