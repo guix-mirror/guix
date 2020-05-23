@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Nikita <nikita@n0.is>
+;;; Copyright © 2020, 2021 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2021 Oskar Köök <oskar@maatriks.ee>
 ;;; Copyright © 2021 Cees de Groot <cg@evrl.com>
 ;;;
@@ -26,8 +27,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system rebar3)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hexpm-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
@@ -221,3 +224,20 @@ built-in support for concurrency, distribution and fault tolerance.")
      "This package provides an Emacs major mode for editing Erlang source
 files.")
     (license license:asl2.0)))
+
+(define-public erlang-cf
+  (package
+    (name "erlang-cf")
+    (version "0.3.1")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "cf" version))
+       (sha256
+        (base32 "0vnmbb1n899xw2p4x6c3clpzxcqqdsfbfhh1dfy530i3201vr2h4"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/project-fifo/cf")
+    (synopsis "Terminal colour helper for Erlang io and io_lib")
+    (description "This package provides a helper library for termial colour
+printing extending the io:format syntax to add colours.")
+    (license license:expat)))
