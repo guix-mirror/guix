@@ -1595,6 +1595,7 @@ message.")))
                     "third_party/crc32c"
                     "third_party/dav1d"
                     "third_party/dawn"
+                    "third_party/emoji-segmenter"
                     "third_party/ffmpeg"
                     "third_party/googletest"
                     "third_party/hunspell"
@@ -1621,6 +1622,7 @@ message.")))
                     "third_party/libyuv"
                     "third_party/lss"
                     "third_party/markupsafe"
+                    "third_party/mesa_headers"
                     "third_party/metrics_proto"
                     "third_party/modp_b64"
                     "third_party/nasm"
@@ -1737,6 +1739,12 @@ message.")))
                  (substitute*
                      "third_party/breakpad/breakpad/src/common/linux/libcurl_wrapper.h"
                    (("third_party/curl") "curl"))
+                 (substitute*
+                     '("components/viz/common/gpu/vulkan_context_provider.h"
+                       "components/viz/common/resources/resource_format_utils.h"
+                       "gpu/config/gpu_util.cc")
+                   (("third_party/vulkan/include/")
+                    ""))
 
                  ;; Replace Google Analytics bundle with an empty file and hope
                  ;; no one notices.
@@ -1777,8 +1785,6 @@ message.")))
        ("libgcrypt" ,libgcrypt)
        ("libjpeg" ,libjpeg-turbo)
        ("libvpx" ,libvpx)
-       ;; FIXME: configure does not find system lcms
-       ;; ("lcms" ,lcms)
        ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
