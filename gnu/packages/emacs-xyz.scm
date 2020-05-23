@@ -3797,13 +3797,15 @@ for Flow files.")
        #:emacs ,emacs                   ;need libxml support
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-python-executable
-           ;; Hardcode python3 executable in the Emacs library.
+         (add-after 'unpack 'specify-python-location
+           ;; Hard-code python3 executable location in the library.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
                                            "/bin/python3")))
                (substitute* "flycheck-grammalecte.el"
                  (("\"python3") (string-append "\"" python3)))
+               (substitute* '("conjugueur.py" "flycheck-grammalecte.py")
+                 (("/usr/bin/env python3?") python3))
                #t)))
          (add-before 'build 'link-to-grammalecte
            ;; XXX: The Python part of the package requires grammalecte, but
