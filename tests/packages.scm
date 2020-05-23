@@ -29,7 +29,7 @@
                 #:renamer (lambda (name)
                             (cond ((eq? name 'location) 'make-location)
                                   (else name))))
-  #:use-module ((gcrypt hash) #:hide (sha256))
+  #:use-module ((gcrypt hash) #:prefix gcrypt:)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix grafts)
@@ -515,8 +515,9 @@
                     (uri "unused://")
                     (file-name "origin-sha512")
                     (hash (content-hash
-                           (bytevector-hash (string->utf8 "hello")
-                                            (hash-algorithm sha512))
+                           (gcrypt:bytevector-hash (string->utf8 "hello")
+                                                   (gcrypt:lookup-hash-algorithm
+                                                    'sha512))
                            sha512))))
          (drv    (package-source-derivation %store source))
          (output (derivation->output-path drv)))
