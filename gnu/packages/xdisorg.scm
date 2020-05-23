@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2016, 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
@@ -1152,6 +1152,50 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
         (base32
          "1fi27b73x85qqar526dbd33av7mahca2ykaqwr7siqiw1qqcby6j"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:imported-modules (,@%gnu-build-system-modules
+                           (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'split-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gtk (assoc-ref outputs "gtk"))
+                   (desktop-file "/share/applications/redshift-gtk.desktop"))
+               (mkdir-p (string-append gtk "/bin"))
+               (link (string-append out "/bin/redshift-gtk")
+                     (string-append gtk "/bin/redshift-gtk"))
+               (delete-file (string-append out "/bin/redshift-gtk"))
+               (copy-recursively (string-append out "/lib")
+                                 (string-append gtk "/lib"))
+               (delete-file-recursively (string-append out "/lib"))
+               (mkdir-p (string-append gtk "/share/applications"))
+               (link (string-append out desktop-file)
+                     (string-append gtk desktop-file))
+               (delete-file (string-append out desktop-file))
+               (with-directory-excursion (string-append out "/share")
+                 (for-each (lambda (dir)
+                             (copy-recursively
+                              (string-append out "/share/" dir)
+                              (string-append gtk "/share/" dir))
+                             (delete-file-recursively dir))
+                           '("appdata" "icons")))
+               #t)))
+         (add-after 'split-outputs 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((gtk (assoc-ref outputs "gtk"))
+                    (python-version
+                     (@ (guix build python-build-system) python-version))
+                    (python (assoc-ref inputs "python"))
+                    (sitedir (string-append gtk "/lib/python"
+                                            (python-version python)
+                                            "/site-packages")))
+               (wrap-program (string-append gtk "/bin/redshift-gtk")
+                 `("PYTHONPATH" ":" prefix
+                   (,(string-append sitedir ":" (getenv "PYTHONPATH"))))
+                 `("GI_TYPELIB_PATH" ":" prefix (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (outputs '("out" "gtk"))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -1160,7 +1204,13 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxxf86vm" ,libxxf86vm)
-       ("glib" ,glib)))                 ; for Geoclue2 support
+       ("glib" ,glib)                   ;for Geoclue2 support
+
+       ;; To build the GTK3 GUI, we need these.
+       ("gtk+" ,gtk+)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pyxdg" ,python-pyxdg)))
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
     (description
