@@ -471,6 +471,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
     (propagated-inputs '())
     (inputs '())
     (native-inputs '())
+    (outputs '("out"))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
