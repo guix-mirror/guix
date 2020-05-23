@@ -487,3 +487,77 @@ a well configured release directory.")
     (description "This package provides SSL verification functions for
 Erlang.")
     (license license:expat)))
+
+(define-public rebar3
+  (package
+    (name "rebar3")
+    (version "3.17.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/erlang/rebar3.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "02sk3whrbprzlih4pgcsd6ngmassfjfmkz21gwvb7mq64pib40k6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (add-after 'unpack 'unpack-dependency-sources
+           (lambda* (#:key inputs #:allow-other-keys)
+             (for-each
+              (lambda (pkgname)
+                (let* ((src (string-append pkgname "-source"))
+                       (input (assoc-ref inputs src))
+                       (checkouts-dir (string-append "_checkouts/" pkgname))
+                       (lib-dir (string-append "_build/default/lib/" pkgname)))
+                  (mkdir-p checkouts-dir)
+                  (invoke "tar" "-xzf" input "-C" checkouts-dir)
+                  (mkdir-p lib-dir)
+                  (copy-recursively checkouts-dir lib-dir)))
+              (list "bbmustache" "certifi" "cf" "cth_readable"
+                    "eunit_formatters" "getopt" "hex_core" "erlware_commons"
+                    "parse_trans" "relx" "ssl_verify_fun" "providers"))
+             #t))
+         (delete 'configure)
+         (replace 'build
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (invoke "./bootstrap")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "rebar3" (string-append out "/bin")))
+             #t))
+         (delete 'check))))
+    (native-inputs
+     `(("erlang" ,erlang)))
+    (inputs
+     `(("bbmustache-source" ,(package-source erlang-bbmustache))
+       ("certifi-source" ,(package-source erlang-certifi))
+       ("cf-source" ,(package-source erlang-cf))
+       ("cth_readable-source" ,(package-source erlang-cth-readable))
+       ("erlware_commons-source" ,(package-source erlang-erlware-commons))
+       ("eunit_formatters-source" ,(package-source erlang-eunit-formatters))
+       ("getopt-source" ,(package-source erlang-getopt))
+       ("hex_core-source" ,(package-source erlang-hex-core))
+       ("parse_trans-source" ,(package-source erlang-parse-trans))
+       ("relx-source" ,(package-source erlang-relx))
+       ("ssl_verify_fun-source" ,(package-source erlang-ssl-verify-fun))
+       ("providers-source" ,(package-source erlang-providers))))
+    (home-page "https://www.rebar3.org/")
+    (synopsis "Sophisticated build-tool for Erlang projects that follows OTP
+principles")
+    (description "@code{rebar3} is an Erlang build tool that makes it easy to
+compile and test Erlang applications, port drivers and releases.
+
+@code{rebar3} is a self-contained Erlang script, so it's easy to distribute or
+even embed directly in a project.  Where possible, rebar uses standard
+Erlang/OTP conventions for project structures, thus minimizing the amount of
+build configuration work.  @code{rebar3} also provides dependency management,
+enabling application writers to easily re-use common libraries from a variety
+of locations (git, hg, etc).")
+    (license license:asl2.0)))
