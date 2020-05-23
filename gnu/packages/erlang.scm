@@ -444,3 +444,20 @@ Erlang.")
     (synopsis "Erlang providers library")
     (description "This package provides an Erlang providers library.")
     (license license:asl2.0)))
+
+(define-public erlang-ssl-verify-fun
+  (package
+    (name "erlang-ssl-verify-fun")
+    (version "1.1.6")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "ssl_verify_fun" version))
+       (sha256
+        (base32 "0bwdqhnmlv0jfs5mrws2a75zngiihnvcni2hj4l65r5abnw050vx"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/deadtrickster/ssl_verify_fun.erl")
+    (synopsis "SSL verification functions for Erlang")
+    (description "This package provides SSL verification functions for
+Erlang.")
+    (license license:expat)))
