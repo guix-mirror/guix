@@ -107,6 +107,7 @@
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gimp)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -259,6 +260,76 @@
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
+
+(define-public gnome-photos
+  (package
+    (name "gnome-photos")
+    (version "3.34.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://gnome/sources/" name "/"
+                       (version-major+minor version) "/"
+                       name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "06ml5sf8xhpan410msqz085hmfc7082d368pb82yq646y9pcfn9w"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       (list "-Ddogtail=false"     ; Not available
+             ;; Required for RUNPATH validation.
+             (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/gnome-photos"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-gnome-photos
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let*
+                 ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/gnome-photos")
+                 `("GRL_PLUGIN_PATH" = (,(getenv "GRL_PLUGIN_PATH")))))
+             #t)))))
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("gettext" ,gettext-minimal)
+       ("git" ,git-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+:bin" ,gtk+ "bin")
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("babl" ,babl)
+       ("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
+       ("gegl" ,gegl)
+       ("geocode-glib" ,geocode-glib)
+       ("gexiv2" ,gexiv2)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-miners" ,gnome-online-miners)
+       ("grilo" ,grilo)
+       ("grilo-plugins" ,grilo-plugins)
+       ("gtk+" ,gtk+)
+       ("libdazzle" ,libdazzle)
+       ("libgdata" ,libgdata)
+       ("libgfbgraph" ,gfbgraph)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("librest" ,rest)
+       ("pygobject" ,python-pygobject)
+       ("tracker" ,tracker)
+       ("tracker-miners" ,tracker-miners)))
+    (synopsis "Access, organize and share your photos on GNOME desktop")
+    (description "GNOME Photos is a simple and elegant replacement for using a
+file manager to deal with photos.  Enhance, crop and edit in a snap.  Seamless
+cloud integration is offered through GNOME Online Accounts.")
+    (home-page "https://wiki.gnome.org/Apps/Photos")
+    (license license:gpl3+)))
 
 (define-public gnome-music
   (package
