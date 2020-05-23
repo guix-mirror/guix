@@ -377,6 +377,35 @@ of reusable Erlang components.")
 arguments using the GNU getopt syntax.")
     (license license:bsd-3)))
 
+(define-public erlang-hex-core
+  (package
+    (name "erlang-hex-core")
+    (version "0.8.2")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "hex_core" version))
+       (sha256
+        (base32 "15fybnqxl5lzkpd8fjj1fxmj8cxcdpkxn0cvwc41cv0vxv3pw797"))))
+    (build-system rebar3-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rebar3" "as" "test" "proper")))))))
+    (inputs
+     `(("erlang-proper" ,erlang-proper)
+       ("erlang-rebar3-proper" ,erlang-rebar3-proper)))
+    (propagated-inputs
+     `(("erlang-getopt" ,erlang-getopt)))
+    (home-page "https://github.com/hexpm/hex_core")
+    (synopsis "Reference implementation of Hex specifications")
+    (description "This package provides the reference implementation of Hex
+specifications.")
+    (license license:asl2.0)))
+
 (define-public erlang-parse-trans
   (package
     (name "erlang-parse-trans")
