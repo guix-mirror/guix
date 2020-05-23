@@ -147,6 +147,18 @@
                        (guix build utils))
           gexp* ...))))
 
+(define (root-partition? partition)
+  "Return true if PARTITION is the root partition, false otherwise."
+  (member 'boot (partition-flags partition)))
+
+(define (find-root-partition image)
+  "Return the root partition of the given IMAGE."
+  (srfi-1:find root-partition? (image-partitions image)))
+
+(define (root-partition-index image)
+  "Return the index of the root partition of the given IMAGE."
+  (1+ (srfi-1:list-index root-partition? (image-partitions image))))
+
 
 ;;
 ;; Disk image.
@@ -276,9 +288,17 @@ image ~a {
   (let* ((substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
-           (let ((inputs '#+(list genimage coreutils findutils)))
+           (let ((inputs '#+(list genimage coreutils findutils))
+                 (bootloader-installer
+                  #+(bootloader-disk-image-installer bootloader)))
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (genimage #$(image->genimage-cfg image) #$output))))
+             (genimage #$(image->genimage-cfg image) #$output)
+             ;; Install the bootloader directly on the disk-image.
+             (when bootloader-installer
+               (bootloader-installer
+                #+(bootloader-package bootloader)
+                #$(root-partition-index image)
+                (string-append #$output "/" #$genimage-name))))))
          (image-dir (computed-file "image-dir" builder)))
     (computed-file name
                    #~(symlink
@@ -370,14 +390,6 @@ used in the image. "
 ;;
 ;; Image creation.
 ;;
-
-(define (root-partition? partition)
-  "Return true if PARTITION is the root partition, false otherwise."
-  (member 'boot (partition-flags partition)))
-
-(define (find-root-partition image)
-  "Return the root partition of the given IMAGE."
-  (srfi-1:find root-partition? (image-partitions image)))
 
 (define (image->root-file-system image)
   "Return the IMAGE root partition file-system type."
