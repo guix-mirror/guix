@@ -423,18 +423,24 @@ fi~%"))))
 
 (define install-grub
   #~(lambda (bootloader device mount-point)
-      ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT.
       (let ((grub (string-append bootloader "/sbin/grub-install"))
             (install-dir (string-append mount-point "/boot")))
-        ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
-        ;; root partition.
-        (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+        ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT. If DEVICE
+        ;; is #f, then we populate the disk-image rooted at MOUNT-POINT.
+        (if device
+            (begin
+              ;; Tell 'grub-install' that there might be a LUKS-encrypted
+              ;; /boot or root partition.
+              (setenv "GRUB_ENABLE_CRYPTODISK" "y")
 
-        ;; Hide potentially confusing messages from the user, such as
-        ;; "Installing for i386-pc platform."
-        (invoke/quiet grub "--no-floppy" "--target=i386-pc"
-                      "--boot-directory" install-dir
-                      device))))
+              ;; Hide potentially confusing messages from the user, such as
+              ;; "Installing for i386-pc platform."
+              (invoke/quiet grub "--no-floppy" "--target=i386-pc"
+                            "--boot-directory" install-dir
+                            device))
+            ;; When creating a disk-image, only install GRUB modules.
+            (copy-recursively (string-append bootloader "/lib/")
+                              install-dir)))))
 
 (define install-grub-disk-image
   #~(lambda (bootloader root-index image)
