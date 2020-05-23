@@ -225,6 +225,40 @@ built-in support for concurrency, distribution and fault tolerance.")
 files.")
     (license license:asl2.0)))
 
+(define-public erlang-bbmustache
+  (package
+    (name "erlang-bbmustache")
+    (version "1.12.1")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "bbmustache" version))
+       (sha256
+        (base32 "0wbfayx6940zf57bpwg1m9sk3cpgam2q8n0w74alkrc4gc7hn47w"))))
+    (build-system rebar3-build-system)
+    (inputs
+     `(("erlang-edown" ,erlang-edown)
+       ("erlang-getopt" ,erlang-getopt)
+       ("erlang-rebar3-git-vsn" ,erlang-rebar3-git-vsn)))
+    (arguments
+     `(#:tests? #f ;; requires mustache specification file
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-escript
+           (lambda _
+             (invoke "rebar3" "as" "dev" "escriptize")))
+         (add-after 'install 'install-escript
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out")))
+               (install-file "_build/dev/bin/bbmustache"
+                             (string-append out "/bin")))
+             #t)))))
+    (home-page "https://github.com/soranoba/bbmustache/")
+    (synopsis "Binary pattern match Based Mustache template engine for Erlang")
+    (description "This Erlang library provides a Binary pattern match Based
+Mustache template engine")
+    (license license:expat)))
+
 (define-public erlang-certifi
   (package
     (name "erlang-certifi")
