@@ -70,6 +70,7 @@
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2765,6 +2766,26 @@ Emacs.")
     (synopsis "Emacs API for working with files and directories")
     (description "This package provides an Emacs library for working with
 files and directories.")
+    (license license:gpl3+)))
+
+(define-public emacs-fountain-mode
+  (package
+    (name "emacs-fountain-mode")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rnkn/fountain-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08giwg0jwk8zzj2i4cm08322qr6znrnv9a49za7c6j47bykpwj6s"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rnkn/fountain-mode")
+    (synopsis "Major mode for screenwriting in Fountain markup")
+    (description "Fountain Mode is a scriptwriting program for GNU Emacs
+using the Fountain plain text markup format.")
     (license license:gpl3+)))
 
 (define-public emacs-fringe-helper
