@@ -343,3 +343,20 @@ outputs you want to be readable around all that noise they contain.")
     (description "Erlware Commons is an Erlware project focused on all aspects
 of reusable Erlang components.")
     (license license:expat)))
+
+(define-public erlang-getopt
+  (package
+    (name "erlang-getopt")
+    (version "1.0.2")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "getopt" version))
+       (sha256
+        (base32 "1yxs36l1ll56zrxn81kw5qd8fv1q14myhjylk7dk31palg7jl725"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/jcomellas/getopt")
+    (synopsis "Command-line options parser for Erlang")
+    (description "This package provides an Erlang module to parse command line
+arguments using the GNU getopt syntax.")
+    (license license:bsd-3)))
