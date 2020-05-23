@@ -266,6 +266,27 @@ Mozilla's canonical set.")
 printing extending the io:format syntax to add colours.")
     (license license:expat)))
 
+(define-public erlang-cth-readable
+  (package
+    (name "erlang-cth-readable")
+    (version "1.5.1")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "cth_readable" version))
+       (sha256
+        (base32 "0hqzgd8fvs4d1bhpm6dkm3bm2jik4qbl78s514r5ivwjxw1dzrds"))))
+    (build-system rebar3-build-system)
+    (propagated-inputs
+     `(("erlang-cf" ,erlang-cf)))
+    (arguments
+     `(#:tests? #f)) ;; no test-suite
+    (home-page "https://github.com/ferd/cth_readable")
+    (synopsis "Common Test hooks for more readable logs for Erlang")
+    (description "This package provides an OTP library to be used for CT log
+outputs you want to be readable around all that noise they contain.")
+    (license license:bsd-3)))
+
 (define-public erlang-erlware-commons
   (package
     (name "erlang-erlware-commons")
