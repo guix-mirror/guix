@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -473,7 +473,7 @@ gpgpme starting with version 1.7.")
 (define-public guile-gcrypt
   (package
     (name "guile-gcrypt")
-    (version "0.2.1")
+    (version "0.3.0")
     (home-page "https://notabug.org/cwebber/guile-gcrypt")
     (source (origin
               (method git-fetch)
@@ -482,7 +482,7 @@ gpgpme starting with version 1.7.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "0n232iyayc46f7hywmjw0jr7pbmmz5h4b04jskhkzz9gxz0ci99c"))
+                "0m29fg4pdfifnqqsa437zc5c1bhbfh62mc69ba25ak4x2cla41ll"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -510,7 +510,7 @@ gpgpme starting with version 1.7.")
        ("libgcrypt" ,libgcrypt)))
     (synopsis "Cryptography library for Guile using Libgcrypt")
     (description
-     "Guile-Gcrypt provides a Guile 2.x interface to a subset of the
+     "Guile-Gcrypt provides a Guile interface to a subset of the
 GNU Libgcrypt crytographic library.  It provides modules for cryptographic
 hash functions, message authentication codes (MAC), public-key cryptography,
 strong randomness, and more.  It is implemented using the foreign function
