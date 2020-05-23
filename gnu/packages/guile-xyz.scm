@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -467,7 +468,12 @@ you send to a FIFO file.")
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs `(("guile2.2-lib" ,guile2.2-lib)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases (modify-phases %standard-phases
                   (add-before 'configure 'set-guilesitedir
                     (lambda _
                       (substitute* "Makefile.in"
@@ -482,6 +488,24 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
                         (("^guilesitedir =.*$")
                          "guilesitedir = \
 $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      #t))
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin"))
+                             (guile-lib (assoc-ref inputs "guile2.2-lib"))
+                             (version (target-guile-effective-version))
+                             (scm (string-append "/share/guile/site/"
+                                                 version))
+                             (go (string-append  "/lib/guile/"
+                                                 version "/site-ccache")))
+                        (wrap-program (string-append bin "/dsv")
+                          `("GUILE_LOAD_PATH" prefix
+                            (,(string-append out scm)
+                             ,(string-append guile-lib scm)))
+                          `("GUILE_LOAD_COMPILED_PATH" prefix
+                            (,(string-append out go)
+                             ,(string-append guile-lib go)))))
                       #t)))))
     (home-page "https://github.com/artyom-poptsov/guile-dsv")
     (synopsis "DSV module for Guile")
