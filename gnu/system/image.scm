@@ -234,6 +234,7 @@ used in the image."
                               #:references-graphs '#$graph
                               #:deduplicate? #f
                               #:system-directory #$os
+                              #:grub-efi #+grub-efi
                               #:bootloader-package
                               #+(bootloader-package bootloader)
                               #:bootloader-installer
