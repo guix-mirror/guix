@@ -219,19 +219,21 @@ system.")
                    (run-with-store store
                      (mbegin %store-monad
                        (set-guile-for-build (default-guile))
-                       (system-image
-                        (image
-                         (inherit efi-disk-image)
-                         (size (* 1500 MiB))
-                         (operating-system installation-os))))))
+                       (lower-object
+                        (system-image
+                         (image
+                          (inherit efi-disk-image)
+                          (size (* 1500 MiB))
+                          (operating-system installation-os)))))))
             (->job 'iso9660-image
                    (run-with-store store
                      (mbegin %store-monad
                        (set-guile-for-build (default-guile))
-                       (system-image
-                        (image
-                         (inherit iso9660-image)
-                         (operating-system installation-os)))))))
+                       (lower-object
+                        (system-image
+                         (image
+                          (inherit iso9660-image)
+                          (operating-system installation-os))))))))
       '()))
 
 (define channel-build-system

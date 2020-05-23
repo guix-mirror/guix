@@ -492,7 +492,7 @@ it can be used for bootloading."
                             (type root-file-system-type))
                           file-systems-to-keep)))))
 
-(define* (make-system-image image)
+(define* (system-image image)
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
   (define substitutable? (image-substitutable? image))
@@ -525,38 +525,10 @@ image, depending on IMAGE format."
   "Find and return an image that could match the given FILE-SYSTEM-TYPE.  This
 is useful to adapt to interfaces written before the addition of the <image>
 record."
-  ;; XXX: Add support for system and target here, or in the caller.
-  (match file-system-type
-    ("iso9660" iso9660-image)
-    (_ efi-disk-image)))
-
-(define (system-image image)
-  "Wrap 'make-system-image' call, so that it is used only if the given IMAGE
-is supported.  Otherwise, fallback to image creation in a VM.  This is
-temporary and should be removed once 'make-system-image' is able to deal with
-all types of images."
-  (define substitutable? (image-substitutable? image))
-  (define volatile-root? (image-volatile-root? image))
-
-  (let* ((image-os (image-operating-system image))
-         (image-root-filesystem-type (image->root-file-system image))
-         (bootloader (bootloader-configuration-bootloader
-                      (operating-system-bootloader image-os)))
-         (bootloader-name (bootloader-name bootloader))
-         (size (image-size image))
-         (format (image-format image)))
-    (mbegin %store-monad
-      (if (and (or (eq? bootloader-name 'grub)
-                   (eq? bootloader-name 'extlinux))
-               (eq? format 'disk-image))
-          ;; Fallback to image creation in a VM when it is not yet supported
-          ;; by this module.
-          (system-disk-image-in-vm image-os
-                                   #:disk-image-size size
-                                   #:file-system-type image-root-filesystem-type
-                                   #:volatile? volatile-root?
-                                   #:substitutable? substitutable?)
-          (lower-object
-           (make-system-image image))))))
+  (mbegin %store-monad
+    (return
+     (match file-system-type
+       ("iso9660" iso9660-image)
+       (_ efi-disk-image)))))
 
 ;;; image.scm ends here

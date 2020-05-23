@@ -670,7 +670,7 @@ checking this by themselves in their 'check' procedure."
 ;;; Action.
 ;;;
 
-(define* (system-derivation-for-action os action
+(define* (system-derivation-for-action os base-image action
                                        #:key image-size file-system-type
                                        full-boot? container-shared-network?
                                        mappings)
@@ -694,11 +694,12 @@ checking this by themselves in their 'check' procedure."
                                                 (* 70 (expt 2 20)))
                                             #:mappings mappings))
     ((disk-image)
-     (system-image
-      (image
-       (inherit (find-image file-system-type))
-       (size image-size)
-       (operating-system os))))
+     (lower-object
+      (system-image
+       (image
+        (inherit base-image)
+        (size image-size)
+        (operating-system os)))))
     ((docker-image)
      (system-docker-image os #:shared-network? container-shared-network?))))
 
@@ -800,7 +801,8 @@ static checks."
       (check-initrd-modules os)))
 
   (mlet* %store-monad
-      ((sys       (system-derivation-for-action os action
+      ((image     (find-image file-system-type))
+       (sys       (system-derivation-for-action os image action
                                                 #:file-system-type file-system-type
                                                 #:image-size image-size
                                                 #:full-boot? full-boot?
