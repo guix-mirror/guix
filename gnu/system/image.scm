@@ -43,6 +43,7 @@
   #:use-module (gnu packages genimage)
   #:use-module (gnu packages guile)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mtools)
   #:use-module ((srfi srfi-1) #:prefix srfi-1:)
@@ -54,6 +55,7 @@
   #:export (esp-partition
             root-partition
 
+            hurd-disk-image
             efi-disk-image
             iso9660-image
 
@@ -90,6 +92,26 @@
    (file-system "ext4")
    (flags '(boot))
    (initializer (gexp initialize-root-partition))))
+
+(define hurd-initialize-root-partition
+  #~(lambda* (#:rest args)
+      (apply initialize-root-partition
+             (append args
+                     (list #:make-device-nodes
+                           make-hurd-device-nodes)))))
+
+(define hurd-disk-image
+  (image
+   (format 'disk-image)
+   (partitions
+    (list (partition
+           (size 'guess)
+           (offset root-offset)
+           (label root-label)
+           (file-system "ext2")
+           (file-system-options '("-o" "hurd" "-O" "ext_attr"))
+           (flags '(boot))
+           (initializer hurd-initialize-root-partition))))))
 
 (define efi-disk-image
   (image
@@ -145,12 +167,14 @@
     (with-imported-modules `(,@(source-module-closure
                                 '((gnu build vm)
                                   (gnu build image)
+                                  (gnu build linux-boot)
                                   (guix store database))
                                 #:select? not-config?)
                              ((guix config) => ,(make-config.scm)))
       #~(begin
           (use-modules (gnu build vm)
                        (gnu build image)
+                       (gnu build linux-boot)
                        (guix store database)
                        (guix build utils))
           gexp* ...))))
@@ -525,10 +549,16 @@ image, depending on IMAGE format."
   "Find and return an image that could match the given FILE-SYSTEM-TYPE.  This
 is useful to adapt to interfaces written before the addition of the <image>
 record."
-  (mbegin %store-monad
-    (return
-     (match file-system-type
-       ("iso9660" iso9660-image)
-       (_ efi-disk-image)))))
+  (mlet %store-monad ((target (current-target-system)))
+    (mbegin %store-monad
+      (return
+       (match file-system-type
+         ("iso9660" iso9660-image)
+         (_ (cond
+             ((and target
+                   (hurd-triplet? target))
+              hurd-disk-image)
+             (else
+              efi-disk-image))))))))
 
 ;;; image.scm ends here
