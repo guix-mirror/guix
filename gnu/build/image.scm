@@ -155,6 +155,8 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
                                     #:key
                                     bootcfg
                                     bootcfg-location
+                                    bootloader-package
+                                    bootloader-installer
                                     (deduplicate? #t)
                                     references-graphs
                                     (register-closures? #t)
@@ -178,6 +180,9 @@ of the directory of the 'system' derivation."
                                   #:deduplicate? deduplicate?))
               references-graphs))
 
+  (when bootloader-installer
+    (display "installing bootloader...\n")
+    (bootloader-installer bootloader-package #f root))
   (when bootcfg
     (install-boot-config bootcfg bootcfg-location root)))
 

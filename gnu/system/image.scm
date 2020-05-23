@@ -235,7 +235,9 @@ used in the image."
                               #:deduplicate? #f
                               #:system-directory #$os
                               #:bootloader-package
-                              #$(bootloader-package bootloader)
+                              #+(bootloader-package bootloader)
+                              #:bootloader-installer
+                              #+(bootloader-installer bootloader)
                               #:bootcfg #$bootcfg
                               #:bootcfg-location
                               #$(bootloader-configuration-file bootloader)))))
