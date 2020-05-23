@@ -377,6 +377,25 @@ of reusable Erlang components.")
 arguments using the GNU getopt syntax.")
     (license license:bsd-3)))
 
+(define-public erlang-parse-trans
+  (package
+    (name "erlang-parse-trans")
+    (version "3.4.1")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "parse_trans" version))
+       (sha256
+        (base32 "1g3ablipihi8z64j9195pmrlf7gymyi21j2da9y509igs3q1sxfc"))))
+    (build-system rebar3-build-system)
+    (inputs
+     `(("erlang-getopt" ,erlang-getopt)))
+    (home-page "https://github.com/uwiger/parse_trans")
+    (synopsis "Parse transform utilities for Erlang")
+    (description "This package provides parse transform utilities for
+Erlang.")
+    (license license:asl2.0)))
+
 (define-public erlang-providers
   (package
     (name "erlang-providers")
