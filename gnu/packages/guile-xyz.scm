@@ -465,8 +465,8 @@ you send to a FIFO file.")
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.2)))
-    (propagated-inputs `(("guile2.2-lib" ,guile2.2-lib)))
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
     (arguments
      `(#:modules (((guix build guile-build-system)
                    #:select (target-guile-effective-version))
@@ -474,6 +474,14 @@ you send to a FIFO file.")
        #:imported-modules ((guix build guile-build-system)
                            ,@%gnu-build-system-modules)
        #:phases (modify-phases %standard-phases
+                  ;; Support Guile 3.0 in configure from upstream commit
+                  ;; 4c724577ccf19bb88580f72f2f6b166a0447ce3f
+                  (add-before 'bootstrap 'configure-support-guile3.0
+                    (lambda _
+                      (substitute* "configure.ac"
+                                  (("GUILE_PKG.*")
+                                   "GUILE_PKG([3.0 2.0 2.2])"))
+                      #t))
                   (add-before 'configure 'set-guilesitedir
                     (lambda _
                       (substitute* "Makefile.in"
@@ -493,7 +501,7 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
                              (bin (string-append out "/bin"))
-                             (guile-lib (assoc-ref inputs "guile2.2-lib"))
+                             (guile-lib (assoc-ref inputs "guile-lib"))
                              (version (target-guile-effective-version))
                              (scm (string-append "/share/guile/site/"
                                                  version))
@@ -514,6 +522,13 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
 delimiter-separated values (DSV) data format.  Guile-DSV supports the
 Unix-style DSV format and RFC 4180 format.")
     (license license:gpl3+)))
+
+(define-public guile2.2-dsv
+  (package
+    (inherit guile-dsv)
+    (name "guile2.2-dsv")
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs `(("guile-lib" ,guile2.2-lib)))))
 
 (define-public guile-fibers
   (package
