@@ -261,10 +261,10 @@ used in the image."
             (image (partition-image partition))
             (offset (partition-offset partition)))
         #~(format #f "~/partition ~a {
-                                      ~/~/partition-type = ~a
-                                      ~/~/image = \"~a\"
-                                      ~/~/offset = \"~a\"
-                                      ~/}"
+~/~/partition-type = ~a
+~/~/image = \"~a\"
+~/~/offset = \"~a\"
+~/}"
                   #$label
                   #$dos-type
                   #$image
