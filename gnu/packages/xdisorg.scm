@@ -1238,6 +1238,24 @@ color temperature should be set to match the lamps in your room.")
                  (base32
                   "0nbkcw3avmzjg1jr1g9yfpm80kzisy55idl09b6wvzv2sz27n957"))))
       (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'install 'create-desktop-file
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; For the GeoClue provider to work, a .desktop file
+                        ;; needs to be provided.  A template is available,
+                        ;; but it only gets installed when the GUI is enabled.
+                        ;; Install it manually for this Wayland variant.
+                        (let* ((out (assoc-ref outputs "out"))
+                               (desktop-file
+                                (string-append
+                                 out "/share/applications/redshift.desktop")))
+                          (mkdir-p (dirname desktop-file))
+                          (copy-file "data/applications/redshift.desktop.in"
+                                     desktop-file)
+                          (substitute* desktop-file
+                            (("^_") ""))
+                          #t))))))
       (native-inputs
        `(("autoconf" ,autoconf)
          ("automake" ,automake)
