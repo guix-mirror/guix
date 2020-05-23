@@ -445,6 +445,32 @@ Erlang.")
     (description "This package provides an Erlang providers library.")
     (license license:asl2.0)))
 
+(define-public erlang-relx
+  (package
+    (name "erlang-relx")
+    (version "4.5.0")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "relx" version))
+       (sha256
+        (base32 "12fjcb5b992ixxkc7v7v55ln1i5qak7dzmzqvf6hx50l1ip3hh58"))))
+    (build-system rebar3-build-system)
+    (propagated-inputs
+     `(("erlang-bbmustache" ,erlang-bbmustache)
+       ("erlang-cf" ,erlang-cf)
+       ("erlang-erlware-commons" ,erlang-erlware-commons)
+       ("erlang-getopt" ,erlang-getopt)
+       ("erlang-providers" ,erlang-providers)))
+    (home-page "https://erlware.github.io/relx/")
+    (synopsis "Release assembler for Erlang/OTP Releases")
+    (description "Relx assembles releases for an Erlang/OTP release.  Given a
+release specification and a list of directories in which to search for OTP
+applications it will generate a release output.  That output depends heavily on
+what plugins available and what options are defined, but usually it is simply
+a well configured release directory.")
+    (license license:asl2.0)))
+
 (define-public erlang-ssl-verify-fun
   (package
     (name "erlang-ssl-verify-fun")
