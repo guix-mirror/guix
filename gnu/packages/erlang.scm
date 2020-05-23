@@ -225,6 +225,30 @@ built-in support for concurrency, distribution and fault tolerance.")
 files.")
     (license license:asl2.0)))
 
+(define-public erlang-certifi
+  (package
+    (name "erlang-certifi")
+    (version "2.7.0")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "certifi" version))
+       (sha256
+        (base32 "1ssiajvll5nilrnsg23ja3qz2fmvnbhy176c8i0gqj0h1alismn9"))))
+    (build-system rebar3-build-system)
+    (inputs
+     `(("parse-trans" ,erlang-parse-trans)))
+    (home-page "https://github.com/certifi/erlang-certifi/")
+    (synopsis "CA bundle adapted from Mozilla for Erlang")
+    (description "This Erlang library contains a CA bundle that you can
+reference in your Erlang application.  This is useful for systems that do not
+have CA bundles that Erlang can find itself, or where a uniform set of CAs is
+valuable.
+
+This an Erlang specific port of certifi.  The CA bundle is derived from
+Mozilla's canonical set.")
+    (license license:bsd-3)))
+
 (define-public erlang-cf
   (package
     (name "erlang-cf")
