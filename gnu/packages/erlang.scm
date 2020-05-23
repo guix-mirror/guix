@@ -344,6 +344,22 @@ outputs you want to be readable around all that noise they contain.")
 of reusable Erlang components.")
     (license license:expat)))
 
+(define-public erlang-eunit-formatters
+  (package
+    (name "erlang-eunit-formatters")
+    (version "0.5.0")
+    (source
+     (origin
+       (method hexpm-fetch)
+       (uri (hexpm-uri "eunit_formatters" version))
+       (sha256
+        (base32 "18q3vb12799584kdb998298b6bfh686mzi5s7pkb7djrf93vgf5f"))))
+    (build-system rebar3-build-system)
+    (home-page "https://github.com/seancribbs/eunit_formatters")
+    (synopsis "Better output for eunit suites")
+    (description "This package provides a better output for Erlang eunits.")
+    (license license:asl2.0)))
+
 (define-public erlang-getopt
   (package
     (name "erlang-getopt")
