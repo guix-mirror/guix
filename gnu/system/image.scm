@@ -420,18 +420,18 @@ to OS.  Also set the UUID and the size of the root partition."
        (string=? (file-system-mount-point fs) "/"))
      (operating-system-file-systems os)))
 
-  (let*-values (((partitions) (image-partitions base-image))
-                ((root-partition other-partitions)
-                 (srfi-1:partition root-partition? partitions)))
-    (image
-     (inherit base-image)
-     (operating-system os)
-     (partitions
-      (cons (partition
-             (inherit (car root-partition))
-             (uuid (file-system-device root-file-system))
-             (size (root-size base-image)))
-            other-partitions)))))
+  (image
+   (inherit base-image)
+   (operating-system os)
+   (partitions
+    (map (lambda (p)
+           (if (root-partition? p)
+               (partition
+                (inherit p)
+                (uuid (file-system-device root-file-system))
+                (size (root-size base-image)))
+               p))
+         (image-partitions base-image)))))
 
 (define (operating-system-for-image image)
   "Return an operating-system based on the one specified in IMAGE, but
