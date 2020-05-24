@@ -24,6 +24,10 @@
   #:use-module (guix discovery)
   #:use-module ((guix download)
                 #:select (download-to-store url-fetch))
+  #:use-module ((guix hexpm-download)
+                #:select (hexpm-fetch))
+  #:use-module ((guix extracting-download)
+                #:select (download-to-store/extract))
   #:use-module (guix gnupg)
   #:use-module (guix packages)
   #:use-module (guix diagnostics)
@@ -430,9 +434,23 @@ SOURCE, an <upstream-source>."
                                         #:key-download key-download)))
          (values version tarball source))))))
 
+(define* (package-update/hexpm-fetch store package source
+                                   #:key key-download)
+  "Return the version, tarball, and SOURCE, to update PACKAGE to
+SOURCE, an <upstream-source>."
+  (match source
+    (($ <upstream-source> _ version urls signature-urls)
+     (let* ((url (first urls))
+            (name (or (origin-file-name (package-source package))
+                      (string-append (basename url) ".gz")))
+            (tarball (download-to-store/extract
+                      store url "contents.tar.gz" name)))
+       (values version tarball source)))))
+
 (define %method-updates
   ;; Mapping of origin methods to source update procedures.
-  `((,url-fetch . ,package-update/url-fetch)))
+  `((,url-fetch . ,package-update/url-fetch)
+    (,hexpm-fetch . ,package-update/hexpm-fetch)))
 
 (define* (package-update store package
                          #:optional (updaters (force %updaters))
