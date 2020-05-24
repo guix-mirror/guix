@@ -340,10 +340,10 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
      `(("openvpn" ,openvpn)))
     (synopsis "Command-line client for ProtonVPN")
     (description
-     "Official CLI for ProtonVPN, a secure point-to-point virtual private
-networking service with a gratis tier.  It can automatically find and connect
-to the fastest servers or use TOR over VPN.  The gratis tier offers unlimited
-bandwidth for up to 10 devices.")
+     "This is the official command-line interface for ProtonVPN, a secure
+point-to-point virtual private networking (VPN) service with a gratis tier.
+It can automatically find and connect to the fastest servers or use Tor over
+VPN.  The gratis tier offers unlimited bandwidth for up to 10 devices.")
     (home-page "https://github.com/ProtonVPN/linux-cli")
     (license license:gpl3+)))
 
