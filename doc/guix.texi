@@ -16523,9 +16523,14 @@ Possible values are:
 
 @deffn {Scheme Procedure} udisks-service [#:udisks @var{udisks}]
 Return a service for @uref{https://udisks.freedesktop.org/docs/latest/,
-UDisks}, a @dfn{disk management} daemon that provides user interfaces with
-notifications and ways to mount/unmount disks.  Programs that talk to UDisks
-include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
+UDisks}, a @dfn{disk management} daemon that provides user interfaces
+with notifications and ways to mount/unmount disks.  Programs that talk
+to UDisks include the @command{udisksctl} command, part of UDisks, and
+GNOME Disks.  Note that Udisks relies on the @command{mount} command, so
+it will only be able to use the file-system utilities installed in the
+system profile.  For example if you want to be able to mount NTFS
+file-systems in read and write fashion, you'll need to have
+@code{ntfs-3g} installed system-wide.
 @end deffn
 
 @deffn {Scheme Variable} colord-service-type
