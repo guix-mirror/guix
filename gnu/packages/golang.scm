@@ -2810,7 +2810,7 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1pm4pwg2abd0j9cn5v3k2ksk9ig4vlwxmlw9rrglanziv9l967qp"))))
+                "1ywbfzz1h3a3qd8rpkiqwi1dm4w8ls9ijb4x1b7567grns9f0vnp"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-kr-text" ,go-github-com-kr-text)))
