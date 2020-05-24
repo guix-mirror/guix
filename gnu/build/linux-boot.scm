@@ -337,6 +337,7 @@ one specific hardware device. These we have to create."
   (for-each (lambda (file)
               (call-with-output-file (scope file)
                 (lambda (port)
+                  (display file port)   ;avoid hard-linking
                   (chmod port #o666))))
             '("dev/null"
               "dev/zero"
@@ -347,6 +348,20 @@ one specific hardware device. These we have to create."
   ;; console-run on first boot.
 
   (mkdir (scope "servers"))
+  (for-each (lambda (file)
+              (call-with-output-file (scope (string-append "servers/" file))
+                (lambda (port)
+                  (display file port)   ;avoid hard-linking
+                  (chmod port #o444))))
+            '("startup"
+              "exec"
+              "proc"
+              "password"
+              "default-pager"
+              "crash-dump-core"
+              "kill"
+              "suspend"))
+
   (mkdir (scope "servers/socket"))
   ;; Don't create /servers/socket/1 & co: runsystem does that on first boot.
 
