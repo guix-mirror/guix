@@ -26983,14 +26983,14 @@ The GRUB @code{gfxmode} to set (a list of screen resolution strings, see
 @end table
 @end deftp
 
-@defvr {Scheme Variable} %default-theme
-This is the default GRUB theme used by the operating system if no
+@deffn {Scheme Procedure} grub-theme
+Return the default GRUB theme used by the operating system if no
 @code{theme} field is specified in @code{bootloader-configuration}
 record.
 
 It comes with a fancy background image displaying the GNU and Guix
 logos.
-@end defvr
+@end deffn
 
 For example, to override the default resolution, you may use something
 like
@@ -27000,7 +27000,7 @@ like
  (bootloader-configuration
  ;; @dots{}
  (theme (grub-theme
-         (inherit %default-theme)
+         (inherit (grub-theme))
          (gfxmode '("1024x786x32" "auto"))))))
 @end lisp
 
