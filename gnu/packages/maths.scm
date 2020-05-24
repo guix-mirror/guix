@@ -227,15 +227,15 @@ programming languages.")
 (define-public qhull
   (package
     (name "qhull")
-    (version "2015.2")
+    (version "2019.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.qhull.org/download/qhull-"
                                   (car (string-split version #\.))
-                                  "-src-7.2.0.tgz"))
+                                  "-src-7.3.2.tgz"))
               (sha256
                (base32
-                "0dm4b2xr3asy6w74khq2zg4gf26zsy3qf9sq7pf7lmrvbj911c3q"))))
+                "1ys3vh3qq0v9lh452xb932vp63advds1pxk42lk7cc1niiar0y9b"))))
     (build-system cmake-build-system)
     (synopsis "Calculate convex hulls and related structures")
     (description
