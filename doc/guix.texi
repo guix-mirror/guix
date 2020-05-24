@@ -22858,6 +22858,12 @@ The network port that the @command{nfsd} daemon should use.
 @item @code{nfsd-threads} (default: @code{8})
 The number of threads used by the @command{nfsd} daemon.
 
+@item @code{nfsd-tcp?} (default: @code{#t})
+Whether the @command{nfsd} daemon should listen on a TCP socket.
+
+@item @code{nfsd-udp?} (default: @code{#f})
+Whether the @command{nfsd} daemon should listen on a UDP socket.
+
 @item @code{pipefs-directory} (default: @code{"/var/lib/nfs/rpc_pipefs"})
 The directory where the pipefs file system is mounted.
 

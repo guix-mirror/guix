@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -261,6 +262,10 @@
                        (default 2049))
   (nfsd-threads        nfs-configuration-nfsd-threads
                        (default 8))
+  (nfsd-tcp?           nfs-configuration-nfsd-tcp?
+                       (default #t))
+  (nfsd-udp?           nfs-configuration-nfsd-udp?
+                       (default #f))
   (pipefs-directory    nfs-configuration-pipefs-directory
                        (default default-pipefs-directory))
   ;; List of modules to debug; any of nfsd, nfs, rpc, idmap, statd, or mountd.
@@ -272,6 +277,7 @@
   (match-record config <nfs-configuration>
     (nfs-utils nfs-versions exports
                rpcmountd-port rpcstatd-port nfsd-port nfsd-threads
+               nfsd-tcp? nfsd-udp?
                pipefs-directory debug)
     (list (shepherd-service
            (documentation "Mount the nfsd pseudo file system.")
@@ -332,7 +338,13 @@
                                #$@(map (lambda (version)
                                          (string-append "--nfs-version=" version))
                                        nfs-versions)
-                               #$(number->string nfsd-threads))))))
+                               #$(number->string nfsd-threads)
+                               #$(if nfsd-tcp?
+                                     "--tcp"
+                                     "--no-tcp")
+                               #$(if nfsd-udp?
+                                     "--udp"
+                                     "--no-udp"))))))
            (stop
             #~(lambda _
                 (zero?
