@@ -206,17 +206,17 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
 (define-public libexif
   (package
     (name "libexif")
-    (version "0.6.21")
+    (version "0.6.22")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libexif/libexif/"
-                                  version "/libexif-" version ".tar.bz2"))
-              (patches (search-patches "libexif-CVE-2016-6328.patch"
-                                       "libexif-CVE-2017-7544.patch"
-                                       "libexif-CVE-2018-20030.patch"))
+              (uri (string-append
+                    "https://github.com/libexif/libexif/releases"
+                    "/download/libexif-"
+                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
+                    "-release/libexif-" version ".tar.xz"))
               (sha256
                (base32
-                "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
+                "0mhcad5zab7fsn120rd585h8ncwkq904nzzrq8vcd72hzk4g2j2h"))))
     (build-system gnu-build-system)
     (home-page "https://libexif.github.io/")
     (synopsis "Read and manipulate EXIF data in digital photographs")
