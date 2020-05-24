@@ -440,7 +440,16 @@ authentication.")
                            version "/pidgin-" version ".tar.bz2"))
        (sha256
         (base32 "13vdqj70315p9rzgnbxjp9c51mdzf1l4jg1kvnylc4bidw61air7"))
-       (patches (search-patches "pidgin-add-search-path.patch"))))
+       (patches (search-patches "pidgin-add-search-path.patch"
+                                ;; Remove the snippet and bootstrapping
+                                ;; native-inputs together with this patch.
+                                "pidgin-libnm.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove stale generated file after applying pidgin-libnm.patch.
+           (delete-file "configure")
+           #t))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -448,7 +457,12 @@ authentication.")
        ("intltool" ,intltool)
        ("gconf" ,gconf)
        ("python" ,python-2)
-       ("doxygen" ,doxygen)))
+       ("doxygen" ,doxygen)
+
+       ;; For bootstrapping after applying pidgin-libnm.patch.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("libgcrypt" ,libgcrypt)
