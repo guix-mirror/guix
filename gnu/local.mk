@@ -1540,6 +1540,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
+  %D%/packages/patches/twinkle-bcg729.patch			\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/u-boot-DT-for-Pinebook-Pro.patch		\
   %D%/packages/patches/u-boot-add-boe-nv140fhmn49-display.patch	\
