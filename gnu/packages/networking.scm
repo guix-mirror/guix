@@ -1723,14 +1723,14 @@ the bandwidth, loss, and other parameters.")
 (define-public nethogs
   (package
     (name "nethogs")
-    (version "0.8.5")
+    (version "0.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/raboof/nethogs/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1k4x8r7s4dgcb6n2rjn28h2yyij92mwm69phncl3597cdxr954va"))
+                "1875q9hx48g68pika7n51an879v3s10ir4sf95z6ggnl6m91sz1i"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs
@@ -1741,7 +1741,7 @@ the bandwidth, loss, and other parameters.")
                       ,(string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No ./configure script.
+         (delete 'configure))))         ; no ./configure script.
     (home-page "https://github.com/raboof/nethogs")
     (synopsis "Per-process bandwidth monitor")
     (description "NetHogs is a small 'net top' tool for Linux.  Instead of
