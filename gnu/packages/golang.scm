@@ -3141,6 +3141,31 @@ network protocol.")
     (home-page "https://github.com/lucas-clemente/quic-go")
     (license license:expat)))
 
+(define-public go-github-com-francoispqt-gojay
+  (package
+    (name "go-github-com-francoispqt-gojay")
+    (version "1.2.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/francoispqt/gojay")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ix95qdyajfmxhf9y52vjrih63f181pjs4v5as8905s4d5vmkd06"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/francoispqt/gojay"))
+    (propagated-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (synopsis "JSON encoder/decoder with powerful stream API for Golang")
+    (description "GoJay is a performant JSON encoder/decoder for Golang.  It has
+a simple API and doesn't use reflection.  It relies on small interfaces to
+decode/encode structures and slices.")
+    (home-page "https://github.com/francoispqt/gojay")
+    (license license:expat)))
+
 (define-public go-github-com-pkg-errors
   (package
     (name "go-github-com-pkg-errors")
