@@ -794,7 +794,7 @@ to find buttons, etc, on the screen to click on.")
 (define-public xbanish
   (package
     (name "xbanish")
-    (version "1.6")
+    (version "1.7")
     (home-page "https://github.com/jcs/xbanish")
     (source (origin
               (method git-fetch)
@@ -803,14 +803,14 @@ to find buttons, etc, on the screen to click on.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vp8ja68hpmqkl61zyjar3czhmny1hbm74m8f393incfz1ymr3i8"))))
+                "0ic5f7zgc32p5g1wxas9y5h8dhik0pvsa8wmn6skdry56gw9vg9q"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)))) ; no configure script
     (inputs
      `(("libx11" ,libx11)
        ("libxfixes" ,libxfixes)
