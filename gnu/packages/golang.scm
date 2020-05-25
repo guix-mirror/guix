@@ -980,7 +980,7 @@ optimized for performance yet simple to use.")
 (define-public go-github-com-blang-semver
   (package
     (name "go-github-com-blang-semver")
-    (version "3.3.0")
+    (version "4.0.0")
     (source
      (origin
        (method git-fetch)
@@ -990,7 +990,7 @@ optimized for performance yet simple to use.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19pli07y5592g4dyjyj0jq5rn548vc3fz0qg3624vm1j5828p1c2"))))
+         "14h9ys4n4kx9cbj42lkdf4i5k3nkll6sd62jcvl7cs565v6fiknz"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/blang/semver"))
