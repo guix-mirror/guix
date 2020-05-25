@@ -61,6 +61,7 @@
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages digest)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -82,6 +83,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
@@ -1354,17 +1356,25 @@ bindings for Python, Java, OCaml and more.")
              (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
              #t)))
        #:configure-flags
-       (list "--with-sysmagic" "--with-syszip" "--with-syscapstone"
-             "--with-openssl" "--with-rpath")
+       (list "--with-openssl"
+             "--with-rpath"
+             "--with-syscapstone"
+             "--with-sysmagic"
+             "--with-syszip"
+             "--with-sysxxhash")
        #:make-flags
        (list "CC=gcc")))
     ;; TODO: Add gmp and libzip and make the build system actually find them.
     (inputs
      `(("capstone" ,capstone)
+       ("libuv" ,libuv)
        ("openssl" ,openssl)
        ("zip" ,zip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In the Libs: section of r_hash.pc.
+     `(("xxhash" ,xxhash)))
     (home-page "https://radare.org/")
     (synopsis "Reverse engineering framework")
     (description
