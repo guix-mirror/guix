@@ -1286,14 +1286,14 @@ spreadsheet.")
 (define-public xerces-c
   (package
     (name "xerces-c")
-    (version "3.1.4")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/xerces/c/3/sources/"
                                   "xerces-c-" version ".tar.xz"))
               (sha256
                (base32
-                "0hb29c0smqlpxj0zdm09s983z5jx37szlliccnvgh0qq91wwqwwr"))))
+                "0jf1khvlssg31vkxbc25dxjxcxm56xb8nywj1sypj6hxzjlrkz0j"))))
     (build-system gnu-build-system)
     (arguments
      (let ((system (or (%current-target-system)
