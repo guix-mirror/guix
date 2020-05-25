@@ -71,6 +71,7 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6074,6 +6075,28 @@ Hydra.  Note that the final binding, besides vanquishing the Hydra, will still
 serve its original purpose, calling the command assigned to it.  This makes
 the Hydra very seamless; it's like a minor mode that disables itself
 automatically.")
+    (license license:gpl3+)))
+
+(define-public emacs-interleave
+  (package
+    (name "emacs-interleave")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rudolfochrist/interleave")
+         (commit (string-append "interleave-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0l5b681mrpk12lx5c16m7kc13p29z6zismwg1llsjg7cdmrmsrcb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rudolfochrist/interleave")
+    (synopsis "Emacs minor mode to interleave notes and text books")
+    (description
+     "Interleave is a minor mode that presents a document viewer side
+by side to an Org buffer with your notes relevant to the current page.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy
