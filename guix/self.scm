@@ -213,7 +213,15 @@ record with the new file name."
      ;; itself.
      (local-file (string-append item "/" file)
                  #:recursive? recursive?))
-    ;; TODO: Add 'local-file?' case.
+    ((? local-file? base)
+     ;; Likewise, but with a <local-file>.
+     (if (local-file-recursive? base)
+         (local-file (string-append (local-file-absolute-file-name base)
+                                    "/" file)
+                     (basename file)
+                     #:recursive? recursive?
+                     #:select? (local-file-select? base))
+         (file-append base file)))
     (_
      ;; In this case, anything that refers to the result also depends on ITEM,
      ;; which isn't great.

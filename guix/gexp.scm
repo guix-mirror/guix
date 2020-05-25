@@ -51,6 +51,7 @@
             local-file-absolute-file-name
             local-file-name
             local-file-recursive?
+            local-file-select?
 
             plain-file
             plain-file?
