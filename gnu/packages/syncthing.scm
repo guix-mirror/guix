@@ -416,7 +416,7 @@ address of the default LAN gateway.")
 (define-public go-github-com-lib-pq
   (package
     (name "go-github-com-lib-pq")
-    (version "1.2.0")
+    (version "1.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -425,7 +425,7 @@ address of the default LAN gateway.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08j1smm6rassdssdks4yh9aspa1dv1g5nvwimmknspvhx8a7waqz"))))
+                "1wjw5pfjgc63n9934mgvg8hr1v9381mcdz62jkn9xqxqcv6b95lw"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lib/pq"
