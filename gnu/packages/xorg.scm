@@ -2477,18 +2477,7 @@ XC-APPGROUP, XTEST.")
          "04a2klvii0in9ln8r85mk2cm73jq8ry2m3yzmf2z8xyjxzjcmlr0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-static")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'pedantry
-                    (lambda _
-                      ;; XXX: libevdev includes kernel headers, which causes this
-                      ;; compile test to fail with:
-                      ;; ...-headers-4.14.67/include/asm-generic/posix_types.h:88:14:
-                      ;;error: ISO C90 does not support ‘long long’ [-Werror=long-long]
-                      (substitute* "test/Makefile.in"
-                        (("-pedantic -Werror -std=c89")
-                         "-pedantic -Werror -std=c99"))
-                      #t)))))
+     `(#:configure-flags '("--disable-static")))
     (native-inputs `(("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
