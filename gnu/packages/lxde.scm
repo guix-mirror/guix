@@ -577,7 +577,7 @@ in LXDE.")
      (origin
        (method url-fetch)
        (uri (string-append "https://downloads.sourceforge.net/lxde/"
-                           name "-" version ".tar.xz"))
+                           "lxpanel-" version ".tar.xz"))
        (sha256
         (base32 "0zis3b815p375s6mymhf5sn1a0c1xv0ixxzb0mh3fqhrby6cqy26"))))
     (build-system gnu-build-system)
