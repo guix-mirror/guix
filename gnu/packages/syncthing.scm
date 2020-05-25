@@ -1037,7 +1037,7 @@ virtual connections from a single physical connection.")
 (define-public go-github-com-ccding-go-stun
   (package
     (name "go-github-com-ccding-go-stun")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
       (origin
         (method git-fetch)
@@ -1047,7 +1047,7 @@ virtual connections from a single physical connection.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1gr0rw1c1y7wh6913lyn5k4ig023by27i36bly6am8dwgrgp34ww"))))
+          "133r2s4h9vv5lmjd680my2c5973gfi0gg5cxcwzjwdjad83a2dm0"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/ccding/go-stun"))
