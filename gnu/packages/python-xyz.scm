@@ -7940,13 +7940,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "1n7a90jww3ly49fm7x27m3xw3la3qfrnykcakga654g6kcyjlhbf"))))
+                "1j9fzxpgmb4rxxyl9jcf84zvznhgi3hnh4hg5vb0qaslxkvng8ii"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
