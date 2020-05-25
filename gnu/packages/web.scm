@@ -2607,7 +2607,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.46")
+    (version "4.47")
     (source
      (origin
        (method url-fetch)
@@ -2615,7 +2615,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "16225vmdsfa2y7i1ydv7634nd0qxxb0ccwnfszjq58rwqgfri2bq"))))
+         "1a9cylhqsm5icvbg09m21nj0xx4zy5gbk4p74npm1ch3qlryzyyr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
