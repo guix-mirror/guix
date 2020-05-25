@@ -10052,12 +10052,12 @@ time values and formatting dates into ASCII strings.")
 (define-public perl-time-mock
   (package
     (name "perl-time-mock")
-    (version "v0.0.2")
+    (version "0.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EW/EWILHELM/"
-                           "Time-Mock-" version ".tar.gz"))
+                           "Time-Mock-v" version ".tar.gz"))
        (sha256
         (base32
          "0bwqyg8z98m8cjw1qcm4wg502n225k33j2fp8ywxkgfjdd1zgllv"))))
