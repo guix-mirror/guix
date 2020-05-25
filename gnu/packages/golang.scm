@@ -2343,7 +2343,7 @@ statistics for wrapped connections.")
 (define-public go-github-com-mitchellh-go-homedir
   (package
     (name "go-github-com-mitchellh-go-homedir")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method git-fetch)
@@ -2353,7 +2353,7 @@ statistics for wrapped connections.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0f0z0aa4wivk4z1y503dmnw0k0g0g403dly8i4q263gfshs82sbq"))))
+         "0ydzkipf28hwj2bfxqmwlww47khyk6d152xax4bnyh60f4lq3nx1"))))
     (build-system go-build-system)
     (arguments
      (quote (#:import-path "github.com/mitchellh/go-homedir"
