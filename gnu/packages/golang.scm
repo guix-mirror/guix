@@ -2824,7 +2824,7 @@ format in Go.")
 (define-public go-github-com-kr-text
   (package
     (name "go-github-com-kr-text")
-    (version "0.1.0")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2833,7 +2833,7 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gm5bsl01apvc84bw06hasawyqm4q84vx1pm32wr9jnd7a8vjgj1"))))
+                "0hf58ypz6rxsw6nx3i856whir9lvy4sdx946wbw1nfaf2rdmr9vx"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/kr/text"))
