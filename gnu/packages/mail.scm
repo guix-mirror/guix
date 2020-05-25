@@ -382,7 +382,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.13.5")
+    (version "1.14.2")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -392,7 +392,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0lx65a44b03rbvcrz0y9syrik67fx3hvblxyyvz5l9bb7rdipmvc"))
+               "0cdcls0x6f2w99hkjz48hxhnx86w3bnyxzibchdc9yspih770bz2"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -416,8 +416,8 @@ aliasing facilities to work just as they would on normal mail.")
                            "--with-sasl"
                            "--with-sqlite3" ; required for Autocrypt
                            "--with-idn2" ; recommended for Autocrypt
-                           ;; so that mutt does not check whether the path
-                           ;; exists, which it does not in the chroot
+                           ;; So that mutt does not check whether the path
+                           ;; exists, which it does not in the chroot.
                            "--with-mailpath=/var/mail")))
     (home-page "http://www.mutt.org/")
     (synopsis "Mail client")
