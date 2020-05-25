@@ -1345,7 +1345,7 @@ if __name__ == \"__main__\":
        ("xorg-server" ,xorg-server)))
     (outputs
      (list "out" "tutorial" "the-question"))
-    (home-page "http://www.renpy.org/")
+    (home-page "https://www.renpy.org/")
     (synopsis "Visual Novel Engine")
     (description "Ren'Py is a visual novel engine that helps you use words,
 images, and sounds to tell interactive stories that run on computers and
