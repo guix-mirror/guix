@@ -1343,17 +1343,7 @@ bindings for Python, Java, OCaml and more.")
               (sha256
                (base32
                 "14b9433cgc2nabhz836zfgvgh2dwailcmvy05krsa0inmzbvx9fg"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "libr/asm/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  (substitute* "libr/parse/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  (substitute* "libr/bin/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  #t))))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; tests require git and network access
