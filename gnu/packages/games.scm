@@ -6664,7 +6664,7 @@ quotation from a collection of quotes.")
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("gmp" ,gmp)))
-    (home-page "http://xonotic.org")
+    (home-page "https://xonotic.org")
     (synopsis "Fast-paced first-person shooter game")
     (description
      "Xonotic is a free, fast-paced first-person shooter.
