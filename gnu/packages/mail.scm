@@ -2762,14 +2762,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32 "0ycidvgy9npd6avxk88sf2ca609m7zb0hzrk1yajrgwb1rfqx68a"))))
+        (base32 "1xkxx801p7sbfkn0bh3cz85wra4xf1z1zhjqqc80z1z1nln7fhb4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
