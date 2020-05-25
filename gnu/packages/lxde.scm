@@ -105,13 +105,13 @@ libFM file management library.")))
   (package
     (name "lxappearance")
     (version "0.6.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/lxde/"
-                                  "LXAppearance/" name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0f4bjaamfxxdr9civvy55pa6vv9dx1hjs522gjbbgx7yp1cdh8kj"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/lxde/"
+                           "LXAppearance/lxappearance-" version ".tar.xz"))
+       (sha256
+        (base32 "0f4bjaamfxxdr9civvy55pa6vv9dx1hjs522gjbbgx7yp1cdh8kj"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
