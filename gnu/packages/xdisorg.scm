@@ -616,7 +616,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -626,7 +626,7 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08gkdby0ysx2mki57z81zlm7vfnq9c1gq692xw67cg5vv2p3320w"))))
+        (base32 "0x70hd59ik37kqd8xqpwrz46np01jv324iz28x2s0kk36d7sblsj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
