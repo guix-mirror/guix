@@ -2767,7 +2767,7 @@ tools and applications:
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
-                           name "-" version ".tar.bz2"))
+                           "balsa-" version ".tar.bz2"))
        (sha256
         (base32 "1xkxx801p7sbfkn0bh3cz85wra4xf1z1zhjqqc80z1z1nln7fhb4"))))
     (build-system gnu-build-system)
