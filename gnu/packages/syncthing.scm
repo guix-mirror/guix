@@ -492,27 +492,25 @@ higher-level API for doing so.")
     (license isc)))
 
 (define-public go-github-com-stathat-go
-  (let ((commit "74669b9f388d9d788c97399a0824adbfee78400e")
-        (revision "0"))
-    (package
-      (name "go-github-com-stathat-go")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/stathat/go")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1zzlsl24dyr202qkr2pay22m6d0gb7ssms77wgdx0r0clgm7dihw"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/stathat/go"))
-      (synopsis "Post statistics to StatHat")
-      (description "This is a Go package for posting to a StatHat account.")
-      (home-page "https://github.com/stathat/go")
-      (license expat))))
+  (package
+    (name "go-github-com-stathat-go")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/stathat/go")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1zzlsl24dyr202qkr2pay22m6d0gb7ssms77wgdx0r0clgm7dihw"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/stathat/go"))
+    (synopsis "Post statistics to StatHat")
+    (description "This is a Go package for posting to a StatHat account.")
+    (home-page "https://github.com/stathat/go")
+    (license expat)))
 
 (define-public go-github-com-rcrowley-go-metrics
   (let ((commit "cac0b30c2563378d434b5af411844adff8e32960")
