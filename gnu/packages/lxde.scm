@@ -31,6 +31,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file-systems)
@@ -571,15 +572,14 @@ in LXDE.")
 (define-public lxpanel
   (package
     (name "lxpanel")
-    (version "0.9.3")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://downloads.sourceforge.net/lxde/"
                            name "-" version ".tar.xz"))
        (sha256
-        (base32
-         "1ccgv7jgl3y865cpb6w7baaz7468fxncm83bqxlwyni5bwhglb1l"))))
+        (base32 "0zis3b815p375s6mymhf5sn1a0c1xv0ixxzb0mh3fqhrby6cqy26"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -594,7 +594,8 @@ in LXDE.")
                #t))))))
     (inputs
      ;; TODO: libindicator-0.3.0
-     `(("gtk+-2" ,gtk+-2)
+     `(("curl" ,curl)
+       ("gtk+-2" ,gtk+-2)
        ("alsa-lib" ,alsa-lib)
        ("libwnck-2" ,libwnck-2)
        ("keybinder" ,keybinder)
