@@ -3191,7 +3191,7 @@ error handling primitives in Go.")
 (define-public go-github-com-maruel-panicparse
   (package
     (name "go-github-com-maruel-panicparse")
-    (version "1.3.0")
+    (version "1.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3200,7 +3200,7 @@ error handling primitives in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13qkn7f64yln8jdmma37h6ra4c7anxkp3vfgvfyb6lb07dpr1ibq"))))
+                "0sff44kqmpwzpa6h84fssdsv9glfm8bjjcnspsr64qzmqxpbc7m4"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/maruel/panicparse"))
