@@ -1573,13 +1573,13 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "DESTDIR=" out)))))
+    (home-page "https://github.com/vixus0/xftwidth")
     (synopsis "Calculator for determining pixel widths of displayed text using Xft fonts")
     (description "xftwidth is a small C program for calculating the pixel
 widths of displayed text using Xft fonts. It is especially useful in scripts
 for displaying text in graphical panels, menus, popups, and notification
 windows generated using dzen. These scripts are often used in conjunction with
 minimalistic tiling window managers such as herbstluftwm and bspwm.")
-    (home-page "http://github.com/vixus0/xftwidth")
     (license license:expat)))
 
 (define-public xcb-util-xrm
