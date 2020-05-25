@@ -747,30 +747,28 @@ notification library in Go.")
       (license expat))))
 
 (define-public go-github-com-beorn7-perks-quantile
-  (let ((commit "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9")
-        (revision "0"))
-    (package
-      (name "go-github-com-beorn7-perks-quantile")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/beorn7/perks.git")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1hrybsql68xw57brzj805xx2mghydpdiysv3gbhr7f5wlxj2514y"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/beorn7/perks/quantile"
-         #:unpack-path "github.com/beorn7/perks"))
-      (synopsis "Compute approximate quantiles over an unbounded data stream")
-      (description "Perks contains the Go package @code{quantile} that computes
+  (package
+    (name "go-github-com-beorn7-perks-quantile")
+    (version "1.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/beorn7/perks.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17n4yygjxa6p499dj3yaqzfww2g7528165cl13haj97hlx94dgl7"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/beorn7/perks/quantile"
+       #:unpack-path "github.com/beorn7/perks"))
+    (synopsis "Compute approximate quantiles over an unbounded data stream")
+    (description "Perks contains the Go package @code{quantile} that computes
 approximate quantiles over an unbounded data stream within low memory and CPU
 bounds.")
-      (home-page "https://github.com/beorn7/perks")
-      (license expat))))
+    (home-page "https://github.com/beorn7/perks")
+    (license expat)))
 
 (define-public go-github-com-prometheus-client-model
   (let ((commit "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016")
