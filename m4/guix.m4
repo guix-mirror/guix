@@ -88,7 +88,7 @@ courageous and port the GNU System distribution to it (see
   # Currently only Linux-based systems are supported, and only on some
   # platforms.
   case "$guix_system" in
-    x86_64-linux|i686-linux|armhf-linux|aarch64-linux|mips64el-linux)
+    x86_64-linux|i686-linux|armhf-linux|aarch64-linux)
       ;;
     *)
       if test "x$guix_courageous" = "xyes"; then

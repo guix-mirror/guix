@@ -464,11 +464,12 @@ and Linux-Libre kernel.
 @item aarch64-linux
 little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
 
-@item mips64el-linux
+@item mips64el-linux (deprecated)
 little-endian 64-bit MIPS processors, specifically the Loongson series,
 n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
-supported; in particular, the project's build farms no longer provide
-substitutes for this architecture.
+supported; in particular, there is no ongoing work to ensure that this
+architecture still works. Should someone decide they wish to revive this
+architecture then the code is still available.
 
 @end table
 
@@ -1060,8 +1061,8 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
         (speed 2.))     ;incredibly fast!
 
       (build-machine
-        (name "meeps.example.org")
-        (system "mips64el-linux")
+        (name "armeight.example.org")
+        (system "aarch64-linux")
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
@@ -1071,7 +1072,7 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @noindent
 In the example above we specify a list of two build machines, one for
-the @code{x86_64} architecture and one for the @code{mips64el}
+the @code{x86_64} architecture and one for the @code{aarch64}
 architecture.
 
 In fact, this file is---not surprisingly!---a Scheme file that is
@@ -5330,7 +5331,7 @@ the system type of the build host.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+as @code{"aarch64-linux-gnu"} (@pxref{Specifying target triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @item --compression=@var{tool}
@@ -5719,7 +5720,7 @@ Return the @code{<derivation>} object of @var{package} cross-built from
 @var{system} to @var{target}.
 
 @var{target} must be a valid GNU triplet denoting the target hardware
-and operating system, such as @code{"mips64el-linux-gnu"}
+and operating system, such as @code{"aarch64-linux-gnu"}
 (@pxref{Specifying Target Triplets,,, autoconf, Autoconf}).
 @end deffn
 
@@ -7720,7 +7721,7 @@ native package build:
                 "-s"
                 (string-append #$emacs "/bin/emacs")
                 (string-append #$output "/bin/vi")))
-   #:target "mips64el-linux-gnu")
+   #:target "aarch64-linux-gnu")
 @end lisp
 
 @noindent
@@ -8840,7 +8841,7 @@ also be offloaded to a remote machine of the right architecture.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
+as @code{"aarch64-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
@@ -8910,7 +8911,7 @@ So for instance, imagine you want to see the build log of GDB on MIPS,
 but you are actually on an @code{x86_64} machine:
 
 @example
-$ guix build --log-file gdb -s mips64el-linux
+$ guix build --log-file gdb -s aarch64-linux
 https://@value{SUBSTITUTE-SERVER}/log/@dots{}-gdb-7.10
 @end example
 
@@ -24477,7 +24478,7 @@ emulated:
 @lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
+           (platforms (lookup-qemu-platforms "arm" "aarch64"))))
 @end lisp
 
 In this example, we enable transparent emulation for the ARM and aarch64
