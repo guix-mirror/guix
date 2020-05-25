@@ -1443,6 +1443,7 @@ to the source files instead of copying them."
                       #:system system
                       #:guile-for-build guile
                       #:local-build? #t
+                      #:substitutable? #f
 
                       ;; Avoid deprecation warnings about the use of the _IO*
                       ;; constants in (guix build utils).
