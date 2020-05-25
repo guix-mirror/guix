@@ -2423,7 +2423,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "25.0.7")
+    (version "25.0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2432,10 +2432,12 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02ppkp1j5yxnxv663nz5wv4vbcg3k53l43xq94d1p1b3j4wxwq8b"))))
+                "0j2k65q3wfyfxhvkl6icz4qy0s3kfqhksizy2i3ah7yml266axbj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests
+     `(#:tests? #f ; no test suite
+       #:configure-flags
+       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -2449,6 +2451,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("jansson" ,jansson)
        ("libx264" ,libx264)
        ("libxcomposite" ,libxcomposite)
+       ("mbedtls" ,mbedtls-apache)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
