@@ -456,7 +456,7 @@ more.")
                       #t)))))
     (inputs
      `(("zeromq" ,zeromq)))
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "High-level C bindings for ØMQ")
     (description
      "czmq provides bindings for the ØMQ core API that hides the differences
