@@ -1,26 +1,24 @@
 diff --git a/src/bin/e_auth.c b/src/bin/e_auth.c
-index 8b0aa6641..f15d2c2a2 100644
+index 8b0aa6641..3dff0ad84 100644
 --- a/src/bin/e_auth.c
 +++ b/src/bin/e_auth.c
-@@ -11,9 +11,7 @@ e_auth_begin(char *passwd)
-    pwlen = strlen(passwd);
+@@ -12,8 +12,7 @@ e_auth_begin(char *passwd)
     if (pwlen == 0) goto out;
  
--   snprintf(buf, sizeof(buf),
+    snprintf(buf, sizeof(buf),
 -            "%s/enlightenment/utils/enlightenment_ckpasswd pw",
 -            e_prefix_lib_get());
-+   snprintf(buf, sizeof(buf), "/run/setuid-programs/enlightenment_ckpasswd");
++            "/run/setuid-programs/enlightenment_ckpasswd pw");
     exe = ecore_exe_pipe_run(buf, ECORE_EXE_PIPE_WRITE, NULL);
     if (!exe) goto out;
     if (ecore_exe_send(exe, passwd, pwlen) != EINA_TRUE) goto out;
-@@ -46,9 +44,7 @@ e_auth_polkit_begin(char *passwd, const char *cookie, unsigned int uid)
-    pwlen = strlen(passwd);
+@@ -47,8 +46,7 @@ e_auth_polkit_begin(char *passwd, const char *cookie, unsigned int uid)
     if (pwlen == 0) goto out;
  
--   snprintf(buf, sizeof(buf),
+    snprintf(buf, sizeof(buf),
 -            "%s/enlightenment/utils/enlightenment_ckpasswd pk",
 -            e_prefix_lib_get());
-+   snprintf(buf, sizeof(buf), "/run/setuid-programs/enlightenment_ckpasswd");
++            "/run/setuid-programs/enlightenment_ckpasswd pk");
     exe = ecore_exe_pipe_run(buf, ECORE_EXE_PIPE_WRITE, NULL);
     if (!exe) goto out;
     snprintf(buf, sizeof(buf), "%s %u %s", cookie, uid, passwd);
