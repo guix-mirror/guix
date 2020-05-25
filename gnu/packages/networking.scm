@@ -1343,13 +1343,13 @@ definitions and structure manipulators for Perl.")
 (define-public perl-net-dns-resolver-programmable
  (package
   (name "perl-net-dns-resolver-programmable")
-  (version "v0.003")
+  (version "0.003")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
              "mirror://cpan/authors/id/J/JM/JMEHNLE/net-dns-resolver-programmable/"
-             "Net-DNS-Resolver-Programmable-" version ".tar.gz"))
+             "Net-DNS-Resolver-Programmable-v" version ".tar.gz"))
       (sha256
         (base32
           "1v3nl2kaj4fs55n1617n53q8sa3mir06898vpy1rq98zjih24h4d"))
