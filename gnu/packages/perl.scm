@@ -4786,12 +4786,12 @@ back to a full directory scan if none of these are available.")
 (define-public perl-getopt-long
   (package
     (name "perl-getopt-long")
-    (version "v2.49.1")
+    (version "2.49.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/J/JV/JV/"
-                           "Getopt-Long-" (substring version 1) ".tar.gz"))
+                           "Getopt-Long-v" (substring version 1) ".tar.gz"))
        (sha256
         (base32
          "0bw8gbhj8s5gmkqvs3m7pk9arqhgqssrby4yimh29ah9alix9ylq"))))
