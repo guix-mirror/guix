@@ -1403,7 +1403,11 @@ Python.")
        (list "CC=gcc")
        #:modules ((ice-9 ftw)
                   (guix build utils)
-                  (guix build cmake-build-system))
+                  (guix build cmake-build-system)
+                  ((guix build python-build-system)
+                   #:select (python-version)))
+       #:imported-modules (,@%cmake-build-system-modules
+                            (guix build python-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-source-file-times-to-1980
@@ -1428,6 +1432,12 @@ Python.")
              ;; optional package.
              (substitute* "tensorflow/tools/pip_package/setup.py"
                ((".*'tensorboard >.*") ""))
+
+             ;; Fix the build with python-3.8, taken from rejected upstream patch:
+             ;; https://github.com/tensorflow/tensorflow/issues/34197
+             (substitute* (find-files "tensorflow/python" ".*\\.cc$")
+               (("(nullptr,)(\\ +/. tp_print)" _ _ tp_print)
+                (string-append "NULL,   " tp_print)))
              #t))
          (add-after 'python3.7-compatibility 'chdir
            (lambda _ (chdir "tensorflow/contrib/cmake") #t))
@@ -1617,16 +1627,19 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
              (invoke "make" "tf_python_build_pip_package")
              #t))
          (add-after 'build-pip-package 'install-python
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (wheel (car (find-files "../build/tf_python/dist/" "\\.whl$"))))
+                   (wheel (car (find-files "../build/tf_python/dist/" "\\.whl$")))
+                   (python-version (python-version
+                                     (assoc-ref inputs "python"))))
                (invoke "python" "-m" "pip" "install" wheel
                        (string-append "--prefix=" out))
 
                ;; XXX: broken RUNPATH, see fix-python-build phase.
                (delete-file
                 (string-append
-                 out "/lib/python3.7/site-packages/tensorflow/contrib/"
+                 out "/lib/python" python-version
+                 "/site-packages/tensorflow/contrib/"
                  "seq2seq/python/ops/lib_beam_search_ops.so"))
                #t))))))
     (native-inputs
