@@ -132,7 +132,7 @@ able to change themes, icons, and fonts used by GTK+ applications.")
               (uri (string-append "mirror://sourceforge/lxde/LXRandR"
                                   "%20%28monitor%20config%20tool%29/LXRandR%20"
                                   (version-major+minor version) ".x/"
-                                  name "-" version ".tar.xz"))
+                                  "lxrandr-" version ".tar.xz"))
               (sha256
                (base32
                 "04n3vgh3ix12p8jfs4w0dyfq3anbjy33h7g53wbbqqc0f74xyplb"))))
