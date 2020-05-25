@@ -10523,14 +10523,14 @@ classes prior to Java SE 8.")
 (define-public java-xerces
   (package
     (name "java-xerces")
-    (version "2.11.0")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://apache/xerces/j/source/"
                            "Xerces-J-src." version ".tar.gz"))
        (sha256
-        (base32 "1006igwy2lqrmjvdk64v8dg6qbk9c29pm8xxx7r87n0vnpvmx6pm"))
+        (base32 "0494kq36gw3nah19ifb720vwxbpg4ww0k6m3zq6wyanw6a083p6s"))
        (patches (search-patches
                  "java-xerces-xjavac_taskdef.patch"
                  "java-xerces-build_dont_unzip.patch"
