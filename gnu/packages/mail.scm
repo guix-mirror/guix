@@ -347,7 +347,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.1")
+    (version "6.4.5")
     (source
      (origin
        (method url-fetch)
@@ -355,21 +355,14 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1859wvfc9fq72mwp4njdiy0x89hnddlfr3nix71qqglcs0fz2crz"))))
+        (base32 "073bjh8qbvww7f5gbd6pq640qspi7dc6cjndvm0h2jcl0a90c3yk"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ssl="
-                            (assoc-ref %build-inputs "openssl")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'create-test-environment
-           (lambda _
-             ;; Fix ‘Cannot find absolute path for user's home directory’.
-             (setenv "HOME" "/tmp")
-             #t)))))
+                            (assoc-ref %build-inputs "openssl")))))
     (home-page "https://www.fetchmail.info/")
     (synopsis "Remote-mail retrieval and forwarding utility")
     (description
