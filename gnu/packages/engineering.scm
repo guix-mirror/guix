@@ -2175,7 +2175,7 @@ simulation.")
 (define-public cutter
   (package
     (name "cutter")
-    (version "1.10.1")
+    (version "1.10.3")
     (source
      (origin
        (method git-fetch)
@@ -2184,8 +2184,7 @@ simulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gvsrcskcdd1hxrjpkpc657anmfs25f174vxk4wzvn385rnmrxd3"))))
+        (base32 "0qj8jyij02nif4jpirl09ygwnv8a9zi3vkb5sf5s8mg7qwlpnvyk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2194,8 +2193,8 @@ simulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (radare2 (assoc-ref inputs "radare2")))
-               ;; fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
-               ;; override `qmake PREFIX=`
+               ;; Fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
+               ;; override `qmake PREFIX=`.
                (substitute* "./src/lib_radare2.pri"
                  (("PREFIX") "R2PREFIX")
                  (("R2PREFIX=/usr") (string-append "R2PREFIX=" radare2)))
