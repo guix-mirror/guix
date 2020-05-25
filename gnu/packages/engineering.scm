@@ -1360,8 +1360,8 @@ bindings for Python, Java, OCaml and more.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'mklibdir
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
              #t)))
        #:configure-flags
        (list "--with-sysmagic" "--with-syszip" "--with-syscapstone"
