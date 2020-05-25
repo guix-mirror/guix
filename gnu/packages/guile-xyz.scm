@@ -2872,11 +2872,11 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "d459ca1d3d09e7624e662bc4cfc3596850796fc6"))
+  (let ((commit "v0.4.1-28-gd459ca1"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "28" commit))
+      (version (string-drop commit 1))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
