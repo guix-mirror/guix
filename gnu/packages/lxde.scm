@@ -523,7 +523,7 @@ in LXDE.")
      (origin
        (method url-fetch)
        (uri (string-append "https://downloads.sourceforge.net/lxde/"
-                           name "-" version ".tar.xz"))
+                           "lxsession-" version ".tar.xz"))
        (sha256
         (base32 "0imv9nysip1j9lrb2z96kl05isjgp312323wnnd5b59h0ff0sgp4"))
        (modules '((guix build utils)))
