@@ -270,7 +270,9 @@ expand to file names, but it's possible to expand to a plain data type."
              (if (not expand)
                  (loop lowered (lookup-expander lowered))
                  (return (expand obj lowered output)))
-             (return lowered)))))))               ;self-quoting
+             (if (not expand)                     ;self-quoting
+                 (return lowered)
+                 (return (expand obj lowered output)))))))))
 
 (define-syntax define-gexp-compiler
   (syntax-rules (=> compiler expander)
