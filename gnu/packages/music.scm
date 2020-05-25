@@ -384,14 +384,14 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public denemo
   (package
     (name "denemo")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/denemo/"
                            "denemo-" version ".tar.gz"))
        (sha256
-        (base32 "1blkcl3slbsq9jlhwcf2m9v9g38a0sjfhh9advgi2qr1gxri08by"))))
+        (base32 "145kq0zfgdadykl3i6na221i4s5wzdrcqq48amzyfarnrqk2rmpd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
