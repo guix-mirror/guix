@@ -78,7 +78,8 @@
                         (mkdir-p out)
                         (call-with-output-file (string-append out "/hg2g.scm")
                           (lambda (port)
-                            (write '(define-module (hg2g)
+                            (define defmod 'define-module) ;fool Geiser
+                            (write `(,defmod (hg2g)
                                       #:export (the-answer))
                                    port)
                             (write '(define the-answer 42) port)))))))))
