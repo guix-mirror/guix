@@ -3102,7 +3102,7 @@ cables.")
 (define-public haproxy
   (package
     (name "haproxy")
-    (version "2.1.3")
+    (version "2.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.haproxy.org/download/"
@@ -3110,7 +3110,7 @@ cables.")
                                   "/src/haproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "0n8bw3d6gikr8c56ycrvksp1sl0b4yfzp19867cxkl3l0daqwrxv"))))
+                "1kcizs5r538chhpwqykdngxyqfi98i03akfjnii721npjvv0y0si"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
