@@ -487,7 +487,7 @@ between different versions of ØMQ.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("zeromq" ,zeromq)))
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "C++ bindings for the ØMQ messaging library")
     (description
      "This package provides header-only C++ bindings for ØMQ.  The header
