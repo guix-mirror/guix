@@ -1010,11 +1010,12 @@ useful as a tutorial and users' guide for new or less experienced users.")
   ;; This version from GNOME's repository includes fixes for compiling with
   ;; recent versions of the build tools.  The latest activity on the
   ;; pre-GNOME version has been in 2014, while GNOME has continued applying
-  ;; fixes in 2016.
-  (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
+  ;; fixes since.
+  (let ((commit "3cf7ec4c2e5bca139a7f3e17f9fc9009c237fcc5")
+        (revision "2"))
     (package
       (name "dia")
-      (version (git-version "0.97.3" "1" commit))
+      (version (git-version "0.97.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1023,24 +1024,23 @@ useful as a tutorial and users' guide for new or less experienced users.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
-      (build-system gnu-build-system)
+                  "04r8dspa6nmicrifhi3sh46hqvyy88hzq37xx99q3q1mwsrpmwy8"))))
+      (build-system meson-build-system)
       (inputs
-       `(("freetype" ,freetype)
-         ("gdk-pixbuf" ,gdk-pixbuf)
+       `(("graphene" ,graphene)
          ("gtk+" ,gtk+-2)
-         ("libart-lgpl" ,libart-lgpl)
          ("libxml2" ,libxml2)
-         ("pango" ,pango)))
+         ("libxslt" ,libxslt)
+         ("poppler" ,poppler)
+         ;; Without Python 2, build fails: plug-ins/python/meson.build:4:0:
+         ;; ERROR: Unknown method "dependency" in object.
+         ("python-2" ,python-2)))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("intltool" ,intltool)
+       `(("appstream-glib" ,appstream-glib)
+         ("docbook-xsl" ,docbook-xsl)
          ("glib" ,glib "bin")
-         ("libtool" ,libtool)
-         ("perl" ,perl)
-         ("pkg-config" ,pkg-config)
-         ("python-wrapper" ,python-wrapper)))
+         ("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
