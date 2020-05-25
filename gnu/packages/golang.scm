@@ -2356,9 +2356,13 @@ statistics for wrapped connections.")
          "0ydzkipf28hwj2bfxqmwlww47khyk6d152xax4bnyh60f4lq3nx1"))))
     (build-system go-build-system)
     (arguments
-     (quote (#:import-path "github.com/mitchellh/go-homedir"
-             ;; TODO: Tests fail because it tries to access home.
-             #:tests? #f)))
+     `(#:import-path "github.com/mitchellh/go-homedir"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-home-directory
+           (lambda _
+             (setenv "HOME" "/")
+             #t)))))
     (home-page "https://github.com/mitchellh/go-homedir")
     (synopsis "Go library for detecting and expanding the user's home directory without cgo")
     (description "This is a Go library for detecting the user's home
