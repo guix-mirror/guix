@@ -141,7 +141,7 @@ as well as images, OS examples, and translations."
                             (date->string date "~B ~Y")
                             version version))))))
 
-          (install-file #$(file-append* documentation "/htmlxref.cnf")
+          (install-file #$(file-append documentation "/htmlxref.cnf")
                         #$output)
 
           (for-each (lambda (texi)
