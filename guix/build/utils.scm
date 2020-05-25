@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -800,7 +801,7 @@ sub-expression.  For example:
      ((\"hello\")
       \"good morning\\n\")
      ((\"foo([a-z]+)bar(.*)$\" all letters end)
-      (string-append \"baz\" letter end)))
+      (string-append \"baz\" letters end)))
 
 Here, anytime a line of FILE contains \"hello\", it is replaced by \"good
 morning\".  Anytime a line of FILE matches the second regexp, ALL is bound to
