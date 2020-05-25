@@ -1821,7 +1821,7 @@ advanced research.")
        ("numpy" ,python-numpy)
        ("pandas" ,python-pandas)
        ("scipy" ,python-scipy)))
-    (home-page "http://github.com/interpretable-ml/iml")
+    (home-page "https://github.com/interpretable-ml/iml")
     (synopsis "Interpretable Machine Learning (iML) package")
     (description "Interpretable ML (iML) is a set of data type objects,
 visualizations, and interfaces that can be used by any method designed to
