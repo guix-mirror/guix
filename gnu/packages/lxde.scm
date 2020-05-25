@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ison <ison@airmail.cc>
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -104,14 +104,14 @@ libFM file management library.")))
 (define-public lxappearance
   (package
     (name "lxappearance")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lxde/"
                                   "LXAppearance/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "07r0xbi6504zjnbpan7zrn7gi4j0kbsqqfpj8v2x94gr05p16qj4"))))
+                "0f4bjaamfxxdr9civvy55pa6vv9dx1hjs522gjbbgx7yp1cdh8kj"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
