@@ -232,7 +232,7 @@ configuration that is stored in a Go struct.")
         (revision "0"))
     (package
       (name "go-github-com-bkaradzic-go-lz4")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "1.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
