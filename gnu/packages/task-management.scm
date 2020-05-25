@@ -52,7 +52,7 @@
             (delete-file "src/cal")
             (delete-file "src/calendar")
             (delete-file "src/tw"))))))
-     (home-page "http://taskwarrior.org")
+     (home-page "https://taskwarrior.org")
     (synopsis "Command line task manager")
     (description
      "Taskwarrior is a command-line task manager following the Getting Things
