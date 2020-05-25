@@ -1364,8 +1364,8 @@ bindings for Python, Java, OCaml and more.")
              (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
              #t)))
        #:configure-flags
-       (list "--with-sysmagic" "--with-syszip" "--with-openssl"
-             "--without-nonpic" "--with-rpath" "--with-syscapstone")
+       (list "--with-sysmagic" "--with-syszip" "--with-syscapstone"
+             "--with-openssl" "--with-rpath")
        #:make-flags
        (list "CC=gcc")))
     (inputs
