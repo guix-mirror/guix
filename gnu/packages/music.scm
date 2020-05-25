@@ -2718,8 +2718,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc" "CFLAGS=-std=c99"
-                          (string-append "PREFIX=" %output))
+       #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
     (inputs
