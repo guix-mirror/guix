@@ -135,14 +135,14 @@ file system, and many more features.")
 (define-public tuir
   (package
     (name "tuir")
-    (version "1.28.3")
+    (version "1.29.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tuir" version))
         (sha256
          (base32
-          "1gpyjrl7jdfjq30m32nzh59ajv91gq19l93jjri2wsv5yrf90hdr"))))
+          "06xb030ibphbrz4nsxm8mh3g60ld8xfp6kc3j6vi1k4ls5s4h79i"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
