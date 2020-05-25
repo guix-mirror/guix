@@ -1732,8 +1732,8 @@ rendering.")
       (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
 (define-public sbcl-stumpwm-pass
-  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
-        (revision "1"))
+  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
+        (revision "2"))
     (package
       (name "sbcl-pass")
       (version (git-version "0.0.1" revision commit)) ;no upstream release
@@ -1745,7 +1745,7 @@ rendering.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
       (inputs
        `(("stumpwm" ,stumpwm "lib")))
       (build-system asdf-build-system/sbcl)
