@@ -930,7 +930,7 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2.2")
+    (version "4.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
@@ -939,7 +939,7 @@ operate properly.")
              (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
-               "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
+               "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
