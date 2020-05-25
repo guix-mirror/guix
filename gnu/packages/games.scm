@@ -450,7 +450,7 @@ possible, while battling many vicious aliens.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.E")
+    (version "0.E-2")
     (source
      (origin
        (method git-fetch)
@@ -458,7 +458,7 @@ possible, while battling many vicious aliens.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
              (commit version)))
        (sha256
-        (base32 "0pbi0fw37zimzdklfj58s1ql0wlqq7dy6idkcsib3hn910ajaxan"))
+        (base32 "15l6w6lxays7qmsv0ci2ry53asb9an9dh7l7fc13256k085qcg68"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
