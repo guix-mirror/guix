@@ -10790,14 +10790,13 @@ such that being individual extensions would be wasteful.")
 (define-public perl-file-find-object
  (package
   (name "perl-file-find-object")
-  (version "v0.2.13")
+  (version "0.2.13")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
-             "mirror://cpan/authors/id/S/SH/SHLOMIF/File-Find-Object-"
-             version
-             ".tar.gz"))
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/File-Find-Object-v"
+             version ".tar.gz"))
       (sha256
         (base32
           "0gf13b76b824s73r5rp00v8xrd6dnb5yi5jjavfc394scqv6ldh4"))))
