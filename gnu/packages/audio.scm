@@ -3988,7 +3988,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -3997,8 +3997,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1747w1kg8y9jbl11xi018d85dm38xk7843pz26sh0k5fdv87a10q"))))
+        (base32 "17kv2jc4jvn3sdicz3sf8dnf25wbvv7ijzkr0mm0sbrrjz6vrwz0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
