@@ -1724,21 +1724,23 @@ the bandwidth, loss, and other parameters.")
   (package
     (name "nethogs")
     (version "0.8.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/raboof/nethogs/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1875q9hx48g68pika7n51an879v3s10ir4sf95z6ggnl6m91sz1i"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raboof/nethogs")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0sn1sdp86akwlm4r1vmkxjjl50c0xaisk91bbz57z7kcsaphxna9"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)
        ("ncurses" ,ncurses)))
     (arguments
      `(#:make-flags `("CC=gcc"
-                      ,(string-append "PREFIX=" %output))
+                      ,(string-append "PREFIX=" %output)
+                      ,(string-append "VERSION=" ,version))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no ./configure script.
