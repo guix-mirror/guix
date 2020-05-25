@@ -114,7 +114,7 @@
        ("texi2html" ,texi2html)
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
-    (home-page "http://gcompris.net")
+    (home-page "https://gcompris.net")
     (synopsis "Educational software suite")
     (description "GCompris is an educational software suite comprising of
 numerous activities for children aged 2 to 10.  Some of the activities are
