@@ -72,6 +72,7 @@
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
+;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15460,8 +15461,8 @@ bookmarks and history.")
     (license license:gpl3+)))
 
 (define-public emacs-stumpwm-mode
-  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
-        (revision "2"))
+    (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
+        (revision "3"))
     (package
       (name "emacs-stumpwm-mode")
       (version (git-version "0.0.1" revision commit))
@@ -15473,7 +15474,7 @@ bookmarks and history.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+                  "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
