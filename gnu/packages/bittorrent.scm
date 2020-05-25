@@ -336,7 +336,7 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://ugetdm.com/")
+    (home-page "https://ugetdm.com/")
     (synopsis "Universal download manager with GTK+ interface")
     (description
      "uGet is portable download manager with GTK+ interface supporting
