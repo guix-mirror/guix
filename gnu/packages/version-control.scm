@@ -1307,7 +1307,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.7")
+    (version "3.6.11")
     (source
      (origin
        (method git-fetch)
@@ -1316,7 +1316,7 @@ also walk each side of a merge and test those changes individually.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rmyzr66lxh2ildf3h1nh3hh2ndwk21rjdin50r5vhwbdd7jg8vb"))))
+        (base32 "1rkj7gknwjlc5ij9w39zf5mr647bm45la57yjczydmvrb8c56yrh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
