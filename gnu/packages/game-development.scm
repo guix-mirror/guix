@@ -1157,7 +1157,7 @@ developed mainly for Ren'py.")
     (native-inputs
      `(("python2-cython" ,python2-cython)
        ("xdg-utils" ,xdg-utils)))
-    (home-page "http://www.renpy.org/")
+    (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
     (description "This package contains the shared libraries and Python
 modules of Ren'py.")
