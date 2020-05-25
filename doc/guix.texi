@@ -22191,6 +22191,31 @@ Can be set to @code{#f} to disable logging.
 @item @code{file} (default @code{#f})
 An optional override of the whole configuration.
 You can use the @code{mixed-text-file} function or an absolute filepath for it.
+@item @code{php-ini-file} (default @code{#f})
+An optional override of the default php settings.
+It may be any ``file-like'' object (@pxref{G-Expressions, file-like objects}).
+You can use the @code{mixed-text-file} function or an absolute filepath for it.
+
+For local development it is useful to set a higher timeout and memory
+limit for spawned php processes.  This be accomplished with the
+following operating system configuration snippet:
+@lisp
+(define %local-php-ini
+  (plain-file "php.ini"
+              "memory_limit = 2G
+max_execution_time = 1800"))
+
+(operating-system
+  ;; @dots{}
+  (services (cons (service php-fpm-service-type
+                           (php-fpm-configuration
+                            (php-ini-file %local-php-ini)))
+                  %base-services)))
+@end lisp
+
+Consult the @url{https://www.php.net/manual/en/ini.core.php,core php.ini
+directives} for comprehensive documentation on the acceptable
+@file{php.ini} directives.
 @end table
 @end deftp
 

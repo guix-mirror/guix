@@ -152,6 +152,7 @@
             php-fpm-configuration-timezone
             php-fpm-configuration-workers-log-file
             php-fpm-configuration-file
+            php-fpm-configuration-php-ini-file
 
             php-fpm-dynamic-process-manager-configuration
             make-php-fpm-dynamic-process-manager-configuration
@@ -856,6 +857,8 @@ of index files."
                                             (version-major (package-version php))
                                             "-fpm.www.log")))
   (file             php-fpm-configuration-file ;#f | file-like
+                    (default #f))
+  (php-ini-file     php-fpm-configuration-php-ini-file ;#f | file-like
                     (default #f)))
 
 (define-record-type* <php-fpm-dynamic-process-manager-configuration>
@@ -962,7 +965,7 @@ of index files."
   (match-lambda
     (($ <php-fpm-configuration> php socket user group socket-user socket-group
                                 pid-file log-file pm display-errors
-                                timezone workers-log-file file)
+                                timezone workers-log-file file php-ini-file)
      (list (shepherd-service
             (provision '(php-fpm))
             (documentation "Run the php-fpm daemon.")
@@ -973,7 +976,10 @@ of index files."
                         #$(or file
                               (default-php-fpm-config socket user group
                                 socket-user socket-group pid-file log-file
-                                pm display-errors timezone workers-log-file)))
+                                pm display-errors timezone workers-log-file))
+                        #$@(if php-ini-file
+                               `("-c" ,php-ini-file)
+                               '()))
                       #:pid-file #$pid-file))
             (stop #~(make-kill-destructor)))))))
 
