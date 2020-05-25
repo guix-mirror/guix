@@ -1358,11 +1358,11 @@ bindings for Python, Java, OCaml and more.")
              "--with-openssl" "--with-rpath")
        #:make-flags
        (list "CC=gcc")))
+    ;; TODO: Add gmp and libzip and make the build system actually find them.
     (inputs
-     `(("openssl" ,openssl)
-       ("zip" ,zip)
-       ("gmp" ,gmp)
-       ("capstone" ,capstone)))
+     `(("capstone" ,capstone)
+       ("openssl" ,openssl)
+       ("zip" ,zip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://radare.org/")
