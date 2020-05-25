@@ -718,7 +718,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.206-1")
+    (version "1.217-1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -727,14 +727,12 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08r3mmck3s5pbvwyq19wp5g8jqcxza3cm8nkc6jm7rqn4jdydc4z"))))
+                "0kcvi3pav2fdx5c22psjv5dggk4cmrqiaq2cklhqngsk4a7vrjan"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no test suite
+     `(#:tests? #f                      ; no test suite
        #:make-flags
-       (list "CC=gcc"
-             (string-append "CFLAGS=-I" (assoc-ref %build-inputs "libbsd") "/include")
-             "LDFLAGS=-lbsd")
+       (list "CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
