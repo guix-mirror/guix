@@ -5322,18 +5322,18 @@ w3c webidl files and a binding configuration file.")
                  (display (read-line in 'concat) out)
                  (sxml->xml
                   (let rec ((sxml (xml->sxml in
-					     #:default-entity-handler
-					     (lambda (port name)
-					       (string-append "<ENTITY>"
-							      (symbol->string name)
-							      "</ENTITY>")))))
+                                             #:default-entity-handler
+                                             (lambda (port name)
+                                               (string-append "<ENTITY>"
+                                                              (symbol->string name)
+                                                              "</ENTITY>")))))
                     ;; We'd like to use sxml-match here, but it can't
                     ;; match against generic tag symbols...
                     (match sxml
                       (`(div (@ (class "links")) . ,rest)
                        '())
-		      (`(ENTITY ,ent)
-		       `(*ENTITY* ,ent))
+                      (`(ENTITY ,ent)
+                       `(*ENTITY* ,ent))
                       ((x ...)
                        (map rec x))
                       (x x)))
