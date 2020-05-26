@@ -10112,6 +10112,13 @@ libraries.  (That libc and GCC's libraries represent a large fraction of
 the closure is not a problem @i{per se} because they are always available
 on the system anyway.)
 
+Since the command also accepts store file names, assessing the size of
+a build result is straightforward:
+
+@example
+guix size $(guix system build config.scm)
+@end example
+
 When the package(s) passed to @command{guix size} are available in the
 store@footnote{More precisely, @command{guix size} looks for the
 @emph{ungrafted} variant of the given package(s), as returned by
