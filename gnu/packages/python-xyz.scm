@@ -9053,14 +9053,14 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
-    (version "6.0.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_console" version))
        (sha256
         (base32
-         "1xdjw11cppf1fxvwkw2bk13ckkwas3bdah8baingn9296mvfi31h"))))
+         "06s3kr5vx0l1y1b7fxb04dmrppscl7q69sl9yyfr0d057d1ssvkg"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-ipykernel" ,python-ipykernel)
