@@ -256,15 +256,14 @@ necessary.
        (uri (string-append "https://binaries.openttd.org/extra/catcodec/"
                            version "/catcodec-" version "-source.tar.xz"))
        (sha256
-        (base32
-         "1qg0c2i4p29sxj0q6qp2jynlrzm5pphz2xhcjqlxa69ycrnlxzs7"))))
+        (base32 "1qg0c2i4p29sxj0q6qp2jynlrzm5pphz2xhcjqlxa69ycrnlxzs7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
        #:make-flags (list (string-append "prefix=" %output))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
-    (home-page "http://dev.openttdcoop.org/projects/catcodec")
+    (home-page "https://dev.openttdcoop.org/projects/catcodec")
     (synopsis "Encode/decode OpenTTD sounds")
     (description "catcodec encodes and decodes sounds for OpenTTD.  These
 sounds are not much more than some metadata (description and filename) and raw
