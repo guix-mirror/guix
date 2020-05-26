@@ -14684,7 +14684,7 @@ is a Cython wrapper for FIt-SNE.")
        ("java-eclipse-jdt-core" ,java-eclipse-jdt-core)
        ("java-eclipse-jdt-compiler-apt" ,java-eclipse-jdt-compiler-apt)
        ("java-openmpi" ,java-openmpi)))
-    (home-page "http://sourceforge.net/projects/bbmap/")
+    (home-page "https://sourceforge.net/projects/bbmap/")
     (synopsis "Aligner and other tools for short sequencing reads")
     (description
      "This package provides bioinformatic tools to align, deduplicate,
