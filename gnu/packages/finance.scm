@@ -666,7 +666,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.15.0.4")
+    (version "0.16.0.0")
     (source
      (origin
        (method git-fetch)
@@ -676,14 +676,16 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "12m5fgnxkr11q2arx1m5ccpxqm5ljcvm6l547dwqn297zs5jim4z"))))
+         "06vdrsj5y9k0zn32hspyxc7sw1kkyrvi3chzkdbnxk9jvyj8k4ld"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("monero-source" ,(package-source monero))
+       ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("hidapi" ,hidapi)
+       ("libgcrypt" ,libgcrypt)
        ("libsodium" ,libsodium)
        ("libunwind" ,libunwind)
        ("libusb" ,libusb)
@@ -705,7 +707,16 @@ the Monero command line client and daemon.")
      `(#:tests? #f ; No tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-makefile-vars
+         (add-after 'unpack 'get-monero-extra-files
+           ;; Some headers and GnuPG public keys of the monero package source
+           ;; code are required to build the GUI.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "tar" "-xv" "--wildcards" "--strip-components=1"
+                     "-C" "monero"
+                     "-f" (assoc-ref inputs "monero-source")
+                     "*.asc" "*.h")
+             #t))
+         (add-after 'get-monero-extra-files 'fix-makefile-vars
            (lambda _
              (substitute* "src/zxcvbn-c/makefile"
                (("\\?=") "="))
