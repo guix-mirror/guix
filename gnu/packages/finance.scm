@@ -1521,14 +1521,14 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
 (define-public flowee
   (package
     (name "flowee")
-    (version "2020.03.3")
+    (version "2020.04.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.com/FloweeTheHub/thehub/-/archive/"
                             version "/thehub-" version ".tar.gz"))
        (sha256
-         (base32 "0ksyh7ll3v9p8f5y15vcb2vkrpzb4h0ricag9j90ad4b4rfsnpjw"))))
+         (base32 "1vwvaxm3b71pfx8l4rrv06wqks6xdf2333w856b36s1bzvj53rhc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-Dbuild_tests=ON" "-Denable_gui=OFF")
