@@ -9006,7 +9006,8 @@ interactive computing.")
          "1ismyaxbv9d56yqqqb8xl58hg0iq0bbyy014a53y1g3hfbc8g7q7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
+     `(("python-ipykernel"
+        ,(prompt-toolkit-2-instead-of-prompt-toolkit python-ipykernel))
        ("python-notebook" ,python-notebook)))
     (native-inputs
      `(("python-certifi" ,python-certifi)
@@ -9033,7 +9034,8 @@ notebooks.")
          "15sww2mvnkqlvx55gwa82v05062a8j1xpncnqna4k9sl53hgcig9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipython" ,python-ipython)
+     `(("python-ipython" ,(prompt-toolkit-2-instead-of-prompt-toolkit
+                           python-ipython))
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
     (native-inputs
@@ -9063,9 +9065,10 @@ in the data.")
          "06s3kr5vx0l1y1b7fxb04dmrppscl7q69sl9yyfr0d057d1ssvkg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
+     `(("python-ipykernel" ,(prompt-toolkit-2-instead-of-prompt-toolkit
+        python-ipykernel))
        ("python-jupyter-client" ,python-jupyter-client)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-pygments" ,python-pygments)))
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -12131,14 +12134,14 @@ collections of data.")
 (define-public python-prompt-toolkit
   (package
     (name "python-prompt-toolkit")
-    (version "2.0.7")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
+       (uri (pypi-uri "prompt_toolkit" version))
        (sha256
         (base32
-         "0fgacqk73w7s932vy46pan2yp8rvjmlkag20xvaydh9mhf6h85zx"))))
+         "1j3x5s4gp4ih73sbcni0a0vffbzvrxbrbnkvb3fzjgxn810ilgan"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -12152,12 +12155,11 @@ collections of data.")
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)
-       ("python-six" ,python-six)
-       ("python-pygments" ,python-pygments)))
+     `(("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/jonathanslenders/python-prompt-toolkit")
+    (home-page
+     "https://github.com/prompt-toolkit/python-prompt-toolkit")
     (synopsis "Library for building command line interfaces in Python")
     (description
      "Prompt-Toolkit is a library for building interactive command line
@@ -12167,11 +12169,31 @@ code completion, incremental search, support for Chinese double-width
 characters, mouse support, and auto suggestions.")
     (license license:bsd-3)))
 
+(define-public python-prompt-toolkit-2
+  (package (inherit python-prompt-toolkit)
+    (name "python-prompt-toolkit")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prompt_toolkit" version))
+       (sha256
+        (base32
+         "0fgacqk73w7s932vy46pan2yp8rvjmlkag20xvaydh9mhf6h85zx"))))
+    (propagated-inputs
+     `(("python-wcwidth" ,python-wcwidth)
+       ("python-six" ,python-six)
+       ("python-pygments" ,python-pygments)))))
+
+(define-public prompt-toolkit-2-instead-of-prompt-toolkit
+  (package-input-rewriting/spec
+   `(("python-prompt-toolkit" . ,(const python-prompt-toolkit-2)))))
+
 (define-public python2-prompt-toolkit
-  (package-with-python2 python-prompt-toolkit))
+  (package-with-python2 python-prompt-toolkit-2))
 
 (define-public python-prompt-toolkit-1
-  (package (inherit python-prompt-toolkit)
+  (package (inherit python-prompt-toolkit-2)
     (version "1.0.15")
     (source
      (origin
