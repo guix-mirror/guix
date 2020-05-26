@@ -151,24 +151,27 @@ libenca and several charset conversion libraries and tools.")
        (sha256
         (base32 "1xlkazhdnja4lksn5c9nf4bln5gjqa35a8gwlam5r0728w0h83qq"))))
     (build-system gnu-build-system)
-    (native-inputs           ;test data that is otherwise downloaded with curl
-     `(("NormalizationTest.txt"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "https://www.unicode.org/Public/13.0.0/ucd/"
-                               "NormalizationTest.txt"))
-           (sha256
-            (base32 "07g0ya4f6zfzvpp24ccxkb2yq568kh83gls85rjl950nv5fya3nn"))))
-       ("GraphemeBreakTest.txt"
-        ,(origin
-           (method url-fetch)
-           (uri (string-append "https://www.unicode.org/Public/13.0.0/ucd/"
-                               "auxiliary/GraphemeBreakTest.txt"))
-           (sha256
-            (base32 "07f8rrvcsq4pibdz6zxggxy8w7zjjqyw2ggclqlhalyv45yv7prj"))))
+    (native-inputs
+     (let ((UNICODE_VERSION "13.0.0"))  ; defined in data/Makefile
+       ;; Test data that is otherwise downloaded with curl.
+       `(("NormalizationTest.txt"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "https://www.unicode.org/Public/"
+                                 UNICODE_VERSION "/ucd/NormalizationTest.txt"))
+             (sha256
+              (base32 "07g0ya4f6zfzvpp24ccxkb2yq568kh83gls85rjl950nv5fya3nn"))))
+         ("GraphemeBreakTest.txt"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "https://www.unicode.org/Public/"
+                                 UNICODE_VERSION
+                                 "/ucd/auxiliary/GraphemeBreakTest.txt"))
+             (sha256
+              (base32 "07f8rrvcsq4pibdz6zxggxy8w7zjjqyw2ggclqlhalyv45yv7prj"))))
 
-       ;; For tests.
-       ("perl" ,perl)))
+         ;; For tests.
+         ("perl" ,perl))))
     (arguments
      '(#:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))

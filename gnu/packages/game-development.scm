@@ -1585,11 +1585,7 @@ games.")
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
-       #:scons-flags (list "platform=x11"
-                           ,@(if (string-prefix? "aarch64" (or (%current-target-system)
-                                                               (%current-system)))
-                               `("CCFLAGS=-DNO_THREADS")
-                               '())
+       #:scons-flags (list "platform=x11" "target=release_debug"
                            ;; Avoid using many of the bundled libs.
                            ;; Note: These options can be found in the SConstruct file.
                            "builtin_bullet=no"
@@ -1608,7 +1604,7 @@ games.")
                            "builtin_wslay=no"
                            "builtin_zlib=no"
                            "builtin_zstd=no")
-       #:tests? #f ; There are no tests
+       #:tests? #f                      ; There are no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'scons-use-env
@@ -1621,41 +1617,46 @@ games.")
                  "env_base = Environment(tools=custom_tools)\n"
                  "env_base = Environment(ENV=os.environ)")))
              #t))
+         ;; Build headless tools, used for packaging games without depending on X.
+         (add-after 'build 'build-headless
+           (lambda* (#:key scons-flags #:allow-other-keys)
+             (apply invoke "scons"
+                    `(,(string-append "-j" (number->string (parallel-job-count)))
+                      "platform=server" ,@(delete "platform=x11" scons-flags)))))
          (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
+                    (headless (assoc-ref outputs "headless"))
+                    (zenity (assoc-ref inputs "zenity")))
+               ;; Strip build info from filenames.
                (with-directory-excursion "bin"
-                 (if (file-exists? "godot.x11.tools.64")
-                     (rename-file "godot.x11.tools.64" "godot")
-                     (rename-file "godot.x11.tools.32" "godot"))
-                 (install-file "godot" bin))
-               ;; Tell Godot where to find zenity for OS.alert().
-               (wrap-program (string-append bin "/godot")
-                 `("PATH" ":" prefix
-                   (,(string-append (assoc-ref %build-inputs "zenity") "/bin"))))
-               #t)))
+                 (for-each
+                  (lambda (file)
+                    (let ((dest (car (string-split (basename file) #\.))))
+                      (rename-file file dest)))
+                  (find-files "." "godot.*\\.x11\\.opt\\.tools.*"))
+                 (install-file "godot" (string-append out "/bin"))
+                 (install-file "godot_server" (string-append headless "/bin")))
+               ;; Tell the editor where to find zenity for OS.alert().
+               (wrap-program (string-append out "/bin/godot")
+                 `("PATH" ":" prefix (,(string-append zenity "/bin")))))
+             #t))
          (add-after 'install 'install-godot-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (desktop (string-append out "/share/applications"))
-                    (icon-dir (string-append out "/share/pixmaps")))
-               (rename-file "icon.png" "godot.png")
-               (install-file "godot.png" icon-dir)
-               (mkdir-p desktop)
-               (with-output-to-file
-                   (string-append desktop "/godot.desktop")
-                 (lambda _
-                   (format #t
-                           "[Desktop Entry]~@
-                           Name=godot~@
-                           Comment=The godot game engine~@
-                           Exec=~a/bin/godot~@
-                           TryExec=~@*~a/bin/godot~@
-                           Icon=godot~@
-                           Type=Application~%"
-                           out)))
-               #t))))))
+                    (applications (string-append out "/share/applications"))
+                    (icons (string-append out "/share/icons/hicolor")))
+               (mkdir-p applications)
+               (copy-file "misc/dist/linux/org.godotengine.Godot.desktop"
+                          (string-append applications "/godot.desktop"))
+               (for-each (lambda (icon dest)
+                           (mkdir-p (dirname dest))
+                           (copy-file icon dest))
+                         '("icon.png" "icon.svg")
+                         `(,(string-append icons "/256x256/apps/godot.png")
+                           ,(string-append icons "/scalable/apps/godot.svg"))))
+             #t)))))
+    (outputs '("out" "headless"))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("alsa-lib" ,alsa-lib)
               ("bullet" ,bullet)

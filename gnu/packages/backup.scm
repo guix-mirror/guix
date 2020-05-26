@@ -1029,14 +1029,14 @@ is format-agnostic, so you can feed virtually any files to it.")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.24")
+    (version "2.3.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/burp/burp-" version
                                   "/burp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dmahqx8ldqdrx9b47r7ag3m801n7h3kclcqja1cc1jzhfhfq27w"))))
+                "1kwm8wwmzla02cqacgpmac6n5466dqd5czx83lkbp97rmg9017h8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

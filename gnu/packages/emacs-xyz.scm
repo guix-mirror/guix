@@ -19,7 +19,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
@@ -168,6 +168,7 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages wordnet)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages uml)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -881,21 +882,21 @@ supports type hints, definition-jumping, completion, and more.")
       (license license:gpl3+))))
 
 (define-public emacs-flycheck
-  ;; last release version was more than 300 commits ago
-  (let ((commit "0006a59259ebd02c9199ddc87f0e3ce22793a2ea")
-        (revision "1"))
+  ;; Last release version was more than 500 commits ago.
+  (let ((commit "9bcf6b665e15db94870bebc81dc8248c3eec20d3")
+        (revision "2"))
     (package
       (name "emacs-flycheck")
       (version (git-version "31" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/flycheck/flycheck/")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "09q3h6ldpg528cfbmsbb1x2vf5hmzgm3fshqn6kdy144jxcdjlf1"))
-                (file-name (git-file-name name version))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flycheck/flycheck/")
+               (commit commit)))
+         (sha256
+          (base32 "015ixss5bjr7gvhj8mkw5x2x1hy6fvvsjarr2xpv0gskkkngs7pg"))
+         (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)))
@@ -3759,7 +3760,7 @@ for Flow files.")
 (define-public emacs-flycheck-grammalecte
   (package
     (name "emacs-flycheck-grammalecte")
-    (version "1.0")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -3767,30 +3768,31 @@ for Flow files.")
                            "flycheck-grammalecte/snapshot/"
                            "flycheck-grammalecte-" version ".tar.xz"))
        (sha256
-        (base32 "02wxaw228dia8cps0v02327hrrribfqb4601qggjpi4l4ms1lf8b"))))
+        (base32 "1mzmzyik843r4j0ibpwqrxmb0g4xmirrf3lxr010bddkmmxf749a"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("\\.(el|py)$")
+       #:exclude '("^test-profile.el$")
+       #:emacs ,emacs                   ;need libxml support
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-external-executables
-           ;; Hardcode python3 and curl executables in the Emacs library.
+         (add-after 'unpack 'fix-python-executable
+           ;; Hardcode python3 executable in the Emacs library.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
-                                           "/bin/python3"))
-                   (curl (string-append (assoc-ref inputs "curl")
-                                        "/bin/curl")))
+                                           "/bin/python3")))
                (substitute* "flycheck-grammalecte.el"
-                 (("\"python3?") (string-append "\"" python3))
-                 (("\"curl") (string-append "\"" curl)))
+                 (("\"python3") (string-append "\"" python3)))
                #t)))
-         (add-after 'install 'link-to-grammalecte
-           ;; The package expects grammalecte to be in a sub-directory.
-           ;; Symlink it there from the store.
+         (add-before 'build 'link-to-grammalecte
+           ;; XXX: The Python part of the package requires grammalecte, but
+           ;; the library is not specified in PYTHONPATH, since we're not
+           ;; using Python build system.  As a workaround, we symlink
+           ;; grammalecte libraries here.
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((grammalecte (assoc-ref inputs "grammalecte"))
-                   (out (assoc-ref outputs "out"))
-                   (version ,(version-major+minor (package-version python))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (grammalecte (assoc-ref inputs "grammalecte"))
+                    (version ,(version-major+minor (package-version python))))
                (with-directory-excursion
                    (string-append out "/share/emacs/site-lisp")
                  (symlink (string-append grammalecte "/lib/"
@@ -3799,17 +3801,17 @@ for Flow files.")
                           "grammalecte"))
                #t))))))
     (inputs
-     `(("curl" ,curl)
-       ("grammalecte" ,grammalecte)
+     `(("grammalecte" ,grammalecte)
        ("python" ,python)))
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)))
     (home-page "https://git.deparis.io/flycheck-grammalecte/")
     (synopsis "Integrate Grammalecte with Flycheck")
-    (description "Integrate the French grammar and typography checker
-Grammalecte with Flycheck to automatically look for mistakes in your writings.
-It also provides an easy way to find synonyms and antonyms for a given
-word (to avoid repetitions for example).")
+    (description
+     "Integrate the French grammar and typography checker Grammalecte with
+Flycheck to automatically look for mistakes in your writings.  It also
+provides an easy way to find synonyms and antonyms for a given word (to avoid
+repetitions for example).")
     (license license:gpl3+)))
 
 (define-public emacs-flycheck-rust
@@ -12690,7 +12692,7 @@ standard Unix password manager\").")
 (define-public emacs-pass
   (package
     (name "emacs-pass")
-    (version "1.8")
+    (version "2.0")
     (source
      (origin
        (method git-fetch)
@@ -12699,7 +12701,7 @@ standard Unix password manager\").")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05h4hacv3yygyjcjj004qbyqjpkl4pyhwgp25gsz8mw5c66l70cx"))))
+        (base32 "0jc8j421mlflspg24jvrqc2n3y5n3cpk3hjy560il8g36xi1049p"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-password-store" ,emacs-password-store)
@@ -14916,6 +14918,29 @@ If you have a @file{todo.org} file with @code{TODO} items in the root of your
 repository, @code{magit-org-todos} will create a section in your Magit status
 buffer with each of your todos.")
       (license license:gpl3+))))
+
+(define-public emacs-vcsh
+  (package
+    (name "emacs-vcsh")
+    (version "0.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/stepnem/vcsh-el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "183pffdiqb7qqmjq31wxl3fpv8qswqgg99gb716rddiyk15ysri7"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/stepnem/vcsh-el")
+    (synopsis "Emacs VCSH integration")
+    (description
+     "This library provides basic ``enter'' functionality and a few
+convenience commands to initialize a @acronym{VCSH, Version Control System for
+$HOME} repository and add files to it.  It can be used in conjunction with
+Magit.")
+    (license license:public-domain)))
 
 (define-public emacs-f3
   (package
@@ -20716,17 +20741,17 @@ it forcibly
 (define-public emacs-elpher
   (package
     (name "emacs-elpher")
-    (version "1.4.6")
+    (version "2.7.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/tgvaughan/elpher")
+             (url "git://thelambdalab.xyz/elpher.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07xansmhn4l0b9ghzf56vyx8cqg0q01aq3pz5ikx2i19v5f0rc66"))))
+         "13ba72sjfyg1xvam131iapzqdf9pkwpn67zlyydmm6bv9pxlr431"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -20736,7 +20761,7 @@ it forcibly
          (add-before 'install 'build-doc
            (lambda _
              (invoke "makeinfo" "elpher.texi"))))))
-    (home-page "https://github.com/tgvaughan/elpher")
+    (home-page "gopher://thelambdalab.xyz/1/projects/elpher/")
     (synopsis "Gopher client for Emacs")
     (description "Elpher is a full-featured gopher client for Emacs.  Its
 features include intuitive keyboard and mouse-driven browsing, out-of-the-box
@@ -22940,4 +22965,52 @@ can has to be compliant with freedesktop.org. In Emacs, you can trash files by
 deleting them with @code{(setq delete-by-moving-to-trash t)}.  This package
 provides a simple but convenient user interface to manage those trashed
 files.")
+    (license license:gpl3+)))
+
+(define-public emacs-plantuml-mode
+  (package
+    (name "emacs-plantuml-mode")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skuro/plantuml-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0yp41d2dmf3sx7qnl5x0zdjcr9y71b2wwc9m0q31v22xqn938ipc"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-local-plantuml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((plantuml (assoc-ref inputs "plantuml"))
+                   (file "plantuml-mode.el"))
+               (chmod file #o644)
+               (emacs-substitute-variables file
+                 ("plantuml-jar-path"
+                  (string-append plantuml "/share/java/plantuml.jar"))
+                 ("plantuml-executable-path"
+                  (string-append plantuml "/bin/plantuml"))
+                 ("plantuml-server-url" 'nil)
+                 ("plantuml-default-exec-mode" ''executable))
+               (emacs-batch-edit-file file
+                 `(progn (progn
+                          (goto-char (point-min))
+                          (re-search-forward "(defun plantuml-download-jar")
+                          (beginning-of-line)
+                          (kill-sexp))
+                         (basic-save-buffer)))
+               #t))))))
+    (inputs
+     `(("plantuml" ,plantuml)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/skuro/plantuml-mode")
+    (synopsis "Major mode for editing PlantUML sources")
+    (description "This package provides a major mode for editing PlantUML
+sources.  It features syntax highlighting, autocompletion, preview of buffer
+or region and use of locally installed binaries.")
     (license license:gpl3+)))

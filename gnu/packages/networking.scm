@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
@@ -87,12 +87,14 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -140,7 +142,6 @@
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list "--enable-polkit"
-                               "--disable-appindicator" ; Not available
                                "--without-systemdsystemunitdir" ; Not required
                                "--without-systemduserunitdir")  ; Not required
        #:phases
@@ -232,6 +233,7 @@
        ("pycairo" ,python-pycairo)
        ("pygobject" ,python-pygobject)
        ("python" ,python-wrapper)
+       ("libappindicator" ,libappindicator)
        ("libnm" ,network-manager)))
     (synopsis "GTK+ Bluetooth manager")
     (description "Blueman is a Bluetooth management utility using the Bluez
@@ -587,15 +589,19 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.4")
+    (version "5.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "0srbqp4a3x9ryrbm5q854375y04ni8j0bmsrl89nmsyn4x4ixy12"))))
+                "159r0hwax0qs5diayw2glxshqxrigk0v67hgmbq56ldddm91n3ya"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmnl" ,libmnl)))
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
     (description
@@ -1949,14 +1955,14 @@ returns the user name and other information about the connection.")
 (define-public spiped
   (package
     (name "spiped")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tarsnap.com/spiped/spiped-"
                                   version ".tgz"))
               (sha256
                (base32
-                "1r51rdcl7nib1yv3yvgd5alwlkkwmr387brqavaklb0p2bwzixz6"))))
+                "04rpnc53whfky7pp2m9h35gwzwn6788pnl6c1qd576mpknbqjw4d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -3132,3 +3138,50 @@ thousands of connections is clearly realistic with today's hardware.")
     (license (list license:gpl2+
                    license:lgpl2.1
                    license:lgpl2.1+))))
+
+(define-public lldpd
+  (package
+    (name "lldpd")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://media.luffy.cx/files/lldpd/lldpd-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "16fbqrs3l976gdslx647nds8x7sz4h5h3h4l4yxzrayvyh9b5lrd"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Drop bundled library.
+           (delete-file-recursively "libevent")
+           #t))))
+    (arguments
+     `(#:configure-flags
+       (list
+        "--with-privsep-user=nobody"
+        "--with-privsep-group=nogroup"
+        "--localstatedir=/var"
+        "--enable-pie"
+        "--without-embedded-libevent"
+        (string-append "--with-systemdsystemunitdir="
+                       (assoc-ref %outputs "out")
+                       "/lib/systemd/system"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libevent" ,libevent)
+       ("libxml2" ,libxml2)
+       ("openssl" ,openssl)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://vincentbernat.github.io/lldpd/")
+    (synopsis "Locate neighbors of your network equipment")
+    (description
+     "The @dfn{Link Layer Discovery Protocol} (LLDP) is an industry standard
+protocol designed to supplant proprietary Link-Layer protocols such as EDP or
+CDP.  The goal of LLDP is to provide an inter-vendor compatible mechanism to
+deliver Link-Layer notifications to adjacent network devices.  @code{lldpd} is
+an implementation of LLDP.  It also supports some proprietary protocols.")
+    (license license:isc)))

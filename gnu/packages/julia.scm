@@ -416,7 +416,7 @@ libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
                         (assoc-ref %build-inputs "utf8proc")
                         "/include")
          "USE_SYSTEM_LLVM=1"
-         "LLVM_VER=6.0.1"
+         "LLVM_VER=8.0.0"
 
          "USE_LLVM_SHLIB=1"
          "USE_SYSTEM_LIBUNWIND=1"

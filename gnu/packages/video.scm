@@ -1610,7 +1610,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.05.03")
+    (version "2020.05.08")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1618,7 +1618,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0qigk1bml6vkck4rs0wnmr46j5gkz04zn30jvnw1r4czjs7vnpal"))))
+                "16zxa8ss2rka7cvkqyi67s8i1h9f4nxx88w9vjbxchbga6w0scc6"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2762,14 +2762,15 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.handbrake.fr/releases/"
-                                  version "/HandBrake-" version "-source.tar.bz2"))
+              (uri (string-append "https://github.com/HandBrake/HandBrake/"
+                                  "releases/download/" version "/"
+                                  "HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "09rcrq0kjs1lc1as7w3glbpbfvzldwpx3xv0pfmkn4pl7acxw1f0"))
+                "0w7jxjrccvxp7g15dv0spildg5apmqp4gwbcqmg58va2gylynvzc"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -3873,7 +3874,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3882,7 +3883,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0273fxgf4r832y9s0p8hqdj1j1nj8nlz4hylya0b4nsif89yfrhp"))))
+                "1rh4sz1bmrsxyxfxajsffw5jd17djcrymhwsi877v02fgln027qr"))))
     (build-system cmake-build-system)
     ;; SVT-AV1 only supports Intel-compatible CPUs.
     (supported-systems '("x86_64-linux" "i686-linux"))

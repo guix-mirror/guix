@@ -1703,14 +1703,13 @@ normally the case.")
 (define-public python-pytest-sugar
   (package
     (name "python-pytest-sugar")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-sugar" version))
        (sha256
-        (base32
-         "1asq7yc4g8bx2sn7yy974mhc9ywvaihasjab4inkirdwn9s7mn7w"))))
+        (base32 "1i0hv3h49zvl62jbiyjag84carbrp3zprqzxffdr291nxavvac0n"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-packaging" ,python-packaging)

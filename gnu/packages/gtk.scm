@@ -318,14 +318,14 @@ functions which were removed.")
 (define-public ganv
   (package
     (name "ganv")
-    (version "1.4.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/ganv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
+                "0pik2d3995z0rjcjhb4hsj5fsph3m8khg6j10k6mx4j2j727aq6l"))))
     (build-system waf-build-system)
     (arguments
      `(#:phases
@@ -337,7 +337,6 @@ functions which were removed.")
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
              #t)))
-       #:python ,python-2 ;XXX: The bundled waf fails with Python 3.7.0.
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)

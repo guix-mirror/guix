@@ -247,13 +247,13 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "8.09")
+   (version "8.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
             (sha256
-             (base32 "19p91hs6j348qp0v9c7abl3rb8d9ncc37k743qhrn29s9jz0567k"))))
+             (base32 "1cdsx4nsrwawbsisfkldfc9i4qn60g03vxb13nzppr2br9p4rrih"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("libxml2" ,libxml2)
@@ -282,7 +282,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.8")
+    (version "2.4.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -290,7 +290,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "149z3agjy03i66mcj5bplim2mh45s2ps1wmxbxczyzw0nxmsd37v"))))
+                "1qpbllwlha7cffsd5dlddb8rl22g9rar5zflkz1wrcllhvfkl7v4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))

@@ -1,6 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+# Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
 #
@@ -155,7 +156,17 @@ noinst_HEADERS =						\
 
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system
-nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service
+nodist_systemdservice_DATA =			\
+  etc/gnu-store.mount				\
+  etc/guix-daemon.service			\
+  etc/guix-publish.service
+
+etc/%.mount: etc/%.mount.in	\
+			 $(top_builddir)/config.status
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
+	$(SED) -e 's|@''storedir''@|$(storedir)|' <	\
+	       "$<" > "$@.tmp";		\
+	mv "$@.tmp" "$@"
 
 etc/guix-%.service: etc/guix-%.service.in	\
 			 $(top_builddir)/config.status

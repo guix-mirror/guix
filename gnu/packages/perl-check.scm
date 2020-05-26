@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -455,6 +456,40 @@ files, as well as to verify that there are no missing or unknown files.")
     (description
      "@code{Test::DistManifest} provides a simple method of testing that a
 @file{MANIFEST} file matches its distribution.")
+    (license perl-license)))
+
+(define-public perl-test-distribution
+  (package
+    (name "perl-test-distribution")
+    (version "2.00")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/S/SR/SRSHAH/Test-Distribution-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0s1bj459qaw2x1fckklv9irpf3mr8gp2cm9vlyrb5dyanrzx1v2h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-pod-coverage" ,perl-pod-coverage)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Test-Distribution")
+    (synopsis "Perform tests on all modules of a distribution")
+    (description "When used in a test script @code{Test::Distribution}
+goes through all the modules in your distribution, checks their POD,
+checks that they compile successfully and checks that they all define
+a $VERSION.  In addition, this module performs a number of tests on
+the distribution itself.  It checks that the distributed files match
+the SIGNATURE file, if that file exists.  It checks that the
+distribution is not missing any core description files.  It also
+checks that the complete set of pre-requisite packages are listed in
+the Makefile.PL file.")
     (license perl-license)))
 
 (define-public perl-test-eol

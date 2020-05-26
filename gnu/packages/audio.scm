@@ -2191,7 +2191,7 @@ buffers, and audio capture.")
 (define-public patchage
   (package
     (name "patchage")
-    (version "1.0.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/patchage-"
@@ -2199,10 +2199,10 @@ buffers, and audio capture.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1agdpwwi42176l4mxj0c4fsvdiv1ig56bfnnx0msckxmy57df8bb"))))
+                "0dk3fiac10m83mwss3026yz7ygc47c2iw924cwwnh2fyydc9bsy6"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3373,14 +3373,14 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.6.7")
+    (version "0.6.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32 "13hsbqj1dkpz1gbclnjxv50kr7b4gcjai6c1l38g01433h217qjc"))
+        (base32 "1hcbff3q6xl9rj1pzy3fwy91y6fa99wwrhb31461j9kgc173ls7r"))
        (modules '((guix build utils)))
        (snippet
         '(begin

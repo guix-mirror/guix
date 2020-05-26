@@ -718,7 +718,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.4")
+    (version "1.4.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -726,7 +726,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0pmx8zh5fsfhkdl0cr7ydcv6cywhxbgavnjrfr5p2ibz9gx3q3vf"))))
+                "15spbplf9p8cdxqfwnv3x67451sfpna9q5n2kgqqwh2y78i7zlhc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1372,7 +1372,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.10")
+    (version "2.3.10.1")
     (source
      (origin
        (method url-fetch)
@@ -1380,7 +1380,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1ibiz3k2flablkcqbkvfzsjnq5b5kxximhcrplflsjl57mr88ca7"))))
+        (base32 "035idr2j81s5mngnhd58rih79dhwwak7q01mqbx3rcmi4cpychk6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2166,14 +2166,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.7")
+    (version "1.4.9")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "0c6n5afn9pr4p7gxkv462lysrw52w9fhvavzm99c78dcp9dj5xnk"))))
+        (base32 "0hinmyd4lipy9wi3grwm72vv6xrpf4m08i9g9nlxzxnwfanw885q"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
@@ -2298,14 +2298,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.6.4p1")
+    (version "6.7.0p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1kyph9ycq0j21dl9n1sq5fns9p4gckdi0fmnf8awrcwrdcm9dyg2"))))
+        (base32 "1f8bp40ywyixflg5qbnang6l210bv4vqa1k2pgm2356bp7bmsgy1"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -2681,7 +2681,7 @@ operators and scripters.")
     ;; Upstream doesn't use git tags, but does ‘tag’ their releases in the
     ;; commit message.  Hence the lack of GIT-VERSIONing despite using a commit
     ;; ID below.  Don't forget to update it…
-    (version "2.21.99999")
+    (version "2.22")
     (source
      (origin
        (method git-fetch)
@@ -2691,10 +2691,10 @@ operators and scripters.")
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (git-reference
              (url "http://repo.or.cz/alpine.git")
-             (commit "abeb2c25935ef8c75f1e5deef0f81276754dc975")))
+             (commit "b50297779a4becb9ceca9c6b5b375d526fe3df78")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rqgbw08a5lj41dkp82aq480lqkc4bnxagna7wpqffi821n8gkwz"))
+        (base32 "06js44fvdl7l33hfd4lsxpcd1cz3c0h796cswyzz0lkrzx89yl48"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -2703,7 +2703,11 @@ operators and scripters.")
            #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))))
        #:configure-flags (list (string-append "--with-ssl-include-dir="
                                               (assoc-ref %build-inputs "openssl")
                                               "/include/openssl")
@@ -2720,6 +2724,13 @@ operators and scripters.")
                                "--with-date-stamp=Thu  1 Jan 01:00:01 CET 1970")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'assume-shadow-passwords
+           ;; Alpine's configure script confuses ‘shadow password support’ with
+           ;; ‘/etc/shadow exists in the build environment’.  It does not.
+           (lambda _
+             (substitute* "configure"
+               (("test -f /etc/shadow") "true"))
+             #t))
          (add-after 'unpack 'make-reproducible
            (lambda _
              ;; This removes time-dependent code to make alpine reproducible.

@@ -228,6 +228,7 @@ Development
 
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix pack::          Creating software bundles.
+* The GCC toolchain::           Working with languages supported by GCC.
 
 Programming Interface
 
@@ -659,9 +660,10 @@ with these commands:
 @c https://lists.gnu.org/archive/html/guix-devel/2017-01/msg01199.html
 
 @example
-# cp ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
+# cp ~root/.config/guix/current/lib/systemd/system/gnu-store.mount \
+     ~root/.config/guix/current/lib/systemd/system/guix-daemon.service \
      /etc/systemd/system/
-# systemctl enable --now guix-daemon
+# systemctl enable --now gnu-store.mount guix-daemon
 @end example
 
 If your host distro uses the Upstart init system:
@@ -1772,13 +1774,6 @@ want to avoid auto-loading the Emacs packages installed with Guix, you
 can do so by running Emacs with the @option{--no-site-file} option
 (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
 
-@subsection The GCC toolchain
-
-@c XXX: The contents of this section were moved under
-@c ``Development'', since it makes more sense there and is not specific
-@c foreign distros.  Remove it from here eventually?
-@xref{Packages for C Development}, for information on packages for C/C++
-development.
 
 @node Upgrading Guix
 @section Upgrading Guix
@@ -3044,6 +3039,7 @@ availability of packages:
 
 @item --search=@var{regexp}
 @itemx -s @var{regexp}
+@anchor{guix-search}
 @cindex searching for packages
 List the available packages whose name, synopsis, or description matches
 @var{regexp} (in a case-insensitive fashion), sorted by relevance.
@@ -4475,6 +4471,9 @@ produce a list of channel specifications in JSON format;
 produce a list of channel specifications in Recutils format.
 @end table
 
+@item --list-formats
+Display available formats for @option{--format} option.
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Display information about @var{profile}.
@@ -4674,9 +4673,9 @@ pack} command allows you to create @dfn{application bundles} that can be
 easily distributed to users who do not run Guix.
 
 @menu
-* Invoking guix environment::   Setting up development environments.
-* Invoking guix pack::          Creating software bundles.
-* Packages for C Development::  Working with C code with Guix.
+* Invoking guix environment::  Setting up development environments.
+* Invoking guix pack::         Creating software bundles.
+* The GCC toolchain::          Working with languages supported by GCC.
 @end menu
 
 @node Invoking guix environment
@@ -5387,13 +5386,15 @@ In addition, @command{guix pack} supports all the common build options
 (@pxref{Common Build Options}) and all the package transformation
 options (@pxref{Package Transformation Options}).
 
-@node Packages for C Development
-@section Packages for C Development
+
+@node The GCC toolchain
+@section The GCC toolchain
 
 @cindex GCC
 @cindex ld-wrapper
 @cindex linker wrapper
 @cindex toolchain, for C development
+@cindex toolchain, for Fortran development
 
 If you need a complete toolchain for compiling and linking C or C++
 source code, use the @code{gcc-toolchain} package.  This package
@@ -5407,7 +5408,9 @@ invoke the actual linker with this new set of arguments.  You can instruct the
 wrapper to refuse to link against libraries not in the store by setting the
 @env{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
 
-
+The package @code{gfortran-toolchain} provides a complete GCC toolchain
+for Fortran development.  For other languages, please use
+@samp{guix search gcc toolchain} (@pxref{guix-search,, Invoking guix package}).
 
 @c *********************************************************************
 @node Programming Interface
@@ -6808,8 +6811,9 @@ following phases changed to some specific for Meson:
 
 @item configure
 The phase runs @code{meson} with the flags specified in
-@code{#:configure-flags}.  The flag @option{--build-type} is always set to
-@code{plain} unless something else is specified in @code{#:build-type}.
+@code{#:configure-flags}.  The flag @option{--buildtype} is always set to
+@code{debugoptimized} unless something else is specified in
+@code{#:build-type}.
 
 @item build
 The phase runs @code{ninja} to build the package in parallel by default, but
@@ -8121,6 +8125,32 @@ There is one difference though: in the @code{file-append} case, the
 resulting script contains the absolute file name as a string, whereas in
 the second case, the resulting script contains a @code{(string-append
 @dots{})} expression to construct the file name @emph{at run time}.
+@end deffn
+
+@deffn {Scheme Syntax} let-system @var{system} @var{body}@dots{}
+@deffnx {Scheme Syntax} let-system (@var{system} @var{target}) @var{body}@dots{}
+Bind @var{system} to the currently targeted system---e.g.,
+@code{"x86_64-linux"}---within @var{body}.
+
+In the second case, additionally bind @var{target} to the current
+cross-compilation target---a GNU triplet such as
+@code{"arm-linux-gnueabihf"}---or @code{#f} if we are not
+cross-compiling.
+
+@code{let-system} is useful in the occasional case where the object
+spliced into the gexp depends on the target system, as in this example:
+
+@example
+#~(system*
+   #+(let-system system
+       (cond ((string-prefix? "armhf-" system)
+              (file-append qemu "/bin/qemu-system-arm"))
+             ((string-prefix? "x86_64-" system)
+              (file-append qemu "/bin/qemu-system-x86_64"))
+             (else
+              (error "dunno!"))))
+   "-net" "user" #$image)
+@end example
 @end deffn
 
 @deffn {Scheme Syntax} with-parameters ((@var{parameter} @var{value}) @dots{}) @var{exp}
@@ -11664,10 +11694,14 @@ update time on the in-memory version of the file inode), and
 Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
-This is either @code{#f}, or a string denoting mount options passed to the
-file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C Library
-Reference Manual}, for details and run @command{man 8 mount} for options for
-various file systems.
+This is either @code{#f}, or a string denoting mount options passed to
+the file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C
+Library Reference Manual}, for details and run @command{man 8 mount} for
+options for various file systems.  Note that the
+@code{file-system-options->alist} and @code{alist->file-system-options}
+procedures from @code{(gnu system file-systems)} can be used to convert
+file system options given as an association list to the string
+representation, and vice-versa.
 
 @item @code{mount?} (default: @code{#t})
 This value indicates whether to automatically mount the file system when
@@ -11747,6 +11781,110 @@ The @code{fusectl} file system, which allows unprivileged users to mount
 and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
 @end defvr
+
+@node Btrfs file system
+@subsection Btrfs file system
+
+The Btrfs has special features, such as subvolumes, that merit being
+explained in more details.  The following section attempts to cover
+basic as well as complex uses of a Btrfs file system with the Guix
+System.
+
+In its simplest usage, a Btrfs file system can be described, for
+example, by:
+
+@lisp
+(file-system
+  (mount-point "/home")
+  (type "btrfs")
+  (device (file-system-label "my-home")))
+@end lisp
+
+The example below is more complex, as it makes use of a Btrfs
+subvolume, named @code{rootfs}.  The parent Btrfs file system is labeled
+@code{my-btrfs-pool}, and is located on an encrypted device (hence the
+dependency on @code{mapped-devices}):
+
+@lisp
+(file-system
+  (device (file-system-label "my-btrfs-pool"))
+  (mount-point "/")
+  (type "btrfs")
+  (options "subvol=rootfs")
+  (dependencies mapped-devices))
+@end lisp
+
+Some bootloaders, for example GRUB, only mount a Btrfs partition at its
+top level during the early boot, and rely on their configuration to
+refer to the correct subvolume path within that top level.  The
+bootloaders operating in this way typically produce their configuration
+on a running system where the Btrfs partitions are already mounted and
+where the subvolume information is readily available.  As an example,
+@command{grub-mkconfig}, the configuration generator command shipped
+with GRUB, reads @file{/proc/self/mountinfo} to determine the top-level
+path of a subvolume.
+
+The Guix System produces a bootloader configuration using the operating
+system configuration as its sole input; it is therefore necessary to
+extract the subvolume name on which @file{/gnu/store} lives (if any)
+from that operating system configuration.  To better illustrate,
+consider a subvolume named 'rootfs' which contains the root file system
+data.  In such situation, the GRUB bootloader would only see the top
+level of the root Btrfs partition, e.g.:
+
+@example
+/                   (top level)
+├── rootfs          (subvolume directory)
+    ├── gnu         (normal directory)
+        ├── store   (normal directory)
+[...]
+@end example
+
+Thus, the subvolume name must be prepended to the @file{/gnu/store} path
+of the kernel, initrd binaries and any other files referred to in the
+GRUB configuration that must be found during the early boot.
+
+The next example shows a nested hierarchy of subvolumes and
+directories:
+
+@example
+/                   (top level)
+├── rootfs          (subvolume)
+    ├── gnu         (normal directory)
+        ├── store   (subvolume)
+[...]
+@end example
+
+This scenario would work without mounting the 'store' subvolume.
+Mounting 'rootfs' is sufficient, since the subvolume name matches its
+intended mount point in the file system hierarchy.  Alternatively, the
+'store' subvolume could be referred to by setting the @code{subvol}
+option to either @code{/rootfs/gnu/store} or @code{rootfs/gnu/store}.
+
+Finally, a more contrived example of nested subvolumes:
+
+@example
+/                           (top level)
+├── root-snapshots          (subvolume)
+    ├── root-current        (subvolume)
+        ├── guix-store      (subvolume)
+[...]
+@end example
+
+Here, the 'guix-store' subvolume doesn't match its intended mount point,
+so it is necessary to mount it.  The subvolume must be fully specified,
+by passing its file name to the @code{subvol} option.  To illustrate,
+the 'guix-store' subvolume could be mounted on @file{/gnu/store} by using
+a file system declaration such as:
+
+@lisp
+(file-system
+  (device (file-system-label "btrfs-pool-1"))
+  (mount-point "/gnu/store")
+  (type "btrfs")
+  (options "subvol=root-snapshots/root-current/guix-store,\
+compress-force=zstd,space_cache=v2"))
+@end lisp
 
 @node Mapped Devices
 @section Mapped Devices
@@ -26504,9 +26642,10 @@ service activation programs and then spawns the GNU@tie{}Shepherd, the
 initialization system.
 
 @item --root=@var{root}
-Mount @var{root} as the root file system.  @var{root} can be a
-device name like @code{/dev/sda1}, a file system label, or a file system
-UUID.
+Mount @var{root} as the root file system.  @var{root} can be a device
+name like @code{/dev/sda1}, a file system label, or a file system UUID.
+When unspecified, the device name from the root file system of the
+operating system declaration is used.
 
 @item --system=@var{system}
 Have @file{/run/booted-system} and @file{/run/current-system} point to

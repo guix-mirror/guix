@@ -19,6 +19,7 @@
 (define-module (guix quirks)
   #:use-module ((guix build utils) #:select (substitute*))
   #:use-module (srfi srfi-9)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:export (%quirks
 
@@ -117,8 +118,42 @@ corresponds to the given Guix COMMIT, a SHA1 hexadecimal string."
 
    (patch missing-ice-9-threads-import? add-missing-ice-9-threads-import)))
 
+(define %bug-41214-patch
+  ;; Patch for <https://bugs.gnu.org/41214>.  Around v1.0.0, (guix build
+  ;; compile) would use Guile 2.2 procedures to access the set of available
+  ;; compilation options.  These procedures no longer exist in 3.0.
+  (let ()
+    (define (accesses-guile-2.2-optimization-options? source commit)
+      (catch 'system-error
+        (lambda ()
+          (match (call-with-input-file
+                     (string-append source "/guix/build/compile.scm")
+                   read)
+            (('define-module ('guix 'build 'compile)
+               _ ...
+               #:use-module ('language 'tree-il 'optimize)
+               #:use-module ('language 'cps 'optimize)
+               #:export ('%default-optimizations
+                         '%lightweight-optimizations
+                         'compile-files))
+             #t)
+            (_ #f)))
+        (const #f)))
+
+    (define (build-with-guile-2.2 source)
+      (substitute* (string-append source "/" %self-build-file)
+        (("\\(default-guile\\)")
+         (object->string '(car (find-best-packages-by-name "guile" "2.2"))))
+        (("\\(find-best-packages-by-name \"guile-gcrypt\" #f\\)")
+         (object->string '(find-best-packages-by-name "guile2.2-gcrypt" #f))))
+      #t)
+
+    (patch accesses-guile-2.2-optimization-options?
+           build-with-guile-2.2)))
+
 (define %patches
   ;; Bits of past Guix revisions can become incompatible with newer Guix and
   ;; Guile.  This variable lists <patch> records for the Guix source tree that
   ;; apply to the Guix source.
-  (list %bug-41028-patch))
+  (list %bug-41028-patch
+        %bug-41214-patch))

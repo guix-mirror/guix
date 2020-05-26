@@ -3720,20 +3720,19 @@ Language (TOML) configuration files.")
 (define-public python-jsonrpc-server
   (package
     (name "python-jsonrpc-server")
-    (version "0.3.2")
+    (version "0.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-jsonrpc-server" version))
        (sha256
         (base32
-         "0ddgdp26dfxaz6isjbb12974b3rxavgsqrn2zrmck62cmipg5g05"))))
+         "0dzya99nbi4mw7q85vmyw1wfgbx5dpmysnvm0bwx5m4xbi4zafy7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-future" ,python-future)
-       ("python-mock" ,python-mock)
+     `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)
-       ("python-ujson" ,python-ujson)))
+       ("python-ujson" ,python-ujson-1)))
     (home-page
      "https://github.com/palantir/python-jsonrpc-server")
     (synopsis "JSON RPC 2.0 server library")
@@ -9479,25 +9478,23 @@ applications.")
 (define-public python-apipkg
   (package
     (name "python-apipkg")
-    (version "1.4")
+    (version "1.5")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "apipkg" version))
              (sha256
               (base32
-               "1iks5701qnp3dlr3q1d9qm68y2plp2m029irhpz92a44psfkjf1f"))))
+               "1xhak74yj3lqflvpijg15rnkklrigvsp5q7s4as4h6a157d8q8ip"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
     (synopsis "Namespace control and lazy-import mechanism")
     (description "With apipkg you can control the exported namespace of a Python
 package and greatly reduce the number of imports for your users.  It is a small
 pure Python module that works on virtually all Python versions.")
     (home-page "https://github.com/pytest-dev/apipkg")
     (license license:expat)))
-
-(define-public python2-apipkg
-  (package-with-python2 python-apipkg))
 
 (define-public python-execnet
   (package
@@ -11396,23 +11393,20 @@ network support library.")
 (define-public python-ply
   (package
     (name "python-ply")
-    (version "3.10")
+    (version "3.11")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "ply" version))
         (sha256
           (base32
-            "1jxsr1d2f732r6ljhvm827113dckwl6qwakfvpbdhcbhvpvlmscn"))))
+            "18qx113g9bi1ac4indd5phma82zcdq601lxncp3vjn43m2mc3iq0"))))
     (build-system python-build-system)
     (home-page "http://www.dabeaz.com/ply/")
     (synopsis "Python Lex & Yacc")
     (description "PLY is a @code{lex}/@code{yacc} implemented purely in Python.
 It uses LR parsing and does extensive error checking.")
     (license license:bsd-3)))
-
-(define-public python2-ply
-  (package-with-python2 python-ply))
 
 (define-public python-tabulate
   (package
@@ -18324,6 +18318,50 @@ services to what you expect in your tests.")
 (define-public python-ujson
   (package
     (name "python-ujson")
+    (version "2.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "ujson" version))
+        (sha256
+         (base32
+          "18z9gb9ggy1r464b9q1gqs078mqgrkj6dys5a47529rqk3yfybdx"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "deps") #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-to-system-double-conversion
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((d-c (assoc-ref inputs "double-conversion")))
+               (substitute* "setup.py"
+                 (("./deps/double-conversion/double-conversion\"")
+                  (string-append d-c "/include/double-conversion\""))
+                 (("-lstdc++" stdc)
+                  (string-append "-L" d-c "/lib\","
+                                 " \"-ldouble-conversion\","
+                                 " \"" stdc)))
+               #t)))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest"))))))
+    (native-inputs
+     `(("double-conversion" ,double-conversion)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/ultrajson/ultrajson")
+    (synopsis "Ultra fast JSON encoder and decoder for Python")
+    (description
+     "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
+bindings for Python 3.")
+    (license license:bsd-3)))
+
+(define-public python-ujson-1
+  (package
+    (inherit python-ujson)
     (version "1.35")
     (source
      (origin
@@ -18332,17 +18370,16 @@ services to what you expect in your tests.")
        (sha256
         (base32
          "11jz5wi7mbgqcsz52iqhpyykiaasila4lq8cmc2d54bfa3jp6q7n"))))
-    (build-system python-build-system)
+    (arguments
+     '(#:phases %standard-phases))
+    (native-inputs '())
     (home-page "http://www.esn.me")
-    (synopsis
-     "Ultra fast JSON encoder and decoder for Python")
     (description
      "UltraJSON is an ultra fast JSON encoder and decoder written in pure C with
- bindings for Python 2.5+ and 3.")
-    (license license:bsd-3)))
+bindings for Python 2.5+ and 3.")))
 
-(define-public python2-ujson
-  (package-with-python2 python-ujson))
+(define-public python2-ujson-1
+  (package-with-python2 python-ujson-1))
 
 (define-public python-iocapture
   ;; The latest release is more than a year older than this commit.
@@ -18749,7 +18786,8 @@ and cuts down boilerplate code when testing libraries for asyncio.")
        (uri (pypi-uri "shouldbe" version))
        (sha256
         (base32
-         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))))
+         "16zbvjxf71dl4yfbgcr6idyim3mdrfvix1dv8b95p0s9z07372pj"))
+       (patches (search-patches "python-shouldbe-0.1.2-cpy3.8.patch"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-forbiddenfruit" ,python-forbiddenfruit)))
@@ -19861,4 +19899,55 @@ provides a simple API which is an extension of Python's built-in @code{cmd}
 module.  @code{cmd2} provides a wealth of features on top of @code{cmd} to
 make your life easier and eliminates much of the boilerplate code which would
 be necessary when using @code{cmd}.")
+    (license license:expat)))
+
+(define-public python-pytidylib
+  (package
+    (name "python-pytidylib")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytidylib" version))
+              (sha256
+               (base32
+                "1wqa9dv5d7swka14rnky862hc7dgk2g3dhlrz57hdn3hb7bwic92"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'qualify-libtidy
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libtidy (string-append (assoc-ref inputs "tidy")
+                                           "/lib/libtidy.so")))
+               (substitute* "tidylib/tidy.py"
+                 (("ctypes\\.util\\.find_library\\('tidy'\\)")
+                  (format #f "'~a'" libtidy)))
+               #t))))))
+    (inputs `(("tidy" ,tidy)))
+    (home-page "https://github.com/countergram/pytidylib")
+    (synopsis "Python wrapper for HTML Tidy library")
+    (description
+     "PyTidyLib is a Python package that wraps the HTML Tidy library.  This
+allows you, from Python code, to “fix” invalid (X)HTML markup.")
+    (license license:expat)))
+
+(define-public python2-pytidylib
+  (package-with-python2 python-pytidylib))
+
+(define-public python-mujson
+  (package
+    (name "python-mujson")
+    (version "1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "mujson" version))
+        (sha256
+         (base32
+          "0wbj6r8yzsdx2b0kbldlkznr1a9nn33za2q9x3g0hbg420dwzn97"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/mattgiles/mujson")
+    (synopsis "Use the fastest JSON functions available at import time")
+    (description "This packages selects the fastest JSON functions available
+at import time.")
     (license license:expat)))

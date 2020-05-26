@@ -17,6 +17,7 @@
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -798,16 +800,16 @@ language.")
 (define-public kicad
   (package
     (name "kicad")
-    (version "5.1.5")
+    (version "5.1.6")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.xz"))
-       (uri (string-append
-             "https://launchpad.net/kicad/" (version-major version)
-             ".0/" version "/+download/kicad-" version ".tar.xz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/kicad/code/kicad.git")
+             (commit version)))
        (sha256
-        (base32 "0x3417f2pa7p65s9f7l49rqbnrzy8gz6i0n07mlbxqbnm0fmlql0"))))
+        (base32 "1pa3z0h0679jmgxlzc833h6q85b5paxdp69kf2h93vkaryj58622"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #t
@@ -821,7 +823,7 @@ language.")
        (modify-phases %standard-phases
          (add-after 'install 'install-translations
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (copy-recursively (assoc-ref inputs "kicad-i18l")
+             (copy-recursively (assoc-ref inputs "kicad-i18n")
                                (assoc-ref outputs "out"))
              #t))
          (add-after 'install 'wrap-program
@@ -859,7 +861,7 @@ language.")
      `(("boost" ,boost)
        ("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
-       ("kicad-i18l" ,kicad-i18l)
+       ("kicad-i18n" ,kicad-i18n)
        ("pkg-config" ,pkg-config)
        ("swig" ,swig)
        ("zlib" ,zlib)))
@@ -885,10 +887,10 @@ perform specific functions, for example, pcbnew (Editing PCB), eeschema (editing
 electrical diagrams), gerbview (viewing Gerber files) and others.")
     (license license:gpl3+)))
 
-(define kicad-i18l
+(define kicad-i18n
   (package
-    (name "kicad-i18l")
-    (version "5.1.5")
+    (name "kicad-i18n")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -897,7 +899,7 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rfpifl8vky1gba2angizlb2n7mwmsiai3r6ip6qma60wdj8sbd3"))))
+                "0qryi8xjm23ka363zfl7bbga0v5c31fr3d4nyxp3m168vkv9zhha"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -906,16 +908,19 @@ electrical diagrams), gerbview (viewing Gerber files) and others.")
          (delete 'check))))
     (native-inputs
      `(("gettext" ,gettext-minimal)))
-    (home-page "https://kicad-pcb.org/")
+    (home-page (package-home-page kicad))
     (synopsis "KiCad GUI translations")
     (description "This package contains the po files that are used for the GUI
 translations for KiCad.")
     (license license:gpl3+)))
 
+(define-public kicad-i18l
+  (deprecated-package "kicad-i18l" kicad-i18n))
+
 (define-public kicad-symbols
   (package
     (name "kicad-symbols")
-    (version "5.1.5")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -924,11 +929,11 @@ translations for KiCad.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "048b07ffsaav1ssrchw2p870lvb4rsyb5vnniy670k7q9p16qq6h"))))
+                "12w3rdy085drlikkpb27n9ni7cyg9l0pqy7hnr86cxjcw3l5wcx6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests exist
-    (home-page "https://kicad-pcb.org/")
+    (home-page (package-home-page kicad))
     (synopsis "Official KiCad schematic symbol libraries")
     (description "This package contains the official KiCad schematic symbol
 libraries.")
@@ -944,7 +949,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-footprints")
-    (version "5.1.5")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -953,7 +958,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c4whgn14qhz4yqkl46w13p6rpv1k0hsc9s9h9368fxfcz9knb2j"))))
+                "1kmf91a5mmvj9izrv40mkaw1w36yjgn8daczd9rq2wlmd0rdp1zx"))))
     (synopsis "Official KiCad footprint libraries")
     (description "This package contains the official KiCad footprint libraries.")))
 
@@ -961,7 +966,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-packages3d")
-    (version "5.1.5")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -970,7 +975,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cff2ms1bsw530kqb1fr1m2pjixyxzwa81mxgac3qpbcf8fnpvaz"))))
+                "0b9jglf77fy0n0r8xs4yqkv6zvipyfvp0z5dnqlzp32csy5aqpi1"))))
     (synopsis "Official KiCad 3D model libraries")
     (description "This package contains the official KiCad 3D model libraries.")))
 
@@ -978,7 +983,7 @@ libraries.")
   (package
     (inherit kicad-symbols)
     (name "kicad-templates")
-    (version "5.1.5")
+    (version (package-version kicad))
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -987,7 +992,7 @@ libraries.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0cs3bm3zb5ngw5ldn0lzw5bvqm4kvcidyrn76438alffwiz2b15g"))))
+                "1hppcsrkn4dk6ggby6ckh0q65qxkywrbyxa4lwpaf7pxjyv498xg"))))
     (synopsis "Official KiCad project and worksheet templates")
     (description "This package contains the official KiCad project and
 worksheet templates.")))
@@ -2042,17 +2047,18 @@ simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
 (define-public librepcb
   (package
     (name "librepcb")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.librepcb.org/releases/"
                            version "/librepcb-" version "-source.zip"))
        (sha256
-        (base32 "1ich849dsx2hmcwlwbry4mkg374n940l3hy6srh4qms2rm7vd7x0"))))
+        (base32 "1b5dkanz3q0y5ag80w0l85hn7axrachb5m9zvyv4zvzrfy09wa88"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (native-inputs
      `(("qttools" ,qttools)             ; for lrelease
@@ -2533,3 +2539,82 @@ without any changes.  And programmers that are familiar with the magellan API
 can continue using it with a free library without the restrictions of the
 official SDK.")
     (license license:bsd-3)))
+
+(define-public openctm
+  (let ((revision 603))
+    ;; Previous versions don't compile, they need to link libGL and libGLU.
+    ;; Fixed in this revision.
+    (package
+      (name "openctm")
+      (version (string-append "1.0.3." (number->string revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "https://svn.code.sf.net/p/openctm/code/trunk")
+               (revision revision)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "01wb70m48xh5gwhv60a5brv4sxl0i0rh038w32cgnlxn5x86s9f1"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("mesa" ,mesa)
+         ("glu" ,glu)
+         ("glut" ,freeglut)
+         ("gtk" ,gtk+-2)))
+      (arguments
+       `(#:tests? #f                              ;no tests
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (rename-file "Makefile.linux" "Makefile")
+               (let ((out (assoc-ref outputs "out")))
+                 ;; Create output directories.
+                 (mkdir-p (string-append out "/lib"))
+                 (mkdir-p (string-append out "/include"))
+                 (mkdir-p (string-append out "/bin"))
+                 ;; Fix rpath.
+                 (substitute* "tools/Makefile.linux"
+                   (("-rpath,\\.")
+                    (string-append "-rpath," out "/lib/"))
+                   (("/usr/local")
+                    out))
+                 ;; Set right output.
+                 (substitute* "Makefile"
+                   (("/usr/lib")
+                    (string-append out "/lib"))
+                   (("\\/usr\\/local")
+                    out))
+                 #t))))))
+      (synopsis "3D triangle mesh format and related tools and libraries")
+      (description "OpenCTM is a file format, a software library and a tool set
+for compression of 3D triangle meshes.  The geometry is compressed to a
+fraction of comparable file formats (3DS, STL, COLLADA...), and the format is
+accessible through a simple API")
+      (license license:zlib)
+      (home-page "http://openctm.sourceforge.net/"))))
+
+(define-public lib3ds
+  (package
+    (name "lib3ds")
+    (version "1.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://storage.googleapis.com/google-code-archive-downloads"
+             "/v2/code.google.com/lib3ds/lib3ds-" version ".zip"))
+       (sha256
+        (base32 "1qr9arfdkjf7q11xhvxwzmhxqz3nhcjkyb8zzfjpz9jm54q0rc7m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://code.google.com/archive/p/lib3ds")
+    (synopsis "3DS format file toolkit")
+    (description "Lib3ds is a toolkit for handling the 3DS format for 3D
+model files.  Its main goal is to simplify the creation of 3DS import and
+export filters.")
+    (license license:lgpl2.1+)))

@@ -582,14 +582,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.33")
+    (version "2.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   "hevea-" version ".tar.gz"))
               (sha256
                (base32
-                "0115bn6n6hhb08rmj0m508wjcsn1mggiagqly6s941pq811wxymb"))))
+                "1pzyszxw90klpcmhjqrjfc8cw6c0gm4w2blim8ydyxb6rq6qml1s"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -2192,14 +2192,14 @@ without a complete in-memory representation of the data.")
 (define-public ocaml-ocurl
   (package
     (name "ocaml-ocurl")
-    (version "0.8.2")
+    (version "0.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ygrek.org.ua/p/release/ocurl/ocurl-"
                                   version ".tar.gz"))
               (sha256
                 (base32
-                  "1ax3xdlzgb1zg7d0wr9nwgmh6a45a764m0wk8p6mx07ad94hz0q9"))))
+                  "0n621cxb9012pj280c7821qqsdhypj8qy9qgrah79dkh6a8h2py6"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -2453,7 +2453,7 @@ compatibility with older compiler to use these new features in their code.")
 (define-public ocaml-fileutils
   (package
     (name "ocaml-fileutils")
-    (version "0.6.0")
+    (version "0.6.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2462,29 +2462,12 @@ compatibility with older compiler to use these new features in their code.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06gxbqfssl16xc8y4d34wpm0mwfr0jgph4lmlwfmgazyggnmvc7m"))))
-    (build-system ocaml-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-topfind
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; add the line #directory ".." at the top of each file
-             ;; using #use "topfind";; to be able to find topfind
-             (let* ((findlib-path (assoc-ref inputs "findlib"))
-                    (findlib-libdir
-                     (string-append findlib-path "/lib/ocaml/site-lib")))
-               (substitute* "setup.ml"
-                 (("#use \"topfind\";;" all)
-                  (string-append "#directory \"" findlib-libdir "\"\n"
-                                 all))))
-             #t)))))
+                "01qf51b8pb7vyfba7y0kb7ajwj1950im25d7f59821zwsibns3d9"))))
+    (build-system dune-build-system)
     (propagated-inputs
      `(("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (native-inputs
-     `(("ocamlbuild" ,ocamlbuild)
-       ("ocaml-oasis" ,ocaml-oasis)
-       ("ocaml-ounit" ,ocaml-ounit)))
+     `(("ocaml-ounit" ,ocaml-ounit)))
     (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
     (synopsis "Pure OCaml functions to manipulate real file and filename")
     (description "Library to provide pure OCaml functions to manipulate real
@@ -2992,7 +2975,7 @@ XML and Protocol Buffers formats.")
 (define-public bap
   (package
     (name "bap")
-    (version "1.6.0")
+    (version "2.0.0")
     (home-page "https://github.com/BinaryAnalysisPlatform/bap")
     (source (origin
               (method git-fetch)
@@ -3002,7 +2985,7 @@ XML and Protocol Buffers formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ryf2xb37pj2f9mc3p5prqgqrylph9qgq7q9jnbx8b03nzzpa6h6"))))
+                "0lb9xkfp67wjjqr75p6krivmjra7l5673236v9ny4gp0xi0755bk"))))
    (build-system ocaml-build-system)
    (native-inputs
     `(("ocaml-oasis" ,(package-with-ocaml4.07 ocaml-oasis))
@@ -3020,16 +3003,23 @@ XML and Protocol Buffers formats.")
       ("ocaml-ocurl" ,(package-with-ocaml4.07 ocaml-ocurl))
       ("ocaml-piqi" ,ocaml4.07-piqi)
       ("ocaml-ppx-jane" ,ocaml4.07-ppx-jane)
+      ("ocaml-utop" ,ocaml4.07-utop)
       ("ocaml-uuidm" ,(package-with-ocaml4.07 ocaml-uuidm))
       ("ocaml-uri" ,ocaml4.07-uri)
       ("ocaml-zarith" ,(package-with-ocaml4.07 ocaml-zarith))))
    (inputs
-    `(("llvm" ,llvm-3.8)
-      ("gmp" ,gmp)))
+    `(("gmp" ,gmp)
+      ("llvm" ,llvm-3.8)
+      ("ncurses" ,ncurses)))
    (arguments
     `(#:use-make? #t
       #:phases
       (modify-phases %standard-phases
+        (add-before 'configure 'fix-ncurses
+          (lambda _
+            (substitute* "oasis/llvm"
+              (("-lcurses") "-lncurses"))
+            #t))
         (replace 'configure
           (lambda* (#:key outputs inputs #:allow-other-keys)
             ;; add write for user, to prevent a failure in the install phase
@@ -4429,7 +4419,7 @@ storage of large amounts of data.")
 (define-public ocaml-octavius
   (package
     (name "ocaml-octavius")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4438,8 +4428,17 @@ storage of large amounts of data.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ck6yj6z5rvqyl39rz87ca1bnk0f1dpgvlk115631hjh8bwpfvfq"))))
+                "1c5m51xcn2jv42kjjpklr6g63sgx1k885wfdp1yr4wrmiaj9cbpx"))))
     (build-system dune-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'make-writable
+           (lambda _
+             (for-each (lambda (file)
+                         (chmod file #o644))
+                       (find-files "." "."))
+             #t)))))
     (properties `((upstream-name . "octavius")))
     (home-page "https://github.com/ocaml-doc/octavius")
     (synopsis "Ocamldoc comment syntax parser")

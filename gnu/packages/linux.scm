@@ -370,50 +370,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.13")
+(define-public linux-libre-5.6-version "5.6.14")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "11zriz0jwqizv0pq0laql0svsnspdfnxqykq70v22x39iyfdf9gi")))
+        (hash (base32 "18vyxi64i93v4qyky5q62kkasm1da7wmz91xfkx3j7ki84skyxik")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.41")
+(define-public linux-libre-5.4-version "5.4.42")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0mxhz3f0ayz0nggndbikp44kx307yxf16qzsv46hni6p8z1ffr0y")))
+        (hash (base32 "0cdwazpzfrrb2y5fp87v9yihy7v8mlbqjzxpzmv7p83609y1nhsf")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.123")
+(define-public linux-libre-4.19-version "4.19.124")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0gwrkbbfy85ajxpg7q6j9mn8mzhmsr1v3wmh5c76p34d3b9i96d7")))
+        (hash (base32 "005dznldnj1m03cbkc5pd2q2cv9jj1j6a0x2vh4p79ypg4c01nfm")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.180")
+(define-public linux-libre-4.14-version "4.14.181")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "03pd4wpg526n391jwc0kbmbxi059mvq8d42a9qbym9mnv5rzjkj4")))
+        (hash (base32 "0kaasqhmg9in7pf4ldk9z4z1cjgv1c9xdr1ca0pznngygibym6xb")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.223")
+(define-public linux-libre-4.9-version "4.9.224")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1r9ag1fhy0g429q44qlqh0qkf42qkhzxa04gxlmnrinqypk00lyg")))
+        (hash (base32 "0jf92cx0b3wq9fxa3169wk4wqvy58hglfk6lsynszy8kjplhfvfz")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.223")
+(define-public linux-libre-4.4-version "4.4.224")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "09fln0sdfif2zv2jifp24yiqi0vcyj8fqx2jz91g21zvsxk3x5nd")))
+        (hash (base32 "1lb8ypn558vk73bj4a20wq40cig9vmzjn2xzzdws78gfair6hxpg")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -3550,9 +3550,9 @@ country-specific regulations for the wireless spectrum.")
                (("cat ")
                 (string-append (assoc-ref inputs "coreutils")
                                "/bin/cat "))
-               (("grep ")
+               (("e?grep " match)
                 (string-append (assoc-ref inputs "grep")
-                               "/bin/grep "))
+                               "/bin/" match))
                (("sed -e")
                 (string-append (assoc-ref inputs "sed")
                                "/bin/sed -e"))
@@ -4191,15 +4191,17 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.8.3")
+    (version "0.8.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
-                                  ".git;a=snapshot;h=" version ";sf=tgz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.opensvc.com/multipath-tools/.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c6ay97wlfv1fl0y8hcfpxhkps14hlnw9gzmj7884micsp7pa9yv"))
+                "14n8pcgnliicqxzc40xvjxk4cafm4qx7a3rsx5qva74r3ydzx8rn"))
+              (patches (search-patches "multipath-tools-sans-systemd.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -4212,10 +4214,13 @@ arrays when needed.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
+     '(#:test-target "test"
+       #:parallel-build? #f             ;XXX: broken in 0.8.4
        #:make-flags (list "CC=gcc"
                           (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
+                          ;; Install Udev rules below this directory, relative
+                          ;; to the prefix.
                           "SYSTEMDPATH=lib"
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
@@ -4237,11 +4242,31 @@ arrays when needed.")
                  (("/usr/include/libudev.h")
                   (string-append udev "/include/libudev.h")))
                #t)))
+         (add-after 'unpack 'fix-maybe-uninitialized-variable
+           (lambda _
+             ;; This variable gets initialized later if needed, but GCC 7
+             ;; fails to notice.  Should be fixed for > 0.8.4.
+             ;; https://www.redhat.com/archives/dm-devel/2020-March/msg00137.html
+             (substitute* "libmultipath/structs_vec.c"
+               (("bool is_queueing;")
+                "bool is_queueing = false;"))
+             #t))
+         (add-after 'unpack 'fix-linking-tests
+           (lambda _
+             ;; Add missing linker flag for -lmpathcmd.  This should be fixed
+             ;; for versions > 0.8.4.
+             (substitute* "tests/Makefile"
+               (("-lmultipath -lcmocka")
+                "-lmultipath -L$(mpathcmddir) -lmpathcmd -lcmocka"))
+             #t))
          (delete 'configure))))         ; no configure script
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("valgrind" ,valgrind)))
+       ("valgrind" ,valgrind)
+
+       ;; For tests.
+       ("cmocka" ,cmocka)))
     (inputs
      `(("json-c" ,json-c-0.13)
        ("libaio" ,libaio)

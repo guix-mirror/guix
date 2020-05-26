@@ -61,6 +61,7 @@
             %test-raid-root-os
             %test-encrypted-root-os
             %test-btrfs-root-os
+            %test-btrfs-root-on-subvolume-os
             %test-jfs-root-os
             %test-f2fs-root-os
 
@@ -862,6 +863,99 @@ build (current-guix) and then store a couple of full system images.")
                                                %btrfs-root-installation-script))
                          (command (qemu-command/writable-image image)))
       (run-basic-test %btrfs-root-os command "btrfs-root-os")))))
+
+
+;;;
+;;; Btrfs root file system on a subvolume.
+;;;
+
+(define-os-with-source (%btrfs-root-on-subvolume-os
+                        %btrfs-root-on-subvolume-os-source)
+  ;; The OS we want to install.
+  (use-modules (gnu) (gnu tests) (srfi srfi-1))
+
+  (operating-system
+    (host-name "hurd")
+    (timezone "America/Montreal")
+    (locale "en_US.UTF-8")
+    (bootloader (bootloader-configuration
+                 (bootloader grub-bootloader)
+                 (target "/dev/vdb")))
+    (kernel-arguments '("console=ttyS0"))
+    (file-systems (cons* (file-system
+                           (device (file-system-label "btrfs-pool"))
+                           (mount-point "/")
+                           (options "subvol=rootfs,compress=zstd")
+                           (type "btrfs"))
+                         (file-system
+                           (device (file-system-label "btrfs-pool"))
+                           (mount-point "/home")
+                           (options "subvol=homefs,compress=lzo")
+                           (type "btrfs"))
+                         %base-file-systems))
+    (users (cons (user-account
+                  (name "charlie")
+                  (group "users")
+                  (supplementary-groups '("wheel" "audio" "video")))
+                 %base-user-accounts))
+    (services (cons (service marionette-service-type
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
+                    %base-services))))
+
+(define %btrfs-root-on-subvolume-installation-script
+  ;; Shell script of a simple installation.
+  "\
+. /etc/profile
+set -e -x
+guix --version
+
+export GUIX_BUILD_OPTIONS=--no-grafts
+ls -l /run/current-system/gc-roots
+parted --script /dev/vdb mklabel gpt \\
+  mkpart primary ext2 1M 3M \\
+  mkpart primary ext2 3M 2G \\
+  set 1 boot on \\
+  set 1 bios_grub on
+
+# Setup the top level Btrfs file system with its subvolume.
+mkfs.btrfs -L btrfs-pool /dev/vdb2
+mount /dev/vdb2 /mnt
+btrfs subvolume create /mnt/rootfs
+btrfs subvolume create /mnt/homefs
+umount /dev/vdb2
+
+# Mount the subvolumes, ready for installation.
+mount LABEL=btrfs-pool -o 'subvol=rootfs,compress=zstd' /mnt
+mkdir /mnt/home
+mount LABEL=btrfs-pool -o 'subvol=homefs,compress=zstd' /mnt/home
+
+herd start cow-store /mnt
+mkdir /mnt/etc
+cp /etc/target-config.scm /mnt/etc/config.scm
+guix system build /mnt/etc/config.scm
+guix system init /mnt/etc/config.scm /mnt --no-substitutes
+sync
+reboot\n")
+
+(define %test-btrfs-root-on-subvolume-os
+  (system-test
+   (name "btrfs-root-on-subvolume-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand.
+This test is expensive in terms of CPU and storage usage since we need to
+build (current-guix) and then store a couple of full system images.")
+   (value
+    (mlet* %store-monad
+        ((image
+          (run-install %btrfs-root-on-subvolume-os
+                       %btrfs-root-on-subvolume-os-source
+                       #:script
+                       %btrfs-root-on-subvolume-installation-script))
+         (command (qemu-command/writable-image image)))
+      (run-basic-test %btrfs-root-on-subvolume-os command
+                      "btrfs-root-on-subvolume-os")))))
 
 
 ;;;

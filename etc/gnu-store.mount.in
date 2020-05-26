@@ -1,0 +1,14 @@
+[Unit]
+Description=Read-only @storedir@ for GNU Guix
+DefaultDependencies=no
+ConditionPathExists=@storedir@
+Before=guix-daemon.service
+
+[Install]
+WantedBy=guix-daemon.service
+
+[Mount]
+What=@storedir@
+Where=@storedir@
+Type=none
+Options=bind,ro

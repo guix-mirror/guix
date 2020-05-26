@@ -978,7 +978,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method git-fetch)
@@ -987,10 +987,18 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ws5lmwdhla73676fj0w26v859n47s0wyxa0mgd0dmkx0x91qriy"))))
+        (base32 "01rygr592ar530qv1flmaiq8icl0qdxgc8lhkcdyn1g09941z47v"))
+       ;; Remove unused bundled libraries.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (with-directory-excursion "ext"
+             (for-each delete-file-recursively '("dirent" "png" "SDL2" "zlib")))
+           #t))))
     (build-system cmake-build-system)
     (inputs
-     `(("sdl2" ,sdl2)
+     `(("libpng" ,libpng)
+       ("sdl2" ,sdl2)
        ("sdl2-mixer" ,sdl2-mixer)))
     (home-page "https://github.com/bvschaik/julius")
     (synopsis "Re-implementation of Caesar III game engine")
@@ -1000,7 +1008,6 @@ Julius includes some UI enhancements while preserving the logic (including
 bugs) of the original game, so that saved games are compatible.  This package
 does not include game data.")
     (license (list license:agpl3
-                   license:expat        ; ext/dirent
                    license:zlib))))     ; ext/tinyfiledialogs
 
 (define-public meandmyshadow
@@ -1725,6 +1732,83 @@ can be explored and changed freely.")
                    license:cc-by3.0
                    license:gpl3+
                    license:silofl1.1))))
+
+(define-public superstarfighter
+  (package
+    (name "superstarfighter")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/notapixelstudio/superstarfighter.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fly63yf5ls1xwm15if4lxwy67wi84k4gvjllljpykrl18vw2y0y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "godot")
+             (setenv "HOME" (getcwd))
+             (with-output-to-file "export_presets.cfg"
+               (lambda ()
+                 (display
+                  "[preset.0]
+name=\"Guix\"
+platform=\"Linux/X11\"
+runnable=true
+[preset.0.options]")))
+             #t))
+         (replace 'build
+           (lambda _
+             (let ((godot (assoc-ref %build-inputs "godot-headless")))
+               (invoke (string-append godot "/bin/godot_server")
+                       "--export-pack" "Guix"
+                       "superstarfighter.pck" "project.godot"))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share"))
+                    (data (string-append share "/superstarfighter"))
+                    (icons (string-append share "/icons/hicolor/256x256/apps")))
+               (install-file "superstarfighter.pck" data)
+               (mkdir-p bin)
+               (call-with-output-file (string-append bin "/superstarfighter")
+                 (lambda (port)
+                   (format port
+                           "#!/bin/sh~@
+                            exec ~a/bin/godot --main-pack ~a/superstarfighter.pck~%"
+                           (assoc-ref inputs "godot")
+                           data)
+                   (chmod port #o755)))
+               (mkdir-p icons)
+               (copy-file "icon.png" (string-append icons "/" ,name ".png"))
+               (make-desktop-entry-file
+                (string-append share "/applications/" ,name ".desktop")
+                #:name "SuperStarfighter"
+                #:comment "Fast-paced arcade combat game"
+                #:exec ,name
+                #:icon ,name
+                #:categories '("Game" "ArcadeGame")))
+             #t)))))
+    (native-inputs
+     `(("godot-headless" ,godot "headless")))
+    (inputs
+     `(("godot" ,godot)))
+    (home-page "https://notapixel.itch.io/superstarfighter")
+    (synopsis "Fast-paced local multiplayer arcade game")
+    (description "In SuperStarfighter, up to four local players compete in a
+2D arena with fast-moving ships and missiles.  Different game types are
+available, as well as a single-player mode with AI-controlled ships.")
+    (license (list license:expat         ; game
+                   license:silofl1.1)))) ; fonts
 
 (define-public xshogi
   (package
@@ -3328,7 +3412,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.4")
+    (version "0.2.6")
     (source
      (origin
        (method git-fetch)
@@ -3337,7 +3421,7 @@ Transport Tycoon Deluxe.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rlw3w20llg36sj3bk50g661qw766ng8ma3p42sdkj8br9dw800h"))))
+        (base32 "1vikbkg3wh5ngzdfilb6irbh6nqinf138qpdz8wz9izlvl8s36k4"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
@@ -4132,7 +4216,7 @@ with the \"Stamp\" tool within Tux Paint.")
 (define-public supertux
   (package
    (name "supertux")
-   (version "0.6.1.1")
+   (version "0.6.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/SuperTux/supertux/"
@@ -4141,7 +4225,7 @@ with the \"Stamp\" tool within Tux Paint.")
             (file-name (string-append name "-" version ".tar.gz"))
             (sha256
              (base32
-              "0n36qxwjlkdlksximz4s729az6pry2sdjavwgm7m65vfgdiz139f"))
+              "167m3z4m8n76dvbv42m1fnvabpbpsxvr28zk9641916jl9pfba96"))
             (patches
              (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
@@ -6752,7 +6836,7 @@ when packaged in Blorb container files or optionally from individual files.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libmanette/"
@@ -6760,7 +6844,7 @@ when packaged in Blorb container files or optionally from individual files.")
                                   "libmanette-" version ".tar.xz"))
               (sha256
                (base32
-                "1zxh7jn2zg7hivmal5zxam6fxvjsd1w6hlw0m2kysk76b8anbw60"))))
+                "1xrc6rh73v5w3kbkflzv1yg8sbxk4wf06hfk95raxhxlssza9q2g"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-compile-resources

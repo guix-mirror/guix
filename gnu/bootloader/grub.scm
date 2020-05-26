@@ -37,19 +37,13 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
-  #:export (grub-image
-            grub-image?
-            grub-image-aspect-ratio
-            grub-image-file
-
-            grub-theme
+  #:export (grub-theme
             grub-theme?
-            grub-theme-images
+            grub-theme-image
+            grub-theme-resolution
             grub-theme-color-normal
             grub-theme-color-highlight
-
-            %background-image
-            %default-theme
+            grub-theme-gfxmode
 
             grub-bootloader
             grub-efi-bootloader
@@ -64,50 +58,45 @@
 ;;;
 ;;; Code:
 
-(define (strip-mount-point mount-point file)
-  "Strip MOUNT-POINT from FILE, which is a gexp or other lowerable object
-denoting a file name."
-  (match mount-point
-    ((? string? mount-point)
-     (if (string=? mount-point "/")
-         file
-         #~(let ((file #$file))
-             (if (string-prefix? #$mount-point file)
-                 (substring #$file #$(string-length mount-point))
-                 file))))
-    (#f file)))
+(define* (normalize-file file mount-point btrfs-subvolume-file-name)
+  "Strip MOUNT-POINT and prepend BTRFS-SUBVOLUME-FILE-NAME to FILE, a
+G-expression or other lowerable object denoting a file name."
 
-(define-record-type* <grub-image>
-  grub-image make-grub-image
-  grub-image?
-  (aspect-ratio    grub-image-aspect-ratio        ;rational number
-                   (default 4/3))
-  (file            grub-image-file))              ;file-valued gexp (SVG)
+  (define (strip-mount-point mount-point file)
+    (if mount-point
+        (if (string=? mount-point "/")
+            file
+            #~(let ((file #$file))
+                (if (string-prefix? #$mount-point file)
+                    (substring #$file #$(string-length mount-point))
+                    file)))
+        file))
+
+  (define (prepend-btrfs-subvolume-file-name btrfs-subvolume-file-name file)
+    (if btrfs-subvolume-file-name
+        #~(string-append #$btrfs-subvolume-file-name #$file)
+        file))
+
+  (prepend-btrfs-subvolume-file-name btrfs-subvolume-file-name
+                                     (strip-mount-point mount-point file)))
+
+
 
 (define-record-type* <grub-theme>
+  ;; Default theme contributed by Felipe López.
   grub-theme make-grub-theme
   grub-theme?
-  (images          grub-theme-images
-                   (default '()))                 ;list of <grub-image>
+  (image           grub-theme-image
+                   (default (file-append %artwork-repository
+                                         "/grub/GuixSD-fully-black-4-3.svg")))
+  (resolution      grub-theme-resolution
+                   (default '(1024 . 768)))
   (color-normal    grub-theme-color-normal
-                   (default '((fg . cyan) (bg . blue))))
+                   (default '((fg . light-gray) (bg . black))))
   (color-highlight grub-theme-color-highlight
-                   (default '((fg . white) (bg . blue))))
-  (gfxmode         grub-gfxmode
+                   (default '((fg . yellow) (bg . black))))
+  (gfxmode         grub-theme-gfxmode
                    (default '("auto"))))          ;list of string
-
-(define %background-image
-  (grub-image
-   (aspect-ratio 4/3)
-   (file (file-append %artwork-repository
-                      "/grub/GuixSD-fully-black-4-3.svg"))))
-
-(define %default-theme
-  ;; Default theme contributed by Felipe López.
-  (grub-theme
-   (images (list %background-image))
-   (color-highlight '((fg . yellow) (bg . black)))
-   (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
 
 
 ;;;
@@ -115,45 +104,49 @@ denoting a file name."
 ;;;
 
 (define (bootloader-theme config)
-  "Return user defined theme in CONFIG if defined or %default-theme
+  "Return user defined theme in CONFIG if defined or a default theme
 otherwise."
-  (or (bootloader-configuration-theme config) %default-theme))
+  (or (bootloader-configuration-theme config) (grub-theme)))
 
-(define* (svg->png svg #:key width height)
-  "Build a PNG of HEIGHT x WIDTH from SVG."
+(define* (image->png image #:key width height)
+  "Build a PNG of HEIGHT x WIDTH from IMAGE if its file suffix is \".svg\".
+Otherwise the picture in IMAGE is just copied."
   (computed-file "grub-image.png"
                  (with-imported-modules '((gnu build svg))
                    (with-extensions (list guile-rsvg guile-cairo)
-                     #~(begin
-                         (use-modules (gnu build svg))
-                         (svg->png #+svg #$output
-                                   #:width #$width
-                                   #:height #$height))))))
+                     #~(if (string-suffix? ".svg" #+image)
+                           (begin
+                             (use-modules (gnu build svg))
+                             (svg->png #+image #$output
+                                       #:width #$width
+                                       #:height #$height))
+                           (copy-file #+image #$output))))))
 
-(define* (grub-background-image config #:key (width 1024) (height 768))
-  "Return the GRUB background image defined in CONFIG with a ratio of
-WIDTH/HEIGHT, or #f if none was found."
-  (let* ((ratio (/ width height))
-         (image (find (lambda (image)
-                        (= (grub-image-aspect-ratio image) ratio))
-                      (grub-theme-images
-                       (bootloader-theme config)))))
+(define* (grub-background-image config)
+  "Return the GRUB background image defined in CONFIG or #f if none was found.
+If the suffix of the image file is \".svg\", then it is converted into a PNG
+file with the resolution provided in CONFIG."
+  (let* ((theme (bootloader-theme config))
+         (image (grub-theme-image theme)))
     (and image
-         (svg->png (grub-image-file image)
-                   #:width width #:height height))))
+         (match (grub-theme-resolution theme)
+           (((? number? width) . (? number? height))
+            (image->png image #:width width #:height height))
+           (_ #f)))))
 
 (define* (eye-candy config store-device store-mount-point
-                    #:key system port)
-  "Return a gexp that writes to PORT (a port-valued gexp) the
-'grub.cfg' part concerned with graphics mode, background images, colors, and
-all that.  STORE-DEVICE designates the device holding the store, and
-STORE-MOUNT-POINT is its mount point; these are used to determine where the
-background image and fonts must be searched for.  SYSTEM must be the target
-system string---e.g., \"x86_64-linux\"."
+                    #:key btrfs-store-subvolume-file-name system port)
+  "Return a gexp that writes to PORT (a port-valued gexp) the 'grub.cfg' part
+concerned with graphics mode, background images, colors, and all that.
+STORE-DEVICE designates the device holding the store, and STORE-MOUNT-POINT is
+its mount point; these are used to determine where the background image and
+fonts must be searched for.  SYSTEM must be the target system string---e.g.,
+\"x86_64-linux\".  BTRFS-STORE-SUBVOLUME-FILE-NAME is the file name of the
+Btrfs subvolume, to be prepended to any store path, if any."
   (define setup-gfxterm-body
     (let ((gfxmode
            (or (and-let* ((theme (bootloader-configuration-theme config))
-                          (gfxmode (grub-gfxmode theme)))
+                          (gfxmode (grub-theme-gfxmode theme)))
                  (string-join gfxmode ";"))
                "auto")))
 
@@ -176,7 +169,7 @@ system string---e.g., \"x86_64-linux\"."
     (if (memq 'gfxterm (bootloader-configuration-terminal-outputs config))
         #~(format #f "if loadfont ~a; then
   setup_gfxterm
-fi~%" #$font-file)
+fi~%" #+font-file)
         ""))
 
   (define (theme-colors type)
@@ -186,11 +179,14 @@ fi~%" #$font-file)
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    (strip-mount-point store-mount-point
-                       (file-append grub "/share/grub/unicode.pf2")))
+    (normalize-file (file-append grub "/share/grub/unicode.pf2")
+                    store-mount-point
+                    btrfs-store-subvolume-file-name))
 
   (define image
-    (grub-background-image config))
+    (normalize-file (grub-background-image config)
+                    store-mount-point
+                    btrfs-store-subvolume-file-name))
 
   (and image
        #~(format #$port "
@@ -215,7 +211,7 @@ fi~%"
                  #$(setup-gfxterm config font-file)
                  #$(grub-setup-io config)
 
-                 #$(strip-mount-point store-mount-point image)
+                 #$image
                  #$(theme-colors grub-theme-color-normal)
                  #$(theme-colors grub-theme-color-highlight))))
 
@@ -237,7 +233,7 @@ the 'share/X11/xkb/symbols/' directory of 'xkeyboard-config'."
 
           ;; 'grub-kbdcomp' passes all its arguments but '-o' to 'ckbcomp'
           ;; (from the 'console-setup' package).
-          (invoke #$(file-append grub "/bin/grub-mklayout")
+          (invoke #+(file-append grub "/bin/grub-mklayout")
                   "-i" #+(keyboard-layout->console-keymap layout)
                   "-o" #$output))))
 
@@ -323,52 +319,66 @@ code."
 (define* (grub-configuration-file config entries
                                   #:key
                                   (system (%current-system))
-                                  (old-entries '()))
+                                  (old-entries '())
+                                  btrfs-subvolume-file-name)
   "Return the GRUB configuration file corresponding to CONFIG, a
 <bootloader-configuration> object, and where the store is available at
-STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
-entries corresponding to old generations of the system."
+STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list
+of menu entries corresponding to old generations of the system.
+BTRFS-SUBVOLUME-FILE-NAME may be used to specify on which subvolume a
+Btrfs root file system resides."
   (define all-entries
     (append entries (bootloader-configuration-menu-entries config)))
   (define (menu-entry->gexp entry)
-    (let ((device (menu-entry-device entry))
-          (device-mount-point (menu-entry-device-mount-point entry))
-          (label (menu-entry-label entry))
-          (kernel (menu-entry-linux entry))
-          (arguments (menu-entry-linux-arguments entry))
-          (initrd (menu-entry-initrd entry)))
+    (let* ((device (menu-entry-device entry))
+           (device-mount-point (menu-entry-device-mount-point entry))
+           (label (menu-entry-label entry))
+           (arguments (menu-entry-linux-arguments entry))
+           (kernel (normalize-file (menu-entry-linux entry)
+                                   device-mount-point
+                                   btrfs-subvolume-file-name))
+           (initrd (normalize-file (menu-entry-initrd entry)
+                                   device-mount-point
+                                   btrfs-subvolume-file-name)))
       ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
       ;; Use the right file names for KERNEL and INITRD in case
       ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
       ;; separate partition.
-      (let ((kernel  (strip-mount-point device-mount-point kernel))
-            (initrd  (strip-mount-point device-mount-point initrd)))
-        #~(format port "menuentry ~s {
+
+      ;; When BTRFS-SUBVOLUME-FILE-NAME is defined, prepend it the kernel and
+      ;; initrd paths, to allow booting from a Btrfs subvolume.
+      #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
   initrd ~a
 }~%"
-                  #$label
-                  #$(grub-root-search device kernel)
-                  #$kernel (string-join (list #$@arguments))
-                  #$initrd))))
+                #$label
+                #$(grub-root-search device kernel)
+                #$kernel (string-join (list #$@arguments))
+                #$initrd)))
   (define sugar
     (eye-candy config
                (menu-entry-device (first all-entries))
                (menu-entry-device-mount-point (first all-entries))
+               #:btrfs-store-subvolume-file-name btrfs-subvolume-file-name
                #:system system
                #:port #~port))
 
   (define keyboard-layout-config
-    (let ((layout (bootloader-configuration-keyboard-layout config))
-          (grub   (bootloader-package
-                   (bootloader-configuration-bootloader config))))
-      #~(let ((keymap #$(and layout
-                             (keyboard-layout-file layout #:grub grub))))
-          (when keymap
-            (format port "\
+    (let* ((layout (bootloader-configuration-keyboard-layout config))
+           (grub   (bootloader-package
+                    (bootloader-configuration-bootloader config)))
+           (keymap* (and layout
+                         (keyboard-layout-file layout #:grub grub)))
+           (keymap (and keymap*
+                        (if btrfs-subvolume-file-name
+                            #~(string-append #$btrfs-subvolume-file-name
+                                             #$keymap*)
+                            keymap*))))
+      #~(when #$keymap
+          (format port "\
 insmod keylayouts
-keymap ~a~%" keymap)))))
+keymap ~a~%" #$keymap))))
 
   (define builder
     #~(call-with-output-file #$output

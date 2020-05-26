@@ -1151,7 +1151,8 @@ persisted.
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((dir (string-append (assoc-ref outputs "out") "/share/java/")))
                (mkdir-p dir)
-               (copy-file "JMapViewer.jar" (string-append dir "JMapViewer.jar"))))))))
+               (copy-file "JMapViewer.jar" (string-append dir "JMapViewer.jar"))
+               #t))))))
     (home-page "https://wiki.openstreetmap.org/wiki/JMapViewer")
     (synopsis "OSM map integration in Java")
     (description "JMapViewer is a Java component which easily

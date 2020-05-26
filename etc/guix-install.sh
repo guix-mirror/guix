@@ -3,7 +3,7 @@
 # Copyright © 2017 sharlatan <sharlatanus@gmail.com>
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-# Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+# Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
 #
@@ -342,7 +342,16 @@ sys_enable_guix_daemon()
                 _msg "${PAS}enabled Guix daemon via upstart"
             ;;
         systemd)
-            { cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
+            { # systemd .mount units must be named after the target directory.
+              # Here we assume a hard-coded name of /gnu/store.
+              # XXX Work around <https://issues.guix.gnu.org/41356> until next release.
+              if [ -f "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" ]; then
+                  cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/gnu-store.mount" \
+                     /etc/systemd/system/;
+                  chmod 664 /etc/systemd/system/gnu-store.mount;
+              fi
+
+              cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
 
@@ -357,8 +366,8 @@ sys_enable_guix_daemon()
 	      fi;
 
               systemctl daemon-reload &&
-                  systemctl start guix-daemon &&
-                  systemctl enable guix-daemon; } &&
+                  systemctl start  gnu-store.mount guix-daemon &&
+                  systemctl enable gnu-store.mount guix-daemon; } &&
                 _msg "${PAS}enabled Guix daemon via systemd"
             ;;
         sysv-init)

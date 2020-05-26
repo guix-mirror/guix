@@ -66,6 +66,7 @@
 /doc/stamp-vti
 /doc/version.texi
 /doc/version-*.texi
+/etc/gnu-store.mount
 /etc/guix-daemon.cil
 /etc/guix-daemon.conf
 /etc/guix-daemon.service
@@ -149,7 +150,6 @@ stamp-h[0-9]
 tmp
 /doc/os-config-lightweight-desktop.texi
 /nix/scripts/download
-/etc/indent-code.el
 /.version
 /doc/stamp-[0-9]
 /gnu/packages/bootstrap

@@ -123,9 +123,11 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp-xyz)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages markup)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages openstack)
@@ -3731,6 +3733,35 @@ possibly-temporary error (like a DNS lookup timeout), it'll wait a few seconds
 and retry a few times.")
     (license license:perl-license)))
 
+(define-public perl-lwpx-paranoidagent
+  (package
+    (name "perl-lwpx-paranoidagent")
+    (version "1.12")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/S/SA/SAXJAZMAN/lwp/LWPx-ParanoidAgent-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0gfhw3jbs25yya2dryv8xvyn9myngcfcmsybj7gkq62fnznil16c"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)
+       ;; Users should instead make sure SSL_ca_path is set properly.
+       ;; ("perl-mozilla-ca" ,perl-mozilla-ca)
+       ("perl-net-dns" ,perl-net-dns)))
+    (home-page "https://metacpan.org/release/LWPx-ParanoidAgent")
+    (synopsis "Security enhanced subclass of LWP::UserAgent")
+    (description "@code{LWPx::ParanoidAgent} is a class subclassing
+@code{LWP::UserAgent} but paranoid against attackers.  Its purpose is
+to vet requests for a remote resource on behalf of a possibly
+malicious user.  The class can do the same as @code{LWP::UserAgent},
+except that proxy support has been removed.  Support for URI schemes
+is limited to http and https.")
+    (license license:perl-license)))
+
 (define-public perl-net-amazon-s3
   (package
     (name "perl-net-amazon-s3")
@@ -4653,15 +4684,14 @@ you'd expect.")
 (define-public uhttpmock
   (package
     (name "uhttpmock")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://tecnocode.co.uk/downloads/uhttpmock/"
-                           name "-" version ".tar.xz"))
+                           "uhttpmock-" version ".tar.xz"))
        (sha256
-        (base32
-         "163py4klka423x7li2b685gmg3a6hjf074mlff2ajhmi3l0lm8x6"))))
+        (base32 "0glyx07kxc3s3cx5vp30kfgscl9q6bghcq1zysfyxm24r0h6j58p"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4859,6 +4889,13 @@ NetSurf project.")
              (invoke "find"  "doc" "underlays" "-type" "f" "-exec"
                      "touch" "{}" "+")
              #t))
+         (add-before 'check 'pre-check
+           ;; XDG_DATA_DIRS is needed by the podcast.t test.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "XDG_DATA_DIRS"
+                     (string-append (assoc-ref inputs "shared-mime-info")
+                                    "/share"))
+             #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4887,8 +4924,10 @@ NetSurf project.")
        ("perl-file-mimeinfo" ,perl-file-mimeinfo)
        ("perl-html-tagset" ,perl-html-tagset)
        ("perl-image-magick" ,perl-image-magick)
+       ("perl-lwpx-paranoidagent" ,perl-lwpx-paranoidagent)
        ("perl-mail-sendmail" ,perl-mail-sendmail)
        ("perl-timedate" ,perl-timedate)
+       ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-sax" ,perl-xml-sax)
        ("perl-xml-simple" ,perl-xml-simple)
        ("perl-xml-twig" ,perl-xml-twig)
@@ -5450,6 +5489,60 @@ HTTP statistics for system administrators that require a visual server report
 on the fly.")
     (license license:x11)))
 
+(define-public hitch
+  (package
+    (name "hitch")
+    (version "1.5.2")
+    (home-page "https://hitch-tls.org/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "source/hitch-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nnzqqigfw78nqhp81a72x1s8d6v49ayw4w5df0zzm2cb1jgv95i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'pre-check
+                    (lambda _
+                      ;; Most tests attempts to access hitch-tls.org which is
+                      ;; unavailable in the build container.  Run them against
+                      ;; a dummy local web server instead.
+                      (for-each (lambda (test)
+                                  (substitute* test
+                                    (("\\[hitch-tls\\.org\\]:80")
+                                     "[localhost]:8000")))
+                                (find-files "src/tests" "\\.sh$"))
+                      (system "python3 -m http.server &")
+
+                      ;; The build container does not reap zombie processes,
+                      ;; causing stop_hitch to hang indefinitely while waiting
+                      ;; for the process to terminate because 'kill -0' never
+                      ;; succeeds.  Use a different test to see whether the
+                      ;; process has shut down.
+                      (substitute* "src/tests/hitch_test.sh"
+                        (("kill -0 \"\\$HITCH_PID\"")
+                         "$(ps -p $HITCH_PID -o state= | grep -qv '^Z$')"))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("curl" ,curl)
+       ("egrep" ,grep)
+       ("lsof" ,lsof)
+       ("python" ,python)))
+    (inputs
+     `(("libev" ,libev)
+       ("openssl" ,openssl)))
+    (synopsis "Scalable TLS proxy")
+    (description
+     "Hitch is a performant TLS proxy based on @code{libev}.  It terminates
+SSL/TLS connections and forwards the unencrypted traffic to a backend such
+as a web server.  It is designed to handle many thousand connections on
+multicore machines.")
+    (license license:bsd-2)))
+
 (define-public httptunnel
   (package
     (name "httptunnel")
@@ -5613,15 +5706,15 @@ configuration language.")
   (package
     (name "varnish-modules")
     (home-page "https://github.com/varnish/varnish-modules")
-    (version "0.15.0")
+    (version "0.16.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.varnish-software.com"
-                                  "/varnish-modules/varnish-modules-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/varnish/varnish-modules"
+                                  "/releases/download/varnish-modules-" version
+                                  "/varnish-modules-" version ".tar.gz"))
               (sha256
                (base32
-                "09li9lqa1kb275w1rby2zldyg8r9cfcl4qyv53qyd9xbzilrz751"))))
+                "1ph5bplsip4rycql1c2hgbvmrwbgcrgv2ldgfp7saxxbsv5cpcds"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5631,7 +5724,7 @@ configuration language.")
     (synopsis "Collection of Varnish modules")
     (description
      "This package provides a collection of modules (@dfn{vmods}) for the Varnish
-cache server, extending the @dfn{Varnish Configuration Language} (VCL) with
+cache server, extending the @acronym{VCL, Varnish Configuration Language} with
 additional capabilities.")
     (license license:bsd-2)))
 
@@ -5838,30 +5931,30 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
 (define-public http-parser
   (package
     (name "http-parser")
-    (version "2.9.3")
+    (version "2.9.4")
     (home-page "https://github.com/nodejs/http-parser")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference (url home-page)
-                                  (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (patches
-               ;; When parsing URLs, treat an empty port (eg
-               ;; `http://hostname:/`) as if it were unspecified.  This patch is
-               ;; applied to Fedora's http-parser and to libgit2's bundled version.
-               (list
-                (origin
-                  (method url-fetch)
-                  (uri (string-append
-                         "https://src.fedoraproject.org/rpms/http-parser/raw/"
-                         "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
-                         "f/0001-url-treat-empty-port-as-default.patch"))
-                  (sha256
-                   (base32
-                    "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))))
-              (sha256
-               (base32
-                "189zi61vczqgmqjd2myjcjbbi5icrk7ccs0kn6nj8hxqiv5j3811"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference (url home-page)
+                           (commit (string-append "v" version))))
+       (sha256
+        (base32 "1vda4dp75pjf5fcph73sy0ifm3xrssrmf927qd1x8g3q46z0cv6c"))
+       (file-name (git-file-name name version))
+       (patches
+        (list
+         (origin
+           ;; Treat an empty port (e.g. `http://hostname:/`) when parsing
+           ;; URLs as if no port were specified.  This patch is applied
+           ;; to Fedora's http-parser and to libgit2's bundled version.
+           (method url-fetch)
+           (uri (string-append
+                 "https://src.fedoraproject.org/rpms/http-parser/raw/"
+                 "e89b4c4e2874c19079a5a1a2d2ccc61b551aa289/"
+                 "f/0001-url-treat-empty-port-as-default.patch"))
+           (sha256
+            (base32
+             "0pbxf2nq9pcn299k2b2ls8ldghaqln9glnp79gi57mamx4iy0f6g")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -5874,6 +5967,14 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
                    '("CC=gcc")))
        #:phases
        (modify-phases %standard-phases
+         ,@(match (%current-system)
+             ("armhf-linux"
+              '((add-before 'check 'apply-assertion.patch
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((patch (assoc-ref inputs "assertion.patch")))
+                      (invoke "patch" "-p1" "-i" patch)
+                      #t)))))
+             (_ '()))
          ,@(if (%current-target-system)
                '((replace 'configure
                     (lambda* (#:key target #:allow-other-keys)
@@ -5884,6 +5985,14 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
                          (string-append "AR=" target "-ar\n")))
                       #t)))
                '((delete 'configure))))))
+    (native-inputs
+     `(,@(match (%current-system)
+           ("armhf-linux"
+            ;; A fix for <https://issues.guix.gnu.org/40604> which in turn
+            ;; breaks i686-linux builds.
+            `(("assertion.patch"
+               ,@(search-patches "http-parser-fix-assertion-on-armhf.patch"))))
+           (_ '()))))
     (synopsis "HTTP request/response parser for C")
     (description "This is a parser for HTTP messages written in C.  It parses
 both requests and responses.  The parser is designed to be used in

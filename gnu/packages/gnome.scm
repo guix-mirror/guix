@@ -50,6 +50,7 @@
 ;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3228,7 +3229,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.58.3")
+    (version "0.60.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/vte/"
@@ -3236,11 +3237,15 @@ libraries written in C.")
                                   "vte-" version ".tar.xz"))
               (sha256
                (base32
-                "0xa9ipwic4jnhhbzlnqbhssz10xkzv61cpkl1ammc6mdq95bbp12"))))
+                "19ccbw0yca78h5qcnm8claj4fg1pj68nj1fsjqqfpzhj7w72i81m"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-Dvapi=true"
+         "-D_systemd=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)
+       ("gettext" ,gettext-minimal)
        ("vala" ,vala)
        ("gobject-introspection" ,gobject-introspection)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
@@ -4435,7 +4440,7 @@ throughout GNOME for API documentation).")
 (define-public cogl
   (package
     (name "cogl")
-    (version "1.22.4")
+    (version "1.22.6")
     (source
      (origin
        (method url-fetch)
@@ -4443,14 +4448,14 @@ throughout GNOME for API documentation).")
                            (version-major+minor version) "/"
                            "cogl-" version ".tar.xz"))
        (sha256
-        (base32 "1q0drs82a8f6glg1v29bb6g2nf15fw0rvdx3d0rgcgfarfaby5sj"))))
+        (base32 "0x8v4n61q89qy27v824bqswpz6bmn801403w2q3pa1lcwk9ln4vd"))))
     ;; NOTE: mutter exports a bundled fork of cogl, so when making changes to
     ;; cogl, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
-       ;;("xorg-server" ,xorg-server) ; for the test suite
+       ("xorg-server" ,xorg-server-for-tests)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("glib" ,glib)
@@ -4469,7 +4474,8 @@ throughout GNOME for API documentation).")
        ("gst-plugins-base" ,gst-plugins-base)
        ("wayland" ,wayland)))
     (arguments
-     `(#:configure-flags (list "--enable-cogl-gst"
+     `(#:disallowed-references (,xorg-server-for-tests)
+       #:configure-flags (list "--enable-cogl-gst"
                                "--enable-wayland-egl-platform"
                                "--enable-wayland-egl-server"
 
@@ -4478,19 +4484,18 @@ throughout GNOME for API documentation).")
                                (string-append "--with-gl-libname="
                                               (assoc-ref %build-inputs "mesa")
                                               "/lib/libGL.so"))
-       ;; XXX FIXME: All tests fail, with many warnings printed like this:
-       ;;   _FontTransOpen: Unable to Parse address
-       ;;   ${prefix}/share/fonts/X11/misc/
-       #:tests? #f
-       #; #:phases
-       #;
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'start-xorg-server
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       ;; The test suite requires a running X server.
-                       (system (format #f "~a/bin/Xvfb :1 &"
-                                       (assoc-ref inputs "xorg-server")))
-                       (setenv "DISPLAY" ":1")
+                     (lambda* (#:key tests? inputs #:allow-other-keys)
+                       (if tests?
+                           (begin
+                             ;; The test suite requires a running X server.
+                             (system (format #f "~a/bin/Xvfb :1 +extension GLX &"
+                                             (assoc-ref inputs "xorg-server")))
+                             (setenv "DISPLAY" ":1")
+                             #t)
+                           (format #t "test suite not run~%"))
                        #t)))))
     (home-page "https://www.cogl3d.org")
     (synopsis "Object oriented GL/GLES Abstraction/Utility Layer")
@@ -5691,7 +5696,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.8")
+    (version "0.30.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/shotwell/"
@@ -5699,7 +5704,7 @@ metadata in photo and video files of various formats.")
                                   "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "1f7m007g6w1sz8s60w6x81ghp2rrjmik8phd958b2hy8zz92wbbj"))))
+                "1y556yyzfya0310v5wqjkf17hy5lhf028iminvvgi2pdfva344id"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -9198,7 +9203,7 @@ mp3, Ogg Vorbis and FLAC")
 (define-public soundconverter
   (package
     (name "soundconverter")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -9207,10 +9212,7 @@ mp3, Ogg Vorbis and FLAC")
                            "soundconverter-" version ".tar.xz"))
 
        (sha256
-        (base32 "1d6x1yf8psqbd9zbybxivfqg55khcnngp2mn92l161dfdk9512c5"))
-       (patches
-        (search-patches
-         "soundconverter-remove-gconf-dependency.patch"))))
+        (base32 "1jv8m82hi23ilrgdznlc1jhp2jm8bw1yrw0chh3qw2l0sixvkl11"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)

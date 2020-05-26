@@ -394,6 +394,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/nvi.scm				\
   %D%/packages/ocaml.scm			\
   %D%/packages/ocr.scm				\
+  %D%/packages/openkinect.scm			\
   %D%/packages/onc-rpc.scm			\
   %D%/packages/opencl.scm			\
   %D%/packages/openbox.scm			\
@@ -403,6 +404,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/orpheus.scm			\
   %D%/packages/ots.scm				\
   %D%/packages/package-management.scm		\
+  %D%/packages/pantheon.scm			\
   %D%/packages/parallel.scm			\
   %D%/packages/password-utils.scm		\
   %D%/packages/patchutils.scm			\
@@ -1079,6 +1081,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
   %D%/packages/patches/hdf-eos5-fix-szip.patch			\
   %D%/packages/patches/hdf-eos5-fortrantests.patch		\
+  %D%/packages/patches/http-parser-fix-assertion-on-armhf.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-cross.patch				\
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
@@ -1135,8 +1138,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/kpackage-allow-external-paths.patch	\
   %D%/packages/patches/kmplayer-aarch64.patch			\
   %D%/packages/patches/kmplayer-upstream_Fix-build-with-Qt-5.9.patch	\
-  %D%/packages/patches/kpmcore-fix-tests.patch			\
-  %D%/packages/patches/kpmcore-remove-broken-test.patch		\
   %D%/packages/patches/kobodeluxe-paths.patch			\
   %D%/packages/patches/kobodeluxe-enemies-pipe-decl.patch	\
   %D%/packages/patches/kobodeluxe-const-charp-conversion.patch	\
@@ -1274,6 +1275,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mozjs38-version-detection.patch		\
   %D%/packages/patches/mrrescue-support-love-11.patch		\
   %D%/packages/patches/mtools-mformat-uninitialized.patch	\
+  %D%/packages/patches/multipath-tools-sans-systemd.patch	\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mumps-shared-libseq.patch		\
   %D%/packages/patches/mumps-shared-mumps.patch			\
@@ -1432,6 +1434,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python-robotframework-honor-source-date-epoch.patch \
+  %D%/packages/patches/python-shouldbe-0.1.2-cpy3.8.patch	\
   %D%/packages/patches/python-slugify-depend-on-unidecode.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
@@ -1495,7 +1498,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-display.patch			\
   %D%/packages/patches/snappy-add-O2-flag-in-CmakeLists.txt.patch	\
   %D%/packages/patches/sooperlooper-build-with-wx-30.patch 	\
-  %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/suitesparse-mongoose-cmake.patch		\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\

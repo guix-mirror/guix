@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1737,3 +1738,35 @@ variation Arial.  Tamil characters are inherently vertically-elliptical.  The
 orthography of Roman glyphs of Meera Inimai are also based on this
 characteristic so that they sit smoothly with the Tamil glyphs.")
     (license license:silofl1.1)))
+
+(define-public font-ipa-mj-mincho
+  (package
+    (name "font-ipa-mj-mincho")
+    (version "006.01")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://mojikiban.ipa.go.jp/OSCDL/IPAmjMincho"
+                                  "/ipamjm" (string-join (string-split version #\.) "")
+                                  ".zip"))
+              (sha256
+               (base32
+                "0s2vs9p7vd7ajnn6c2icli069sjwi4d45a39fczqpwwn507lwj9m"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((doc-dir (string-append (assoc-ref outputs "out")
+                                           "/share/doc/font-ipa-mj-mincho")))
+               (mkdir-p doc-dir)
+               (copy-file "Readme.txt" (string-append doc-dir "/README"))
+               (copy-file "IPA_Font_License_Agreement_v1.0.txt"
+                          (string-append doc-dir "/LICENSE"))
+               #t))))))
+    (home-page "https://mojikiban.ipa.go.jp/1300.html")
+    (synopsis "Japanese font from the Information-technology Promotion Agency")
+    (description "MJM Mincho is a font that aims at, for example, allowing you
+to write people's name, or for formal business situations where it is necessary
+to have a detailed and proper character style.")
+    (license license:ipa)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,8 +55,12 @@
   (let* ((out (assoc-ref outputs "out"))
          (js  (string-append out "/share/javascript/")))
     (mkdir-p js)
-    (for-each (cut install-file <> js)
-              (find-files "guix/build" "\\.min\\.js$")))
+    (for-each
+      (lambda (file)
+        (if (not (zero? (stat:size (stat file))))
+          (install-file file js)
+          (error "File is empty: " file)))
+      (find-files "guix/build" "\\.min\\.js$")))
   #t)
 
 (define %standard-phases

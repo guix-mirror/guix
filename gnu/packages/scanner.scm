@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,16 +39,16 @@
 (define-public sane-backends-minimal
   (package
     (name "sane-backends-minimal")
-    (version "1.0.29")
+    (version "1.0.30")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "https://gitlab.com/sane-project/backends/uploads/"
-                   "54f858b20a364fc35d820df935a86478/"
+                   "c3dd60c9e054b5dee1e7b01a7edc98b0/"
                    "sane-backends-" version ".tar.gz"))
              (sha256
               (base32
-               "1vd83vhl0hddwsdh2jb0k3yzycfghi2xa9lc3ga9r12rbx77n0ma"))
+               "18vryaycps3zpjzxh0wjgg8nv2f4pdvcfxxmdfj28qbzqjlrcp9z"))
              (modules '((guix build utils)))
              (snippet
               ;; Generated HTML files and udev rules normally embed a

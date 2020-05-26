@@ -544,7 +544,9 @@ built-in registry server of Docker.")
                (install-file (string-append "bundles/dynbinary-daemon/dockerd-"
                                             (getenv "VERSION"))
                              out-bin)
-               #t))))))
+               #t)))
+         (add-after 'install 'remove-go-references
+           (assoc-ref go:%standard-phases 'remove-go-references)))))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("containerd" ,containerd)       ; for containerd-shim

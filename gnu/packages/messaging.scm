@@ -704,7 +704,7 @@ else [])"))
                           ;; FIXME: Cannot use this expression as it would
                           ;; introduce a circular dependency at the top level.
                           ;; (version-major+minor (package-version python))
-                          "3.7"
+                          "3.8"
 
                           "/site-packages"))))))
     (native-inputs
@@ -1803,16 +1803,16 @@ notifications, and Python scripting support.")
 (define-public libqmatrixclient
   (package
     (name "libqmatrixclient")
-    (version "0.5.2")
+    (version "0.5.3.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/QMatrixClient/libqmatrixclient")
+              (url "https://github.com/quotient-im/libQuotient")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bhlqfs7251fss4icx794ka614npr6zyrpp4qwc4q5408ykfm7lr"))))
+        (base32 "0gkwr3yw6k2m0j8cc085b5p2q788rf5nhp1p5hc5d55pc7mci2qs"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -1955,16 +1955,16 @@ There is support for:
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.4c")
+    (version "0.0.9.4e")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/QMatrixClient/Quaternion")
+              (url "https://github.com/quotient-im/Quaternion")
               (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0gpv6b3nn3lsyym8809kiqkpdszfasldqjpk5s542zyn41gdlql4"))))
+        (base32 "0hqhg7l6wpkdbzrdjvrbqymmahziri07ba0hvbii7dd2p0h248fv"))))
     (build-system qt-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)

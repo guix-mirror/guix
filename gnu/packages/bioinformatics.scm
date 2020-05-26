@@ -5723,7 +5723,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "2.9.6")
+    (version "2.10.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5732,7 +5732,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d5k5kabgl15as37kj9x65xc92j4gcqms86hvihw3yb6wag0r0q3"))))
+                "1ix51c25hjn57w93qmwzw80xh2i34wx8j2hn7szh8p6w8i3az5qa"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -5789,7 +5789,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.9.6")
+    (version "2.10.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5798,7 +5798,7 @@ simultaneously.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0knkj1sq34hlivgv5qd6jlczqrs3ldmfgn6vbbw7p4mqxvb9mirk"))))
+                "0m8hlxscidsfqm9x9fyi62q6lpf1dv5115kgjjgnrkl49q9c27m6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -6148,7 +6148,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.9.6")
+    (version "2.10.6")
     (source
      (origin
        (method git-fetch)
@@ -6158,11 +6158,11 @@ sequence itself can be retrieved from these databases.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vqzap68v81k0zif2mnqfy8pnw2nrhsg87p6mgq8qk3nk2jv2rgy"))))
+         "1cr2mijkfs5sm35ffjs6861qsd1qkgnhnbavdv65zg5d655abbjf"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-build? #f ; not supported
-       #:tests? #f ; no "check" target
+     `(#:parallel-build? #f             ; not supported
+       #:tests? #f                      ; no "check" target
        #:make-flags
        (list (string-append "DEFAULT_CRT="
                             (assoc-ref %build-inputs "ncbi-vdb")
@@ -6205,6 +6205,9 @@ sequence itself can be retrieved from these databases.")
              ;; Dynamic linking
              (substitute* "tools/copycat/Makefile"
                (("smagic-static") "lmagic"))
+             (substitute* "tools/driver-tool/utf8proc/Makefile"
+               (("CC\\?=gcc") "myCC=gcc")
+               (("\\(CC\\)") "(myCC)"))
 
              ;; The 'configure' script doesn't recognize things like
              ;; '--enable-fast-install'.
@@ -6217,8 +6220,9 @@ sequence itself can be retrieved from these databases.")
                      (string-append "--with-magic-prefix="
                                     (assoc-ref inputs "libmagic"))
                      ;; TODO: building with libxml2 fails with linker errors
-                     ;; (string-append "--with-xml2-prefix="
-                     ;;                (assoc-ref inputs "libxml2"))
+                     #;
+                     (string-append "--with-xml2-prefix="
+                                    (assoc-ref inputs "libxml2"))
                      (string-append "--with-ncbi-vdb-sources="
                                     (assoc-ref inputs "ncbi-vdb"))
                      (string-append "--with-ncbi-vdb-build="
@@ -6234,8 +6238,9 @@ sequence itself can be retrieved from these databases.")
        ("ncbi-vdb" ,ncbi-vdb)
        ("libmagic" ,file)
        ("fuse" ,fuse)
-       ("hdf5" ,hdf5)
-       ("zlib" ,zlib)))
+       ("hdf5" ,hdf5-1.10)
+       ("zlib" ,zlib)
+       ("python" ,python-wrapper)))
     (home-page
      "https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software")
     (synopsis "Tools and libraries for reading and writing sequencing data")

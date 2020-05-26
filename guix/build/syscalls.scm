@@ -1315,61 +1315,130 @@ bytes."
       40
       32))
 
-(define-c-struct sockaddr-in                      ;<linux/in.h>
-  sizeof-sockaddrin
+(define-c-struct sockaddr-in/linux                ;<linux/in.h>
+  sizeof-sockaddr-in/linux
   (lambda (family port address)
     (make-socket-address family address port))
-  read-sockaddr-in
-  write-sockaddr-in!
+  read-sockaddr-in/linux
+  write-sockaddr-in!/linux
   (family    unsigned-short)
   (port      (int16 ~ big))
   (address   (int32 ~ big)))
 
-(define-c-struct sockaddr-in6                     ;<linux/in6.h>
-  sizeof-sockaddr-in6
+(define-c-struct sockaddr-in/hurd                 ;<netinet/in.h>
+  sizeof-sockaddr-in/hurd
+  (lambda (len family port address zero)
+    (make-socket-address family address port))
+  read-sockaddr-in/hurd
+  write-sockaddr-in!/hurd
+  (len       uint8)
+  (family    uint8)
+  (port      (int16 ~ big))
+  (address   (int32 ~ big))
+  (zero      (array uint8 8)))
+
+(define-c-struct sockaddr-in6/linux               ;<linux/in6.h>
+  sizeof-sockaddr-in6/linux
   (lambda (family port flowinfo address scopeid)
     (make-socket-address family address port flowinfo scopeid))
-  read-sockaddr-in6
-  write-sockaddr-in6!
+  read-sockaddr-in6/linux
+  write-sockaddr-in6!/linux
   (family    unsigned-short)
   (port      (int16 ~ big))
   (flowinfo  (int32 ~ big))
   (address   (int128 ~ big))
   (scopeid   int32))
 
-(define (write-socket-address! sockaddr bv index)
+(define-c-struct sockaddr-in6/hurd                ;<netinet/in.h>
+  sizeof-sockaddr-in6/hurd
+  (lambda (len family port flowinfo address scopeid)
+    (make-socket-address family address port flowinfo scopeid))
+  read-sockaddr-in6/hurd
+  write-sockaddr-in6!/hurd
+  (len       uint8)
+  (family    uint8)
+  (port      (int16 ~ big))
+  (flowinfo  (int32 ~ big))
+  (address   (int128 ~ big))
+  (scopeid   int32))
+
+(define (write-socket-address!/linux sockaddr bv index)
   "Write SOCKADDR, a socket address as returned by 'make-socket-address', to
 bytevector BV at INDEX."
   (let ((family (sockaddr:fam sockaddr)))
     (cond ((= family AF_INET)
-           (write-sockaddr-in! bv index
-                               family
-                               (sockaddr:port sockaddr)
-                               (sockaddr:addr sockaddr)))
+           (write-sockaddr-in!/linux bv index
+                                     family
+                                     (sockaddr:port sockaddr)
+                                     (sockaddr:addr sockaddr)))
           ((= family AF_INET6)
-           (write-sockaddr-in6! bv index
-                                family
-                                (sockaddr:port sockaddr)
-                                (sockaddr:flowinfo sockaddr)
-                                (sockaddr:addr sockaddr)
-                                (sockaddr:scopeid sockaddr)))
+           (write-sockaddr-in6!/linux bv index
+                                      family
+                                      (sockaddr:port sockaddr)
+                                      (sockaddr:flowinfo sockaddr)
+                                      (sockaddr:addr sockaddr)
+                                      (sockaddr:scopeid sockaddr)))
           (else
            (error "unsupported socket address" sockaddr)))))
+
+(define (write-socket-address!/hurd sockaddr bv index)
+  "Write SOCKADDR, a socket address as returned by 'make-socket-address', to
+bytevector BV at INDEX."
+  (let ((family (sockaddr:fam sockaddr)))
+    (cond ((= family AF_INET)
+           (write-sockaddr-in!/hurd bv index
+                                    sizeof-sockaddr-in/hurd
+                                    family
+                                    (sockaddr:port sockaddr)
+                                    (sockaddr:addr sockaddr)
+                                    '(0 0 0 0 0 0 0 0)))
+          ((= family AF_INET6)
+           (write-sockaddr-in6!/hurd bv index
+                                     sizeof-sockaddr-in6/hurd
+                                     family
+                                     (sockaddr:port sockaddr)
+                                     (sockaddr:flowinfo sockaddr)
+                                     (sockaddr:addr sockaddr)
+                                     (sockaddr:scopeid sockaddr)))
+          (else
+           (error "unsupported socket address" sockaddr)))))
+
+(define write-socket-address!
+  (if (string-suffix? "linux-gnu" %host-type)
+      write-socket-address!/linux
+      write-socket-address!/hurd))
 
 (define PF_PACKET 17)                             ;<bits/socket.h>
 (define AF_PACKET PF_PACKET)
 
-(define* (read-socket-address bv #:optional (index 0))
+(define* (read-socket-address/linux bv #:optional (index 0))
   "Read a socket address from bytevector BV at INDEX."
   (let ((family (bytevector-u16-native-ref bv index)))
     (cond ((= family AF_INET)
-           (read-sockaddr-in bv index))
+           (read-sockaddr-in/linux bv index))
           ((= family AF_INET6)
-           (read-sockaddr-in6 bv index))
+           (read-sockaddr-in6/linux bv index))
           (else
            ;; XXX: Unsupported address family, such as AF_PACKET.  Return a
            ;; vector such that the vector can at least call 'sockaddr:fam'.
            (vector family)))))
+
+(define* (read-socket-address/hurd bv #:optional (index 0))
+  "Read a socket address from bytevector BV at INDEX."
+  (let ((family (bytevector-u16-native-ref bv index)))
+    (cond ((= family AF_INET)
+           (read-sockaddr-in/hurd bv index))
+          ((= family AF_INET6)
+           (read-sockaddr-in6/hurd bv index))
+          (else
+           ;; XXX: Unsupported address family, such as AF_PACKET.  Return a
+           ;; vector such that the vector can at least call 'sockaddr:fam'.
+           (vector family)))))
+
+(define read-socket-address
+  (if (string-suffix? "linux-gnu" %host-type)
+      read-socket-address/linux
+      read-socket-address/hurd))
 
 (define %ioctl
   ;; The most terrible interface, live from Scheme.

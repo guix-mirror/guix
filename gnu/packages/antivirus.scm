@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,14 +44,14 @@
 (define-public clamav
   (package
     (name "clamav")
-    (version "0.102.2")
+    (version "0.102.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.clamav.net/downloads/production/"
                                   "clamav-" version ".tar.gz"))
               (sha256
                (base32
-                "1lq7r6r2yl8pp3fkn32b0bsmbbl9pg90kpvhsa2clad3xg0drz49"))
+                "14q6vi178ih60yz4ja33b6181va1dcj8fyscnmxfx2crav250c7d"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -59,7 +59,8 @@
                             '("win32"                  ; unnecessary
                               "libclamav/c++/llvm"     ; use system llvm
                               "libclamav/tomsfastmath" ; use system tomsfastmath
-                              "libclamunrar"))))       ; non-free license
+                              "libclamunrar"))         ; non-free license
+                  #t))
               (patches
                (search-patches "clamav-system-tomsfastmath.patch"
                                "clamav-config-llvm-libs.patch"))))

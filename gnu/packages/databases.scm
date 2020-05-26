@@ -1459,7 +1459,7 @@ extremely small.")
 (define-public perl-dbi
   (package
     (name "perl-dbi")
-    (version "1.642")
+    (version "1.643")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1467,7 +1467,7 @@ extremely small.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0pbzqazrx7pnw4nbyaf27in4b6yddkirbd2ws7mnqa2n7812a81z"))))
+                "1yinx39960y241vf2sknxj0dfz82a5m9gvklq5rw78k0nlyrjawa"))))
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
@@ -1703,7 +1703,7 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
-    (version "1.62")
+    (version "1.64")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1711,7 +1711,7 @@ columns, primary keys, unique constraints and relationships.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0p78ri1q6xpc1i98i6mlriv8n66iz8r5r11dlsknjm4y58rfz0mx"))))
+                "00gz5aw3xrr92lf9nfk0dhmy7a8jzmxhznddd9b0a8w4a1xqzbpl"))))
     (build-system perl-build-system)
     (inputs `(("sqlite" ,sqlite)))
     (propagated-inputs `(("perl-dbi" ,perl-dbi)))
@@ -2049,17 +2049,14 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.852")
+  (version "1.853")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
-             version
-             ".tar.gz"))
+      (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
+                          version ".tar.gz"))
       (sha256
-        (base32
-          "14c30xyqx9c1hxw40bqbzls41al8gmklxv5jbk2kknmn4dsrbdrs"))))
+        (base32 "1y967si45vj0skip1hnhicbv9da29fv6qcfwnsbnvj06n36mkj6h"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))
@@ -2382,13 +2379,13 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.95")
+    (version "0.98")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "0nx9f193gzl33r1lbqhb96h1igya7pz8wmahr8m9x5zgc05hal91"))
+                "027pgbdhhdcbwj53vrzr6a60gjhmz4s75gl3180fd4q8pwlbq986"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.
@@ -2423,9 +2420,6 @@ Memory-Mapped Database} (LMDB), a high-performance key-value store.")
            ;; ‘lib/win32/inttypes.h’ and ‘lib/win32-stdint/stdint.h’ are BSD-3,
            ;; but not actually needed on platforms currently supported by Guix.
            license:bsd-3))))
-
-(define-public python2-lmdb
-  (package-with-python2 python-lmdb))
 
 (define-public python-orator
   (package

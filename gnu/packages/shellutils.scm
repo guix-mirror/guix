@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
@@ -46,7 +46,7 @@
 (define-public zsh-autosuggestions
   (package
     (name "zsh-autosuggestions")
-    (version "0.6.3")
+    (version "0.6.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -55,7 +55,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1h8h2mz9wpjpymgl2p7pc146c1jgb3dggpvzwm9ln3in336wl95c"))))
+                "0h52p2waggzfshvy1wvhj4hf06fmzd44bv6j18k3l9rcx6aixzn6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("ruby" ,ruby)

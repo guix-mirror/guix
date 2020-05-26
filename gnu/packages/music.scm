@@ -1436,7 +1436,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.13")
+    (version "0.9.14")
     (source (origin
               (method url-fetch)
               (uri
@@ -1444,7 +1444,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0bb48myvgvqcibwm68qhd4852pjr2g19rasf059a799d1hzgfq3l"))))
+                "08n83krkak20924flb9azhm9hn40lyfvn29m63zs3lw3wajf0b40"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1468,7 +1468,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.13")
+    (version "0.9.14")
     (source (origin
               (method url-fetch)
               (uri
@@ -1476,7 +1476,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1h88sakxs0b20k8v2sh14y05fin1zqmhnid6h9mk9c37ixxg58ia"))))
+                "0fr7pkp55zvjxf7p22drs93fsjgvqhbd55vxi0srhp2s2wzz5qak"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1501,7 +1501,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.13")
+    (version "0.9.14")
     (source (origin
               (method url-fetch)
               (uri
@@ -1509,7 +1509,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0clsp6s5qfnh0xaxbd35vq2ppi72q9dfayrzlgl73800a8p7gh9m"))))
+                "0p3f9wsn1nz93szcl60yxhxdr554zm2z2jlbniwwify765lvasxc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1534,7 +1534,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.13")
+    (version "0.9.14")
     (source (origin
               (method url-fetch)
               (uri
@@ -1542,7 +1542,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1c1zllph86qswcxddz4vpsj6r9w21hbv4gkba0pyd3q7pbfqr7nz"))))
+                "079iwwlkl1gscyv70v9ambad8shxbs0ixdfp0vsl6dbh87b09qzh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1755,7 +1755,7 @@ is subjective.")
 (define-public tuxguitar
   (package
     (name "tuxguitar")
-    (version "1.5.3")
+    (version "1.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1763,7 +1763,7 @@ is subjective.")
                     version "/tuxguitar-" version "-src.tar.gz"))
               (sha256
                (base32
-                "1qy5kjcsl3c86kdlyvsf6dsfmfl1mv8zg0ln6g3qg3i8f35vlpp6"))))
+                "0fjhf56lhlhm84v08917xp4yw8y6d0qajm4qiy1gfp8dm74whwwg"))))
     (build-system ant-build-system)
     (arguments
      `(#:build-target "build"

@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,28 +25,28 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages suckless)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gnome)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages fonts)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages webkit)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages mpd)
-  #:use-module (gnu packages linux)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
-  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages libbsd))
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages mpd)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages))
 
 (define-public blind
   (package
@@ -61,10 +61,13 @@
                 "0nncvzyipvkkd7zlgzwbjygp82frzs2hvbnk71gxf671np607y94"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no check target
-       #:make-flags (list
-                     "CC=gcc"
-                     (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -147,12 +150,16 @@ optimising the environment for the application in use and the task performed.")
                 "0ia9nqr83bv6x247q30bal0v42chcj9qcjgv59xs6xj46m7iz5xk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output)
-                          (string-append "FREETYPEINC="
-                                         (assoc-ref %build-inputs "freetype")
-                                         "/include/freetype2"))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)
+               (string-append "FREETYPEINC="
+                              (assoc-ref %build-inputs "freetype")
+                              "/include/freetype2")))
        #:phases
        (modify-phases %standard-phases (delete 'configure))))
     (inputs
@@ -175,15 +182,19 @@ numbers of user-defined menu items efficiently.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "spoon-" version ".tar.gz"))
        (sha256
         (base32
          "1jpmg9k9f4f3lpz0k3cphqjswlyf8lz2sm8ccifiip93kd4rrdj0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))))
     (inputs
      `(("libx11" ,libx11)
        ("libxkbfile" ,libxkbfile)
@@ -208,9 +219,13 @@ numbers of user-defined menu items efficiently.")
                 "0sif752303dg33f14k6pgwq2jp1hjyhqv6x4sy3sj281qvdljf5m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)
@@ -226,19 +241,23 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.suckless.org/st/st-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0ddz2mdp1c7q67rd5vrvws9r0493ln0mlqyc3d73dv8im884xdxf"))))
+        (base32 "0ll5wbw1szs70wdf8zy1y2ig5mfbqw2w4ls8d64r8z3y4gdf76lk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -277,9 +296,13 @@ drawing.")
          "07cmajyafljigy10d21kkyvv5jf3hxkx06pz3rwwk3y3c9x4rvps"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -323,15 +346,18 @@ point surf to another URI by setting its XProperties.")
      `(#:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configuration
        #:tests? #f                      ; no test suite
-       #:make-flags (let ((pkg-config (lambda (flag)
-                                        (string-append
-                                         "$(shell pkg-config " flag " "
-                                         "xft fontconfig x11 libpng)"))))
-                      (list
-                       "CC=gcc"
-                       (string-append "PREFIX=" %output)
-                       (string-append "INCS=-I. " (pkg-config "--cflags"))
-                       (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
+       #:make-flags
+       (let ((target ,(%current-target-system))
+             (pkg-config (lambda (flag)
+                           (string-append
+                            "$(shell pkg-config " flag " "
+                            "xft fontconfig x11 libpng)"))))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)
+               (string-append "INCS=-I. " (pkg-config "--cflags"))
+               (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -356,15 +382,19 @@ few minutes.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "xbattmon-" version ".tar.gz"))
        (sha256
         (base32
          "1zr6y8lml9xkx0a3dbbsds2qz1bjxvskp7wsckkf8mlsqrbb3xsg"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))))
     (inputs
      `(("libx11" ,libx11)))
     (home-page "https://git.2f30.org/xbattmon/")
@@ -381,7 +411,7 @@ few minutes.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "wificurse-" version ".tar.gz"))
        (sha256
         (base32
          "067ghr1xly5ca41kc83xila1p5hpq0bxfcmc8jvxi2ggm6wrhavn"))))
@@ -414,18 +444,22 @@ drivers capable of injecting packets in wireless networks.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "skroll-" version ".tar.gz"))
        (sha256
         (base32
          "0km6bjfz4ssb1z0xwld6iiixnn7d255ax8yjs3zkdm42z8q9yl0f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://2f30.org/")
     (synopsis "Commandline utility which scrolls text")
     (description
@@ -442,18 +476,22 @@ left.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "sbm-" version ".tar.gz"))
        (sha256
         (base32
          "1nks5mkh5wn30kyjzlkjlgi31bv1wq52kbp0r6nzbyfnvfdlywik"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/sbm/")
     (synopsis "Simple bandwidth monitor")
     (description
@@ -468,18 +506,22 @@ left.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "prout-" version ".tar.gz"))
        (sha256
         (base32
          "1s6c3ygg1h1fyxkh8gd7nzjk6qhnwsb4535d2k780kxnwns5fzas"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("cups-minimal" ,cups-minimal)
        ("zlib" ,zlib)))
@@ -507,8 +549,12 @@ cups server to be installed.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -541,8 +587,12 @@ cups server to be installed.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -559,20 +609,23 @@ environment variable.")
 (define-public fortify-headers
   (package
     (name "fortify-headers")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "fortify-headers-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nvplfg4y4a10x2j12qwmxzlk2q4j6287j0v5f9bfsdayb04qvh2"))))
+        (base32 "1dhz41jq1azcf7rbvga8w6pnx19l1j9r6jwj8qrlrfnjl9hdi9bb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -605,18 +658,22 @@ initially intended to be used on musl-based Linux distributions.
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "colors-" version ".tar.gz"))
        (sha256
         (base32
          "1lckmqpgj89841splng0sszbls2ag71ggkgr1wsv9y3v6y87589z"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (inputs
      `(("libpng" ,libpng)))
     (home-page "https://git.2f30.org/colors/")
@@ -635,25 +692,29 @@ colormap to stdout.")
         (commit "ff4c60635e1f455b0a0b4200f8183fbd5a88225b"))
     (package
       (name "libutf")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/cls/libutf")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1ih5vjavilzggyr1j1z6w1z12c2fs5fg77cfnv7ami5ivsy3kg3d"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ; No tests
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output))
+       `(#:tests? #f                    ; no tests
+         #:make-flags
+         (let ((target ,(%current-target-system)))
+           (list (string-append "CC=" (if target
+                                          (string-append target "-gcc")
+                                          "gcc"))
+                 (string-append "PREFIX=" %output)))
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)))) ; No configure script
+           (delete 'configure))))       ; no configure script
       (inputs
        `(("gawk" ,gawk)))
       (home-page "https://github.com/cls/libutf")
@@ -677,26 +738,29 @@ as -1, to be used instead of U+FFFD.
 
 ;; No release tarballs so far.
 (define-public lchat
-  (let ((revision "3")
-        (commit "f95191970fd59c52a8b09cff32bd8d2135cbfc6b"))
+  (let ((revision "4")
+        (commit "e3b64e67b9b9d832462382246474ce1e7d92217c"))
     (package
       (name "lchat")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/younix/lchat")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
-          (base32
-           "07pxzziczhzprmjy61k7nl9i1kxpgnad37qkjf5fn4wf06nqdxpl"))))
+          (base32 "1qcjqbgmsskc04j2r6xl3amkwj05n520sq1wv2mqyqncz42qrxm0"))))
       (build-system gnu-build-system)
       (arguments
        `(#:test-target "test"
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output))
+         #:make-flags
+         (let ((target ,(%current-target-system)))
+           (list (string-append "CC=" (if target
+                                          (string-append target "-gcc")
+                                          "gcc"))
+                 (string-append "PREFIX=" %output)))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)          ; no configure script
@@ -733,18 +797,22 @@ chat output in the background.")
      (origin
        (method url-fetch)
        (uri (string-append "https://dl.2f30.org/releases/"
-                           name "-" version ".tar.gz"))
+                           "scron-" version ".tar.gz"))
        (sha256
         (base32
          "066fwa55kqcgfrsqgxh94sqbkxfsr691360xg4ljxr4i75d25s2a"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; No tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
+     `(#:tests? #f                      ; no tests
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               (string-append "PREFIX=" %output)))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No configure script
+         (delete 'configure))))         ; no configure script
     (home-page "https://git.2f30.org/scron/")
     (synopsis "Simple cron daemon")
     (description

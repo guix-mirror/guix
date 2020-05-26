@@ -230,7 +230,10 @@ set up using CL source package conventions."
              ((#:phases phases) (list phases-transformer phases))))
           (inputs (new-inputs package-inputs))
           (propagated-inputs (new-propagated-inputs))
-          (native-inputs (new-inputs package-native-inputs))
+          (native-inputs (append (if target-is-source?
+                                     (list (list (package-name pkg) pkg))
+                                     '())
+                                 (new-inputs package-native-inputs)))
           (outputs (if target-is-source?
                        '("out")
                        (package-outputs pkg)))))

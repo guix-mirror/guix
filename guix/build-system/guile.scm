@@ -29,6 +29,10 @@
   #:export (%guile-build-system-modules
             guile-build-system))
 
+(define %scheme-file-regexp
+  ;; Regexp to match Scheme files.
+  "\\.(scm|sls)$")
+
 (define %guile-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build guile-build-system)
@@ -80,6 +84,7 @@
                       (system (%current-system))
                       (source-directory ".")
                       not-compiled-file-regexp
+                      (scheme-file-regexp %scheme-file-regexp)
                       (compile-flags %compile-flags)
                       (imported-modules %guile-build-system-modules)
                       (modules '((guix build guile-build-system)
@@ -97,6 +102,7 @@
                                 (source
                                  source))
                     #:source-directory ,source-directory
+                    #:scheme-file-regexp ,scheme-file-regexp
                     #:not-compiled-file-regexp ,not-compiled-file-regexp
                     #:compile-flags ,compile-flags
                     #:phases ,phases

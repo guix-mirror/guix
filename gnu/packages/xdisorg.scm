@@ -58,6 +58,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -2357,4 +2358,32 @@ create layout indicator widgets.")
 is to find @file{.desktop} files and offer you a menu to start an application
 using @command{dmenu}.")
     (home-page "https://github.com/enkore/j4-dmenu-desktop")
+    (license license:gpl3+)))
+
+(define-public wofi
+  (package
+    (name "wofi")
+    (version "1.1.2")
+    (source (origin
+              (method hg-fetch)
+              (uri (hg-reference
+                    (url "https://hg.sr.ht/~scoopta/wofi")
+                    (changeset (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "086j5wshawjbwdmmmldivfagc2rr7g5a2gk11l0snqqslm294xsn"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk3" ,gtk+)
+       ("wayland" ,wayland)))
+    (synopsis "Launcher/menu program for wayland")
+    (description
+     "Wofi is a launcher/menu program for wlroots based wayland compositors
+such as sway, similar to @command{rofi}.")
+    (home-page "https://hg.sr.ht/~scoopta/wofi")
     (license license:gpl3+)))

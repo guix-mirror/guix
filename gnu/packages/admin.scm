@@ -1229,7 +1229,7 @@ at once based on a Perl regular expression.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
+     `(#:configure-flags (list "ROTT_ETCDIR=/etc/rottlog" ;rc file location
                                "--localstatedir=/var")
 
        ;; Install example config files in OUT/etc.
@@ -1242,6 +1242,20 @@ at once based on a Perl regular expression.")
                     (lambda _
                       (substitute* "rc/rc"
                         (("/usr/sbin/sendmail") "sendmail"))
+                      #t))
+                  (add-after 'unpack 'fix-configure
+                    (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                      ;; Replace outdated config.sub and config.guess:
+                      (for-each (lambda (file)
+                                  (install-file
+                                   (string-append
+                                    (assoc-ref
+                                     (or native-inputs inputs) "automake")
+                                    "/share/automake-"
+                                    ,(version-major+minor
+                                      (package-version automake))
+                                    "/" file) "."))
+                                '("config.sub" "config.guess"))
                       #t))
                   (add-after 'build 'set-packdir
                     (lambda _
@@ -1263,6 +1277,7 @@ at once based on a Perl regular expression.")
                     (lambda _
                       (invoke "make" "install-info"))))))
     (native-inputs `(("texinfo" ,texinfo)
+                     ("automake" ,automake)
                      ("util-linux" ,util-linux))) ; for 'cal'
     (home-page "https://www.gnu.org/software/rottlog/")
     (synopsis "Log rotation and management")
@@ -1676,7 +1691,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200326")
+    (version "20200430")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1684,7 +1699,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0y08l6djjn87jmsp5kj0myjdb48000g20xlfs0a22jzzi383h3by"))))
+                "1hiaz9lrmjzdbi5zl0ajfflja41cixzx2j76iyx02qbjlmy9cfjc"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1696,14 +1711,16 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
        #:tests? #f                      ; no 'check' target
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (home-page "https://acpica.org/")
-    (synopsis "Tools for the development and debug of ACPI tables")
+    (synopsis "Tools for the development and debugging of ACPI tables")
     (description
-     "The ACPI Component Architecture (@dfn{ACPICA}) project provides an
-OS-independent reference implementation of the Advanced Configuration and
-Power Interface Specification (@dfn{ACPI}).  ACPICA code contains those portions
-of ACPI meant to be directly integrated into the host OS as a kernel-resident
-subsystem, and a small set of tools to assist in developing and debugging ACPI
-tables.  This package contains only the user-space tools needed for ACPI table
+     "The @acronym{ACPICA, ACPI Component Architecture} project provides an
+OS-independent reference implementation of the @acronym{ACPI, Advanced
+Configuration and Power Interface} specification.  ACPICA code contains those
+portions of ACPI meant to be directly integrated into the host OS as a
+kernel-resident subsystem, and a small set of tools to assist in developing and
+debugging ACPI tables.
+
+This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
     (license license:gpl2)))            ; dual GPLv2/ACPICA Licence
 

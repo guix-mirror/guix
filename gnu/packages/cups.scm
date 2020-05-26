@@ -244,7 +244,7 @@ device-specific programs to convert and print many types of files.")
     (license license:asl2.0)))
 
 (define-public cups
-  (package (inherit cups-minimal)
+  (package/inherit cups-minimal
     (name "cups")
     (arguments
      `(;; Three tests fail:

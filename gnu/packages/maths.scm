@@ -8,7 +8,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018, 2020 Kei Kebreau <kkebreau@posteo.net>
@@ -20,7 +20,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
 ;;; Copyright © 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
@@ -472,8 +472,9 @@ precision floating point numbers.")
     (arguments
      (let ((system (%current-system)))
        (cond
-        ((string-prefix? "aarch64" system)
-         ;; Some sparse matrix tests are failing on AArch64:
+        ((or (string-prefix? "aarch64" system)
+             (string-prefix? "powerpc" system))
+         ;; Some sparse matrix tests are failing on AArch64 and PowerPC:
          ;; https://lists.gnu.org/archive/html/bug-gsl/2020-04/msg00001.html
          '(#:phases (modify-phases %standard-phases
                       (add-before 'check 'disable-failing-tests
@@ -4366,7 +4367,7 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.8.7")
+    (version "4.8.8")
     (home-page "https://github.com/Z3Prover/z3")
     (source (origin
               (method git-fetch)
@@ -4375,7 +4376,7 @@ as equations, scalars, vectors, and matrices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hprcdwhhyjigmhhk6514m71bnmvqci9r8gglrqilgx424r6ff7q"))))
+                "1rn538ghqwxq0v8i6578j8mflk6fyv0cp4hjfqynzvinjbps56da"))))
     (build-system gnu-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
