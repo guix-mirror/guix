@@ -6957,20 +6957,20 @@ in Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-markdown
-  (let ((commit "46cd81b37991c4325fc24015a610f832b0ff995d")
-        (revision "1"))
+  (let ((commit "685d7fbb81bc02fa32779d2a127b99a0c8c7436b")
+        (revision "2"))
     (package
       (name "emacs-evil-markdown")
       (version (git-version "0.0.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Somelauw/evil-markdown.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mad8sp5y9vyk28595qygspnyh8bfmb1fbxjlw70qwc1kdn822n4"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Somelauw/evil-markdown.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1z1sjn6dcqv8mmkh6nfcwhnql2z6xr9yx3hs77bfxj79pf3c466p"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
