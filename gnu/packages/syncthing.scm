@@ -876,31 +876,31 @@ Prometheus metrics.")
       (license asl2.0)))
 
 (define-public go-github-com-prometheus-procfs
-    (package
-      (name "go-github-com-prometheus-procfs")
-      (version "0.0.11")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/prometheus/procfs.git")
-                       (commit (string-append "v" version))))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1msc8bfywsmrgr2ryqjdqwkxiz1ll08r3qgvaka2507z1wpcpj2c"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/prometheus/procfs"
-         ;; The tests require Go modules, which are not yet supported in Guix's
-         ;; Go build system.
-         #:tests? #f))
-      (propagated-inputs
-       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
-      (synopsis "Go library for reading @file{/proc}")
-      (description "The @code{procfs} Go package provides functions to retrieve
+  (package
+    (name "go-github-com-prometheus-procfs")
+    (version "0.0.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/prometheus/procfs.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1msc8bfywsmrgr2ryqjdqwkxiz1ll08r3qgvaka2507z1wpcpj2c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/prometheus/procfs"
+       ;; The tests require Go modules, which are not yet supported in Guix's
+       ;; Go build system.
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
+    (synopsis "Go library for reading @file{/proc}")
+    (description "The @code{procfs} Go package provides functions to retrieve
 system, kernel, and process metrics from the @file{/proc} pseudo file system.")
-      (home-page "https://github.com/prometheus/procfs")
-      (license asl2.0)))
+    (home-page "https://github.com/prometheus/procfs")
+    (license asl2.0)))
 
 (define-public go-github-com-prometheus-client-golang
     (package
