@@ -39,9 +39,11 @@
   #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages package-management)
@@ -142,6 +144,7 @@
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
+            boot-parameters-multiboot-modules
             read-boot-parameters
             read-boot-parameters-file
             boot-parameters->menu-entry
@@ -283,7 +286,8 @@ directly by the user."
   (store-mount-point boot-parameters-store-mount-point)
   (kernel           boot-parameters-kernel)
   (kernel-arguments boot-parameters-kernel-arguments)
-  (initrd           boot-parameters-initrd))
+  (initrd           boot-parameters-initrd)
+  (multiboot-modules boot-parameters-multiboot-modules))
 
 (define (ensure-not-/dev device)
   "If DEVICE starts with a slash, return #f.  This is meant to filter out
@@ -314,7 +318,7 @@ file system labels."
   (match (read port)
     (('boot-parameters ('version 0)
                        ('label label) ('root-device root)
-                       ('kernel linux)
+                       ('kernel kernel)
                        rest ...)
      (boot-parameters
       (label label)
@@ -330,12 +334,12 @@ file system labels."
          ((_ entries) (map sexp->menu-entry entries))
          (#f          '())))
 
-      ;; In the past, we would store the directory name of the kernel instead
-      ;; of the absolute file name of its image.  Detect that and correct it.
-      (kernel (if (string=? linux (direct-store-path linux))
-                  (string-append linux "/"
+      ;; In the past, we would store the directory name of linux instead of
+      ;; the absolute file name of its image.  Detect that and correct it.
+      (kernel (if (string=? kernel (direct-store-path kernel))
+                  (string-append kernel "/"
                                  (system-linux-image-file-name))
-                  linux))
+                  kernel))
 
       (kernel-arguments
        (match (assq 'kernel-arguments rest)
@@ -348,6 +352,8 @@ file system labels."
           (string-append directory file))
          (('initrd (? string? file))
           file)))
+
+      (multiboot-modules (or (assq 'multiboot-modules rest) '()))
 
       (store-device
        ;; Linux device names like "/dev/sda1" are not suitable GRUB device
@@ -386,14 +392,25 @@ The object has its kernel-arguments extended in order to make it bootable."
                                (boot-parameters-kernel-arguments params))))))
 
 (define (boot-parameters->menu-entry conf)
-  (menu-entry
-   (label (boot-parameters-label conf))
-   (device (boot-parameters-store-device conf))
-   (device-mount-point (boot-parameters-store-mount-point conf))
-   (linux (boot-parameters-kernel conf))
-   (linux-arguments (boot-parameters-kernel-arguments conf))
-   (initrd (boot-parameters-initrd conf))))
-
+  (let* ((kernel (boot-parameters-kernel conf))
+         (multiboot-modules (boot-parameters-multiboot-modules conf))
+         (multiboot? (pair? multiboot-modules)))
+    (menu-entry
+     (label (boot-parameters-label conf))
+     (device (boot-parameters-store-device conf))
+     (device-mount-point (boot-parameters-store-mount-point conf))
+     (linux (and (not multiboot?) kernel))
+     (linux-arguments (if (not multiboot?) '
+                          (boot-parameters-kernel-arguments conf)
+                          '()))
+     (initrd (boot-parameters-initrd conf))
+     (multiboot-kernel (and multiboot? kernel))
+     (multiboot-arguments (if multiboot?
+                              (boot-parameters-kernel-arguments conf)
+                              '()))
+     (multiboot-modules (if multiboot?
+                            (boot-parameters-multiboot-modules conf)
+                            '())))))
 
 
 ;;;
@@ -485,8 +502,10 @@ from the initrd."
 (define (operating-system-kernel-file os)
   "Return an object representing the absolute file name of the kernel image of
 OS."
-  (file-append (operating-system-kernel os)
-               "/" (system-linux-image-file-name)))
+  (if (operating-system-hurd os)
+      (file-append (operating-system-kernel os) "/boot/gnumach")
+      (file-append (operating-system-kernel os)
+                      "/" (system-linux-image-file-name))))
 
 (define (package-for-kernel target-kernel module-package)
   "Return a package like MODULE-PACKAGE, adapted for TARGET-KERNEL, if
@@ -1131,17 +1150,45 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
                           #:store-directory-prefix
 			  (btrfs-store-subvolume-file-name file-systems))))
 
+(define (operating-system-multiboot-modules os)
+  (if (operating-system-hurd os) (hurd-multiboot-modules os) '()))
+
+(define (hurd-multiboot-modules os)
+  (let* ((hurd (operating-system-hurd os))
+         (root-file-system-command
+          (list (file-append hurd "/hurd/ext2fs.static")
+                "ext2fs"
+                "--multiboot-command-line='${kernel-command-line}'"
+                "--host-priv-port='${host-port}'"
+                "--device-master-port='${device-port}'"
+                "--exec-server-task='${exec-task}'"
+                "--store-type=typed"
+                "'${root}'" "'$(task-create)'" "'$(task-resume)'"))
+         (target (%current-target-system))
+         (libc (if target
+                   (with-parameters ((%current-target-system #f))
+                     ;; TODO: cross-libc has extra patches for the Hurd;
+                     ;; remove in next rebuild cycle
+                     (cross-libc target))
+                   glibc))
+         (exec-server-command
+          (list (file-append libc "/lib/ld.so.1") "exec"
+                (file-append hurd "/hurd/exec") "'$(exec-task=task-create)'")))
+    (list root-file-system-command exec-server-command)))
+
 (define* (operating-system-boot-parameters os root-device
                                            #:key system-kernel-arguments?)
   "Return a monadic <boot-parameters> record that describes the boot
 parameters of OS.  When SYSTEM-KERNEL-ARGUMENTS? is true, add kernel arguments
 such as '--root' and '--load' to <boot-parameters>."
-  (let* ((initrd          (operating-system-initrd-file os))
+  (let* ((initrd          (and (not (hurd-target?))
+                               (operating-system-initrd-file os)))
          (store           (operating-system-store-file-system os))
          (bootloader      (bootloader-configuration-bootloader
                            (operating-system-bootloader os)))
          (bootloader-name (bootloader-name bootloader))
-         (label           (operating-system-label os)))
+         (label           (operating-system-label os))
+         (multiboot-modules (operating-system-multiboot-modules os)))
     (boot-parameters
      (label label)
      (root-device root-device)
@@ -1151,6 +1198,7 @@ such as '--root' and '--load' to <boot-parameters>."
           (operating-system-kernel-arguments os root-device)
           (operating-system-user-kernel-arguments os)))
      (initrd initrd)
+     (multiboot-modules multiboot-modules)
      (bootloader-name bootloader-name)
      (bootloader-menu-entries
       (bootloader-configuration-menu-entries (operating-system-bootloader os)))
