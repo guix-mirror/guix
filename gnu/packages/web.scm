@@ -5145,7 +5145,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public libnslog
   (package
     (name "libnslog")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -5153,7 +5153,7 @@ C.  It is developed as part of the NetSurf project.")
                            "libnslog-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1ggs6xvxp8fbg5w8pifalipm458ygr9ab6j2yvj8fnnmxwvdh4jd"))))
+         "1l2k0kdv9iv18svhv360vszjavhl4g09cp8a8yb719pgsylxr67w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
