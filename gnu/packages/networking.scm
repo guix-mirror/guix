@@ -1731,8 +1731,9 @@ the bandwidth, loss, and other parameters.")
              (url "https://github.com/raboof/nethogs")
              (commit (string-append "v" version))))
        (hash
-        (content-hash "0sn1sdp86akwlm4r1vmkxjjl50c0xaisk91bbz57z7kcsaphxna9"
-                      sha256))
+        (content-hash
+         (base32 "0sn1sdp86akwlm4r1vmkxjjl50c0xaisk91bbz57z7kcsaphxna9")
+         sha256))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
