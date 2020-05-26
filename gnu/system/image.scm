@@ -253,7 +253,7 @@ used in the image."
                   #$label
                   #$dos-type
                   #$image
-                  #$(or offset 0))))
+                  #$offset)))
 
     (let* ((format (image-format image))
            (image-type (format->image-type format))
