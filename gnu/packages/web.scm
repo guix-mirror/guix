@@ -14,7 +14,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Bake Timmons <b3timmons@speedymail.org>
@@ -35,10 +35,13 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;; Copyright © 2019, 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
@@ -108,6 +111,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages java)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages image)
@@ -1470,7 +1474,7 @@ hash/signatures.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.1.7")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
@@ -1479,27 +1483,13 @@ hash/signatures.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0a87931cx5m14a1x8rbjix3nz7agrcgndf4h392vm62a4rby9240"))))
+         "0mq5wf17ifcwwxq3kbimhi53jn3fg23vcynqpzxjcz3vfjlfs2nq"))))
     (build-system gnu-build-system)
     (home-page "http://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
     (description
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license license:expat)))
-
-(define-public libyaml-2.1
-  (package
-    (inherit libyaml)
-    (version "0.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://pyyaml.org/download/libyaml/yaml-"
-             version ".tar.gz"))
-       (sha256
-        (base32
-         "1karpcfgacgppa82wm2drcfn2kb6q2wqfykf5nrhy20sci2i2a3q"))))))
 
 (define-public libquvi-scripts
   (package
@@ -5247,7 +5237,7 @@ w3c webidl files and a binding configuration file.")
        ("openssl" ,openssl)
        ("utf8proc" ,utf8proc)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libcss" ,libcss)
        ("libdom" ,libdom)
        ("libnsbmp" ,libnsbmp)
@@ -5865,10 +5855,22 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
        #:make-flags
        (list (string-append "PREFIX="
                             (assoc-ref %outputs "out"))
-             "CC=gcc" "library")
+             "library"
+             ,@(if (%current-target-system)
+                   '()
+                   '("CC=gcc")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         ,@(if (%current-target-system)
+               '((replace 'configure
+                    (lambda* (#:key target #:allow-other-keys)
+                      (substitute* (find-files "." "Makefile")
+                        (("CC\\?=.*$")
+                         (string-append "CC=" target "-gcc\n"))
+                        (("AR\\?=.*$")
+                         (string-append "AR=" target "-ar\n")))
+                      #t)))
+               '((delete 'configure))))))
     (synopsis "HTTP request/response parser for C")
     (description "This is a parser for HTTP messages written in C.  It parses
 both requests and responses.  The parser is designed to be used in
@@ -7070,8 +7072,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.39.1")
-    (replacement nghttp2-1.39.2)
+    (version "1.40.0")
     (source
      (origin
        (method url-fetch)
@@ -7080,7 +7081,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
-         "0j0lk37k8k3f61r9nw647hg4b22z1753l36n3xrp9x01civ614b7"))))
+         "0wwhwv7cvi1vxpdjwvg0kpa4jzhszclpnwrwfcw728zz53a47z09"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
@@ -7094,7 +7095,8 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
      ;; Required to build the tools (i.e. without ‘--enable-lib-only’).
      `(("c-ares" ,c-ares)
        ("jansson" ,jansson)             ; for HPACK tools
-       ("jemalloc" ,jemalloc)           ; fight nghttpd{,x} heap fragmentation
+       ,@(if (hurd-target?) '()
+             `(("jemalloc" ,jemalloc))) ; fight nghttpd{,x} heap fragmentation
        ("libev" ,libev)
        ("libxml2" ,libxml2)             ; for ‘nghttp -a’
        ("openssl" ,openssl)))
@@ -7118,9 +7120,10 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                 (assoc-ref outputs "lib")))
              #t))
          (add-before 'check 'set-timezone-directory
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append
+                               (assoc-ref (or native-inputs inputs) "tzdata")
+                               "/share/zoneinfo"))
              #t)))))
     (home-page "https://nghttp2.org/")
     (synopsis "HTTP/2 protocol client, proxy, server, and library")
@@ -7148,33 +7151,6 @@ compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
     (license license:expat)))
-
-(define nghttp2-1.39.2
-  (package
-    (inherit nghttp2)
-    (version "1.39.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/nghttp2/nghttp2/"
-                                  "releases/download/v" version "/"
-                                  "nghttp2-" version ".tar.xz"))
-              (sha256
-               (base32
-                "12yfsjghbaypp4w964d45ih9vs38g6anih80wbsflaxx192idlm2"))))))
-
-;; 'Node' requires this newer version, to be removed on the next rebuild cycle.
-(define-public nghttp2-1.40
-  (package
-   (inherit nghttp2)
-   (version "1.40.0")
-   (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/nghttp2/nghttp2/"
-                                 "releases/download/v" version "/"
-                                 "nghttp2-" version ".tar.xz"))
-             (sha256
-              (base32
-               "0wwhwv7cvi1vxpdjwvg0kpa4jzhszclpnwrwfcw728zz53a47z09"))))))
 
 (define-public hpcguix-web
   (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")
@@ -7246,11 +7222,11 @@ compressed JSON header blocks.
          ("uglify-js" ,uglify-js)
          ("pkg-config" ,pkg-config)))
       (inputs
-       `(("guix" ,guile3.0-guix)))
+       `(("guix" ,guix)))
       (propagated-inputs
-       `(("guile" ,guile-next)
-         ("guile-commonmark" ,guile3.0-commonmark)
-         ("guile-json" ,guile3.0-json)))
+       `(("guile" ,guile-3.0)
+         ("guile-commonmark" ,guile-commonmark)
+         ("guile-json" ,guile-json-3)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages

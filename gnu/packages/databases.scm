@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
@@ -168,7 +168,7 @@
        ("avahi" ,avahi)
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -761,6 +761,20 @@ Language.")
          "-DINSTALL_SHAREDIR=share")
        #:phases
        (modify-phases %standard-phases
+         ,@(if (string-prefix? "arm" (%current-system))
+               ;; XXX: Because of the GCC 5 input, we need to hide GCC 7 from
+               ;; CPLUS_INCLUDE_PATH so that its headers do not shadow GCC 5.
+               '((add-after 'set-paths 'hide-default-gcc
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (let ((gcc (assoc-ref inputs "gcc")))
+                       (setenv "CPLUS_INCLUDE_PATH"
+                               (string-join
+                                (delete (string-append gcc "/include/c++")
+                                        (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                      #\:))
+                                ":"))
+                       #t))))
+               '())
          (add-after 'unpack 'fix-pcre-detection
            (lambda _
              ;; The bundled PCRE in MariaDB has a patch that was upstreamed
@@ -893,7 +907,7 @@ Language.")
      `(("bison" ,bison)
        ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
        ,@(if (string-prefix? "armhf" (%current-system))
-             `(("gcc", gcc-5))
+             `(("gcc@5", gcc-5))
              '())
        ("perl" ,perl)))
     (inputs
@@ -974,7 +988,7 @@ developed in C/C++ to MariaDB and MySQL databases.")
              (invoke "make" "-C" "contrib" "install"))))))
     (inputs
      `(("readline" ,readline)
-       ("libuuid" ,util-linux)
+       ("libuuid" ,util-linux "lib")
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (home-page "https://www.postgresql.org/")
@@ -1129,7 +1143,7 @@ including field and record folding.")))
 (define-public rocksdb
   (package
     (name "rocksdb")
-    (version "6.7.3")
+    (version "6.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1138,7 +1152,7 @@ including field and record folding.")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19nacd7fb98i97ir07jjsk3l1vf7zzq04c4nqywizq8wakcx99s9"))
+                "0i6qglyrcqwxnrvq67zm7ln79a4sj8mzgij9h0nz5zkxax8v1zg1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2197,24 +2211,24 @@ can autogenerate peewee models using @code{pwiz}, a model generator.")
 (define-public python-tortoise-orm
   (package
     (name "python-tortoise-orm")
-    (version "0.16.3")
+    (version "0.16.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tortoise-orm" version))
        (sha256
         (base32
-         "01hbvfyxs2qd1mjc96aipwsdxxhydw8ww686r4gsf87bl6f98dvz"))))
+         "0wr7p4v0b16ypm9fcpwpl99kf491m6w3jkd13xcsgq13fy73fbqc"))))
     (build-system python-build-system)
     ;; Disable tests for now. They pull in a lot of dependencies.
     (arguments `(#:tests? #f))
     (native-inputs
-     `(("python-ciso8601" ,python-ciso8601)
-       ("python-asynctest" ,python-asynctest)
+     `(("python-asynctest" ,python-asynctest)
        ("python-nose2" ,python-nose2)))
     (propagated-inputs
      `(("python-aiosqlite" ,python-aiosqlite)
        ("python-pypika" ,python-pypika)
+       ("python-ciso8601" ,python-ciso8601)
        ("python-typing-extensions"
         ,python-typing-extensions)))
     (home-page
@@ -2698,7 +2712,7 @@ PickleShare.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.28.0-r1")
+    (version "3.31.1-r1")
     (source
       (origin
         (method url-fetch)
@@ -2706,7 +2720,7 @@ PickleShare.")
                             "/download/" version "/apsw-" version ".zip"))
         (sha256
           (base32
-           "0x62534l5hcgwrc4k2gxpdzc1sxlhm6m4nwlay74rnmr77qh8wly"))))
+           "1gap5lr6c7bp134nzvfwr693i6d0fqyaysg3ms2cayjldv616yfx"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -2743,14 +2757,14 @@ translate the complete SQLite API into Python.")
 (define-public python-aiosqlite
   (package
     (name "python-aiosqlite")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiosqlite" version))
        (sha256
         (base32
-         "1f3zdldp9zgrw6qz5fsp3wa5zw73cjf139pj4vf24ryv895320jg"))))
+         "1w8248yz85xyzvvh4jaxnc59fqil45aka6h82kn1rcih4rjxbnn1"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-aiounittest" ,python-aiounittest)))
@@ -3074,14 +3088,16 @@ transforms idiomatic python function calls to well-formed SQL queries.")
 (define-public python-pypika
   (package
     (name "python-pypika")
-    (version "0.36.0")
+    (version "0.37.2")
     (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "PyPika" version))
-       (sha256
-        (base32
-         "0qzn5vygirg52dlizm6ayzdc5llq8p2krrx0kymr236lrz89wqp8"))))
+     (origin (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/kayak/pypika.git")
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "089z1c778q1fwhzsc88ws8j5gm2hgxknibabn4wpax8rz2bfs3ck"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-parameterized" ,python-parameterized)))
@@ -3456,7 +3472,8 @@ The drivers officially supported by @code{libdbi} are:
        ("sqlite" ,sqlite)
        ("odbc" ,unixodbc)
        ("boost" ,boost)
-       ("mysql" ,mysql)))
+       ("mariadb:dev" ,mariadb "dev")
+       ("mariadb:lib" ,mariadb "lib")))
     (arguments
      `(#:tests? #f ; Tests may require running database management systems.
        #:phases
@@ -3464,7 +3481,8 @@ The drivers officially supported by @code{libdbi} are:
          (add-after 'unpack 'fix-lib-path
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("set\\(SOCI_LIBDIR \"lib64\"\\)") "")))))))
+               (("set\\(SOCI_LIBDIR \"lib64\"\\)") ""))
+             #t)))))
     (synopsis "C++ Database Access Library")
     (description
      "SOCI is an abstraction layer for several database backends, including

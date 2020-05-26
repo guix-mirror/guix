@@ -35,14 +35,14 @@
 (define-public libntlm
   (package
     (name "libntlm")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.nongnu.org/libntlm/releases/"
                                   "libntlm-" version ".tar.gz"))
               (sha256
                (base32
-                "1gcvv7f9rggpxay81qv6kw5hr6gd4qiyzkbwhzz02fx9jvv9kmsk"))))
+                "08b83nss16jsn213j326yhn1vnrz10k15fwq6jm5b1vdn23nndzj"))))
     (build-system gnu-build-system)
     (synopsis "Library that implements NTLM authentication")
     (description

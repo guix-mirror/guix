@@ -53,14 +53,14 @@
 (define-public ceph
   (package
     (name "ceph")
-    (version "14.2.8")
+    (version "14.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.ceph.com/tarballs/ceph-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0p7pjycqhxqg1mmix8ykx3xqq01d560p54iiidxps0rcvwfkyyki"))
+                "0zkh1a23v8g1fa5flqa2d53lv08ancab3li57gybpqpnja90k7il"))
               (patches
                (search-patches "ceph-disable-cpu-optimizations.patch"))
               (modules '((guix build utils)))
@@ -200,7 +200,7 @@
        ("python-sphinx" ,python-sphinx)
        ("yasm" ,yasm)))
     (inputs
-     `(("boost" ,boost-with-python3)
+     `(("boost" ,boost)
        ("curl" ,curl)
        ("cryptsetup" ,cryptsetup)
        ("expat" ,expat)
@@ -229,6 +229,7 @@
        ("snappy" ,snappy)
        ("udev" ,eudev)
        ("util-linux" ,util-linux)
+       ("util-linux:lib" ,util-linux "lib")
        ("xfsprogs" ,xfsprogs)
        ("zlib" ,zlib)))
     (home-page "https://ceph.com/")

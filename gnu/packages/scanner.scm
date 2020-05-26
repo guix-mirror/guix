@@ -123,7 +123,7 @@ package contains the library, but no drivers.")
     (name "sane-backends")
     (inputs
      `(("hplip" ,(@ (gnu packages cups) hplip-minimal))
-       ("libjpeg" ,libjpeg)             ; wanted by pixma, epsonds, others
+       ("libjpeg" ,libjpeg-turbo)       ; wanted by pixma, epsonds, others
        ("libpng" ,libpng)               ; support ‘scanimage --format=png’
        ,@(package-inputs sane-backends-minimal)))
     (arguments
@@ -226,7 +226,7 @@ package contains the library and drivers.")))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("lcms" ,lcms)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("sane-backends" ,sane-backends)
 

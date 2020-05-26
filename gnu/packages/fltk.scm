@@ -56,7 +56,7 @@
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (inputs
-    `(("libjpeg" ,libjpeg)
+    `(("libjpeg" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("libx11" ,libx11)
       ("libxft" ,libxft)
@@ -129,7 +129,7 @@ UI builder called FLUID that can be used to create applications in minutes.")
                                     (assoc-ref outputs "out") "/lib"))
              #t)))))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("libjpeg" ,libjpeg-turbo)
        ("glu" ,glu)
        ("waf" ,python-waf)))
     ;; ntk.pc lists "x11" and "xft" in Requires.private, and "cairo" in

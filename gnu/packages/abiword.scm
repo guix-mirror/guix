@@ -95,7 +95,7 @@
         ("libchamplain" ,libchamplain)
         ("libglade" ,libglade)
         ("libgsf" ,libgsf)
-        ("libjpeg" ,libjpeg)
+        ("libjpeg" ,libjpeg-turbo)
         ("libpng" ,libpng)
         ("librsvg" ,librsvg)
         ("libxml2" ,libxml2)

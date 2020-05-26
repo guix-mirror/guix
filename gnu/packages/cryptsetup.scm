@@ -62,7 +62,7 @@
       ("libgcrypt" ,libgcrypt)
       ("lvm2" ,lvm2)                    ; device-mapper
       ("popt" ,popt)
-      ("util-linux" ,util-linux)))      ; libuuid
+      ("util-linux" ,util-linux "lib"))) ;libuuid
    (synopsis "Hard disk encryption tool")
    (description
     "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk
@@ -142,6 +142,6 @@ files).  This assumes LIBRARY uses Libtool."
          ("libgcrypt" ,libgcrypt-static)
          ("lvm2" ,lvm2-static)
          ("util-linux" ,util-linux "static")
-         ("util-linux" ,util-linux)
+         ("util-linux" ,util-linux "lib")
          ("popt" ,popt))))
     (synopsis "Hard disk encryption tool (statically linked)")))

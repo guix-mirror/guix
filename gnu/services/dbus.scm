@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -363,7 +363,13 @@ tuples, are all set as environment variables when the bus daemon launches it."
                             (append (polkit-configuration-actions config)
                                     actions)))))
 
-                (default-value (polkit-configuration))))
+                (default-value (polkit-configuration))
+                (description
+                 "Run the
+@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
+management service}, which allows system administrators to grant access to
+privileged operations in a structured way.  Polkit is a requirement for most
+desktop environments, such as GNOME.")))
 
 (define* (polkit-service #:key (polkit polkit))
   "Return a service that runs the

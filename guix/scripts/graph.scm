@@ -307,6 +307,14 @@ derivation graph")))))))
 ;;; DAG of residual references (aka. run-time dependencies).
 ;;;
 
+(define intern
+  (mlambda (str)
+    "Intern STR, a string denoting a store item."
+    ;; This is necessary for %REFERENCE-NODE-TYPE and %REFERRER-NODE-TYPE
+    ;; because their nodes are strings but the (guix graph) traversal
+    ;; procedures expect to be able to compare nodes with 'eq?'.
+    str))
+
 (define ensure-store-items
   ;; Return a list of store items as a monadic value based on the given
   ;; argument, which may be a store item or a package.
@@ -316,10 +324,10 @@ derivation graph")))))))
      (mlet %store-monad ((drv (package->derivation package)))
        (return (match (derivation->output-paths drv)
                  (((_ . file-names) ...)
-                  file-names)))))
+                  (map intern file-names))))))
     ((? store-path? item)
      (with-monad %store-monad
-       (return (list item))))
+       (return (list (intern item)))))
     (x
      (raise
       (condition (&message (message "unsupported argument for \
@@ -333,18 +341,19 @@ substitutes."
     (guard (c ((store-protocol-error? c)
                (match (substitutable-path-info store (list item))
                  ((info)
-                  (values (substitutable-references info) store))
+                  (values (map intern (substitutable-references info))
+                          store))
                  (()
                   (leave (G_ "references for '~a' are not known~%")
                          item)))))
-      (values (references store item) store))))
+      (values (map intern (references store item)) store))))
 
 (define %reference-node-type
   (node-type
    (name "references")
    (description "the DAG of run-time dependencies (store references)")
    (convert ensure-store-items)
-   (identifier (lift1 identity %store-monad))
+   (identifier (lift1 intern %store-monad))
    (label store-path-package-name)
    (edges references*)))
 
@@ -353,14 +362,14 @@ substitutes."
     (lambda (item)
       "Return the referrers of ITEM, except '.drv' files."
       (mlet %store-monad ((items (referrers item)))
-        (return (remove derivation-path? items))))))
+        (return (map intern (remove derivation-path? items)))))))
 
 (define %referrer-node-type
   (node-type
    (name "referrers")
    (description "the DAG of referrers in the store")
    (convert ensure-store-items)
-   (identifier (lift1 identity %store-monad))
+   (identifier (lift1 intern %store-monad))
    (label store-path-package-name)
    (edges non-derivation-referrers)))
 
@@ -448,6 +457,29 @@ package modules, while attempting to retain user package modules."
 
 
 ;;;
+;;; Displaying a path.
+;;;
+
+(define (display-path node1 node2 type)
+  "Display the shortest path from NODE1 to NODE2, of TYPE."
+  (mlet %store-monad ((path (shortest-path node1 node2 type)))
+    (define node-label
+      (let ((label (node-type-label type)))
+        ;; Special-case derivations and store items to print them in full,
+        ;; contrary to what their 'node-type-label' normally does.
+        (match-lambda
+          ((? derivation? drv) (derivation-file-name drv))
+          ((? string? str) str)
+          (node (label node)))))
+
+    (if path
+        (format #t "~{~a~%~}" (map node-label path))
+        (leave (G_ "no path from '~a' to '~a'~%")
+               (node-label node1) (node-label node2)))
+    (return #t)))
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
@@ -456,6 +488,9 @@ package modules, while attempting to retain user package modules."
                  (lambda (opt name arg result)
                    (alist-cons 'node-type (lookup-node-type arg)
                                result)))
+         (option '("path") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'path? #t result)))
          (option '("list-types") #f #f
                  (lambda (opt name arg result)
                    (list-node-types)
@@ -501,6 +536,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   -t, --type=TYPE        represent nodes of the given TYPE"))
   (display (G_ "
       --list-types       list the available graph types"))
+  (display (G_ "
+      --path             display the shortest path between the given nodes"))
   (display (G_ "
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (display (G_ "
@@ -557,11 +594,19 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
           (mlet %store-monad ((_     (set-grafting #f))
                               (nodes (mapm %store-monad
                                            (node-type-convert type)
-                                           items)))
-            (export-graph (concatenate nodes)
-                          (current-output-port)
-                          #:node-type type
-                          #:backend backend))
+                                           (reverse items))))
+            (if (assoc-ref opts 'path?)
+                (match nodes
+                  (((node1 _ ...) (node2 _ ...))
+                   (display-path node1 node2 type))
+                  (_
+                   (leave (G_ "'--path' option requires exactly two \
+nodes (given ~a)~%")
+                          (length nodes))))
+                (export-graph (concatenate nodes)
+                              (current-output-port)
+                              #:node-type type
+                              #:backend backend)))
           #:system (assq-ref opts 'system)))))
   #t)
 

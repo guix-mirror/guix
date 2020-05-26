@@ -1,0 +1,30 @@
+Author: Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Not upstreamed.
+
+From 1ddae040d67e9a4ebcc3e1b95af1bff12c0f086b Mon Sep 17 00:00:00 2001
+From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Date: Tue, 7 Apr 2020 17:41:05 +0200
+Subject: [PATCH] Build fix for the Hurd.
+
+* gss-serv.c (ssh_gssapi_acquire_cred): Use HOST_NAME_MAX instead of
+MAXHOSTNAMELEN.
+---
+ gss-serv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gss-serv.c b/gss-serv.c
+index 1d47870e7..22081c6f1 100644
+--- a/gss-serv.c
++++ b/gss-serv.c
+@@ -107,7 +107,7 @@ ssh_gssapi_acquire_cred(Gssctxt *ctx)
+ 		gss_create_empty_oid_set(&status, &oidset);
+ 		gss_add_oid_set_member(&status, ctx->oid, &oidset);
+ 
+-		if (gethostname(lname, MAXHOSTNAMELEN)) {
++		if (gethostname(lname, HOST_NAME_MAX)) {
+ 			gss_release_oid_set(&status, &oidset);
+ 			return (-1);
+ 		}
+-- 
+2.26.0
+

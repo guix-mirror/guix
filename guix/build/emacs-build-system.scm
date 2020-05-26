@@ -21,7 +21,7 @@
 
 (define-module (guix build emacs-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
-  #:use-module (guix build utils)
+  #:use-module ((guix build utils) #:hide (delete))
   #:use-module (guix build emacs-utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)

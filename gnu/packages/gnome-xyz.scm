@@ -148,6 +148,53 @@ GNOME Shell.")
     (home-page "https://github.com/ubuntu/gnome-shell-extension-appindicator/")
     (license license:gpl2+)))
 
+(define-public gnome-shell-extension-clipboard-indicator
+  (package
+    (name "gnome-shell-extension-clipboard-indicator")
+    (version "34")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url (string-append "https://github.com/Tudmotu/"
+                                        "gnome-shell-extension-clipboard-indicator.git"))
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0i00psc1ky70zljd14jzr627y7nd8xwnwrh4xpajl1f6djabh12s"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove pre-compiled settings schemas and translations from
+               ;; source, as they are generated as part of build. Upstream
+               ;; includes them for people who want to run the software
+               ;; directly from source tree.
+               '(begin (delete-file "schemas/gschemas.compiled")
+                       (for-each delete-file (find-files "locale" "\\.mo$"))
+                       #t))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("." "share/gnome-shell/extensions/clipboard-indicator@tudmotu.com"
+          #:include-regexp ("\\.css$" "\\.compiled$" "\\.js(on)?$" "\\.mo$" "\\.xml$")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'compile-schemas
+           (lambda _
+             (with-directory-excursion "schemas"
+               (invoke "glib-compile-schemas" "."))
+             #t))
+         (add-before 'install 'compile-locales
+           (lambda _ (invoke "./compile-locales.sh")
+                   #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")))       ; for glib-compile-schemas
+    (home-page "https://github.com/Tudmotu/gnome-shell-extension-clipboard-indicator")
+    (synopsis "Clipboard manager extension for GNOME Shell")
+    (description "Clipboard Indicator is a clipboard manager for GNOME Shell
+that caches clipboard history.")
+    (license license:expat)))
+
 (define-public gnome-shell-extension-topicons-redux
   (package
     (name "gnome-shell-extension-topicons-redux")
@@ -229,8 +276,8 @@ faster window switching.")
 (define-public gnome-shell-extension-gsconnect
   (package
     (name "gnome-shell-extension-gsconnect")
-    ;; v28 is the last version to support GNOME 3.32
-    (version "28")
+    ;; v33 is the last version to support GNOME 3.34
+    (version "33")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -240,7 +287,7 @@ faster window switching.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0grqkzqm7mlkbzin4nx9w7bh5cgygph8pn0cvim4a4gg99nfcp5z"))))
+                "1q03axhn75i864vgmd6myhmgwrmnpf01gsd1wl0di5x9q8mic2zn"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -294,7 +341,6 @@ faster window switching.")
      `(("at-spi2-core" ,at-spi2-core)
        ("caribou" ,caribou)
        ("evolution-data-server" ,evolution-data-server)
-       ("folks" ,folks)
        ("gjs" ,gjs)
        ("glib" ,glib)
        ("glib:bin" ,glib "bin")

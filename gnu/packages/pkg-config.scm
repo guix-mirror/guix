@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,17 @@
              (base32
               "14fmwzki1rlz8bs2p810lk6jqdxsk966d8drgsjmi54cd00rrikg"))))
    (build-system gnu-build-system)
-   (arguments `(#:configure-flags '("--with-internal-glib")))
+   (arguments
+    `(#:configure-flags
+      '("--with-internal-glib"
+        ;; Those variables are guessed incorrectly when cross-compiling.
+        ;; See: https://developer.gimp.org/api/2.0/glib/glib-cross-compiling.html.
+        ,@(if (%current-target-system)
+              '("glib_cv_stack_grows=no"
+                "glib_cv_uscore=no"
+                "ac_cv_func_posix_getpwuid_r=yes"
+                "ac_cv_func_posix_getgrgid_r=yes")
+              '()))))
    (native-search-paths
     (list (search-path-specification
            (variable "PKG_CONFIG_PATH")

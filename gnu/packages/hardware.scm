@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,15 +19,25 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages hardware)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages cpp)
+  #:use-module (gnu packages crypto)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -78,6 +89,43 @@ ddcutil allows colour-related settings to be saved at the time a monitor is
 calibrated, and restored when the calibration is applied.")
     (license (list license:bsd-3        ; FindDDCUtil.cmake
                    license:gpl2+))))    ; everything else
+
+(define-public edid-decode
+  (let ((commit "74b64180d67bb009d8d9ea1b6f18ad41aaa16396") ; 2020-04-22
+        (revision "1"))
+    (package
+      (name "edid-decode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (file-name (git-file-name name version))
+         (uri (git-reference
+               (url "git://linuxtv.org/edid-decode.git")
+               (commit commit)))
+         (sha256
+          (base32 "0nirp5bza08zj5d8bjgcm0p869hdg3qg3mwa7999pjdrzmn7s2ah"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                     ; No test suite
+         #:make-flags
+         (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+               "bindir=/bin" "mandir=/share/man")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-cross-compilation
+             (lambda* (#:key native-inputs target #:allow-other-keys)
+               (when target
+                 (substitute* "Makefile"
+                   (("\\$\\(CXX\\)")
+                    (string-append target "-g++"))))
+               #t))
+           (delete 'configure))))
+      (home-page "https://git.linuxtv.org/edid-decode.git/")
+      (synopsis "Decode @dfn{EDID} data in human-readable format")
+      (description "edid-decode decodes @dfn{EDID} monitor description data in
+human-readable format and checks if it conforms to the standards.")
+      (license license:expat))))
 
 ;; Distinct from memtest86, which is obsolete.
 (define-public memtest86+
@@ -307,3 +355,112 @@ supported by the Linux kernel.")
        "Rkdeveloptool can read from and write to RockChip devices over USB, such
 as the Pinebook Pro.")
       (license license:gpl2+))))
+
+(define-public libqb
+  (package
+    (name "libqb")
+    ;; NOTE: We are using a Release Candidate version (for 2.0) here because
+    ;; of the linker issues with the previous release.
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ClusterLabs/libqb/releases/download/v"
+                    version "/libqb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "008vvw504kh40br5v2xkqavnp9vpmjvf768faqzv1d00fd53ingn"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (home-page "https://clusterlabs.github.io/libqb/")
+    (synopsis "Library providing high performance logging, tracing, ipc, and poll")
+    (description "Libqb is a library with the primary purpose of providing
+high-performance, reusable features for client-server architecture, such as
+logging, tracing, inter-process communication (IPC), and polling.  Libqb is
+not intended to be an all-encompassing library, but instead provide focused
+APIs that are highly tuned for maximum performance for client-server
+applications.")
+    (license license:lgpl2.1)))
+
+(define-public usbguard
+  (package
+    (name "usbguard")
+    (version "0.7.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/USBGuard/usbguard/releases/download/usbguard-"
+                    version "/usbguard-" version ".tar.gz"))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0gzhs8s4aka86mkcjib36z54si939ki4bmk46p6v8kln1fixad3j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-build-scripts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+               (("/usr/include/catch")
+                (string-append (assoc-ref inputs "catch") "/include")))
+             ;; Do not create log directory.
+             (substitute* "Makefile.in" ((".*/log/usbguard.*") ""))
+             ;; Disable LDAP tests: they use 'sudo'.
+             (substitute* "src/Tests/Makefile.in"
+               (("\\$\\(am__append_2\\)") ""))
+             #t))
+         (add-after 'install 'delete-static-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; It can't be direclty disabled since it's needed for the tests.
+             (delete-file (string-append (assoc-ref outputs "out")
+                                         "/lib/libusbguard.a"))
+             #t))
+         (add-after 'install 'install-zsh-completion
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (site-functions
+                     (string-append out "/share/zsh/site-functions")))
+               (mkdir-p site-functions)
+               (copy-file "scripts/usbguard-zsh-completion"
+                          (string-append site-functions "/_usbguard"))
+               #t))))
+       #:make-flags
+       (list (string-append "BASH_COMPLETION_DIR="
+                            (assoc-ref %outputs "out")
+                            "/etc/bash_completion.d"))
+       #:configure-flags
+       (list
+        "--localstatedir=/var"
+        "--enable-systemd=no"
+        "--with-ldap"
+        "--with-dbus"
+        "--with-polkit")))
+    (inputs
+     `(("audit" ,audit)
+       ("catch" ,catch-framework)
+       ("dbus-glib" ,dbus-glib)
+       ("ldap" ,openldap)
+       ("libcap-ng" ,libcap-ng)
+       ("libseccomp" ,libseccomp)
+       ("libsodium" ,libsodium)
+       ("pegtl" ,pegtl)
+       ("polkit" ,polkit)
+       ("protobuf" ,protobuf)
+       ("libqb" ,libqb)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("bash-completion" ,bash-completion)
+       ("gdbus-codegen" ,glib "bin")
+       ("umockdev" ,umockdev)
+       ("xmllint" ,libxml2)
+       ("xsltproc" ,libxslt)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://usbguard.github.io")
+    (synopsis "Helps to protect your computer against rogue USB devices (a.k.a. BadUSB)")
+    (description "USBGuard is a software framework for implementing USB device
+authorization policies (what kind of USB devices are authorized) as well as
+method of use policies (how a USB device may interact with the system).
+Simply put, it is a USB device whitelisting tool.")
+    (license license:gpl2)))

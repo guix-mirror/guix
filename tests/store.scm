@@ -475,6 +475,23 @@
       (run-with-store %store
         (mapm/accumulate-builds built-derivations `((,d1) (,d2)))))))
 
+(test-equal "mapm/accumulate-builds, %current-target-system"
+  (make-list 2 '("i586-pc-gnu" "i586-pc-gnu"))
+  ;; Both the 'mapm' and 'mapm/accumulate-builds' procedures should see the
+  ;; right #:target.
+  (run-with-store %store
+    (mlet %store-monad ((lst1 (mapm %store-monad
+                                    (lambda _
+                                      (current-target-system))
+                                    '(a b)))
+                        (lst2 (mapm/accumulate-builds
+                               (lambda _
+                                 (current-target-system))
+                               '(a b))))
+      (return (list lst1 lst2)))
+    #:system system
+    #:target "i586-pc-gnu"))
+
 (test-assert "topologically-sorted, one item"
   (let* ((a (add-text-to-store %store "a" "a"))
          (b (add-text-to-store %store "b" "b" (list a)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
 
 (define-module (guix build syscalls)
   #:use-module (system foreign)
+  #:use-module (system base target)
   #:use-module (rnrs bytevectors)
   #:autoload   (ice-9 binary-ports) (get-bytevector-n)
   #:use-module (srfi srfi-1)
@@ -77,6 +79,8 @@
             fdatasync
             pivot-root
             scandir*
+            getxattr
+            setxattr
 
             fcntl-flock
             lock-file
@@ -194,9 +198,14 @@
      (* (sizeof* type) n))
     ((_ type)
      (let-syntax ((v (lambda (s)
-                       (let ((val (sizeof type)))
-                         (syntax-case s ()
-                           (_ val))))))
+                       ;; When compiling natively, call 'sizeof' at expansion
+                       ;; time; otherwise, emit code to call it at run time.
+                       (syntax-case s ()
+                         (_
+                          (if (= (target-word-size)
+                                 (with-target %host-type target-word-size))
+                              (sizeof type)
+                              #'(sizeof type)))))))
        v))))
 
 (define-syntax alignof*
@@ -208,9 +217,14 @@
      (alignof* type))
     ((_ type)
      (let-syntax ((v (lambda (s)
-                       (let ((val (alignof type)))
-                         (syntax-case s ()
-                           (_ val))))))
+                       ;; When compiling natively, call 'sizeof' at expansion
+                       ;; time; otherwise, emit code to call it at run time.
+                       (syntax-case s ()
+                         (_
+                          (if (= (target-word-size)
+                                 (with-target %host-type target-word-size))
+                              (alignof type)
+                              #'(alignof type)))))))
        v))))
 
 (define-syntax align                             ;as found in (system foreign)
@@ -711,6 +725,49 @@ backend device."
              (list (strerror err))
              (list err))))))
 
+(define getxattr
+  (let ((proc (syscall->procedure ssize_t "getxattr"
+                                  `(* * * ,size_t))))
+    (lambda (file key)
+      "Get the extended attribute value for KEY on FILE."
+      (let-values (((size err)
+                    ;; Get size of VALUE for buffer.
+                    (proc (string->pointer/utf-8 file)
+                          (string->pointer key)
+                          (string->pointer "")
+                          0)))
+        (cond ((< size 0) #f)
+              ((zero? size) "")
+              ;; Get VALUE in buffer of SIZE.  XXX actual size can race.
+              (else (let*-values (((buf) (make-bytevector size))
+                                  ((size err)
+                                   (proc (string->pointer/utf-8 file)
+                                         (string->pointer key)
+                                         (bytevector->pointer buf)
+                                         size)))
+                      (if (>= size 0)
+                          (utf8->string buf)
+                          (throw 'system-error "getxattr" "~S: ~A"
+                                 (list file key (strerror err))
+                                 (list err))))))))))
+
+(define setxattr
+  (let ((proc (syscall->procedure int "setxattr"
+                                  `(* * * ,size_t ,int))))
+    (lambda* (file key value #:optional (flags 0))
+      "Set extended attribute KEY to VALUE on FILE."
+      (let*-values (((bv) (string->utf8 value))
+                    ((ret err)
+                     (proc (string->pointer/utf-8 file)
+                           (string->pointer key)
+                           (bytevector->pointer bv)
+                           (bytevector-length bv)
+                           flags)))
+        (unless (zero? ret)
+          (throw 'system-error "setxattr" "~S: ~A"
+                 (list file key value (strerror err))
+                 (list err)))))))
+
 
 ;;;
 ;;; Random.
@@ -1194,6 +1251,8 @@ bytes."
 ;;;
 
 (define SIOCGIFCONF                               ;from <bits/ioctls.h>
+                                                  ;     <net/if.h>
+                                                  ;     <hurd/ioctl.h>
   (if (string-contains %host-type "linux")
       #x8912                                      ;GNU/Linux
       #xf00801a4))                                ;GNU/Hurd
@@ -1204,23 +1263,23 @@ bytes."
 (define SIOCSIFFLAGS
   (if (string-contains %host-type "linux")
       #x8914                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #x84804190))                                ;GNU/Hurd
 (define SIOCGIFADDR
   (if (string-contains %host-type "linux")
       #x8915                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #xc08401a1))                                ;GNU/Hurd
 (define SIOCSIFADDR
   (if (string-contains %host-type "linux")
       #x8916                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #x8084018c))                                ;GNU/Hurd
 (define SIOCGIFNETMASK
   (if (string-contains %host-type "linux")
       #x891b                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #xc08401a5))                                ;GNU/Hurd
 (define SIOCSIFNETMASK
   (if (string-contains %host-type "linux")
       #x891c                                      ;GNU/Linux
-      -1))                                        ;FIXME: GNU/Hurd?
+      #x80840196))                                ;GNU/Hurd
 (define SIOCADDRT
   (if (string-contains %host-type "linux")
       #x890B                                      ;GNU/Linux

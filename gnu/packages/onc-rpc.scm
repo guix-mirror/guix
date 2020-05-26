@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,8 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages pkg-config)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
 (define-public libtirpc
   (package
@@ -71,6 +73,21 @@
 procedure calls) protocol in a transport-independent manner.  It supports both
 IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
     (license bsd-3)))
+
+(define-public libtirpc/hurd
+  (package
+    (inherit libtirpc)
+    (name "libtirpc-hurd")
+    (source (origin (inherit (package-source libtirpc))
+                    (patches (search-patches "libtirpc-hurd.patch"
+                                             "libtirpc-hurd-client.patch"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libtirpc)
+       ((#:configure-flags flags ''())
+        ;; When cross-building the target system's krb5-config should be used.
+        `(list (string-append "ac_cv_prog_KRB5_CONFIG="
+                              (assoc-ref %build-inputs "mit-krb5")
+                              "/bin/krb5-config")))))))
 
 (define-public rpcbind
   (package

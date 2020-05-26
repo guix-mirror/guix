@@ -63,7 +63,8 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "avahi")
-                                    "/include/avahi-compat-libdns_sd"))
+                                    "/include/avahi-compat-libdns_sd:"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
              #t)))))
     (inputs
      `(("avahi" ,avahi)

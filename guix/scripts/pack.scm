@@ -286,6 +286,7 @@ added to the pack."
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
+                    #:target target
                     #:references-graphs `(("profile" ,profile))))
 
 (define (singularity-environment-file profile)
@@ -384,7 +385,7 @@ added to the pack."
                      ;; Reset all UIDs and GIDs.
                      "-force-uid" "0" "-force-gid" "0")))
 
-          (setenv "PATH" (string-append #$archiver "/bin"))
+          (setenv "PATH" #+(file-append archiver "/bin"))
 
           ;; We need an empty file in order to have a valid file argument when
           ;; we reparent the root file system.  Read on for why that's
@@ -484,6 +485,7 @@ added to the pack."
                                    (compressor-extension compressor)
                                    ".squashfs")
                     build
+                    #:target target
                     #:references-graphs `(("profile" ,profile))))
 
 (define* (docker-image name profile
@@ -558,7 +560,7 @@ the image."
                         ((_) str)
                         ((names ... _) (loop names))))))) ;drop one entry
 
-            (setenv "PATH" (string-append #$archiver "/bin"))
+            (setenv "PATH" #+(file-append archiver "/bin"))
 
             (build-docker-image #$output
                                 (map store-info-item
@@ -574,12 +576,13 @@ the image."
                                        #~(list (string-append #$profile "/"
                                                               #$entry-point)))
                                 #:extra-files directives
-                                #:compressor '#$(compressor-command compressor)
+                                #:compressor '#+(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
 
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
+                    #:target target
                     #:references-graphs `(("profile" ,profile))))
 
 
@@ -681,18 +684,50 @@ last resort for relocation."
   (define runner
     (local-file (search-auxiliary-file "run-in-namespace.c")))
 
+  (define audit-source
+    (local-file (search-auxiliary-file "pack-audit.c")))
+
   (define (proot)
     (specification->package "proot-static"))
+
+  (define (fakechroot-library)
+    (computed-file "libfakechroot.so"
+                   #~(copy-file #$(file-append
+                                   (specification->package "fakechroot")
+                                   "/lib/fakechroot/libfakechroot.so")
+                                #$output)))
+
+  (define (audit-module)
+    ;; Return an ld.so audit module for use by the 'fakechroot' execution
+    ;; engine that translates file names of all the files ld.so loads.
+    (computed-file "pack-audit.so"
+                   (with-imported-modules '((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils))
+
+                         (copy-file #$audit-source "audit.c")
+                         (substitute* "audit.c"
+                           (("@STORE_DIRECTORY@")
+                            (%store-directory)))
+
+                         (invoke #$compiler "-std=gnu99"
+                                 "-shared" "-fPIC" "-Os" "-g0"
+                                 "-Wall" "audit.c" "-o" #$output)))))
 
   (define build
     (with-imported-modules (source-module-closure
                             '((guix build utils)
-                              (guix build union)))
+                              (guix build union)
+                              (guix elf)))
       #~(begin
           (use-modules (guix build utils)
                        ((guix build union) #:select (relative-file-name))
+                       (guix elf)
+                       (ice-9 binary-ports)
                        (ice-9 ftw)
-                       (ice-9 match))
+                       (ice-9 match)
+                       (srfi srfi-1)
+                       (rnrs bytevectors))
 
           (define input
             ;; The OUTPUT* output of PACKAGE.
@@ -710,6 +745,48 @@ last resort for relocation."
               (match (string-index base #\/)
                 (#f    base)
                 (index (string-drop base index)))))
+
+          (define (elf-interpreter elf)
+            ;; Return the interpreter of ELF as a string, or #f if ELF has no
+            ;; interpreter segment.
+            (match (find (lambda (segment)
+                           (= (elf-segment-type segment) PT_INTERP))
+                         (elf-segments elf))
+              (#f #f)                             ;maybe a .so
+              (segment
+               (let ((bv (make-bytevector (- (elf-segment-memsz segment) 1))))
+                 (bytevector-copy! (elf-bytes elf)
+                                   (elf-segment-offset segment)
+                                   bv 0 (bytevector-length bv))
+                 (utf8->string bv)))))
+
+          (define (elf-loader-compile-flags program)
+            ;; Return the cpp flags defining macros for the ld.so/fakechroot
+            ;; wrapper of PROGRAM.
+
+            ;; TODO: Handle scripts by wrapping their interpreter.
+            (if (elf-file? program)
+                (let* ((bv      (call-with-input-file program
+                                  get-bytevector-all))
+                       (elf     (parse-elf bv))
+                       (interp  (elf-interpreter elf))
+                       (gconv   (and interp
+                                     (string-append (dirname interp)
+                                                    "/gconv"))))
+                  (if interp
+                      (list (string-append "-DPROGRAM_INTERPRETER=\""
+                                           interp "\"")
+                            (string-append "-DFAKECHROOT_LIBRARY=\""
+                                           #$(fakechroot-library) "\"")
+
+                            (string-append "-DLOADER_AUDIT_MODULE=\""
+                                           #$(audit-module) "\"")
+                            (if gconv
+                                (string-append "-DGCONV_DIRECTORY=\""
+                                               gconv "\"")
+                                "-UGCONV_DIRECTORY"))
+                      '()))
+                '()))
 
           (define (build-wrapper program)
             ;; Build a user-namespace wrapper for PROGRAM.
@@ -730,10 +807,11 @@ last resort for relocation."
               (mkdir-p (dirname result))
               (apply invoke #$compiler "-std=gnu99" "-static" "-Os" "-g0" "-Wall"
                      "run.c" "-o" result
-                     (if proot
-                         (list (string-append "-DPROOT_PROGRAM=\""
-                                              proot "\""))
-                         '()))
+                     (append (if proot
+                                 (list (string-append "-DPROOT_PROGRAM=\""
+                                                      proot "\""))
+                                 '())
+                             (elf-loader-compile-flags program)))
               (delete-file "run.c")))
 
           (setvbuf (current-output-port) 'line)
@@ -1035,7 +1113,7 @@ Create a bundle of PACKAGE.\n"))
                                             store
                                             (if (assoc-ref opts 'bootstrap?)
                                                 %bootstrap-guile
-                                                (canonical-package guile-2.2))
+                                                (default-guile))
                                             (assoc-ref opts 'system)
                                             #:graft? (assoc-ref opts 'graft?))))
             (let* ((derivation? (assoc-ref opts 'derivation-only?))

@@ -13,12 +13,12 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
@@ -148,7 +148,9 @@ tools have full access to view and control running applications.")
       ("python" ,python-wrapper)))
     (arguments
      `(#:tests? #f  ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
-       #:configure-flags '("--enable-tee")))  ; needed for GNU Icecat
+       #:configure-flags '("--enable-tee"      ;needed for GNU Icecat
+                           "--enable-xml"      ;for cairo-xml support
+                           "--disable-static")))
    (synopsis "2D graphics library")
    (description
     "Cairo is a 2D graphics library with support for multiple output devices.
@@ -184,7 +186,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "2.5.3")
+   (version "2.6.4")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -192,7 +194,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0p45xk5bblsw8lfs7y7z80b4rvda9f2hlpr28flkrfmpjz3hvl7y"))))
+               "04iwq13w6zkdhljmsxrzgg4fyh04qnwfn57rgrl9kmijc7cvh4wl"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -224,16 +226,28 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.42.4")
+   (version "1.44.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
                                 (version-major+minor version) "/"
                                 name "-" version ".tar.xz"))
+            (patches (search-patches "pango-skip-libthai-test.patch"))
             (sha256
              (base32
-              "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
-   (build-system gnu-build-system)
+              "07qvxa2sk90chp1l12han6vxvy098mc37sdqcznyywyv2g6bd9b6"))))
+   (build-system meson-build-system)
+   (arguments
+    '(#:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'disable-cantarell-tests
+                   (lambda _
+                     (substitute* "tests/meson.build"
+                       ;; XXX FIXME: These tests require "font-cantarell", but
+                       ;; adding it here would introduce a circular dependency.
+                       (("\\[ 'test-harfbuzz'.*") "")
+                       (("\\[ 'test-itemize'.*") "")
+                       (("\\[ 'test-layout'.*") ""))
+                     #t)))))
    (propagated-inputs
     ;; These are all in Requires or Requires.private of the '.pc' files.
     `(("cairo" ,cairo)
@@ -241,13 +255,13 @@ affine transformation (scale, rotation, shear, etc.).")
       ("fontconfig" ,fontconfig)
       ("freetype" ,freetype)
       ("glib" ,glib)
-      ("harfbuzz" ,harfbuzz)))
-   (inputs
-    `(("zlib" ,zlib)
+      ("harfbuzz" ,harfbuzz)
 
       ;; Some packages, such as Openbox, expect Pango to be built with the
       ;; optional libxft support.
       ("libxft" ,libxft)))
+   (inputs
+    `(("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -259,6 +273,21 @@ applications.  It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
+
+(define-public pango-1.42
+  (package
+   (inherit pango)
+   (version "1.42.4")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/pango/"
+                                 (version-major+minor version) "/"
+                                 "pango-" version ".tar.xz"))
+             (sha256
+              (base32
+               "17bwb7dgbncrfsmchlib03k9n3xaalirb39g3yb43gg8cg6p8aqx"))))
+   (build-system gnu-build-system)
+   (arguments '())))
 
 (define-public pangox-compat
   (package
@@ -275,7 +304,7 @@ used throughout the world.")
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)
-       ("pango" ,pango)))
+       ("pango" ,pango-1.42)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
@@ -506,7 +535,7 @@ highlighting and other features typical of a source code editor.")
       ;; Used for testing and required at runtime.
       ("shared-mime-info" ,shared-mime-info)))
    (inputs
-    `(("libjpeg" ,libjpeg)
+    `(("libjpeg" ,libjpeg-turbo)
       ("libtiff" ,libtiff)
       ("libx11"  ,libx11)))
    (native-inputs
@@ -609,10 +638,10 @@ in the GNOME project.")
       ("libxi" ,libxi)
       ("libxtst" ,libxtst)))
    (native-inputs
-    `(("gobject-introspection" ,gobject-introspection)
+    `(("gettext" ,gettext-minimal)
+      ("gobject-introspection" ,gobject-introspection)
       ("gtk-doc" ,gtk-doc)
       ("glib" ,glib "bin")
-      ("intltool" ,intltool)
       ("pkg-config" ,pkg-config)))
    (synopsis "Assistive Technology Service Provider Interface, core components")
    (description
@@ -674,7 +703,7 @@ is part of the GNOME accessibility project.")
                                      "gtk2-respect-GUIX_GTK2_IM_MODULE_FILE.patch"
                                      "gtk2-theme-paths.patch"))))
    (build-system gnu-build-system)
-   (outputs '("out" "doc"))
+   (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf+svg)
@@ -701,14 +730,19 @@ is part of the GNOME accessibility project.")
                            (assoc-ref %outputs "doc")
                            "/share/gtk-doc/html"))
       #:phases
-      (alist-cons-before
-       'configure 'disable-tests
-       (lambda _
-         ;; FIXME: re-enable tests requiring an X server
-         (substitute* "gtk/Makefile.in"
-           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
-         #t)
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'disable-tests
+          (lambda _
+            ;; FIXME: re-enable tests requiring an X server
+            (substitute* "gtk/Makefile.in"
+              (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
+            #t))
+        (add-after 'install 'remove-cache
+          (lambda* (#:key outputs #:allow-other-keys)
+	    (for-each
+	      delete-file
+	      (find-files (assoc-ref outputs "out") "immodules.cache"))
+            #t)))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK2_PATH")
@@ -736,7 +770,6 @@ application suites.")
               "120yz5gxqbv7sgdbcy4i0b6ixm8jpjzialdrqs0gv15q7bwnjk8w"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
-   (outputs '("out" "bin" "doc"))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -844,10 +877,14 @@ application suites.")
                        "#include <libguile.h>\n#include <string.h>\n"))
                     #t)))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
+     ;; because of them.
+     '(#:configure-flags '("--disable-Werror")))
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
-       ("guile" ,guile-2.2)))
+       ("guile" ,guile-3.0)))
     (propagated-inputs
      ;; The .pc file refers to 'cairo'.
      `(("cairo" ,cairo)))
@@ -864,21 +901,18 @@ graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
 
-(define-public guile3.0-cairo
+(define-public guile2.2-cairo
   (package
     (inherit guile-cairo)
-    (name "guile3.0-cairo")
-    (arguments
-     (substitute-keyword-arguments (package-arguments guile-cairo)
-       ((#:configure-flags flags ''())
-        ;; Uses of 'scm_t_uint8' & co. are deprecated; don't stop the build
-        ;; because of them.
-        `(cons "--disable-Werror" ,flags))))
+    (name "guile2.2-cairo")
     (inputs
-     `(("guile" ,guile-3.0)
-       ("guile-lib" ,guile3.0-lib)
+     `(("guile" ,guile-2.2)
+       ("guile-lib" ,guile2.2-lib)
        ,@(fold alist-delete (package-inputs guile-cairo)
                '("guile" "guile-lib"))))))
+
+(define-public guile3.0-cairo
+  (deprecated-package "guile3.0-cairo" guile-cairo))
 
 (define-public guile-rsvg
   ;; Use a recent snapshot that supports Guile 2.2 and beyond.
@@ -916,7 +950,7 @@ exceptions, macros, and a dynamic programming environment.")
                        ("automake" ,automake)
                        ("libtool" ,libtool)
                        ("texinfo" ,texinfo)))
-      (inputs `(("guile" ,guile-2.2)
+      (inputs `(("guile" ,guile-3.0)
                 ("librsvg" ,librsvg)
                 ("guile-lib" ,guile-lib)))        ;for (unit-test)
       (propagated-inputs `(("guile-cairo" ,guile-cairo)))
@@ -927,16 +961,19 @@ images onto Cairo surfaces.")
       (home-page "https://wingolog.org/projects/guile-rsvg/")
       (license license:lgpl2.1+))))
 
-(define-public guile3.0-rsvg
+(define-public guile2.2-rsvg
   (package
     (inherit guile-rsvg)
-    (name "guile3.0-rsvg")
+    (name "guile2.2-rsvg")
     (inputs
-     `(("guile" ,guile-3.0)
-       ("guile-lib" ,guile3.0-lib)
+     `(("guile" ,guile-2.2)
+       ("guile-lib" ,guile2.2-lib)
        ,@(fold alist-delete (package-inputs guile-rsvg)
                '("guile" "guile-lib"))))
-    (propagated-inputs `(("guile-cairo" ,guile3.0-cairo)))))
+    (propagated-inputs `(("guile-cairo" ,guile2.2-cairo)))))
+
+(define-public guile3.0-rsvg
+  (deprecated-package "guile3.0-rsvg" guile-rsvg))
 
 (define-public guile-present
   (package
@@ -982,7 +1019,7 @@ images onto Cairo surfaces.")
                                  out "/lib/guile/" version "/site-ccache "))))
              #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-3.0)))
     (propagated-inputs
      ;; These are used by the (present …) modules.
      `(("guile-lib" ,guile-lib)
@@ -998,15 +1035,18 @@ includes a tools to generate PDF presentations out of Org mode and Texinfo
 documents.")
     (license license:lgpl3+)))
 
-(define-public guile3.0-present
+(define-public guile2.2-present
   (package
     (inherit guile-present)
-    (name "guile3.0-present")
-    (inputs `(("guile" ,guile-3.0)))
+    (name "guile2.2-present")
+    (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-lib" ,guile3.0-lib)
-       ("guile-cairo" ,guile3.0-cairo)
-       ("guile-rsvg" ,guile3.0-rsvg)))))
+     `(("guile-lib" ,guile2.2-lib)
+       ("guile-cairo" ,guile2.2-cairo)
+       ("guile-rsvg" ,guile2.2-rsvg)))))
+
+(define-public guile3.0-present
+  (deprecated-package "guile3.0-present" guile-present))
 
 (define-public guile-gnome
    (package
@@ -1041,9 +1081,9 @@ documents.")
        ("glib" ,glib)))
     (inputs `(("guile" ,guile-2.2)))
     (propagated-inputs
-     `(("guile-cairo" ,guile-cairo)
+     `(("guile-cairo" ,guile2.2-cairo)
        ("g-wrap" ,g-wrap)
-       ("guile-lib" ,guile-lib)))
+       ("guile-lib" ,guile2.2-lib)))
     (arguments
       `(#:tests? #f                               ;FIXME
         #:phases (modify-phases %standard-phases
@@ -1248,7 +1288,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.17.1")
+    (version "1.19.0")
     (source
      (origin
       (method url-fetch)
@@ -1256,7 +1296,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "165n0g7gp2a0qi8558snvfans17x83jv2lv7bx4vr1rxjbn3a2hg"))))
+        "176i283glkpycka8wwyndwld0zp1yn9xj9rpvllqgja698vsjnsg"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1270,14 +1310,21 @@ printing and other features typical of a source code editor.")
     (license license:lgpl3+)
     (properties `((python2-variant . ,(delay python2-pycairo))))))
 
+;; Pycairo no longer supports Python 2 since version 1.19.0, so we stick
+;; with this older version here.
 (define-public python2-pycairo
   (let ((pycairo (package-with-python2
                   (strip-python2-variant python-pycairo))))
     (package
       (inherit pycairo)
-      (propagated-inputs
-       `(("python2-funcsigs" ,python2-funcsigs)
-         ,@(package-propagated-inputs pycairo)))
+      (version "1.18.2")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/pygobject/pycairo/releases"
+                                    "/download/v" version "/pycairo-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0cb5n4r4nl0k1g90b1gz9iyk4lp7hi03db98i1p52a870bym7f6w"))))
       ;; Dual-licensed under LGPL 2.1 or Mozilla Public License 1.1
       (license (list license:lgpl2.1 license:mpl1.1)))))
 
@@ -1301,6 +1348,11 @@ printing and other features typical of a source code editor.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python-2)
+
+       ;; XXX: The package fails to build with the latest Pango (propagated
+       ;; from GTK+2), so we provide it with this older version.
+       ("pango" ,pango-1.42)
+
        ("libglade" ,libglade)
        ("glib"   ,glib)))
     (propagated-inputs
@@ -1862,6 +1914,14 @@ shell scripts.  Example of how to use @code{yad} can be consulted at
                          "/lib/girepository-1.0"))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'do-not-treat-warnings-as-errors
+           (lambda _
+             ;; Prevent the build from failing due to deprecation warnings
+             ;; from newer GLib and GTK versions.
+             (substitute* (find-files "." "^Makefile.in$")
+               ((" -Werror")
+                ""))
+             #t))
          (add-before 'configure 'set-environment
            (lambda _
              (setenv "HAVE_VALGRIND_TRUE" "")
@@ -1961,3 +2021,79 @@ popovers.")
 library for drawing.")
     (home-page "https://wiki.gnome.org/GooCanvas")
     (license license:lgpl2.0)))
+
+(define-public gtksheet
+  (package
+    (name "gtksheet")
+    (version "4.3.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fpaquet/gtksheet")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "10qzmdkjkkvkcadxn019cbyhwaahxcfv1apv54lc711bqvh63v8r"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-glade"
+                               "--enable-introspection")
+       #:phases
+       (modify-phases %standard-phases
+         ;; The "configure" script is present, but otherwise the project is
+         ;; not bootstrapped properly. Delete configure so the bootstrap phase
+         ;; will take over.
+         (add-after 'unpack 'delete-configure
+           (lambda _
+             (delete-file "configure")
+             #t))
+         ;; Fix glade install directories.
+         (add-before 'bootstrap 'configure-glade-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("`\\$PKG_CONFIG --variable=catalogdir gladeui-2.0`")
+                (string-append (assoc-ref outputs "out") "/share/glade/catalogs"))
+               (("`\\$PKG_CONFIG --variable=moduledir gladeui-2.0`")
+                (string-append (assoc-ref outputs "out") "/lib/glade/modules"))
+               (("`\\$PKG_CONFIG --variable=pixmapdir gladeui-2.0`")
+                (string-append (assoc-ref outputs "out") "/share/pixmaps")))
+             #t))
+         ;; Fix incorrect typelib version. This is a known upstream bug. See
+         ;; https://github.com/fpaquet/gtksheet/issues/23
+         (add-after 'install 'fix-typelib-version
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion (string-append (assoc-ref outputs "out")
+                                                      "/lib/girepository-1.0")
+               (rename-file "GtkSheet-4.0.typelib"
+                            (string-append "GtkSheet-" ,version ".typelib")))
+             #t)))))
+    (inputs
+     `(("glade" ,glade3)
+       ("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gobject-introspection" ,gobject-introspection)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://fpaquet.github.io/gtksheet/")
+    (synopsis "Spreadsheet widget for GTK+")
+    (description "GtkSheet is a matrix widget for GTK+.  It consists of an
+scrollable grid of cells where you can allocate text.  Cell contents can be
+edited interactively through a specially designed entry, GtkItemEntry.  It is
+also a container subclass, allowing you to display buttons, images and any
+other widget in it.  You can also set many attributes such as border,
+foreground and background colors, text justification and more.")
+    (native-search-paths
+     (list
+      (search-path-specification
+       (variable "GLADE_CATALOG_SEARCH_PATH")
+       (files '("share/glade/catalogs")))
+      (search-path-specification
+       (variable "GLADE_MODULE_SEARCH_PATH")
+       (files '("lib/glade/modules")))))
+    (license license:lgpl2.0+)))

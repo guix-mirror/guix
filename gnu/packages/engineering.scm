@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -770,7 +771,8 @@ fonts to gEDA.")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-append (assoc-ref inputs "catch")
-                                      "/include/catch"))
+                                      "/include/catch:"
+                                      (or (getenv "CPLUS_INCLUDE_PATH") "")))
                #t)))))
       (native-inputs
        `(("pkg-config" ,pkg-config)))
@@ -1690,7 +1692,19 @@ parallel computing platforms.  It also supports serial execution.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "117dqs0d4pcgbzvr3jn5ppra7n7x2m6c161ywh6laa934pw7h2bz"))))
+                "117dqs0d4pcgbzvr3jn5ppra7n7x2m6c161ywh6laa934pw7h2bz"))
+              (patches
+               (list (origin
+                       ;; Fix build with GCC 7.  Patch taken from Arch Linux:
+                       ;; https://git.archlinux.org/svntogit/community.git/tree/trunk?h=packages/freehdl
+                       (method url-fetch)
+                       (uri "https://git.archlinux.org/svntogit/community.git\
+/plain/trunk/build-fix.patch?h=packages/freehdl\
+&id=3bb90d64dfe6883e26083cd1fa96226d0d59175a")
+                       (file-name "freehdl-c++-namespace.patch")
+                       (sha256
+                        (base32
+                         "09df3c70rx81rnhlhry1wpdhji274nx9jb74rfprk06l4739zm08")))))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1766,7 +1780,6 @@ parallel computing platforms.  It also supports serial execution.")
        ("libtool" ,libtool)))
     (native-inputs
      `(("pkg-config-native" ,pkg-config)
-       ("gcc" ,gcc-5)
        ("libtool-native" ,libtool)))
     (home-page "http://www.freehdl.seul.org/")
     (synopsis "VHDL simulator")
@@ -2216,7 +2229,7 @@ engineers for reverse engineers.")
     (native-inputs
      `(("googletest-source" ,(package-source googletest))))
     (inputs
-     `(("libuuid" ,util-linux)))
+     `(("libuuid" ,util-linux "lib")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -2311,6 +2324,15 @@ full programmatic control over your models.")
        (uri (git-reference
              (url "https://github.com/FreeCAD/FreeCAD.git")
              (commit version)))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Fix build with Python 3.8, see
+           ;; <https://tracker.freecadweb.org/view.php?id=4143>.
+           (substitute* "src/Base/swigpyrun.inl"
+             (("PyObject \\*modules = interp->modules;")
+              "PyObject *modules = PyEval_GetBuiltins();"))
+           #t))
        (file-name (git-file-name name version))
        (sha256
         (base32

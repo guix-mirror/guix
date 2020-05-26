@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Valentin Ignatev <valentignatev@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,7 +140,7 @@
                             "lisp/textmodes/artist.el"
                             "lisp/progmodes/sh-script.el")
                (("\"/bin/sh\"")
-                (format "~s" (which "sh"))))
+                (format #f "~s" (which "sh"))))
              #t))
          (add-before 'configure 'fix-/bin/pwd
            (lambda _
@@ -163,7 +164,7 @@
                                (byte-recompile-directory
                                 (file-name-as-directory ,dir) 0 1))))
                    (invoke emacs "--quick" "--batch"
-                           (format "--eval=~s" expr))))
+                           (format #f "--eval=~s" expr))))
 
                (copy-file (assoc-ref inputs "guix-emacs.el")
                           (string-append lisp-dir "/guix-emacs.el"))
@@ -193,7 +194,7 @@
        ("libxft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("imagemagick" ,imagemagick)
        ("acl" ,acl)
 
@@ -242,9 +243,9 @@ languages.")
     (license license:gpl3+)))
 
 (define-public emacs-next
-  (let ((commit "36abf6864604b3061c2e070f8997491fa2bce44c")
+  (let ((commit "c36c5a3dedbb2e0349be1b6c3b7567ea7b594f1c")
         (revision "0")
-        (emacs-version "27.0.50"))
+        (emacs-version "27.0.91"))
     (package
       (inherit emacs)
       (name "emacs-next")
@@ -256,7 +257,7 @@ languages.")
                (url "https://git.savannah.gnu.org/git/emacs.git")
                (commit commit)))
          (sha256
-          (base32 "1ckn607p0clz0dhhlizvv7l03p4nminy48h53xrpz55w4rcrcm2l"))
+          (base32 "0mlrg2npy1r79laahkgzhxd1qassfcdz8qk1cpw7mqgf6y5x505h"))
          (file-name (git-file-name name version))
          (patches (search-patches "emacs27-exec-path.patch"
                                   "emacs-fix-scheme-indent-function.patch"
@@ -321,7 +322,9 @@ languages.")
       (inputs
        `(("jansson" ,jansson)
          ("harfbuzz" ,harfbuzz)
-         ,@(package-inputs emacs)))
+         ;; Emacs no longer uses ImageMagick by default
+         ;; https://git.savannah.gnu.org/cgit/emacs.git/tree/etc/NEWS?h=emacs-27.0.91&id=c36c5a3dedbb2e0349be1b6c3b7567ea7b594f1c#n102
+         ,@(alist-delete "imagemagick" (package-inputs emacs))))
       (native-inputs
        `(("autoconf" ,autoconf)      ; needed when building from trunk
          ,@(package-native-inputs emacs)))

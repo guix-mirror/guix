@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Francesco Frassinelli <fraph24@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Adonay Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
@@ -48,6 +48,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages linphone)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -73,7 +75,6 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages speech)
-  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages video)
@@ -91,6 +92,35 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system qt))
+
+(define-public libilbc
+  (package
+    (name "libilbc")
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/TimothyGu/libilbc.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32
+         "1j1pn1w1198qvdiq2hgv9hkyq2nqcvmfnwlgppac633idkjnjrqx"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; No target
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Libre iLBC codec")
+    (description "LibiLBC is a packaging friendly copy of the iLBC codec from
+the WebRTC project.  It provides a base for distribution packages and can be
+used as drop-in replacement for the non-free code from RFC 3591.")
+    (home-page "https://github.com/TimothyGu/libilbc")
+    (license license:bsd-3)))
 
 (define-public spandsp
   (package
@@ -163,6 +193,7 @@
        ("fftw" ,fftw)
        ("libpcap" ,libpcap)
        ("libsndfile" ,libsndfile)
+       ("libjpeg" ,libjpeg-turbo)      ;XXX: should be propagated from libtiff
        ("libtiff" ,libtiff)
        ("netpbm" ,netpbm)
        ("sox" ,sox)
@@ -257,6 +288,37 @@ packet-manipulation library.")
    (license license:gpl2+) ; plus runtime exception
    (home-page "https://www.gnu.org/software/ccrtp/")))
 
+(define-public zrtpcpp
+  (package
+    (name "zrtpcpp")
+    (version "4.6.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/wernerd/ZRTPCPP.git")
+         (commit
+          (string-append "V" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32
+         "06vphvh4dgi7ah5qkq53wqvswv8l273x0xwbc447qmgvamm0x1vs"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ; No target
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ccrtp" ,ccrtp)
+       ("ucommon" ,ucommon)))
+    (synopsis "C++ Implementation of ZRTP protocol")
+    (description  "GNU ZRTP C++ provides a library that adds ZRTP support to the
+GNU ccRTP stack and serves as library for other RTP stacks
+(PJSIP, GStreamer).")
+    (home-page "https://www.gnu.org/software/ccrtp/zrtp")
+    (license license:lgpl3+)))
 
 (define-public osip
   (package
@@ -593,71 +655,73 @@ Mumble consists of two applications for separate usage:
   (package
     (name "twinkle")
     (version "1.10.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/LubosD/twinkle")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0s0gi03xwvzp02ah4q6j33r9jx9nbayr6dxlg2ck9pwbay1nq1hx"))))
-    (build-system cmake-build-system)
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/LubosD/twinkle")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (patches
+        (search-patches "twinkle-bcg729.patch")) ; To support new BCG729 API.
+       (sha256
+        (base32
+         "0s0gi03xwvzp02ah4q6j33r9jx9nbayr6dxlg2ck9pwbay1nq1hx"))))
+    (build-system qt-build-system)
     (arguments
-     `(#:tests? #f                                ; no test target
-       #:configure-flags '("-DWITH_SPEEX=On")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/twinkle")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtdeclarative")))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/qml"))
-                         '("qtdeclarative" "qtquickcontrols"))))
-               #t))))))
+     `(#:tests? #f                      ; no test target
+       #:configure-flags
+       (list
+        ;; FIX-ME: Make Twinkle compatible with libre version of iLBC.
+        ;; "-DWITH_ILBC=On"                ; For iLBC Codec Support
+        "-DWITH_ZRTP=On"                ; For ZRTP Support
+        "-DWITH_G729=On"                ; For G729 Codec Support
+        "-DWITH_SPEEX=On")))            ; For Speex Codec Support
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
-       ("readline" ,readline)
-       ("file" ,file)
-       ("ucommon" ,ucommon)
-       ("ccrtp" ,ccrtp)
-       ("libxml2" ,libxml2)
-       ("speex" ,speex)
-       ("speexdsp" ,speexdsp)
-       ("libsndfile" ,libsndfile)
-       ("alsa-lib" ,alsa-lib)
        ("qttools" ,qttools)))
     (inputs
-     `(("qtbase" ,qtbase)
+     `(("alsa-lib" ,alsa-lib)
+       ("bcg729" ,bcg729)
+       ("zrtpcpp" ,zrtpcpp)
+       ("ccrtp" ,ccrtp)
+       ("file" ,file)
+       ("libilbc" ,libilbc)
+       ("libsndfile" ,libsndfile)
+       ("libxml2" ,libxml2)
+       ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
-       ("qtquickcontrols" ,qtquickcontrols)))
-    (home-page "http://twinkle.dolezel.info/")
+       ("qtquickcontrols" ,qtquickcontrols)
+       ("readline" ,readline)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("ucommon" ,ucommon)))
     (synopsis "Softphone for voice over IP and instant messaging")
     (description "Twinkle is a softphone for your voice over IP and instant
-messaging communcations using the SIP protocol.  You can use it for direct IP
-phone to IP phone communication or in a network using a SIP proxy to route your
-calls and messages")
+messaging communcations using the SIP protocol.  You can use it for direct
+IP phone to IP phone communication or in a network using a SIP proxy to route
+your calls and messages.")
+    (home-page "http://twinkle.dolezel.info/")
     (license license:gpl2+)))
 
 (define-public pjproject
   (package
     (name "pjproject")
-    (version "2.9")
+    (version "2.10")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/pjsip/pjproject.git")
-             (commit "5dfa75be7d69047387f9b0436dd9492bbbf03fe4")))
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1aklicpgwc88578k03i5d5cm5h8mfm7hmx8vfprchbmaa2p8f4z0"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -686,11 +750,7 @@ calls and messages")
               (lambda (dirs)
                 (substitute* "third_party/build/os-linux.mak"
                   (((string-append "DIRS += " dirs)) "")))
-              third-party-dirs))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1ayj6n7zd5wvd1nzj2k9s57fb4ckc2fv92k5sjvhd87yg69k3393"))))
+              third-party-dirs))))))
     (build-system gnu-build-system)
     (inputs
      `(("portaudio" ,portaudio)))
@@ -701,7 +761,7 @@ calls and messages")
        ("libsrtp" ,libsrtp)
        ("gnutls" ,gnutls)
        ("resample", resample)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -733,297 +793,6 @@ calls and messages")
     (description "PJProject provides an implementation of the Session
 Initiation Protocol (SIP) and a multimedia framework.")
     (license license:gpl2+)))
-
-(define %jami-version "20191101.3.67671e7")
-
-(define* (jami-source #:key without-daemon)
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://dl.jami.net/ring-release/tarballs/ring_"
-                        %jami-version
-                        ".tar.gz"))
-    (modules '((guix build utils)))
-    (snippet
-     (if without-daemon
-       '(begin
-          (delete-file-recursively "daemon/contrib"))
-       #f))
-    (sha256
-     (base32
-      "0kw172w2ccyz438kf5xqw14nhfm4xk6a2libnzib9j2wvhlpf4q0"))))
-
-(define-public pjproject-jami
-  (package
-    (inherit pjproject)
-    (name "pjproject-jami")
-    (native-inputs
-     `(("savoir-faire-linux-patches" ,(jami-source))
-       ,@(package-native-inputs pjproject)))
-    (arguments
-     `(#:tests? #f
-       ;; See ring-project/daemon/contrib/src/pjproject/rules.mak.
-       #:configure-flags
-       (list "--disable-oss"
-             "--disable-sound"
-             "--disable-video"
-             "--enable-ext-sound"
-             "--disable-speex-aec"
-             "--disable-g711-codec"
-             "--disable-l16-codec"
-             "--disable-gsm-codec"
-             "--disable-g722-codec"
-             "--disable-g7221-codec"
-             "--disable-speex-codec"
-             "--disable-ilbc-codec"
-             "--disable-opencore-amr"
-             "--disable-silk"
-             "--disable-sdl"
-             "--disable-ffmpeg"
-             "--disable-v4l2"
-             "--disable-openh264"
-             "--disable-resample"
-             "--disable-libwebrtc"
-             "--with-gnutls"
-             "--with-external-srtp"
-             ;; We need -fPIC or else we get the following error when linking
-             ;; against pjproject-jami:
-             ;;   relocation R_X86_64_32S against `.rodata' can not be used when
-             ;;   making a shared object;
-             "CFLAGS=-fPIC"
-             "CXXFLAGS=-fPIC")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'make-git-checkout-writable
-           (lambda _
-             (for-each make-file-writable (find-files "."))
-             #t))
-         (add-after 'unpack 'apply-patches
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((savoir-faire-linux-patches-directory "Savoir-faire Linux patches")
-                   ;; Comes from
-                   ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
-                   ;; WARNING: These amount for huge changes in pjproject.
-                   (savoir-faire-linux-patches
-                    '("fix_turn_alloc_failure"
-                      "rfc2466"
-                      "ipv6"
-                      "multiple_listeners"
-                      "pj_ice_sess"
-                      "fix_turn_fallback"
-                      "fix_ioqueue_ipv6_sendto"
-                      "add_dtls_transport"
-                      "rfc6544"
-                      "ice_config"
-                      "sip_config"
-                      "fix_first_packet_turn_tcp"
-                      "fix_ebusy_turn"
-                      "ignore_ipv6_on_transport_check"
-                      "fix_turn_connection_failure"
-                      ;; "uwp_vs" ; for windows
-                      "disable_local_resolution")))
-               (mkdir-p savoir-faire-linux-patches-directory)
-               (invoke "tar" "-xvf" (assoc-ref inputs "savoir-faire-linux-patches")
-                       "-C" savoir-faire-linux-patches-directory
-                       "--strip-components=5"
-                       "ring-project/daemon/contrib/src/pjproject")
-               (for-each
-                (lambda (file)
-                  (invoke "patch" "--force" "-p1" "-i"
-                          (string-append savoir-faire-linux-patches-directory "/"
-                                         file ".patch")))
-                savoir-faire-linux-patches))
-             #t))
-         ;; TODO: We could use substitute-keyword-arguments instead of
-         ;; repeating the phases from pjproject, but somehow it does
-         ;; not work.
-         (add-before 'build 'build-dep
-           (lambda _ (invoke "make" "dep")))
-         (add-before 'patch-source-shebangs 'autoconf
-           (lambda _
-             (invoke "autoconf" "-v" "-f" "-i" "-o"
-                     "aconfigure" "aconfigure.ac")))
-         (add-before 'autoconf 'disable-some-tests
-           ;; Three of the six test programs fail due to missing network
-           ;; access.
-           (lambda _
-             (substitute* "Makefile"
-               (("selftest: pjlib-test pjlib-util-test pjnath-test pjmedia-test pjsip-test pjsua-test")
-                "selftest: pjlib-test pjlib-util-test pjmedia-test"))
-             #t)))))))
-
-(define-public libring
-  (package
-    (name "libring")
-    (version %jami-version)
-    (source (jami-source #:without-daemon #t))
-    (build-system gnu-build-system)
-    (inputs
-     ;; Missing (optional?) dep: libnatpmp.
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("dbus-c++" ,dbus-c++)
-       ("eudev" ,eudev)
-       ("ffmpeg" ,ffmpeg)
-       ("flac" ,flac)
-       ("gmp" ,gmp)
-       ("gsm" ,gsm)
-       ("jack" ,jack-1)
-       ("jsoncpp" ,jsoncpp)
-       ("libogg" ,libogg)
-       ("libva" ,libva)
-       ("opendht" ,opendht)
-       ("opus" ,opus)
-       ("pcre" ,pcre)
-       ("pulseaudio" ,pulseaudio)
-       ("libsamplerate" ,libsamplerate)
-       ("libsndfile" ,libsndfile)
-       ("speex" ,speex)
-       ("speexdsp" ,speexdsp)
-       ("libupnp" ,libupnp)
-       ("libvorbis" ,libvorbis)
-       ("libx264" ,libx264)
-       ("libvdpau" ,libvdpau)
-       ("yaml-cpp" ,yaml-cpp)
-       ("zlib" ,zlib)
-       ("openssl" ,openssl)
-       ("libsecp256k1" ,libsecp256k1)
-       ("python" ,python)
-       ("python-wrapper" ,python-wrapper)
-       ("restinio" ,restinio)
-       ("libx11" ,libx11)
-       ("asio" ,asio)
-       ;; TODO: Upstream seems to rely on a custom pjproject (a.k.a. pjsip) version.
-       ;; See https://git.jami.net/savoirfairelinux/ring-daemon/issues/24.
-       ("pjproject" ,pjproject-jami)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)
-       ("which" ,which)
-       ("cppunit" ,cppunit)
-       ("perl" ,perl)))                 ; Needed for documentation.
-    (arguments
-     `(#:tests? #f         ; The tests fail to compile due to missing headers.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
-           (lambda _
-             (chdir "daemon")
-             #t))
-         (add-before 'build 'add-lib-dir
-           (lambda _
-             (mkdir-p "src/lib")
-             #t)))))
-    (synopsis "Distributed multimedia communications platform")
-    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
-video and chat communication platform that requires no centralized server and
-leaves the power of privacy in the hands of the user.  It supports the SIP and
-IAX protocols, as well as decentralized calling using P2P-DHT.
-
-This package provides a library and daemon implementing the Jami core
-functionality.")
-    (home-page "https://jami.net/")
-    (license license:gpl3+)))
-
-(define-public libringclient
-  (package
-    (inherit libring)
-    (name "libringclient")
-    (build-system cmake-build-system)
-    (propagated-inputs
-     `(("libring" ,libring)     ; For 'dring'.
-       ("qtbase" ,qtbase)       ; Qt is included in several installed headers.
-       ("qttools" ,qttools)))
-    (arguments
-     `(#:tests? #f                      ; There is no testsuite.
-       #:configure-flags
-       (list (string-append "-DRING_BUILD_DIR="
-                            (assoc-ref %build-inputs "libring") "/include"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
-           (lambda _
-             (chdir "lrc")
-             #t))
-         (add-before 'configure 'fix-dbus-interfaces-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "CMakeLists.txt"
-               (("\\$\\{CMAKE_INSTALL_PREFIX\\}(/share/dbus-1/interfaces)" _ dbus-interfaces-path-suffix)
-                (string-append (assoc-ref inputs "libring")
-                               dbus-interfaces-path-suffix))))))))
-    (synopsis "Distributed multimedia communications platform")
-    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
-video and chat communication platform that requires no centralized server and
-leaves the power of privacy in the hands of the user.  It supports the SIP and
-IAX protocols, as well as decentralized calling using P2P-DHT.
-
-This package provides a library common to all Jami clients.")
-    (home-page "https://jami.net")
-    (license license:gpl3+)))
-
-(define-public jami
-  (package
-    (inherit libring)
-    (name "jami")
-    (build-system cmake-build-system)
-    (inputs
-     `(("libringclient" ,libringclient)
-       ("gtk+" ,gtk+)
-       ("qrencode" ,qrencode)
-       ("libnotify" ,libnotify)
-       ("clutter" ,clutter)
-       ("clutter-gtk" ,clutter-gtk)
-       ("libcanberra" ,libcanberra)
-       ("webkitgtk" ,webkitgtk)
-       ;; TODO: We must wrap ring-client-gnome to force using the
-       ;; `sqlite-with-column-metadata' package instead of `sqlite' or else it
-       ;; fails with:
-       ;;
-       ;;   /gnu/store/...-qtbase-5.11.2/lib/qt5/plugins/sqldrivers/libqsqlite.so:
-       ;;   undefined symbol: sqlite3_column_table_name16
-       ;;
-       ;; qtbase is built against sqlite-with-column-metadata but somehow
-       ;; jami-client-gnome ends up with both `sqlite' and
-       ;; `sqlite-with-column-metadata' as inputs and it seems that
-       ;; libqsqlite.so gets confused.
-       ("sqlite" ,sqlite-with-column-metadata)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("gettext" ,gettext-minimal)
-       ("glib:bin" ,glib "bin")
-       ("doxygen" ,doxygen)))
-    (propagated-inputs
-     `(("libring" ,libring) ; Contains `dring', the daemon, which is automatically by d-bus.
-       ("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("evolution-data-server" ,evolution-data-server)))
-    (arguments
-     `(#:tests? #f                      ; There is no testsuite.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'change-directory
-           (lambda _
-             (chdir "client-gnome")
-             #t))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (path (string-append (assoc-ref inputs "sqlite") "/lib")))
-               (wrap-program (string-append out "/bin/jami-gnome")
-                 `("LD_LIBRARY_PATH" ":" prefix (,path))))
-             #t)))))
-    (synopsis "Distributed, privacy-respecting communication program")
-    (description "Jami (formerly GNU Ring) is a secure and distributed voice,
-video and chat communication platform that requires no centralized server and
-leaves the power of privacy in the hands of the user.  It supports the SIP and
-IAX protocols, as well as decentralized calling using P2P-DHT.
-
-This package provides the Jami client for the GNOME desktop.")
-    (home-page "https://jami.net")
-    (license license:gpl3+)))
-
-(define-public jami-client-gnome
-  (deprecated-package "jami-client-gnome" jami))
 
 (define-public libtgvoip
   (package

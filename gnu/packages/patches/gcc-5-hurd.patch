@@ -1,0 +1,63 @@
+This patch is needed to build gcc-5.5.0 on the Hurd.
+
+Backported from upstream: https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=6cd9cb89ebdc1e1394b81c4a418c2b3b0eb86c57
+
+commit b590b96ebc3f5b42a4829170e069722dd940e2543
+Author: jason <jason@138bc75d-0d04-0410-961f-82ee72b054a4>
+Date:   Sat May 9 04:50:23 2015 +0000
+
+            * src/c++98/Makefile.am (AM_CXXFLAGS): Add -std=gnu++98.
+            * src/c++98/Makefile.in: Regenerate.
+            * src/Makefile.am (AM_CXXFLAGS): Add -std=gnu++98.
+            * src/Makefile.in: Regenerate.
+    
+    git-svn-id: svn+ssh://gcc.gnu.org/svn/gcc/trunk@222964 138bc75d-0d04-0410-961f-82ee72b054a4
+
+diff --git a/libstdc++-v3/src/Makefile.am b/libstdc++-v3/src/Makefile.am
+index a5f48b22c6d..cd07ccd81bc 100644
+--- a/libstdc++-v3/src/Makefile.am
++++ b/libstdc++-v3/src/Makefile.am
+@@ -168,6 +168,7 @@ compatibility-condvar.o: compatibility-condvar.cc
+ # OPTIMIZE_CXXFLAGS on the compile line so that -O2 can be overridden
+ # as the occasion calls for it.
+ AM_CXXFLAGS = \
++	-std=gnu++98 \
+ 	$(glibcxx_compiler_pic_flag) \
+ 	$(XTEMPLATE_FLAGS) $(VTV_CXXFLAGS) \
+ 	$(WARN_CXXFLAGS) $(OPTIMIZE_CXXFLAGS) $(CONFIG_CXXFLAGS)
+diff --git a/libstdc++-v3/src/Makefile.in b/libstdc++-v3/src/Makefile.in
+index 433f9ea121a..31b56282e26 100644
+--- a/libstdc++-v3/src/Makefile.in
++++ b/libstdc++-v3/src/Makefile.in
+@@ -429,6 +429,7 @@ libstdc___la_LINK = $(CXXLINK) $(libstdc___la_LDFLAGS)
+ # OPTIMIZE_CXXFLAGS on the compile line so that -O2 can be overridden
+ # as the occasion calls for it.
+ AM_CXXFLAGS = \
++	-std=gnu++98 \
+ 	$(glibcxx_compiler_pic_flag) \
+ 	$(XTEMPLATE_FLAGS) $(VTV_CXXFLAGS) \
+ 	$(WARN_CXXFLAGS) $(OPTIMIZE_CXXFLAGS) $(CONFIG_CXXFLAGS)
+diff --git a/libstdc++-v3/src/c++98/Makefile.am b/libstdc++-v3/src/c++98/Makefile.am
+index e348dfb1205..a5b68a19a8b 100644
+--- a/libstdc++-v3/src/c++98/Makefile.am
++++ b/libstdc++-v3/src/c++98/Makefile.am
+@@ -215,6 +215,7 @@ parallel_settings.o: parallel_settings.cc
+ # OPTIMIZE_CXXFLAGS on the compile line so that -O2 can be overridden
+ # as the occasion calls for it.
+ AM_CXXFLAGS = \
++	-std=gnu++98 \
+ 	$(glibcxx_lt_pic_flag) $(glibcxx_compiler_shared_flag) \
+ 	$(XTEMPLATE_FLAGS) $(VTV_CXXFLAGS) \
+ 	$(WARN_CXXFLAGS) $(OPTIMIZE_CXXFLAGS) $(CONFIG_CXXFLAGS)
+diff --git a/libstdc++-v3/src/c++98/Makefile.in b/libstdc++-v3/src/c++98/Makefile.in
+index 3c69791bb66..ce86136906b 100644
+--- a/libstdc++-v3/src/c++98/Makefile.in
++++ b/libstdc++-v3/src/c++98/Makefile.in
+@@ -421,6 +421,7 @@ PARALLEL_FLAGS = -D_GLIBCXX_PARALLEL
+ # OPTIMIZE_CXXFLAGS on the compile line so that -O2 can be overridden
+ # as the occasion calls for it.
+ AM_CXXFLAGS = \
++	-std=gnu++98 \
+ 	$(glibcxx_lt_pic_flag) $(glibcxx_compiler_shared_flag) \
+ 	$(XTEMPLATE_FLAGS) $(VTV_CXXFLAGS) \
+ 	$(WARN_CXXFLAGS) $(OPTIMIZE_CXXFLAGS) $(CONFIG_CXXFLAGS)

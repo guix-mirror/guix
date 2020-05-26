@@ -77,7 +77,7 @@
 
             system-qemu-image/shared-store
             system-qemu-image/shared-store-script
-            system-disk-image
+            system-disk-image-in-vm
             system-docker-image
 
             virtual-machine
@@ -269,95 +269,6 @@ substitutable."
                      (eq? (service-kind service) guix-service-type))
                    (operating-system-services os)))))
 
-(define* (iso9660-image #:key
-                        (name "iso9660-image")
-                        file-system-label
-                        file-system-uuid
-                        (system (%current-system))
-                        (target (%current-target-system))
-                        (qemu qemu-minimal)
-                        os
-                        bootcfg-drv
-                        bootloader
-                        (register-closures? (has-guix-service-type? os))
-                        (inputs '())
-                        (grub-mkrescue-environment '())
-                        (substitutable? #t))
-  "Return a bootable, stand-alone iso9660 image.
-
-INPUTS is a list of inputs (as for packages)."
-  (define schema
-    (and register-closures?
-         (local-file (search-path %load-path
-                                  "guix/store/schema.sql"))))
-
-  (expression->derivation-in-linux-vm
-   name
-   (with-extensions gcrypt-sqlite3&co
-     (with-imported-modules `(,@(source-module-closure '((gnu build vm)
-                                                         (guix store database)
-                                                         (guix build utils))
-                                                       #:select? not-config?)
-                              ((guix config) => ,(make-config.scm)))
-       #~(begin
-           (use-modules (gnu build vm)
-                        (guix store database)
-                        (guix build utils))
-
-           (sql-schema #$schema)
-
-           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
-           (setenv "GUIX_LOCPATH"
-                   #+(file-append glibc-utf8-locales "/lib/locale"))
-           (setlocale LC_ALL "en_US.utf8")
-
-           (let ((inputs
-                  '#$(append (list parted e2fsprogs dosfstools xorriso)
-                             (map canonical-package
-                                  (list sed grep coreutils findutils gawk))))
-
-
-                 (graphs     '#$(match inputs
-                                  (((names . _) ...)
-                                   names)))
-                 ;; This variable is unused but allows us to add INPUTS-TO-COPY
-                 ;; as inputs.
-                 (to-register
-                  '#$(map (match-lambda
-                            ((name thing) thing)
-                            ((name thing output) `(,thing ,output)))
-                          inputs)))
-
-             (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (make-iso9660-image #$xorriso
-                                 '#$grub-mkrescue-environment
-                                 #$(bootloader-package bootloader)
-                                 #$bootcfg-drv
-                                 #$os
-                                 "/xchg/guixsd.iso"
-                                 #:register-closures? #$register-closures?
-                                 #:closures graphs
-                                 #:volume-id #$file-system-label
-                                 #:volume-uuid #$(and=> file-system-uuid
-                                                        uuid-bytevector))))))
-   #:system system
-   #:target target
-
-   ;; Keep a local file system for /tmp so that we can populate it directly as
-   ;; root and have files owned by root.  See <https://bugs.gnu.org/31752>.
-   #:file-systems (remove (lambda (file-system)
-                            (string=? (file-system-mount-point file-system)
-                                      "/tmp"))
-                          %linux-vm-file-systems)
-
-   #:make-disk-image? #f
-   #:single-file-output? #t
-   #:references-graphs inputs
-   #:substitutable? substitutable?
-
-   ;; Xorriso seems to be quite memory-hungry, so increase the VM's RAM size.
-   #:memory-size 512))
-
 (define* (qemu-image #:key
                      (name "qemu-image")
                      (system (%current-system))
@@ -366,6 +277,9 @@ INPUTS is a list of inputs (as for packages)."
                      (disk-image-size 'guess)
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
+                     (file-system-options '())
+                     (device-nodes 'linux)
+                     (extra-directives '())
                      file-system-label
                      file-system-uuid
                      os
@@ -379,7 +293,8 @@ INPUTS is a list of inputs (as for packages)."
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
 partition; likewise FILE-SYSTEM-UUID, if true, specifies the UUID of the root
-partition (a UUID object).
+partition (a UUID object).  FILE-SYSTEM-OPTIONS is an optional list of
+command-line options passed to 'mkfs.ext4' (or similar).
 
 The returned image is a full disk image that runs OS-DERIVATION,
 with a GRUB installation that uses GRUB-CONFIGURATION as its configuration
@@ -390,7 +305,13 @@ all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image.  By default, REGISTER-CLOSURES? is set to true only if a service of
 type GUIX-SERVICE-TYPE is present in the services definition of the operating
-system."
+system.
+
+When DEVICE-NODES is 'linux, create Linux-device block and character devices
+under /dev.  When it is 'hurd, do Hurdish things.
+
+EXTRA-DIRECTIVES is an optional list of directives to populate the root file
+system that is passed to 'populate-root-file-system'."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -408,6 +329,9 @@ system."
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build vm)
+                        ((gnu build linux-boot)
+                         #:select (make-essential-device-nodes
+                                   make-hurd-device-nodes))
                         (guix store database)
                         (guix build utils)
                         (srfi srfi-26)
@@ -439,10 +363,16 @@ system."
                                      (((names . _) ...)
                                       names)))
                     (initialize (root-partition-initializer
+                                 #:extra-directives '#$extra-directives
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
                                  #:system-directory #$os
+
+                                 #:make-device-nodes
+                                 #$(match device-nodes
+                                     ('linux #~make-essential-device-nodes)
+                                     ('hurd #~make-hurd-device-nodes))
 
                                  ;; Disable deduplication to speed things up,
                                  ;; and because it doesn't help much for a
@@ -465,6 +395,7 @@ system."
                              (uuid #$(and=> file-system-uuid
                                             uuid-bytevector))
                              (file-system #$file-system-type)
+                             (file-system-options '#$file-system-options)
                              (flags '(boot))
                              (initializer initialize)))
                       ;; Append a small EFI System Partition for use with UEFI
@@ -508,13 +439,17 @@ system."
 (define* (system-docker-image os
                               #:key
                               (name "guix-docker-image")
-                              (register-closures? (has-guix-service-type? os)))
+                              (register-closures? (has-guix-service-type? os))
+                              shared-network?)
   "Build a docker image.  OS is the desired <operating-system>.  NAME is the
-base name to use for the output file.  When REGISTER-CLOSURES? is true,
-register the closure of OS with Guix in the resulting Docker image.  By
-default, REGISTER-CLOSURES? is set to true only if a service of type
-GUIX-SERVICE-TYPE is present in the services definition of the operating
-system."
+base name to use for the output file.  When SHARED-NETWORK? is true, assume
+that the container will share network with the host and thus doesn't need a
+DHCP client, nscd, and so on.
+
+When REGISTER-CLOSURES? is true, register the closure of OS with Guix in the
+resulting Docker image.  By default, REGISTER-CLOSURES? is set to true only if
+a service of type GUIX-SERVICE-TYPE is present in the services definition of
+the operating system."
   (define schema
     (and register-closures?
          (local-file (search-path %load-path
@@ -531,7 +466,9 @@ system."
 
 
   (let ((os    (operating-system-with-gc-roots
-                (containerized-operating-system os '())
+                (containerized-operating-system os '()
+                                                #:shared-network?
+                                                shared-network?)
                 (list boot-program)))
         (name  (string-append name ".tar.gz"))
         (graph "system-graph"))
@@ -604,62 +541,13 @@ system."
 ;;; VM and disk images.
 ;;;
 
-(define* (operating-system-uuid os #:optional (type 'dce))
-  "Compute UUID object with a deterministic \"UUID\" for OS, of the given
-TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
-  ;; Note: For this to be deterministic, we must not hash things that contains
-  ;; (directly or indirectly) procedures, for example.  That rules out
-  ;; anything that contains gexps, thunk or delayed record fields, etc.
-
-  (define service-name
-    (compose service-type-name service-kind))
-
-  (define (file-system-digest fs)
-    ;; Return a hashable digest that does not contain 'dependencies' since
-    ;; this field can contain procedures.
-    (let ((device (file-system-device fs)))
-      (list (file-system-mount-point fs)
-            (file-system-type fs)
-            (file-system-device->string device)
-            (file-system-options fs))))
-
-  (if (eq? type 'iso9660)
-      (let ((pad (compose (cut string-pad <> 2 #\0)
-                          number->string))
-            (h   (hash (map service-name (operating-system-services os))
-                       3600)))
-        (bytevector->uuid
-         (string->iso9660-uuid
-          (string-append "1970-01-01-"
-                         (pad (hash (operating-system-host-name os) 24)) "-"
-                         (pad (quotient h 60)) "-"
-                         (pad (modulo h 60)) "-"
-                         (pad (hash (map file-system-digest
-                                         (operating-system-file-systems os))
-                                    100))))
-         'iso9660))
-      (bytevector->uuid
-       (uint-list->bytevector
-        (list (hash (map file-system-digest
-                         (operating-system-file-systems os))
-                    (- (expt 2 32) 1))
-              (hash (operating-system-host-name os)
-                    (- (expt 2 32) 1))
-              (hash (map service-name (operating-system-services os))
-                    (- (expt 2 32) 1))
-              (hash (map file-system-digest (operating-system-file-systems os))
-                    (- (expt 2 32) 1)))
-        (endianness little)
-        4)
-       type)))
-
-(define* (system-disk-image os
-                            #:key
-                            (name "disk-image")
-                            (file-system-type "ext4")
-                            (disk-image-size (* 900 (expt 2 20)))
-                            (volatile? #t)
-                            (substitutable? #t))
+(define* (system-disk-image-in-vm os
+                                  #:key
+                                  (name "disk-image")
+                                  (file-system-type "ext4")
+                                  (disk-image-size (* 900 (expt 2 20)))
+                                  (volatile? #t)
+                                  (substitutable? #t))
   "Return the derivation of a disk image of DISK-IMAGE-SIZE bytes of the
 system described by OS.  Said image can be copied on a USB stick as is.  When
 VOLATILE? is true, the root file system is made volatile; this is useful
@@ -667,25 +555,14 @@ to USB sticks meant to be read-only.
 
 SUBSTITUTABLE? determines whether the returned derivation should be marked as
 substitutable."
-  (define normalize-label
-    ;; ISO labels are all-caps (case-insensitive), but since
-    ;; 'find-partition-by-label' is case-sensitive, make it all-caps here.
-    (if (string=? "iso9660" file-system-type)
-        string-upcase
-        identity))
-
   (define root-label
-    ;; Volume name of the root file system.
-    (normalize-label "Guix_image"))
+    "Guix_image")
 
   (define (root-uuid os)
     ;; UUID of the root file system, computed in a deterministic fashion.
     ;; This is what we use to locate the root file system so it has to be
     ;; different from the user's own file system UUIDs.
-    (operating-system-uuid os
-                           (if (string=? file-system-type "iso9660")
-                               'iso9660
-                               'dce)))
+    (operating-system-uuid os 'dce))
 
   (define file-systems-to-keep
     (remove (lambda (fs)
@@ -702,11 +579,7 @@ substitutable."
                                 #:volatile-root? volatile?
                                 rest)))
 
-               (bootloader (if (string=? "iso9660" file-system-type)
-                               (bootloader-configuration
-                                 (inherit (operating-system-bootloader os))
-                                 (bootloader grub-mkrescue-bootloader))
-                               (operating-system-bootloader os)))
+               (bootloader (operating-system-bootloader os))
 
                ;; Force our own root file system.  (We need a "/" file system
                ;; to call 'root-uuid'.)
@@ -724,33 +597,20 @@ substitutable."
                                      (type file-system-type))
                                    file-systems-to-keep))))
         (bootcfg (operating-system-bootcfg os)))
-    (if (string=? "iso9660" file-system-type)
-        (iso9660-image #:name name
-                       #:file-system-label root-label
-                       #:file-system-uuid uuid
-                       #:os os
-                       #:bootcfg-drv bootcfg
-                       #:bootloader (bootloader-configuration-bootloader
-                                     (operating-system-bootloader os))
-                       #:inputs `(("system" ,os)
-                                  ("bootcfg" ,bootcfg))
-                       #:grub-mkrescue-environment
-                       '(("MKRESCUE_SED_MODE" . "mbr_hfs"))
-                       #:substitutable? substitutable?)
-        (qemu-image #:name name
-                    #:os os
-                    #:bootcfg-drv bootcfg
-                    #:bootloader (bootloader-configuration-bootloader
-                                  (operating-system-bootloader os))
-                    #:disk-image-size disk-image-size
-                    #:disk-image-format "raw"
-                    #:file-system-type file-system-type
-                    #:file-system-label root-label
-                    #:file-system-uuid uuid
-                    #:copy-inputs? #t
-                    #:inputs `(("system" ,os)
-                               ("bootcfg" ,bootcfg))
-                    #:substitutable? substitutable?))))
+    (qemu-image #:name name
+                #:os os
+                #:bootcfg-drv bootcfg
+                #:bootloader (bootloader-configuration-bootloader
+                              (operating-system-bootloader os))
+                #:disk-image-size disk-image-size
+                #:disk-image-format "raw"
+                #:file-system-type file-system-type
+                #:file-system-label root-label
+                #:file-system-uuid uuid
+                #:copy-inputs? #t
+                #:inputs `(("system" ,os)
+                           ("bootcfg" ,bootcfg))
+                #:substitutable? substitutable?)))
 
 (define* (system-qemu-image os
                             #:key

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
@@ -548,7 +548,7 @@ assorted menu related utility programs.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("libxslt" ,libxslt)
-       ("yelp-tools" ,yelp-tools/fixed)
+       ("yelp-tools" ,yelp-tools)
        ("scrollkeeper" ,scrollkeeper)
        ("gettext" ,gettext-minimal)
        ("docbook-xml" ,docbook-xml)
@@ -792,7 +792,7 @@ infamous 'Wanda the Fish'.")
        ("libice" ,libice)
        ("libsm" ,libsm)
        ("libgxps" ,libgxps)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libxml2" ,libxml2)
        ("dogtail" ,python2-dogtail)
        ("shared-mime-info" ,shared-mime-info)
@@ -1277,7 +1277,7 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("pkg-config" ,pkg-config)
        ("scrollkeeper" ,scrollkeeper)
        ("xorgproto" ,xorgproto)
-       ("yelp-tools" ,yelp-tools/fixed)))
+       ("yelp-tools" ,yelp-tools)))
     (inputs
      `(("atk" ,atk)
        ("cairo" ,cairo)
@@ -1344,7 +1344,7 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("libpeas" ,libpeas)
        ("libxml2" ,libxml2)
        ("libexif" ,libexif)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("librsvg" ,librsvg)
        ("lcms" ,lcms)
        ("mate-desktop" ,mate-desktop)

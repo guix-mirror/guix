@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
@@ -454,6 +454,34 @@ colored output using the ansi-terminal package.")
     (synopsis "Simple applicative parser")
     (description "This package provides a simple applicative parser in Parsec
 style.")
+    (license license:bsd-3)))
+
+(define-public ghc-assoc
+  (package
+    (name "ghc-assoc")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/assoc/assoc-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m9n4vp190bvn2wcrd4ggfwa9pi93jp0zgx02mdgywn2zfidw020"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-tagged" ,ghc-tagged)))
+    (home-page
+     "http://hackage.haskell.org/package/assoc")
+    (synopsis
+     "Swap and assoc: Symmetric and Semigroupy Bifunctors")
+    (description
+     "Provides generalisations of @code{swap :: (a,b) -> (b,a)} and
+@code{assoc :: ((a,b),c) -> (a,(b,c))} to @code{Bifunctor}s supporting
+similar operations (e.g. @code{Either}, @code{These}).")
     (license license:bsd-3)))
 
 (define-public ghc-async
@@ -6600,7 +6628,7 @@ compiler versions.")
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
-       ("libyaml" ,libyaml-2.1)))
+       ("libyaml" ,libyaml)))
     (home-page "https://github.com/snoyberg/yaml#readme")
     (synopsis "Low-level, streaming YAML interface.")
     (description "This package provides a Haskell wrapper over the
@@ -7629,6 +7657,41 @@ data structures as non-empty.")
 definitions and utilities, such as monoid actions, monoid coproducts,
 semi-direct products, \"deletable\" monoids, \"split\" monoids, and
 \"cut\" monoids.")
+    (license license:bsd-3)))
+
+(define-public ghc-mtl-compat
+  (package
+    (name "ghc-mtl-compat")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/mtl-compat/mtl-compat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17iszr5yb4f17g8mq6i74hsamii8z6m2qfsmgzs78mhiwa7kjm8r"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://github.com/haskell-compat/mtl-compat")
+    (synopsis
+     "Backported Control.Monad.Except module from mtl")
+    (description
+     "This package backports the Control.Monad.Except module from mtl (if
+using mtl-2.2.0.1 or earlier), which reexports the ExceptT monad transformer
+and the MonadError class.
+
+This package should only be used if there is a need to use the
+Control.Monad.Except module specifically.  If you just want the mtl class
+instances for ExceptT, use transformers-compat instead, since mtl-compat does
+nothing but reexport the instances from that package.
+
+Note that unlike how mtl-2.2 or later works, the Control.Monad.Except
+module defined in this package exports all of ExceptT's monad class instances.
+Therefore, you may have to declare @code{import Control.Monad.Except ()} at
+the top of your file to get all of the ExceptT instances in scope.")
     (license license:bsd-3)))
 
 (define-public ghc-murmur-hash
@@ -8724,6 +8787,29 @@ of two versions of a source file.  It provides a good balance between
 performance, nice output for humans, and simplicity of implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-pattern-arrows
+  (package
+    (name "ghc-pattern-arrows")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/pattern-arrows/pattern-arrows-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "13q7bj19hd60rnjfc05wxlyck8llxy11z3mns8kxg197wxrdkhkg"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://blog.functorial.com/posts/2013-10-27-Pretty-Printing-Arrows.html")
+    (synopsis "Arrows for Pretty Printing")
+    (description
+     "A library for generating concise pretty printers based on precedence
+rules.")
+    (license license:expat)))
+
 (define-public ghc-pcre-light
   (package
     (name "ghc-pcre-light")
@@ -9245,6 +9331,33 @@ questions, and a bunch of files are automatically generated.
 project-template tries to provide a canonical Haskell library for implementing
 the ideal templating system.")
     (license license:bsd-3)))
+
+(define-public ghc-protolude
+  (package
+    (name "ghc-protolude")
+    (version "0.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/protolude/protolude-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0zzkyxz0vmcbncpid7gp72fpjj0fla3gqhlfkij5c5lg12skjgfj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-mtl-compat" ,ghc-mtl-compat)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://github.com/protolude/protolude")
+    (synopsis "Sensible set of defaults for writing custom Preludes")
+    (description
+     "Protolude gives you sensible defaults for writing custom Preludes to
+replace the standard one provided by GHC.")
+    (license license:expat)))
 
 (define-public ghc-psqueues
   (package
@@ -10404,6 +10517,46 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
 Haskell")
     (description "SecureMem is similar to ByteString, except that it provides
 a memory chunk that will be auto-scrubbed after it run out of scope.")
+    (license license:bsd-3)))
+
+(define-public ghc-semialign
+  (package
+    (name "ghc-semialign")
+    (version "1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/semialign/semialign-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "004x0a80sqqdgvsyk4z0nasxpi6z3g1d8kgwj804bj9ka8dlc75m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-these" ,ghc-these)
+       ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "0qnqnyfng4kwy2h2anrcy5id2ijnawava3zcc5h5b8ri1y6ks6zi")))
+    (home-page
+     "https://github.com/isomorphism/these")
+    (synopsis
+     "Align and Zip type-classes from the common Semialign ancestor ")
+    (description
+     "The major use of @code{These} of this is provided by the
+@code{align} member of @code{Semialign} class, representing a
+generalized notion of \"zipping with padding\" that combines
+structures without truncating to the size of the smaller input.  It
+turns out that @code{zip} operation fits well the @code{Semialign}
+class, forming lattice-like structure.")
     (license license:bsd-3)))
 
 (define-public ghc-semigroupoids
@@ -11887,6 +12040,63 @@ and @code{Eq} instances.  These instances used to live in the haskell-src-meta
 package, and that's where the version number started.")
     (license license:bsd-3)))
 
+(define-public ghc-these
+  (package
+    (name "ghc-these")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/these/these-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1k0pi65g7cm9hzdw6my6bzz2zvddkmj1qs45ymqmi316bpiixk3r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-assoc" ,ghc-assoc)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "0923r86fnmgpx0msm68aszirh2n19nn5bccgjxfh2146jw4z7w3z")))
+    (home-page
+     "https://github.com/isomorphism/these")
+    (synopsis "Either-or-both data type")
+    (description
+     "This package provides a data type @code{These a b} which can
+hold a value of either type or values of each type.  This is usually
+thought of as an \"inclusive or\" type (contrasting @code{Either a b} as
+\"exclusive or\") or as an \"outer join\" type (contrasting @code{(a, b)}
+as \"inner join\").
+
+@code{data These a b = This a | That b | These a b}
+
+Since version 1, this package was split into parts:
+
+@itemize
+@item
+https://hackage.haskell.org/package/semialign For @code{Align} and
+@code{Zip} type-classes.
+@item
+https://hackage.haskell.org/package/semialign-indexed For
+@code{SemialignWithIndex} class, providing @code{ialignWith} and
+@code{izipWith}
+@item
+https://hackage.haskell.org/package/these-lens For lens combinators.
+@item
+http://hackage.haskell.org/package/monad-chronicle For transformers
+variant of @code{These}.
+@end itemize")
+    (license license:bsd-3)))
+
 (define-public ghc-threads
   (package
     (name "ghc-threads")
@@ -12125,6 +12335,45 @@ objects from the timezone-series package.")
 Haskell client library allowing users to update and view @code{tldr} pages
 from a shell.  The @code{tldr} pages are a community effort to simplify the
 man pages with practical examples.")
+    (license license:bsd-3)))
+
+(define-public ghc-transformers
+  (package
+    (name "ghc-transformers")
+    (version "0.5.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/transformers/transformers-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0v66j5k0xqk51pmca55wq192qyw2p43s2mgxlz4f95q2c1fpjs5n"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/transformers")
+    (synopsis "Concrete functor and monad transformers")
+    (description
+     "Transformers provides functor and monad transformers, inspired by the
+paper \"Functional Programming with Overloading and Higher-Order
+Polymorphism\", by Mark P Jones, in Advanced School of Functional Programming,
+1995 @url{http://web.cecs.pdx.edu/~mpj/pubs/springschool.html}.
+
+This package contains:
+@itemize
+@item the monad transformer class (in @code{Control.Monad.Trans.Class})
+@item concrete functor and monad transformers, each with associated operations
+and functions to lift operations associated with other transformers.
+@end itemize
+
+This package can be used on its own in portable Haskell code, in which case
+operations need to be manually lifted through transformer stacks (see
+@code{Control.Monad.Trans.Class} for some examples).  Alternatively, it can be
+used with the non-portable monad classes in the mtl or monads-tf packages,
+which automatically lift operations introduced by monad transformers through
+other transformers.")
     (license license:bsd-3)))
 
 (define-public ghc-transformers-base
@@ -12669,6 +12918,31 @@ a style ready for qualification, that is, you should import them by
     (synopsis "Haskell URI parsing as ByteStrings")
     (description "This Haskell package aims to be an RFC3986 compliant URI
 parser that uses ByteStrings for parsing and representing the URI data.")
+    (license license:bsd-3)))
+
+(define-public ghc-utf8-light
+  (package
+    (name "ghc-utf8-light")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/utf8-light/utf8-light-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0rwyc5z331yfnm4hpx0sph6i1zvkd1z10vvglhnp0vc9wy644k0q"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/utf8-light")
+    (synopsis "Lightweight unicode support for Haskell")
+    (description
+     "This package profides a class for encoding and decoding UTF8 strings
+with instances for several common types.  It also includes several functions
+for working with UTF8.  It aims to be lightweight, depending only on Base and
+including only one module.")
     (license license:bsd-3)))
 
 (define-public ghc-utf8-string

@@ -112,6 +112,7 @@ environment presented by Intel's EFI.")
        ("util-linux" ,util-linux))) ; getopt
     (inputs
      `(("gnu-efi" ,gnu-efi)
+       ("libuuid" ,util-linux "lib")
        ("openssl" ,openssl)))
     (synopsis "EFI signing tools")
     (description "This package provides tools for signing EFI binaries.")

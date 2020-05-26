@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,13 +104,14 @@
     (name "bitcoin-core")
     (version "0.19.1")
     (source (origin
-             (method url-fetch)
-             (uri
-              (string-append "https://bitcoincore.org/bin/bitcoin-core-"
-                             version "/bitcoin-" version ".tar.gz"))
-             (sha256
-              (base32
-               "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))))
+              (method url-fetch)
+              (uri
+               (string-append "https://bitcoincore.org/bin/bitcoin-core-"
+                              version "/bitcoin-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h3w7brc18145np920vy7j5ms5hym59hvr40swdjx34fbdaisngj"))
+              (patches (search-patches "bitcoin-core-python-compat.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -126,35 +128,36 @@
        ("qtbase" ,qtbase)))
     (arguments
      `(#:configure-flags
-        (list
-          ;; Boost is not found unless specified manually.
-          (string-append "--with-boost="
-                         (assoc-ref %build-inputs "boost"))
-          ;; XXX: The configure script looks up Qt paths by
-          ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
-          ;; up executables residing in 'qttools', so we specify them here.
-          (string-append "ac_cv_path_LRELEASE="
-                         (assoc-ref %build-inputs "qttools")
-                         "/bin/lrelease")
-          (string-append "ac_cv_path_LUPDATE="
-                         (assoc-ref %build-inputs "qttools")
-                         "/bin/lupdate"))
+       (list
+        ;; Boost is not found unless specified manually.
+        (string-append "--with-boost="
+                       (assoc-ref %build-inputs "boost"))
+        ;; XXX: The configure script looks up Qt paths by
+        ;; `pkg-config --variable=host_bins Qt5Core`, which fails to pick
+        ;; up executables residing in 'qttools', so we specify them here.
+        (string-append "ac_cv_path_LRELEASE="
+                       (assoc-ref %build-inputs "qttools")
+                       "/bin/lrelease")
+        (string-append "ac_cv_path_LUPDATE="
+                       (assoc-ref %build-inputs "qttools")
+                       "/bin/lupdate"))
        #:phases
-        (modify-phases %standard-phases
-          (add-before 'configure 'make-qt-deterministic
+       (modify-phases %standard-phases
+         (add-before 'configure 'make-qt-deterministic
            (lambda _
-            ;; Make Qt deterministic.
-            (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
-            #t))
-          (add-before 'check 'set-home
+             ;; Make Qt deterministic.
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
-            #t))
-          (add-after 'check 'check-functional
+             (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
+             #t))
+         (add-after 'check 'check-functional
            (lambda _
-            (invoke "python3" "./test/functional/test_runner.py"
-                    (string-append "--jobs=" (number->string (parallel-job-count))))
-            #t)))))
+             (invoke
+              "python3" "./test/functional/test_runner.py"
+              (string-append "--jobs=" (number->string (parallel-job-count))))
+             #t)))))
     (home-page "https://bitcoin.org/en/")
     (synopsis "Bitcoin peer-to-peer client")
     (description
@@ -197,7 +200,7 @@ and dynamically with report tools based on filtering and graphical charts.")
 (define-public ledger
   (package
     (name "ledger")
-    (version "3.1.3")
+    (version "3.2.0")
     (source
      (origin
        (method git-fetch)
@@ -206,16 +209,32 @@ and dynamically with report tools based on filtering and graphical charts.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0bfnrqrd6wqgsngfpqi30xh6yy86pwl25iwzrqy44q31r0zl4mm3"))))
+        (base32 "1l5c9jf2wnly6ncm9civ8i7v47xld15g1y7wpl0hqwgbfyffwjci"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:modules (,@%cmake-build-system-modules
+                  ((guix build python-build-system) #:select (python-version)))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build python-build-system))
+       #:configure-flags
        `("-DBUILD_DOCS:BOOL=ON"
          "-DBUILD_WEB_DOCS:BOOL=ON"
          "-DUSE_PYTHON:BOOL=ON"
          "-DCMAKE_INSTALL_LIBDIR:PATH=lib")
        #:phases
-       (modify-phases %standard-phases
+       (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+         (add-after 'unpack 'fix-python-installation-directory
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; By default the package attempts to install its Python bindings
+             ;; to the Python store directory, which obviously does not work.
+             ;; Passing -DPython_SITEARCH in #:configure-flags has no effect.
+             (let ((python-version (python-version (assoc-ref inputs "python")))
+                   (out (assoc-ref outputs "out")))
+               (substitute* "src/CMakeLists.txt"
+                 (("DESTINATION \\$\\{Python_SITEARCH\\}")
+                  (string-append "DESTINATION " out "/lib/python"
+                                 python-version "/site-packages")))
+               #t)))
          (add-before 'configure 'install-examples
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((examples (string-append (assoc-ref outputs "out")
@@ -241,7 +260,7 @@ and dynamically with report tools based on filtering and graphical charts.")
        ("gmp" ,gmp)
        ("libedit" ,libedit)
        ("mpfr" ,mpfr)
-       ("python" ,python-2)
+       ("python" ,python)
        ("utfcpp" ,utfcpp)))
     (native-inputs
      `(("groff" ,groff)
@@ -853,31 +872,21 @@ Ledger Blue/Nano S.")
 (define-public python-trezor
   (package
     (name "python-trezor")
-    (version "0.11.3")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "trezor" version))
         (sha256
           (base32
-            "0211m027vlvyqy83kwbjjjxalb04xgf1klv0h0y0f0yhj07516n7"))))
+            "0ycmpwjv5xp25993divjhaq5j766zgcy22xx39xfc1pcvldq5g7n"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-        (modify-phases %standard-phases
-          ;; Default tests run device-specific tests which fail, only run specific tests.
-          (replace 'check
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              ;; Delete tests that require network access.
-              (delete-file "trezorlib/tests/unit_tests/test_tx_api.py")
-              (invoke "python" "-m" "pytest" "--pyarg" "trezorlib.tests.unit_tests"))))))
     (propagated-inputs
      `(("python-click" ,python-click)
        ("python-construct" ,python-construct)
        ("python-ecdsa" ,python-ecdsa)
        ("python-libusb1" ,python-libusb1)
        ("python-mnemonic" ,python-mnemonic)
-       ("python-pyblake2" ,python-pyblake2)
        ("python-requests" ,python-requests)
        ("python-typing-extensions" ,python-typing-extensions)))
     (native-inputs

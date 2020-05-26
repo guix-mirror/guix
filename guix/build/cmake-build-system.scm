@@ -67,6 +67,8 @@
                   ,@(if target
                         (list (string-append "-DCMAKE_C_COMPILER="
                                              target "-gcc")
+                              (string-append "-DCMAKE_CXX_COMPILER="
+                                             target "-g++")
                               (if (string-contains target "mingw")
                                   "-DCMAKE_SYSTEM_NAME=Windows"
                                   "-DCMAKE_SYSTEM_NAME=Linux"))

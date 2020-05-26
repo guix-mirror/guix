@@ -378,7 +378,10 @@ the /etc/skel directory for those."
                        (service-extension user-processes-service-type
                                           (const '(user-homes)))
                        (service-extension etc-service-type
-                                          etc-files)))))
+                                          etc-files)))
+                (description
+                 "Ensure the specified user accounts and groups exist, as well
+as each account home directory.")))
 
 (define (account-service accounts+groups skeletons)
   "Return a <service> that takes care of user accounts and user groups, with

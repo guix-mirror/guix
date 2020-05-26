@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,15 +30,20 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gv)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpi)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
@@ -299,6 +305,126 @@ neutron scattering spectra, but also computes other quantities.  The software
 is currently not actively maintained and works only with Python 2 and
 NumPy < 1.9.")
     (license license:cecill)))
+
+(define-public tng
+  (package
+    (name "tng")
+    (version "1.8.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/gromacs/tng.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1apf2n8nb34z09xarj7k4jgriq283l769sakjmj5aalpbilvai4q"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-bundled-zlib
+           (lambda _
+             (delete-file-recursively "external")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "../build/bin/tests/tng_testing")
+             #t)))))
+    (home-page "https://github.com/gromacs/tng")
+    (synopsis "Trajectory Next Generation binary format manipulation library")
+    (description "TRAJNG (Trajectory next generation) is a program library for
+handling molecular dynamics (MD) trajectories.  It can store coordinates, and
+optionally velocities and the H-matrix.  Coordinates and velocities are
+stored with user-specified precision.")
+    (license license:bsd-3)))
+
+(define-public gromacs
+  (package
+    (name "gromacs")
+    (version "2020.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.gromacs.org/pub/gromacs/gromacs-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1wyjgcdl30wy4hy6jvi9lkq53bqs9fgfq6fri52dhnb3c76y8rbl"))
+              ;; Our version of tinyxml2 is far newer than the bundled one and
+              ;; require fixing `testutils' code. See patch header for more info
+              (patches (search-patches "gromacs-tinyxml2.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DGMX_DEVELOPER_BUILD=on" ; Needed to run tests
+             ;; Unbundling
+             "-DGMX_USE_LMFIT=EXTERNAL"
+             "-DGMX_BUILD_OWN_FFTW=off"
+             "-DGMX_EXTERNAL_BLAS=on"
+             "-DGMX_EXTERNAL_LAPACK=on"
+             "-DGMX_EXTERNAL_TNG=on"
+             "-DGMX_EXTERNAL_ZLIB=on"
+             "-DGMX_EXTERNAL_TINYXML2=on"
+             (string-append "-DTinyXML2_DIR="
+                            (assoc-ref %build-inputs "tinyxml2"))
+             ;; Workaround for cmake/FindSphinx.cmake version parsing that does
+             ;; not understand the guix-wrapped `sphinx-build --version' answer
+             (string-append "-DSPHINX_EXECUTABLE_VERSION="
+                            ,(package-version python-sphinx)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fixes
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Still bundled: part of gromacs, source behind registration
+             ;; but free software anyways
+             ;;(delete-file-recursively "src/external/vmd_molfile")
+             ;; Still bundled: threads-based OpenMPI-compatible fallback
+             ;; designed to be bundled like that
+             ;;(delete-file-recursively "src/external/thread_mpi")
+             ;; Unbundling
+             (delete-file-recursively "src/external/lmfit")
+             (delete-file-recursively "src/external/clFFT")
+             (delete-file-recursively "src/external/fftpack")
+             (delete-file-recursively "src/external/build-fftw")
+             (delete-file-recursively "src/external/tng_io")
+             (delete-file-recursively "src/external/tinyxml2")
+             (delete-file-recursively "src/external/googletest")
+             (copy-recursively (assoc-ref inputs "googletest-source")
+                               "src/external/googletest")
+             ;; This test warns about the build host hardware, disable
+             (substitute* "src/gromacs/hardware/tests/hardwaretopology.cpp"
+               (("TEST\\(HardwareTopologyTest, HwlocExecute\\)")
+                "void __guix_disabled()"))
+             #t)))))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("googletest-source" ,(package-source googletest))
+       ("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("python-pygments" ,python-pygments)
+       ("python-sphinx" ,python-sphinx)))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("hwloc" ,hwloc-2 "lib")
+       ("lmfit" ,lmfit)
+       ("openblas" ,openblas)
+       ("perl" ,perl)
+       ("tinyxml2" ,tinyxml2)
+       ("tng" ,tng)))
+    (home-page "http://www.gromacs.org/")
+    (synopsis "Molecular dynamics software package")
+    (description "GROMACS is a versatile package to perform molecular dynamics,
+i.e. simulate the Newtonian equations of motion for systems with hundreds to
+millions of particles.  It is primarily designed for biochemical molecules like
+proteins, lipids and nucleic acids that have a lot of complicated bonded
+interactions, but since GROMACS is extremely fast at calculating the nonbonded
+interactions (that usually dominate simulations) many groups are also using it
+for research on non-biological systems, e.g. polymers.  GROMACS supports all the
+usual algorithms you expect from a modern molecular dynamics implementation.")
+    (license license:lgpl2.1+)))
 
 (define-public openbabel
   (package

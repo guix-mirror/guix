@@ -787,7 +787,7 @@ Use '~/.config/guix/channels.scm' instead."))
                                          store
                                          (if (assoc-ref opts 'bootstrap?)
                                              %bootstrap-guile
-                                             (canonical-package guile-2.2)))))
+                                             (default-guile)))))
                           (with-profile-lock profile
                             (run-with-store store
                               (build-and-install instances profile)))))))))))))))

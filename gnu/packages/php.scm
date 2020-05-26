@@ -4,6 +4,7 @@
 ;;; Copyright © 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +60,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.4.5")
+    (version "7.4.6")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -67,7 +68,7 @@
                                   "php-" version ".tar.xz"))
               (sha256
                (base32
-                "0b1wybhqjlnc94qzixhycg9i0w39fqlhm80mvbmd5i5xamzzsnfh"))
+                "0ck8s3zlqnkswwmz3p1bgma7ddjsx9j9sdlz5di1jc7nhhpk4h6p"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -210,6 +211,13 @@
                          "ext/standard/tests/strings/setlocale_basic2.phpt"
                          "ext/standard/tests/strings/setlocale_basic3.phpt"
                          "ext/standard/tests/strings/setlocale_variation1.phpt"
+                         ;; This failing test is skipped on PHP's Travis CI as it is
+                         ;; supposedly inaccurate.
+                         "ext/standard/tests/file/disk_free_space_basic.phpt"
+                         ;; The following test erroneously expect the link
+                         ;; count of a sub-directory to increase compared to
+                         ;; its parent.
+                         "ext/standard/tests/file/lstat_stat_variation8.phpt"
 
                          ;; XXX: These gd tests fails.  Likely because our version
                          ;; is different from the (patched) bundled one.
@@ -224,6 +232,21 @@
                          ;; This bug should have been fixed in gd 2.2.2.
                          ;; Is it a regression?
                          "ext/gd/tests/bug65148.phpt"
+                         ;; This bug should have been fixed in the gd 2.2
+                         ;; series.  Perhaps a regression introduced by gd
+                         ;; 2.3.0?
+                         "ext/gd/tests/bug66590.phpt"
+                         ;; This bug should have been fixed in the php-5.5
+                         ;; series.  Perhaps a regression introduced by gd
+                         ;; 2.3.0?
+                         "ext/gd/tests/bug70102.phpt"
+                         ;; This bug should have been fixed in the php-5.6
+                         ;; series.  Perhaps a regression introduced by gd
+                         ;; 2.3.0?
+                         "ext/gd/tests/bug73869.phpt"
+                         ;; Some WebP related tests fail.
+                         "ext/gd/tests/webp_basic.phpt"
+                         "ext/gd/tests/imagecreatefromstring_webp.phpt"
                          ;; Expected error message, but from the wrong function
                          "ext/gd/tests/bug77269.phpt"
                          ;; TODO: Enable these when libgd is built with xpm support.
@@ -237,8 +260,11 @@
                          ;; complete.  It's a warning in both cases and test
                          ;; result is the same.
                          "ext/gd/tests/bug77973.phpt"
-                         ;; New test failures added with 7.4.3
+                         ;; Test expects uninitialized value to be false, but
+                         ;; instead gets "resource(5) of type (gd)".
                          "ext/gd/tests/bug79067.phpt"
+                         ;; The following test fails with "The image size
+                         ;; differs: expected 114x115, got 117x117".
                          "ext/gd/tests/bug79068.phpt"
 
                          ;; XXX: These iconv tests have the expected outcome,

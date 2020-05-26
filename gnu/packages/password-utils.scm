@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Jean-Baptiste Note <jean-baptiste.note@m4x.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -213,7 +215,7 @@ algorithms AES or Twofish.")
        ("zip" ,zip)))
     (inputs `(("curl" ,curl)
               ("file" ,file)
-              ("libuuid" ,util-linux)
+              ("libuuid" ,util-linux "lib")
               ("libxt" ,libxt)
               ("libxtst" ,libxtst)
               ("openssl" ,openssl)
@@ -1168,3 +1170,42 @@ exhaustive mode to try every password given a charset or in dictionary mode to
 try every password contained in a file.")
     (home-page "https://github.com/glv2/bruteforce-luks")
     (license license:gpl3+)))
+
+(define-public makepasswd
+  (let ((commit "3545d57d3a589a392d7eb0df36a5286785345c9e")
+        (revision "1"))
+    (package
+      (name "makepasswd")
+      (version (git-version "0.5.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/khorben/makepasswd")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0lspqyyxbk6h28yxnp7pd5aib161vrkzgasam5jpzn35n1jacx2j"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("libxslt" ,libxslt)
+         ("libxml2" ,libxml2)
+         ("docbook-xsl" ,docbook-xsl)
+         ("docbook-xml" ,docbook-xml)))
+      (inputs
+       `(("openssl" ,openssl)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure))
+         #:make-flags (list "CC=gcc"
+                            (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:tests? #f))  ;no tests
+      (synopsis "Generate (pseudo-)random passwords and hashes")
+      (description
+       "Makepasswd is a program that generates pseudo-random passwords of a
+desired length.  It can also generate their corresponding hashes for a given
+encryption algorithm if so desired.")
+      (home-page "https://github.com/khorben/makepasswd")
+      (license license:gpl3))))

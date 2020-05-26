@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,6 +42,7 @@
             traverse/depth-first
             node-transitive-edges
             node-reachable-count
+            shortest-path
 
             %graph-backends
             %d3js-backend
@@ -139,6 +140,72 @@ typically returned by 'node-edges' or 'node-back-edges'."
                           (+ 1 count))
                         0
                         nodes node-edges))
+
+(define (shortest-path node1 node2 type)
+  "Return as a monadic value the shorted path, represented as a list, from
+NODE1 to NODE2 of the given TYPE.  Return #f when there is no path."
+  (define node-edges
+    (node-type-edges type))
+
+  (define (find-shortest lst)
+    ;; Return the shortest path among LST, where each path is represented as a
+    ;; vlist.
+    (let loop ((lst lst)
+               (best +inf.0)
+               (shortest #f))
+      (match lst
+        (()
+         shortest)
+        ((head . tail)
+         (let ((len (vlist-length head)))
+           (if (< len best)
+               (loop tail len head)
+               (loop tail best shortest)))))))
+
+  (define (find-path node path paths)
+    ;; Return the a vhash that maps nodes to paths, with each path from the
+    ;; given node to NODE2.
+    (define (augment-paths child paths)
+      ;; When using %REFERENCE-NODE-TYPE, nodes can contain self references,
+      ;; hence this test.
+      (if (eq? child node)
+          (store-return paths)
+          (find-path child vlist-null paths)))
+
+    (cond ((eq? node node2)
+           (store-return (vhash-consq node (vlist-cons node path)
+                                      paths)))
+          ((vhash-assq node paths)
+           (store-return paths))
+          (else
+           ;; XXX: We could stop recursing if one if CHILDREN is NODE2, but in
+           ;; practice it's good enough.
+           (mlet* %store-monad ((children (node-edges node))
+                                (paths    (foldm %store-monad
+                                                 augment-paths
+                                                 paths
+                                                 children)))
+             (define sub-paths
+               (filter-map (lambda (child)
+                             (match (vhash-assq child paths)
+                               (#f #f)
+                               ((_ . path) path)))
+                           children))
+
+             (match sub-paths
+               (()
+                (return (vhash-consq node #f paths)))
+               (lst
+                (return (vhash-consq node
+                                     (vlist-cons node (find-shortest sub-paths))
+                                     paths))))))))
+
+  (mlet %store-monad ((paths (find-path node1
+                                        (vlist-cons node1 vlist-null)
+                                        vlist-null)))
+    (return (match (vhash-assq node1 paths)
+              ((_ . #f) #f)
+              ((_ . path) (vlist->list path))))))
 
 
 ;;;

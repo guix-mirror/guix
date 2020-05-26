@@ -38,7 +38,7 @@ diff -ru libgd-2.2.3.orig/tests/gdimagecopyresampled/bug00201.c libgd-2.2.3/test
 @@ -65,7 +66,8 @@
      gdImageDestroy(background);
      gdImageDestroy(scaled_logo);
-     
+ 
 -    gdAssertImageEqualsToFile("gdimagecopyresampled/bug00201_exp.png", img);
 +    if (FLT_EVAL_METHOD != 2)
 +        gdAssertImageEqualsToFile("gdimagecopyresampled/bug00201_exp.png", img);

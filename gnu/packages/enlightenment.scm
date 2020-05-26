@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;;
@@ -124,7 +124,7 @@
        ("harfbuzz" ,harfbuzz)
        ("luajit" ,luajit)
        ("libinput" ,libinput-minimal)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libtiff" ,libtiff)
@@ -134,7 +134,7 @@
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments
@@ -194,7 +194,7 @@ removable devices or support for multimedia.")
 (define-public terminology
   (package
     (name "terminology")
-    (version "1.6.0")
+    (version "1.7.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -202,7 +202,7 @@ removable devices or support for multimedia.")
                               "terminology/terminology-" version ".tar.xz"))
               (sha256
                (base32
-                "0xxx4xyhis6fy3frgb34ip0aj0kc4zashf60gzbxmq5gadbb0p5r"))
+                "11qan2k6w94cglysh95yxkbv6hw9x15ri927hkiy3k0hbmpbrxc8"))
               (modules '((guix build utils)))
               ;; Remove the bundled fonts.
               (snippet
@@ -336,8 +336,8 @@ Libraries with some extra bells and whistles.")
                (substitute* "src/modules/everything/evry_plug_calc.c"
                  (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
-                 (("/bin/mount") (string-append utils "/bin/mount"))
-                 (("/bin/umount") (string-append utils "/bin/umount"))
+                 (("/bin/mount") "/run/setuid-programs/mount")
+                 (("/bin/umount") "/run/setuid-programs/umount")
                  (("/usr/bin/eject") (string-append utils "/bin/eject"))
                  (("/usr/bin/l2ping") (string-append bluez "/bin/l2ling"))
                  (("/bin/rfkill") (string-append utils "/sbin/rfkill"))
@@ -449,25 +449,32 @@ Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
 (define-public edi
   (package
     (name "edi")
-    (version "0.6.0")
+    (version "0.8.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.enlightenment.org/rel/apps/edi/"
-                            name "-" version ".tar.xz"))
+        (uri (string-append "https://github.com/Enlightenment/edi/releases/"
+                            "download/v" version "/edi-" version ".tar.xz"))
         (sha256
          (base32
-          "0iqkah327ms5m7k054hcik2l9v68i4mg9yy52brprfqpd5jk7pw8"))))
-    (build-system gnu-build-system)
+          "01k8gp8r2wa6pyg3dkbm35m6hdsbss06hybghg0qjmd4mzswcd3a"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-clang-header
+           (lambda _
+             (substitute* "scripts/clang_include_dir.sh"
+               (("grep clang") "grep clang | head -n1"))
+             #t))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))
        #:tests? #f)) ; tests require running dbus service
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("check" ,check)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
        ("efl" ,efl)))
@@ -478,7 +485,8 @@ the EFL.  It's aim is to create a new, native development environment for Linux
 that tries to lower the barrier to getting involved in Enlightenment development
 and in creating applications based on the Enlightenment Foundation Library suite.")
     (license (list license:public-domain ; data/extra/skeleton
-                   license:gpl2))))      ; edi
+                   license:gpl2          ; edi
+                   license:gpl3))))      ; data/extra/examples/images/mono-runtime.png
 
 (define-public lekha
   (package
@@ -560,7 +568,7 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.2.6")
+    (version "0.4.1")
     (source
       (origin
         (method url-fetch)
@@ -568,22 +576,14 @@ directories.
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
          (base32
-          "1rg3kri6j8nmab0kdljnmcc096c8ibgwzvbhqr0b25xpmrq8bcac"))))
-    (build-system gnu-build-system)
+          "0c3sgz6g8agig1i6fwn1jv318zsm556l9f3f0dm1jll146dlk2iv"))))
+    (build-system meson-build-system)
     (arguments
-     '(#:tests? #f   ; no tests
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure) ; no configure phase
-         (add-after 'unpack 'set-environmental-variables
-           (lambda _ (setenv "CC" (which "gcc")) #t)))))
+     '(#:tests? #f))    ; no tests
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("efl" ,efl)
-       ("perl" ,perl)))
+     `(("efl" ,efl)))
     (home-page "https://www.enlightenment.org")
     (synopsis "EFL process viewer")
     (description

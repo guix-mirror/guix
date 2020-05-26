@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,7 +159,7 @@
        ("ijs"          ,ijs)
        ("dbus"         ,dbus)
        ("lcms"         ,lcms)
-       ("libjpeg"      ,libjpeg)
+       ("libjpeg"      ,libjpeg-turbo)
        ("libpng"       ,libpng)
        ("libtiff"      ,libtiff)
        ("glib"         ,glib)
@@ -536,7 +537,20 @@ should only be used as part of the Guix cups-pk-helper service.")
                   (string-append "rulessystemdir = " out
                                  "/lib/systemd/system"))
                  (("/etc/sane.d")
-                  (string-append out "/etc/sane.d"))))))
+                  (string-append out "/etc/sane.d")))
+               #t)))
+         (add-before 'configure 'fix-build-with-python-3.8
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               ;; XXX: The configure script of looks for Python headers in the
+               ;; wrong places as of version 3.20.3.  Help it by adding the
+               ;; include directory on C_INCLUDE_PATH.
+               (when python
+                 (setenv "C_INCLUDE_PATH"
+                         (string-append python "/include/python"
+                                        (python:python-version python)
+                                        ":" (getenv "C_INCLUDE_PATH"))))
+               #t)))
          (add-after 'install 'install-models-dat
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -585,7 +599,7 @@ should only be used as part of the Guix cups-pk-helper service.")
     (inputs
      `(("cups-minimal" ,cups-minimal)
        ("dbus" ,dbus)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libusb" ,libusb)
        ("python" ,python)
        ("python-dbus" ,python-dbus)
@@ -673,14 +687,14 @@ printer/driver specific, but spooler-independent PPD file.")
 (define-public foo2zjs
   (package
     (name "foo2zjs")
-    (version "20200207")
+    (version "20200426")
     (source (origin
               (method url-fetch)
               ;; XXX: This is an unversioned URL!
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "0pf1sm29gnrhhpyvq95jskvr874h5r4kls9w10gc24z23fjmr5zx"))))
+                "0wwh29ddd59q18r1jpi3166lgnwr8zn9lry82vahc2g96l97isp7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

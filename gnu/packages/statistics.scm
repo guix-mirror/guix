@@ -11,6 +11,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
+;;; Copyright © 2020 Tim Howes <timhowes@lavabit.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -351,7 +352,7 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("openblas" ,openblas)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libxt" ,libxt)
@@ -407,14 +408,14 @@ available, greatly increasing its breadth and scope.")
 (define-public r-boot
   (package
     (name "r-boot")
-    (version "1.3-24")
+    (version "1.3-25")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "boot" version))
        (sha256
         (base32
-         "0yv0l55kjmlfdx1xhgyjdi0bskxhfal74wr5jxaib1qj99nmkm49"))))
+         "1gpvi1h3nqhnnsfy96rlhakdpj84iqqsxr29rr3261sknky3aj26"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/boot")
     (synopsis "Bootstrap functions for R")
@@ -428,14 +429,14 @@ D.V. Hinkley (1997, CUP), originally written by Angelo Canty for S.")
 (define-public r-mass
   (package
     (name "r-mass")
-    (version "7.3-51.5")
+    (version "7.3-51.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "MASS" version))
        (sha256
         (base32
-         "1k0m7pa4gb5apzrrkb5kx5d7bmkm2pl5g15vwb6j067hrqahck26"))))
+         "1viyxy22qp8abzzzlbck55b0i81rrdygim1dq2pm52s2v13mq0z2"))))
     (properties `((upstream-name . "MASS")))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
@@ -449,14 +450,14 @@ Applied Statistics with S\" (4th edition, 2002) by Venables and Ripley.")
 (define-public r-class
   (package
     (name "r-class")
-    (version "7.3-16")
+    (version "7.3-17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "class" version))
        (sha256
         (base32
-         "1jpdgj0lsi60q0mqbhfw809w8d66whix27y6wpdzll6775g3j3ll"))))
+         "04qk8qia0qr8893fizmkbd5hsqn6m8383c0cyn9xnmkmvyv8a7xy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
@@ -512,14 +513,14 @@ code for possible problems.")
 (define-public r-foreign
   (package
     (name "r-foreign")
-    (version "0.8-78")
+    (version "0.8-79")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "foreign" version))
        (sha256
         (base32
-         "01anirfbfa3ip5pyqv72cg4x7p0jsppmbvxrllw7bm28fl1hgiyq"))))
+         "1d5rk4k3khjrir1b4ciridd6vdpcgzi35r7p7ra4ky7vbaabcdmg"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/foreign")
     (synopsis "Read data stored by other statistics software")
@@ -532,14 +533,14 @@ for reading and writing some dBase files.")
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
-    (version "2.23-16")
+    (version "2.23-17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "KernSmooth" version))
        (sha256
         (base32
-         "1acrkbdn3a74y4dndkcdl1njnpfqz7gk3bsz03g8lfj8l7z53hmq"))))
+         "11g6b0q67vasxag6v9m4px33qqxpmnx47c73yv1dninv2pz76g9b"))))
     (properties `((upstream-name . "KernSmooth")))
     (build-system r-build-system)
     (native-inputs
@@ -643,14 +644,14 @@ distributions beyond the exponential family.")
 (define-public r-nnet
   (package
     (name "r-nnet")
-    (version "7.3-13")
+    (version "7.3-14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nnet" version))
        (sha256
         (base32
-         "1z0rj5cm4ycw1y0gd5wwwg8c2298v90iybgqdqh17967jbi2125f"))))
+         "1bzl62p5awva5kxcncs6lrdrkqp9ljd993zia731ckfpcjbrw6sx"))))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
     (synopsis "Feed-forward neural networks and multinomial log-linear models")
@@ -681,14 +682,14 @@ classification, regression and survival trees.")
 (define-public r-spatial
   (package
     (name "r-spatial")
-    (version "7.3-11")
+    (version "7.3-12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spatial" version))
        (sha256
         (base32
-         "04aw8j533sn63ybyrf4hyhrqm4058vfcb7yhjy07kq92mk94hi32"))))
+         "0qrdhzd5r78iwi46nk8jr56dzz5l5imkflxjw64d0ys0wyg06fbn"))))
     (build-system r-build-system)
     (home-page "http://www.stats.ox.ac.uk/pub/MASS4/")
     (synopsis "Functions for kriging and point pattern analysis")
@@ -1614,13 +1615,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.4.5")
+    (version "0.4.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "1a0h3dr519p3jj6aygbhwi9f2zwlan6d07f1gkh2db56y5vaq7yd"))))
+                "1jik4lywg4688dfi5fh8jbnmsxvq3382ii0nsw5armjzfq3v309s"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -2370,13 +2371,13 @@ functions make it easy to control additional request components.")
 (define-public r-git2r
   (package
     (name "r-git2r")
-    (version "0.26.1")
+    (version "0.27.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "git2r" version))
               (sha256
                (base32
-                "0dbl845sahv2i641ncaf06w06djravwc5wknp9syzx0ad8l0kmhk"))))
+                "1h1vfzym6hi1fqs9p5z5v0f4xldggr425frw8k6dsidah3qhg4h9"))))
     (build-system r-build-system)
     (inputs
      `(("libgit2" ,libgit2)
@@ -2588,13 +2589,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.860.2.0")
+    (version "0.9.870.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1rg9ak0zbv8d9cyj10jq52nrcbk1pvfz28kbkhpx79mpjhrl7pb5"))))
+                "1r7iajxvbyvslsy16rqacc95azmjciw9lvcq31xl97fl09kmsq5v"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3669,14 +3670,14 @@ more complete @code{viridis} package.")
 (define-public r-tidyselect
   (package
     (name "r-tidyselect")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyselect" version))
        (sha256
         (base32
-         "1bwwsljkg1bxh7xnqxv7n0n1s9y8x407i6lsv826vy1ss1k1fxpy"))))
+         "14rqx4dq574hilmdwrr34wyjg8rlw4rvndpsqd9plgxm3wwfsdg6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ellipsis" ,r-ellipsis)
@@ -3684,6 +3685,8 @@ more complete @code{viridis} package.")
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://cran.r-project.org/web/packages/tidyselect")
     (synopsis "Select from a set of strings")
     (description
@@ -3696,14 +3699,14 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0safj8bcf8libwr0jx4059bmarngvhfddrcv8k5iw39m9lpxs0r4"))))
+         "18ypk63nifp5jj5d9880m49zdv7n4a18gac59wj5z5xk6qr7vfal"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -3718,6 +3721,8 @@ selection.")
        ("r-stringi" ,r-stringi)
        ("r-tibble" ,r-tibble)
        ("r-vctrs" ,r-vctrs)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hadley/tidyr")
     (synopsis "Tidy data with `spread()` and `gather()` functions")
     (description
@@ -4112,14 +4117,14 @@ existing packages provide.")
 (define-public r-sfsmisc
   (package
     (name "r-sfsmisc")
-    (version "1.1-6")
+    (version "1.1-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sfsmisc" version))
        (sha256
         (base32
-         "04fvjdab6vyyghyqy0abxvfbyr1myz6yib7ibwiyjw9yf7fjrcjp"))))
+         "12g6m8sf17q3qmm133nm4fa296w5n5d9ly3fvb2nvc0w4llkif3l"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/sfsmisc")
     (synopsis "Utilities from \"Seminar fuer Statistik\" ETH Zurich")
@@ -4241,18 +4246,20 @@ including:
 (define-public r-rocr
   (package
     (name "r-rocr")
-    (version "1.0-7")
+    (version "1.0-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ROCR" version))
        (sha256
         (base32
-         "1jay8cm7lgq56i967vm5c2hgaxqkphfpip0gn941li3yhh7p3vz7"))))
+         "0amvvrkiflmr3qygrsgrsja4gaf2v6r6h6i2bgpsm8r069vmlf2p"))))
     (properties `((upstream-name . "ROCR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-gplots" ,r-gplots)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rocr.bioinf.mpi-sb.mpg.de/")
     (synopsis "Visualizing the performance of scoring classifiers")
     (description
@@ -4271,13 +4278,13 @@ mechanism.")
 (define-public r-zoo
   (package
     (name "r-zoo")
-    (version "1.8-7")
+    (version "1.8-8")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "zoo" version))
               (sha256
                (base32
-                "1w4542zs53bm261g95086a60576v334g1jrhnbgdqni4izf2s1wy"))))
+                "1rrw431jwaxd9xljp73f15rhcxvwc0xlyrmr0ghi5fj7a03c932f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
@@ -4957,16 +4964,16 @@ groupings.")
 (define-public r-vgam
   (package
     (name "r-vgam")
-    (version "1.1-2")
+    (version "1.1-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "VGAM" version))
        (sha256
-        (base32 "0kyan3a4ys2xbg9kf167cyf1gk7g963id62cjm2ij4i7y4wi61zq"))))
+        (base32 "1hwlrdx3nhdp83pvy1h23i16vbbhi4kizdhr58c8nvg7kqdzb7qc"))))
     (properties `((upstream-name . "VGAM")))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "https://www.stat.auckland.ac.nz/~yee/VGAM")
     (synopsis "Vector generalized linear and additive models")
@@ -5280,14 +5287,14 @@ even in multithreaded code, typically using OpenMP.")
 (define-public r-mnormt
   (package
     (name "r-mnormt")
-    (version "1.5-6")
+    (version "1.5-7")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "mnormt" version))
         (sha256
           (base32
-           "0k8y08gj6z525yvc7y3dl2kzgnafbj3i7lvpamypsmqxf74zql99"))))
+           "1y0vlvh02wza2wvfd29wxjlw3jg9rnwnx3kph5qz4179kz87fgfg"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -5786,42 +5793,51 @@ Java package that provides routines for various statistical distributions.")
 (define-public emacs-ess
   (package
     (name "emacs-ess")
-    (version "17.11")
+    (version "18.10.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/emacs-ess/ESS/archive/v"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-ess/ESS")
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "0cbilbsiwvcyf6d5y24mymp57m3ana5dkzab3knfs83w4a3a4c5c"))
-              (file-name (string-append name "-" version ".tar.gz"))
+                "1yq41l2bicwjrc0b731iic20cpcnz6ppigri1jn621qv2qv22vy3"))
+              (file-name (git-file-name name version))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Stop ESS from trying to bundle an external julia-mode.el.
                   (substitute* "lisp/Makefile"
-                    (("^\tjulia-mode.elc\\\\\n") "")
-                    (("^dist: all julia-mode.el")
-                     "dist: all"))
-                  ;; No need to build docs in so many formats.  Also, skipping
-                  ;; pdf lets us not pull in texlive.
+                    (("^ess-julia.elc: julia-mode.elc") "")
+                    (("^all: julia-mode.el")
+                     "all:"))
+                  ;; Include *.el files in install target.
+                  (substitute* "lisp/Makefile"
+                    (("\t\\$\\(INSTALL) \\$\\(ELC\\) \\$\\(LISPDIR\\)" elc)
+                     (string-append "\t$(INSTALL) $(ELS) ess-autoloads.el "
+                                    "$(LISPDIR)\n" elc)))
+                  ;; Only build docs in info format.
                   (substitute* "doc/Makefile"
-                    (("all  : info text html pdf")
+                    (("all  : info text")
                      "all  : info")
                     (("install: install-info install-other-docs")
                      "install: install-info"))
-                  ;; Test fails upstream
+                  ;; Stop install-info from trying to update the info directory.
+                  (substitute* "doc/Makefile"
+                    ((".*\\$\\(INFODIR\\)/dir.*") ""))
+                  ;; Fix roxygen preview test.
                   (substitute* "test/ess-r-tests.el"
-                    (("ert-deftest ess-r-namespaced-eval-no-srcref-in-errors ()")
-                     "ert-deftest ess-r-namespaced-eval-no-srcref-in-errors () :expected-result :failed"))
+                               (("Add together two numbers.\n")
+                                "Add together two numbers. ")
+                               (("##' add\\(10, 1\\)") "add(10, 1)"))
                   #t))))
     (build-system gnu-build-system)
     (arguments
      (let ((base-directory "/share/emacs/site-lisp"))
        `(#:make-flags (list (string-append "PREFIX=" %output)
-                            (string-append "ETCDIR=" %output "/"
+                            (string-append "ETCDIR=" %output
                                            ,base-directory "/etc")
-                            (string-append "LISPDIR=" %output "/"
+                            (string-append "LISPDIR=" %output
                                            ,base-directory))
          #:phases
          (modify-phases %standard-phases
@@ -5840,6 +5856,7 @@ Java package that provides routines for various statistical distributions.")
        ("r-minimal" ,r-minimal)))
     (native-inputs
      `(("perl" ,perl)
+       ("r-roxygen2" ,r-roxygen2)
        ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("emacs-julia-mode" ,emacs-julia-mode)))

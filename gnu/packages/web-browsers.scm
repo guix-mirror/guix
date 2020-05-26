@@ -140,7 +140,7 @@ management, extensions such as advertisement blocker and colorful tabs.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("fltk" ,fltk)
               ("fontconfig" ,fontconfig)
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("libpng" ,libpng)
               ("libxcursor" ,libxcursor)
               ("libxft" ,libxft)
@@ -188,7 +188,7 @@ older or slower computers and embedded systems.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("zlib" ,zlib)
               ("openssl" ,openssl)
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("libtiff" ,libtiff)
               ("libevent" ,libevent)
               ("libpng" ,libpng)
@@ -338,7 +338,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.10.0")
+    (version "1.11.0")
     (source
      (origin
        (method url-fetch)
@@ -347,7 +347,7 @@ access.")
                            "qutebrowser-" version ".tar.gz"))
        (sha256
         (base32
-         "1prvd3cysmcjfybn0dmr3ih0bl6lm5ml9i7wd09fn8hb7047mkby"))))
+         "0b0qlki9bp9mm41lrh6rc6qqvm4nsz8da63sby3a1f2xm9b9vvg2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests

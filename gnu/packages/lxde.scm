@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -27,7 +27,9 @@
 
 (define-module (gnu packages lxde)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
@@ -55,6 +57,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -249,25 +252,26 @@ with freedesktop.org standard.")
   (package
     (name "spacefm")
     (version "1.0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/IgnorantGuru/spacefm/archive/"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "1jg7xfyr7kihjnalxp8wxyb9qjk8hqf5l36rp3s0lvkpmpyakppy"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "src/main.c"
-                    (("#include <sys/types\\.h>" all)
-                     ;; Add missing include for 'major' and 'minor' with glibc
-                     ;; >= 2.28.
-                     (string-append all "\n"
-                                    "#include <sys/sysmacros.h>\n")))
-                  #t))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/IgnorantGuru/spacefm.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "193mdcv73cfc2bnm4bzmnf1wmkzgj1ya64y0lgyxn3ww36ghcsx9"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "src/main.c"
+             (("#include <sys/types\\.h>" all)
+              ;; Add missing include for 'major' and 'minor' with glibc
+              ;; >= 2.28.
+              (string-append all "\n"
+                             "#include <sys/sysmacros.h>\n")))
+           #t))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
@@ -277,32 +281,123 @@ with freedesktop.org standard.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("bash" ,bash)
+       ("btrfs-progs" ,btrfs-progs)
        ("cairo" ,cairo)
+       ("coreutils" ,coreutils)
        ("curlftpfs" ,curlftpfs)
-       ("dbus" ,dbus)
+       ("e2fsprogs" ,e2fsprogs)
        ("eudev" ,eudev)
        ("fakeroot" ,fakeroot)
        ("ffmpegthumbnailer" ,ffmpegthumbnailer)
+       ("fsarchiver" ,fsarchiver)
        ("fuseiso" ,fuseiso)
        ("glib" ,glib)
+       ("gphotofs" ,gphotofs)
        ("gtk+" ,gtk+)
        ("ifuse" ,ifuse)
        ("jmtpfs" ,jmtpfs)
+       ("ktsuss" ,ktsuss)
        ("libx11" ,libx11)
        ("lsof" ,lsof)
+       ("ntfs-3g" ,ntfs-3g)
        ("pango" ,pango)
+       ("procps" ,procps)
        ("shared-mime-info" ,shared-mime-info)
        ("startup-notification" ,startup-notification)
        ("udevil" ,udevil)
        ("util-linux" ,util-linux)
        ("wget" ,wget)))
     (arguments
-     `(#:configure-flags (list (string-append "--with-bash-path="
-                                              (assoc-ref %build-inputs "bash")
-                                              "/bin/bash")
-                               (string-append "--sysconfdir="
-                                              (assoc-ref %outputs "out")
-                                              "/etc"))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bin-dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (util-linux (assoc-ref inputs "util-linux"))
+                    (procps (assoc-ref inputs "procps"))
+                    (e2fsprogs (assoc-ref inputs "e2fsprogs"))
+                    (btrfs-progs (assoc-ref inputs "btrfs-progs"))
+                    (ntfs-3g (assoc-ref inputs "ntfs-3g"))
+                    (lsof (assoc-ref inputs "lsof"))
+                    (fsarchiver (assoc-ref inputs "fsarchiver"))
+                    (ktsuss (assoc-ref inputs "ktsuss")))
+               (with-directory-excursion "src"
+                 (substitute* '("ptk/ptk-file-task.c" "ptk/ptk-handler.h"
+                                "ptk/ptk-location-view.c" "spacefm-auth"
+                                "spacefm-auth.bash" "vfs/vfs-file-task.c"
+                                "settings.c" "../data/ui/prefdlg.ui"
+                                "../data/ui/prefdlg2.ui")
+                   (("/bin/sh" file) (string-append bash file))
+                   (("/bin/bash" file) (string-append bash file))
+                   (("/bin/kill" file) (string-append coreutils file))
+                   (("/bin/ls" file) (string-append coreutils file))
+                   (("/usr(/bin/sha256sum)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/sha512sum)" _ file) (string-append coreutils file))
+                   (("/sbin/fsck" file) (string-append util-linux file))
+                   (("/sbin/mkfs" file) (string-append util-linux file))
+                   (("/sbin/mkswap" file) (string-append util-linux file))
+                   (("/bin/ps" file) (string-append procps file))
+                   (("/sbin/tune2fs" file) (string-append e2fsprogs file))
+                   (("/sbin/btrfs") (string-append btrfs-progs "/bin/btrfs"))
+                   (("/sbin/ntfslabel" file) (string-append ntfs-3g file))
+                   (("/usr(/bin/lsof)" _ file) (string-append lsof file))
+                   (("(/usr)?/(sbin|bin)/fsarchiver") (string-append fsarchiver
+                                                                     "/sbin/fsarchiver"))
+                   (("/usr(/bin/ktsuss)" _ file) (string-append ktsuss file))))
+               #t)))
+         (add-after 'patch-bin-dirs 'patch-share-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (with-directory-excursion "src"
+                 (substitute* '("main-window.c" "settings.c"
+                                "ptk/ptk-app-chooser.c")
+                   (("/usr(/local)?/share") share)))
+               #t)))
+         (add-after 'patch-share-dirs 'patch-mime-dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((mime (string-append (assoc-ref inputs "shared-mime-info")
+                                         "/share/mime")))
+               (with-directory-excursion "src"
+                 (substitute* '("mime-type/mime-type.c" "ptk/ptk-file-menu.c")
+                   (("/usr(/local)?/share/mime") mime)))
+               #t)))
+         (add-after 'patch-mime-dirs 'patch-setuid-progs
+           (lambda _
+             (let* ((su "/run/setuid-programs/su")
+                    (mount "/run/setuid-programs/mount")
+                    (umount "/run/setuid-programs/umount")
+                    (udevil "/run/setuid-programs/udevil"))
+               (with-directory-excursion "src"
+                 (substitute* '("settings.c" "settings.h" "vfs/vfs-file-task.c"
+                                "vfs/vfs-volume-hal.c" "../data/ui/prefdlg.ui"
+                                "../data/ui/prefdlg2.ui")
+                   (("(/usr)?/bin/su") su)
+                   (("/(bin|sbin)/mount") mount)
+                   (("/(bin|sbin)/umount") umount)
+                   (("/usr/bin/udevil") udevil)))
+               #t)))
+         (add-after 'patch-setuid-progs 'patch-spacefm-conf
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "etc/spacefm.conf"
+               (("#terminal_su=/bin/su")
+                "terminal_su=/run/setuid-programs/su")
+               (("#graphical_su=/usr/bin/gksu")
+                (string-append "graphical_su="
+                               (string-append (assoc-ref inputs "ktsuss")
+                                              "/bin/ktsuss"))))
+             #t)))
+       #:configure-flags (list
+                          (string-append "--with-preferable-sudo="
+                                         (assoc-ref %build-inputs "ktsuss")
+                                         "/bin/ktsuss")
+                          (string-append "--with-bash-path="
+                                         (assoc-ref %build-inputs "bash")
+                                         "/bin/bash")
+                          (string-append "--sysconfdir="
+                                         (assoc-ref %outputs "out")
+                                         "/etc"))))
     (home-page "https://ignorantguru.github.io/spacefm/")
     (synopsis "Multi-panel tabbed file manager")
     (description "SpaceFM is a graphical, multi-panel, tabbed file manager

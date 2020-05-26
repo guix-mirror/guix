@@ -2,7 +2,8 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +58,8 @@
                                             "--with-guile-site-ccache-dir="
                                             (assoc-ref %outputs "out")
                                             "/lib/guile/2.2/site-ccache"))))
-      (native-inputs `(("pkg-config" ,pkg-config)
+      (native-inputs `(("guile" ,guile-2.2)
+                       ("pkg-config" ,pkg-config)
                        ("texinfo" ,texinfo)))
       (inputs `(("guile" ,guile-2.2)
                 ("xcb" ,xcb-proto)))

@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marek Benc <dusxmt@gmx.com>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
@@ -36,6 +36,7 @@
 ;;; Copyright © 2020 Damien Cassou <damien@cassou.me>
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Boris A. Dekshteyn <boris.dekshteyn@gmail.com>
+;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -464,6 +465,8 @@ following the mouse.")
                 "1ryxzdf048x7wsx4dlvrr1p00gzwfs7lybnhgc7ygbj0dvyxcrns"))
               (patches (search-patches "pixman-CVE-2016-5296.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
     (inputs
      `(("libpng" ,libpng)
        ("zlib" ,zlib)))
@@ -646,7 +649,7 @@ of the screen selected by mouse.")
 (define-public slop
   (package
     (name "slop")
-    (version "7.4")
+    (version "7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -655,7 +658,7 @@ of the screen selected by mouse.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fgd8a2dqkg64all0f96sca92sdss9r3pzmv5kck46b99z2325z6"))))
+                "1k8xxb4rj2fylr4vj16yvsf73cyywliz9cy78pl4ibmi03jhg837"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f)) ; no "check" target
@@ -679,7 +682,7 @@ selection's dimensions to stdout.")
 (define-public maim
   (package
     (name "maim")
-    (version "5.5.3")
+    (version "5.6.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -688,7 +691,7 @@ selection's dimensions to stdout.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1kbxsz8whfxl5blwsvpva2q95zwy72argwhi1cfqh5lrhzq5zrpp"))))
+                "181mjjrjb9fs1ficcv9miqbk94v95j1yli7fjp2dj514g7nj9l3x"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))            ; no "check" target
@@ -1252,7 +1255,7 @@ protocol.")
        ("libglade" ,libglade)
        ("libxml2" ,libxml2)
        ("libsm" ,libsm)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("linux-pam" ,linux-pam)
        ("pango" ,pango)
        ("gtk+" ,gtk+)
@@ -1925,16 +1928,16 @@ binary to setuid-binaries:
 (define-public wl-clipboard
   (package
     (name "wl-clipboard")
-    (version "2.0.0_beta2")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/bugaevc/wl-clipboard.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wyqbaph9v1v6lwfcjf8gjhdl70icpss4wapshzfxcz3l9m1p8hv"))))
+        (base32 "0c4w87ipsw09aii34szj9p0xfy0m00wyjpll0gb0aqmwa60p0c5d"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2128,7 +2131,7 @@ Xwrits hides itself until you should take another break.")
                 "env = Environment(
                          ENV = {
                            'PATH': os.environ['PATH'],
-                           'CPATH': os.environ['CPATH'],
+                           'CPATH': os.environ['C_INCLUDE_PATH'],
                            'LIBRARY_PATH': os.environ['LIBRARY_PATH'],
                            'PKG_CONFIG_PATH': os.environ['PKG_CONFIG_PATH']
                          },")
@@ -2324,3 +2327,34 @@ some kind of chat (in native language).
 @command{kbdd} also supports D-Bus signals, which makes it possible to
 create layout indicator widgets.")
     (license license:bsd-2)))
+
+(define-public j4-dmenu-desktop
+  (package
+    (name "j4-dmenu-desktop")
+    (version "2.17")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/enkore/j4-dmenu-desktop.git")
+                    (commit (string-append "r" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v23fimkn83dcm5p53y2ymhklff3kwppxhf75sm8xmswrzkixpgc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch2" ,catch-framework2)))
+    (arguments
+     `(#:configure-flags '("-DWITH_GIT_CATCH=off")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "./j4-dmenu-tests" "exclude:SearchPath/XDG_DATA_HOME"))))))
+    (synopsis "Fast desktop menu")
+    (description
+     "j4-dmenu-desktop is a replacement for i3-dmenu-desktop.  Its purpose
+is to find @file{.desktop} files and offer you a menu to start an application
+using @command{dmenu}.")
+    (home-page "https://github.com/enkore/j4-dmenu-desktop")
+    (license license:gpl3+)))

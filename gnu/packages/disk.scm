@@ -48,6 +48,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file-systems)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -103,16 +104,34 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--disable-systemd"
-             (string-append "--sysconfdir="
-                            (assoc-ref %outputs "out")
-                            "/etc"))
+       (list
+        "--disable-systemd"
+        (string-append "--sysconfdir="
+                       (assoc-ref %outputs "out")
+                       "/etc")
+        ;; udevil expects these programs to be run with uid set as root.
+        ;; user has to manually add these programs to setuid-programs.
+        ;; mount and umount are default setuid-programs in guix system.
+        "--with-mount-prog=/run/setuid-programs/mount"
+        "--with-umount-prog=/run/setuid-programs/umount"
+        "--with-losetup-prog=/run/setuid-programs/losetup"
+        "--with-setfacl-prog=/run/setuid-programs/setfacl")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remove-root-reference
            (lambda _
              (substitute* "src/Makefile.in"
                (("-o root -g root") ""))
+             #t))
+         (add-after 'unpack 'patch-udevil-reference
+           ;; udevil expects itself to be run with uid set as root.
+           ;; devmon also expects udevil to be run with uid set as root.
+           ;; user has to manually add udevil to setuid-programs.
+           (lambda _
+             (substitute* "src/udevil.c"
+               (("/usr/bin/udevil") "/run/setuid-programs/udevil"))
+             (substitute* "src/devmon"
+               (("`which udevil 2>/dev/null`") "/run/setuid-programs/udevil"))
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
@@ -157,13 +176,15 @@ tmpfs/ramfs filesystems.")
     (inputs
      `(("lvm2" ,lvm2)
        ("readline" ,readline)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (native-inputs
      `(("gettext" ,gettext-minimal)
+
        ;; For the tests.
        ("e2fsprogs" ,e2fsprogs)
        ("perl" ,perl)
-       ("python" ,python-2)))
+       ("python" ,python-2)
+       ("util-linux" ,util-linux)))
     (home-page "https://www.gnu.org/software/parted/")
     (synopsis "Disk partition editor")
     (description
@@ -187,7 +208,7 @@ tables.  It includes a library and command-line utility.")
     (inputs
      `(("gettext" ,gettext-minimal)
        ("guile" ,guile-1.8)
-       ("util-linux" ,util-linux)
+       ("util-linux" ,util-linux "lib")
        ("parted" ,parted)))
     ;; The build neglects to look for its own headers in its own tree.  A next
     ;; release should fix this, but may never come: GNU fdisk looks abandoned.
@@ -227,7 +248,7 @@ tables, and it understands a variety of different formats.")
      `(("gettext" ,gettext-minimal)
        ("ncurses" ,ncurses)
        ("popt" ,popt)
-       ("util-linux" ,util-linux)))     ; libuuid
+       ("util-linux" ,util-linux "lib"))) ;libuuid
     (arguments
      `(#:test-target "test"
        #:phases
@@ -417,7 +438,7 @@ and can dramatically shorten the lifespan of the drive if left unchecked.")
       ;; as '/dev/disk/by-id'
      `(#:tests? #f))
     (inputs
-     `(("util-linux" ,util-linux)
+     `(("util-linux" ,util-linux "lib")
        ("parted" ,parted)
        ("glib" ,glib)
        ("gtkmm" ,gtkmm)
@@ -645,7 +666,7 @@ automatically finding out which program to use for what file type.")
     (inputs
      `(("cryptsetup" ,cryptsetup)
        ("nss" ,nss)
-       ("libblkid" ,util-linux)
+       ("libblkid" ,util-linux "lib")
        ("lvm2" ,lvm2)                   ; for "-ldevmapper"
        ("glib" ,glib)
        ("gpgme" ,gpgme)))
@@ -698,7 +719,7 @@ passphrases.")
        ("json-c" ,json-c)
        ("keyutils" ,keyutils)
        ("kmod" ,kmod)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:configure-flags
        (list "--disable-asciidoctor"    ; use docbook-xsl instead
@@ -781,8 +802,17 @@ to create devices with respective mappings for the ATARAID sets discovered.")
                (base32
                 "15c7g2gbkahmy8c6677pvbvblan5h8jxcqqmn6nlvqwqynq2mkjm"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configuration-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+              (substitute* "src/lib/blockdev.c"
+               (("/etc/libblockdev/conf.d/" path) (string-append out path)))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ("util-linux" ,util-linux)))
     (inputs
@@ -792,7 +822,6 @@ to create devices with respective mappings for the ATARAID sets discovered.")
        ("dmraid" ,dmraid)
        ("eudev" ,eudev)
        ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
        ("kmod" ,kmod)
        ("libbytesize" ,libbytesize)
        ("libyaml" ,libyaml)
@@ -867,7 +896,7 @@ LVM D-Bus API).")
        ("libelf" ,libelf)
        ("elfutils" ,elfutils)
        ("json-glib" ,json-glib)
-       ("libblkid" ,util-linux)))
+       ("libblkid" ,util-linux "lib")))
     (home-page "https://rmlint.rtfd.org")
     (synopsis "Remove duplicates and other lint from the file system")
     (description "@command{rmlint} finds space waste and other broken things
@@ -917,39 +946,60 @@ since they are better handled by external tools.")
      (origin
        (method url-fetch)
        (uri
-        (string-append "https://sourceforge.net/projects/xfe/files/xfe/"
-                       version
-                       "/xfe-" version ".tar.gz"))
+        (string-append "mirror://sourceforge/xfe/xfe/" version "/"
+                       "xfe-" version ".tar.gz"))
        (sha256
         (base32 "1fl51k5jm2vrfc2g66agbikzirmp0yb0lqhmsssixfb4mky3hpzs"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bin-dirs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((bash (assoc-ref inputs "bash"))
+                    (coreutils (assoc-ref inputs "coreutils"))
+                    (findutils (assoc-ref inputs "findutils"))
+                    (file-prog (assoc-ref inputs "file")))
+               (with-directory-excursion "src"
+                 (substitute* '("FilePanel.cpp" "help.h" "SearchPanel.cpp"
+                                "startupnotification.cpp" "xfeutils.cpp"
+                                "../st/config.h")
+                   (("/bin/sh" file) (string-append bash file))
+                   (("/bin/ls" file) (string-append coreutils file))
+                   (("/usr(/bin/du)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/sort)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/cut)" _ file) (string-append coreutils file))
+                   (("/usr(/bin/xargs)" _ file) (string-append findutils file))
+                   (("/usr(/bin/file)" _ file) (string-append file-prog file))))
+               #t)))
+         (add-after 'unpack 'patch-share-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (xfe (string-append share "/xfe")))
+               (with-directory-excursion "src"
+                 (substitute* '("foxhacks.cpp" "help.h" "xfedefs.h"
+                                "XFileExplorer.cpp")
+                   (("/(usr|opt)(/local)?/share") share)
+                   (("~/.config/xfe") xfe)))
+               #t))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("fox" ,fox)
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("file" ,file)
+       ("findutils" ,findutils)
+       ("fox" ,fox)
        ("freetype" ,freetype)
        ("x11" ,libx11)
        ("xcb" ,libxcb)
        ("xcb-util" ,xcb-util)
        ("xft" ,libxft)
        ("xrandr" ,libxrandr)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-xferc-path
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (xferc   (string-append out "/share/xfe/xferc")))
-               (substitute* "src/XFileExplorer.cpp"
-                 (("/usr/share/xfe/xferc") xferc))
-               #t))))
-       #:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "BASH_COMPLETION_DIR=" out
-                              "/share/bash-completion/completions")))))
     (synopsis "File Manager for X-Based Graphical Systems")
-    (description"XFE (X File Explorer) is a file manager for X.  It is based on
+    (description "XFE (X File Explorer) is a file manager for X.  It is based on
 the popular but discontinued, X Win Commander.  It aims to be the file manager
 of choice for all light thinking Unix addicts!")
     (home-page "http://roland65.free.fr/xfe/")

@@ -1,12 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Carlos Sánchez de La Lama <csanchezdll@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Joseph LaFreniere <joseph@lafreniere.xyz>
 ;;; Copyright © 2020 Guy Fleury Iteriteka <gfleury@disroot.org>
 ;;;
@@ -342,7 +342,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                (files '("include")))
               (search-path-specification
                (variable "CPLUS_INCLUDE_PATH")
-               (files '("include")))
+               ;; Add 'include/c++' here so that <cstdlib>'s "#include_next
+               ;; <stdlib.h>" finds GCC's <stdlib.h>, not libc's.
+               (files '("include/c++" "include")))
               (search-path-specification
                (variable "LIBRARY_PATH")
                (files '("lib" "lib64")))))
@@ -402,6 +404,7 @@ Go.  It also includes runtime support libraries for these languages.")
                 "14l06m7nvcvb0igkbip58x59w3nq6315k6jcz3wr9ch1rn9d44bc"))
               (patches (search-patches "gcc-4.9-libsanitizer-fix.patch"
                                        "gcc-4.9-libsanitizer-ustat.patch"
+                                       "gcc-4.9-libsanitizer-mode-size.patch"
                                        "gcc-arm-bug-71399.patch"
                                        "gcc-asan-missing-include.patch"
                                        "gcc-libvtv-runpath.patch"
@@ -421,7 +424,33 @@ Go.  It also includes runtime support libraries for these languages.")
                   #t))))
     ;; Override inherited texinfo-5 with latest version.
     (native-inputs `(("perl" ,perl)   ;for manpages
-                     ("texinfo" ,texinfo)))))
+                     ("texinfo" ,texinfo)))
+    (arguments
+     (if (%current-target-system)
+         (package-arguments gcc-4.8)
+         ;; For native builds of GCC 4.9 and GCC 5, the C++ include path needs
+         ;; to be adjusted so it does not interfere with GCC's own build processes.
+         (substitute-keyword-arguments (package-arguments gcc-4.8)
+           ((#:modules modules %gnu-build-system-modules)
+            `((srfi srfi-1)
+              ,@modules))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((libc (assoc-ref inputs "libc"))
+                         (gcc (assoc-ref inputs  "gcc")))
+                     (setenv "CPLUS_INCLUDE_PATH"
+                             (string-join (fold delete
+                                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                              #\:)
+                                                (list (string-append libc "/include")
+                                                      (string-append gcc "/include/c++")))
+                                          ":"))
+                     (format #t
+                             "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                             (getenv "CPLUS_INCLUDE_PATH"))
+                     #t))))))))))
 
 (define-public gcc-5
   ;; Note: GCC >= 5 ships with .info files but 'make install' fails to install
@@ -441,7 +470,9 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-5.0-libvtv-runpath.patch"
                                        "gcc-5-source-date-epoch-1.patch"
                                        "gcc-5-source-date-epoch-2.patch"
-                                       "gcc-fix-texi2pod.patch"))
+                                       "gcc-6-libsanitizer-mode-size.patch"
+                                       "gcc-fix-texi2pod.patch"
+                                       "gcc-5-hurd.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix 'libcc1/configure' error when cross-compiling GCC.
@@ -473,35 +504,31 @@ Go.  It also includes runtime support libraries for these languages.")
                (base32
                 "0i89fksfp6wr1xg9l8296aslcymv2idn60ip31wr9s4pwin7kwby"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-6-libsanitizer-mode-size.patch"
                                        "gcc-6-source-date-epoch-1.patch"
                                        "gcc-6-source-date-epoch-2.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
+
+    ;; GCC 4.9 and 5 has a workaround that is not needed for GCC 6 and later.
+    (arguments (package-arguments gcc-4.8))
+
     (inputs
      `(("isl" ,isl)
-       ,@(package-inputs gcc-4.7)))
-
-    (native-search-paths
-     ;; We have to use 'CPATH' for GCC > 5, not 'C_INCLUDE_PATH' & co., due to
-     ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70129>.
-     (list (search-path-specification
-            (variable "CPATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "LIBRARY_PATH")
-            (files '("lib" "lib64")))))))
+       ,@(package-inputs gcc-4.7)))))
 
 (define-public gcc-7
   (package
     (inherit gcc-6)
-    (version "7.4.0")
+    (version "7.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.xz"))
               (sha256
                (base32
-                "0lgy170b0pp60j9cczqkmaqyjjb584vfamj4c30swd7k0j6y5pgd"))
+                "0qg6kqc5l72hpnj4vr6l0p69qav0rh4anlkk3y55540zy3klc6dq"))
               (patches (search-patches "gcc-strmov-store-file-names.patch"
+                                       "gcc-7-libsanitizer-mode-size.patch"
                                        "gcc-5.0-libvtv-runpath.patch"))))
     (description
      "GCC is the GNU Compiler Collection.  It provides compiler front-ends
@@ -535,6 +562,20 @@ It also includes runtime support libraries for these languages.")))
               "1la2yy27ziasyf0jvzk58y1i5b5bq2h176qil550bxhifs39gqbi"))
             (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-9-asan-fix-limits-include.patch"
+                                     "gcc-5.0-libvtv-runpath.patch"))))))
+
+(define-public gcc-10
+  (package
+   (inherit gcc-8)
+   (version "10.1.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/gcc/gcc-"
+                                version "/gcc-" version ".tar.xz"))
+            (sha256
+             (base32
+              "18kyds3ss4j7in8shlsbmjafdhin400mq739d0dnyrabhhiqm2dn"))
+            (patches (search-patches "gcc-9-strmov-store-file-names.patch"
                                      "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
@@ -614,12 +655,12 @@ as the 'native-search-paths' field."
     (native-search-paths search-paths)
     (properties (alist-delete 'hidden? (package-properties gcc)))
     (arguments
-     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
-                                                (guix build utils)
-                                                (ice-9 regex)
-                                                (srfi srfi-1)
-                                                (srfi srfi-26))
-                                               ,@(package-arguments gcc))
+     (substitute-keyword-arguments (package-arguments gcc)
+       ((#:modules modules %gnu-build-system-modules)
+        `(,@modules
+          (srfi srfi-1)
+          (srfi srfi-26)
+          (ice-9 regex)))
        ((#:configure-flags flags)
         `(cons (string-append "--enable-languages="
                               ,(string-join languages ","))
@@ -897,7 +938,7 @@ as the 'native-search-paths' field."
 (define-public isl
   (package
     (name "isl")
-    (version "0.21")
+    (version "0.22.1")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -908,8 +949,27 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.bz2")))
              (sha256
               (base32
-               "0ng8l3q1px9lkzb44nxnzhh6fhdbclrwng9xs2v9m8yii8gs336i"))))
+               "1kf54jib0nind1pvakblnfhimmwzm0y1llz8470ag0di5vwqwrhs"))))
     (build-system gnu-build-system)
+    (outputs '("out" "static"))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'move-static-library
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (static (assoc-ref outputs "static"))
+                             (source (string-append out "/lib/libisl.a"))
+                             (target (string-append static "/lib/libisl.a")))
+                        (mkdir-p (dirname target))
+                        (link source target)
+                        (delete-file source)
+
+                        ;; Remove reference to libisl.a from the .la file so
+                        ;; libtool looks for it in the usual locations.
+                        (substitute* (string-append out "/lib/libisl.la")
+                          (("^old_library=.*")
+                           "old_library=''\n"))
+                        #t))))))
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
     (synopsis

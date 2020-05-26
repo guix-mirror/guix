@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,21 @@
        (substitute-keyword-arguments (package-arguments xgcc)
          ((#:phases phases)
           `(modify-phases ,phases
+             (add-after 'set-paths 'augment-CPLUS_INCLUDE_PATH
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((gcc (assoc-ref inputs  "gcc")))
+                   ;; Remove the default compiler from CPLUS_INCLUDE_PATH to
+                   ;; prevent header conflict with the GCC from native-inputs.
+                   (setenv "CPLUS_INCLUDE_PATH"
+                           (string-join
+                            (delete (string-append gcc "/include/c++")
+                                    (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                  #\:))
+                            ":"))
+                   (format #t
+                           "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                           (getenv "CPLUS_INCLUDE_PATH"))
+                   #t)))
              ;; Without a working multilib build, the resulting GCC lacks
              ;; support for nearly every AVR chip.
              (add-after 'unpack 'fix-genmultilib
@@ -78,7 +94,7 @@
               (variable "CROSS_LIBRARY_PATH")
               (files '("avr/lib")))))
       (native-inputs
-       `(("gcc" ,gcc-5)
+       `(("gcc@5" ,gcc-5)
          ,@(package-native-inputs xgcc))))))
 
 (define-public avr-gcc-5

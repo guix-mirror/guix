@@ -98,6 +98,47 @@ takes a bytevector and returns #t when it's a valid superblock."
 (define null-terminated-latin1->string
   (cut latin1->string <> zero?))
 
+(define (bytevector-utf16-length bv)
+  "Given a bytevector BV containing a NUL-terminated UTF16-encoded string,
+determine where the NUL terminator is and return its index.  If there's no
+NUL terminator, return the size of the bytevector."
+  (let ((length (bytevector-length bv)))
+    (let loop ((index 0))
+      (if (< index length)
+          (if (zero? (bytevector-u16-ref bv index 'little))
+              index
+              (loop (+ index 2)))
+          length))))
+
+(define* (bytevector->u16-list bv endianness #:optional (index 0))
+  (if (< index (bytevector-length bv))
+      (cons (bytevector-u16-ref bv index endianness)
+            (bytevector->u16-list bv endianness (+ index 2)))
+      '()))
+
+;; The initrd doesn't have iconv data, so do the conversion ourselves.
+(define (utf16->string bv endianness)
+  (list->string
+   (map integer->char
+        (reverse
+         (let loop ((remainder (bytevector->u16-list bv endianness))
+                    (result '()))
+             (match remainder
+              (() result)
+              ((a) (cons a result))
+              ((a b x ...)
+               (if (and (>= a #xD800) (< a #xDC00) ; high surrogate
+                        (>= b #xDC00) (< b #xE000)) ; low surrogate
+                   (loop x (cons (+ #x10000
+                                    (* #x400 (- a #xD800))
+                                    (- b #xDC00))
+                                 result))
+                   (loop (cons b x) (cons a result))))))))))
+
+(define (null-terminated-utf16->string bv endianness)
+  (utf16->string (sub-bytevector bv 0 (bytevector-utf16-length bv))
+                 endianness))
+
 
 ;;;
 ;;; Ext2 file systems.
@@ -338,6 +379,60 @@ if DEVICE does not contain a JFS file system."
 
 
 ;;;
+;;; F2FS (Flash-Friendly File System)
+;;;
+
+;;; https://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git/tree/include/linux/f2fs_fs.h
+;;; (but using xxd proved to be simpler)
+
+(define-syntax %f2fs-endianness
+  ;; Endianness of F2FS file systems
+  (identifier-syntax (endianness little)))
+
+;; F2FS actually stores two adjacent copies of the superblock.
+;; should we read both?
+(define (f2fs-superblock? sblock)
+  "Return #t when SBLOCK is an F2FS superblock."
+  (let ((magic (bytevector-u32-ref sblock 0 %f2fs-endianness)))
+    (= magic #xF2F52010)))
+
+(define (read-f2fs-superblock device)
+  "Return the raw contents of DEVICE's F2FS superblock as a bytevector, or #f
+if DEVICE does not contain an F2FS file system."
+  (read-superblock device
+                   ;; offset of magic in first copy
+                   #x400
+                   ;; difference between magic of second
+                   ;; and first copies
+                   (- #x1400 #x400)
+                   f2fs-superblock?))
+
+(define (f2fs-superblock-uuid sblock)
+  "Return the UUID of F2FS superblock SBLOCK as a 16-byte bytevector."
+  (sub-bytevector sblock
+                  (- (+ #x460 12)
+                     ;; subtract superblock offset
+                     #x400)
+                  16))
+
+(define (f2fs-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 512 characters, or
+#f if SBLOCK has no volume name."
+  (null-terminated-utf16->string
+   (sub-bytevector sblock (- (+ #x470 12) #x400) 512)
+   %f2fs-endianness))
+
+(define (check-f2fs-file-system device)
+  "Return the health of a F2FS file system on DEVICE."
+  (match (status:exit-val
+          (system* "fsck.f2fs" "-p" device))
+    ;; 0 and -1 are the only two possibilities
+    ;; (according to the manpage)
+    (0 'pass)
+    (_ 'fatal-error)))
+
+
+;;;
 ;;; LUKS encrypted devices.
 ;;;
 
@@ -472,7 +567,9 @@ partition field reader that returned a value."
         (partition-field-reader read-fat16-superblock
                                 fat16-superblock-volume-name)
         (partition-field-reader read-jfs-superblock
-                                jfs-superblock-volume-name)))
+                                jfs-superblock-volume-name)
+        (partition-field-reader read-f2fs-superblock
+                                f2fs-superblock-volume-name)))
 
 (define %partition-uuid-readers
   (list (partition-field-reader read-iso9660-superblock
@@ -486,7 +583,9 @@ partition field reader that returned a value."
         (partition-field-reader read-fat16-superblock
                                 fat16-superblock-uuid)
         (partition-field-reader read-jfs-superblock
-                                jfs-superblock-uuid)))
+                                jfs-superblock-uuid)
+        (partition-field-reader read-f2fs-superblock
+                                f2fs-superblock-uuid)))
 
 (define read-partition-label
   (cut read-partition-field <> %partition-label-readers))
@@ -582,6 +681,7 @@ were found."
      ((string-prefix? "btrfs" type) check-btrfs-file-system)
      ((string-suffix? "fat" type) check-fat-file-system)
      ((string-prefix? "jfs" type) check-jfs-file-system)
+     ((string-prefix? "f2fs" type) check-f2fs-file-system)
      ((string-prefix? "nfs" type) (const 'pass))
      (else #f)))
 

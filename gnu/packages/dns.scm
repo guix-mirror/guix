@@ -4,9 +4,9 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
@@ -15,6 +15,8 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -878,22 +880,16 @@ System (HNS) peer-to-peer network.")
 (define-public libmicrodns
   (package
     (name "libmicrodns")
-    (version "0.0.10")
+    (version "0.1.2")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/videolabs/libmicrodns")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://github.com/videolabs/libmicrodns/"
+                                  "releases/download/" version "/microdns-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1xvl9k49ng35wbsqmnjnyqvkyjf8dcq2ywsq3jp3wh0rgmxhq2fh"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
+                "0p4va18zxgmzcdwhlbg2mmjwswlbgqy4ay5vaxrw7cxmhsflnv36"))))
+    (build-system meson-build-system)
     (home-page "https://github.com/videolabs/libmicrodns")
     (synopsis "Minimal mDNS resolver library")
     (description "@code{libmicrodns} provides a minimal implementation of a
@@ -1005,4 +1001,35 @@ known public suffixes.")
     (description "MaraDNS is a small and lightweight DNS server.  MaraDNS
 consists of a UDP-only authoritative DNS server for hosting domains, and a UDP
 and TCP-capable recursive DNS server for finding domains on the internet.")
+    (license license:bsd-2)))
+
+(define-public openresolv
+  (package
+    (name "openresolv")
+    (version "3.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://roy.marples.name/downloads/openresolv/"
+                                  "openresolv-" version ".tar.xz"))
+              (sha256
+               (base32
+                "01ms6c087la4hk0f0w6n2vpsb7dg4kklah2rqyhz88p0vr9bqy20"))
+              (patches
+               (search-patches "openresolv-restartcmd-guix.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No test suite
+       #:configure-flags
+       (list (string-append "--sysconfdir=/etc"))
+       #:make-flags
+       (list (string-append "SYSCONFDIR=/" (assoc-ref %outputs "out") "/etc"))))
+    (home-page "https://roy.marples.name/projects/openresolv/")
+    (synopsis "Resolvconf POSIX compliant implementation, a middleman for resolv.conf")
+    (description "openresolv is an implementation of @command{resolvconf}, the
+middleman between the network configuration services and
+@file{/etc/resolv.conf}.  @command{resolvconf} itself is just a script that
+stores, removes and lists a full @file{resolv.conf} generated for the
+interface.  It then calls all the helper scripts it knows about so it can
+configure the real @file{/etc/resolv.conf} and optionally any local
+nameservers other than libc.")
     (license license:bsd-2)))

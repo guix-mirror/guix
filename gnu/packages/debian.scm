@@ -27,6 +27,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages perl))
 
 (define-public debian-archive-keyring
@@ -190,3 +191,40 @@ scratch, without requiring the availability of @code{dpkg} or @code{apt}.
 It does this by downloading .deb files from a mirror site, and carefully
 unpacking them into a directory which can eventually be chrooted into.")
     (license license:gpl2)))
+
+
+(define-public apt-mirror
+  (let ((commit "e664486a5d8947c2579e16dd793d762ea3de4202")
+        (revision "1"))
+    (package
+      (name "apt-mirror")
+      (version (git-version "0.5.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/apt-mirror/apt-mirror/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0qj6b7gldwcqyfs2kp6amya3ja7s4vrljs08y4zadryfzxf35nqq"))))
+      (build-system gnu-build-system)
+      (outputs '("out"))
+      (arguments
+       `(#:tests? #f
+         ;; sysconfdir is not PREFIXed in the makefile but DESTDIR is
+         ;; honored correctly; we therefore use DESTDIR for our
+         ;; needs. A more correct fix would involve patching.
+         #:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                            "PREFIX=/")
+         #:phases (modify-phases %standard-phases (delete 'configure))))
+      (inputs
+       `(("wget" ,wget)
+         ("perl" ,perl)))
+      (home-page "http://apt-mirror.github.io/")
+      (synopsis "Script for mirroring a Debian repository")
+      (description
+       "apt-mirror is a small tool that provides the ability to
+selectively mirror Debian and Ubuntu GNU/Linux distributions or any
+other apt sources typically provided by open source developers.")
+      (license license:gpl2))))

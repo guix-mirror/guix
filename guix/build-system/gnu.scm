@@ -296,13 +296,19 @@ standard packages used as implicit inputs of the GNU build system."
                           `(("source" ,source))
                           '())
                     ,@native-inputs
+
+                    ;; When not cross-compiling, ensure implicit inputs come
+                    ;; last.  That way, libc headers come last, which allows
+                    ;; #include_next to work correctly; see
+                    ;; <https://bugs.gnu.org/30756>.
+                    ,@(if target '() inputs)
                     ,@(if (and target implicit-cross-inputs?)
                           (standard-cross-packages target 'host)
                           '())
                     ,@(if implicit-inputs?
                           (standard-packages)
                           '())))
-    (host-inputs inputs)
+    (host-inputs (if target inputs '()))
 
     ;; The cross-libc is really a target package, but for bootstrapping
     ;; reasons, we can't put it in 'host-inputs'.  Namely, 'cross-gcc' is a
@@ -454,13 +460,19 @@ is one of `host' or `target'."
            (libc      (module-ref cross 'cross-libc)))
       (case kind
         ((host)
+         ;; Cross-GCC appears once here, so that it's in $PATH...
          `(("cross-gcc" ,(gcc target
                               #:xbinutils (binutils target)
                               #:libc (libc target)))
            ("cross-binutils" ,(binutils target))))
         ((target)
          (let ((libc (libc target)))
-           `(("cross-libc" ,libc)
+           ;; ... and once here, so that libstdc++ & co. are in
+           ;; CROSS_CPLUS_INCLUDE_PATH, etc.
+           `(("cross-gcc" ,(gcc target
+                                #:xbinutils (binutils target)
+                                #:libc libc))
+             ("cross-libc" ,libc)
 
              ;; MinGW's libc doesn't have a "static" output.
              ,@(if (member "static" (package-outputs libc))

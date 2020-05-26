@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -252,3 +253,38 @@ structures and functions commonly needed, such as maps, deques, linked lists,
 string formatting and autoresizing, option and config file parsing, type
 checking casts and more.")
     (license license:lgpl2.1+)))
+
+(define-public sparse
+  (package
+    (name "sparse")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://kernel.org/software/devel/sparse/dist/"
+                              "sparse-"  version ".tar.xz"))
+              (sha256
+               (base32
+                "0qavyryxmhd1rf11akgn1nq3r15k11bqa3qajaq36a56r225rc7x"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (arguments
+     '(#:make-flags `(,(string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (add-after 'unpack 'patch-cgcc
+                    (lambda _
+                      (substitute* "cgcc"
+                        (("'cc'") (string-append "'" (which "gcc") "'")))
+                      #t)))))
+    (synopsis "Semantic C parser for Linux development")
+    (description
+     "Sparse is a semantic parser for C and is required for Linux development.
+It provides a compiler frontend capable of parsing most of ANSI C as well as
+many GCC extensions, and a collection of sample compiler backends, including a
+static analyzer also called @file{sparse}.  Sparse provides a set of
+annotations designed to convey semantic information about types, such as what
+address space pointers point to, or what locks a function acquires or
+releases.")
+    (home-page "https://sparse.wiki.kernel.org/index.php/Main_Page")
+    (license license:expat)))

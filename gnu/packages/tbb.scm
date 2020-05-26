@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,7 +29,7 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "2020.1")
+    (version "2020.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -38,7 +38,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1vrh1mr9jmj46as9y8j5q1hpvihzd1iq4jr1y4x9a19dw8b7yk56"))
+                "0h8kdxikpq2v4a2h9cj33ril9kj0ig47n0vvbd92wabkn442jwar"))
               (modules '((guix build utils)))
               (snippet
                '(begin

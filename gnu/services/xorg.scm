@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018, 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -31,7 +31,7 @@
   #:use-module (gnu system keyboard)
   #:use-module (gnu services base)
   #:use-module (gnu services dbus)
-  #:use-module ((gnu packages base) #:select (canonical-package))
+  #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fonts)
@@ -619,7 +619,9 @@ reboot_cmd " shepherd "/sbin/reboot\n"
                          (service-extension profile-service-type
                                             (const (list xterm)))))
 
-                  (default-value (slim-configuration)))))
+                  (default-value (slim-configuration))
+                  (description
+                   "Run the SLiM graphical login manager for X11."))))
 
 (define-deprecated (slim-service #:key (slim slim)
                                  (allow-empty-passwords? #t) auto-login?
@@ -691,7 +693,11 @@ theme."
                  (list (service-extension pam-root-service-type
                                           screen-locker-pam-services)
                        (service-extension setuid-program-service-type
-                                          screen-locker-setuid-programs)))))
+                                          screen-locker-setuid-programs)))
+                (description
+                 "Allow the given program to be used as a screen locker for
+the graphical server by making it setuid-root, so it can authenticate users,
+and by creating a PAM service for it.")))
 
 (define* (screen-locker-service package
                                 #:optional

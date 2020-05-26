@@ -38,6 +38,7 @@
                 #:select (lookup-compressor self-contained-tarball))
   #:use-module (gnu bootloader)
   #:use-module (gnu bootloader u-boot)
+  #:use-module (gnu image)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages make-bootstrap)
   #:use-module (gnu packages package-management)
   #:use-module (gnu system)
+  #:use-module (gnu system image)
   #:use-module (gnu system vm)
   #:use-module (gnu system install)
   #:use-module (gnu tests)
@@ -123,8 +125,12 @@ SYSTEM."
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
 
-(define %packages-to-cross-build
-  %core-packages)
+(define (packages-to-cross-build target)
+  "Return the list of packages to cross-build for TARGET."
+  ;; Don't cross-build the bootstrap tarballs for MinGW.
+  (if (string-contains target "mingw")
+      (drop-right %core-packages 6)
+      %core-packages))
 
 (define %cross-targets
   '("mips64el-linux-gnu"
@@ -175,7 +181,7 @@ SYSTEM."
                 (map (lambda (package)
                        (package-cross-job store (job-name package)
                                           package target system))
-                     %packages-to-cross-build))
+                     (packages-to-cross-build target)))
               (remove (either from-32-to-64? same? pointless?)
                       %cross-targets)))
 
@@ -209,32 +215,23 @@ system.")
     (expt 2 20))
 
   (if (member system %guixsd-supported-systems)
-      (if (member system %u-boot-systems)
-          (list (->job 'flash-image
-                       (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (system-disk-image
-                            (operating-system (inherit installation-os)
-                             (bootloader (bootloader-configuration
-                                          (bootloader u-boot-bootloader)
-                                          (target #f))))
-                            #:disk-image-size
-                            (* 1500 MiB))))))
-          (list (->job 'usb-image
-                       (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (system-disk-image installation-os
-                                              #:disk-image-size
-                                              (* 1500 MiB)))))
-                (->job 'iso9660-image
-                       (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (system-disk-image installation-os
-                                              #:file-system-type
-                                              "iso9660"))))))
+      (list (->job 'usb-image
+                   (run-with-store store
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-image
+                        (image
+                         (inherit efi-disk-image)
+                         (size (* 1500 MiB))
+                         (operating-system installation-os))))))
+            (->job 'iso9660-image
+                   (run-with-store store
+                     (mbegin %store-monad
+                       (set-guile-for-build (default-guile))
+                       (system-image
+                        (image
+                         (inherit iso9660-image)
+                         (operating-system installation-os)))))))
       '()))
 
 (define channel-build-system

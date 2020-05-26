@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix git-download)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages adns)
@@ -122,7 +123,23 @@ browsers to backend services.")
               (file-name (git-file-name "grpc" version))
               (sha256
                (base32
-                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))))
+                "1jimqz3115f9pli5w6ik9wi7mjc7ix6y7yrq4a1ab9fc3dalj7p2"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments grpc)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           ;; Note: This would be nicer as a snippet, but that creates a tarball
+           ;; instead of a checkout and breaks assumptions made by the builder.
+           (add-after 'unpack 'rename-gettid
+             (lambda _
+               ;; Rename custom gettid() syscall wrapper to avoid conflict
+               ;; with gettid() from glibc 2.30.
+               (substitute* '("src/core/lib/gpr/log_linux.cc"
+                              "src/core/lib/gpr/log_posix.cc"
+                              "src/core/lib/iomgr/ev_epollex_linux.cc")
+                 (("gettid\\(")
+                  "sys_gettid("))
+               #t))))))))
 
 (define-public python-grpcio
   (package

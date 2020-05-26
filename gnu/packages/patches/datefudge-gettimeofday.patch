@@ -1,0 +1,13 @@
+Add the 'restrict' qualifier to match the 'gettimeofday' declaration found
+in glibc 2.31.
+
+--- datefudge-1.23/datefudge.c	2020-02-17 22:35:21.343341725 +0100
++++ datefudge-1.23/datefudge.c	2020-02-17 22:35:49.619117874 +0100
+@@ -78,6 +78,6 @@
+     return 0;
+ }
+ 
+-int gettimeofday(struct timeval *x, struct timezone *y) {
++int gettimeofday(struct timeval *restrict x, void *restrict y) {
+     return __gettimeofday(x,y);
+ }

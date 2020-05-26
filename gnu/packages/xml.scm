@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Adriano Peluso <catonano@gmail.com>
@@ -67,32 +67,6 @@
 (define-public expat
   (package
     (name "expat")
-    (version "2.2.7")
-    (replacement expat-2.2.9)
-    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
-              (origin
-                (method url-fetch)
-                (uri (list (string-append "mirror://sourceforge/expat/expat/"
-                                          version "/expat-" version ".tar.xz")
-                           (string-append
-                            "https://github.com/libexpat/libexpat/releases/download/R_"
-                            (string-map dot->underscore version)
-                            "/expat-" version ".tar.xz")))
-                (sha256
-                 (base32
-                  "1y5yax6bq8p9xk49zqkd62pxk8bq266wrgbrqgaxp3wsrw5g9qrh")))))
-    (build-system gnu-build-system)
-    (home-page "https://libexpat.github.io/")
-    (synopsis "Stream-oriented XML parser library written in C")
-    (description
-     "Expat is an XML parser library written in C.  It is a
-stream-oriented parser in which an application registers handlers for
-things the parser might find in the XML document (like start tags).")
-    (license license:expat)))
-
-(define expat-2.2.9
-  (package
-    (inherit expat)
     (version "2.2.9")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
@@ -105,7 +79,17 @@ things the parser might find in the XML document (like start tags).")
                             "/expat-" version ".tar.xz")))
                 (sha256
                  (base32
-                  "1960mmgbb4cm64n1p0nz3hrs1pw03hkrfcw8prmnn4622mdrd9hy")))))))
+                  "1960mmgbb4cm64n1p0nz3hrs1pw03hkrfcw8prmnn4622mdrd9hy")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-static")))
+    (home-page "https://libexpat.github.io/")
+    (synopsis "Stream-oriented XML parser library written in C")
+    (description
+     "Expat is an XML parser library written in C.  It is a
+stream-oriented parser in which an application registers handlers for
+things the parser might find in the XML document (like start tags).")
+    (license license:expat)))
 
 (define-public libebml
   (package
@@ -134,14 +118,14 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.9")
+    (version "2.9.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0wd881jzvqayx0ihzba29jl80k06xj9ywp16kxacdqs3064p1ywl"))))
+               "07xynh8hcxb2yb1fs051xrgszjvj37wnxvxgsj10rzmqzy9y3zma"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
@@ -183,9 +167,12 @@ project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
 (define-public python-libxml2
-  ;; TODO: Merge with 'python-libxml2/fixed' on the next rebuild cycle.
   (package/inherit libxml2
     (name "python-libxml2")
+    (source (origin
+              (inherit (package-source libxml2))
+              (patches (cons (search-patch "python-libxml2-utf8.patch")
+                             (origin-patches (package-source libxml2))))))
     (build-system python-build-system)
     (outputs '("out"))
     (arguments
@@ -211,40 +198,41 @@ project (but it is usable outside of the Gnome platform).")
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
 
-(define-public python-libxml2/fixed
-  ;; This variant fixes a crash when processing UTF-8 sequences:
-  ;;    <https://bugs.gnu.org/37468>
-  ;; TODO: Merge with 'python-libxml2' on the next rebuild cycle.
-  (package/inherit
-   python-libxml2
-   (version (string-append (package-version python-libxml2) "-1"))
-   (source (origin
-             (inherit (package-source libxml2))
-             (patches (cons (search-patch "python-libxml2-utf8.patch")
-                            (origin-patches (package-source libxml2))))))))
-
 (define-public python2-libxml2
   (package-with-python2 python-libxml2))
 
 (define-public libxslt
   (package
     (name "libxslt")
-    (version "1.1.33")
+    (version "1.1.34")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1j1q1swnsy8jgi9x7mclvkrqhfgn09886gdlr9wzk7a08i8n0dlf"))
+               "0zrzz6kjdyavspzik6fbkpvfpbd25r2qg6py5nnjaabrsr3bvccq"))
              (patches (search-patches "libxslt-generated-ids.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-fuzz-tests
+                    (lambda _
+                      ;; Disable libFuzzer tests, because they require
+                      ;; instrumentation builds of libxml2 and libxslt.
+                      (substitute* "tests/Makefile"
+                        (("exslt plugins fuzz")
+                         "exslt plugins"))
+                      #t)))))
     (home-page "http://xmlsoft.org/XSLT/index.html")
     (synopsis "C library for applying XSLT stylesheets to XML documents")
     (inputs `(("libgcrypt" ,libgcrypt)
               ("libxml2" ,libxml2)
               ("python" ,python-minimal-wrapper)
-              ("zlib" ,zlib)))
+              ("zlib" ,zlib)
+              ("xz" ,xz)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
@@ -355,7 +343,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
 (define-public perl-xml-parser
   (package
     (name "perl-xml-parser")
-    (version "2.44")
+    (version "2.46")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -363,7 +351,7 @@ parsers for it.  @code{XML::Descent} allows such parsers to be created.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "05ij0g6bfn27iaggxf8nl5rhlwx6f6p6xmdav6rjcly3x5zd1s8s"))))
+               "0pai3ik47q7rgnix9644c673fwydz52gqkxr9kxwq765j4j36cfk"))))
     (build-system perl-build-system)
     (arguments `(#:make-maker-flags
                  (let ((expat (assoc-ref %build-inputs "expat")))
@@ -955,6 +943,8 @@ code for classes that correspond to data structures defined by XMLSchema.")
                                               (assoc-ref %build-inputs
                                                          "util-linux")
                                               "/bin/getopt"))))
+    (native-inputs
+     `(("util-linux" ,util-linux)))
     (inputs
      `(("util-linux" ,util-linux)                 ; for 'getopt'
        ("libxml2" ,libxml2)                       ; for 'xmllint'
@@ -970,14 +960,14 @@ XSL-T processor.  It also performs any necessary post-processing.")
 (define-public xmlsec
   (package
     (name "xmlsec")
-    (version "1.2.29")
+    (version "1.2.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.aleksey.com/xmlsec/download/"
                                   "xmlsec1-" version ".tar.gz"))
               (sha256
                (base32
-                "1arr50fvma01q2ix7g4k2c7lb8qcqjajn7wdc07r66b0jsxdxldi"))))
+                "1j5bf7ni45jghyrbf7a14wx2pvfara557zyry7g7h8840c5kd11d"))))
     (build-system gnu-build-system)
     (propagated-inputs                  ; according to xmlsec1.pc
      `(("libxml2" ,libxml2)
@@ -2109,7 +2099,7 @@ libxml2 and libxslt.")
 (define-public python-xmlschema
   (package
     (name "python-xmlschema")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               ;; Unit tests are not distributed with the PyPI archive.
               (method git-fetch)
@@ -2119,7 +2109,7 @@ libxml2 and libxslt.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0nqhqbvp0kpd1bz11b6gpkc0mkg068mqs56ww4k5ang1cl9d8gd6"))))
+                "03bz5mp45y4shmlc1gxq1h69vjx60z1acg9cy4kq7fczgx8qg9jw"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

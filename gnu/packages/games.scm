@@ -15,7 +15,7 @@
 ;;; Copyright © 2015, 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016, 2017 Rodger Fox <thylakoid@openmailbox.org>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
@@ -27,7 +27,7 @@
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -241,7 +241,7 @@
      `(("expat" ,expat)
        ("freeglut" ,freeglut)
        ("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libogg" ,libogg)
        ("libtiff" ,libtiff)
        ("libvorbis" ,libvorbis)
@@ -863,7 +863,7 @@ effects and music to make a completely free game.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libogg" ,libogg)
        ("libpng" ,libpng)
        ("libvorbis" ,libvorbis)
@@ -1200,7 +1200,11 @@ such as chess or stockfish.")
         (base32
          "11xwhcli1h12k6rnhhyq4jphzrhfik7i8ah3k32pqw803460n6yf"))))
     (build-system gnu-build-system)
-    (inputs `(("glib" ,glib)
+    (inputs `(;; XXX: Build with an older Pango for 'pango_font_get_hb_font' and
+              ;; 'pango_coverage_get_type'.  Try removing this for versions > 1.06.002.
+              ("pango" ,pango-1.42)
+
+              ("glib" ,glib)
               ("readline" ,readline)
               ("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
@@ -1252,6 +1256,16 @@ also features an attractive, 3D representation of the playing board.")
        (base32
         "1vlf924mq8hg93bsjj0rzvs0crc6psmlxyc6zn0fr7msnmpx6gib"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'skip-gtk-update-icon-cache
+                    (lambda _
+                      ;; Do not attempt to run 'gtk-update-icon-cache', which is
+                      ;; unnecessary and causes a needless dependency on glib.
+                      (substitute* "Makefile.in"
+                        (("gtk-update-icon-cache")
+                         "true"))
+                      #t)))))
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
               ("glu" ,glu)
@@ -2213,7 +2227,7 @@ are primarily in English, however some in other languages are provided.")
        #:make-flags '("CC=gcc" "sharedlib")))
     (inputs
      `(("bzip2" ,bzip2)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxxf86vm" ,libxxf86vm)
@@ -2360,7 +2374,7 @@ match, cannon keep, and grave-itation pit.")
        ("gmp" ,gmp)
        ("irrlicht" ,irrlicht)
        ("jsoncpp" ,jsoncpp)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libogg" ,libogg)
        ("libvorbis" ,libvorbis)
@@ -2497,6 +2511,7 @@ Widgets, and allows users to create more.")
               (uri (string-append "https://codeload.github.com/fifengine/"
                                   "fifengine/tar.gz/" version))
               (file-name (string-append name "-" version ".tar.gz"))
+              (patches (search-patches "fifengine-swig-compat.patch"))
               (sha256
                (base32
                 "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
@@ -2513,7 +2528,9 @@ Widgets, and allows users to create more.")
                        "/include/AL")
         (string-append "-DPYTHON_SITE_PACKAGES="
                        (assoc-ref %outputs "out")
-                       "/lib/python3.7/site-packages"))
+                       "/lib/python"
+                       ,(version-major+minor (package-version python))
+                       "/site-packages"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-run_tests.py
@@ -2602,7 +2619,7 @@ games using Python as well as C++.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("freetype" ,freetype)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
        ("libxml2" ,libxml2)
@@ -2731,7 +2748,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
        ("curl" ,curl)
        ;; The following input is needed to build the bundled and modified
        ;; version of irrlicht.
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("openssl" ,openssl)
        ("enet" ,enet)))
     (native-inputs
@@ -2882,20 +2899,7 @@ falling, themeable graphics and sounds, and replays.")
                 "1i8mz6gw3qar09bscczhki0g4scj8pl58v85rp0g55r4bcq41l5v"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f                      ;no check target
-       #:phases (modify-phases %standard-phases
-                  (add-before 'configure 'treat-boost-as-system-header
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (let ((boost (assoc-ref inputs "boost")))
-                        ;; Ensure Boost is treated as "system headers" to
-                        ;; pacify compiler warnings induced by Boost headers.
-                        (for-each (lambda (variable)
-                                    (setenv variable
-                                            (string-append boost "/include:"
-                                                           (or (getenv variable)
-                                                               ""))))
-                                  '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-                        #t))))))
+     `(#:tests? #f))                    ;no check target
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
@@ -4391,7 +4395,7 @@ throwing people around in pseudo-randomly generated buildings.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (getenv "CPATH") ":"
+                     (string-append (or (getenv "CPATH") "") ":"
                                     (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
          (replace 'configure
@@ -4800,7 +4804,8 @@ over 100 user-created campaigns.")
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL:"
                                     (assoc-ref inputs "python")
-                                    "/include/python2.7"))
+                                    "/include/python2.7:"
+                                    (or (getenv "CPLUS_INCLUDE_PATH") "")))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
@@ -4865,7 +4870,7 @@ small robot living in the nano world, repair its maker.")
 (define-public teeworlds
   (package
     (name "teeworlds")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4874,7 +4879,7 @@ small robot living in the nano world, repair its maker.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lxdb1k2cdj2421vyz1z0ximzfnpkh2y4y84zpn2gqsa1nzwbryb"))
+                "169dl83q08zl4h813az8hjs4rs3dms9yjn6bnsld4fjcj0imvvc6"))
               (modules '((guix build utils)
                          (ice-9 ftw)
                          (ice-9 regex)
@@ -5577,7 +5582,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
                                              "/include/SDL2:"
-                                             (getenv "CPATH")))
+                                             (or (getenv "CPATH") "")))
                       #t))
                   (delete 'check)
                   ;; premake doesn't provide install target
@@ -5631,19 +5636,13 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                         (copy-recursively "game" (string-append data "/game"))
                         ;; launcher
                         (mkdir-p applications)
-                        (with-output-to-file (string-append applications "/"
-                                                            ,name ".desktop")
-                          (lambda ()
-                            (display
-                             (string-append
-                              "[Desktop Entry]
-Name=ToME4
-Comment=" ,synopsis "\n"
-"Exec=" ,name "\n"
-"Icon=" icon "\n"
-"Terminal=false
-Type=Application
-Categories=Game;RolePlaying;\n")))))
+                        (make-desktop-entry-file
+                         (string-append applications "/" ,name ".desktop")
+                         #:name "ToME4"
+                         #:comment ,synopsis
+                         #:exec ,name
+                         #:icon icon
+                         #:categories '("Game" "RolePlaying")))
                       #t)))))
     (home-page "https://te4.org")
     (description "Tales of Maj’Eyal (ToME) RPG, featuring tactical turn-based
@@ -6100,7 +6099,7 @@ You can save humanity and get programming skills!")
               ("fluidsynth" ,fluidsynth)
               ("gtk+3" ,gtk+)
               ("libgme" ,libgme)
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("libsndfile" ,libsndfile)
               ("mesa" ,mesa)
               ("mpg123" ,mpg123)
@@ -6191,7 +6190,7 @@ affect gameplay).")
   (package
     (inherit chocolate-doom)
     (name "crispy-doom")
-    (version "5.7.2")
+    (version "5.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6199,7 +6198,7 @@ affect gameplay).")
                     (commit (string-append "crispy-doom-" version))))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "002aqbgsksrgzqridwdlkrjincaxh0dkvwlrbb8d2f3kwk7lj4fq"))))
+               (base32 "1b6gn0dysv631jynh769whww9xcss1gms78sz3nrn855q1dsvcb4"))))
     (native-inputs
      (append
       (package-native-inputs chocolate-doom)
@@ -6557,7 +6556,7 @@ quotation from a collection of quotes.")
      `(("xonotic-data" ,xonotic-data)
        ("alsa-lib" ,alsa-lib)
        ("curl" ,curl)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmodplug" ,libmodplug)
        ("libvorbis" ,libvorbis)
        ("libogg" ,libogg)
@@ -6832,7 +6831,7 @@ your score gets higher, you level up and the blocks fall faster.")
 (define-public endless-sky
   (package
     (name "endless-sky")
-    (version "0.9.10")
+    (version "0.9.12")
     (source
       (origin
         (method git-fetch)
@@ -6841,8 +6840,7 @@ your score gets higher, you level up and the blocks fall faster.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1wax9qhxakydg6bs92d1jy2fki1n9r0wkps1np02y0pvm1fl189i"))))
+         (base32 "18nkl4s3r5sy3sd9lhbdg9160c7fggklklprx0d5azifc8g6k0wj"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -7989,22 +7987,18 @@ on items and player adaptability for character progression.")
            ;; game, so we borrow SCUMMVM's.
            (let ((apps (string-append out "/share/applications")))
              (mkdir-p apps)
-             (with-output-to-file (string-append apps "/drascula.desktop")
-               (lambda _
-                 (format #t
-                         "[Desktop Entry]~@
-                     Name=Drascula: The Vampire Strikes Back~@
-                     GenericName=Drascula~@
-                     Exec=~a/bin/drascula~@
-                     Icon=~a/share/icons/hicolor/scalable/apps/scummvm.svg~@
-                     Categories=AdventureGame;Game;RolePlaying;~@
-                     Keywords=game;adventure;roleplaying;2D,fantasy;~@
-                     Comment=Classic 2D point and click adventure game~@
-                     Comment[de]=klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier~@
-                     Comment[fr]=Jeux classique d'aventure pointer-et-cliquer en 2D~@
-                     Comment[it]=Gioco classico di avventura punta e clicca 2D~@
-                     Type=Application~%"
-                         out scummvm))))
+             (make-desktop-entry-file
+              (string-append apps "/drascula.desktop")
+              #:name "Drascula: The Vampire Strikes Back"
+              #:generic-name "Drascula"
+              #:exec (string-append out "/bin/drascula")
+              #:icon (string-append scummvm "/share/icons/hicolor/scalable/apps/scummvm.svg")
+              #:categories '("AdventureGame" "Game" "RolePlaying")
+              #:keywords '("game" "adventure" "roleplaying" "2D" "fantasy")
+              #:comment '((#f "Classic 2D point and click adventure game")
+                          ("de" "Klassisches 2D-Abenteuerspiel in Zeigen-und-Klicken-Manier")
+                          ("fr" "Jeu classique d'aventure pointer-et-cliquer en 2D")
+                          ("it" "Gioco classico di avventura punta e clicca 2D"))))
            #t))))
     (native-inputs
      `(("bash" ,bash)
@@ -10247,7 +10241,7 @@ This package is part of the KDE games module.")
      `(("curl" ,curl)
        ("font-dejavu" ,font-dejavu)
        ("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libxdg-basedir" ,libxdg-basedir)
        ("libxml2" ,libxml2)
@@ -10566,7 +10560,7 @@ kingdom.")
       (native-inputs
        `(("gettext" ,gettext-minimal))) ;for msgfmt
       (inputs
-       `(("libjpeg" ,libjpeg)
+       `(("libjpeg" ,libjpeg-turbo)
          ("libpng" ,libpng)
          ("libvorbis" ,libvorbis)
          ("physfs" ,physfs)

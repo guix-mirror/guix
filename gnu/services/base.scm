@@ -47,7 +47,7 @@
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module (gnu packages bash)
   #:use-module ((gnu packages base)
-                #:select (canonical-package coreutils glibc glibc-utf8-locales))
+                #:select (coreutils glibc glibc-utf8-locales))
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (gnu packages linux)
@@ -1093,7 +1093,7 @@ the tty to run, among other things."
   (name-services nscd-configuration-name-services ;list of <packages>
                  (default '()))
   (glibc      nscd-configuration-glibc            ;<package>
-              (default (canonical-package glibc))))
+              (default glibc)))
 
 (define-record-type* <nscd-cache> nscd-cache make-nscd-cache
   nscd-cache?
@@ -1383,7 +1383,7 @@ information on the configuration file syntax."
                               (module "pam_limits.so")
                               (arguments '("conf=/etc/security/limits.conf")))))
              (if (member (pam-service-name pam)
-                         '("login" "su" "slim" "gdm-password"))
+                         '("login" "su" "slim" "gdm-password" "sddm"))
                  (pam-service
                   (inherit pam)
                   (session (cons pam-limits
@@ -1840,7 +1840,7 @@ archive}).  If that is not the case, the service will fail to start."
   udev-configuration make-udev-configuration
   udev-configuration?
   (udev   udev-configuration-udev                 ;<package>
-          (default eudev/btrfs-fix))
+          (default eudev))
   (rules  udev-configuration-rules                ;list of <package>
           (default '())))
 
@@ -2038,7 +2038,7 @@ the udev rules in use.")
 directory dynamically.  Get extra rules from the packages listed in the
 @code{rules} field of its value, @code{udev-configuration} object.")))
 
-(define* (udev-service #:key (udev eudev/btrfs-fix) (rules '()))
+(define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type
@@ -2396,9 +2396,7 @@ to handle."
                    (rules (list lvm2 fuse alsa-utils crda))))
 
         (service special-files-service-type
-                 `(("/bin/sh" ,(file-append (canonical-package bash)
-                                            "/bin/sh"))
-                   ("/usr/bin/env" ,(file-append (canonical-package coreutils)
-                                                 "/bin/env"))))))
+                 `(("/bin/sh" ,(file-append bash "/bin/sh"))
+                   ("/usr/bin/env" ,(file-append coreutils "/bin/env"))))))
 
 ;;; base.scm ends here

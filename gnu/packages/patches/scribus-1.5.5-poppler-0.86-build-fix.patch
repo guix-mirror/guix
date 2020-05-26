@@ -1,0 +1,642 @@
+Fix build with Poppler 0.86.
+
+The original series of patches authored by Craig Bradney <mrb@scribus.info>
+and Jean Ghali <jghali@libertysurf.fr>, taken from
+https://gitweb.gentoo.org/repo/gentoo.git/tree/app-office/scribus/files
+
+diff --git a/scribus/plugins/import/pdf/importpdf.cpp b/scribus/plugins/import/pdf/importpdf.cpp
+--- a/scribus/plugins/import/pdf/importpdf.cpp
++++ b/scribus/plugins/import/pdf/importpdf.cpp
+@@ -75,7 +75,11 @@ PdfPlug::PdfPlug(ScribusDoc* doc, int flags)
+ QImage PdfPlug::readThumbnail(const QString& fName)
+ {
+ 	QString pdfFile = QDir::toNativeSeparators(fName);
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 83, 0)
++	globalParams.reset(new GlobalParams());
++#else
+ 	globalParams = new GlobalParams();
++#endif
+ 	if (globalParams)
+ 	{
+ #if defined(Q_OS_WIN32) && POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 62, 0)
+@@ -90,7 +94,9 @@ QImage PdfPlug::readThumbnail(const QString& fName)
+ 			if (pdfDoc->getErrorCode() == errEncrypted)
+ 			{
+ 				delete pdfDoc;
++#if POPPLER_ENCODED_VERSION < POPPLER_VERSION_ENCODE(0, 83, 0)
+ 				delete globalParams;
++#endif
+ 				return QImage();
+ 			}
+ 			if (pdfDoc->isOk())
+@@ -134,11 +140,15 @@ QImage PdfPlug::readThumbnail(const QString& fName)
+ 				image.setText("YSize", QString("%1").arg(h));
+ 				delete dev;
+ 				delete pdfDoc;
++#if POPPLER_ENCODED_VERSION < POPPLER_VERSION_ENCODE(0, 83, 0)
+ 				delete globalParams;
++#endif
+ 				return image;
+ 			}
+ 			delete pdfDoc;
++#if POPPLER_ENCODED_VERSION < POPPLER_VERSION_ENCODE(0, 83, 0)
+ 			delete globalParams;
++#endif
+ 		}
+ 	}
+ 	return QImage();
+@@ -387,7 +397,11 @@ bool PdfPlug::convert(const QString& fn)
+ 		qApp->processEvents();
+ 	}
+ 
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 83, 0)
++	globalParams.reset(new GlobalParams());
++#else
+ 	globalParams = new GlobalParams();
++#endif
+ 	GooString *userPW = nullptr;
+ 	if (globalParams)
+ 	{
+@@ -429,7 +443,9 @@ bool PdfPlug::convert(const QString& fn)
+ 					if (progressDialog)
+ 						progressDialog->close();
+ 					delete pdfDoc;
++#if POPPLER_ENCODED_VERSION < POPPLER_VERSION_ENCODE(0, 83, 0)
+ 					delete globalParams;
++#endif
+ 					return false;
+ 				}
+ 				if (progressDialog)
+@@ -474,7 +490,9 @@ bool PdfPlug::convert(const QString& fn)
+ 							progressDialog->close();
+ 						delete optImp;
+ 						delete pdfDoc;
++#if POPPLER_ENCODED_VERSION < POPPLER_VERSION_ENCODE(0, 83, 0)
+ 						delete globalParams;
++#endif
+ 						return false;
+ 					}
+ 					pageString = optImp->getPagesString();
+@@ -838,11 +856,20 @@ bool PdfPlug::convert(const QString& fn)
+ 								names = catDict.dictLookup("OpenAction");
+ 								if (names.isDict())
+ 								{
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++									std::unique_ptr<LinkAction> linkAction;
++									linkAction = LinkAction::parseAction(&names, pdfDoc->getCatalog()->getBaseURI());
++#else
+ 									LinkAction *linkAction = nullptr;
+ 									linkAction = LinkAction::parseAction(&names, pdfDoc->getCatalog()->getBaseURI());
++#endif
+ 									if (linkAction)
+ 									{
+-										LinkJavaScript *jsa = (LinkJavaScript*)linkAction;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++										LinkJavaScript *jsa = (LinkJavaScript*) linkAction.get();
++#else
++										LinkJavaScript *jsa = (LinkJavaScript*) linkAction;
++#endif
+ 										if (jsa->isOk())
+ 										{
+ 											QString script = UnicodeParsedString(jsa->getScript());
+@@ -908,8 +935,12 @@ bool PdfPlug::convert(const QString& fn)
+ 		}
+ 		delete pdfDoc;
+ 	}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 83, 0)
++	globalParams.release();
++#else
+ 	delete globalParams;
+ 	globalParams = nullptr;
++#endif
+ 
+ //	qDebug() << "converting finished";
+ //	qDebug() << "Imported" << Elements.count() << "Elements";
+@@ -1046,3 +1077,43 @@ QString PdfPlug::UnicodeParsedString(POPPLER_CONST GooString *s1)
+ 	}
+ 	return result;
+ }
++
++QString PdfPlug::UnicodeParsedString(const std::string& s1)
++{
++	if (s1.length() == 0)
++		return QString();
++	GBool isUnicode;
++	int i;
++	Unicode u;
++	QString result;
++	if ((s1.at(0) & 0xff) == 0xfe && (s1.length() > 1 && (s1.at(1) & 0xff) == 0xff))
++	{
++		isUnicode = gTrue;
++		i = 2;
++		result.reserve((s1.length() - 2) / 2);
++	}
++	else
++	{
++		isUnicode = gFalse;
++		i = 0;
++		result.reserve(s1.length());
++	}
++	while (i < s1.length())
++	{
++		if (isUnicode)
++		{
++			u = ((s1.at(i) & 0xff) << 8) | (s1.at(i+1) & 0xff);
++			i += 2;
++		}
++		else
++		{
++			u = s1.at(i) & 0xff;
++			++i;
++		}
++		// #15616: imagemagick may write unicode strings incorrectly in PDF
++		if (u == 0)
++			continue;
++		result += QChar( u );
++	}
++	return result;
++}
+diff --git a/scribus/plugins/import/pdf/importpdf.h b/scribus/plugins/import/pdf/importpdf.h
+--- a/scribus/plugins/import/pdf/importpdf.h
++++ b/scribus/plugins/import/pdf/importpdf.h
+@@ -82,6 +82,7 @@ private:
+ 	bool convert(const QString& fn);
+ 	QRectF getCBox(int box, int pgNum);
+ 	QString UnicodeParsedString(POPPLER_CONST GooString *s1);
++	QString UnicodeParsedString(const std::string& s1);
+ 	
+ 	QList<PageItem*> Elements;
+ 	double baseX, baseY;
+diff --git a/scribus/plugins/import/pdf/importpdfconfig.h b/scribus/plugins/import/pdf/importpdfconfig.h
+--- a/scribus/plugins/import/pdf/importpdfconfig.h
++++ b/scribus/plugins/import/pdf/importpdfconfig.h
+@@ -52,4 +52,16 @@ for which a new license (GPL+exception) is in place.
+ #define POPPLER_REF
+ #endif
+ 
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 82, 0)
++#define POPPLER_CONST_082 const
++#else
++#define POPPLER_CONST_082
++#endif
++
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 83, 0)
++#define POPPLER_CONST_083 const
++#else
++#define POPPLER_CONST_083
++#endif
++
+ #endif
+diff --git a/scribus/plugins/import/pdf/slaoutput.cpp b/scribus/plugins/import/pdf/slaoutput.cpp
+--- a/scribus/plugins/import/pdf/slaoutput.cpp
++++ b/scribus/plugins/import/pdf/slaoutput.cpp
+@@ -308,9 +308,15 @@ LinkAction* SlaOutputDev::SC_getAction(AnnotWidget *ano)
+ }
+ 
+ /* Replacement for the crippled Poppler function LinkAction* AnnotWidget::getAdditionalAction(AdditionalActionsType type) */
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++std::unique_ptr<LinkAction> SlaOutputDev::SC_getAdditionalAction(const char *key, AnnotWidget *ano)
++{
++	std::unique_ptr<LinkAction> linkAction;
++#else
+ LinkAction* SlaOutputDev::SC_getAdditionalAction(const char *key, AnnotWidget *ano)
+ {
+ 	LinkAction *linkAction = nullptr;
++#endif
+ 	Object obj;
+ 	Ref refa = ano->getRef();
+ 
+@@ -455,7 +461,11 @@ bool SlaOutputDev::handleLinkAnnot(Annot* annota, double xCoor, double yCoor, do
+ 			POPPLER_CONST GooString *ndst = gto->getNamedDest();
+ 			if (ndst)
+ 			{
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++				std::unique_ptr<LinkDest> dstn = pdfDoc->findDest(ndst);
++#else
+ 				LinkDest *dstn = pdfDoc->findDest(ndst);
++#endif
+ 				if (dstn)
+ 				{
+ 					if (dstn->getKind() == destXYZ)
+@@ -499,7 +509,11 @@ bool SlaOutputDev::handleLinkAnnot(Annot* annota, double xCoor, double yCoor, do
+ 			POPPLER_CONST GooString *ndst = gto->getNamedDest();
+ 			if (ndst)
+ 			{
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++				std::unique_ptr<LinkDest> dstn = pdfDoc->findDest(ndst);
++#else
+ 				LinkDest *dstn = pdfDoc->findDest(ndst);
++#endif
+ 				if (dstn)
+ 				{
+ 					if (dstn->getKind() == destXYZ)
+@@ -967,7 +981,11 @@ void SlaOutputDev::handleActions(PageItem* ite, AnnotWidget *ano)
+ 				POPPLER_CONST GooString *ndst = gto->getNamedDest();
+ 				if (ndst)
+ 				{
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++					std::unique_ptr<LinkDest> dstn = pdfDoc->findDest(ndst);
++#else
+ 					LinkDest *dstn = pdfDoc->findDest(ndst);
++#endif
+ 					if (dstn)
+ 					{
+ 						if (dstn->getKind() == destXYZ)
+@@ -1019,7 +1037,11 @@ void SlaOutputDev::handleActions(PageItem* ite, AnnotWidget *ano)
+ 				POPPLER_CONST GooString *ndst = gto->getNamedDest();
+ 				if (ndst)
+ 				{
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++					std::unique_ptr<LinkDest> dstn = pdfDoc->findDest(ndst);
++#else
+ 					LinkDest *dstn = pdfDoc->findDest(ndst);
++#endif
+ 					if (dstn)
+ 					{
+ 						if (dstn->getKind() == destXYZ)
+@@ -1088,96 +1110,148 @@ void SlaOutputDev::handleActions(PageItem* ite, AnnotWidget *ano)
+ 		else
+ 			qDebug() << "Found unsupported Action of type" << Lact->getKind();
+ 	}
+-	LinkAction *Aact = SC_getAdditionalAction("D", ano);
++	auto Aact = SC_getAdditionalAction("D", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setD_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("E", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setE_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("X", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setX_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("Fo", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setFo_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("Bl", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setBl_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("C", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setC_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("F", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setF_act(UnicodeParsedString(jsa->getScript()));
+@@ -1185,14 +1259,22 @@ void SlaOutputDev::handleActions(PageItem* ite, AnnotWidget *ano)
+ 				ite->annotation().setFormat(5);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("K", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setK_act(UnicodeParsedString(jsa->getScript()));
+@@ -1200,21 +1282,33 @@ void SlaOutputDev::handleActions(PageItem* ite, AnnotWidget *ano)
+ 				ite->annotation().setFormat(5);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ 	Aact = SC_getAdditionalAction("V", ano);
+ 	if (Aact)
+ 	{
+ 		if (Aact->getKind() == actionJavaScript)
+ 		{
+-			LinkJavaScript *jsa = (LinkJavaScript*)Aact;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact.get();
++#else
++			LinkJavaScript *jsa = (LinkJavaScript*) Aact;
++#endif
+ 			if (jsa->isOk())
+ 			{
+ 				ite->annotation().setV_act(UnicodeParsedString(jsa->getScript()));
+ 				ite->annotation().setAAact(true);
+ 			}
+ 		}
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++		Aact.reset();
++#else
+ 		Aact = nullptr;
++#endif
+ 	}
+ }
+ 
+@@ -1224,6 +1318,11 @@ void SlaOutputDev::startDoc(PDFDoc *doc, XRef *xrefA, Catalog *catA)
+ 	catalog = catA;
+ 	pdfDoc = doc;
+ 	updateGUICounter = 0;
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 84, 0)
++	m_fontEngine = new SplashFontEngine(true, true, true, true);
++#elif POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 61, 0)
++	m_fontEngine = new SplashFontEngine(globalParams->getEnableFreeType(), true, true, true);
++#else
+ 	m_fontEngine = new SplashFontEngine(
+ #if HAVE_T1LIB_H
+ 	globalParams->getEnableT1lib(),
+@@ -1234,6 +1333,7 @@ void SlaOutputDev::startDoc(PDFDoc *doc, XRef *xrefA, Catalog *catA)
+ 	true,
+ #endif
+ 	true);
++#endif
+ }
+ 
+ void SlaOutputDev::startPage(int pageNum, GfxState *, XRef *)
+@@ -2784,7 +2884,7 @@ void SlaOutputDev::drawMaskedImage(GfxState *state, Object *ref, Stream *str,  i
+ 	delete[] mbuffer;
+ }
+ 
+-void SlaOutputDev::drawImage(GfxState *state, Object *ref, Stream *str, int width, int height, GfxImageColorMap *colorMap, GBool interpolate, int *maskColors, GBool inlineImg)
++void SlaOutputDev::drawImage(GfxState *state, Object *ref, Stream *str, int width, int height, GfxImageColorMap *colorMap, GBool interpolate, POPPLER_CONST_082 int* maskColors, GBool inlineImg)
+ {
+ 	ImageStream * imgStr = new ImageStream(str, width, colorMap->getNumPixelComps(), colorMap->getBits());
+ //	qDebug() << "Image Components" << colorMap->getNumPixelComps() << "Mask" << maskColors;
+@@ -3365,7 +3465,7 @@ err1:
+ 		fontsrc->unref();
+ }
+ 
+-void SlaOutputDev::drawChar(GfxState *state, double x, double y, double dx, double dy, double originX, double originY, CharCode code, int nBytes, Unicode *u, int uLen)
++void SlaOutputDev::drawChar(GfxState *state, double x, double y, double dx, double dy, double originX, double originY, CharCode code, int nBytes, POPPLER_CONST_082 Unicode *u, int uLen)
+ {
+ 	double x1, y1, x2, y2;
+ 	int render;
+@@ -3452,7 +3552,7 @@ void SlaOutputDev::drawChar(GfxState *state, double x, double y, double dx, doub
+ 	}
+ }
+ 
+-GBool SlaOutputDev::beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
++GBool SlaOutputDev::beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, POPPLER_CONST_082 Unicode *u, int uLen)
+ {
+ //	qDebug() << "beginType3Char";
+ 	GfxFont *gfxFont;
+@@ -3705,7 +3805,7 @@ QString SlaOutputDev::getAnnotationColor(const AnnotColor *color)
+ 	return fNam;
+ }
+ 
+-QString SlaOutputDev::convertPath(GfxPath *path)
++QString SlaOutputDev::convertPath(POPPLER_CONST_083 GfxPath *path)
+ {
+ 	if (! path)
+ 		return QString();
+@@ -3715,7 +3815,7 @@ QString SlaOutputDev::convertPath(GfxPath *path)
+ 
+ 	for (int i = 0; i < path->getNumSubpaths(); ++i)
+ 	{
+-		GfxSubpath * subpath = path->getSubpath(i);
++		POPPLER_CONST_083 GfxSubpath * subpath = path->getSubpath(i);
+ 		if (subpath->getNumPoints() > 0)
+ 		{
+ 			output += QString("M %1 %2").arg(subpath->getX(0)).arg(subpath->getY(0));
+@@ -3922,6 +4022,46 @@ QString SlaOutputDev::UnicodeParsedString(POPPLER_CONST GooString *s1)
+ 	return result;
+ }
+ 
++QString SlaOutputDev::UnicodeParsedString(const std::string& s1)
++{
++	if (s1.length() == 0)
++		return QString();
++	GBool isUnicode;
++	int i;
++	Unicode u;
++	QString result;
++	if ((s1.at(0) & 0xff) == 0xfe && (s1.length() > 1 && (s1.at(1) & 0xff) == 0xff))
++	{
++		isUnicode = gTrue;
++		i = 2;
++		result.reserve((s1.length() - 2) / 2);
++	}
++	else
++	{
++		isUnicode = gFalse;
++		i = 0;
++		result.reserve(s1.length());
++	}
++	while (i < s1.length())
++	{
++		if (isUnicode)
++		{
++			u = ((s1.at(i) & 0xff) << 8) | (s1.at(i+1) & 0xff);
++			i += 2;
++		}
++		else
++		{
++			u = s1.at(i) & 0xff;
++			++i;
++		}
++		// #15616: imagemagick may write unicode strings incorrectly in PDF
++		if (u == 0)
++			continue;
++		result += QChar( u );
++	}
++	return result;
++}
++
+ bool SlaOutputDev::checkClip()
+ {
+ 	bool ret = false;
+diff --git a/scribus/plugins/import/pdf/slaoutput.h b/scribus/plugins/import/pdf/slaoutput.h
+--- a/scribus/plugins/import/pdf/slaoutput.h
++++ b/scribus/plugins/import/pdf/slaoutput.h
+@@ -20,6 +20,8 @@ for which a new license (GPL+exception) is in place.
+ #include <QTextStream>
+ #include <QTransform>
+ 
++#include <memory>
++
+ #include "fpointarray.h"
+ #include "importpdfconfig.h"
+ #include "pageitem.h"
+@@ -159,7 +161,11 @@ public:
+ 	virtual ~SlaOutputDev();
+ 
+ 	LinkAction* SC_getAction(AnnotWidget *ano);
++#if POPPLER_ENCODED_VERSION >= POPPLER_VERSION_ENCODE(0, 86, 0)
++	std::unique_ptr<LinkAction> SC_getAdditionalAction(const char *key, AnnotWidget *ano);
++#else
+ 	LinkAction* SC_getAdditionalAction(const char *key, AnnotWidget *ano);
++#endif
+ 	static GBool annotations_callback(Annot *annota, void *user_data);
+ 	bool handleTextAnnot(Annot* annota, double xCoor, double yCoor, double width, double height);
+ 	bool handleLinkAnnot(Annot* annota, double xCoor, double yCoor, double width, double height);
+@@ -229,7 +235,7 @@ public:
+ 
+ 	//----- image drawing
+ 	void drawImageMask(GfxState *state, Object *ref, Stream *str, int width, int height, GBool invert, GBool interpolate, GBool inlineImg) override;
+-	void drawImage(GfxState *state, Object *ref, Stream *str, int width, int height, GfxImageColorMap *colorMap, GBool interpolate, int *maskColors, GBool inlineImg) override;
++	void drawImage(GfxState *state, Object *ref, Stream *str, int width, int height, GfxImageColorMap *colorMap, GBool interpolate, POPPLER_CONST_082 int *maskColors, GBool inlineImg) override;
+ 	void drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+ 				   int width, int height,
+ 				   GfxImageColorMap *colorMap,
+@@ -261,8 +267,8 @@ public:
+ 	//----- text drawing
+ 	void  beginTextObject(GfxState *state) override;
+ 	void  endTextObject(GfxState *state) override;
+-	void  drawChar(GfxState *state, double /*x*/, double /*y*/, double /*dx*/, double /*dy*/, double /*originX*/, double /*originY*/, CharCode /*code*/, int /*nBytes*/, Unicode * /*u*/, int /*uLen*/) override;
+-	GBool beginType3Char(GfxState * /*state*/, double /*x*/, double /*y*/, double /*dx*/, double /*dy*/, CharCode /*code*/, Unicode * /*u*/, int /*uLen*/) override;
++	void  drawChar(GfxState *state, double /*x*/, double /*y*/, double /*dx*/, double /*dy*/, double /*originX*/, double /*originY*/, CharCode /*code*/, int /*nBytes*/, POPPLER_CONST_082 Unicode * /*u*/, int /*uLen*/) override;
++	GBool beginType3Char(GfxState * /*state*/, double /*x*/, double /*y*/, double /*dx*/, double /*dy*/, CharCode /*code*/, POPPLER_CONST_082 Unicode * /*u*/, int /*uLen*/) override;
+ 	void  endType3Char(GfxState * /*state*/) override;
+ 	void  type3D0(GfxState * /*state*/, double /*wx*/, double /*wy*/) override;
+ 	void  type3D1(GfxState * /*state*/, double /*wx*/, double /*wy*/, double /*llx*/, double /*lly*/, double /*urx*/, double /*ury*/) override;
+@@ -282,11 +288,12 @@ private:
+ 	void getPenState(GfxState *state);
+ 	QString getColor(GfxColorSpace *color_space, POPPLER_CONST_070 GfxColor *color, int *shade);
+ 	QString getAnnotationColor(const AnnotColor *color);
+-	QString convertPath(GfxPath *path);
++	QString convertPath(POPPLER_CONST_083 GfxPath *path);
+ 	int getBlendMode(GfxState *state);
+ 	void applyMask(PageItem *ite);
+ 	void pushGroup(const QString& maskName = "", GBool forSoftMask = gFalse, GBool alpha = gFalse, bool inverted = false);
+ 	QString UnicodeParsedString(POPPLER_CONST GooString *s1);
++	QString UnicodeParsedString(const std::string& s1);
+ 	bool checkClip();
+ 	bool pathIsClosed;
+ 	QString CurrColorFill;

@@ -31,6 +31,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages bootstrap)
@@ -358,6 +359,32 @@ edges."
         (return (lset= eq? (node-transitive-edges (list p2) edges)
                        (list p1a p1b p0)))))))
 
+(test-assert "node-transitive-edges, references"
+  (run-with-store %store
+    (mlet* %store-monad ((d0 (package->derivation %bootstrap-guile))
+                         (d1 (gexp->derivation "d1"
+                                               #~(begin
+                                                   (mkdir #$output)
+                                                   (symlink #$%bootstrap-guile
+                                                            (string-append
+                                                             #$output "/l")))))
+                         (d2 (gexp->derivation "d2"
+                                               #~(begin
+                                                   (mkdir #$output)
+                                                   (symlink #$d1
+                                                            (string-append
+                                                             #$output "/l")))))
+                         (_  (built-derivations (list d2)))
+                         (->node -> (node-type-convert %reference-node-type))
+                         (o2      (->node (derivation->output-path d2)))
+                         (o1      (->node (derivation->output-path d1)))
+                         (o0      (->node (derivation->output-path d0)))
+                         (edges   (node-edges %reference-node-type
+                                              (append o0 o1 o2)))
+                         (reqs    ((store-lift requisites) o2)))
+      (return (lset= string=?
+                     (append o2 (node-transitive-edges o2 edges)) reqs)))))
+
 (test-equal "node-reachable-count"
   '(3 3)
   (run-with-store %store
@@ -370,5 +397,66 @@ edges."
                            (back   (node-back-edges %package-node-type all)))
         (return (list (node-reachable-count (list p2) edges)
                       (node-reachable-count (list p0) back)))))))
+
+(test-equal "shortest-path, packages + derivations"
+  '(("p5" "p4" "p1" "p0")
+    ("p3" "p2" "p1" "p0")
+    #f
+    ("p5-0.drv" "p4-0.drv" "p1-0.drv" "p0-0.drv"))
+  (run-with-store %store
+    (let* ((p0 (dummy-package "p0"))
+           (p1 (dummy-package "p1" (inputs `(("p0" ,p0)))))
+           (p2 (dummy-package "p2" (inputs `(("p1" ,p1)))))
+           (p3 (dummy-package "p3" (inputs `(("p2" ,p2)))))
+           (p4 (dummy-package "p4" (inputs `(("p1" ,p1)))))
+           (p5 (dummy-package "p5" (inputs `(("p4" ,p4) ("p3" ,p3))))))
+      (mlet* %store-monad ((path1 (shortest-path p5 p0 %package-node-type))
+                           (path2 (shortest-path p3 p0 %package-node-type))
+                           (nope  (shortest-path p3 p4 %package-node-type))
+                           (drv5  (package->derivation p5))
+                           (drv0  (package->derivation p0))
+                           (path3 (shortest-path drv5 drv0
+                                                 %derivation-node-type)))
+        (return (append (map (lambda (path)
+                               (and path (map package-name path)))
+                             (list path1 path2 nope))
+                        (list (map (node-type-label %derivation-node-type)
+                                   path3))))))))
+
+(test-equal "shortest-path, reverse packages"
+  '("libffi" "guile" "guile-json")
+  (run-with-store %store
+    (mlet %store-monad ((path (shortest-path (specification->package "libffi")
+                                             guile-json
+                                             %reverse-package-node-type)))
+      (return (map package-name path)))))
+
+(test-equal "shortest-path, references"
+  `(("d2" "d1" ,(package-full-name %bootstrap-guile "-"))
+    (,(package-full-name %bootstrap-guile "-") "d1" "d2"))
+  (run-with-store %store
+    (mlet* %store-monad ((d0 (package->derivation %bootstrap-guile))
+                         (d1 (gexp->derivation "d1"
+                                               #~(begin
+                                                   (mkdir #$output)
+                                                   (symlink #$%bootstrap-guile
+                                                            (string-append
+                                                             #$output "/l")))))
+                         (d2 (gexp->derivation "d2"
+                                               #~(begin
+                                                   (mkdir #$output)
+                                                   (symlink #$d1
+                                                            (string-append
+                                                             #$output "/l")))))
+                         (_  (built-derivations (list d2)))
+                         (->node -> (node-type-convert %reference-node-type))
+                         (o2   (->node (derivation->output-path d2)))
+                         (o0   (->node (derivation->output-path d0)))
+                         (path (shortest-path (first o2) (first o0)
+                                              %reference-node-type))
+                         (rpath (shortest-path (first o0) (first o2)
+                                               %referrer-node-type)))
+      (return (list (map (node-type-label %reference-node-type) path)
+                    (map (node-type-label %referrer-node-type) rpath))))))
 
 (test-end "graph")

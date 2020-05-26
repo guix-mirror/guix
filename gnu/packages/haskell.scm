@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,10 +38,8 @@
 
 (define-module (gnu packages haskell)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages elf)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages lisp)
@@ -171,10 +170,6 @@ top of CLISP.")
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
        #:parallel-tests? #f
-
-       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-       ;; gremlin) doesn't support it yet, so skip this phase.
-       #:validate-runpath? #f
 
        ;; Don't pass --build=<triplet>, because the configure script
        ;; auto-detects slightly different triplets for --host and --target and
@@ -321,9 +316,7 @@ interactive environment for the functional language Haskell.")
       (sha256
        (base32 "1c8qc4fhkycynk4g1f9hvk53dj6a1vvqi6bklqznns6hw59m8qhi"))
       (patches
-       (search-patches
-        "ghc-dont-pass-linker-flags-via-response-files.patch"
-        "ghc-8.0-fall-back-to-madv_dontneed.patch"))))
+       (search-patches "ghc-8.0-fall-back-to-madv_dontneed.patch"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (outputs '("out" "doc"))
@@ -350,10 +343,6 @@ interactive environment for the functional language Haskell.")
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
        #:parallel-tests? #f
-
-       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-       ;; gremlin) doesn't support it yet, so skip this phase.
-       #:validate-runpath? #f
 
        ;; Don't pass --build=<triplet>, because the configure script
        ;; auto-detects slightly different triplets for --host and --target and
@@ -424,22 +413,18 @@ interactive environment for the functional language Haskell.")
 (define-public ghc-8.4
   (package (inherit ghc-8.0)
     (name "ghc")
-    (version "8.4.3")
+    (version "8.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.haskell.org/ghc/dist/"
                            version "/" name "-" version "-src.tar.xz"))
        (sha256
-        (base32 "1mk046vb561j75saz05rghhbkps46ym5aci4264dwc2qk3dayixf"))))
+        (base32 "1ch4j2asg7pr52ai1hwzykxyj553wndg7wq93i47ql4fllspf48i"))))
     (inputs
      `(("gmp" ,gmp)
        ("ncurses" ,ncurses)
-       ("libffi" ,libffi)
-       ("target-binutils" ,binutils)
-       ("target-gcc" ,gcc)
-       ("target-ld-wrapper" ,(make-ld-wrapper "ld-wrapper"
-                                              #:binutils binutils))))
+       ("libffi" ,libffi)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)               ; for tests
@@ -454,16 +439,12 @@ interactive environment for the functional language Haskell.")
                  version "/" name "-" version "-testsuite.tar.xz"))
            (sha256
             (base32
-             "1z55b1z0m3plqd2d1ks6w5wvx7igm7zsk3i4v7cms003z0as0hzz"))))))
+             "0s8lf9sxj7n89pjagi58b3fahnp34qvmwhnn0j1fbg6955vbrfj6"))))))
     (arguments
      `(#:test-target "test"
        ;; We get a smaller number of test failures by disabling parallel test
        ;; execution.
        #:parallel-tests? #f
-
-       ;; The DSOs use $ORIGIN to refer to each other, but (guix build
-       ;; gremlin) doesn't support it yet, so skip this phase.
-       #:validate-runpath? #f
 
        ;; Don't pass --build=<triplet>, because the configure script
        ;; auto-detects slightly different triplets for --host and --target and
@@ -514,9 +495,9 @@ interactive environment for the functional language Haskell.")
          ;; plain command names.
          (add-before 'configure 'set-target-programs
            (lambda* (#:key inputs #:allow-other-keys)
-             (let ((binutils (assoc-ref inputs "target-binutils"))
-                   (gcc (assoc-ref inputs "target-gcc"))
-                   (ld-wrapper (assoc-ref inputs "target-ld-wrapper")))
+             (let ((binutils (assoc-ref inputs "binutils"))
+                   (gcc (assoc-ref inputs "gcc"))
+                   (ld-wrapper (assoc-ref inputs "ld-wrapper")))
                (setenv "CC" (string-append gcc "/bin/gcc"))
                (setenv "CXX" (string-append gcc "/bin/g++"))
                (setenv "LD" (string-append ld-wrapper "/bin/ld"))
@@ -573,6 +554,7 @@ interactive environment for the functional language Haskell.")
            (uri (string-append
                  "https://www.haskell.org/ghc/dist/"
                  version "/" name "-" version "-testsuite.tar.xz"))
+           (patches (search-patches "ghc-testsuite-dlopen-pie.patch"))
            (sha256
             (base32
              "0pw9r91g2np3i806g2f4f8z4jfdd7mx226cmdizk4swa7av1qf91"))))
@@ -588,10 +570,10 @@ interactive environment for the functional language Haskell.")
                ,make-flags))
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-           ;; These two tests refer to the root user, which doesn't exist
-           ;; (see <https://bugs.gnu.org/36692>).
            (add-after 'unpack-testsuite 'skip-tests
              (lambda _
+               ;; These two tests refer to the root user, which doesn't exist
+               ;; (see <https://bugs.gnu.org/36692>).
                (substitute* "libraries/unix/tests/all.T"
                  (("^test\\('T8108'") "# guix skipped: test('T8108'"))
                (substitute* "libraries/unix/tests/libposix/all.T"

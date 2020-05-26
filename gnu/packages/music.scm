@@ -8,7 +8,7 @@
 ;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 nikita <nikita@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -27,6 +27,7 @@
 ;;; Copyright © 2019, 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Lars-Dominik Braun <lars@6xq.net>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -300,7 +301,7 @@ score, keyboard, guitar, drum and controller views.")
          ("pulseaudio" ,pulseaudio)
          ("qtbase" ,qtbase)
          ("qtx11extras" ,qtx11extras)
-         ("sqlite" ,sqlite-with-column-metadata)
+         ("sqlite" ,sqlite)
          ("sparsehash" ,sparsehash)
          ("taglib" ,taglib)))
       (home-page "https://clementine-player.org")
@@ -625,62 +626,72 @@ MusePack, Monkey's Audio, and WavPack files.")
 (define-public extempore
   (package
     (name "extempore")
-    (version "0.7.0")
+    (version "0.8.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/digego/extempore.git")
-                    (commit version)))
+                    (commit (string-append "v" version))))
               (sha256
                (base32
-                "12fsp7zkfxb9kykwq46l88kcbbici9arczrrsl4qn87m6vm5349l"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "182jy23qv115dipny7kglwbn21z55dp253w1ykm0kh8n6vkgs7gp"))
+              (file-name (git-file-name name version))
+              (patches (search-patches
+                        "extempore-unbundle-external-dependencies.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled sources.
+                  (map delete-file-recursively
+                       '("src/portaudio"
+                         "src/pcre"))
+                  #t))))
     (build-system cmake-build-system)
     (arguments
-     `(;; The default target also includes ahead-of-time compilation of the
-       ;; standard libraries.  However, during the "install" phase this would
-       ;; happen *again* for unknown reasons.  Hence we only build the
-       ;; extempore executable during the build phase.
-       #:make-flags '("extempore")
-       #:configure-flags '("-DJACK=ON"
-                           ;; We want to distribute.
-                           "-DIN_TREE=OFF"
-                           ;; Don't download any dependencies.
-                           "-DBUILD_DEPS=OFF")
+     `(#:configure-flags (list "-DJACK=ON"
+                               "-DPACKAGE=ON"
+                               "-DEXTERNAL_SHLIBS_AUDIO=OFF"
+                               "-DEXTERNAL_SHLIBS_GRAPHICS=OFF"
+                               "-DCMAKE_BUILD_TYPE=Release"
+                               (string-append "-DEXT_SHARE_DIR="
+                                              (assoc-ref %outputs "out")
+                                              "/share"))
        #:modules ((ice-9 match)
                   (guix build cmake-build-system)
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'build 'build-aot-libs
+           (lambda _
+             (for-each (lambda (target)
+                         (invoke "make" target))
+                       '("aot_base"
+                         "aot_math"
+                         "aot_instruments"))
+             #t))
+         (add-after 'unpack 'patch-install-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("EXT_SHARE_DIR=\"\\.\"\\)")
+                "EXT_SHARE_DIR=\"${EXT_SHARE_DIR}/extempore\")")
+               (("DESTINATION \"\\.\"\\)") "DESTINATION bin)")
+               (("DESTINATION \"\\.\"\n") "DESTINATION share/extempore\n"))
+             #t))
          (add-after 'unpack 'patch-directories
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Rewrite default path to runtime directory
-             (substitute* "src/Extempore.cpp"
-               (("runtimedir \\+= \"runtime\"")
-                (string-append "runtimedir = \""
-                               (assoc-ref outputs "out")
-                               "/lib/extempore/runtime\"")))
              (substitute* "extras/extempore.el"
                (("\\(runtime-directory \\(concat default-directory \"runtime\"\\)\\)")
                 (string-append "(runtime-directory \""
                                (assoc-ref outputs "out")
-                               "/lib/extempore/runtime"
+                               "/share/extempore/runtime"
                                "\")")))
              #t))
          (add-after 'unpack 'link-with-additional-libs
            (lambda _
              ;; The executable must be linked with libffi and zlib.
              (substitute* "CMakeLists.txt"
-               (("add_dependencies\\(aot_extended extended_deps\\)") "")
                (("target_link_libraries\\(extempore PRIVATE dl" line)
                 (string-append line " ffi z")))
-             #t))
-         ;; FIXME: AOT compilation of the nanovg bindings fail with the error:
-         ;; "Compiler Error  could not bind _nvgLinearGradient"
-         (add-after 'unpack 'disable-nanovg
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("aotcompile_lib\\(libs/external/nanovg.xtm.*") ""))
              #t))
          ;; FIXME: All examples that are used as tests segfault for some
          ;; unknown reason.
@@ -710,20 +721,16 @@ MusePack, Monkey's Audio, and WavPack files.")
                 ("gl/glcompat-directbind" "libGL.so" "mesa")))
              #t))
          (add-after 'unpack 'use-own-llvm
-          (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "EXT_LLVM_DIR" (assoc-ref inputs "llvm"))
-            ;; Our LLVM builds shared libraries, so Extempore should use
-            ;; those.
-            (substitute* "CMakeLists.txt"
-              (("CMAKE_STATIC_LIBRARY") "CMAKE_SHARED_LIBRARY"))
-            #t))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "EXT_LLVM_DIR" (assoc-ref inputs "llvm"))
+             ;; Our LLVM builds shared libraries, so Extempore should use
+             ;; those.
+             (substitute* "CMakeLists.txt"
+               (("CMAKE_STATIC_LIBRARY") "CMAKE_SHARED_LIBRARY"))
+             #t))
          (add-after 'unpack 'fix-aot-compilation
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* "CMakeLists.txt"
-               ;; EXT_SHARE_DIR does not exist before installation, so the
-               ;; working directory should be the source directory instead.
-               (("WORKING_DIRECTORY \\$\\{EXT_SHARE_DIR\\}")
-                "WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}")
                ;; Extempore needs to be told where the runtime is to be found.
                ;; While we're at it we disable automatic tuning for a specific
                ;; CPU to make binary substitution possible.
@@ -1153,6 +1160,28 @@ complete studio.")
     (description
      "This package provides a multi-channel MIDI step sequencer LV2 plugin
 with a selectable pattern matrix size.")
+    (license license:gpl3+)))
+
+(define-public bchoppr
+  (package
+    (inherit bsequencer)
+    (name "bchoppr")
+    (version "1.4.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sjaehn/BChoppr.git")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "1ympx0kyn3mkb23xgd44rlrf4qnngnlkmikz9syhayklgax7ijgm"))))
+    (synopsis "Audio stream-chopping LV2 plugin")
+    (description "B.Choppr cuts the audio input stream into a repeated
+sequence of up to 16 chops.  Each chop can be leveled up or down (gating).
+B.Choppr is the successor of B.Slizr.")
+    (home-page "https://github.com/sjaehn/BChoppr")
     (license license:gpl3+)))
 
 (define-public solfege
@@ -1979,24 +2008,27 @@ using a system-independent interface.")
     (license license:expat)))
 
 (define-public portmidi-for-extempore
-  (package (inherit portmidi)
-    (name "portmidi-for-extempore")
-    (version "217")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/extemporelang/portmidi.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1inriyrjf7xx2b7r54x0vmf9ngyqgr7g5060c22bwkbsgg53apzv"))))
-    (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; no tests
-    (native-inputs '())
-    ;; Extempore refuses to build on architectures other than x86_64
-    (supported-systems '("x86_64-linux"))
-    (home-page "https://github.com/extemporelang/portmidi/")))
+  (let ((version "217")
+        (revision "0")
+        (commit "8602f548f71daf5ef638b2f7d224753400cb2158"))
+    (package (inherit portmidi)
+      (name "portmidi-for-extempore")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/extemporelang/portmidi.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1qidzl1s3kzhczzm96rcd2ppn27a97k2axgfh1zhvyf0s52d7m4w"))))
+      (build-system cmake-build-system)
+      (arguments `(#:tests? #f))        ; no tests
+      (native-inputs '())
+      ;; Extempore refuses to build on architectures other than x86_64
+      (supported-systems '("x86_64-linux"))
+      (home-page "https://github.com/extemporelang/portmidi/"))))
 
 (define-public python-pyportmidi
   (package
@@ -2035,7 +2067,7 @@ using a system-independent interface.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "3.1.1")
+    (version "3.1.2")
     (source
      (origin
        (method url-fetch)
@@ -2043,7 +2075,7 @@ using a system-independent interface.")
              "https://github.com/wbsoft/frescobaldi/releases/download/v"
              version "/frescobaldi-" version ".tar.gz"))
        (sha256
-        (base32 "0kfwvgygx2ds01w8g7vzykfrajglmr2brchk9d67ahzijpgvfkj5"))))
+        (base32 "084vxzvxnxl5rrhllincnh6krsyi03c8p0452ppzmn9c52wgyb2w"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
@@ -2056,7 +2088,7 @@ using a system-independent interface.")
        ("python-pyportmidi" ,python-pyportmidi)
        ("python-pyqt" ,python-pyqt)
        ("python-sip" ,python-sip)))
-    (home-page "http://www.frescobaldi.org/")
+    (home-page "https://www.frescobaldi.org/")
     (synopsis "LilyPond sheet music text editor")
     (description
      "Frescobaldi is a LilyPond sheet music text editor with syntax
@@ -2274,7 +2306,7 @@ improves on support for JACK features, such as JACK MIDI.")
                 "1zs5yy124bymfyapsnljr6rv2lnn5inwchm0xnwiw44b2d39l8hn"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libuuid" ,util-linux)
+     `(("libuuid" ,util-linux "lib")
        ("libsndfile" ,libsndfile)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

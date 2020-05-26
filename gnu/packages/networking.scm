@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 Benz Schenk <benz.schenk@uzh.ch>
 ;;; Copyright © 2016, 2017 Pjotr Prins <pjotr.guix@thebird.nl>
@@ -33,7 +33,7 @@
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
+;;; Copyright © 2019, 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2019 Daniel Schaefer <git@danielschaefer.me>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -72,6 +72,7 @@
   #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autogen)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -113,6 +114,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
@@ -127,46 +129,110 @@
 (define-public blueman
   (package
     (name "blueman")
-    (version "2.1.2")
+    (version "2.1.3")
     (source
      (origin
        (method url-fetch)
-       (uri
-        (string-append "https://github.com/blueman-project/blueman/releases/"
-                       "download/2.1.2/blueman-2.1.2.tar.gz"))
+       (uri (string-append "https://github.com/blueman-project/blueman/releases"
+                           "/download/" version "/blueman-" version ".tar.xz"))
        (sha256
-        (base32 "0wamxdw36c8i3aqwmja5q70fajqwd7inpkvlpkldd54wdxbcd38d"))))
+        (base32 "1pngqbwapbvywhkmflapqvs0wa0af7d1a87wy56l5hg2r462xl1v"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:configure-flags
-       (list
-        "--enable-polkit"
-        "--disable-appindicator"         ; Deprecated
-        "--with-systemdsystemunitdir=no" ; Not required
-        "--with-systemduserunitdir=no")))  ; Not required
+     `(#:configure-flags (list "--enable-polkit"
+                               "--disable-appindicator" ; Not available
+                               "--without-systemdsystemunitdir" ; Not required
+                               "--without-systemduserunitdir")  ; Not required
+       #:phases
+       (modify-phases %standard-phases
+         ;; Python references are not being patched in patch-phase of build,
+         ;; despite using python-wrapper as input. So we patch them manually.
+         (add-after 'unpack 'patch-python-references
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "apps"
+               (substitute* '("blueman-adapters.in" "blueman-applet.in"
+                              "blueman-assistant.in" "blueman-manager.in"
+                              "blueman-mechanism.in" "blueman-report.in"
+                              "blueman-rfcomm-watcher.in" "blueman-sendto.in"
+                              "blueman-services.in" "blueman-tray.in")
+                 (("@PYTHON@") (string-append (assoc-ref inputs "python")
+                                              "/bin/python"
+                                              ,(version-major+minor
+                                                (package-version python))))))
+             #t))
+         ;; Fix loading of external programs.
+         (add-after 'unpack 'patch-external-programs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("apps/blueman-report.in" "blueman/main/NetConf.py"
+                            "blueman/main/PPPConnection.py")
+               (("/usr/sbin/bluetoothd")
+                (string-append (assoc-ref inputs "bluez")
+                               "/libexec/bluetooth/bluetoothd"))
+               (("/sbin/iptables")
+                (string-append (assoc-ref inputs "iptables")
+                               "/sbin/iptables"))
+               (("/usr/sbin/pppd")
+                (string-append (assoc-ref inputs "ppp")
+                               "/sbin/pppd")))
+             #t))
+         ;; Fix loading of pulseaudio libraries.
+         (add-after 'unpack 'patch-pulseaudio-libraries
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((pulseaudio (assoc-ref inputs "pulseaudio"))
+                    (pulse (string-append pulseaudio "/lib/libpulse.so.0"))
+                    (pulse-glib (string-append pulseaudio
+                                               "/lib/libpulse-mainloop-glib.so.0")))
+               (with-directory-excursion "blueman/main"
+                 (substitute* "PulseAudioUtils.py"
+                   (("libpulse.so.0") pulse)
+                   (("libpulse-mainloop-glib.so.0") pulse-glib)))
+               #t)))
+         ;; Fix running of blueman programs.
+         (add-after 'glib-or-gtk-wrap 'wrap-blueman-progs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/blueman-"))
+                    (libexec (string-append out "/libexec/blueman-"))
+                    (lib (string-append out "/lib/python"
+                                        ,(version-major+minor
+                                          (package-version python))
+                                        "/site-packages")))
+               (for-each
+                (lambda (program)
+                  (wrap-program program
+                    `("PYTHONPATH" = (,(getenv "PYTHONPATH") ,lib))
+                    `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH")))))
+                (append
+                 (map (lambda (prog) (string-append bin prog))
+                      '("adapters" "applet" "assistant" "manager" "report"
+                        "sendto" "services" "tray"))
+                 (map (lambda (prog) (string-append libexec prog))
+                      '("mechanism" "rfcomm-watcher"))))
+               #t))))))
     (native-inputs
      `(("cython" ,python-cython)
        ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk+:bin" ,gtk+ "bin")
        ("intltool" ,intltool)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme)
-       ("bluez" ,bluez)
+     `(("bluez" ,bluez)
        ("dbus" ,dbus)
-       ("gdkpixbuf" ,gdk-pixbuf)
+       ("gdkpixbuf" ,gdk-pixbuf+svg)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("iproute2" ,iproute)
+       ("iptables" ,iptables)
        ("net-tools" ,net-tools)
        ("pango" ,pango)
        ("polkit" ,polkit)
+       ("ppp" ,ppp)
        ("pulseaudio" ,pulseaudio)
        ("pycairo" ,python-pycairo)
        ("pygobject" ,python-pygobject)
        ("python" ,python-wrapper)
-       ("libnm" ,libnma)))
+       ("libnm" ,network-manager)))
     (synopsis "GTK+ Bluetooth manager")
     (description "Blueman is a Bluetooth management utility using the Bluez
 D-Bus backend.  It is designed to be easy to use for most common Bluetooth
@@ -425,6 +491,41 @@ between different versions of ØMQ.")
      "This package provides header-only C++ bindings for ØMQ.  The header
 files contain direct mappings of the abstractions provided by the ØMQ C API.")
     (license license:expat)))
+
+(define-public libnatpmp
+  (package
+    (name "libnatpmp")
+    (version "20150609")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://miniupnp.free.fr/files/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1c1n8n7mp0amsd6vkz32n8zj3vnsckv308bb7na0dg0r8969rap1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)) ; no tests
+       #:make-flags
+       (let* ((target ,(%current-target-system))
+              (gcc (if target
+                       (string-append target "-gcc")
+                       "gcc")))
+         (list
+          (string-append "CC=" gcc)
+          (string-append "INSTALLPREFIX=" (assoc-ref %outputs "out"))
+          (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")))))
+    (home-page "http://miniupnp.free.fr/libnatpmp.html")
+    (synopsis "C library implementing NAT-PMP")
+    (description
+     "@code{libnatpmp} is a portable and asynchronous implementation of
+the Network Address Translation - Port Mapping Protocol (NAT-PMP)
+written in the C programming language.")
+    (license license:bsd-3)))
 
 (define-public librdkafka
   (package
@@ -1031,12 +1132,6 @@ live network and disk I/O bandwidth monitor.")
                         (("/bin/sh")
                          (which "sh")))
                       #t))
-                  (replace 'bootstrap
-                    (lambda _
-                      ;; Patch shebangs in generated files before running
-                      ;; ./configure.
-                      (setenv "NOCONFIGURE" "please")
-                      (invoke "bash" "./autogen.sh")))
                   (add-after 'build 'absolutize-tools
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((ethtool (string-append (assoc-ref inputs "ethtool")
@@ -2231,12 +2326,6 @@ remotely.")
                (base32
                 "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
     (build-system gnu-build-system)
-    (arguments
-     `(;; Ensure the kernel headers are treated as system headers to suppress
-       ;; harmless -Werror=pedantic warnings.
-       #:make-flags (list (string-append "C_INCLUDE_PATH="
-                                         (assoc-ref %build-inputs "kernel-headers")
-                                         "/include"))))
     (inputs `(("zeromq" ,zeromq)
               ("czmq" ,czmq)
               ("libsodium" ,libsodium)))
@@ -2501,15 +2590,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'set-environment
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "C_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "curl") "/include:"
-                                    (assoc-ref inputs "libpcap") "/include:"
-                                    (assoc-ref inputs "openssl") "/include:"
-                                    (assoc-ref inputs "zlib") "/include"))
-             #t)))))
+         (delete 'configure))))
     (home-page "https://github.com/ZerBea/hcxtools")
     (synopsis "Capture wlan traffic to hashcat and John the Ripper")
     (description
@@ -2633,7 +2714,7 @@ communication over HTTP.")
 (define-public restinio
   (package
     (name "restinio")
-    (version "0.6.0.1")
+    (version "0.6.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2642,7 +2723,7 @@ communication over HTTP.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c25kpx652nng8m1sqf5an2c3c4g3k6zj85mkkaxzk88iwfzq1s8"))))
+                "141a96hx8zhcdv121g6cs91n46kb47y040v25pnvz5f54964z7f5"))))
     (build-system cmake-build-system)
     (inputs                             ; TODO: Need to force-keep references on some inputs, e.g. boost.
      `(("zlib" ,zlib)
@@ -2675,7 +2756,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "2.0.0beta2")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2684,7 +2765,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02ix0rvvyhq22gd5djcq84qz08ji7ln93faf23b27zjzni2klzv5"))))
+                "1q1fwk8wwk9r6bp0indpr60ql668lsk16ykslacyhrh7kg97kvhr"))))
     ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
     (build-system cmake-build-system)
     (inputs

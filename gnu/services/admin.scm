@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,8 +72,11 @@
   (list (log-rotation                             ;syslog files
          (files %rotated-files)
 
+         (options '(;; Run post-rotate once per rotation
+                    "sharedscripts"
+                    ;; Append .gz to rotated files
+                    "storefile @FILENAME.@COMP_EXT"))
          ;; Restart syslogd after rotation.
-         (options '("sharedscripts"))
          (post-rotate #~(let ((pid (call-with-input-file "/var/run/syslog.pid"
                                      read)))
                           (kill pid SIGHUP))))

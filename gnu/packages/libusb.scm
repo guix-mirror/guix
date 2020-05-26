@@ -8,6 +8,8 @@
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Christopher Howard <christopher@librehacker.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,7 +115,8 @@ version of libusb to run with newer libusb.")
       (sha256
        (base32
         "0i4bacxkyr7xyqxbmb00ypkrv4swkgm0mghbzjsnw6blvvczgxip"))
-      (patches (search-patches "libusb-0.1-disable-tests.patch"))))))
+      (patches (search-patches "libusb-0.1-disable-tests.patch"))))
+    (arguments `(#:configure-flags (list "CFLAGS=-Wno-error")))))
 
 (define-public libusb4java
   ;; There is no public release so we take the latest version from git.
@@ -358,14 +361,7 @@ I2C and SPI devices attached to the USB Hub.")
         (base32 "02vraf4j46bp746s0gz7vga2gv2dy3zd1v1bsy9x8algg9fpcb7n"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'configure-later
-           ;; Don't run ./configure during bootstrap.
-           (lambda _
-             (setenv "NOCONFIGURE" "set")
-             #t)))
-       ;; Tests fail randomly when run in parallel because several of them write
+     `(;; Tests fail randomly when run in parallel because several of them write
        ;; and read to/from the same file--e.g., "4.plist" is accessed by
        ;; 'large.test' and 'largecmp.test'.
        #:parallel-tests? #f))
@@ -405,6 +401,25 @@ connections from and to iOS devices by connecting to a socket provided by a
 @code{usbmuxd} daemon.")
     (license license:lgpl2.1+)))
 
+;; These patches are needed to build with Python 3.8.
+(define %libimobiledevice-patches
+  (list (origin
+          (method url-fetch)
+          (uri (string-append "https://github.com/libimobiledevice/libimobiledevice"
+                              "/commit/1ff3448d2e27f1bac8d2f0af8b8e952854860278.patch"))
+          (file-name "libimobiledevice-python-config.patch")
+          (sha256
+           (base32
+            "1mkwhp8vvhajij29jk3w4rkgcfh8d8waf908drh3076k70hb6i8y")))
+        (origin
+          (method url-fetch)
+          (uri (string-append "https://github.com/libimobiledevice/libimobiledevice"
+                              "/commit/eea4f1be9107c8ab621fd71460e47d0d38e55d71.patch"))
+          (file-name "libimobiledevice-python-3.8-compat.patch")
+          (sha256
+           (base32
+            "1zz8v7kgwyq5ck1qp03l29pcmljygnjwls9d6q28nv5pkwa6848w")))))
+
 (define-public libimobiledevice
   (package
     (name "libimobiledevice")
@@ -413,17 +428,19 @@ connections from and to iOS devices by connecting to a socket provided by a
               (method url-fetch)
               (uri (string-append "https://www.libimobiledevice.org/downloads/"
                                   "libimobiledevice-" version ".tar.bz2"))
+              ;; Note: Remove the 'force-bootstrap' phase and the autoconf
+              ;; inputs below when removing these patches.
+              (patches %libimobiledevice-patches)
               (sha256
                (base32
                 "0dqhy4qwj30mw8pwckvjmgnj1qqrh6p8c6jknmhvylshhzh0ssvq"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list (string-append "PYTHON_LDFLAGS=-L"
-                            (assoc-ref %build-inputs "python")
-                            "/lib -lpython"
-                            ,(version-major+minor (package-version python))
-                            "m"))))
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'bootstrap 'force-bootstrap
+                    (lambda _
+                      (delete-file "configure")
+                      #t)))))
     (propagated-inputs
      `(("openssl" ,openssl-1.0)
        ("libplist" ,libplist)
@@ -433,6 +450,10 @@ connections from and to iOS devices by connecting to a socket provided by a
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
+
+       ;; These are required because we patch and bootstrap the build system.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
        ("libtool" ,libtool)))
     (home-page "https://www.libimobiledevice.org/")
     (synopsis "Protocol library and tools to communicate with Apple devices")

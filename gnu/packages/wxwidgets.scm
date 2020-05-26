@@ -53,7 +53,7 @@
 (define-public wxwidgets
   (package
     (name "wxwidgets")
-    (version "3.0.4")
+    (version "3.0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -61,14 +61,14 @@
                            "releases/download/v" version
                            "/wxWidgets-" version ".tar.bz2"))
        (sha256
-        (base32 "1w7pgfqjab7n84lc4aarydl3g55d1hdgl2ilwml766r6inc7y5cn"))))
+        (base32 "01y89999jw5q7njrhxajincx7lydls6yq37ikazjryssrxrnw3s4"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("glu" ,glu)
        ;; XXX gstreamer-0.10 builds fail
        ;; ("gstreamer" ,gstreamer-0.10)
        ("gtk" ,gtk+)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmspack" ,libmspack)
        ("libsm" ,libsm)
        ("libtiff" ,libtiff)
@@ -124,7 +124,7 @@ and many other languages.")
         (base32 "1gjs9vfga60mk4j4ngiwsk9h6c7j22pw26m3asxr1jwvqbr8kkqk"))))
     (inputs
      `(("gtk" ,gtk+-2)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("libmspack" ,libmspack)
        ("sdl" ,sdl)

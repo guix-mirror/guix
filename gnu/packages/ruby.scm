@@ -5,8 +5,8 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
+;;; Copyright © 2019 Brett Gilio <brettg@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,7 +78,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.5.3")
+    (version "2.6.5")
     (source
      (origin
        (method url-fetch)
@@ -86,7 +87,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0vrhrw7kcz9mg0jkqnihkcxqy5k05v8k1j0y2735z8wfk8sx1j8w"))
+         "0qhsw2mr04f3lqinkh557msr35pb5rdaqy4vdxcj91flgxqxmmnm"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -95,6 +96,7 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
+       #:configure-flags '("--enable-shared") ; dynamic linking
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'replace-bin-sh-and-remove-libffi
@@ -116,8 +118,9 @@
      `(("readline" ,readline)
        ("openssl" ,openssl)
        ("libffi" ,libffi)
-       ("gdbm" ,gdbm)
-       ("zlib" ,zlib)))
+       ("gdbm" ,gdbm)))
+    (propagated-inputs
+     `(("zlib" ,zlib)))
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
@@ -128,10 +131,53 @@ a focus on simplicity and productivity.")
     (home-page "https://www.ruby-lang.org")
     (license license:ruby)))
 
-(define-public ruby-2.4
+(define-public ruby-2.7
   (package
     (inherit ruby)
-    (version "2.4.3")
+    (version "2.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0674x98f542y02r7n2yv2qhmh97blqhi2mvh2dn5f000vlxlh66l"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively "ext/fiddle/libffi-3.2.1")
+                   #t))))
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags '("--enable-shared") ; dynamic linking
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh-and-remove-libffi
+           (lambda _
+             (substitute* '("configure.ac"
+                            "template/Makefile.in"
+                            "lib/rubygems/installer.rb"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c"
+                            "test/rubygems/test_gem_ext_configure_builder.rb"
+                            "test/rdoc/test_rdoc_parser.rb"
+                            "test/ruby/test_rubyoptions.rb"
+                            "test/ruby/test_process.rb"
+                            "test/ruby/test_system.rb"
+                            "tool/rbinstall.rb")
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)))))
+
+(define-public ruby-2.5
+  (package
+    (inherit ruby)
+    (version "2.5.8")
     (source
      (origin
        (method url-fetch)
@@ -140,18 +186,17 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0l9bv67dgsphk42lmiskhrnh47hbyj6rfg2rcjx22xivpx07srr3"))
-       (patches (search-patches "ruby-rubygems-276-for-ruby24.patch"))
+         "0vad5ah1lrdhxsyqr5iqc8c7r7qczpmm76cz8rsf4crimpzv5483"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
 
-(define-public ruby-2.3
+(define-public ruby-2.4
   (package
     (inherit ruby)
-    (version "2.3.8")
+    (version "2.4.10")
     (source
      (origin
        (method url-fetch)
@@ -160,7 +205,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1zhxbjff08pvbnxvn58krns6q0p6g4977q6ykfn823gxhifn63wi"))
+         "1prhqlgik1zmw9lakl6hkriqslspw48pvhxff17h7ns42p8qwrnm"))
        (modules '((guix build utils)))
        (snippet `(begin
                    ;; Remove bundled libffi
@@ -297,14 +342,32 @@ a menu system for providing multiple options to the user.")
 (define-public ruby-hoe
   (package
     (name "ruby-hoe")
-    (version "3.16.2")
+    (version "3.21.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "hoe" version))
               (sha256
                (base32
-                "12q6dn2irsfamdbjpqvs0dwl4i1vl7wflxrcg972h9jw0ds38f3a"))))
+                "0qid0n56mgsjvq5ksxajv0gb92akky8imwgvw22ajms5g4fd6nf4"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; One of the tests fails if the SOURCE_DATE_EPOCH environment
+         ;; variable is set, so unset it for the duration of the tests.
+         ;;
+         ;; TestHoe#test_possibly_better
+         ;; [/tmp/guix-build-ruby-hoe-3.20.0.drv-0/gem/test/test_hoe.rb:250]:
+         ;; Expected: 2019-11-12 00:00:00 UTC
+         ;; Actual: 1970-01-01 00:00:00 UTC
+         (add-before 'check 'unset-SOURCE-DATE-EPOCH
+           (lambda _
+             (unsetenv "SOURCE_DATE_EPOCH")
+             #t))
+         (add-after 'check 'set-SOURCE-DATE-EPOCH-again
+           (lambda _
+             (setenv "SOURCE_DATE_EPOCH" "1")
+             #t)))))
     (synopsis "Ruby project management helper")
     (description
      "Hoe is a rake/rubygems helper for project Rakefiles.  It helps manage,
@@ -1950,6 +2013,40 @@ two hashes.")
     (home-page "https://github.com/liufengyun/hashdiff")
     (license license:expat)))
 
+(define-public ruby-hydra
+  ;; No releases yet.
+  (let ((commit "5abfa378743756ae4d9306cc134bcc482f5c9525")
+        (revision "0"))
+    (package
+      (name "ruby-hydra")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://github.com/hyphenation/hydra")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1cik398l2765y3d9sdhjzki3303hkry58ac6jlkiy7iy62nm529f"))))
+      (build-system ruby-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'make-files-writable
+                      (lambda _
+                        (for-each make-file-writable (find-files "."))
+                        #t))
+                    (replace 'check
+                      (lambda _
+                        (invoke "rspec"))))))
+      (native-inputs
+       `(("ruby-rspec" ,ruby-rspec)))
+      (propagated-inputs
+       `(("ruby-byebug" ,ruby-byebug)))
+      (synopsis "Ruby hyphenation patterns")
+      (description
+       "ruby-hydra is a Ruby library for working with hyphenation patterns.")
+      (license license:expat))))
+
 (define-public ruby-shindo
   (package
     (name "ruby-shindo")
@@ -2237,14 +2334,16 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
 (define-public ruby-power-assert
   (package
     (name "ruby-power-assert")
-    (version "0.2.7")
+    (version "1.1.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "power_assert" version))
               (sha256
                (base32
-                "0ka6w71lcan4wgf111xi3pcn9ma9lhakv31jg8w007nwzi0xfjbi"))))
+                "1dii0wkfa0jm8sk9b20zl1z4980dmrjh0zqnii058485pp3ws10s"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f))                    ; No included tests
     (native-inputs
      `(("bundler" ,bundler)))
     (synopsis "Assert library with descriptive assertion messages")
@@ -4051,6 +4150,16 @@ utilities for Ruby.")
         (base32
          "09dpbrih054mn42flbbcdpzk2727mzfvjrgqb12zdafhx7p9rrzp"))))
     (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-safe-tests
+           (lambda _
+             (substitute* "test/test_utils.rb"
+               (("def safe_test\\(options = \\{\\}\\)")
+                 "def safe_test(options = {})
+      skip('The Guix build environment has an unsafe load path')"))
+             #t)))))
     (propagated-inputs
      `(("ruby-thread-safe" ,ruby-thread-safe)))
     (synopsis "Time zone library for Ruby")
@@ -4441,13 +4550,13 @@ a native C extension.")
 (define-public ruby-json-pure
   (package
     (name "ruby-json-pure")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "json_pure" version))
               (sha256
                (base32
-                "12yf9fmhr4c2jm3xl20vf1qyz5i63vc8a6ngz9j0f86nqwhmi2as"))))
+                "0m0j1mfwv0mvw72kzqisb26xjl236ivqypw1741dkis7s63b8439"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -4481,7 +4590,7 @@ a native C extension.")
     (synopsis "JSON implementation in pure Ruby")
     (description
      "This package provides a JSON implementation written in pure Ruby.")
-    (home-page "https://flori.github.com/json")
+    (home-page "https://flori.github.com/json/")
     (license license:ruby)))
 
 (define-public ruby-jwt
@@ -4547,7 +4656,7 @@ a native C extension.")
 (define-public ruby-listen
   (package
     (name "ruby-listen")
-    (version "3.1.5")
+    (version "3.2.0")
     (source
      (origin
        ;; The gem does not include a Rakefile, so fetch from the Git
@@ -4559,7 +4668,7 @@ a native C extension.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1hqmkfa9f2xb5jlvqbafdxjd5ax75jm8gqj5nh3k22xq0kacsvgg"))))
+         "1hkp1g6hk5clsmbd001gkc12ma6s459x820piajyasv61m87if24"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"
@@ -5411,14 +5520,14 @@ It is intended be used by all Cucumber implementations to parse
 (define-public ruby-aruba
   (package
     (name "ruby-aruba")
-    (version "0.14.8")
+    (version "0.14.14")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "aruba" version))
        (sha256
         (base32
-         "0zdd81l1lp0x78sxa6kkfqclpj5il3xl70nz05wqv2sfzzhqydxh"))))
+         "0l2mfpdxc03gdrbwc2hv4vdhjhqhfcdp6d02j05j64ncpi9srlqn"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
@@ -5450,11 +5559,7 @@ It is intended be used by all Cucumber implementations to parse
                ((".*cucumber.*") "\n")
                ((".*license_finder.*") "\n")
                ((".*rake.*") "gem 'rake'\n")
-               ((".*simplecov.*") "\n")
                ((".*relish.*") "\n"))
-             (substitute* "spec/spec_helper.rb"
-               ((".*simplecov.*") "")
-               (("^SimpleCov.*") ""))
              (substitute* "aruba.gemspec"
                (("spec\\.add\\_runtime\\_dependency 'cucumber'.*")
                 "spec.add_runtime_dependency 'cucumber'"))
@@ -5464,7 +5569,8 @@ It is intended be used by all Cucumber implementations to parse
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rspec" ,ruby-rspec)
-       ("ruby-fuubar" ,ruby-fuubar)))
+       ("ruby-fuubar" ,ruby-fuubar)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (propagated-inputs
      `(("ruby-childprocess" ,ruby-childprocess)
        ("ruby-contracts" ,ruby-contracts)
@@ -5756,7 +5862,7 @@ A modified copy of yajl is used, and included in the package.")
 (define-public ruby-yard
   (package
     (name "ruby-yard")
-    (version "0.9.16")
+    (version "0.9.20")
     (source
      (origin
        (method git-fetch)
@@ -5767,20 +5873,24 @@ A modified copy of yajl is used, and included in the package.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0a4r1pfs0ms4vlccsf1x2jckx35lqm8b8lh6rdjxqfr5fia5izpf"))))
+         "1v48zz8hzazrg79jksj9siys21d2axvzijvkxw2j42zh86syi1wi"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
+             ;; Delete the Gemfile to avoid errors relating to it
+             (delete-file "Gemfile")
              ;; $HOME needs to be set to somewhere writeable for tests to run
              (setenv "HOME" "/tmp")
              ;; Run tests without using 'rake' to avoid dependencies.
              (invoke "rspec"))))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec)
-       ("ruby-rack" ,ruby-rack)))
+       ("ruby-rack" ,ruby-rack)
+       ("ruby-redcloth" ,ruby-redcloth)
+       ("ruby-asciidoc" ,ruby-asciidoctor)))
     (synopsis "Documentation generation tool for Ruby")
     (description
      "YARD is a documentation generation tool for the Ruby programming
@@ -6094,13 +6204,6 @@ neither too verbose nor too minimal.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'adjust-failing-test
-           (lambda _
-             ;; XXX: This test fails with SQLite versions >= 3.21.
-             ;; See <https://github.com/sparklemotion/sqlite3-ruby/issues/226>.
-             (substitute* "test/test_integration_resultset.rb"
-               (("\"integer\", \"text\"") "\"INTEGER\", \"text\""))
-             #t))
          (add-before 'check 'add-gemtest-file
            ;; This file exists in the repository but is not distributed.
            (lambda _ (invoke "touch" ".gemtest"))))))
@@ -7433,17 +7536,17 @@ in standard Ruby syntax.")
     (home-page "https://github.com/ruby/rake")
     (license license:expat)))
 
-(define-public ruby-childprocess-0.6
+(define-public ruby-childprocess
   (package
     (name "ruby-childprocess")
-    (version "0.6.3")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "childprocess" version))
        (sha256
         (base32
-         "1p3f43scdzx9zxmy2kw5zsc3az6v46nq4brwcxmnscjy4w4racbv"))))
+         "1ic028k8xgm2dds9mqnvwwx3ibaz32j8455zxr9f4bcnviyahya5"))))
     (build-system ruby-build-system)
     (arguments
      `(#:tests? #f))
@@ -7455,21 +7558,8 @@ in standard Ruby syntax.")
     (synopsis "Control external programs running in the background, in Ruby")
     (description "@code{childprocess} provides a gem to control external
 programs running in the background, in Ruby.")
-    (home-page "http://github.com/enkessler/childprocess")
+    (home-page "https://github.com/enkessler/childprocess")
     (license license:expat)))
-
-(define-public ruby-childprocess
-  (package
-    (inherit ruby-childprocess-0.6)
-    (name "ruby-childprocess")
-    (version "0.9.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (rubygems-uri "childprocess" version))
-       (sha256
-        (base32
-         "0a61922kmvcxyj5l70fycapr87gz1dzzlkfpq85rfqk5vdh3d28p"))))))
 
 (define-public ruby-public-suffix
   (package

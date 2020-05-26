@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -46,7 +46,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.28.0")
+   (version "3.31.1")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -58,13 +58,14 @@
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2019/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2020/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "1hxpi45crbqp6lacl7z611lna02k956m9bsy2bjzrbb2y23546yn"))))
+              "1bj936svd8i5g25xd1bj52hj4zca01fgl3sqkj86z9q5pkz4wa32"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
+   (outputs '("out" "static"))
    (arguments
     `(#:configure-flags
       ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_FTS3,
@@ -74,7 +75,25 @@
       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
                            "-DSQLITE_ENABLE_FTS3 "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                           "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
+                           "-DSQLITE_ENABLE_DBSTAT_VTAB "
+                           ;; Column metadata is required by GNU Jami and Qt, et.al.
+                           "-DSQLITE_ENABLE_COLUMN_METADATA"))
+      #:phases (modify-phases %standard-phases
+                 (add-after 'install 'move-static-library
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out    (assoc-ref outputs "out"))
+                            (static (assoc-ref outputs "static"))
+                            (source (string-append out "/lib/libsqlite3.a")))
+                       (mkdir-p (string-append static "/lib"))
+                       (link source (string-append static "/lib/libsqlite3.a"))
+                       (delete-file source)
+
+                       ;; Remove reference to the static library from the .la file
+                       ;; so that Libtool looks for it in the usual places.
+                       (substitute* (string-append out "/lib/libsqlite3.la")
+                         (("^old_library=.*")
+                          "old_library=''\n"))
+                       #t))))))
    (home-page "https://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
@@ -84,14 +103,7 @@ widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
 
-;; This is used by Qt.
+;; Column metadata support was added to the regular 'sqlite' package with
+;; commit fad5b1a6d8d9c36bea5785ae4fbc1beb37e644d7.
 (define-public sqlite-with-column-metadata
-  (package/inherit sqlite
-    (name "sqlite-with-column-metadata")
-    (arguments
-     (substitute-keyword-arguments (package-arguments sqlite)
-       ((#:configure-flags flags)
-        `(list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
-                              "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
-                              "-DSQLITE_ENABLE_DBSTAT_VTAB "
-                              "-DSQLITE_ENABLE_COLUMN_METADATA")))))))
+  (deprecated-package "sqlite-with-column-metadata" sqlite))

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -65,3 +65,8 @@ guix show python@3 | grep "^name: python"
 
 # "python@2" exists but is deprecated; make sure it doesn't show up.
 if guix show python@2; then false; else true; fi
+
+# Specifying multiple packages.
+output="`guix show sed grep | grep ^name:`"
+test "$output" = "name: sed
+name: grep"

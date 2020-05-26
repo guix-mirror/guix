@@ -29,14 +29,14 @@
 (define-public magic-wormhole-mailbox-server
   (package
     (name "magic-wormhole-mailbox-server")
-    (version "0.3.1")
+    (version "0.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "magic-wormhole-mailbox-server" version))
         (sha256
          (base32
-          "1q6zhbx8fcpk7rchclm7yqcxdsc1x97hki2ji61sa544r5xvxv55"))))
+          "1yw8i8jv5iv1kkz1aqimskw7fpichjn6ww0fq0czbalwj290bw8s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -68,14 +68,14 @@ connection, or through a transit-relay.")
 (define-public magic-wormhole-transit-relay
   (package
     (name "magic-wormhole-transit-relay")
-    (version "0.1.2")
+    (version "0.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "magic-wormhole-transit-relay" version))
         (sha256
          (base32
-          "11w5gdc6am2ph5rns60x0694sx4zrlzxj540jljhn5cmnbx1ngxi"))))
+          "0ppsx2s1ysikns1h053x67z2zmficbn3y3kf52bzzslhd2s02j6b"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -107,14 +107,14 @@ together, allowing them to pretend they have a direct connection.")
 (define-public magic-wormhole
   (package
     (name "magic-wormhole")
-    (version "0.11.2")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "magic-wormhole" version))
         (sha256
          (base32
-          "01fr4bi6kc6fz9n3c4qq892inrc3nf6p2djy65yvm7xkvdxncydf"))))
+          "0q41j99718y7m95zg1vaybnsp31lp6lhyqkbv4yqz5ys6jixh3qv"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

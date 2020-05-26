@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Arm Ltd <David.Truby@arm.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,8 @@ as \"x86_64-linux\"."
              ("powerpc"     => "PowerPC")
              ("riscv"       => "RISCV")
              ("x86_64"      => "X86")
-             ("i686"        => "X86"))))
+             ("i686"        => "X86")
+             ("i586"        => "X86"))))
 
 (define (llvm-download-uri component version)
   (if (version>=? version "9.0.1")
@@ -96,6 +98,7 @@ as \"x86_64-linux\"."
        (base32
         "1pwgm6cr0xr5a0hrbqs1zvsvvjvy0yq1y47c96804wcs795s90yz"))))
     (build-system cmake-build-system)
+    (outputs '("out" "opt-viewer"))
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
        ("perl"   ,perl)))
@@ -113,16 +116,27 @@ as \"x86_64-linux\"."
 
        ;; Don't use '-g' during the build, to save space.
        #:build-type "Release"
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'shared-lib-workaround
-                    ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
-                    ;; doesn't seem to get the correct rpath to be able to run
-                    ;; from the build directory.  Set LD_LIBRARY_PATH as a
-                    ;; workaround.
-                    (lambda _
-                      (setenv "LD_LIBRARY_PATH"
-                              (string-append (getcwd) "/lib"))
-                      #t)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'shared-lib-workaround
+           ;; Even with CMAKE_SKIP_BUILD_RPATH=FALSE, llvm-tblgen
+           ;; doesn't seem to get the correct rpath to be able to run
+           ;; from the build directory.  Set LD_LIBRARY_PATH as a
+           ;; workaround.
+           (lambda _
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (getcwd) "/lib"))
+             #t))
+         (add-after 'install 'install-opt-viewer
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (opt-viewer-out (assoc-ref outputs "opt-viewer"))
+                    (opt-viewer-share-dir (string-append opt-viewer-out "/share"))
+                    (opt-viewer-dir (string-append opt-viewer-share-dir "/opt-viewer")))
+               (mkdir-p opt-viewer-share-dir)
+               (rename-file (string-append out "/share/opt-viewer")
+                            opt-viewer-dir))
+             #t)))))
     (home-page "https://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
@@ -152,7 +166,28 @@ of programming tools as well as libraries with equivalent functionality.")
     (arguments
      `(;; Don't use '-g' during the build to save space.
        #:build-type "Release"
-       #:tests? #f))                    ; Tests require gtest
+       #:tests? #f                      ; Tests require gtest
+       #:modules ((srfi srfi-1)
+                  (ice-9 match)
+                  ,@%cmake-build-system-modules)
+       #:phases (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+                  (add-after 'set-paths 'hide-glibc
+                    ;; Work around https://issues.guix.info/issue/36882.  We need to
+                    ;; remove glibc from CPLUS_INCLUDE_PATH so that the one hardcoded
+                    ;; in GCC, at the bottom of GCC include search-path is used.
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let* ((filters '("libc"))
+                             (input-directories
+                              (filter-map (lambda (input)
+                                            (match input
+                                              ((name . dir)
+                                               (and (not (member name filters))
+                                                    dir))))
+                                          inputs)))
+                        (set-path-environment-variable "CPLUS_INCLUDE_PATH"
+                                                       '("include")
+                                                       input-directories)
+                        #t))))))
     (home-page "https://compiler-rt.llvm.org")
     (synopsis "Runtime library for Clang/LLVM")
     (description
@@ -306,8 +341,11 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     ;; Clang supports the same environment variables as GCC.
     (native-search-paths
      (list (search-path-specification
-            (variable "CPATH")
+            (variable "C_INCLUDE_PATH")
             (files '("include")))
+           (search-path-specification
+            (variable "CPLUS_INCLUDE_PATH")
+            (files '("include/c++" "include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
@@ -396,7 +434,8 @@ output), and Binutils.")
 (define-public clang-runtime-9
   (clang-runtime-from-llvm
    llvm-9
-   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"))
+   "0xwh79g3zggdabxgnd0bphry75asm1qz7mv3hcqihqwqr6aspgy2"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-9
   (clang-from-llvm llvm-9 clang-runtime-9
@@ -427,7 +466,8 @@ output), and Binutils.")
 (define-public clang-runtime-8
   (clang-runtime-from-llvm
    llvm-8
-   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
+   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-8
   (clang-from-llvm llvm-8 clang-runtime-8
@@ -451,7 +491,8 @@ output), and Binutils.")
 (define-public clang-runtime-7
   (clang-runtime-from-llvm
    llvm-7
-   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
+   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-7
   (clang-from-llvm llvm-7 clang-runtime-7
@@ -475,7 +516,8 @@ output), and Binutils.")
 (define-public clang-runtime-6
   (clang-runtime-from-llvm
    llvm-6
-   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"))
+   "1fcr3jn24yr8lh36nc0c4ikli4744i2q9m1ik67p1jymwwaixkgl"
+   '("clang-runtime-9-libsanitizer-mode-field.patch")))
 
 (define-public clang-6
   (clang-from-llvm llvm-6 clang-runtime-6
@@ -495,13 +537,20 @@ output), and Binutils.")
       (uri (llvm-download-uri "llvm" version))
       (sha256
        (base32
-        "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))))
+        "1vi9sf7rx1q04wj479rsvxayb6z740iaz3qniwp266fgp5a07n8z"))))
+    (outputs '("out"))
+    (arguments
+     (substitute-keyword-arguments (package-arguments llvm)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'install-opt-viewer)))))))
 
 (define-public clang-runtime-3.9.1
   (clang-runtime-from-llvm
    llvm-3.9.1
    "16gc2gdmp5c800qvydrdhsp0bzb97s8wrakl6i8a4lgslnqnf2fk"
-   '("clang-runtime-asan-build-fixes.patch"
+   '("clang-runtime-3.9-libsanitizer-mode-field.patch"
+     "clang-runtime-asan-build-fixes.patch"
      "clang-runtime-esan-build-fixes.patch"
      "clang-3.5-libsanitizer-ustat-fix.patch")))
 
@@ -527,6 +576,7 @@ output), and Binutils.")
    llvm-3.8
    "0p0y85c7izndbpg2l816z7z7558axq11d5pwkm4h11sdw7d13w0d"
    '("clang-runtime-asan-build-fixes.patch"
+     "clang-runtime-3.8-libsanitizer-mode-field.patch"
      "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.8
@@ -550,6 +600,7 @@ output), and Binutils.")
    llvm-3.7
    "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"
    '("clang-runtime-asan-build-fixes.patch"
+     "clang-runtime-3.8-libsanitizer-mode-field.patch"
      "clang-3.5-libsanitizer-ustat-fix.patch")))
 
 (define-public clang-3.7
@@ -572,7 +623,7 @@ output), and Binutils.")
   (clang-runtime-from-llvm
    llvm-3.6
    "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"
-   '("clang-runtime-asan-build-fixes.patch")))
+     '("clang-runtime-asan-build-fixes.patch")))
 
 (define-public clang-3.6
   (clang-from-llvm llvm-3.6 clang-runtime-3.6
@@ -627,12 +678,16 @@ output), and Binutils.")
                    #:patches '("clang-3.5-libc-search-path.patch")))
 
 (define-public llvm-for-extempore
-  (package (inherit llvm-3.7)
+  (package (inherit llvm-3.8)
     (name "llvm-for-extempore")
     (source
      (origin
-       (inherit (package-source llvm-3.7))
-       (patches (list (search-patch "llvm-for-extempore.patch")))))
+       (method url-fetch)
+       (uri (string-append "http://extempore.moso.com.au/extras/"
+                           "llvm-3.8.0.src-patched-for-extempore.tar.xz"))
+       (sha256
+        (base32
+         "1svdl6fxn8l01ni8mpm0bd5h856ahv3h9sdzgmymr6fayckjvqzs"))))
     ;; Extempore refuses to build on architectures other than x86_64
     (supported-systems '("x86_64-linux"))))
 
@@ -648,6 +703,23 @@ output), and Binutils.")
         (base32
          "0d2bj5i6mk4caq7skd5nsdmz8c2m5w5anximl5wz3x32p08zz089"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases (@ (guix build cmake-build-system) %standard-phases)
+         (add-after 'set-paths 'adjust-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs  "gcc")))
+               ;; Hide GCC's C++ headers so that they do not interfere with
+               ;; the ones we are attempting to build.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join (delete (string-append gcc "/include/c++")
+                                            (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                                          #\:))
+                                    ":"))
+               (format #t
+                       "environment variable `CPLUS_INCLUDE_PATH' changed to ~a~%"
+                       (getenv "CPLUS_INCLUDE_PATH"))
+               #t))))))
     (native-inputs
      `(("clang" ,clang)
        ("llvm" ,llvm)))

@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -715,19 +716,28 @@ BLAKE.")
 (define-public rhash
   (package
     (name "rhash")
-    (version "1.3.8")
+    (version "1.3.9")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/rhash/RHash/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/rhash/rhash/" version
+                           "/rhash-" version "-src.tar.gz"))
+       (file-name (string-append "rhash-" version ".tar.gz"))
        (sha256
         (base32
-         "0k60ywyhwqwqxa2q2l85vwgf884hcgy31nxir3dqgz7ymib6llxy"))))
+         "1xn9fqa6rlnhsbgami45g82dlw9i1skg2sri3ydiinwak5ph1ca2"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags
+     `(#:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             ,@(let ((target (%current-target-system)))
+                 (if target
+                     `((string-append "--target=" ,target)
+                       (string-append "--cc="
+                                      (assoc-ref %build-inputs "cross-gcc")
+                                      "/bin/" ,target "-gcc"))
+                     '())))
+       #:make-flags
        ;; The binaries in /bin need some help finding librhash.so.0.
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:test-target "test"             ; ‘make check’ just checks the sources
@@ -736,9 +746,13 @@ BLAKE.")
          (replace 'configure
            ;; ./configure is not GNU autotools' and doesn't gracefully handle
            ;; unrecognized options, so we must call it manually.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (invoke "./configure"
-                     (string-append "--prefix=" (assoc-ref outputs "out")))))
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (apply invoke "./configure" configure-flags)))
+         (add-before 'check 'patch-/bin/sh
+           (lambda _
+             (substitute* "Makefile"
+               (("/bin/sh") (which "sh")))
+             #t))
          (add-after 'install 'install-library-extras
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke

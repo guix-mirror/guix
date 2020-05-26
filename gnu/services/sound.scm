@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2020 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,11 +128,6 @@ ctl.!default {
                       (default
                         (file-append pulseaudio "/etc/pulse/system.pa"))))
 
-(define (pulseaudio-environment config)
-  `(;; Define these variables, so that pulseaudio honors /etc.
-    ("PULSE_CONFIG" . "/etc/pulse/daemon.conf")
-    ("PULSE_CLIENTCONFIG" . "/etc/pulse/client.conf")))
-
 (define (pulseaudio-conf-entry arg)
   (match arg
     ((key . value)
@@ -139,21 +135,22 @@ ctl.!default {
     ((? string? _)
      (string-append arg "\n"))))
 
+(define pulseaudio-environment
+  (match-lambda
+    (($ <pulseaudio-configuration> client-conf daemon-conf default-script-file)
+     `(("PULSE_CONFIG" . ,(apply mixed-text-file "daemon.conf"
+                                 "default-script-file = " default-script-file "\n"
+                                 (map pulseaudio-conf-entry daemon-conf)))
+       ("PULSE_CLIENTCONFIG" . ,(apply mixed-text-file "client.conf"
+                                       (map pulseaudio-conf-entry client-conf)))))))
+
 (define pulseaudio-etc
   (match-lambda
-    (($ <pulseaudio-configuration> client-conf daemon-conf
-                                   default-script-file system-script-file)
+    (($ <pulseaudio-configuration> _ _ default-script-file system-script-file)
      `(("pulse"
         ,(file-union
           "pulse"
-          `(("client.conf"
-             ,(apply mixed-text-file "client.conf"
-                     (map pulseaudio-conf-entry client-conf)))
-            ("daemon.conf"
-             ,(apply mixed-text-file "daemon.conf"
-                     "default-script-file = " default-script-file "\n"
-                     (map pulseaudio-conf-entry daemon-conf)))
-            ("default.pa" ,default-script-file)
+          `(("default.pa" ,default-script-file)
             ("system.pa" ,system-script-file))))))))
 
 (define pulseaudio-service-type

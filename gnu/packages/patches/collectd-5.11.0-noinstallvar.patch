@@ -1,0 +1,21 @@
+Disable creation of /var and /etc
+
+--- a/Makefile.am	2020-03-08 16:57:09.511535600 +0100
++++ b/Makefile.am	2020-04-21 11:36:49.827182272 +0200
+@@ -2376,16 +2376,6 @@
+ endif
+ 
+ install-exec-hook:
+-	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/run
+-	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/lib/$(PACKAGE_NAME)
+-	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/log
+-	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)
+-	if test -e $(DESTDIR)$(sysconfdir)/collectd.conf; \
+-	then \
+-		$(INSTALL) -m 0640 $(builddir)/src/collectd.conf $(DESTDIR)$(sysconfdir)/collectd.conf.pkg-orig; \
+-	else \
+-		$(INSTALL) -m 0640 $(builddir)/src/collectd.conf $(DESTDIR)$(sysconfdir)/collectd.conf; \
+-	fi; \
+ 	$(mkinstalldirs) $(DESTDIR)$(cpkgdatadir)
+ 	$(INSTALL) -m 0644 $(srcdir)/src/types.db $(DESTDIR)$(cpkgdatadir)/types.db;
+ 	$(INSTALL) -m 0644 $(srcdir)/src/postgresql_default.conf \

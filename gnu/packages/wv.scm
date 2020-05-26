@@ -45,7 +45,7 @@
     (inputs
       `(("glib" ,glib)
         ("libgsf" ,libgsf)
-        ("libjpeg" ,libjpeg)
+        ("libjpeg" ,libjpeg-turbo)
         ("libpng" ,libpng)
         ("zlib" ,zlib)))
     (native-inputs

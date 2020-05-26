@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Mekeor Melire <mekeor.melire@gmail.com>
@@ -20,6 +20,7 @@
 ;;; Copyright © 2019, 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -266,6 +267,51 @@ access to servers running the Discord protocol.")
     (home-page "https://github.com/sm00th/bitlbee-discord/")
     (license license:gpl2+)))
 
+(define-public purple-mattermost
+  (package
+    (name "purple-mattermost")
+    (version "1.2")
+    (home-page "https://github.com/EionRobb/purple-mattermost")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fm49iv58l09qpy8vkca3am642fxiwcrrh6ykimyc2mas210b5g2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; Adjust the makefile to install files in the right
+                      ;; place.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "Makefile"
+                          (("MATTERMOST_DEST = .*")
+                           (string-append "MATTERMOST_DEST = " out
+                                          "/lib/purple-2\n")) ;XXX: hardcoded
+                          (("MATTERMOST_ICONS_DEST = .*")
+                           (string-append "MATTERMOST_ICONS_DEST = "
+                                          out
+                                          "/share/pixmaps/pidgin/protocols\n")))
+                        #t))))
+       #:make-flags (list "CC=gcc"
+                          ,(string-append "PLUGIN_VERSION=" version))
+       #:tests? #f))
+    (inputs `(("glib" ,glib)
+              ("json-glib" ,json-glib)
+              ("discount" ,discount)
+              ("pidgin" ,pidgin)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Purple plug-in to access Mattermost instant messaging")
+    (description
+     "Purple-Mattermost is a plug-in for Purple, the instant messaging library
+used by Pidgin and Bitlbee, among others, to access
+@uref{https://mattermost.com/, Mattermost} servers.")
+    (license license:gpl3+)))
+
 (define-public hexchat
   (package
     (name "hexchat")
@@ -505,14 +551,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.7.5")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08a7yb2xs85hyyz8dpzfbsfjwj2r6kcii022lj3l4rf8hl9ix558"))))
+                "0m5xf60r40pgbg9lyk56dafxj2hj149pn2wf8vzsp8xgq4kv5zcl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -759,7 +805,7 @@ on Axolotl and PEP.")
        ("libgcrypt" ,libgcrypt)
        ("libsoup" ,libsoup)
        ("qrencode" ,qrencode)
-       ("sqlite" ,sqlite-with-column-metadata)
+       ("sqlite" ,sqlite)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+)
        ("glib-networking" ,glib-networking)
@@ -1723,6 +1769,12 @@ building the IRC clients and bots.")
          (delete 'configure)
          (add-before 'build 'enable-python-scripting
            (lambda _
+             ;; XXX: For compatibility with Python 3.8, adjust python3-config
+             ;; invokation to include --embed; see
+             ;; <https://github.com/JFreegman/toxic/issues/533>.
+             (substitute* "cfg/checks/python.mk"
+               (("python3-config --ldflags")
+                "python3-config --ldflags --embed"))
              (setenv "ENABLE_PYTHON" "1")
              #t)))))
     (inputs

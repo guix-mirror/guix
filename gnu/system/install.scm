@@ -419,8 +419,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; Having /bin/sh is a good idea.  In particular it allows Tramp
           ;; connections to this system to work.
           (service special-files-service-type
-                   `(("/bin/sh" ,(file-append (canonical-package bash)
-                                              "/bin/sh"))))
+                   `(("/bin/sh" ,(file-append bash "/bin/sh"))))
 
           ;; Loopback device, needed by OpenSSH notably.
           (service static-networking-service-type
@@ -443,7 +442,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                    (list bare-bones-os
                          glibc-utf8-locales
                          texinfo
-                         (canonical-package guile-2.2)))
+                         guile-3.0))
 
           ;; Machines without Kernel Mode Setting (those with many old and
           ;; current AMD GPUs, SiS GPUs, ...) need uvesafb to show the GUI
@@ -470,12 +469,6 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                  (target "/dev/sda")))
     (label (string-append "GNU Guix installation "
                           (package-version guix)))
-
-    ;; XXX: The AMD Radeon driver is reportedly broken, which makes kmscon
-    ;; non-functional:
-    ;; <https://lists.gnu.org/archive/html/guix-devel/2019-03/msg00441.html>.
-    ;; Thus, blacklist it.
-    (kernel-arguments '("quiet" "modprobe.blacklist=radeon"))
 
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
@@ -521,7 +514,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
      ;; Explicitly allow for empty passwords.
      (base-pam-services #:allow-empty-passwords? #t))
 
-    (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
+    (packages (cons* glibc ;for 'tzselect' & co.
                      parted gptfdisk ddrescue
                      fontconfig
                      font-dejavu font-gnu-unifont
@@ -530,6 +523,7 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
                      mdadm
                      dosfstools         ;mkfs.fat, for the UEFI boot partition
                      btrfs-progs
+                     f2fs-tools
                      jfsutils
                      openssh    ;we already have sshd, having ssh/scp can help
                      wireless-tools iw wpa-supplicant-minimal iproute

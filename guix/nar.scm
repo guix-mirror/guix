@@ -82,10 +82,28 @@
 REFERENCES and DERIVER.  When LOCK? is true, acquire exclusive locks on TARGET
 before attempting to register it; otherwise, assume TARGET's locks are already
 held."
+  ;; TODO: make this reusable
+  (define (acquire-lock file)
+    (let ((port (lock-file file)))
+      ;; There is an inherent race condition between opening the lock file and
+      ;; attempting to acquire the lock on it, and because we like deleting
+      ;; these lock files when we release them, only the first successful
+      ;; acquisition on a given lock file matters.  To make it easier to tell
+      ;; when an acquisition is and isn't the first, the first to acquire it
+      ;; writes a deletion token (arbitrary character) prior to releasing the
+      ;; lock.
+      (if (zero? (stat:size (stat port)))
+          port
+          ;; if FILE is non-empty, that's because it contains the deletion
+          ;; token, so we aren't the first to acquire it.  So try again!
+          (begin
+            (close port)
+            (acquire-lock file)))))
+
   (with-database %default-database-file db
     (unless (path-id db target)
       (let ((lock (and lock?
-                       (lock-file (string-append target ".lock")))))
+                       (acquire-lock (string-append target ".lock")))))
 
         (unless (path-id db target)
           ;; If FILE already exists, delete it (it's invalid anyway.)
@@ -102,6 +120,12 @@ held."
                          #:deriver deriver))
 
         (when lock?
+          (delete-file (string-append target ".lock"))
+          ;; Write the deletion token to inform anyone who acquires the lock
+          ;; on this particular file next that they aren't the first to
+          ;; acquire it, so they should retry.
+          (display "d" lock)
+          (force-output lock)
           (unlock-file lock))))))
 
 (define (temporary-store-file)
@@ -114,8 +138,8 @@ held."
 (define-syntax-rule (with-temporary-store-file name body ...)
   "Evaluate BODY with NAME bound to the file name of a temporary store item
 protected from GC."
-  (let loop ((name (temporary-store-file)))
-    (with-store store
+  (with-store store
+    (let loop ((name (temporary-store-file)))
       ;; Add NAME to the current process' roots.  (Opening this connection to
       ;; the daemon allows us to reuse its code that deals with the
       ;; per-process roots file.)

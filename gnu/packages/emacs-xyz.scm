@@ -1,10 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
@@ -12,7 +12,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
@@ -68,6 +68,8 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Jérémy Korwin-Zmijowski <jeremy@korwin-zmijowski.fr>
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1001,13 +1003,13 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.18")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
-        (base32 "1nq9pj47sxgpkw97c2xrkhgcwh3zsfd2a22qiqbl4i9zf2l9yy91"))))
+        (base32 "1aa3iqh0r635jw8k89zh8y4am9d4hfrqpk9mrdh2b51invjn8llq"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -1105,14 +1107,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.15")
+    (version "1.17")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://elpa.gnu.org/packages/relint-" version ".tar"))
        (sha256
-        (base32 "0sxmdsacj8my942k8j76m2y68nzab7190acv7cwgflc5n4f07yxa"))))
+        (base32 "1nv13dqdhf72c1jgk1ml4k6jqb8wsyphcx2vhsyhig5198lg4kd7"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -1321,33 +1323,32 @@ incrementally confined in Isearch manner.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/emms/emms-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00hnv7jjgb2simgrf7gf2y1cyg2syk7kj1hkbac146hlgxk8ngj1"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "Makefile"
-                    (("/usr/bin/install-info")
-                     ;; No need to use 'install-info' since it would create a
-                     ;; useless 'dir' file.
-                     "true")
-                    (("^INFODIR=.*")
-                     ;; Install Info files to $out/share/info, not $out/info.
-                     "INFODIR := $(PREFIX)/share/info\n")
-                    (("/site-lisp/emms")
-                     ;; Install directly in share/emacs/site-lisp, not in a
-                     ;; sub-directory.
-                     "/site-lisp")
-                    (("^all: (.*)\n" _ rest)
-                     ;; Build 'emms-print-metadata'.
-                     (string-append "all: " rest " emms-print-metadata\n")))
-                  #t))))
+    (version "5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/emms/emms-" version ".tar.gz"))
+       (sha256
+        (base32 "1nd7sb6pva7qb1ki6w0zhd6zvqzd7742kaqi0f3v4as5jh09l6nr"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Makefile"
+             (("/usr/bin/install-info")
+              ;; No need to use 'install-info' since it would create a
+              ;; useless 'dir' file.
+              "true")
+             (("^INFODIR=.*")
+              ;; Install Info files to $out/share/info, not $out/info.
+              "INFODIR := $(PREFIX)/share/info\n")
+             (("/site-lisp/emms")
+              ;; Install directly in share/emacs/site-lisp, not in a
+              ;; sub-directory.
+              "/site-lisp")
+             (("^all: (.*)\n" _ rest)
+              ;; Build 'emms-print-metadata'.
+              (string-append "all: " rest " emms-print-metadata\n")))
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1515,6 +1516,29 @@ one you want.  This is an O(N) operation, where the N is the amount of links.
 This package turns this into an O(1) operation.  It does so by assigning a
 letter to each link using avy.")
     (license license:gpl3+)))
+
+(define-public emacs-auto-sudoedit
+  (package
+    (name "emacs-auto-sudoedit")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ncaq/auto-sudoedit.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "10p0hc95j382km8655pqld9wxg10j1f36czzppkdd6a55cxarv9f"))))
+    (propagated-inputs
+     `(("emacs-f" ,emacs-f)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ncaq/auto-sudoedit")
+    (synopsis "Automatically re-open read-only files with sudo")
+    (description
+     "This package automatically reopens a file or directory with
+@command{sudo} if it cannot write to it.")
+    (license license:expat)))
 
 (define-public emacs-bbdb
   (package
@@ -2179,7 +2203,7 @@ window).")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("emacs" ,emacs-minimal)
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo-5)))               ;fails to build with Texinfo 6.7
     (home-page "https://github.com/purcell/mmm-mode")
     (synopsis "Allow multiple major modes in an Emacs buffer")
     (description
@@ -2248,6 +2272,30 @@ filters, new key bindings and faces.  It can be enabled by
 DjVuLibre, see @url{http://djvu.sourceforge.net/}.  It assumes you have the
 programs @command{djvused}, @command{djview}, @command{ddjvu}, and
 @command{djvm} installed.")
+    (license license:gpl3+)))
+
+(define-public emacs-pabbrev
+  (package
+    (name "emacs-pabbrev")
+    (version "4.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "pabbrev-" version ".el"))
+       (sha256
+        (base32 "19v5adk61y8fpigw7k6wz6dj79jwr450hnbi7fj0jvb21cvjmfxh"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/pabbrev.html")
+    (synopsis "Predictive abbreviation expansion")
+    (description
+     "The code provides a abbreviation expansion for Emacs.  It is
+fairly similar to Dabbrev expansion, which works based on the contents
+of the current buffer (or other buffers).
+
+Predictive abbreviation expansion works based on the previously
+written text.  Unlike dynamic abbreviation, the text is analysed
+during idle time, while Emacs is doing nothing else.")
     (license license:gpl3+)))
 
 (define-public emacs-pdf-tools
@@ -2380,13 +2428,21 @@ type, for example: packages, buffers, files, etc.")
                                   "releases/emacs-guix-" version ".tar.gz"))
               (sha256
                (base32
-                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))))
+                "0yz64c0z4ygi2k4af18k4r1ncgys18jb8icywkp2g5pgmpn5l7ps"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Add support for Guile 3.0.  Remove for versions > 0.5.2.
+                  (substitute* "configure"
+                    (("\"2\\.2 2\\.0\"")
+                     "\"3.0 2.2 2.0\""))
+                  #t))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("emacs" ,emacs-minimal)))
     (inputs
-     `(("guile" ,guile-2.2)
+     `(("guile" ,guile-3.0)
        ("guix" ,guix)))
     (propagated-inputs
      `(("geiser" ,emacs-geiser)
@@ -2455,7 +2511,7 @@ work with Emacs 24 and 25.")
 
 (define-public emacs-extempore-mode
   ;; Use the latest commit at time of packaging.  There are no releases or tags.
-  (let ((commit "848ad0084f27b92d1cf98dabffbad29f959a642d")
+  (let ((commit "09518ae6650d7be33a4633a4c0f31b7130d04c6e")
         (revision "1"))
     (package
       (name "emacs-extempore-mode")
@@ -2468,7 +2524,7 @@ work with Emacs 24 and 25.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "00wr025php7nl33x541s9rjm99hj0jbdcmnw9ljx5hqpm04aqm7c"))))
+          (base32 "0hfza9lzdsz94gxhmzyp9fwviscv19rmnjgd0q613faayn11sjsp"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/extemporelang/extempore-emacs-mode")
       (synopsis "Emacs major mode for Extempore source files")
@@ -2477,6 +2533,37 @@ work with Emacs 24 and 25.")
 create an Extempore REPL, connect the current @code{extempore-mode} buffer to a
 running Extempore process, and more.")
       (license license:bsd-2))))
+
+(define-public emacs-kakoune
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "d73d14e69ea38076af50cc69f846808383ff539d")
+        (revision "0"))
+    (package
+      (name "emacs-kakoune")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jmorag/kakoune.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nk6jdy1y5mc3ryd0smiqghrk6iv34d5grc7f7migmshlbq0np92"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-expand-region"    ,emacs-expand-region)
+         ("emacs-multiple-cursors" ,emacs-multiple-cursors)
+         ("emacs-ryo-modal"        ,emacs-ryo-modal)))
+      (home-page "https://github.com/jmorag/kakoune.el")
+      (synopsis "Emacs simple simulation, but not emulation, of Kakoune")
+      (description "This package provides many, but not all of the editing
+primitives in the Kakoune editor.  Unlike Evil mode for Vim, this is a very
+shallow emulation, which seeks to do as little work as possible, leveraging
+Emacs native editing commmands and the work of other packages wherever
+possible.")
+      (license license:expat))))
 
 (define-public emacs-keyfreq
   (package
@@ -2628,9 +2715,33 @@ Stack Overflow, Super User, and other StackExchange sites.")
       (home-page "https://github.com/dryman/toml-mode.el")
       (synopsis "Emacs major mode for editing TOML files")
       (description
-       "This package provides a major mode for editing files in @acronym{TOML,
-Tom's Obvious, Minimal Language} data format.")
+       ;; XXX: Ideally we'd use @acronym for "TOML", but Guile's Texinfo
+       ;; parser does not currently support @comma{}, making it impossible
+       ;; to use commas in the @acronym arguments.
+       "This package provides a major mode for editing files in @dfn{TOML}
+(Tom's Obvious, Minimal Language) data format.")
       (license license:gpl3+))))
+
+(define-public emacs-twittering-mode
+  (package
+    (name "emacs-twittering-mode")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/twmode"
+                           "/twittering-mode-" version
+                           "/twittering-mode-" version ".tar.xz"))
+       (sha256
+        (base32 "02imis1gxz90lah0b5n37j2hlsaw5igss11d85vpsm5d1bgw8j28"))))
+    (build-system emacs-build-system)
+    (home-page "http://twmode.sourceforge.net")
+    (synopsis "Emacs major mode for Twitter")
+    (description
+     "Twittering mode is an Emacs major mode for Twitter.
+You can check timelines, tweet, mark posts as favorites and so on with
+Emacs.")
+    (license license:gpl2+)))
 
 (define-public emacs-f
   (package
@@ -4294,6 +4405,28 @@ features:
 completion backends according to mode, and integrates with
 @code{use-package}.")
       (license license:gpl3+))))
+
+(define-public emacs-icomplete-vertical
+  (package
+    (name "emacs-icomplete-vertical")
+    (version "0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/oantolin/icomplete-vertical.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1bqnlvv1gvrjriazvzd3bq98r8ii6fqax0zznhvkl1ij5pf55a90"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/oantolin/icomplete-vertical")
+    (synopsis "Display icomplete candidates vertically")
+    (description
+     "This package defines a global minor mode to display Icomplete
+completion candidates vertically.")
+    (license license:gpl3+)))
 
 (define-public emacs-handle
   (let ((commit "51c050bc1c6e5caf0eb47ecd985daea1db7241ab")
@@ -7291,6 +7424,30 @@ of its name.")
 names, e.g. #0000ff is displayed in white with a blue background.")
     (license license:gpl3+)))
 
+(define-public emacs-ryo-modal
+  ;; Package has no release.  Version is extracted from "Version:" keyword in
+  ;; main file.
+  (let ((commit "3a54312eea7023a86ca3f8eb3c03c872554bff2f")
+        (revision "0"))
+    (package
+      (name "emacs-ryo-modal")
+      (version (git-version "0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Kungsgeten/ryo-modal.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
+      (build-system emacs-build-system)
+      (home-page "http://github.com/Kungsgeten/ryo-modal")
+      (synopsis "Emacs minor mode for defining modal editing environments")
+      (description "RYO modal provides a convenient way of defining modal
+keybindings in Emacs, and does not come with any predefined bindings.")
+      (license license:expat))))
+
 (define-public emacs-visual-fill-column
   (package
     (name "emacs-visual-fill-column")
@@ -7436,24 +7593,47 @@ special variables.  An interface to GitLab’s CI file linter is also provided
 via @code{gitlab-ci-lint}.")
     (license license:gpl3+)))
 
-(define-public emacs-web-mode
+(define-public emacs-gitlab-snip-helm
   (package
-    (name "emacs-web-mode")
-    (version "16")
+    (name "emacs-gitlab-snip-helm")
+    (version "0.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/fxbois/web-mode.git")
-                    (commit (string-append "v" version))))
+                    (url "https://gitlab.com/sasanidas/gitlab-snip-helm.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17dw6a8d0p304f2sa4f9zwd8r48w2wbkc3fvbmxwlg4w12h7cwf0"))))
+                "1c5js19zyb1z61hapvbfcl5jhrjqij46cxldgqij6al0scw44dga"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-helm" ,emacs-helm)))
+    (home-page "https://gitlab.com/sasanidas/gitlab-snip-helm/")
+    (synopsis "GitLab snippet API interaction for Emacs")
+    (description "This package provides GitLab snippet API interaction for
+Emacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-web-mode
+  (package
+    (name "emacs-web-mode")
+    (version "17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fxbois/web-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0jr5a1nzp8nbdng0k2fcaymiiv9ngrbknbrqaswgqn3akvx793jk"))))
     (build-system emacs-build-system)
     (synopsis "Major mode for editing web templates")
-    (description "Web-mode is an Emacs major mode for editing web templates
+    (description "Web mode is an Emacs major mode for editing web templates
 aka HTML files embedding parts (CSS/JavaScript) and blocks (pre rendered by
-client/server side engines).  Web-mode is compatible with many template
+client/server side engines).  Web mode is compatible with many template
 engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
 Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
 Dust.js, React/JSX, Angularjs, ejs, etc.")
@@ -8092,8 +8272,8 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "a478a95a8a3665e40bdae3bab2a0519db6c1f29c")
-        (revision "13"))
+  (let ((commit "d062cc206d671fb5aefb1e0e679a9cb1d6c73e33")
+        (revision "14"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.3" revision commit))
@@ -8105,7 +8285,7 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "15ii5lw6hs4yyl22yyzfwzagdma2sman4rm5gq4m9773g4ava515"))))
+                  "1zizfqmfrxx3shgggwa74rg2qqbrs8704wf94ajx0k11dbm1dbrp"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -10185,15 +10365,12 @@ It should enable you to implement low-level X11 applications.")
                ;; Add a .desktop file to xsessions
                (mkdir-p xsessions)
                (mkdir-p bin)
-               (with-output-to-file
-                   (string-append xsessions "/exwm.desktop")
-                 (lambda _
-                   (format #t "[Desktop Entry]~@
-                     Name=~a~@
-                     Comment=~a~@
-                     Exec=~a~@
-                     TryExec=~:*~a~@
-                     Type=Application~%" ,name ,synopsis exwm-executable)))
+               (make-desktop-entry-file
+                (string-append xsessions "/exwm.desktop")
+                #:name ,name
+                #:comment ,synopsis
+                #:exec exwm-executable
+                #:try-exec exwm-executable)
                ;; Add a shell wrapper to bin
                (with-output-to-file exwm-executable
                  (lambda _
@@ -10520,6 +10697,29 @@ as bold, underscore or italic.")
 Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-eglot
+  (package
+    (name "emacs-eglot")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "eglot-" version ".tar"))
+       (sha256
+        (base32 "15hd6sx7qrpvlvhwwkcgdiki8pswwf4mm7hkm0xvznskfcp44spx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-jsonrpc" ,emacs-jsonrpc)))
+    (home-page "https://github.com/joaotavora/eglot")
+    (synopsis "Client for Language Server Protocol (LSP) servers")
+    (description
+     "Emacs Polyglot, or Eglot, is an Emacs @acronym{Language Server Protocol,
+LSP} client that stays out of the way.  It guesses the LSP program to start
+for the current file, using the major mode as a hint.  It prompts you to enter
+one if it fails.")
+    (license license:gpl3+)))
+
 ;; Tests for ert-runner have a circular dependency with ecukes, and therefore
 ;; cannot be run
 (define-public emacs-ert-runner
@@ -10704,10 +10904,31 @@ a @url{http://json.org/, JSON} file.")
 highlighting.")
     (license license:gpl3+)))
 
+(define-public emacs-jsonrpc
+  (package
+    (name "emacs-jsonrpc")
+    (version "1.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "jsonrpc-" version ".el"))
+       (sha256
+        (base32 "04cy1mqd6y8k5lcpg076szjk9av9345mmsnzzh6vgbcw3dcgbr23"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/jsonrpc.html")
+    (synopsis "JSON-RPC library")
+    (description
+     "This library implements the JSONRPC 2.0 specification as
+described in @url{http://www.jsonrpc.org/}.  As the name suggests,
+JSONRPC is a generic Remote Procedure Call protocol designed around
+JSON objects.")
+    (license license:gpl3+)))
+
 (define-public emacs-restclient
   (let ((commit "422ee8d8b077dffe65706a0f027ed700b84746bc")
         (version "0")
-        (revision "2"))                 ;Guix package revision,
+        (revision "2"))               ;Guix package revision,
                                         ;upstream doesn't have official releases
     (package
       (name "emacs-restclient")
@@ -13176,7 +13397,7 @@ files to be expanded upon opening them.")
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
-    (version "2.3.1")
+    (version "2.3.3")
     (source
      (origin
        (method git-fetch)
@@ -13185,45 +13406,43 @@ files to be expanded upon opening them.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bnqnxkb9dnl0fjrrjx0xn9jsqki2h8ygw3d5dm4bl79smah3qkh"))))
+        (base32 "0mpgyy9qfb5x4fvlmb274hgayjbwf0bgk65dxyx31zikjwpcd56p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/joostkremers/parsebib")
-    (synopsis "Library for parsing bib files")
+    (synopsis "Library for parsing @file{.bib} files")
     (description
-     "This package provides an Emacs library for parsing bib files.")
+     "This package provides an Emacs library for parsing @file{.bib} files.")
     (license license:gpl3+)))
 
 (define-public emacs-ebib
-  (let ((commit "99bd909f47f71e024ce324981109b73a50e82fba"))
-    (package
-      (name "emacs-ebib")
-      (version "2.21")
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/joostkremers/ebib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "131vgl4d1j9s4055x88409w19q52x2m0x08b961hylp7yb5ljzgh"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-parsebib" ,emacs-parsebib)))
-      (home-page "https://joostkremers.github.io/ebib/")
-      (synopsis "BibTeX database manager for Emacs")
-      (description
-       "Ebib is a BibTeX database manager that runs in GNU Emacs.
-With Ebib you can create, sort and manage your .bib database files,
-all within Emacs.  It supports searching, multi-line field values and
-@@String and @@Preamble definitions.  Ebib integrates with (La)TeX
-mode, Org mode and other Emacs editing modes.")
-      ;; The Ebib source files are released under a BSD license with
-      ;; the exception of org-ebib.el, which is released under the GNU
-      ;; GPL.
-      (license (list license:bsd-3
-                     license:gpl3+)))))
+  (package
+    (name "emacs-ebib")
+    (version "2.22.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/ebib.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0spiz5r2y4pdpyc4d3f9w228giq0j9rm8f5h5akzn5rwiq9pfkwz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-parsebib" ,emacs-parsebib)))
+    (home-page "https://joostkremers.github.io/ebib/")
+    (synopsis "BibTeX database manager for Emacs")
+    (description
+     "Ebib is a BibTeX database manager that runs in GNU Emacs.
+With Ebib you can create, sort and manage your @file{.bib} database files, all
+within Emacs.  It supports searching, multi-line field values and
+@samp{@@String} and @samp{@@Preamble} definitions.  Ebib integrates
+with (La)TeX mode, Org mode and other Emacs editing modes.")
+    ;; The Ebib source files are released under a BSD license with
+    ;; the exception of org-ebib.el, which is released under the GNU
+    ;; GPL.
+    (license (list license:bsd-3
+                   license:gpl3+))))
 
 (define-public emacs-biblio
   (package
@@ -14370,7 +14589,7 @@ powerful Org contents.")
 (define-public emacs-org-re-reveal
   (package
     (name "emacs-org-re-reveal")
-    (version "2.5.1")
+    (version "2.12.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -14379,7 +14598,7 @@ powerful Org contents.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zbz6hbddxbb264ibmhc04cmnpk17kb50jpn5l8878q4hxw5wwy2"))))
+                "19nz77f2r49hqavz50ri222prhrd5890vhvc7jfazbascbcdjbqv"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-htmlize" ,emacs-htmlize)
@@ -18164,7 +18383,7 @@ stored playlists.")
 (define-public emacs-vterm
   (let ((version "0")
         (revision "1")
-        (commit "7d7381fa8104b55b70148cf147523d9ab7f01fcd"))
+        (commit "e63bd65eece7c5de3a534b7e2fdbe58256ec2da0"))
     (package
       (name "emacs-vterm")
       (version (git-version version revision commit))
@@ -18176,7 +18395,7 @@ stored playlists.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "04a2jlhmr20ipgzpnba3yryw3ly7qdxjgaw10dwn9wxy1yqmapz1"))))
+                  "0iq857w54qmazxh23fipz85fb9i6dav3f63g0ghpmi6mybfp6i5v"))))
       (build-system emacs-build-system)
       (arguments
        `(#:modules ((guix build emacs-build-system)
@@ -18187,14 +18406,11 @@ stored playlists.")
                              (guix build cmake-build-system))
          #:phases
          (modify-phases %standard-phases
-           (add-before 'add-source-to-load-path 'remove-vterm-module-make
+           (add-before 'add-source-to-load-path 'substitute-vterm-module-path
              (lambda* (#:key outputs #:allow-other-keys)
-               ;; Remove the Emacs Lisp file.
-               (delete-file "vterm-module-make.el")
-               ;; Remove references to the removed file.
-               (make-file-writable "vterm.el")
+               (chmod "vterm.el" #o644)
                (emacs-substitute-sexps "vterm.el"
-                 ("(or (require 'vterm-module nil t)"
+                 ("(require 'vterm-module nil t)"
                   `(module-load
                     ,(string-append (assoc-ref outputs "out")
                                     "/lib/vterm-module.so"))))
@@ -18618,7 +18834,7 @@ the standard @code{Dockerfile} file format.")
 (define-public emacs-lsp-mode
   (package
     (name "emacs-lsp-mode")
-    (version "6.2.1")
+    (version "6.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -18627,7 +18843,7 @@ the standard @code{Dockerfile} file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f9d0zhblcjzrpggqclww2g7fyjky5rzpp7zj424005ahv0zd3xf"))))
+                "125rpmhlyd6wmq7p71j54x3rzmk07vn1hdcvvdjjip5481raxcwx"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -19446,9 +19662,9 @@ be used in @code{dired-mode}.")
       (license license:gpl3+))))
 
 (define-public emacs-exwm-edit
-  (let ((commit "961c0f3ea45766b888c73d7353da13d329538034")
+  (let ((commit "bc25ba094b383be3c650ca0b7e1534efe2bb154f")
         (version "0.0.1")
-        (revision "1"))
+        (revision "2"))
     (package
       (name "emacs-exwm-edit")
       (version (git-version version revision commit))
@@ -19461,7 +19677,7 @@ be used in @code{dired-mode}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "087pk5ckx753qrn6xpka9khhlp7iqlz76w7861x90av2f5cgy6fw"))))
+           "1z1ya9xgknka3dy3b3x8zzfkxdx5jqsi8q5aqkvxjxa6n7mmqdwv"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-exwm" ,emacs-exwm)))
@@ -20003,6 +20219,43 @@ well as an option for visually flashing evaluated s-expressions.")
     (synopsis "Ivy interface for TRAMP")
     (description "This package allows @code{ivy-mode} to display and filter
 SSH servers.")
+    (license license:gpl3+)))
+
+(define-public emacs-tramp
+  (package
+    (name "emacs-tramp")
+    (version "2.4.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "tramp-" version ".tar"))
+       (sha256
+        (base32 "01il42xb6s38qnb7bhn9d7gscc5p5y4da5a4dp1i1cyi823sfp8f"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:emacs ,emacs                   ;need D-Bus
+       #:phases
+       (modify-phases %standard-phases
+         ;; All but one "/bin/" directory refer to remote
+         ;; environments, which may not be Guix.  Do not patch them
+         ;; blindly.  However, local encoding shell has to be patched.
+         (replace 'patch-el-files
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((sh (assoc-ref inputs "bash"))
+                   (file "tramp.el"))
+               (emacs-substitute-variables file
+                 ("tramp-encoding-shell" (string-append sh "/bin/sh"))))
+             #t)))))
+    (inputs
+     `(("bash" ,bash)))
+    (home-page "https://savannah.gnu.org/projects/tramp")
+    (synopsis "Remote file editing package for Emacs")
+    (description
+     "Tramp stands for ``Transparent Remote (file) Access, Multiple
+Protocol''.  This package provides remote file editing, using
+a combination of @command{rsh} and @command{rcp} or other work-alike
+programs, such as @command{ssh} and @command{scp}.")
     (license license:gpl3+)))
 
 (define-public emacs-tramp-auto-auth
@@ -21039,14 +21292,14 @@ Emacs that integrate with major modes like Org-mode.")
 (define-public emacs-modus-operandi-theme
   (package
     (name "emacs-modus-operandi-theme")
-    (version "0.7.0")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "modus-operandi-theme-" version ".el"))
        (sha256
-        (base32 "17zvcqplbl3rk39k61v43ganzv06j49rlyickanwll5m1a3iibw2"))))
+        (base32 "0i8s6blkhx53m1jk1bblqs7fwlbn57xkxxhsp9famcj5m0xyfimb"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Accessible light theme (WCAG AAA)")
@@ -21060,14 +21313,14 @@ standard.  This is the highest standard of its kind.")
 (define-public emacs-modus-vivendi-theme
   (package
     (name "emacs-modus-vivendi-theme")
-    (version "0.7.0")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "modus-vivendi-theme-" version ".el"))
        (sha256
-        (base32 "1w4vrg39dghghkvll3h4kmzykc3zpp6pbychb39gcc13z2b06v8g"))))
+        (base32 "121nlr5w58j4q47rh9xjjf9wzb97yl2m1n2l6g58ck4vnarwndl1"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.com/protesilaos/modus-themes")
     (synopsis "Accessible dark theme (WCAG AAA)")
@@ -21337,7 +21590,7 @@ Google guidelines.")
 (define-public emacs-helm-fish-completion
   (package
     (name "emacs-helm-fish-completion")
-    (version "0.2")
+    (version "0.3")
     (home-page "https://github.com/emacs-helm/helm-fish-completion")
     (source
      (origin
@@ -21347,7 +21600,7 @@ Google guidelines.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "089gp2k22xwn33z8brpyb7r18vpyralq2cwxj1xsc8b2sj9s4896"))))
+        (base32 "1iv0hwr74hzgrvrr31nlnswvi87lvpg24rd1rhkr5kjicr2295fq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("helm" ,emacs-helm)
@@ -21674,6 +21927,32 @@ display of major and minor modes in the mode line.")
       (description "This package allows Org items to be accessed via the Ivy
 interface.")
       (home-page "https://github.com/akirak/ivy-omni-org")
+      (license license:gpl3+))))
+
+(define-public emacs-ivy-posframe
+  (let ((commit "ae9bafe94fe6b77b6fe45766ae6172646f6a5d50"))
+    (package
+      (name "emacs-ivy-posframe")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tumashu/ivy-posframe.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1j6yns5d7lh2v1nfcznrirl7qicdli9csciqvfgj4gkh72a97pw1"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-posframe" ,emacs-posframe)
+         ("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/tumashu/ivy-posframe")
+      (synopsis "Pop a posframe (a child frame) to show Ivy candidates")
+      (description
+       "This package provides an Emacs Ivy extension, which let Ivy use
+posframe to show its candidate menu.")
       (license license:gpl3+))))
 
 (define-public emacs-shackle

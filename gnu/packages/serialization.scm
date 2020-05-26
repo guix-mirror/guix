@@ -2,12 +2,12 @@
 ;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
@@ -40,6 +40,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
@@ -296,7 +297,13 @@ that implements both the msgpack and msgpack-rpc specifications.")
                 "037d1b1qdmn3rksmn1j71j26bv4hkjv7sn7da261k853xb5899sg"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")))
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES"
+                           ,@(if (%current-target-system)
+                                 `("-DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF")
+                                 '()))
+       ,@(if (%current-target-system)
+             '()
+             `(#:cmake ,cmake-bootstrap))))
     (synopsis "C++ library for interacting with JSON")
     (description "JsonCpp is a C++ library that allows manipulating JSON values,
 including serialization and deserialization to and from strings.  It can also
@@ -324,7 +331,7 @@ it a convenient format to store user input files.")
 (define-public capnproto
   (package
     (name "capnproto")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -332,7 +339,7 @@ it a convenient format to store user input files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0hfdnhlbskagzgvby8wy6lrxj53zfzpfqimbhga68c0ji2yw1969"))))
+                "03f1862ljdshg7d0rg3j7jzgm3ip55kzd2y91q7p0racax3hxx6i"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -219,7 +219,7 @@ taxonomic inference capability.")
        ("libxml2" ,libxml2)
        ("mpfr" ,mpfr)
        ("pcre" ,pcre)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (propagated-inputs
      `(("raptor2" ,raptor2))) ; stipulated by rasqal.pc
     (arguments
@@ -267,14 +267,14 @@ and triple stores.")
 (define-public serd
   (package
     (name "serd")
-    (version "0.30.2")
+    (version "0.30.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/serd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "00kjjgs5a8r72khgpya14scvl3n58wqwl5927y14z03j25q04ccx"))))
+               "168rn3m32c59qbar120f83ibcnnd987ij9p053kybgl7cmm6358c"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target

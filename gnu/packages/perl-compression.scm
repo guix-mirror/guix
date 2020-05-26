@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,6 +106,31 @@ compression library.")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
 writing of compressed data created with the zlib and bzip2 libraries.")
+    (license license:perl-license)))
+
+(define-public perl-perlio-gzip
+  (package
+    (name "perl-perlio-gzip")
+    (version "0.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/N/NW/NWCLARK/PerlIO-gzip-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1idxsdmpinsp6qm1lizs7y955bq2wqk9avsz1hxky7i07yd6fj28"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:make-maker-flags
+       ;; MakeMaker doesn't honor LIBRARY_PATH.
+       (let ((zlib (assoc-ref %build-inputs "zlib")))
+         (list (format #f "LIBS=-L~a/lib/ -lz" zlib)))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://metacpan.org/pod/PerlIO::gzip")
+    (synopsis "Perl extension to provide a PerlIO layer to gzip/gunzip")
+    (description "PerlIO::gzip provides a PerlIO layer that manipulates files
+in the format used by the @command{gzip} program.")
     (license license:perl-license)))
 
 (define-public perl-archive-extract

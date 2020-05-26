@@ -4,6 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages image)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages python)
@@ -92,22 +94,24 @@ over IRC, instant messaging, network games, and most server software.")
 (define-public libupnp
   (package
     (name "libupnp")
-    (version "1.6.25")
+    (version "1.12.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/pupnp/pupnp/libUPnP%20"
-                          version "/" name "-" version ".tar.bz2"))
+      (uri (string-append "https://github.com/pupnp/pupnp/releases/download"
+                          "/release-" version "/libupnp-" version".tar.bz2"))
       (sha256
        (base32
-        "0hzsd7rvfa87b4hxg9yj4xhdfxx9sp09r9sqdl3mqhvmcyw018y5"))))
+        "02a0dnbk1cla8xlb5l2zp09grv2hsf8n4jbd560mmzj830mn8dpw"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
     (arguments
      ;; The tests require a network device capable of multicasting which is
      ;; not available in the build environment. See
      ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00312.html.
      `(#:tests? #f
-       #:configure-flags '("--enable-ipv6")))
+       #:configure-flags '("--disable-static")))
     (home-page "http://pupnp.sourceforge.net")
     (synopsis "Portable SDK for UPnP Devices")
     (description
@@ -144,7 +148,7 @@ and others.")
        ("gettext" ,gettext-minimal)))
     (inputs
      `(("libexif" ,libexif)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libid3tag" ,libid3tag)
        ("flac" ,flac)
        ("libvorbis" ,libvorbis)

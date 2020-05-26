@@ -7,12 +7,12 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Toni Reina <areina@riseup.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
@@ -236,6 +236,8 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-gnu-freefont
   (package
     (name "font-gnu-freefont")
+    ;; Note: Remove the special FontForge input and package once the 2020
+    ;; release is out.
     (version "20120503")
     (source (origin
              (method url-fetch)
@@ -253,11 +255,11 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
                      (let ((doc-dir  (string-append %output "/share/doc/"
                                                     ,name "-" ,version))
                            (ttf-font-dir (string-append %output
-                                                        "/share/fonts/ttf"))
+                                                        "/share/fonts/truetype"))
                            (otf-font-dir (string-append %output
-                                                        "/share/fonts/otf"))
+                                                        "/share/fonts/opentype"))
                            (woff-font-dir (string-append %output
-                                                         "/share/fonts/woff")))
+                                                         "/share/fonts/webfonts")))
                        (mkdir-p doc-dir)
                        (substitute* "Makefile"
                          (("\\$\\(TMPDIR\\)") doc-dir)
@@ -289,12 +291,8 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
                                    (lambda (file) (string-suffix? "woff" file))
                                    (find-files "." "")))))))
        #:test-target "tests"))
-    ;; replace python 3 with python 2
-    ;; python 3 support commits aren't yet released in 20120503
-    ;; so freefont needs python 2 support in fontforge
-    (native-inputs `(("fontforge" ,(package (inherit fontforge)
-                                     (inputs `(("python-2" ,python-2)
-                                     ,@(package-inputs fontforge)))))))
+    ;; FreeFont anno 2012 requires a FontForge built with Python 2.
+    (native-inputs `(("fontforge" ,fontforge-20190801)))
     (home-page "https://www.gnu.org/software/freefont/")
     (synopsis "Unicode-encoded outline fonts")
     (description

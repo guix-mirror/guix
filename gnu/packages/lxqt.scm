@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -994,8 +994,7 @@ components to build desktop file managers which belongs to LXDE.")
         (base32 "0x3c25inlxll965xszx37mnl5gp3smm2h7x04f67z0qlh3vsbrjq"))))
     (build-system cmake-build-system)
     (inputs
-     `(("glib:bin" ,glib "bin")
-       ("libfm-qt" ,libfm-qt)
+     `(("libfm-qt" ,libfm-qt)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
     (native-inputs
@@ -1011,17 +1010,7 @@ components to build desktop file managers which belongs to LXDE.")
              (substitute* '("autostart/CMakeLists.txt")
                (("DESTINATION \"\\$\\{LXQT_ETC_XDG_DIR\\}")
                 "DESTINATION \"etc/xdg"))
-             #t))
-         (add-after 'install 'wrap-glib
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (glib (assoc-ref inputs "glib:bin"))
-                    (gio-exe-path (string-append glib "/bin/gio-launch-desktop")))
-               (if (file-exists? gio-exe-path)
-                 (wrap-program (string-append out "/bin/pcmanfm-qt")
-                   `("GIO_LAUNCH_DESKTOP" = (,gio-exe-path)))
-                 (error "could not find gio-launch-desktop"))
-               #t))))))
+             #t)))))
     (home-page "https://lxqt.org/")
     (synopsis "File manager and desktop icon manager")
     (description "PCManFM-Qt is the Qt port of PCManFM, the file manager of

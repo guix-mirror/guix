@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -234,7 +234,7 @@ name of its URI."
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
-  '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "mips64el-linux"))
+  '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux" "mips64el-linux" "i586-gnu"))
 
 (define %hurd-systems
   ;; The GNU/Hurd systems for which support is being developed.
@@ -638,8 +638,10 @@ specifies modules in scope when evaluating SNIPPET."
               (apply invoke
                      (string-append #+tar "/bin/tar")
                      "cvfa" #$output
-                     ;; avoid non-determinism in the archive
-                     "--mtime=@0"
+                     ;; Avoid non-determinism in the archive.  Set the mtime
+                     ;; to 1 as is the case in the store (software like gzip
+                     ;; behaves differently when it stumbles upon mtime = 0).
+                     "--mtime=@1"
                      "--owner=root:0"
                      "--group=root:0"
                      (if tar-supports-sort?
@@ -812,11 +814,13 @@ dependencies are known to build on SYSTEM."
 
 (define (bag-transitive-inputs bag)
   "Same as 'package-transitive-inputs', but applied to a bag."
-  (transitive-inputs (bag-direct-inputs bag)))
+  (parameterize ((%current-target-system #f))
+    (transitive-inputs (bag-direct-inputs bag))))
 
 (define (bag-transitive-build-inputs bag)
   "Same as 'package-transitive-native-inputs', but applied to a bag."
-  (transitive-inputs (bag-build-inputs bag)))
+  (parameterize ((%current-target-system #f))
+    (transitive-inputs (bag-build-inputs bag))))
 
 (define (bag-transitive-host-inputs bag)
   "Same as 'package-transitive-target-inputs', but applied to a bag."
@@ -825,7 +829,8 @@ dependencies are known to build on SYSTEM."
 
 (define (bag-transitive-target-inputs bag)
   "Return the \"target inputs\" of BAG, recursively."
-  (transitive-inputs (bag-target-inputs bag)))
+  (parameterize ((%current-target-system (bag-target bag)))
+    (transitive-inputs (bag-target-inputs bag))))
 
 (define* (package-closure packages #:key (system (%current-system)))
   "Return the closure of PACKAGES on SYSTEM--i.e., PACKAGES and the list of

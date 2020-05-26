@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,7 +25,6 @@
   #:export (install-boot-config
             evaluate-populate-directive
             populate-root-file-system
-            register-closure
             install-database-and-gc-roots
             populate-single-profile-directory))
 
@@ -51,9 +50,14 @@ that the fonts, background images, etc. referred to by BOOTCFG are not GC'd."
     (copy-file bootcfg pivot)
     (rename-file pivot target)))
 
-(define (evaluate-populate-directive directive target)
+(define* (evaluate-populate-directive directive target
+                                      #:key
+                                      (default-gid 0)
+                                      (default-uid 0))
   "Evaluate DIRECTIVE, an sexp describing a file or directory to create under
-directory TARGET."
+directory TARGET.  DEFAULT-UID and DEFAULT-GID are the default UID and GID in
+the context of the caller.  If the directive matches those defaults then,
+'chown' won't be run."
   (let loop ((directive directive))
     (catch 'system-error
       (lambda ()
@@ -63,10 +67,22 @@ directory TARGET."
           (('directory name uid gid)
            (let ((dir (string-append target name)))
              (mkdir-p dir)
-             (chown dir uid gid)))
+             ;; If called from a context without "root" permissions, "chown"
+             ;; to root will fail.  In that case, do not try to run "chown"
+             ;; and assume that the file will be chowned elsewhere (when
+             ;; interned in the store for instance).
+             (or (and (= uid default-uid) (= gid default-gid))
+                 (chown dir uid gid))))
           (('directory name uid gid mode)
            (loop `(directory ,name ,uid ,gid))
            (chmod (string-append target name) mode))
+          (('file name)
+           (call-with-output-file (string-append target name)
+             (const #t)))
+          (('file name (? string? content))
+           (call-with-output-file (string-append target name)
+             (lambda (port)
+               (display content port))))
           ((new '-> old)
            (let try ()
              (catch 'system-error
@@ -91,9 +107,7 @@ directory TARGET."
 (define (directives store)
   "Return a list of directives to populate the root file system that will host
 STORE."
-  `(;; Note: the store's GID is fixed precisely so we can set it here rather
-    ;; than at activation time.
-    (directory ,store 0 30000 #o1775)
+  `((directory ,store 0 0 #o1775)
 
     (directory "/etc")
     (directory "/var/log")                          ; for shepherd
@@ -119,11 +133,14 @@ STORE."
 
     (directory "/home" 0 0)))
 
-(define (populate-root-file-system system target)
+(define* (populate-root-file-system system target
+                                    #:key (extras '()))
   "Make the essential non-store files and directories on TARGET.  This
-includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
+includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM.
+EXTRAS is a list of directives appended to the built-in directives to populate
+TARGET."
   (for-each (cut evaluate-populate-directive <> target)
-            (directives (%store-directory)))
+            (append (directives (%store-directory)) extras))
 
   ;; Add system generation 1.
   (let ((generation-1 (string-append target

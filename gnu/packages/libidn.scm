@@ -59,14 +59,14 @@ Java libraries.")
 (define-public libidn2
   (package
     (name "libidn2")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/libidn/" name "-" version
                                   ".tar.lz"))
               (sha256
                (base32
-                "1a5cv79q6b719jv4fpwjl3r0mmx9qcpla98v9dk64cgxn8f8di10"))))
+                "14yw4w37ya6rcqa7h6p44x6711dwgq2j22xg6k79ybbf04sj88kb"))))
     (native-inputs
      `(("lzip" ,lzip)))
     (inputs

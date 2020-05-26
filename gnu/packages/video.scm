@@ -11,7 +11,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2018, 2019, 2020 Eric Bavier <bavier@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Feng Shu <tumashu@163.com>
@@ -1191,7 +1191,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.8")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1200,13 +1200,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                     "/vlc-" version ".tar.xz"))
               (sha256
                (base32
-                "1xmxjpyzdhabchwncz6lvx3kzvl7fz9c42bkv3nbj68albs9w570"))
-              (patches
-               (search-patches
-                ;; TODO: The test "libvlc_slaves" fails.  Applied upstream as
-                ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=4186c94104ee528abd6860611b49515f3e6ec644>.
-                ;; Try removing it in 3.0.9.
-                "vlc-fix-test_libvlc_slaves.patch"))))
+                "0cackl1084hcmg4myf3kvjvd6sjxmzn0c0qkmanz6brvgzyanrm9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -1311,20 +1305,6 @@ videoformats depend on the configuration flags of ffmpeg.")
                ;; which fails in our sandboxed build system
                (substitute* "test/run_vlc.sh"
                  (("./vlc --ignore-config") "echo"))
-
-               ;; modules/text_renderer/freetype/text_layout.c uses a
-               ;; now-deprecated interface 'fribidi_get_par_embedding_levels'
-               ;; from fribidi.h, so for now we enable the use of deprecated
-               ;; fribidi interfaces from this file.
-               ;; FIXME: Try removing this for vlc >= 3.0.3.
-               (substitute* "modules/text_renderer/freetype/text_layout.c"
-                 (("# define FRIBIDI_NO_DEPRECATED 1") ""))
-
-               ;; Fix build with libssh2 > 1.8.0:
-               ;; <https://trac.videolan.org/vlc/ticket/22060>
-               ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=11449b5cd8b415768e010d9b7c1d6ba3cea21f82>
-               (substitute* "modules/access/sftp.c"
-                 (("010801") "010900"))
                #t)))
          (add-after 'strip 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
@@ -1389,7 +1369,7 @@ streaming protocols.")
        ("libdvdcss" ,libdvdcss)
        ("libdvdnav" ,libdvdnav)         ; ignored without libdvdread
        ("libdvdread" ,libdvdread)       ; ignored without libdvdnav
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libmpeg2" ,libmpeg2)
        ("libmpg123" ,mpg123)            ; audio codec for MP3
        ("libpng" ,libpng)
@@ -1487,7 +1467,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libdvdread" ,libdvdread)
        ("libdvdnav" ,libdvdnav)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libx11" ,libx11)
@@ -1630,7 +1610,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.03.24")
+    (version "2020.05.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1638,7 +1618,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "05l4asakakxn53wrvxn6c03fd80zdizdbj6r2cj8c1ja3sj9i8s5"))))
+                "0qigk1bml6vkck4rs0wnmr46j5gkz04zn30jvnw1r4czjs7vnpal"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2428,7 +2408,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("glu" ,glu)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libx11" ,libx11)
        ("qtbase" ,qtbase)
        ("eudev" ,eudev)))
@@ -2948,16 +2928,16 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cisco/"
-                                  name "/releases/download/v"
-                                  version "/Source.Code.tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cisco/openh264")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iq802xfsfkskg6q1j0kg90xh04vv1sxf61mrmahgynz5d7hx2ii"))))
+                "1wba260n1932vafd5ni2jqv9kzc7lj6a1asm1cqk8jv690m6zvpi"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)
@@ -3239,6 +3219,7 @@ programmers to access a standard API to open and decompress media files.")
                (base32
                 "11b83qazc8h0iidyj1rprnnjdivj1lpphvpa08y53n42bfa36pn5"))
               (patches (search-patches "aegisub-icu59-include-unistr.patch"
+                                       "aegisub-make43.patch"
                                        "aegisub-boost68.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -3430,7 +3411,7 @@ It counts more than 100 plugins.")
        ("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("libjpeg" ,libjpeg-turbo)
        ("ffmpeg" ,ffmpeg-3.4)
        ("libmicrohttpd" ,libmicrohttpd)
        ("sqlite" ,sqlite)))

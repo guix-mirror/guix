@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -174,7 +174,12 @@ database {
                              (const %dicod-activation))
           (service-extension shepherd-root-service-type
                              dicod-shepherd-service)))
-   (default-value (dicod-configuration))))
+   (default-value (dicod-configuration))
+   (description
+    "Run @command{dicod}, the dictionary server of
+@uref{https://www.gnu.org/software/dico, GNU Dico}.  @command{dicod}
+implements the standard DICT protocol supported by clients such as
+@command{dico} and GNOME Dictionary.")))
 
 (define* (dicod-service #:key (config (dicod-configuration)))
   "Return a service that runs the @command{dicod} daemon, an implementation

@@ -1171,6 +1171,8 @@ for both major versions of GTK+."
     ;; Don't run the hook when there's nothing to do.
     (let* ((pkg-gtk+ (module-ref        ; lazy reference
                       (resolve-interface '(gnu packages gtk)) 'gtk+))
+           (pkg-gtk+2 (module-ref        ; lazy reference
+                       (resolve-interface '(gnu packages gtk)) 'gtk+-2))
            (gexp #~(begin
                      #$(if gtk+
                            (build
@@ -1184,7 +1186,7 @@ for both major versions of GTK+."
                            (build
                             gtk+-2 "2.10.0"
                             #~(string-append
-                               #$gtk+-2 "/bin/gtk-query-immodules-2.0"))
+                               #$pkg-gtk+2:bin "/bin/gtk-query-immodules-2.0"))
                            #t))))
       (if (or gtk+ gtk+-2)
           (gexp->derivation "gtk-im-modules" gexp
@@ -1487,6 +1489,7 @@ the entries in MANIFEST."
                     ;; <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=29654#23>.
                     #:env-vars `(("MALLOC_PERTURB_" . "1"))
 
+                    #:substitutable? #f
                     #:local-build? #t
                     #:properties
                     `((type . profile-hook)
@@ -1624,8 +1627,10 @@ are cross-built for TARGET."
                          (guix search-paths)
                          (srfi srfi-1))
 
-            (setvbuf (current-output-port) _IOLBF)
-            (setvbuf (current-error-port) _IOLBF)
+            (let ((line (cond-expand (guile-2.2 'line)
+                                     (else _IOLBF)))) ;Guile 2.0
+              (setvbuf (current-output-port) line)
+              (setvbuf (current-error-port) line))
 
             #+(if locales? set-utf8-locale #t)
 

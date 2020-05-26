@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
@@ -40,6 +40,7 @@
             find-long-option
             find-long-options
             make-essential-device-nodes
+            make-hurd-device-nodes
             make-static-device-nodes
             configure-qemu-networking
 
@@ -223,7 +224,7 @@ one specific hardware device. These we have to create."
               (call-with-input-file devname-name
                                     read-static-device-nodes))))
 
-(define* (make-essential-device-nodes #:key (root "/"))
+(define* (make-essential-device-nodes #:optional (root "/"))
   "Make essential device nodes under ROOT/dev."
   ;; The hand-made devtmpfs/udev!
 
@@ -322,6 +323,36 @@ one specific hardware device. These we have to create."
 
   ;; File systems in user space (FUSE).
   (mknod (scope "dev/fuse") 'char-special #o666 (device-number 10 229)))
+
+(define* (make-hurd-device-nodes #:optional (root "/"))
+  "Make some of the nodes needed on GNU/Hurd."
+  (define (scope dir)
+    (string-append root
+                   (if (string-suffix? "/" root)
+                       ""
+                       "/")
+                   dir))
+
+  (mkdir (scope "dev"))
+  (for-each (lambda (file)
+              (call-with-output-file (scope file)
+                (lambda (port)
+                  (chmod port #o666))))
+            '("dev/null"
+              "dev/zero"
+              "dev/full"
+              "dev/random"
+              "dev/urandom"))
+  ;; Don't create /dev/console, /dev/vcs, etc.: they are created by
+  ;; console-run on first boot.
+
+  (mkdir (scope "servers"))
+  (mkdir (scope "servers/socket"))
+  ;; Don't create /servers/socket/1 & co: runsystem does that on first boot.
+
+  ;; TODO: Set the 'gnu.translator' extended attribute for passive translator
+  ;; settings?
+  )
 
 (define %host-qemu-ipv4-address
   (inet-pton AF_INET "10.0.2.10"))
@@ -534,10 +565,13 @@ upon error."
             ;; The "--root=SPEC" kernel command-line option always provides a
             ;; string, but the string can represent a device, a UUID, or a
             ;; label.  So check for all three.
-            (let ((root (cond ((string-prefix? "/" root) root)
-                              ((uuid root) => identity)
-                              (else (file-system-label root)))))
-              (mount-root-file-system (canonicalize-device-spec root)
+            (let ((device-spec (cond ((string-prefix? "/" root) root)
+                                     ((uuid root) => identity)
+                                     ((string-contains root ":/") #f) ; nfs
+                                     (else (file-system-label root)))))
+              (mount-root-file-system (if device-spec
+                                          (canonicalize-device-spec device-spec)
+                                          root)
                                       root-fs-type
                                       #:volatile-root? volatile-root?
                                       #:flags root-fs-flags

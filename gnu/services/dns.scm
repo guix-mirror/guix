@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -638,7 +639,10 @@
                         (service-extension activation-service-type
                                            knot-activation)
                         (service-extension account-service-type
-                                           (const %knot-accounts))))))
+                                           (const %knot-accounts))))
+                (description
+                 "Run @uref{https://www.knot-dns.cz/, Knot}, an authoritative
+name server for the @acronym{DNS, Domain Name System}.")))
 
 
 ;;;
@@ -748,6 +752,8 @@ cache.size = 100 * MB
                     (default #f))       ;boolean
   (servers          dnsmasq-configuration-servers
                     (default '()))      ;list of string
+  (addresses        dnsmasq-configuration-addresses
+                    (default '()))      ;list of string
   (cache-size       dnsmasq-configuration-cache-size
                     (default 150))      ;integer
   (negative-cache?  dnsmasq-configuration-negative-cache?
@@ -759,7 +765,7 @@ cache.size = 100 * MB
                                 no-hosts?
                                 port local-service? listen-addresses
                                 resolv-file no-resolv? servers
-                                cache-size negative-cache?)
+                                addresses cache-size negative-cache?)
      (shepherd-service
       (provision '(dnsmasq))
       (requirement '(networking))
@@ -783,6 +789,8 @@ cache.size = 100 * MB
                          '())
                   #$@(map (cut format #f "--server=~a" <>)
                           servers)
+                  #$@(map (cut format #f "--address=~a" <>)
+                          addresses)
                   #$(format #f "--cache-size=~a" cache-size)
                   #$@(if negative-cache?
                          '()

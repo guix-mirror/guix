@@ -1204,14 +1204,14 @@ multi-system game/emulator system.")
 (define-public scummvm
   (package
     (name "scummvm")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.scummvm.org/frs/scummvm/" version
                            "/scummvm-" version ".tar.xz"))
        (sha256
-        (base32 "1a6waf1ybp91nwva8g650cljlfb1di4l0jv13vg6yfgkas9pclsp"))))
+        (base32 "1c4fz1nfg0nqnqx9iipayhzcsiqdmfxm2i95nw9dbhshhsdnrhf4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                 ;require "git"

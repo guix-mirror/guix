@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 #
 # This file is part of GNU Guix.
@@ -82,3 +82,17 @@ then false; else true; fi
 
 # Try --load-path
 guix graph -L $module_dir dummy | grep 'label = "dummy'
+
+# Displaying shortest paths (or lack thereof).
+if guix graph --path emacs vim; then false; else true; fi
+
+path="\
+emacs
+gnutls
+guile
+libffi"
+test "`guix graph --path emacs libffi | cut -d '@' -f1`" = "$path"
+
+# At the derivation level, there's a direct path because libffi is propagated
+# via gtk+.
+test "`guix graph --path -t derivation emacs libffi | wc -l`" -ge 2

@@ -4,11 +4,11 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
@@ -35,6 +35,8 @@
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2020 Holger Peters <holger.peters@posteo.de>
+;;; Copyright © 2020 Noisytoot <noisytoot@gmail.com>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,7 +95,6 @@
         (base32
          "09pkw6f1790prnrq0k8cqgnf1qy57ll8lpmc6kld09q7zw4vi6i5"))
        (patches (search-patches "python-aiohttp-3.6.2-no-warning-fail.patch"))))
-
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -107,6 +108,17 @@
              ;; make sure the timestamp of this file is > 1990, because a few
              ;; tests like test_static_file_if_modified_since_past_date depend on it
              (invoke "touch" "-d" "2020-01-01" "tests/data.unknown_mime_type")
+
+             ;; FIXME: These tests are failing due to deprecation warnings
+             ;; in Python 3.8.  Remove this when updating to aiohttp >= 3.7.
+             ;; https://github.com/aio-libs/aiohttp/issues/4477
+             ;; https://github.com/aio-libs/aiohttp/issues/4525
+             (with-directory-excursion "tests"
+               (for-each delete-file '("test_client_session.py"
+                                       "test_multipart.py"
+                                       "test_web_middleware.py"
+                                       "test_web_protocol.py"
+                                       "test_web_urldispatcher.py")))
              #t)))))
     (propagated-inputs
      `(("python-aiodns" ,python-aiodns)
@@ -868,6 +880,37 @@ for long polling, WebSockets, and other applications that require a long-lived
 connection to each user.")
     (license license:asl2.0)
     (properties `((python2-variant . ,(delay python2-tornado))))))
+
+(define-public python-tornado-6
+  (package
+    (name "python-tornado")
+    (version "6.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tornado" version))
+       (sha256
+        (base32
+         "1p5n7sw4580pkybywg93p8ddqdj9lhhy72rzswfa801vlidx9qhg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "python" "-m" "tornado.test.runtests")
+             #t)))))
+    (native-inputs
+     `(("python-certifi" ,python-certifi)))
+    (home-page "https://www.tornadoweb.org/")
+    (synopsis "Python web framework and asynchronous networking library")
+    (description
+     "Tornado is a Python web framework and asynchronous networking library,
+originally developed at FriendFeed.  By using non-blocking network I/O,
+Tornado can scale to tens of thousands of open connections, making it ideal
+for long polling, WebSockets, and other applications that require a long-lived
+connection to each user.")
+    (license license:asl2.0)))
 
 (define-public python2-tornado
   (let ((tornado (package-with-python2 (strip-python2-variant python-tornado))))
@@ -1971,14 +2014,16 @@ library.")
            (lambda _
              (delete-file "src/geventhttpclient/tests/test_client.py")
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"  "src/geventhttpclient/tests" "-v"
                      ;; Append the test modules to sys.path to avoid
                      ;; namespace conflict which breaks SSL tests.
-                     "--import-mode=append")
+                     "--import-mode=append"
+                     ;; XXX: Disable test fails with Python 3.8:
+                     ;; https://github.com/gwik/geventhttpclient/issues/119
+                     "-k" (string-append "not test_cookielib_compatibility"))
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
@@ -2161,6 +2206,15 @@ Betamax.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch
+           (lambda _
+             ;; There's a small issue with one test with Python 3.8, this
+             ;; change has been suggested upstream:
+             ;; https://github.com/boto/s3transfer/pull/164
+             (substitute* "tests/unit/test_s3transfer.py"
+               (("super\\(FailedDownloadParts, self\\)\\.submit\\(function\\)")
+                "futures.Future()"))
+             #t))
          (replace 'check
            (lambda _
              ;; Some of the 'integration' tests require network access or
@@ -3268,32 +3322,6 @@ such as IoT applications or multi-user database-driven business applications.")
 Python.")
     (license license:bsd-3)))
 
-;; kaldi-gstreamer-server does not yet work with python-ws4py > 0.3.2
-(define-public python2-ws4py-for-kaldi-gstreamer-server
-  (package (inherit python-ws4py)
-    (name "python2-ws4py")
-    (version "0.3.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "ws4py" version))
-       (sha256
-        (base32
-         "12ys3dv98awhrxd570vla3hqgzq3avjhq4yafhghhq3a942y1928"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         ;; We don't have a package for cherrypy.
-         (add-after 'unpack 'remove-cherrypy-support
-           (lambda _
-             (delete-file "ws4py/server/cherrypyserver.py")
-             #t)))))
-    (propagated-inputs
-     `(("python-gevent" ,python2-gevent)
-       ("python-tornado" ,python2-tornado)))))
-
 (define-public python-slugify
   (package
     (name "python-slugify")
@@ -3621,3 +3649,100 @@ and rendering come directly from GitHub, so you'll know exactly how it will
 appear.  Changes you make to the file will be instantly reflected in the browser
 without requiring a page refresh.")
       (license license:expat))))
+
+(define-public python-port-for
+  (package
+    (name "python-port-for")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "port-for" version))
+       (sha256
+        (base32
+         "1pncxlj25ggw99r0ijfbkq70gd7cbhqdx5ivsxy4jdp0z14cpda7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-urllib3
+           (lambda _
+             (substitute* "port_for/_download_ranges.py"
+               (("urllib2") "urllib3"))
+             #t)))))
+    (propagated-inputs
+     `(("python-urllib3" ,python-urllib3)))
+    (native-inputs
+     `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/kmike/port-for/")
+    (synopsis "TCP localhost port finder and association manager")
+    (description
+     "This package provides a utility that helps with local TCP ports
+management.  It can find an unused TCP localhost port and remember the
+association.")
+    (license license:expat)))
+
+(define-public python-livereload
+  (package
+    (name "python-livereload")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "livereload" version))
+       (sha256
+        (base32
+         "0rhggz185bxc3zjnfpmhcvibyzi86i624za1lfh7x7ajsxw4y9c9"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-tornado" ,python-tornado)))
+    (home-page "https://github.com/lepture/python-livereload")
+    (synopsis "Python LiveReload")
+    (description
+     "Python LiveReload provides a command line utility, @command{livereload},
+for starting a web server in a directory.  It can trigger arbitrary commands
+and serve updated contents upon changes to the directory.")
+    (license license:bsd-3)))
+
+(define-public python-vf-1
+  (package
+    (name "python-vf-1")
+    (version "0.0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "VF-1" version))
+       (sha256
+        (base32
+         "0xlqsaxsiayk1sd07kpz8abbcnab582y29a1y4882fq6j4gma5xi"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/solderpunk/VF-1")
+    (synopsis "Command line gopher client")
+    (description "@code{VF-1} is a command line gopher client with
+@acronym{TLS, Transport Layer Security} support.")
+    (license license:bsd-2)))
+
+(define-public python-websockets
+  (package
+    (name "python-websockets")
+    (version "8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "websockets" version))
+        (sha256
+         (base32
+          "03s3ml6sbki24aajllf8aily0xzrn929zxi84p50zkkbikdd4raw"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))  ; Tests not included in release tarball.
+    (home-page "https://github.com/aaugustin/websockets")
+    (synopsis
+     "Python implementation of the WebSocket Protocol (RFC 6455 & 7692)")
+    (description
+     "@code{websockets} is a library for building WebSocket servers and clients
+in Python with a focus on correctness and simplicity.
+
+Built on top of @code{asyncio}, Python's standard asynchronous I/O framework,
+it provides an elegant coroutine-based API.")
+    (license license:bsd-3)))

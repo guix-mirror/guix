@@ -5,6 +5,8 @@
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages cross-base)
@@ -59,7 +62,7 @@
      '(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'pre-configure
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
              (chdir "target_firmware")
 
              ;; 'configure' is a simple script that runs 'cmake' with
@@ -67,7 +70,7 @@
              (substitute* "configure"
                (("^TOOLCHAIN=.*$")
                 (string-append "TOOLCHAIN="
-                               (assoc-ref inputs "cross-gcc")
+                               (assoc-ref (or native-inputs inputs) "cross-gcc")
                                "\n")))
              #t))
          (replace 'install
@@ -82,8 +85,11 @@
 
     ;; The firmware is cross-compiled using a "bare bones" compiler (no libc.)
     ;; Use our own tool chain for that.
-    (native-inputs `(("cross-gcc" ,(cross-gcc "xtensa-elf"))
-                     ("cross-binutils" ,(cross-binutils "xtensa-elf"))
+    (native-inputs `(("cross-gcc" ,(cross-gcc
+                                    "xtensa-elf"
+                                    #:xbinutils (cross-binutils "xtensa-elf"
+                                                                binutils-2.33)))
+                     ("cross-binutils" ,(cross-binutils "xtensa-elf" binutils-2.33))
                      ("cmake" ,cmake-minimal)
                      ("perl" ,perl)))
     (home-page "https://wireless.wiki.kernel.org/en/users/Drivers/ath9k_htc")
@@ -314,14 +320,26 @@ coreboot.")
     (build-system gnu-build-system)
     (native-inputs
      `(("acpica" ,acpica)
-       ("gcc" ,gcc-5)
+       ("gcc@5" ,gcc-5)
        ("nasm" ,nasm)
        ("python-2" ,python-2)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (arguments
      `(#:tests? #f ; No check target.
        #:phases
        (modify-phases %standard-phases
+         ;; Hide the default GCC from CPLUS_INCLUDE_PATH to prevent it from
+         ;; shadowing the version of GCC provided in native-inputs.
+         (add-after 'set-paths 'hide-gcc7
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                              #\:))
+                        ":"))
+               #t)))
          (replace 'configure
            (lambda _
              (let* ((cwd (getcwd))

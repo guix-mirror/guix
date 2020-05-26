@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -291,13 +292,13 @@ designed to be used in a generic text renderer.")
        ("fribidi" ,fribidi)
        ("glib" ,glib)
        ("gtk+-2" ,gtk+-2)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("liblinebreak" ,liblinebreak)
        ("libxft" ,libxft)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gcc" ,gcc-5)
+     `(("gcc@5" ,gcc-5)
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ; No tests exist.
@@ -309,6 +310,18 @@ designed to be used in a generic text renderer.")
                                       (assoc-ref %outputs "out") "/lib"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'augment-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hide the default GCC from CPLUS_INCLUDE_PATH to prevent a header
+             ;; conflict with the GCC provided in native-inputs.
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                              #\:))
+                        ":"))
+               #t)))
          (delete 'configure)
          (add-after 'unpack 'fix-install-locations
            (lambda* (#:key outputs #:allow-other-keys)

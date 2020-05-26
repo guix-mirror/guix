@@ -3,12 +3,13 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,7 +363,7 @@ tools:
 (define-public cpplint
   (package
     (name "cpplint")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method git-fetch)
@@ -372,9 +373,21 @@ tools:
              (url "https://github.com/cpplint/cpplint")
              (commit version)))
        (sha256
-        (base32 "1ns9wbizr10w7rpyp106d7ip68s5nyskr54vw9bij11sci9z0v3j"))
+        (base32 "1yzcxqx0186sh80p0ydl9z0ld51fn2cdpz9hmhrp15j53g9ira7c"))
        (file-name (git-file-name name version))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'use-later-pytest
+           (lambda _
+             (substitute* "test-requirements"
+               (("pytest.*") "pytest\n"))
+             #t)))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/cpplint/cpplint")
     (synopsis "Static code checker for C++")
     (description "@code{cpplint} is a command-line tool to check C/C++ files
@@ -485,3 +498,24 @@ point and then, after each tween step, plugging back the result.")
 augment the C++ standard library.  The Abseil library code is collected from
 Google's C++ code base.")
     (license license:asl2.0)))
+
+(define-public pegtl
+  (package
+    (name "pegtl")
+    (version "2.8.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/taocpp/PEGTL.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "17crgjfdx55imi2dqnz6xpvsxq07390yfgkz5nd2g77ydkvq9db3"))))
+    (build-system cmake-build-system)
+    (home-page "https://github.com/taocpp/PEGTL")
+    (synopsis "Parsing Expression Grammar template library")
+    (description "The Parsing Expression Grammar Template Library (PEGTL) is
+a zero-dependency C++ header-only parser combinator library for creating
+parsers according to a Parsing Expression Grammar (PEG).")
+    (license license:expat)))

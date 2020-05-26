@@ -787,7 +787,7 @@ second element is the derivation to compile them."
                      (target 'current)
                      (graft? (%graft?))
                      (guile-for-build (%guile-for-build))
-                     (effective-version "2.2")
+                     (effective-version "3.0")
 
                      deprecation-warnings)
   "*Note: This API is subject to change; use at your own risk!*
@@ -888,7 +888,7 @@ derivations--e.g., code evaluated for its side effects."
                            (modules '())
                            (module-path %load-path)
                            (guile-for-build (%guile-for-build))
-                           (effective-version "2.2")
+                           (effective-version "3.0")
                            (graft? (%graft?))
                            references-graphs
                            allowed-references disallowed-references
@@ -1304,49 +1304,6 @@ execution environment."
 ;;; Module handling.
 ;;;
 
-(define %not-slash
-  (char-set-complement (char-set #\/)))
-
-(define (file-mapping->tree mapping)
-  "Convert MAPPING, an alist like:
-
-  ((\"guix/build/utils.scm\" . \"…/utils.scm\"))
-
-to a tree suitable for 'interned-file-tree'."
-  (let ((mapping (map (match-lambda
-                        ((destination . source)
-                         (cons (string-tokenize destination
-                                                %not-slash)
-                               source)))
-                      mapping)))
-    (fold (lambda (pair result)
-            (match pair
-              ((destination . source)
-               (let loop ((destination destination)
-                          (result result))
-                 (match destination
-                   ((file)
-                    (let* ((mode (stat:mode (stat source)))
-                           (type (if (zero? (logand mode #o100))
-                                     'regular
-                                     'executable)))
-                      (alist-cons file
-                                  `(,type (file ,source))
-                                  result)))
-                   ((file rest ...)
-                    (let ((directory (assoc-ref result file)))
-                      (alist-cons file
-                                  `(directory
-                                    ,@(loop rest
-                                            (match directory
-                                              (('directory . entries) entries)
-                                              (#f '()))))
-                                  (if directory
-                                      (alist-delete file result)
-                                      result)))))))))
-          '()
-          mapping)))
-
 (define %utils-module
   ;; This file provides 'mkdir-p', needed to implement 'imported-files' and
   ;; other primitives below.  Note: We give the file name relative to this
@@ -1481,13 +1438,8 @@ TARGET, a GNU triplet."
                       (ice-9 format)
                       (srfi srfi-1)
                       (srfi srfi-26)
+                      (system base target)
                       (system base compile))
-
-         ;; TODO: Inline this on the next rebuild cycle.
-         (ungexp-splicing
-          (if target
-              (gexp ((use-modules (system base target))))
-              (gexp ())))
 
          (define (regular? file)
            (not (member file '("." ".."))))
@@ -1603,12 +1555,12 @@ TARGET, a GNU triplet."
 ;;;
 
 (define (default-guile)
-  ;; Lazily resolve 'guile-2.2' (not 'guile-final' because this is for
+  ;; Lazily resolve 'guile-3.0' (not 'guile-final' because this is for
   ;; programs returned by 'program-file' and we don't want to keep references
   ;; to several Guile packages).  This module must not refer to (gnu …)
   ;; modules directly, to avoid circular dependencies, hence this hack.
   (module-ref (resolve-interface '(gnu packages guile))
-              'guile-2.2))
+              'guile-3.0))
 
 (define* (load-path-expression modules #:optional (path %load-path)
                                #:key (extensions '()) system target)

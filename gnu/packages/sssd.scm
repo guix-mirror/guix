@@ -165,7 +165,7 @@ fundamental object types for C.")
        ("libxml2" ,libxml2)             ; for xmllint
        ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)
-       ("util-linux" ,util-linux)))     ; for uuid.h, reqired for KCM
+       ("util-linux" ,util-linux "lib"))) ;for uuid.h, reqired for KCM
     (home-page "https://pagure.io/SSSD/sssd/")
     (synopsis "System security services daemon")
     (description "SSSD is a system daemon.  Its primary function is to provide

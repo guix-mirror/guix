@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -168,14 +168,14 @@ please install the @code{flyer-composer-gui} package.")))
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.79.0")
+   (version "0.86.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1j18jlv1q6h21azb939gqjsgcbsh5qcd8dwxdmad54p5ixha91gr"))))
+              "0v3z4mk1rr8i0c4cfkab7pnxdbil30j4cm4w6cqlq6cfghkhlqxg"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -512,7 +512,7 @@ using the DjVuLibre library.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("mujs" ,mujs)
        ("mupdf" ,mupdf)
        ("openjpeg" ,openjpeg)
@@ -652,7 +652,7 @@ interaction.")
      `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -711,7 +711,7 @@ extracting content or merging files.")
         ("freetype" ,freetype)
         ("harfbuzz" ,harfbuzz)
         ("jbig2dec" ,jbig2dec)
-        ("libjpeg" ,libjpeg)
+        ("libjpeg" ,libjpeg-turbo)
         ("libx11" ,libx11)
         ("libxext" ,libxext)
         ("mujs" ,mujs)
@@ -1032,7 +1032,7 @@ the PDF pages.")
         #:tests? #f
         #:make-flags (list "CC=gcc"
                            (string-append "prefix=" (assoc-ref %outputs "out")))))
-    (inputs `(("libjpeg" ,libjpeg)
+    (inputs `(("libjpeg" ,libjpeg-turbo)
               ("curl" ,curl)
               ("libtiff" ,libtiff)
               ("libudev" ,eudev)

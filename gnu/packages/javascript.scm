@@ -409,14 +409,14 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.6")
+    (version "1.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mujs.com/downloads/mujs-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1q9w2dcspfp580pzx7sw7x9gbn8j0ak6dvj75wd1ml3f3q3i43df"))))
+                "1ilhay15z4k7mlzs6g2d00snivin7vp72dfw5wwpmc0x70jr31l2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

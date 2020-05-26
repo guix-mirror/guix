@@ -655,6 +655,87 @@ limitation, automatic pruning, energy saving and replay resistance.")
 a WAI handler, via the native Haskell TLS implementation.")
     (license license:expat)))
 
+(define-public ghc-websockets
+  (package
+    (name "ghc-websockets")
+    (version "0.12.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/websockets/websockets-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1vp3790w3hmr6v96314vdx74f7sg2c7hvnc93gafq0xhbxnr7nvx"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network" ,ghc-network)
+       ("ghc-random" ,ghc-random)
+       ("ghc-sha" ,ghc-sha)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-entropy" ,ghc-entropy)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://jaspervdj.be/websockets/")
+    (synopsis
+     "Write WebSocket-capable servers in Haskell")
+    (description
+     "This library allows you to write WebSocket-capable servers.
+
+An example server:
+@url{https://github.com/jaspervdj/websockets/blob/master/example/server.lhs}
+An example client:
+@url{https://github.com/jaspervdj/websockets/blob/master/example/client.hs}
+
+See also:
+@itemize
+@item The specification of the WebSocket protocol:
+@url{http://www.whatwg.org/specs/web-socket-protocol/}
+@item The JavaScript API for dealing with WebSockets:
+@url{http://www.w3.org/TR/websockets/}
+@end itemize")
+    (license license:bsd-3)))
+
+(define-public ghc-wai-websockets
+  (package
+    (name "ghc-wai-websockets")
+    (version "3.0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/wai-websockets/wai-websockets-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0b2xmdsrsqpssyib53wbr6r8hf75789ndyyanv37sv99iyqcwz4i"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-wai" ,ghc-wai)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network" ,ghc-network)
+       ("ghc-websockets" ,ghc-websockets)
+       ("ghc-http-types" ,ghc-http-types)))
+    (arguments
+     `(#:configure-flags '("--flags=-example")))
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis
+     "Provide a bridge between WAI and the websockets package")
+    (description
+     "Use websockets with WAI applications, primarily those hosted via Warp.")
+    (license license:expat)))
+
 (define-public ghc-xss-sanitize
   (package
     (name "ghc-xss-sanitize")
@@ -922,6 +1003,39 @@ essentially the opposite of pretty-printing.")
      "aeson-qq provides a JSON quasiquoter for Haskell.  This package exposes
 the function @code{aesonQQ} that compile-time converts a string representation
 of a JSON value into a @code{Data.Aeson.Value}.")
+    (license license:expat)))
+
+(define-public ghc-aeson-better-errors
+  (package
+    (name "ghc-aeson-better-errors")
+    (version "0.9.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/aeson-better-errors/aeson-better-errors-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "09vkyrhwak3bmpfsqcd2az8hfqqkxyhg468hv5avgisy0nzh3w38"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-void" ,ghc-void)))
+    (home-page
+     "https://github.com/hdgarrood/aeson-better-errors")
+    (synopsis
+     "Better error messages when decoding JSON values in Haskell")
+    (description
+     "Gives you the tools to build parsers to decode JSON values, and gives
+good error messages when parsing fails.  See also
+@url{http://harry.garrood.me/blog/aeson-better-errors/}.")
     (license license:expat)))
 
 (define-public ghc-multipart
@@ -1693,3 +1807,100 @@ non-Haskell dependencies.")
 and Perl's @code{Web::Scraper}.  Scalpel builds on top of TagSoup to provide a
 declarative and monadic interface.")
     (license license:asl2.0)))
+
+(define-public ghc-sourcemap
+  (package
+    (name "ghc-sourcemap")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/sourcemap/sourcemap-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0ynfm44ym8y592wnzdwa0d05dbkffyyg5sm26y5ylzpynk64r85r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (arguments
+     `(#:tests? #f ; FIXME: Fail to compile
+       #:cabal-revision
+       ("1" "1f7q44ar6qfip8fsllg43jyn7r15ifn2r0vz32cbmx0sb0d38dax")))
+    (home-page
+     "http://hackage.haskell.org/package/sourcemap")
+    (synopsis
+     "Implementation of source maps as proposed by Google and Mozilla")
+    (description
+     "Sourcemap provides an implementation of source maps, revision 3,
+proposed by Google and Mozilla here
+@url{https://wiki.mozilla.org/DevTools/Features/SourceMap}.")
+    (license license:bsd-3)))
+
+(define-public ghc-language-javascript
+  (package
+    (name "ghc-language-javascript")
+    (version "0.7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/language-javascript/language-javascript-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15bpqpkjf2y3fk8wff9zlnkpsjc63bnbvhlkxrs9alj0bikq17nk"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (native-inputs
+     `(("ghc-alex" ,ghc-alex)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-happy" ,ghc-happy)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-utf8-light" ,ghc-utf8-light)))
+    (home-page
+     "https://github.com/erikd/language-javascript")
+    (synopsis "Parser for JavaScript")
+    (description
+     "Parses Javascript into an Abstract Syntax Tree (AST).  Initially intended
+as frontend to hjsmin.")
+    (license license:bsd-3)))
+
+(define-public ghc-bower-json
+  (package
+    (name "ghc-bower-json")
+    (version "1.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/bower-json/bower-json-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wvygg3rdbxzrmr61a9w6ddv9pfric85ih8hnxyk0ydzn7i59abs"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-better-errors" ,ghc-aeson-better-errors)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-transformers" ,ghc-transformers)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/hdgarrood/bower-json")
+    (synopsis "Read bower.json from Haskell")
+    (description
+     "This package provides a data type and ToJSON/FromJSON instances for
+Bower's package manifest file, bower.json.")
+    (license license:expat)))

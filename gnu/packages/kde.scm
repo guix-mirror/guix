@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
@@ -209,7 +209,7 @@ projects.")
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.4.6")
+    (version "5.5.1")
     (source
       (origin
         (method url-fetch)
@@ -217,7 +217,7 @@ projects.")
                             "/" version "/src/kdevelop-"
                             version ".tar.xz"))
         (sha256
-         (base32 "01jmrmwbc1hrvq7jdfcc7mxl03q2l6kz57yca2j26xwyvfcfv5sz"))))
+         (base32 "18hxwkdbfw0qs3p19jv6d8wwwdzb9m087891i8w2bzkn21fd5pmy"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -302,15 +302,16 @@ software (Git, Subversion, Mercurial, CVS and Bazaar).")
 (define-public kdevelop-pg-qt
   (package
     (name "kdevelop-pg-qt")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/KDE/kdevelop-pg-qt/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/KDE/kdevelop-pg-qt")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "15ja19gg6x7gww4ch12hy585x55ghbkpsiyr8fqiyjk0j6v07hh5"))))
+        (base32 "1kfab4p717acbdkcdi41d98vwch7v431gb2qi6s38hmclsf8bf8g"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
@@ -529,7 +530,7 @@ cards.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("qtbase" ,qtbase)
        ("qca" ,qca)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux "lib")))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library for managing partitions")
     (description "Library for managing partitions.")

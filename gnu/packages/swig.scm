@@ -2,6 +2,8 @@
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,34 +26,28 @@
   #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages pcre)
-  #:use-module (gnu packages guile)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python))
 
 (define-public swig
   (package
     (name "swig")
-    (version "3.0.12")
+    (version "4.0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                  name "-" version "/"
                                  name "-" version ".tar.gz"))
-             (patches (search-patches "swig-guile-gc.patch"))
              (sha256
               (base32
-               "0kf99ygrjs5616gsqhz1l7bib3a12izmxi7g48bwblbymr3z9ybw"))))
+               "1ac7g0gd8ndwv3ybqn5vjgqxa7090bby4db164a7mn9ssp8b803s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'set-env
-           ;; Required since Perl 5.26.0's removal of the current
-           ;; working directory from @INC.
-           ;; TODO Try removing this for later versions of SWIG.
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t))
          (add-before 'configure 'workaround-gcc-bug
            (lambda _
              ;; XXX: Don't add the -isystem flag, or GCCs #include_next
@@ -60,17 +56,12 @@
                (("-isystem ") "-I"))
              #t)))))
     (native-inputs `(("boost" ,boost)
-                     ("pcre" ,pcre "bin")))       ;for 'pcre-config'
-    (inputs `(;; Provide these to run the corresponding tests.
-              ("guile" ,guile-2.0)
-              ("perl" ,perl)))
-              ;; FIXME: reactivate input python as soon as the test failures
-              ;;   fatal error: Python.h: No such file or directory
-              ;;   # include <Python.h>
-              ;; are fixed.
-              ;; The python part probably never worked and does not seem to
-              ;; be needed for currently dependent packages.
-;;               ("python" ,python-wrapper)))
+                     ("pcre" ,pcre "bin")       ;for 'pcre-config'
+                     ;; The following are for tests and examples:
+                     ("guile" ,guile-3.0)
+                     ("perl" ,perl)))
+                     ;;("python" ,python-wrapper)
+    (inputs `(("pcre" ,pcre)))
     (home-page "http://swig.org/")
     (synopsis
      "Interface compiler that connects C/C++ code to higher-level languages")

@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -74,7 +74,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "3.3")
+    (version "3.4")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -82,7 +82,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "04c8cgwzkax481sz7lbzy23mk79bqmjy3qpvr7vxa4c14mc9k5gk"))))
+                "0r83zincbfnk8g13xwm2qaccml9srnwlsmpc1f0nhwjkqyjmqm0q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases (delete 'configure))
@@ -158,7 +158,6 @@ actions.")
                  write-dummy-changelog)
                (call-with-output-file "ChangeLog.html"
                  write-dummy-changelog)
-               (setenv "NOCONFIGURE" "true")
 
                ;; Don't try to run 'git' for the version number.
                (substitute* "configure.ac"
@@ -207,7 +206,7 @@ collection.  Geeqie was initially based on GQview.")
                 "0hi9v0rdx47nys0wvm9xasdrafa34r5kq6crb074a0ipwmc60iiq"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
-              ("libjpeg" ,libjpeg)))
+              ("libjpeg" ,libjpeg-turbo)))
     (native-inputs `(("intltool"   ,intltool)
                      ("pkg-config" ,pkg-config)))
     (synopsis "Simple and fast image viewer for X")
@@ -385,7 +384,7 @@ It supports JPEG, PNG and GIF formats.")
        ("zlib" ,zlib)
        ("exiv2" ,exiv2)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("lcms" ,lcms)
        ("openexr" ,openexr)
        ("fftw" ,fftwf)
@@ -672,7 +671,7 @@ with tiling window managers.  Features include:
        ("glib" ,glib)
        ("gtk+" ,gtk+-2)
        ("lcms" ,lcms)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("libexif" ,libexif)
        ("libx11" ,libx11)

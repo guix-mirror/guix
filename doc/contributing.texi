@@ -1083,12 +1083,14 @@ guix pull --url=/path/to/your/checkout --profile=/tmp/guix.master
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
-a subject.  You may use your email client or the @command{git
-send-email} command (@pxref{Sending a Patch Series}).  We prefer to get
-patches in plain text messages, either inline or as MIME attachments.
-You are advised to pay attention if your email client changes anything
-like line breaks or indentation which could potentially break the
-patches.
+a subject, if your patch is to be applied on a branch other than
+@code{master}, say @code{core-updates}, specify it in the subject like
+@samp{[PATCH core-updates] @dots{}}.  You may use your email client or
+the @command{git send-email} command (@pxref{Sending a Patch Series}).
+We prefer to get patches in plain text messages, either inline or as
+MIME attachments.  You are advised to pay attention if your email client
+changes anything like line breaks or indentation which could potentially
+break the patches.
 
 When a bug is resolved, please close the thread by sending an email to
 @email{@var{NNN}-done@@debbugs.gnu.org}.
@@ -1187,18 +1189,38 @@ the OpenPGP key you will use to sign commits, and giving its fingerprint
 (see below).  See @uref{https://emailselfdefense.fsf.org/en/}, for an
 introduction to public-key cryptography with GnuPG.
 
+@c See <https://sha-mbles.github.io/>.
+Set up GnuPG such that it never uses the SHA1 hash algorithm for digital
+signatures, which is known to be unsafe since 2019, for instance by
+adding the following line to @file{~/.gnupg/gpg.conf} (@pxref{GPG
+Esoteric Options,,, gnupg, The GNU Privacy Guard Manual}):
+
+@example
+digest-algo sha512
+@end example
+
 @item
 Maintainers ultimately decide whether to grant you commit access,
 usually following your referrals' recommendation.
 
 @item
+@cindex OpenPGP, signed commits
 If and once you've been given access, please send a message to
 @email{guix-devel@@gnu.org} to say so, again signed with the OpenPGP key
 you will use to sign commits (do that before pushing your first commit).
 That way, everyone can notice and ensure you control that OpenPGP key.
 
-@c TODO: Add note about adding the fingerprint to the list of authorized
-@c keys once that has stabilized.
+@quotation Important
+Before you can push for the first time, maintainers must:
+
+@enumerate
+@item
+add your OpenPGP key to the @code{keyring} branch;
+@item
+add your OpenPGP fingerprint to the @file{.guix-authorizations} file of
+the branch(es) you will commit to.
+@end enumerate
+@end quotation
 
 @item
 Make sure to read the rest of this section and... profit!

@@ -9,7 +9,7 @@
 # Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
-# Copyright © 2018 ng0 <ng0@n0.is>
+# Copyright © 2018 Nikita <nikita@n0.is>
 # Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 # Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
@@ -70,6 +70,7 @@ MODULES =					\
   guix/docker.scm	   			\
   guix/json.scm					\
   guix/records.scm				\
+  guix/openpgp.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
   guix/combinators.scm				\
@@ -94,6 +95,7 @@ MODULES =					\
   guix/repl.scm					\
   guix/inferior.scm				\
   guix/describe.scm				\
+  guix/quirks.scm				\
   guix/channels.scm				\
   guix/gnu-maintenance.scm			\
   guix/self.scm					\
@@ -174,6 +176,7 @@ MODULES =					\
   guix/build/git.scm				\
   guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
+  guix/build/gnu-bootstrap.scm			\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
@@ -336,6 +339,7 @@ AUX_FILES =						\
   gnu/packages/aux-files/linux-libre/4.9-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.4-i686.conf	\
   gnu/packages/aux-files/linux-libre/4.4-x86_64.conf	\
+  gnu/packages/aux-files/pack-audit.c			\
   gnu/packages/aux-files/run-in-namespace.c
 
 # Templates, examples.
@@ -414,6 +418,7 @@ SCM_TESTS =					\
   tests/nar.scm				\
   tests/networking.scm				\
   tests/opam.scm				\
+  tests/openpgp.scm				\
   tests/packages.scm				\
   tests/pack.scm				\
   tests/pki.scm				\
@@ -564,6 +569,11 @@ EXTRA_DIST +=						\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
   tests/cve-sample.json					\
+  tests/civodul.key					\
+  tests/rsa.key						\
+  tests/dsa.key						\
+  tests/ed25519.key					\
+  tests/ed25519.sec					\
   build-aux/config.rpath				\
   bootstrap						\
   doc/build.scm						\

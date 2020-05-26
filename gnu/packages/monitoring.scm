@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -48,11 +50,14 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages time)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public nagios
   (package
@@ -445,3 +450,47 @@ written in Go with pluggable metric collectors.")
     (description "This package provides a file system monitor.")
     (home-page "https://github.com/emcrisostomo/fswatch")
     (license license:gpl3+)))
+
+(define-public collectd
+  (package
+    (name "collectd")
+    (version "5.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://storage.googleapis.com/collectd-tarballs/collectd-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1cjxksxdqcqdccz1nbnc2fp6yy84qq361ynaq5q8bailds00mc9p"))
+              (patches (search-patches "collectd-5.11.0-noinstallvar.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--localstatedir=/var" "--sysconfdir=/etc")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autoreconf
+                    (lambda _
+                      ;; Required because of patched sources.
+                      (invoke "autoreconf" "-vfi"))))))
+    (inputs
+     `(("rrdtool" ,rrdtool)
+       ("curl" ,curl)
+       ("libyajl" ,libyajl)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://collectd.org/")
+    (synopsis "Collect system and application performance metrics periodically")
+    (description
+     "collectd gathers metrics from various sources such as the operating system,
+applications, log files and external devices, and stores this information or
+makes it available over the network.  Those statistics can be used to monitor
+systems, find performance bottlenecks (i.e., performance analysis) and predict
+future system load (i.e., capacity planning).")
+    ;; license:expat for the daemon in src/daemon/ and some plugins,
+    ;; license:gpl2 for other plugins
+    (license (list license:expat license:gpl2))))
+

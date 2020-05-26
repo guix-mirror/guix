@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,57 +28,45 @@
   #:use-module (gnu packages python)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu))
 
-;; These patches are taken from ICUs 'maint-64' branch and will be included in
-;; 64.3.  The latter patch is needed because many packages use "invalid"
-;; locales which misbehave with ICU 64.2.  See discussion at
-;; <https://lists.gnu.org/archive/html/guix-devel/2019-07/msg00343.html>.
-(define %icu4c-patches
-  (list (origin
-          (method url-fetch)
-          (uri (string-append "https://github.com/unicode-org/icu/commit/"
-                              "7788f04eb9be0d7ecade6af46cf7b9825447763d.patch"))
-          (file-name "icu4c-datetime-regression.patch")
-          (sha256
-           (base32
-            "0gs2sbdfpzwwdjqcqr0c16fw3g7wy3gb1gbgvzs9k1ciw0bhpv4w")))
-        (origin
-          (method url-fetch)
-          (uri (string-append "https://github.com/unicode-org/icu/commit/"
-                              "cfb20862909ff105d4f2c43923c97561bc5a5815.patch"))
-          (file-name "icu4c-locale-mapping.patch")
-          (sha256
-           (base32
-            "0s5psb60aisj6icziblvlp9dqcz56n3887i8ib0yidbjnnrw5b97")))))
-
 (define-public icu4c
   (package
    (name "icu4c")
-   (replacement icu4c/fixed)
-   (version "64.2")
+   (version "66.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://download.icu-project.org/files/icu4c/"
-                  version
+                  "https://github.com/unicode-org/icu/releases/download/release-"
+                  (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
-            (patches %icu4c-patches)
             (patch-flags '("-p2"))
+            (patches (search-patches "icu4c-CVE-2020-10531.patch"))
             (sha256
-             (base32 "0v0xsf14xwlj125y9fd8lrhsaych4d8liv8gr746zng6g225szb2"))))
+             (base32 "0bharwzc9nzkbrcf405z2nb3h7q0711z450arz0mjmdrk8hg58sj"))))
    (build-system gnu-build-system)
+   ;; When cross-compiling, this package needs a source directory of a
+   ;; native-build of itself.
    (native-inputs
-    `(("python" ,python-minimal)))
+    `(("python" ,python-minimal)
+      ,@(if (%current-target-system)
+            `(("icu4c-build-root" ,icu4c-build-root))
+            '())))
    (inputs
     `(("perl" ,perl)))
    (arguments
     `(#:configure-flags
-      '("--enable-rpath")
+      (list
+       "--enable-rpath"
+        ,@(if (%current-target-system)
+              '((string-append "--with-cross-build="
+                                (assoc-ref %build-inputs "icu4c-build-root")))
+              '()))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'chdir-to-source
@@ -106,34 +95,24 @@ C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
 
-(define icu4c/fixed
+(define-public icu4c-build-root
   (package
     (inherit icu4c)
-    (source (origin
-              (inherit (package-source icu4c))
-              (patch-flags '("-p2"))
-              (patches (append
-                         (origin-patches (package-source icu4c))
-                         (search-patches
-                           "icu4c-CVE-2020-10531.patch")))))))
-
-(define-public icu4c-66.1
-  (package
-    (inherit icu4c)
-    (version "66.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/unicode-org/icu/releases/download/release-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\- x)) version)
-                    "/icu4c-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
-                    "-src.tgz"))
-              (patch-flags '("-p2"))
-              (patches (search-patches "icu4c-CVE-2020-10531.patch"))
-              (sha256
-               (base32
-                "0bharwzc9nzkbrcf405z2nb3h7q0711z450arz0mjmdrk8hg58sj"))))))
+    (name "icu4c-build-root")
+    (arguments
+     (substitute-keyword-arguments (package-arguments icu4c)
+       ((#:tests? _ '())
+        #f)
+       ((#:out-of-source? _ '())
+        #t)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (copy-recursively "../build" out)
+                 #t)))))))
+    (native-inputs '())))
 
 (define-public java-icu4j
   (package

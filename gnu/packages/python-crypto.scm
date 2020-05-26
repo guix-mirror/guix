@@ -9,7 +9,7 @@
 ;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
@@ -280,7 +280,8 @@ making them easy to handle and incorporate into other protocols.")
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycrypto" version))
-      (patches (search-patches "python-pycrypto-CVE-2013-7459.patch"))
+      (patches (search-patches "python-pycrypto-CVE-2013-7459.patch"
+                               "python-pycrypto-time-clock.patch"))
       (sha256
        (base32
         "0g0ayql5b9mkjam8hym6zyg6bv77lbh66rv1fyvgqb17kfc1xkpj"))))

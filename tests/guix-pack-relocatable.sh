@@ -84,6 +84,29 @@ fi
 grep 'GNU sed' "$test_directory/output"
 chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
 
+case "`uname -m`" in
+    x86_64|i?86)
+	# Try '-RR' and PRoot.
+	tarball="`guix pack -RR -S /Bin=bin sed`"
+	tar tvf "$tarball" | grep /bin/proot
+	(cd "$test_directory"; tar xvf "$tarball")
+	GUIX_EXECUTION_ENGINE="proot"
+	export GUIX_EXECUTION_ENGINE
+	"$test_directory/Bin/sed" --version > "$test_directory/output"
+	grep 'GNU sed' "$test_directory/output"
+
+	# Now with fakechroot.
+	GUIX_EXECUTION_ENGINE="fakechroot"
+	"$test_directory/Bin/sed" --version > "$test_directory/output"
+	grep 'GNU sed' "$test_directory/output"
+
+	chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
+	;;
+    *)
+	echo "skipping PRoot test" >&2
+	;;
+esac
+
 # Ensure '-R' works with outputs other than "out".
 tarball="`guix pack -R -S /share=share groff:doc`"
 (cd "$test_directory"; tar xvf "$tarball")

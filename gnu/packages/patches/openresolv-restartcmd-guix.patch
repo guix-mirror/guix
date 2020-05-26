@@ -1,0 +1,34 @@
+From 7f0ce36828ec1e130bee857b8236ca091e4d8a2c Mon Sep 17 00:00:00 2001
+From: Brice Waegeneire <brice@waegenei.re>
+Date: Sat, 9 May 2020 15:52:06 +0200
+Subject: [PATCH] Add RESTARTCMD for Guix System.
+
+---
+
+openresolv need to know how to restart the nscd service, this patch teach it
+to do it on Guix System by using shepherd.
+
+ resolvconf.in | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/resolvconf.in b/resolvconf.in
+index 3cad04d..5ef5294 100644
+--- a/resolvconf.in
++++ b/resolvconf.in
+@@ -369,6 +369,13 @@ detect_init()
+ 			then
+ 				/etc/rc.d/$1 restart
+ 			fi'
++	elif [ -e /gnu/store ] && [ -e /run/current-system/profile ]; then
++		# Guix System
++		RESTARTCMD='
++			if /run/current-system/profile/bin/herd status $1 2>&1
++			then
++				/run/current-system/profile/bin/herd restart $1
++			fi'
+ 	else
+ 		for x in /etc/init.d/rc.d /etc/rc.d /etc/init.d; do
+ 			[ -d $x ] || continue
+-- 
+2.26.0
+

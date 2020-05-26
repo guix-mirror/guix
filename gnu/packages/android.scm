@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Stefan Handschuh <handschuh.stefan@googlemail.com>
 ;;; Copyright © 2015 Kai-Chung Yan <seamlikok@gmail.com>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -611,9 +611,20 @@ file system.")
        #:make-flags '("CXXFLAGS=-std=gnu++11 -Wno-error")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'augment-CPLUS_INCLUDE_PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hide the default GCC from CPLUS_INCLUDE_PATH to prevent it from
+             ;; shadowing the version of GCC provided in native-inputs.
+             (let ((gcc (assoc-ref inputs "gcc")))
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH")
+                                              #\:))
+                        ":"))
+               #t)))
          (add-after 'unpack 'enter-source
            (lambda _ (chdir "libutils") #t))
-
          (add-after 'install 'install-headers
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (copy-recursively "../include/utils" (string-append (assoc-ref outputs "out") "/include/utils")))))))
@@ -623,7 +634,7 @@ file system.")
     (native-inputs
      `(("android-bionic-uapi" ,android-bionic-uapi)
        ("android-liblog" ,android-liblog)
-       ("gcc" ,gcc-5))) ; XXX: fails to build with GCC 7
+       ("gcc@5" ,gcc-5))) ; XXX: fails to build with GCC 7
     (home-page "https://developer.android.com/")
     (synopsis "Android utility library")
     (description "@code{android-libutils} provides utilities for Android NDK developers.")
@@ -840,7 +851,7 @@ script that you can put anywhere in your path.")
               (install-file "abootimg" bin)
               #t))))))
     (inputs
-     `(("libblkid" ,util-linux)))
+     `(("libblkid" ,util-linux "lib")))
     (home-page "https://ac100.grandou.net/abootimg")
     (synopsis "Tool for manipulating Android Boot Images")
     (description "This package provides a tool for manipulating old Android

@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2016 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
@@ -213,6 +213,39 @@ and any other types of tests into a single test suite.")
 @url{https://hackage.haskell.org/package/hedgehog, hedgehog testing library}
 with the @url{https://hackage.haskell.org/package/tasty, tasty testing
 framework}.")
+    (license license:bsd-3)))
+
+(define-public ghc-tasty-hspec
+  (package
+    (name "ghc-tasty-hspec")
+    (version "1.1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/tasty-hspec/tasty-hspec-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0i9kdzjpk750sa078jj3iyhp72k0177zk7vxl131r6dkyz09x27y"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-core" ,ghc-hspec-core)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("4" "1yppwhs2r2rlwrzli9ccv5ldgl95h5p7pqhsr898r3das6daf6sk")))
+    (home-page
+     "https://github.com/mitchellwrosen/tasty-hspec")
+    (synopsis
+     "Hspec support for the Tasty test framework")
+    (description
+     "This package provides a Tasty provider for Hspec test suites.")
     (license license:bsd-3)))
 
 (define-public ghc-tasty-hunit

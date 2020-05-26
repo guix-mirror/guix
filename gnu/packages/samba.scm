@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
@@ -51,6 +51,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
@@ -168,14 +169,20 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.11.6")
+    (version "4.12.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0f7g17zw4nzk1bjnqqrr84hkyq9vn0k7zyim2i177xkigd6qyhwi"))))
+               "0l514s2xhsy1lspzgvibbzs80zi84zxr2wx4d40hq85yb2lg5434"))
+                    (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; TODO: also remove the bundled ‘third_party/popt’.
+           (delete-file-recursively "third_party/pyiso8601")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -222,13 +229,13 @@ anywhere.")
        ;; ("gamin" ,gamin)
        ("gpgme" ,gpgme)
        ("gnutls" ,gnutls)
-       ("iniparser" ,iniparser)
        ("jansson" ,jansson)
-       ("libaio" ,libaio)
        ("libarchive" ,libarchive)
        ("linux-pam" ,linux-pam)
        ("lmdb" ,lmdb)
        ("openldap" ,openldap)
+       ("perl" ,perl)
+       ("python" ,python)
        ("popt" ,popt)
        ("readline" ,readline)
        ("tdb" ,tdb)))
@@ -238,12 +245,15 @@ anywhere.")
        ("talloc" ,talloc)
        ("tevent" ,tevent)))
     (native-inputs
-     `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
-       ("xsltproc" ,libxslt)           ;ditto
-       ("rpcsvc-proto" ,rpcsvc-proto)  ;for 'rpcgen'
-       ("perl" ,perl)
+     `(("perl-parse-yapp" ,perl-parse-yapp)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("python-iso8601" ,python-iso8601)
+       ("rpcsvc-proto" ,rpcsvc-proto)   ; for 'rpcgen'
+
+       ;; For generating man pages.
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xsltproc" ,libxslt)))
     (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")

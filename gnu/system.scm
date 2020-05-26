@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,6 +120,7 @@
             operating-system-etc-directory
             operating-system-locale-directory
             operating-system-boot-script
+            operating-system-uuid
 
             system-linux-image-file-name
             operating-system-with-gc-roots
@@ -148,7 +150,8 @@
             %base-packages-linux
             %base-packages-networking
             %base-packages-utils
-            %base-firmware))
+            %base-firmware
+            %default-kernel-arguments))
 
 ;;; Commentary:
 ;;;
@@ -179,7 +182,7 @@
   (kernel-loadable-modules operating-system-kernel-loadable-modules
                     (default '()))                ; list of packages
   (kernel-arguments operating-system-user-kernel-arguments
-                    (default '("quiet")))         ; list of gexps/strings
+                    (default %default-kernel-arguments)) ; list of gexps/strings
   (bootloader operating-system-bootloader)        ; <bootloader-configuration>
   (label operating-system-label                   ; string
          (thunked)
@@ -488,6 +491,17 @@ possible (that is if there's a LINUX keyword argument in the build system)."
        ((#:linux kernel #f)
         target-kernel)))))
 
+(define %default-modprobe-blacklist
+  ;; List of kernel modules to blacklist by default.
+  '("usbmouse" ;races with bcm5974, see <https://bugs.gnu.org/35574>
+    "usbkbd")) ;races with usbhid, see <https://issues.guix.gnu.org/35574#18>
+
+(define %default-kernel-arguments
+  ;; Default arguments passed to the kernel.
+  (list (string-append "modprobe.blacklist="
+                       (string-join %default-modprobe-blacklist ","))
+        "quiet"))
+
 (define* (operating-system-directory-base-entries os)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
@@ -600,17 +614,12 @@ of PROVENANCE-SERVICE-TYPE to its services."
  (cons* procps psmisc which
         (@ (gnu packages admin) shadow) ;for 'passwd'
 
-        ;; XXX: We don't use (canonical-package guile-2.2) here because that
-        ;; would create a collision in the global profile between the GMP
-        ;; variant propagated by 'guile-final' and the GMP variant propagated
-        ;; by 'gnutls', itself propagated by 'guix'.
-        guile-2.2
+        guile-3.0
 
         ;; The packages below are also in %FINAL-INPUTS, so take them from
         ;; there to avoid duplication.
-        (map canonical-package
-             (list bash coreutils findutils grep sed
-                   diffutils patch gawk tar gzip bzip2 xz lzip))))
+        (list bash coreutils findutils grep sed
+              diffutils patch gawk tar gzip bzip2 xz lzip)))
 
 (define %base-packages-linux
   ;; Default set of linux specific packages.
@@ -975,6 +984,55 @@ we're running in the final root."
                (operating-system-initrd-modules os)
                #:mapped-devices mapped-devices
                #:keyboard-layout (operating-system-keyboard-layout os)))
+
+(define* (operating-system-uuid os #:optional (type 'dce))
+  "Compute UUID object with a deterministic \"UUID\" for OS, of the given
+TYPE (one of 'iso9660 or 'dce).  Return a UUID object."
+  ;; Note: For this to be deterministic, we must not hash things that contains
+  ;; (directly or indirectly) procedures, for example.  That rules out
+  ;; anything that contains gexps, thunk or delayed record fields, etc.
+
+  (define service-name
+    (compose service-type-name service-kind))
+
+  (define (file-system-digest fs)
+    ;; Return a hashable digest that does not contain 'dependencies' since
+    ;; this field can contain procedures.
+    (let ((device (file-system-device fs)))
+      (list (file-system-mount-point fs)
+            (file-system-type fs)
+            (file-system-device->string device)
+            (file-system-options fs))))
+
+  (if (eq? type 'iso9660)
+      (let ((pad (compose (cut string-pad <> 2 #\0)
+                          number->string))
+            (h   (hash (map service-name (operating-system-services os))
+                       3600)))
+        (bytevector->uuid
+         (string->iso9660-uuid
+          (string-append "1970-01-01-"
+                         (pad (hash (operating-system-host-name os) 24)) "-"
+                         (pad (quotient h 60)) "-"
+                         (pad (modulo h 60)) "-"
+                         (pad (hash (map file-system-digest
+                                         (operating-system-file-systems os))
+                                    100))))
+         'iso9660))
+      (bytevector->uuid
+       (uint-list->bytevector
+        (list (hash (map file-system-digest
+                         (operating-system-file-systems os))
+                    (- (expt 2 32) 1))
+              (hash (operating-system-host-name os)
+                    (- (expt 2 32) 1))
+              (hash (map service-name (operating-system-services os))
+                    (- (expt 2 32) 1))
+              (hash (map file-system-digest (operating-system-file-systems os))
+                    (- (expt 2 32) 1)))
+        (endianness little)
+        4)
+       type)))
 
 (define (locale-name->definition* name)
   "Variant of 'locale-name->definition' that raises an error upon failure."

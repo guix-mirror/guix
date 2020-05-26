@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,7 +30,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2020-03-03")
+     (version "2020-05-01")
      (home-page "https://github.com/google/re2")
      (source (origin
                (method git-fetch)
@@ -38,7 +38,16 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0f1fncvg41dg9k06jiqbd7k51ljihk7rjb0kvxkbrlvgbzlpb860"))))
+                 "0daav6ja99v5hdlwh1xzmja950y7767yw0phcbd0wpn42km39i20"))
+               (modules '((guix build utils)))
+               (snippet
+                '(begin
+                   ;; Fix test failure on 32-bit platforms, see
+                   ;; <https://github.com/google/re2/issues/256>.
+                   (substitute* "re2/testing/compile_test.cc"
+                     (("re->CompileToProg\\(920\\)")
+                      "re->CompileToProg(850)"))
+                   #t))))
      (build-system gnu-build-system)
      (arguments
       `(#:modules ((guix build gnu-build-system)

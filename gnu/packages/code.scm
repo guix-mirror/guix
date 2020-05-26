@@ -12,6 +12,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@goebel-consult.de>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
 
 (define-module (gnu packages code)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -48,6 +50,7 @@
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
@@ -374,36 +377,60 @@ stack traces.")
     (license license:gpl3+)))
 
 (define-public lcov
-  (package
-    (name "lcov")
-    (version "1.14")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ltp/Coverage%20Analysis"
-                                  "/LCOV-" version "/lcov-" version ".tar.gz"))
-              (sha256
-               (base32
-                "06h7ixyznf6vz1qvksjgy5f3q2nw9akf6zx59npf0h3l32cmd68l"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags
-       (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "PREFIX=" out)))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))           ; no configure script
-       #:tests? #f))                    ; no 'check' target
-    (inputs `(("perl" ,perl)))
-    (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
-    (synopsis "Code coverage tool that enhances GNU gcov")
-    (description
-     "LCOV is an extension of @command{gcov}, a tool part of the
+  ;; Use a recent commit from upstream since the latest official release
+  ;; (1.14) doesn't support GCC 9 (see:
+  ;; https://github.com/linux-test-project/lcov/issues/58).
+  (let* ((commit "40580cd65909bc8324ae09b36bca2e178652ff3f")
+         (revision "0")
+         (version (git-version "1.14" revision commit)))
+    (package
+      (name "lcov")
+      (version "1.14")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/linux-test-project/lcov.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0shgmh6fzhnj1qfdl90jgjmlbb1ih1qh879dca8hc58yggy3hqgb"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:test-target "test"
+         #:make-flags (list (string-append "PREFIX="
+                                           (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-pwd
+             ;; Lift the requirement of having a shell in PATH.
+             (lambda _
+               (substitute* "bin/geninfo"
+                 (("qw/abs_path/")
+                  "qw/abs_path getcwd/"))
+               (substitute* '("bin/lcov" "bin/geninfo")
+                 (("`pwd`")
+                  "getcwd()"))
+               #t))
+           (delete 'configure)          ;no configure script
+           (add-after 'install 'wrap
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/geninfo")
+                   `("PERL5LIB" ":" prefix (,(getenv "PERL5LIB")))))
+               #t)))))
+      (inputs `(("perl" ,perl)
+                ("perl-json" ,perl-json)
+                ("perl-perlio-gzip" ,perl-perlio-gzip)))
+      (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
+      (synopsis "Code coverage tool that enhances GNU gcov")
+      (description "LCOV is an extension of @command{gcov}, a tool part of the
 GNU@tie{}Binutils, which provides information about what parts of a program
 are actually executed (i.e., \"covered\") while running a particular test
 case.  The extension consists of a set of Perl scripts which build on the
 textual @command{gcov} output to implement the following enhanced
 functionality such as HTML output.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public rtags
   (package
@@ -660,9 +687,24 @@ the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
             ;; overrides this to be in PREFIX/doc.  Fix this.
             (substitute* "doc/Makefile.in"
               (("^docdir = .*$") "docdir = @docdir@\n"))
+            #t))
+        (add-after 'unpack 'fix-configure
+          (lambda* (#:key inputs native-inputs #:allow-other-keys)
+            ;; Replace outdated config.sub and config.guess:
+            (with-directory-excursion "config"
+              (for-each (lambda (file)
+                          (install-file
+                           (string-append (assoc-ref
+                                           (or native-inputs inputs) "automake")
+                                          "/share/automake-"
+                                          ,(version-major+minor
+                                            (package-version automake))
+                                          "/" file) "."))
+                        '("config.sub" "config.guess")))
             #t)))))
    (native-inputs
-    `(("texinfo" ,texinfo)))
+    `(("texinfo" ,texinfo)
+      ("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
    (synopsis "Code reformatter")
    (description
     "Indent is a program that makes source code easier to read by

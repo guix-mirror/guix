@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -253,6 +253,17 @@ wrapper.  It provides a backport of the @code{Path} object.")
         ("python-pathlib2" ,python2-pathlib2)
         ("python-unittest2" ,python2-unittest2)
         ,@(package-native-inputs base))))))
+
+;; This package is used to bootstrap pytest, via importlib-metadata.
+(define-public python2-zipp-bootstrap
+  (hidden-package
+   (package/inherit
+    python2-zipp
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments python2-zipp)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python2-setuptools-scm))))))
 
 (define-public python-zstandard
   (package

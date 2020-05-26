@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,20 @@
                "0d5qlq5ab95wh1xc87rqrh1vx6i8lddka1w3f1zcqvcqdxgyn8zx"))
              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+    (arguments
+     (if (%current-target-system)
+         ;; The 'setpgrp' test cannot provide an answer when cross-compiling,
+         ;; so provide the right one for glibc.
+         `(#:configure-flags (list "ac_cv_func_setpgrp_void=yes"
+
+                                   ;; TODO: Move this globally on the next
+                                   ;; rebuild cycle.
+                                   ;; Set a valid localstatedir for the
+                                   ;; benefit of the default
+                                   ;; 'daemon_pid_file_proc', used by the
+                                   ;; Hurd's console client.
+                                   "--localstatedir=/var"))
+         '()))
 
     ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18639>.
     (home-page "http://0pointer.de/lennart/projects/libdaemon/")

@@ -1,0 +1,67 @@
+Unbundling tinyxml2 from gromacs and using our own, which is newer, broke gromacs
+build.
+
+This patch fixes three issues:
+
+- cmake now errors out if using multiple target_link_libraries with mixed styles
+  of signatures.
+
+- Error handling API changed, fix the testutils/refdata_xml.cpp code by using the
+  new API: document.ErrorStr() & tinyxml2::XML_SUCCESS.
+
+Those fixes will be submitted for inclusion to upstream, but may not be suitable
+there as long as they still keep the old version bundled.
+
+First hunk has already been requested for merging. Third is in discussion. Second
+will only be sent if third is OK'ed.
+
+diff -ruN gromacs-2020.2/src/testutils/CMakeLists.txt gromacs-2020.2-fixed/src/testutils/CMakeLists.txt
+--- gromacs-2020.2/src/testutils/CMakeLists.txt 2020-04-30 18:33:44.000000000 +0200
++++ gromacs-2020.2-fixed/src/testutils/CMakeLists.txt   2020-05-01 22:52:16.356000000 +0200
+@@ -73,7 +73,7 @@
+ 
+ if(HAVE_TINYXML2)
+     include_directories(SYSTEM ${TinyXML2_INCLUDE_DIR})
+-    target_link_libraries(testutils ${TinyXML2_LIBRARIES})
++    target_link_libraries(testutils PRIVATE ${TinyXML2_LIBRARIES})
+ else()
+     include_directories(BEFORE SYSTEM "../external/tinyxml2")
+ endif()
+diff -ruN gromacs-2020.2/src/testutils/refdata_xml.cpp gromacs-2020.2-fixed/src/testutils/refdata_xml.cpp
+--- gromacs-2020.2/src/testutils/refdata_xml.cpp        2020-04-30 18:33:44.000000000 +0200
++++ gromacs-2020.2-fixed/src/testutils/refdata_xml.cpp  2020-05-01 23:17:09.556000000 +0200
+@@ -206,21 +206,12 @@
+     document.LoadFile(path.c_str());
+     if (document.Error())
+     {
+-        const char* errorStr1 = document.GetErrorStr1();
+-        const char* errorStr2 = document.GetErrorStr2();
++        const char* errorStr = document.ErrorStr();
+         std::string errorString("Error was ");
+-        if (errorStr1)
+-        {
+-            errorString += errorStr1;
+-        }
+-        if (errorStr2)
+-        {
+-            errorString += errorStr2;
+-        }
+-        if (!errorStr1 && !errorStr2)
+-        {
++        if (errorStr)
++            errorString += errorStr;
++        else
+             errorString += "not specified.";
+-        }
+         GMX_THROW(TestException("Reference data not parsed successfully: " + path + "\n."
+                                 + errorString + "\n"));
+     }
+@@ -371,7 +362,7 @@
+     XMLElementPtr rootElement = createRootElement(&document);
+     createChildElements(rootElement, rootEntry);
+ 
+-    if (document.SaveFile(path.c_str()) != tinyxml2::XML_NO_ERROR)
++    if (document.SaveFile(path.c_str()) != tinyxml2::XML_SUCCESS)
+     {
+         GMX_THROW(TestException("Reference data saving failed in " + path));
+     }

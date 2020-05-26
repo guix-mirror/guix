@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 L  p R n  d n <guix@lprndn.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,16 +126,15 @@ create smooth, animated user interfaces.")
 (define-public lightdm
   (package
     (name "lightdm")
-    (version "1.24.0")
+    (version "1.30.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://launchpad.net/lightdm/"
-                                  (version-major+minor version) "/"
-                                  version "/+download/lightdm-"
-                                  version ".tar.xz"))
+              (uri (string-append
+                    "https://github.com/CanonicalLtd/lightdm/releases/download/"
+                    version "/lightdm-" version ".tar.xz"))
               (sha256
                (base32
-                "18j33bm54i8k7ncxcs69zqi4105s62n58jrydqn3ikrb71s9nl6d"))))
+                "158zb2d0v1309a8v19hh32y4yj3v6yg4yg6m0l7v59d3a2b7f651"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f ; fails when run in parallel
@@ -152,12 +152,6 @@ create smooth, animated user interfaces.")
                (("/usr/sbin/nologin") (which "nologin")))
              (substitute* "src/seat.c"
                (("/bin/sh") (which "sh")))
-             #t))
-         (add-after 'unpack 'disable-broken-tests
-           (lambda _
-             (substitute* "tests/Makefile.in"
-               (("test-sessions-gobject ") "")
-               ((" test-sessions-python ") " "))
              #t))
          (add-before 'check 'pre-check
            ;; Run test-suite under a dbus session.
@@ -181,6 +175,7 @@ create smooth, animated user interfaces.")
        ("pkg-config" ,pkg-config)
        ("itstool" ,itstool)
        ("intltool" ,intltool)
+       ("vala" ,vala)                   ;for Vala bindings
        ;; For tests
        ("dbus" ,dbus)
        ("python" ,python-2)
@@ -210,12 +205,44 @@ display manager which supports different greeters.")
                (base32
                 "1g7wc3d3vqfa7mrdhx1w9ywydgjbffla6rbrxq9k3sc62br97qms"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-at-spi-command="
+                            (assoc-ref %build-inputs "at-spi2-core")
+                            "/libexec/at-spi-bus-launcher"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'fix-.desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append
+                             out "/share/xgreeters/lightdm-gtk-greeter.desktop")
+                 (("Exec=lightdm-gtk-greeter")
+                  (string-append "Exec=" out "/sbin/lightdm-gtk-greeter")))
+               #t)))
+         (add-after 'fix-.desktop-file 'wrap-program
+           ;; Mimic glib-or-gtk build system
+           ;; which doesn't wrap files in /sbin
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((gtk (assoc-ref inputs "gtk+")))
+               (wrap-program (string-append (assoc-ref outputs "out")
+                                            "/sbin/lightdm-gtk-greeter")
+                 `("XDG_DATA_DIRS" ":" prefix
+                   ,(cons "/run/current-system/profile/share"
+                          (map (lambda (pkg)
+                                 (string-append (assoc-ref inputs pkg) "/share"))
+                               '("gtk+" "shared-mime-info" "glib"))))
+                 `("GTK_PATH" ":" prefix (,gtk))
+                 `("GIO_EXTRA_MODULES" ":" prefix (,gtk))))
+             #t)))))
     (native-inputs
      `(("exo" ,exo)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("lightdm" ,lightdm)
+       ("shared-mime-info" ,shared-mime-info)
+       ("at-spi2-core" ,at-spi2-core)
        ("gtk+" ,gtk+)))
     (synopsis "GTK+ greeter for LightDM")
     (home-page "https://launchpad.net/lightdm-gtk-greeter")
@@ -244,7 +271,7 @@ GTK+, lets you select a desktop session and log in to it.")
     (build-system cmake-build-system)
     (inputs `(("linux-pam" ,linux-pam)
 	      ("libpng" ,libpng)
-	      ("libjpeg" ,libjpeg)
+	      ("libjpeg" ,libjpeg-turbo)
 	      ("freeglut" ,freeglut)
 	      ("libxrandr" ,libxrandr)
 	      ("libxrender" ,libxrender)

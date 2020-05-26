@@ -1,16 +1,25 @@
-Make sure the build system honors CPATH and LIBRARY_PATH when
+Make sure the build system honors C_INCLUDE_PATH and LIBRARY_PATH when
 looking for headers and libraries.
 
 --- a/setup.py	2015-10-07 23:32:58.891329173 +0200
 +++ b/setup.py	2015-10-07 23:46:29.653349924 +0200
-@@ -575,8 +575,8 @@
+@@ -676,15 +676,15 @@
          # if a file is found in one of those directories, it can
          # be assumed that no additional -I,-L directives are needed.
-         if not cross_compiling:
--            lib_dirs = self.compiler.library_dirs + system_lib_dirs
--            inc_dirs = self.compiler.include_dirs + system_include_dirs
-+            lib_dirs = os.getenv('LIBRARY_PATH', '').split(os.pathsep)
-+            inc_dirs = os.getenv('CPATH', '').split(os.pathsep)
+         if not CROSS_COMPILING:
+-            self.lib_dirs = self.compiler.library_dirs + system_lib_dirs
+-            self.inc_dirs = self.compiler.include_dirs + system_include_dirs
++            self.lib_dirs = os.getenv('LIBRARY_PATH', '').split(os.pathsep)
++            self.inc_dirs = os.getenv('C_INCLUDE_PATH', '').split(os.pathsep)
          else:
              # Add the sysroot paths. 'sysroot' is a compiler option used to
              # set the logical path of the standard system headers and
+             # libraries.
+-            self.lib_dirs = (self.compiler.library_dirs +
++            self.lib_dirs = (os.getenv('CROSS_LIBRARY_PATH', '').split(os.pathsep) +
+                              sysroot_paths(('LDFLAGS', 'CC'), system_lib_dirs))
+-            self.inc_dirs = (self.compiler.include_dirs +
++            self.inc_dirs = (os.getenv('CROSS_C_INCLUDE_PATH', '').split(os.pathsep) +
+                              sysroot_paths(('CPPFLAGS', 'CFLAGS', 'CC'),
+                                            system_include_dirs))
+ 

@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
@@ -18,6 +19,7 @@
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Rene Saavedra <pacoon@protonmail.com>
+;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -531,7 +533,7 @@ of a the system to know what users are logged in, and where.")
                                     (find-files ".." "^(kbd-model-map|language-fallback-map)$"))
                           #t)))))))
     (native-inputs (package-native-inputs elogind))
-    (inputs `(("libmount" ,util-linux)
+    (inputs `(("libmount" ,util-linux "lib")
               ("xkeyboard-config" ,xkeyboard-config)
               ("kbd" ,kbd)
               ,@(package-inputs elogind)))
@@ -693,7 +695,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public waylandpp
   (package
     (name "waylandpp")
-    (version "0.2.5")
+    (version "0.2.7")
     (home-page "https://github.com/NilsBrause/waylandpp")
     (source (origin
               (method git-fetch)
@@ -701,7 +703,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "16h57hzd688664qcyznzhjp3hxipdkzgv46x82yhkww24av8b55n"))))
+                "1r4m0xhvwpcqxrqvp3hz1bzlkxqj2jiymd5r6hj8xjzz536hyprz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests
@@ -742,7 +744,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
        ("lcms" ,lcms)
        ("libevdev" ,libevdev)
        ("libinput" ,libinput-minimal)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libunwind" ,libunwind)
        ("libva" ,libva)
        ("libwebp" ,libwebp)
@@ -896,7 +898,7 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.7.7")
+    (version "2.8.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -904,7 +906,7 @@ Analysis and Reporting Technology) functionality.")
                     version "/udisks-" version ".tar.bz2"))
               (sha256
                (base32
-                "1dnlxqgy9v0mjdknv3b1s64szdykyk3hk0rxj3chwhpd415lrwgs"))))
+                "06cq52kp1nyy15qzylywy9s7hhhqc45k0s3y68crf0zsmjyng0yj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("docbook-xml" ,docbook-xml-4.3) ; to build the manpages
@@ -933,7 +935,6 @@ Analysis and Reporting Technology) functionality.")
        #:disallowed-references ("doc")            ;enforce separation of "doc"
        #:configure-flags
        (list "--enable-man"
-             "--enable-gtk-doc" ; Without this the HTML doc does not seem to build automatically.
              "--enable-available-modules" ; Such as lvm2, btrfs, etc.
              "--localstatedir=/var"
              "--enable-fhs-media"     ;mount devices in /media, not /run/media
@@ -1688,3 +1689,188 @@ Its features include:
 @end itemize
 ")
     (license license:expat)))
+
+(define-public plymouth
+  (package
+    (name "plymouth")
+    (version "0.9.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.freedesktop.org/software/"
+                           "plymouth/releases/" name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0l8kg7b2vfxgz9gnrn0v2w4jvysj2cirp0nxads5sy05397pl6aa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-logo="
+                            "/etc/plymouth/logo.png")
+             (string-append "--with-background-color="
+                            "0x00ff00")
+             (string-append "--with-background-start-color-stop="
+                            "0xff0000")
+             (string-append "--with-background-end-color-stop="
+                            "0x0000ff")
+             "--localstatedir=/var"
+             "--with-boot-tty=/dev/console"
+             "--without-system-root-install"
+             "--without-rhgb-compat-link"
+             "--enable-drm"
+             "--disable-systemd-integration"
+             ;; Disable GTK to dramatically reduce the closure
+             ;; size from ~800 MiB to a little more than 200 MiB
+             "--disable-gtk")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "src/main.c"
+               (("__DATE__") "\"guix\""))
+             #t))
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "docs/Makefile.in"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             (setenv "XML_CATALOG_FILES"
+                     (string-append (assoc-ref inputs "docbook-xml")
+                                    "/xml/dtd/docbook/catalog.xml"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)
+       ("pango" ,pango)
+       ("libdrm" ,libdrm)
+       ("libpng" ,libpng)
+       ("eudev" ,eudev)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml)))
+    (synopsis "Graphical boot animation (splash) and logger")
+    (home-page "https://www.freedesktop.org/wiki/Software/Plymouth/")
+    (description
+     "Plymouth is an application that runs very early in the boot process and
+that provides a graphical boot animation while the boot process happens in the
+background.  You are not supposed to install this on your own, it is only
+useful with system integration.")
+    (license license:gpl2+)))
+
+(define-public libindicator
+  (package
+    (name "libindicator")
+    (version "12.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://launchpad.net/libindicator/"
+             (version-major+minor version) "/" version
+             "/+download/libindicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zs4z7l9b57jldwz0ban77f3c2zq43ambd0dssf5qg9i216f9lmj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("dbus-test-runner" ,dbus-test-runner)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)
+       ("xvfb" ,xorg-server-for-tests)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("glib" ,glib)))
+    (arguments
+     `(#:make-flags '("CFLAGS=-Wno-error")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-missing-space-for-libm
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("LIBM=\"-lm\"") "LIBM=\" -lm\""))
+             #t))
+         (add-before 'configure 'fix-test-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/Makefile.in"
+               (("/bin/sh") (which "sh"))
+               (("#!/bin/bash") (string-append "#!" (which "bash")))
+               (("/usr/share")
+                (string-append (assoc-ref inputs "dbus-test-runner") "/share")))
+             #t)))))
+    (home-page "https://launchpad.net/libindicator")
+    (synopsis "Ayatana indicators symbols and functions")
+    (description "A set of symbols and convenience functions for Ayatana indicators.")
+    (license license:gpl3)))
+
+(define-public libappindicator
+  (package
+    (name "libappindicator")
+    (version "12.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://launchpad.net/libappindicator/"
+             (version-major+minor version) "/" version
+             "/+download/libappindicator-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17xlqd60v0zllrxp8bgq3k5a1jkj0svkqn8rzllcyjh8k0gpr46m"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("dbus-test-runner" ,dbus-test-runner)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("xvfb" ,xorg-server-for-tests)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("gtk+" ,gtk+)
+       ("libdbusmenu" ,libdbusmenu)
+       ("libindicator" ,libindicator)
+       ("python@2" ,python-2)
+       ("python2-pygtk" ,python2-pygtk)
+       ("python2-pygobject-2" ,python2-pygobject-2)
+       ;; ("mono" ,mono) ; requires non-packaged gapi
+       ("vala" ,vala)))
+    (arguments
+     ;; FIXME: do not hardcode gtk version
+     `(#:configure-flags '("--with-gtk=3")
+       #:make-flags '("CFLAGS=-Wno-error")
+       #:tests? #f ; One test does not pass (it succeeds when it should fail).
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "docs/reference/Makefile.in"
+               (("/bin/sh") (which "sh")))
+             (substitute* "tests/Makefile.in"
+               (("/bin/sh") (which "sh"))
+               (("#!/bin/bash") (string-append "#!" (which "bash")))
+               (("/usr") (string-append (assoc-ref inputs "dbus-test-runner"))))
+             (substitute* "bindings/python/Makefile.in"
+               (("-lappindicator") "-lappindicator3"))
+             #t))
+         (add-after 'unpack 'fix-codegen-path
+           (lambda _
+             (substitute* "configure"
+               (("PYGTK_CODEGEN=.*") "PYGTK_CODEGEN=pygtk-codegen-2.0\n"))
+             #t))
+         (add-after 'build 'build-bindings
+           (lambda _
+             (invoke "make" "-C" "bindings/python")
+             #t))
+         (add-after 'install 'install-bindings
+           (lambda _
+             (invoke "make" "-C" "bindings/python" "install")
+             #t)))))
+    (home-page "https://launchpad.net/libappindicator")
+    (synopsis "Allow applications to export a menu into the Unity menu bar")
+    (description "A library to allow applications to export a menu, originally
+into the Unity menu bar.  Based on KSNI, it also works in KDE and will
+fallback to generic Systray support if none of those are available.")
+    (license license:lgpl2.1+)))

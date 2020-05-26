@@ -36,7 +36,7 @@
   #:use-module ((gnu packages xorg)
                 #:select (console-setup xkeyboard-config))
   #:use-module ((gnu packages make-bootstrap)
-                #:select (%guile-static-stripped))
+                #:select (%guile-3.0-static-stripped))
   #:use-module (gnu system file-systems)
   #:use-module (gnu system mapped-devices)
   #:use-module (gnu system keyboard)
@@ -62,7 +62,7 @@
 
 (define* (expression->initrd exp
                              #:key
-                             (guile %guile-static-stripped)
+                             (guile %guile-3.0-static-stripped)
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system)))
@@ -245,6 +245,9 @@ FILE-SYSTEMS."
           '())
     ,@(if (find (file-system-type-predicate "jfs") file-systems)
           (list jfs_fsck/static)
+          '())
+    ,@(if (find (file-system-type-predicate "f2fs") file-systems)
+          (list f2fs-fsck/static)
           '())))
 
 (define-syntax vhash                              ;TODO: factorize
@@ -275,6 +278,7 @@ FILE-SYSTEMS."
                     ("btrfs" => '("btrfs"))
                     ("iso9660" => '("isofs"))
                     ("jfs" => '("jfs"))
+                    ("f2fs" => '("f2fs" "crc32_generic"))
                     (else '())))
 
 (define (file-system-modules file-systems)

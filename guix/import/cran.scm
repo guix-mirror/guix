@@ -312,6 +312,7 @@ empty list when the FIELD cannot be found."
 (define default-r-packages
   (list "base"
         "compiler"
+        "datasets"
         "grDevices"
         "graphics"
         "grid"

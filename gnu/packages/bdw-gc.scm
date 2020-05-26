@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages hurd))
@@ -31,14 +32,14 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.6.12")
+   (version "8.0.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/ivmai/bdwgc/releases"
                                 "/download/v" version "/gc-" version ".tar.gz"))
             (sha256
              (base32
-              "10jhhi79d5brwlsyhwgpnrmc8nhlf7aan2lk9xhgihk5jc6srbvc"))))
+              "1798rp3mcfkgs38ynkbg2p47bq59pisrc6mn0l20pb5iczf0ssj3"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags
@@ -54,21 +55,14 @@
        ,@(if (hurd-triplet? (or (%current-system)
                                 (%current-target-system)))
              '("--disable-gcj-support")
-             '()))
-      #:phases (modify-phases %standard-phases
-                 (add-after 'unpack 'adjust-pc-file
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((libatomic-ops (assoc-ref inputs "libatomic-ops")))
-                       ;; GC 7.6.10 and later includes -latomic_ops in the
-                       ;; pkg-config file.  To avoid propagation, insert an
-                       ;; absolute reference so dependent programs can find it.
-                       (substitute* "bdw-gc.pc.in"
-                         (("@ATOMIC_OPS_LIBS@" match)
-                          (string-append "-L" libatomic-ops "/lib "
-                                         match)))
-                       #t))))))
+             '()))))
    (native-inputs `(("pkg-config" ,pkg-config)))
-   (inputs `(("libatomic-ops" ,libatomic-ops)))
+   (propagated-inputs
+    (if (%current-target-system)
+        ;; The build system refuses to check for compiler intrinsics when
+        ;; cross-compiling, and demands using libatomic-ops instead.
+        `(("libatomic-ops" ,libatomic-ops))
+        '()))
    (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
@@ -91,17 +85,27 @@ C or C++ programs, though that is not its primary goal.")
 
    (license (x11-style (string-append home-page "license.txt")))))
 
-(define-public libgc-8.0
+;; TODO: Add a static output in libgc in the next rebuild cycle.
+(define-public libgc/static-libs
+  (package/inherit
+   libgc
+   (arguments (substitute-keyword-arguments (package-arguments libgc)
+                ((#:configure-flags flags ''())
+                 `(cons "--enable-static" ,flags))))
+   (properties '((hidden? . #t)))))
+
+(define-public libgc-7
   (package
    (inherit libgc)
-   (version "8.0.4")
+   (version "7.6.12")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/ivmai/bdwgc/releases"
                                  "/download/v" version "/gc-" version ".tar.gz"))
              (sha256
               (base32
-               "1798rp3mcfkgs38ynkbg2p47bq59pisrc6mn0l20pb5iczf0ssj3"))))))
+               "10jhhi79d5brwlsyhwgpnrmc8nhlf7aan2lk9xhgihk5jc6srbvc"))))
+   (propagated-inputs `(("libatomic-ops" ,libatomic-ops)))))
 
 (define-public libgc/back-pointers
   (package/inherit

@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
@@ -49,6 +50,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
@@ -122,13 +124,36 @@ mathematical operations, and much more.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     `(#:configure-flags '("-DDETACH_KERNEL_DRIVER=ON")
-       #:tests? #f)) ; No tests
+     `(#:configure-flags '("-DDETACH_KERNEL_DRIVER=ON"
+                           "-DINSTALL_UDEV_RULES=ON")
+       #:tests? #f ; No tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION \"/etc/udev/")
+                (string-append "DESTINATION \""
+                               (assoc-ref outputs "out")
+                               "/lib/udev/")))
+             #t)))))
     (home-page "https://osmocom.org/projects/sdr/wiki/rtl-sdr")
     (synopsis "Software defined radio driver for Realtek RTL2832U")
     (description "DVB-T dongles based on the Realtek RTL2832U can be used as a
 cheap software defined radio, since the chip allows transferring the raw I/Q
-samples to the host.  @code{rtl-sdr} provides drivers for this purpose.")
+samples to the host.  @code{rtl-sdr} provides drivers for this purpose.
+
+The default Linux driver managing DVB-T dongles as TV devices doesn't work for
+SDR purposes and clashes with this package.  Therefore you must prevent the
+kernel from loading it automatically by adding the following line to your
+system configuration:
+
+@lisp
+(kernel-arguments '(\"modprobe.blacklist=dvb_usb_rtl28xxu\"))
+@end lisp
+
+To install the rtl-sdr udev rules, you must extend 'udev-service-type' with
+this package.  E.g.: @code{(udev-rules-service 'rtl-sdr rtl-sdr)}")
     (license license:gpl2+)))
 
 (define-public chirp
@@ -266,7 +291,6 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("ghostscript" ,ghostscript)
        ("orc" ,orc)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)
        ("python-cheetah" ,python-cheetah)
        ("python-mako" ,python-mako)
        ("python-pyzmq" ,python-pyzmq)
@@ -293,6 +317,7 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
        ("log4cpp" ,log4cpp)
        ("pango" ,pango)
        ("portaudio" ,portaudio)
+       ("python" ,python)
        ("python-click" ,python-click)
        ("python-click-plugins" ,python-click-plugins)
        ("python-lxml" ,python-lxml)
@@ -364,9 +389,16 @@ used by RDS Spy, and audio files containing @dfn{multiplex} signals (MPX).")
                  `("GI_TYPELIB_PATH" ":" prefix ,(filter identity paths))))
              #t)))))
     (native-search-paths
+     ;; Variables required to find third-party plugins at runtime.
      (list (search-path-specification
             (variable "GRC_BLOCKS_PATH")
-            (files '("/share/gnuradio/grc/blocks")))))
+            (files '("share/gnuradio/grc/blocks")))
+           (search-path-specification
+            (variable "PYTHONPATH")
+            (files (list (string-append "lib/python"
+                                        (version-major+minor
+                                         (package-version python))
+                                        "/site-packages"))))))
     (synopsis "Toolkit for software-defined radios")
     (description
      "GNU Radio is a development toolkit that provides signal processing blocks
@@ -709,20 +741,10 @@ for correctness.")
      (synopsis "User-space library and utilities for HackRF SDR")
      (description
       "Command line utilities and a C library for controlling the HackRF
-Software Defined Radio (SDR) over USB.  Installing this package installs
-the userspace hackrf utilities and C library.  To install the hackrf
-udev rules, you must add this package as a system service via
-modify-services.  E.g.:
-
-@lisp
-(services
- (modify-services
-  %desktop-services
-  (udev-service-type config =>
-   (udev-configuration (inherit config)
-    (rules (cons hackrf
-            (udev-configuration-rules config)))))))
-@end lisp")
+Software Defined Radio (SDR) over USB.  Installing this package installs the
+userspace hackrf utilities and C library.  To install the hackrf udev rules,
+you must extend 'udev-service-type' with this package.  E.g.:
+@code{(udev-rules-service 'hackrf hackrf #:groups '(\"dialout\"))}.")
      (license license:gpl2))))
 
 (define-public hamlib
@@ -823,7 +845,20 @@ users.")
        ("qtmultimedia" ,qtmultimedia)
        ("qtserialport" ,qtserialport)))
     (arguments
-     `(#:tests? #f)) ; No test suite
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'work-around-runtime-bug
+           (lambda _
+             ;; Some of the programs in this package fail to find symbols
+             ;; in libm at runtime. Adding libm manually at the end of the
+             ;; library lists when linking the programs seems to help.
+             ;; TODO: find exactly what is wrong in the way the programs
+             ;; are built.
+             (substitute* "CMakeLists.txt"
+               (("target_link_libraries \\((.*)\\)" all libs)
+                (string-append "target_link_libraries (" libs " m)")))
+             #t)))))
     (synopsis "Weak-signal ham radio communication program")
     (description
      "WSJT-X implements communication protocols or modes called FT4, FT8,
@@ -832,6 +867,82 @@ detecting and measuring your own radio signals reflected from the Moon.  These
 modes were all designed for making reliable, confirmed QSOs under extreme
 weak-signal conditions.")
     (home-page "https://www.physics.princeton.edu/pulsar/k1jt/wsjtx.html")
+    (license license:gpl3)))
+
+(define-public js8call
+  (package
+    (inherit wsjtx)
+    (name "js8call")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://files.js8call.com/" version
+                           "/js8call-" version ".tgz"))
+       (sha256
+        (base32 "034jnv6h172znn9ijl6wpmzx0rqibb69ppg52ndvkxhqlgrbsvyc"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete bundled boost to use the shared one.
+           (delete-file-recursively "boost")
+           #t))))
+    (build-system qt-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("gfortran" ,gfortran)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ("ruby-asciidoctor" ,ruby-asciidoctor)))
+    (inputs
+     `(("boost" ,boost)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("hamlib" ,wsjtx-hamlib)
+       ("libusb" ,libusb)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtserialport" ,qtserialport)))
+    (arguments
+     `(#:tests? #f ; No test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "CMakeLists.txt"
+               (("DESTINATION /usr/share")
+                (string-append "DESTINATION "
+                               (assoc-ref outputs "out")
+                               "/share")))
+             #t))
+         (add-after 'fix-paths 'work-around-runtime-bug
+           (lambda _
+             ;; Some of the programs in this package fail to find symbols
+             ;; in libm at runtime. Adding libm manually at the end of the
+             ;; library lists when linking the programs seems to help.
+             ;; TODO: find exactly what is wrong in the way the programs
+             ;; are built.
+             (substitute* "CMakeLists.txt"
+               (("target_link_libraries \\((.*)\\)" all libs)
+                (string-append "target_link_libraries (" libs " m)")))
+             #t))
+         (add-after 'unpack 'fix-hamlib
+           (lambda _
+             (substitute* "CMake/Modules/Findhamlib.cmake"
+               (("set \\(ENV\\{PKG_CONFIG_PATH\\}.*\\)")
+                "set (__pc_path $ENV{PKG_CONFIG_PATH})
+  list (APPEND __pc_path \"${__hamlib_pc_path}\")
+  set (ENV{PKG_CONFIG_PATH} \"${__pc_path}\")"))
+             (substitute* "HamlibTransceiver.hpp"
+               (("#ifdef JS8_USE_LEGACY_HAMLIB")
+                "#if 1"))
+             #t)))))
+    (synopsis "Weak-signal ham radio communication program")
+    (description
+     "JS8Call is a software using the JS8 digital mode (a derivative of the FT8
+mode) providing weak signal keyboard to keyboard messaging to amateur radio
+operators.")
+    (home-page "http://js8call.com/")
     (license license:gpl3)))
 
 (define-public xnec2c
@@ -882,3 +993,74 @@ an antenna, and then plot the radiation pattern or frequency-related data like
 gain and standing wave ratio.")
     (home-page "http://www.5b4az.org/")
     (license license:gpl3+)))
+
+(define-public dump1090
+  (package
+    (name "dump1090")
+    (version "3.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/flightaware/dump1090.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xg8rzrxqklx1m9ncxsd96dlkbjcsxfi2mrb859v50f07xysdyd8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("ncurses" ,ncurses)
+       ("rtl-sdr" ,rtl-sdr)))
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list (string-append "CC=" (if target
+                                        (string-append target "-gcc")
+                                        "gcc"))
+               "BLADERF=no"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (install-file "dump1090" bin)
+               (install-file "view1090" bin)
+               #t))))))
+    (synopsis "Mode S decoder for rtl-sdr devices")
+    (description
+     "Dump1090 is a Mode S decoder specifically designed for rtl-sdr devices.
+It can be used to decode the ADS-B signals that planes emit to indicate
+their position, altitude, speed, etc.")
+    (home-page "https://github.com/flightaware/dump1090")
+    (license license:bsd-3)))
+
+(define-public rtl-433
+  (package
+    (name "rtl-433")
+    (version "20.02")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/merbanan/rtl_433.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "11991xky9gawkragdyg27qsf7kw5bhlg7ygvf3fn7ng00x4xbh1z"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libusb" ,libusb)
+       ("rtl-sdr" ,rtl-sdr)))
+    (synopsis "Decoder for radio transmissions in ISM bands")
+    (description
+     "This is a generic data receiver, mainly for decoding radio transmissions
+from devices on the 433 MHz, 868 MHz, 315 MHz, 345 MHz and 915 MHz ISM bands.")
+    (home-page "https://github.com/merbanan/rtl_433")
+    (license license:gpl2+)))

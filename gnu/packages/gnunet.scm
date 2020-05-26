@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017, 2018, 2019 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018, 2019 Nikita <nikita@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
@@ -102,7 +102,7 @@
       ("gtk+" ,gtk+)
       ("libarchive" ,libarchive)
       ("libgsf" ,libgsf)
-      ("libjpeg" ,libjpeg)
+      ("libjpeg" ,libjpeg-turbo)
       ("libltdl" ,libltdl)
       ("libmpeg2" ,libmpeg2)
       ("libmp4v2" ,libmp4v2)
@@ -270,7 +270,7 @@ supports HTTP, HTTPS and GnuTLS.")
       ("libextractor" ,libextractor)
       ("libidn" ,libidn2)
       ("libgcrypt" ,libgcrypt)
-      ("libjpeg" ,libjpeg)
+      ("libjpeg" ,libjpeg-turbo)
       ("libltdl" ,libltdl)
       ("libmicrohttpd" ,libmicrohttpd)
       ("libogg" ,libogg)

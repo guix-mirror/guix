@@ -1,0 +1,77 @@
+From the upstream commit, with the changes to CHANGELOG and the docs
+folder removed.
+
+From 1532d67c3ecf452b8c86bcc5928525398755cd01 Mon Sep 17 00:00:00 2001
+From: Joey Hess <joeyh@joeyh.name>
+Date: Thu, 7 May 2020 13:18:11 -0400
+Subject: [PATCH] S3: Support signature=v4
+
+To use S3 Signature Version 4. Some S3 services seem to require v4, while
+others may only support v2, which remains the default.
+
+I'm also not sure if v4 works correctly in all cases, there is this
+upstream bug report: https://github.com/aristidb/aws/issues/262
+I've only tested it against the default S3 endpoint.
+---
+ CHANGELOG                                     |  3 +++
+ Remote/S3.hs                                  | 23 ++++++++++++++++++-
+ ..._3bbdf23c8a4a480f4f6b8e8a2f8ddecd._comment | 13 +++++++++++
+ ..._854390b9a781da82ecb85ad85eecad04._comment | 13 +++++++++++
+ doc/special_remotes/S3.mdwn                   |  4 ++++
+ ..._cf57e8dbd9fdc7c487565b61808b6bb2._comment | 10 ++++++++
+ 6 files changed, 65 insertions(+), 1 deletion(-)
+ create mode 100644 doc/bugs/S3_special_remote_support_for_DigitalOcean_Spaces/comment_2_3bbdf23c8a4a480f4f6b8e8a2f8ddecd._comment
+ create mode 100644 doc/forum/backblaze_s3/comment_1_854390b9a781da82ecb85ad85eecad04._comment
+ create mode 100644 doc/special_remotes/S3/comment_34_cf57e8dbd9fdc7c487565b61808b6bb2._comment
+
+diff --git a/Remote/S3.hs b/Remote/S3.hs
+index cb345d1f8..e3ea492f2 100644
+--- a/Remote/S3.hs
++++ b/Remote/S3.hs
+@@ -99,6 +99,8 @@ remote = specialRemoteType $ RemoteType
+ 				(FieldDesc "port to connect to")
+ 			, optionalStringParser requeststyleField
+ 				(FieldDesc "for path-style requests, set to \"path\"")
++			, signatureVersionParser signatureField
++				(FieldDesc "S3 signature version")
+ 			, optionalStringParser mungekeysField HiddenField
+ 			, optionalStringParser AWS.s3credsField HiddenField
+ 			]
+@@ -148,6 +150,22 @@ protocolField = Accepted "protocol"
+ requeststyleField :: RemoteConfigField
+ requeststyleField = Accepted "requeststyle"
+ 
++signatureField :: RemoteConfigField
++signatureField = Accepted "signature"
++
++newtype SignatureVersion = SignatureVersion Int
++
++signatureVersionParser :: RemoteConfigField -> FieldDesc -> RemoteConfigFieldParser
++signatureVersionParser f fd =
++	genParser go f defver fd
++		(Just (ValueDesc "v2 or v4"))
++  where
++	go "v2" = Just (SignatureVersion 2)
++	go "v4" = Just (SignatureVersion 4)
++	go _ = Nothing
++
++	defver = SignatureVersion 2
++
+ portField :: RemoteConfigField
+ portField = Accepted "port"
+ 
+@@ -877,7 +895,10 @@ s3Configuration c = cfg
+ 		Nothing
+ 			| port == 443 -> AWS.HTTPS
+ 			| otherwise -> AWS.HTTP
+-	cfg = S3.s3 proto endpoint False
++	cfg = case getRemoteConfigValue signatureField c of
++		Just (SignatureVersion 4) -> 
++			S3.s3v4 proto endpoint False S3.SignWithEffort
++		_ -> S3.s3 proto endpoint False
+ 
+ data S3Info = S3Info
+ 	{ bucket :: S3.Bucket
+-- 
+2.26.2
+

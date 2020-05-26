@@ -23,10 +23,10 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
-;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -38,7 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -58,6 +58,7 @@
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
@@ -92,12 +94,14 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public python-2.7
   (package
     (name "python2")
-    (version "2.7.16")
+    (version "2.7.17")
     (source
      (origin
       (method url-fetch)
@@ -105,12 +109,13 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "1mqfcqp5y8r0bfyr7ppl74n0lig45p9mc4b8adlcpvj74rhfy8pj"))
+        "0hds28cg226m8j8sr394nm9yc4gxhvlv109w0avsf2mxrlrz0hsd"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
-                               "python-2.7-adjust-tests.patch"))
+                               "python-2.7-adjust-tests.patch"
+                               "python-cross-compile.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -151,6 +156,13 @@
              "INSTALL=install -c"
              "MKDIR_P=mkdir -p"
 
+             ;; Disable runtime check failing if cross-compiling, see:
+             ;; https://lists.yoctoproject.org/pipermail/poky/2013-June/008997.html
+             ,@(if (%current-target-system)
+                   '("ac_cv_buggy_getaddrinfo=no"
+                     "ac_cv_file__dev_ptmx=no"
+                     "ac_cv_file__dev_ptc=no")
+                   '())
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
        ;; With no -j argument tests use all available cpus, so provide one.
@@ -171,6 +183,12 @@
           (add-before
            'configure 'patch-lib-shells
            (lambda _
+             ;; This variable is used in setup.py to enable cross compilation
+             ;; specific switches. As it is not set properly by configure
+             ;; script, set it manually.
+             ,@(if (%current-target-system)
+                   '((setenv "_PYTHON_HOST_PLATFORM" ""))
+                   '())
              ;; Filter for existing files, since some may not exist in all
              ;; versions of python that are built with this recipe.
              (substitute* (filter file-exists?
@@ -181,6 +199,14 @@
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
              #t))
+          ,@(if (hurd-system?)
+                `((add-before 'build 'patch-regen-for-hurd
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((libc (assoc-ref inputs "libc")))
+                        (substitute* "Lib/plat-generic/regen"
+                          (("/usr/include/") (string-append libc "/include/")))
+                        #t))))
+                '())
           (add-before 'configure 'do-not-record-configure-flags
             (lambda* (#:key configure-flags #:allow-other-keys)
               ;; Remove configure flags from the installed '_sysconfigdata.py'
@@ -250,7 +276,9 @@
                            (if (null? opt) "none" (car opt)))
                    (for-each (lambda (file)
                                (apply invoke
-                                      `(,(string-append out "/bin/python")
+                                      `(,,(if (%current-target-system)
+                                              "python2"
+                                              '(string-append out "/bin/python"))
                                         ,@opt
                                         "-m" "compileall"
                                         "-f" ; force rebuild
@@ -293,7 +321,12 @@
        ("tcl" ,tcl)
        ("tk" ,tk)))                               ; for tkinter
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ;; When cross-compiling, a native version of Python itself is needed.
+       ,@(if (%current-target-system)
+             `(("python2" ,this-package)
+               ("which" ,which))
+             '())))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
@@ -323,27 +356,28 @@ data types.")
     (name "python")
     (properties `((superseded . ,python-2)))))
 
-(define-public python-3.7
+(define-public python-3.8
   (package (inherit python-2)
     (name "python")
-    (version "3.7.4")
+    (version "3.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-3-fix-tests.patch"
+                        "python-3.8-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "0gxiv5617zd7dnqm5k9r4q2188lk327nf9jznwq9j6b8p0s92ygv"))
+                "1ps5v323cp5czfshqjmbsqw7nvrdpcbk06f62jbzaqik4gfffii6"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   ;; Delete the bundled copy of libexpat.
                   (delete-file-recursively "Modules/expat")
-                  (substitute* "Modules/Setup.dist"
+                  (substitute* "Modules/Setup"
                     ;; Link Expat instead of embedding the bundled one.
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
                   #t))))
@@ -356,19 +390,18 @@ data types.")
                 " --exclude test_mmap"
                 ;; test_socket may hang and eventually run out of memory
                 ;; on some systems: <https://bugs.python.org/issue34587>.
-                " test_socket"
-                ;; XXX: test_ctypes fails on some platforms due to a problem in
-                ;; libffi 3.2.1: <https://bugs.python.org/issue23249>.
-                ,@(if (string-prefix? "aarch64" (%current-system))
-                      '(" test_ctypes")
-                      '()))))
+                " test_socket")))
        ((#:phases phases)
        `(modify-phases ,phases
+          ,@(if (hurd-system?)
+                `((delete 'patch-regen-for-hurd)) ;regen was removed after 3.5.9
+                '())
           (add-before 'check 'set-TZDIR
-            (lambda* (#:key inputs #:allow-other-keys)
+            (lambda* (#:key inputs native-inputs #:allow-other-keys)
               ;; test_email requires the Olson time zone database.
               (setenv "TZDIR"
-                      (string-append (assoc-ref inputs "tzdata")
+                      (string-append (assoc-ref
+                                      (or native-inputs inputs) "tzdata")
                                      "/share/zoneinfo"))
               #t))
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
@@ -389,18 +422,48 @@ data types.")
                             (if (null? opt) "none" (car opt)))
                     (for-each (lambda (file)
                                 (apply invoke
-                                       `(,(string-append out "/bin/python3")
-                                         ,@opt
-                                         "-m" "compileall"
-                                         "-f" ; force rebuild
-                                         ;; Don't build lib2to3, because it's Python 2 code.
-                                         "-x" "lib2to3/.*"
-                                         ,file)))
+                                       `(,,(if (%current-target-system)
+                                               "python3"
+                                               '(string-append out
+                                                               "/bin/python3"))
+                                          ,@opt
+                                          "-m" "compileall"
+                                          "-f" ; force rebuild
+                                          ;; Don't build lib2to3, because it's Python 2 code.
+                                          "-x" "lib2to3/.*"
+                                          ,file)))
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
-                 #t)))))))
+                 #t)))
+           ;; XXX: Apply patch on ARM platforms only to avoid a full rebuild.
+           ;; Remove this phase in the next rebuild cycle.
+           ,@(let ((system (or (%current-target-system)
+                               (%current-system))))
+               (if (any (cute string-prefix? <> system)
+                        '("arm" "aarch64"))
+                   '((add-after 'unpack 'apply-alignment-patch
+                       (lambda* (#:key native-inputs inputs #:allow-other-keys)
+                        (invoke "patch" "-p1" "--force" "--input"
+                                (assoc-ref (or native-inputs inputs)
+                                           "arm-alignment.patch")))))
+                   '()))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
+
+       ;; Disable unaligned accesses in the sha3 module on ARM as
+       ;; it causes a test failure when building 32-bit Python on a
+       ;; 64-bit kernel.  See <https://bugs.python.org/issue36515>.
+       ;; TODO: make this a regular patch in the next rebuild cycle.
+       ,@(let ((system (or (%current-target-system)
+                           (%current-system))))
+           (if (any (cute string-prefix? <> system)
+                    '("arm" "aarch64"))
+               `(("arm-alignment.patch" ,(search-patch "python-3-arm-alignment.patch")))
+               '()))
+
+       ,@(if (%current-target-system)
+             `(("python3" ,this-package))
+             '())
        ,@(package-native-inputs python-2)))
     (native-search-paths
      (list (search-path-specification
@@ -409,33 +472,8 @@ data types.")
                                         (version-major+minor version)
                                         "/site-packages"))))))))
 
-(define-public python-3.8
-  (package
-    (inherit python-3.7)
-    (name "python-next")
-    (version "3.8.0")
-    (source
-     (origin
-       (inherit (package-source python-3.7))
-       (uri (string-append "https://www.python.org/ftp/python/"
-                           version "/Python-" version ".tar.xz"))
-       (sha256 (base32 "110d0did9rxn7rg85kf2fwli5hqq44xv2d8bi7d92m7v2d728mmk"))
-       (patches (search-patches
-                 "python-3.8-search-paths.patch"
-                 "python-3-fix-tests.patch"
-                 "python-3.8-fix-tests.patch"
-                 "python-3-deterministic-build-info.patch"))
-       (snippet
-        '(begin
-           ;; Delete the bundled copy of libexpat.
-           (delete-file-recursively "Modules/expat")
-           (substitute* "Modules/Setup"
-             ;; Link Expat instead of embedding the bundled one.
-             (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
-           #t))))))
-
 ;; Current 3.x version.
-(define-public python-3 python-3.7)
+(define-public python-3 python-3.8)
 
 ;; Current major version.
 (define-public python python-3)

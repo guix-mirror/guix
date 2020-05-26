@@ -1,18 +1,20 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +51,7 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
@@ -70,7 +73,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.14")
+    (version "4.16.0")
     (source
      (origin
       (method url-fetch)
@@ -78,7 +81,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "025sqnlzji78ss2fi78dajc0v0h5fi02wp39hws41sn8qnjlnq4y"))))
+        "179jskl7dmfp1rd2khkzmlibzgki4wi6hvmmwfv7q49r728b03qf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -163,7 +166,7 @@ living in the same process.")
   (package
     (name "gnutls")
     (replacement gnutls-3.6.13)
-    (version "3.6.9")
+    (version "3.6.12")
     (source (origin
              (method url-fetch)
              (uri
@@ -175,10 +178,11 @@ living in the same process.")
              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
              (sha256
               (base32
-               "1jqz5s3lv8sa53348cfi9nr5pw5l55n8m40b8msdvv0pb2jzqca3"))))
+               "0jvca1qahn9lrwv6f5kfs95icirc15b2a8x9fzczyj996ipg3b5z"))))
     (build-system gnu-build-system)
     (arguments
-     `(; Ensure we don't keep a reference to this buggy software.
+     `(,@(if (hurd-target?) '(#:tests? #f) '())
+       ; Ensure we don't keep a reference to this buggy software.
        #:disallowed-references (,net-tools)
        #:configure-flags
        (list
@@ -223,11 +227,15 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(("net-tools" ,net-tools)
+     `(,@(if (hurd-target?) '()
+             `(("net-tools" ,net-tools)))
        ("pkg-config" ,pkg-config)
-       ("which" ,which)))
+       ("which" ,which)
+       ,@(if (hurd-target?) '()
+             `(("datefudge" ,datefudge)))         ;tests rely on 'datefudge'
+       ("util-linux" ,util-linux)))               ;one test needs 'setsid'
     (inputs
-     `(("guile" ,guile-2.2)))
+     `(("guile" ,guile-3.0)))
     (propagated-inputs
      ;; These are all in the 'Requires.private' field of gnutls.pc.
      `(("libtasn1" ,libtasn1)
@@ -248,16 +256,22 @@ required structures.")
 (define-public gnutls-3.6.13
   (package
     (inherit gnutls)
-    (version "3.6.A")
+    (version "3.6.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnutls/v"
                                   (version-major+minor version)
                                   "/gnutls-3.6.13.tar.xz"))
-              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
+              (patches (search-patches "gnutls-skip-trust-store-test.patch"
+                                       "gnutls-cross.patch"))
               (sha256
                (base32
-                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))))
+                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))
+    (native-inputs
+     `(,@(if (%current-target-system)             ;for cross-build
+             `(("guile" ,guile-3.0))              ;to create .go files
+             '())
+       ,@(package-native-inputs gnutls)))))
 
 (define-public gnutls/guile-2.0
   ;; GnuTLS for Guile 2.0.
@@ -276,48 +290,21 @@ required structures.")
     (inputs `(("unbound" ,unbound)
               ,@(package-inputs gnutls)))))
 
-(define gnutls-3.6.10
-  ;; This is for 'guile3.0-gnutls', below.  Version 3.6.10 is the first to
-  ;; introduce Guile 2.9/3.0 support.
-  (package/inherit gnutls
-    (version "3.6.10")
-    (source (origin
-              (inherit (package-source gnutls))
-              (uri (string-append "mirror://gnupg/gnutls/v"
-                                  (version-major+minor version)
-                                  "/gnutls-" version ".tar.xz"))
-              (sha256
-               (base32
-                "14r2h73yfj66cm14k9mnb3kgzq5a7qjg5b31m53bf19vcxkwmwxi"))))
-    (native-inputs
-     `(,@(package-native-inputs gnutls)
-
-       ;; Datefudge is used to fuzz time for tests, and its presence
-       ;; enables a test that uses 'setsid' from util-linux.
-       ("datefudge" ,datefudge)
-       ("util-linux" ,util-linux)))))
+(define-public guile2.2-gnutls
+  (package
+    (inherit gnutls)
+    (name "guile2.2-gnutls")
+    (inputs `(("guile" ,guile-2.2)
+              ,@(alist-delete "guile"
+                              (package-inputs gnutls))))))
 
 (define-public guile3.0-gnutls
-  (package/inherit gnutls-3.6.10
-    (name "guile3.0-gnutls")
-    (arguments
-     (substitute-keyword-arguments (package-arguments gnutls-3.6.10)
-       ((#:phases phases '%standard-phases)
-        `(modify-phases ,phases
-           (add-before 'build 'leave-guile-stdout-open
-             (lambda _
-               ;; Work around <https://bugs.gnu.org/38348>.
-               (substitute* "guile/Makefile"
-                 (("out=-") "out=/dev/null"))
-               #t))))))
-    (inputs `(("guile" ,guile-next)
-              ,@(alist-delete "guile"
-                              (package-inputs gnutls-3.6.10))))))
+  (deprecated-package "guile3.0-gnutls" gnutls))
 
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.1.1c")
+   (version "1.1.1f")
    (replacement openssl-1.1.1g)
    (source (origin
              (method url-fetch)
@@ -330,7 +317,7 @@ required structures.")
                                        "/openssl-" version ".tar.gz")))
              (sha256
               (base32
-               "142c7zdlz06hjrrvinb9f276czc78bnkyhd9xma621qmmmwk1yzn"))
+               "0d9zv9srjqivs8nn099fpbjv1wyhfcb8lzy491dpmfngdvz6nv0q"))
              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
@@ -338,9 +325,7 @@ required structures.")
               "static"))    ;6.4 MiB of .a files
    (native-inputs `(("perl" ,perl)))
    (arguments
-    `(#:disallowed-references (,perl)
-      #:parallel-build? #f
-      #:parallel-tests? #f
+    `(#:parallel-tests? #f
       #:test-target "test"
 
       ;; Changes to OpenSSL sometimes cause Perl to "sneak in" to the closure,
@@ -348,6 +333,25 @@ required structures.")
       #:disallowed-references ,(list (canonical-package perl))
       #:phases
       (modify-phases %standard-phases
+	,@(if (%current-target-system)
+	      '((add-before
+		    'configure 'set-cross-compile
+		  (lambda* (#:key target outputs #:allow-other-keys)
+		    (setenv "CROSS_COMPILE" (string-append target "-"))
+		    (setenv "CONFIGURE_TARGET_ARCH"
+			    (cond
+			     ((string-prefix? "i586" target)
+			      "hurd-x86")
+			     ((string-prefix? "i686" target)
+			      "linux-x86")
+			     ((string-prefix? "x86_64" target)
+			      "linux-x86_64")
+			     ((string-prefix? "arm" target)
+			      "linux-armv4")
+			     ((string-prefix? "aarch64" target)
+			      "linux-aarch64")))
+		    #t)))
+	      '())
         (replace 'configure
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -357,7 +361,9 @@ required structures.")
                 (("/usr/bin/env")
                  (string-append (assoc-ref %build-inputs "coreutils")
                                 "/bin/env")))
-              (invoke "./config"
+              (invoke ,@(if (%current-target-system)
+			    '("./Configure")
+			    '("./config"))
                       "shared"       ;build shared libraries
                       "--libdir=lib"
 
@@ -368,7 +374,10 @@ required structures.")
                                      "/share/openssl-" ,version)
 
                       (string-append "--prefix=" out)
-                      (string-append "-Wl,-rpath," lib)))))
+                      (string-append "-Wl,-rpath," lib)
+		      ,@(if (%current-target-system)
+			    '((getenv "CONFIGURE_TARGET_ARCH"))
+			    '())))))
         (add-after 'install 'move-static-libraries
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Move static libraries to the "static" output.
@@ -484,21 +493,26 @@ required structures.")
                    (("^MANDIR[[:blank:]]*=.*$")
                     (string-append "MANDIR = " out "/share/man\n")))
                  #t)))
-        (replace 'configure
-          ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (invoke "./config"
-                      "shared"                 ;build shared libraries
-                      "--libdir=lib"
+	   (replace 'configure
+	     ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
+	     (lambda* (#:key outputs #:allow-other-keys)
+	       (let ((out (assoc-ref outputs "out")))
+		 (invoke ,@(if (%current-target-system)
+			       '("./Configure")
+			       '("./config"))
+			 "shared"                 ;build shared libraries
+			 "--libdir=lib"
 
-                      ;; The default for this catch-all directory is
-                      ;; PREFIX/ssl.  Change that to something more
-                      ;; conventional.
-                      (string-append "--openssldir=" out
-                                     "/share/openssl-" ,version)
+			 ;; The default for this catch-all directory is
+			 ;; PREFIX/ssl.  Change that to something more
+			 ;; conventional.
+			 (string-append "--openssldir=" out
+					"/share/openssl-" ,version)
 
-                      (string-append "--prefix=" out)))))
+			 (string-append "--prefix=" out)
+			 ,@(if (%current-target-system)
+			       '((getenv "CONFIGURE_TARGET_ARCH"))
+			       '())))))
         (delete 'move-extra-documentation)
         (add-after 'install 'move-man3-pages
           (lambda* (#:key outputs #:allow-other-keys)
@@ -876,7 +890,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.16.5")
+    (version "2.16.6")
     (source
      (origin
        (method url-fetch)
@@ -886,7 +900,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "0kdhwy241xsk4isbadqx6z80m8sf76da5sbmqv8qy11yr37cdd35"))))
+         "0w0p51vx0cc6fyqfdn59669q6n4187vi64fw5ha302hrlqimwib6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

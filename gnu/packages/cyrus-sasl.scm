@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 
 (define-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages tls)
@@ -41,8 +43,13 @@
                         "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-"
                         version ".tar.gz")))
             (sha256 (base32
-                     "1m85zcpgfdhm43cavpdkhb1s2zq1b31472hq1w1gs3xh94anp1i6"))))
+                     "1m85zcpgfdhm43cavpdkhb1s2zq1b31472hq1w1gs3xh94anp1i6"))
+            (patches (search-patches "cyrus-sasl-ac-try-run-fix.patch"))))
    (build-system gnu-build-system)
+   (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
    (inputs `(("gdbm" ,gdbm)
              ("openssl" ,openssl)))
    (propagated-inputs
@@ -57,7 +64,13 @@
       ;; 'plugin_common.c'.  When building the shared libraries there, libtool
       ;; ends up doing "ln -s plugin_common.lo plugin_common.o", which can
       ;; fail with EEXIST when building things in parallel.
-      #:parallel-build? #f))
+      #:parallel-build? #f
+
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'autogen
+          (lambda _
+            (invoke "autoreconf" "-vif"))))))
    (synopsis "Simple Authentication Security Layer implementation")
    (description
     "SASL (Simple Authentication Security Layer) is an Internet

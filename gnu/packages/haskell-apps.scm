@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
-;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Alexandru-Sergiu Marton <brown121407@member.fsf.org>
 ;;; Copyright © 2020 Brian Leung <bkleung89@gmail.com>
@@ -37,6 +37,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system haskell)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gl)
@@ -198,7 +199,7 @@ pre-processors.  Additional features include: a plain-text mode; an option to
 unlit literate code files; and an option to turn off macro-expansion.")
     (license (list license:lgpl2.1+ license:gpl3+))))
 
-;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
+;; Darcs has no https support:
 ;; http://darcs.net/manual/Configuring_darcs.html#SECTION00440070000000000000
 ;; and results of search engines will show that if the protocol is http, https
 ;; is never mentioned.
@@ -341,14 +342,15 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200330")
+    (version "8.20200501")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
+       (patches (search-patches "git-annex-S3v4.patch"))
        (sha256
-        (base32 "0xy0ld7kr4cfdl4g4yzvrzl5r60dcj33cxm28a4qz6nqm2yhd4sv"))))
+        (base32 "19rggaymvqy7r61n2rl2nigwdi2hzq5l1afcd5l0k1vbacwgq4jl"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags

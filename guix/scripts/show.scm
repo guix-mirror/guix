@@ -73,4 +73,4 @@ This is an alias for 'guix package --show='.\n"))
   (unless (assoc-ref opts 'query)
     (leave (G_ "missing arguments: no package to show~%")))
 
-  (guix-package* opts))
+  (guix-package* (reverse opts)))

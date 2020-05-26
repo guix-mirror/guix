@@ -119,7 +119,7 @@
        ("freetype" ,freetype)
        ("gl" ,mesa)
        ("glu" ,glu)
-       ("jpeg" ,libjpeg)
+       ("jpeg" ,libjpeg-turbo)
        ("png" ,libpng)
        ("tiff" ,libtiff)
        ("x11" ,libx11)
@@ -172,11 +172,11 @@ objects!")
                "-DWITH_MOD_OCEANSIM=ON"
                "-DWITH_OPENSUBDIV=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
-               (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
+               (string-append "-DPYTHON_LIBRARY=python" ,python-version)
                (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
                               "/lib")
                (string-append "-DPYTHON_INCLUDE_DIR=" (assoc-ref %build-inputs "python")
-                              "/include/python" ,python-version "m")
+                              "/include/python" ,python-version)
                (string-append "-DPYTHON_VERSION=" ,python-version)
                (string-append "-DPYTHON_NUMPY_PATH="
                               (assoc-ref %build-inputs "python-numpy")
@@ -211,7 +211,7 @@ objects!")
        ("opensubdiv" ,opensubdiv)
        ("ilmbase" ,ilmbase)
        ("openjpeg" ,openjpeg)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("ffmpeg" ,ffmpeg)
@@ -299,7 +299,7 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.4.1")
+    (version "2.5.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -308,9 +308,9 @@ many more.")
               (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "020gyl8zv83ag6gbcchmqiyx9rh2jca7j8n52zx1gk4rck7kwc01"))
+                "1k50cvi3sk6gf6w713lkk2gv5cvs74vkc7s7k4z6nmyhi4g89w4y"))
               (patches (search-patches "ilmbase-fix-tests.patch"
-                                       "ilmbase-openexr-pkg-config.patch"))))
+                                       "ilmbase-fix-test-arm.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -426,10 +426,7 @@ graphics.")
                    ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
                    (lambda _
                      (substitute* "IlmImfTest/main.cpp"
-                       ((".*testOptimizedInterleavePatterns.*") "")
-                       ;; This test is broken in 2.4.0 and will be fixed in a later
-                       ;; release: <https://github.com/openexr/openexr/issues/571>.
-                       ((".*testLargeDataWindowOffsets.*") ""))
+                       ((".*testOptimizedInterleavePatterns.*") ""))
                      #t)))
                '()))))
     (native-inputs
@@ -469,7 +466,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     (inputs
      `(("boost" ,boost)
        ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("openexr" ,openexr)
@@ -484,22 +481,6 @@ on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
     (home-page "https://www.openimageio.org")
     (license license:bsd-3)))
-
-;; This older version of OpenImageIO is required for Blender 2.79.
-(define-public openimageio-1.7
-  (package
-    (inherit openimageio)
-    (name "openimageio")
-    (version "1.7.19")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/OpenImageIO/oiio.git")
-                    (commit (string-append "Release-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0yxxy43l3lllw7maqg42dlkgqms2d4772sxzxk7kmxg4lnhsvndc"))))))
 
 (define-public openscenegraph
   (package
@@ -531,7 +512,7 @@ visual effects work for film.")
        ("unzip" ,unzip)))
     (inputs
      `(("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)             ; required by the JPEG texture plugin
+       ("libjpeg" ,libjpeg-turbo)       ; required for the JPEG texture plugin.
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
        ("libxrandr" ,libxrandr)
@@ -570,7 +551,7 @@ virtual reality, scientific visualization and modeling.")
           "-DCMAKE_CXX_FLAGS=-fpermissive"
           ,flags))))
     (inputs
-     `(("libjpeg" ,libjpeg)
+     `(("libjpeg" ,libjpeg-turbo)
        ,@(package-inputs openscenegraph)))))
 
 
@@ -635,7 +616,7 @@ virtual reality, scientific visualization and modeling.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("openexr" ,openexr)
@@ -987,7 +968,7 @@ your terminal.")
      `(("imagemagick" ,imagemagick)
        ("lcms" ,lcms)
        ("fbida" ,fbida)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zip" ,zip)
        ("perl" ,perl)
        ("perl-cpanel-json-xs" ,perl-cpanel-json-xs)

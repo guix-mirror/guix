@@ -53,7 +53,7 @@
   (let ((commit "35b1504507a7a4168caae3d78db54d1121b121e1")
         (revision "1"))
     ;; When upgrading Julia, also upgrade this.  Get the commit from
-    ;; https://github.com/JuliaLang/julia/blob/v1.3.1/deps/libuv.version
+    ;; https://github.com/JuliaLang/julia/blob/v1.4.1/deps/libuv.version
     (package
       (inherit libuv)
       (name "libuv-julia")
@@ -100,10 +100,10 @@
 
 (define (julia-patch-url version name)
   (string-append "https://raw.githubusercontent.com/JuliaLang/julia/v" version
-                 "/deps/patches/" name))
+                 "/deps/patches/" name ".patch"))
 
 (define (julia-patch name sha)
-  (let ((version "1.3.1"))
+  (let ((version "1.4.1"))
     (origin (method url-fetch)
             (uri (julia-patch-url version name))
             (sha256 (base32 sha))
@@ -111,10 +111,10 @@
 
 (define llvm-julia
   (package
-    (inherit llvm-6)
+    (inherit llvm-8)
     (name "llvm-julia")
     (source (origin
-              (inherit (package-source llvm-6))
+              (inherit (package-source llvm-8))
               ;; Those patches are inside the Julia source repo.
               ;; They are _not_ Julia specific (https://github.com/julialang/julia#llvm)
               ;; but they are required to build Julia.
@@ -124,42 +124,50 @@
                        ((name hash)
                         (julia-patch name hash)))
                      (list
-                       '("llvm-6.0-D44650"
-                         "1336q4vqayr94wdcnlmcxh90mjdh34dzw9x2cbiqjnx9b1j8fxyb")
+                       '("llvm-7.0-D44650"
+                         "1h55kkmkiisfj6sk956if2bcj9s0v6n5czn8dxb870vp5nccj3ir")
                        '("llvm-6.0-DISABLE_ABI_CHECKS"
                          "014fawd1ba7yckalypfld22zgic87x9nx3cim42zrwygywd36pyg")
                        '("llvm-6.0-NVPTX-addrspaces"
                          "1qdi2zmrjsrj0h84zv2vyly2hjcn4f67mfy0s1q353g4v4jkscqc")
-                       '("llvm-6.0.0_D27296-libssp"
-                         "0s5hi2r1j63i8m6ig1346crx2aiv9f7rgb3mg80kw1wx5y7pdpfh")
                        '("llvm-D27629-AArch64-large_model_6.0.1"
                          "1qrshmlqvnasdyc158vfn3hnbigqph3lsq7acb9w8lwkpnnm2j4z")
-                       '("llvm-D34078-vectorize-fdiv"
-                         "1696hg84a0jxcnggvqsc2cdp271hf9a44p4qsd078qm1mfawkaay")
-                       '("llvm-D42262-jumpthreading-not-i1"
-                         "1c8w210gwidbnkkw8anp17dk5pnxws2fl3mb2qxh7y9wzfpixgaq")
-                       '("llvm-D44892-Perf-integration"
-                         "0r37jd0ssh2k1pndkfd5blgpg9z90im4vlzprhb0n0wwz45g4b05")
-                       '("llvm-D46460"
-                         "1miqgswdc0qvbaf4571c2xkxyp9ais06b1bcpa83sq22vr4hbsfb")
-                       '("llvm-D49832-SCEVPred"
-                         "0v5c88hgqj6dymv3j86ca5mhpqab5fbnrvjiw1nvnrnya9l4dlbn")
-                       '("llvm-D50010-VNCoercion-ni"
-                         "0iblb3q1xixwrb12jpb89h3ywmqmzdp6aqp416j4ncwakyjhhfkp")
-                       '("llvm-D50167-scev-umin"
-                         "1f2rakcnnyhr7w10k7gqg0k0491pyvx5ijplivw557f714ys3q6v")
-                       '("llvm-OProfile-line-num"
-                         "1jvbbmwyags0xfwamb13qrf3rgcz9i1r03m9lava7swag8xb78c7")
-                       '("llvm-PPC-addrspaces"
-                         "1f23nhsxh2s3jskbgs7da9nwg3s1hrkbk5aahl08x41wi3mny01p")
-                       '("llvm-rL323946-LSRTy"
-                         "10cz3vy1yw0w643z7xx021wa4kymx9fcm3bjg61s6vzdqd6d9fns")
-                       '("llvm-rL326967-aligned-load"
-                         "04jxnv32yj5x17hqhi8g2p8rhgp38gmjzr871w7z8s44pq10v9v4")
-                       '("llvm-rL327898"
-                         "15ah49gbsll23z28kpyahi5vl0fh3fkxcgd1zmxxdcl96s3x8bnq"))))))
+                       '("llvm8-D34078-vectorize-fdiv"
+                         "19spqc3xsazn1xs9gpcgv9ldadfkv49rmc5khl7sf1dlmhgi4602")
+                       '("llvm7-D50010-VNCoercion-ni"
+                         "18scg6aa036xa1508s7q93w9dvc5gp69fz6yl6fkh4yffw4gymw6")
+                       '("llvm-8.0-D50167-scev-umin"
+                         "0g9w2x8yryjdkihnrf18x0yi5bi14c5p8wffda1w732dr5ckzk94")
+                       '("llvm-D57118-powerpc"
+                         "0vxz5s0s9b625v1rv8lg1566yhxh1i91ydzmvy5s7njvzc7p19aw")
+                       '("llvm8-WASM-addrspaces"
+                         "1176agj9hh7csdm2lnklb42zcdsb3q6lx9jiyp2shn4p2678y76q")
+                       '("llvm-exegesis-mingw"
+                         "0ph1cj1j7arvf1xq2xcr7qf9g0cpdl14fincgr67vpi520zvd3vp")
+                       '("llvm-test-plugin-mingw"
+                         "12z738cnahbf6n381im7i0hxp1m6k9hrnfjlmq9sac46nxly9gnj")
+                       '("llvm-8.0-D66401-mingw-reloc"
+                         "15v3p5sznn979cfnd7gdn3nd701fd7xd5aks6lnj1mslvljlq3ls")
+                       '("llvm7-revert-D44485"
+                         "0f59kq3p3mpwsbmskypbi4zn01l6ig0x7v2rjp08k2r8z8m6fa8n")
+                       '("llvm-8.0-D63688-wasm-isLocal"
+                         "0i9wi5n63ip3802z6m7aj3p07hkqjlmp4vg4wq3xkf9f6w9rksab")
+                       '("llvm-8.0-D55758-tablegen-cond"
+                         "1l08mg7qigravi7plsq3yzya80fljnp95n8faddr29wbr2qr0655")
+                       '("llvm-8.0-D59389-refactor-wmma"
+                         "0rgrwk4xlwpk7yai2j7xadcfws93rmk2hhh44fysa88imvrbp478")
+                       '("llvm-8.0-D59393-mma-ptx63-fix"
+                         "094jcsxbcx9fljj623mgmc0rjpk12s2rs0di0ck0hakzhr8mbv5n")
+                       '("llvm-8.0-D66657-codegen-degenerate"
+                         "1n1ddx19h90bbpimdyd9dh8fsm6gb93xxyqm4ljkxa1k3cx2vm72")
+                       '("llvm-8.0-D71495-vectorize-freduce"
+                         "1zff08wvji9lnpskk4b3p5zyjsy5hhy23ynxjqlj9dw7jvvfrf0p")
+                       '("llvm-8.0-D75072-SCEV-add-type"
+                         "0amlyyndsc90ml2k6prdahf24q0j23nfmlbqf8gcqcxpl5sqq3i6")
+                       '("llvm-8.0-D65174-limit-merge-stores"
+                        "1ls5114fhgip9rbqabqc16mi367ra0k75ngc1vyqqhq1ghm9x7y9"))))))
     (arguments
-     (substitute-keyword-arguments (package-arguments llvm-6)
+     (substitute-keyword-arguments (package-arguments llvm-8)
        ((#:configure-flags flags)
         `(list ;; Taken from NixOS. Only way I could get libLLVM-6.0.so
            "-DCMAKE_BUILD_TYPE=Release"
@@ -180,10 +188,50 @@
            "-DLLVM_ENABLE_DUMP=ON"
            "-DLLVM_LINK_LLVM_DYLIB=ON"))))))
 
+(define-public libwhich
+  (package
+    (name "libwhich")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vtjnash/libwhich.git")
+             ;; fixes linux-vdso.so related tests
+             (commit "87cffe10080c98e7b5786c5166e420bf1ada1d41")))
+       (file-name (string-append name "-" version "-checkout"))
+       (sha256
+        (base32
+         "1bpa0fcqpa3ai3hm8mz0p13bf76fsq53wsfcx5qw302zh22108xr"))))
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'set-ld-library-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (assoc-ref inputs "zlib") "/lib"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "libwhich" (string-append out "/bin")))
+             #t)))))
+    (native-inputs
+     ;; used for tests
+     `(("zlib" ,zlib)))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/vtjnash/libwhich")
+    (synopsis "Like @code{which}, for dynamic libraries")
+    (description "@code{libwhich} is like @code{which}, but for dynamic
+libraries.  It is also a bit like @code{ldd} and @code{otool -L}.")
+    (license license:expat)))
+
 (define-public julia
   (package
     (name "julia")
-    (version "1.3.1")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -191,7 +239,7 @@
                     version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "1nwkmr9j55g1zkxdchnid1h022s0is52vx23niksshgvh793g41x"))
+                "030aza3qj5zcinxbrbqgi7p64q6klwq2bhwccraarx7l0hg9lw3i"))
               (patches
                (search-patches "julia-SOURCE_DATE_EPOCH-mtime.patch"))))
     (build-system gnu-build-system)
@@ -214,15 +262,6 @@
          (delete 'configure)
          (add-after 'unpack 'prepare-deps
            (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir "deps/srccache")
-             ;; no USE_SYSTEM_{OBJCONV/LIBWHICH} option
-             (copy-file (assoc-ref inputs "objconv")
-                        "deps/srccache/objconv.zip")
-             (copy-file (assoc-ref inputs "libwhich")
-                        (string-append "deps/srccache/libwhich-"
-                                       "81e9723c0273d78493dc8c8ed570f68d9ce7e89e"
-                                       ".tar.gz"))
-
              ;; needed by libwhich
              (setenv "LD_LIBRARY_PATH"
                      (string-join (map (lambda (pkg)
@@ -247,21 +286,19 @@
                (("src ui doc deps")
                 "src ui deps"))
              #t))
+         (add-after 'unpack 'use-system-libwhich
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; don't build it
+             (substitute* "deps/Makefile"
+               (("DEP_LIBS \\+= libwhich") ""))
+             ;; call our version
+             (substitute* "base/Makefile"
+               (("\\$\\$\\(build_depsbindir\\)/libwhich")
+                (string-append (assoc-ref inputs "libwhich") "/bin/libwhich")))
+             #t))
          (add-before 'check 'set-home
            ;; Some tests require a home directory to be set.
            (lambda _ (setenv "HOME" "/tmp") #t))
-         (add-after 'unpack 'hardcode-soname-map
-           ;; ./src/runtime_ccall.cpp creates a map from library names to paths
-           ;; using the output of "/sbin/ldconfig -p".  Since ldconfig is not
-           ;; used in Guix, we patch runtime_ccall.cpp to contain a static map.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "base/math.jl"
-               (("const libm = Base.libm_name")
-                (string-append "const libm = \""
-                               (assoc-ref inputs "openlibm")
-                               "/lib/libopenlibm.so"
-                               "\"")))
-             #t))
          (add-before 'build 'fix-include-and-link-paths
            (lambda* (#:key inputs #:allow-other-keys)
              ;; LIBUTF8PROC is a linker flag, not a build target.  It is
@@ -304,10 +341,14 @@
                 ;; running order.  I think it depends on the number of
                 ;; runners, disabling it for now
                 ;; https://github.com/JuliaLang/julia/issues/34330
-                "tests = filter(e->!in(e,[\"backtrace\",\"exceptions\",
-                                          \"stress\",\"precompile\",
-                                          \"client\",\"stacktraces\"]),
+                "tests = filter(e->!in(e,[\"backtrace\",\"exceptions\",\"precompile\",
+                                           \"client\",\"stacktraces\"]),
                                        testnames)"))
+             ;; precompile test is broken, fixed in
+             ;; fed29f893544d1dc8f86444c65d632c68168d0f3
+             (substitute* "test/precompile.jl"
+               (("@test !isdefined\\(Base.Nothing.name.mt")
+                "# @test !isdefined(Base.Nothing.name.mt"))
              ;; When HOME is not set, julia calls uv_os_homedir, which in
              ;; turns call getpwuid_r. Add the HOME env variable to the
              ;; external julia call to fix this
@@ -317,24 +358,31 @@
              ;; https://github.com/JuliaLang/julia/issues/32377
              (substitute* "stdlib/REPL/test/replcompletions.jl"
                (("@test count") "@test_broken count"))
+             ;; Dates has a similar bug:
+             ;; https://github.com/JuliaLang/julia/issues/34655
+             (substitute* "stdlib/Dates/test/io.jl"
+               (("\"Dates.Time") "\"Time"))
+             ;; Upstream bug I found when packaging
+             ;; https://github.com/JuliaLang/julia/issues/35785
+             (substitute* "test/file.jl"
+               (("@test dirname\\(t\\) == d") "@test_broken dirname(t) == d"))
              #t))
-       (add-after 'install 'make-wrapper
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (bin (string-append out "/bin"))
-                  (program "julia"))
-             (with-directory-excursion bin
-               (wrap-program program
-                             `("JULIA_LOAD_PATH" ":" prefix
-                               ("" "$JULIA_LOAD_PATH")))
-               (wrap-program program
-                             `("JULIA_DEPOT_PATH" ":" prefix
-                               ("" "$JULIA_DEPOT_PATH"))))
-             #t))))
+         (add-after 'install 'make-wrapper
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (program "julia"))
+               (with-directory-excursion bin
+                 (wrap-program program
+                   `("JULIA_LOAD_PATH" ":" prefix
+                     ("" "$JULIA_LOAD_PATH")))
+                 (wrap-program program
+                   `("JULIA_DEPOT_PATH" ":" prefix
+                     ("" "$JULIA_DEPOT_PATH"))))
+               #t))))
        #:make-flags
        (list
-         (string-append "prefix=" (assoc-ref %outputs "out"))
-         (string-append "PREFIX=" (assoc-ref %outputs "out"))
+        (string-append "prefix=" (assoc-ref %outputs "out"))
 
          ;; Passing the MARCH flag is necessary to build binary substitutes for
          ;; the supported architectures.
@@ -382,17 +430,12 @@
          "USE_SYSTEM_PATCHELF=1"
          "USE_SYSTEM_PCRE=1"
          "USE_SYSTEM_OPENLIBM=1"
-
+         "USE_SYSTEM_MBEDTLS=1"
+         "USE_SYSTEM_LIBSSH2=1"
          "USE_SYSTEM_GMP=1"
          "USE_SYSTEM_MPFR=1"
          "USE_SYSTEM_ARPACK=1"
          "USE_SYSTEM_LIBGIT2=1"
-         (string-append "LIBUV="
-                        (assoc-ref %build-inputs "libuv")
-                        "/lib/libuv.so")
-         (string-append "LIBUV_INC="
-                        (assoc-ref %build-inputs "libuv")
-                        "/include")
          "USE_SYSTEM_ZLIB=1")))
     (inputs
      `(("llvm" ,llvm-julia)
@@ -423,30 +466,7 @@
        ("suitesparse" ,suitesparse)
        ;; Find dependencies versions here:
        ;; https://raw.githubusercontent.com/JuliaLang/julia/v1.3.0/deps/Versions.make
-       ("objconv"
-        ,(origin
-           (method url-fetch)
-           ;; No versioned URL, see <https://www.agner.org/optimize/> for updates.
-           (uri "https://www.agner.org/optimize/objconv.zip")
-           (file-name "objconv-2018-10-07.zip")
-           (sha256
-            (base32
-             "0wp6ld9vk11f4nnkn56627zmlv9k5vafi99qa3yyn1pgcd61zcfs"))))
-       ("libwhich"
-        ,(let ((commit "81e9723c0273d78493dc8c8ed570f68d9ce7e89e"))
-           (origin
-             ;; Note: We use a /tarball URL, but that's because Julia's build
-             ;; system checks the hash of that tarball; thus we can't use
-             ;; 'git-fetch'.
-             (method url-fetch)
-             (uri (string-append
-                    "https://api.github.com/repos/vtjnash/libwhich/tarball/"
-                    commit))
-             (file-name (string-append "libwhich-" (string-take commit 7)
-                                       ".tar.gz"))
-             (sha256
-              (base32
-               "1p7zg31kpmpbmh1znrk1xrbd074agx13b9q4dcw8n2zrwwdlbz3b")))))
+       ("libwhich" ,libwhich)
        ("dsfmt" ,dsfmt)))
     (native-inputs
      `(("openssl" ,openssl)

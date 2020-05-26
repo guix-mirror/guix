@@ -8,18 +8,18 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2020 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017,2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
@@ -49,6 +49,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
@@ -81,11 +82,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
+  #:use-module (guix deprecation)
   #:use-module (srfi srfi-1))
 
 (define-public libpng
@@ -363,7 +366,7 @@ Features:
 @end enumerate")
     (license license:gpl3+)))
 
-(define-public libjpeg
+(define-public ijg-libjpeg
   (package
    (name "libjpeg")
    (version "9c")
@@ -392,8 +395,8 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
    (license license:ijg)
    (home-page "https://www.ijg.org/")))
 
-(define-public libjpeg-8
-  (package (inherit libjpeg)
+(define-public ijg-libjpeg-8
+  (package (inherit ijg-libjpeg)
    (version "8d")
    (source (origin
             (method url-fetch)
@@ -499,7 +502,7 @@ official designation is ISO/IEC 29199-2). This library is an implementation of t
             (sha256 (base32
                      "1dss7907fclfl8zsw0bl4qcw0hhz6fqgi3867w0jyfm3q9jfpcc8"))))
    (build-system gnu-build-system)
-   (inputs `(("libjpeg" ,libjpeg)))
+   (inputs `(("libjpeg" ,libjpeg-turbo)))
    (arguments
     '(#:tests? #f))                     ; no tests
    (synopsis "Optimize JPEG images")
@@ -544,7 +547,7 @@ extracting icontainer icon files.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.0.10")
+   (version "4.1.0")
    (source
      (origin
        (method url-fetch)
@@ -552,7 +555,7 @@ extracting icontainer icon files.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1r4np635gr6zlc0bic38dzvxia6iqzcrary4n1ylarzpr8fd2lic"))))
+         "0d46bdvxdiv59lxnb0xz9ywm8arsr6xsapi5s6y6vnys2wjz6aax"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -561,9 +564,10 @@ extracting icontainer icon files.")
     `(#:configure-flags (list (string-append "--with-docdir="
                                              (assoc-ref %outputs "doc")
                                              "/share/doc/"
-                                             ,name "-" ,version))))
+                                             ,name "-" ,version)
+                              "--disable-static")))
    (inputs `(("zlib" ,zlib)
-             ("libjpeg" ,libjpeg)))
+             ("libjpeg" ,libjpeg-turbo)))
    (synopsis "Library for handling TIFF files")
    (description
     "Libtiff provides support for the Tag Image File Format (TIFF), a format
@@ -596,13 +600,11 @@ collection of tools for doing simple manipulations of TIFF images.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)))
-    (propagated-inputs
-     ;; Linking a program with leptonica also requires these.
-     `(("openjpeg" ,openjpeg)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
        ("zlib" ,zlib)))
     (arguments
      '(#:phases
@@ -614,7 +616,16 @@ collection of tools for doing simple manipulations of TIFF images.")
                 (string-append " " (which "sh") " "))
                (("which gnuplot")
                 "true"))
-             #t)))))
+             #t))
+         (add-after 'install 'provide-absolute-giflib-reference
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (giflib (assoc-ref inputs "giflib")))
+               ;; Add an absolute reference to giflib to avoid propagation.
+               (with-directory-excursion (string-append out "/lib")
+                 (substitute* '("liblept.la" "pkgconfig/lept.pc")
+                   (("-lgif") (string-append "-L" giflib "/lib -lgif"))))
+               #t))))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
@@ -629,18 +640,33 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.16")
+    (version "0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ArtifexSoftware"
                                   "/ghostpdl-downloads/releases/download"
-                                  "/gs927/" name "-" version ".tar.gz"))
+                                  "/gs951/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "00h61y7bh3z6mqfzxyb318gyh0f8jwarg4hvlrm83rqps8avzxm4"))
-              (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
+                "0pigfw2v0ppvr0lbysm69gx0zsa5q2q92yrb8af2j3im6x97f6cy"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--disable-static")))
+    (arguments '(#:configure-flags '("--disable-static")
+                 #:phases (modify-phases %standard-phases
+                            (add-before 'bootstrap 'force-bootstrap
+                              (lambda _
+                                ;; XXX: jbig2dec 0.18 was released with
+                                ;; a broken configure script, so we
+                                ;; recreate the build system here.
+                                ;; Remove the autoconf inputs below
+                                ;; when deleting this code.
+                                (delete-file "configure")
+                                (delete-file "autogen.sh")
+                                #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("python" ,python-wrapper)))     ;for tests
     (synopsis "Decoder of the JBIG2 image compression format")
     (description
       "JBIG2 is designed for lossy or lossless encoding of @code{bilevel} (1-bit
@@ -782,31 +808,31 @@ error-resilience, a Java-viewer for j2k-images, ...")
 (define-public giflib
   (package
     (name "giflib")
-    (version "5.1.4")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/giflib/giflib-"
-                                  version ".tar.bz2"))
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))
-              (patches (search-patches
-                        "giflib-make-reallocarray-private.patch"))))
+                "1gbrg03z1b6rlrvjyc6d41bc8j1bsr7rm8206gb1apscyii5bnii"))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
-    (inputs `(("libx11" ,libx11)
-              ("libice" ,libice)
-              ("libsm" ,libsm)
-              ("perl" ,perl)))
     (arguments
-     `(#:phases
+     '(#:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out"))
+                          (string-append "BINDIR="
+                                         (assoc-ref %outputs "bin") "/bin"))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'disable-html-doc-gen
            (lambda _
-             (substitute* "doc/Makefile.in"
+             (substitute* "doc/Makefile"
                (("^all: allhtml manpages") ""))
              #t))
+         (delete 'configure)
          (add-after 'install 'install-manpages
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((bin (assoc-ref outputs "bin"))
@@ -870,7 +896,7 @@ compose, and analyze GIF images.")
        ("freetype" ,freetype)
        ("giflib" ,giflib)
        ("libid3tag" ,libid3tag)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
        ("libx11" ,libx11)
@@ -989,7 +1015,7 @@ supplies a generic doubly-linked list and some string functions.")
     `(("pkg-config" ,pkg-config)
       ("unzip" ,unzip)))
    (inputs
-    `(("libjpeg" ,libjpeg)
+    `(("libjpeg" ,libjpeg-turbo)
       ("libjxr" ,libjxr)
       ("libpng" ,libpng)
       ("libraw" ,libraw)
@@ -1015,6 +1041,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       (uri (string-append "https://github.com/ukoethe/vigra/releases/download/"
                           "Version-" (string-join (string-split version #\.) "-")
                           "/vigra-" version "-src.tar.gz"))
+      (patches (search-patches "vigra-python-compat.patch"))
       (sha256 (base32
                 "1bqs8vx5i1bzamvv563i24gx2xxdidqyxh9iaj46mbznhc84wmm5"))))
    (build-system cmake-build-system)
@@ -1025,16 +1052,16 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("hdf5" ,hdf5)
       ("ilmbase" ,ilmbase) ; propagated by openexr, but needed explicitly
                            ; to create a configure-flag
-      ("libjpeg" ,libjpeg)
+      ("libjpeg" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)
       ("openexr" ,openexr)
-      ("python" ,python-2) ; print syntax
-      ("python2-numpy" ,python2-numpy)
+      ("python" ,python-wrapper)
+      ("python-numpy" ,python-numpy)
       ("zlib" ,zlib)))
    (native-inputs
     `(("doxygen" ,doxygen)
-      ("python2-nose" ,python2-nose)
+      ("python-nose" ,python-nose)
       ("sphinx" ,python-sphinx)))
    (arguments
     `(#:test-target "check"
@@ -1054,7 +1081,9 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
               (string-append "-DVIGRANUMPY_INSTALL_DIR="
                              (assoc-ref %outputs "out")
-                             "/lib/python2.7/site-packages")
+                             "/lib/python"
+                             ,(version-major+minor (package-version python))
+                             "/site-packages")
               ;; OpenEXR is not enabled by default.
               "-DWITH_OPENEXR=1"
               ;; Fix rounding error on 32-bit machines
@@ -1127,7 +1156,7 @@ language bindings to VIGRA.")
     (inputs
      `(("freeglut" ,freeglut)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)))
     (native-inputs
@@ -1167,7 +1196,7 @@ channels.")
     (propagated-inputs
      ;; These are all in the 'Libs.private' field of libmng.pc.
      `(("lcms" ,lcms)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (home-page "https://www.libmng.com/")
     (synopsis "Library for handling MNG files")
@@ -1283,7 +1312,7 @@ convert, manipulate, filter and display a wide variety of image formats.")
                (base32
                 "05l75yd1zsxwv25ykwwwjs8961szv7iywf16nc6vc6qpby27ckv6"))))
     (build-system cmake-build-system)
-    (inputs `(("libjpeg" ,libjpeg)))
+    (inputs `(("libjpeg" ,libjpeg-turbo)))
     (synopsis "JPEG-2000 library")
     (description "The JasPer Project is an initiative to provide a reference
 implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
@@ -1371,7 +1400,7 @@ differences in file encoding, image quality, and other small variations.")
     (inputs
      `(("libmhash" ,libmhash)
        ("libmcrypt" ,libmcrypt)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("zlib" ,zlib)))
     (arguments
      `(#:make-flags '("CXXFLAGS=-fpermissive")    ;required for MHashPP.cc
@@ -1496,21 +1525,47 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.2")
-    (replacement libjpeg-turbo/fixed)
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))
+                "01ill8bgjyk582wipx7sh7gj2nidylpbzvwhx0wkcm6mxx3qbp9k"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
     (arguments
-     '(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
-                           "-DENABLE_STATIC=0")))
+     `(#:configure-flags '("-DCMAKE_INSTALL_LIBDIR:PATH=lib"
+                           "-DENABLE_STATIC=0"
+                           ;; djpeg-shared-3x2-float-prog-cmp fails on 32-bit PPC.
+                           ,@(if (string=? "powerpc-linux" (%current-system))
+                               `("-DFLOATTEST=NO")
+                               '())
+                           ;; The build system probes for the current CPU, but
+                           ;; that fails when cross-compiling.
+                           ,@(let ((target (%current-target-system)))
+                               (if target
+                                   (cond
+                                    ((string-prefix? "arm" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=arm"))
+                                    ((string-prefix? "aarch64" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=aarch64"))
+                                    ((string-prefix? "i686" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=x86"))
+                                    ((string-prefix? "x86_64" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=x86_64"))
+                                    ;; 32-bit and 64-bit
+                                    ((string-prefix? "powerpc" target)
+                                     `("-DCMAKE_SYSTEM_PROCESSOR=powerpc"))
+                                    (else '()))
+                                   '())))
+       ,@(if (%current-target-system)
+             '()
+             ;; Use a special "bootstrap" CMake for the native build to work
+             ;; around a circular dependency between CMake and this package.
+             `(#:cmake ,cmake-bootstrap))))
     (home-page "https://libjpeg-turbo.org/")
     (synopsis "SIMD-accelerated JPEG image handling library")
     (description "libjpeg-turbo is a JPEG image codec that accelerates baseline
@@ -1527,19 +1582,8 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
 
-;; Replacement package to fix CVE-2019-13960 and CVE-2019-2201.
-(define libjpeg-turbo/fixed
-  (package
-    (inherit libjpeg-turbo)
-    (version "2.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1ds16bnj17v6hzd43w8pzijz3imd9am4hw75ir0fxm240m8dwij2"))
-              (patches (search-patches "libjpeg-turbo-CVE-2019-2201.patch"))))))
+(define-deprecated libjpeg libjpeg-turbo)
+(export libjpeg)
 
 (define-public niftilib
   (package
@@ -1752,7 +1796,7 @@ identical visual appearance.")
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("ncurses" ,ncurses)))
     (home-page "https://csl.name/jp2a/")
     (synopsis "Convert JPEG images to ASCII")
@@ -2006,7 +2050,7 @@ AOM, including with alpha.")
          ("libtiff" ,libtiff)
          ("libpng" ,libpng)
          ("libungif", libungif)
-         ("libjpeg", libjpeg)
+         ("libjpeg", libjpeg-turbo)
          ("libwebp" ,libwebp)
          ("openjpeg" ,openjpeg)
          ("lcms" ,lcms)

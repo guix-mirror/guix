@@ -335,7 +335,9 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
    (name 'dhcpd)
    (extensions
     (list (service-extension shepherd-root-service-type dhcpd-shepherd-service)
-          (service-extension activation-service-type dhcpd-activation)))))
+          (service-extension activation-service-type dhcpd-activation)))
+   (description "Run a DHCP (Dynamic Host Configuration Protocol) daemon.  The
+daemon is responsible for allocating IP addresses to its client.")))
 
 
 ;;;

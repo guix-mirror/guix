@@ -6,12 +6,13 @@
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
-;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,6 +214,19 @@ to share commonly used Xfce widgets among the Xfce applications.")
                (base32
                 "1dp5s64g6572h9zvx9js7qc72s728qsd9y7hl7hg6rwaq0cjb2gc"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; exo won't find URI::Escape otherwise
+         (add-after 'install 'wrap-exo-compose-mail
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perl5lib (getenv "PERL5LIB")))
+               (wrap-program (string-append out "/lib/xfce4/exo/exo-compose-mail")
+                 `("PERL5LIB" ":" prefix
+                   (,(string-append perl5lib ":" out
+                                    "/lib/perl5/site_perl")))))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -290,7 +304,7 @@ merging features essential for loading menus modified with menu editors.")
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("cairo" ,cairo) ;; Needed for pdf thumbnails (poppler-glibc.pc)
        ("freetype" ,freetype)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
        ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails

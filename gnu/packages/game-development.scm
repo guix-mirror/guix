@@ -38,6 +38,7 @@
 
 (define-module (gnu packages game-development)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -532,7 +533,7 @@ clone.")
        ("xcb-util-image" ,xcb-util-image)
        ("libxrandr" ,libxrandr)
        ("eudev" ,eudev)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libsndfile" ,libsndfile)
        ("stb-image" ,stb-image)
        ("stb-image-write" ,stb-image-write)))
@@ -779,7 +780,7 @@ etc.")
        ("freetype" ,freetype)
        ("glu" ,glu)
        ("gtk" ,gtk+-2)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
@@ -861,7 +862,7 @@ etc.")
        ("curl" ,curl)
        ("freetype" ,freetype)
        ("giflib" ,giflib)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libwebp" ,libwebp)
        ("libx11" ,libx11)
@@ -1013,7 +1014,7 @@ interface (API).")
        ("sdl-mixer" ,sdl-mixer)
        ("sdl-ttf" ,sdl-ttf)
        ("sdl-gfx" ,sdl-gfx)
-       ("libjpeg" ,libjpeg)
+       ("libjpeg" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libX11" ,libx11)
        ("libsmpeg" ,libsmpeg)
@@ -1726,7 +1727,7 @@ scripted in a Python-like language.")
               ("libxft" ,libxft)
               ("libxinerama" ,libxinerama)
               ("libfontconfig" ,fontconfig)
-              ("libjpeg" ,libjpeg)
+              ("libjpeg" ,libjpeg-turbo)
               ("libpng" ,libpng)
               ("fltk" ,fltk)
               ("zlib" ,zlib)))
@@ -1934,7 +1935,7 @@ of the others")
       (build-system gnu-build-system)
       (inputs
        `(("sdl2" ,sdl2)
-         ("libjpeg" ,libjpeg)
+         ("libjpeg" ,libjpeg-turbo)
          ("openal" ,openal)
          ("curl" ,curl)
          ("opusfile" ,opusfile)
@@ -2225,3 +2226,89 @@ rigid body physics library written in C.")
 developers providing an advanced true color console, input, and lots of other
 utilities frequently used in roguelikes.")
     (license license:bsd-3)))
+
+(define-public warsow-qfusion
+  ;; As of 2020-04-09, the latest stable version 2.1.0 is deprecated.
+  ;; The 2.5 beta as published on the homepage is commit
+  ;; c4de15df559410aff0ca6643724e24cddb0ecbbd
+  (let ((commit "c4de15df559410aff0ca6643724e24cddb0ecbbd"))
+    (package
+      (name "warsow-qfusion")
+      (version (git-version "2.5" "1" commit)) ; 2.5-beta
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Warsow/qfusion/")
+                      (commit commit)
+                      (recursive? #t)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0xv2yycr43p3xmq7lm6j6zb3cpcr6w00x7qg918faq0mw9j7v48g"))
+                ;; Issue reported here: https://github.com/Warsow/qfusion/issues/46
+                (patches (search-patches "warsow-qfusion-fix-bool-return-type.patch"))
+                (modules '((guix build utils)))
+                (snippet '(begin
+                            (delete-file-recursively "platforms")
+                            (delete-file-recursively "debian")
+                            (delete-file-recursively "libsrcs")
+                            #t))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; No tests.
+         #:configure-flags '("-DQFUSION_GAME=Warsow")
+         #:modules
+         ((guix build utils)
+          (guix build cmake-build-system)
+          (ice-9 match))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'change-to-build-dir
+             (lambda _
+               (chdir "source")
+               #t))
+           (add-after 'install 'really-install
+             (lambda* (#:key outputs system #:allow-other-keys)
+               (let ((arch (match system
+                             ("x86_64-linux" "x86_64")
+                             ("i686-linux" "i386")))
+                     (out (assoc-ref outputs "out")))
+                 (install-file (string-append "../source/build/basewsw/libgame_"
+                                              arch ".so")
+                               (string-append out "/lib/"))
+                 (install-file (string-append "../source/build/libui_" arch ".so")
+                               (string-append out "/lib/"))
+                 (for-each
+                  (lambda (file)
+                    (install-file file (string-append out "/bin/")))
+                  (append (find-files "../source/build" "warsow")
+                          (find-files "../source/build" "wsw_server."))))
+               #t)))))
+      (inputs
+       `(("alsa-lib" ,alsa-lib)
+         ("curl" ,curl)
+         ("freetype" ,freetype)
+         ("ffmpeg" ,ffmpeg)
+         ("libjpeg" ,libjpeg-turbo)
+         ("libogg" ,libogg)
+         ("libpng" ,libpng)
+         ("libtheora" ,libtheora)
+         ("libvorbis" ,libvorbis)
+         ("mesa" ,mesa)
+         ("openal" ,openal)
+         ("pulseaudio" ,pulseaudio)
+         ("qtbase" ,qtbase)
+         ("qtdeclarative" ,qtdeclarative)
+         ("sdl2" ,sdl2)
+         ("uuid.h" ,util-linux "lib")
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://github.com/Warsow/qfusion")
+      (supported-systems '("i686-linux" "x86_64-linux"))
+      (synopsis "Warsow's fork of qfusion, the id Tech 2 derived game engine")
+      (description
+       "This package contains the game engine of Warsow, a first-person
+shooter video game.  The engine is based on qfusion, the id Tech 2 derived
+game engine.  id Tech 2 is the engine originally behind Quake 2.")
+      (license license:gpl2+))))

@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -88,12 +88,18 @@
              (substitute* "share/icons/application/CMakeLists.txt"
               (("gtk-update-icon-cache") "true"))
              #t))
-         (add-before 'configure 'dont-use-system-includes
+         (add-after 'unpack 'adjust-for-new-poppler
            (lambda _
-             ;; Don't add redundant -isystem includes which confuses GCC7.
-             (substitute* "CMakeScripts/DefineDependsandFlags.cmake"
-               (("include_directories\\(SYSTEM")
-                "include_directories("))
+             (substitute* (find-files "src/extension/internal/pdfinput")
+               ;; Needed for Poppler 0.82.
+               (("Unicode \\*u") "Unicode const *u")
+               ;; Needed for Poppler 0.83.
+               (("\\(GfxPath") "(const GfxPath")
+               (("GfxSubpath") "const GfxSubpath")
+               (("new GlobalParams\\(\\)")
+                "std::unique_ptr<GlobalParams>(new GlobalParams())")
+               (("new GlobalParams\\(poppler_datadir\\)")
+                "std::unique_ptr<GlobalParams>(new GlobalParams(poppler_datadir))"))
              #t)))))
     (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")
