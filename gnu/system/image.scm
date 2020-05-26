@@ -117,6 +117,7 @@
 'make-partition-image'."
   #~'(#$@(list (partition-size partition))
       #$(partition-file-system partition)
+      #$(partition-file-system-options partition)
       #$(partition-label partition)
       #$(and=> (partition-uuid partition)
                uuid-bytevector)))

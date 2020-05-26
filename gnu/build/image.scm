@@ -47,9 +47,10 @@
   "Take SEXP, a tuple as returned by 'partition->gexp', and turn it into a
 <partition> record."
   (match sexp
-    ((size file-system label uuid)
+    ((size file-system file-system-options label uuid)
      (partition (size size)
                 (file-system file-system)
+                (file-system-options file-system-options)
                 (label label)
                 (uuid uuid)))))
 
@@ -71,19 +72,22 @@ take the partition metadata size into account, take a 25% margin."
 'make-partition-image'."
   (let ((size (partition-size partition))
         (fs (partition-file-system partition))
+        (fs-options (partition-file-system-options partition))
         (label (partition-label partition))
         (uuid (partition-uuid partition))
-        (options "lazy_itable_init=1,lazy_journal_init=1"))
-    (invoke "mke2fs" "-t" fs "-d" root
-            "-L" label "-U" (uuid->string uuid)
-            "-E" (format #f "root_owner=~a:~a,~a"
-                         owner-uid owner-gid options)
-            target
-            (format #f "~ak"
-                    (size-in-kib
-                     (if (eq? size 'guess)
-                         (estimate-partition-size root)
-                         size))))))
+        (journal-options "lazy_itable_init=1,lazy_journal_init=1"))
+    (apply invoke
+           `("mke2fs" "-t" ,fs "-d" ,root
+             "-L" ,label "-U" ,(uuid->string uuid)
+             "-E" ,(format #f "root_owner=~a:~a,~a"
+                           owner-uid owner-gid journal-options)
+             ,@fs-options
+             ,target
+             ,(format #f "~ak"
+                      (size-in-kib
+                       (if (eq? size 'guess)
+                           (estimate-partition-size root)
+                           size)))))))
 
 (define* (make-vfat-image partition target root)
   "Handle the creation of VFAT partition images.  See 'make-partition-image'."
