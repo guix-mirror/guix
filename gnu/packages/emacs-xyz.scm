@@ -5913,7 +5913,7 @@ test tags.  It supports both interactive and non-interactive use.")
        (sha256
         (base32 "1m37scr82lqqy954fchjxrmdh4lngrl4d1yzxhp3yfjhsydizhrj"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/rocky/emacs-load-relative")
+    (home-page "https://github.com/rocky/emacs-load-relative")
     (synopsis "Emacs Lisp relative file loading related functions")
     (description
      "Provides functions which facilitate writing multi-file Emacs packages
