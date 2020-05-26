@@ -5032,7 +5032,7 @@ in which the loaded data is arranged in memory.")
 (define-public libdom
   (package
     (name "libdom")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
@@ -5040,7 +5040,7 @@ in which the loaded data is arranged in memory.")
                            "libdom-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1ixkqsl3f7dl1kajksm0c231w1v5xy8z6hm3v67hgm9nh4qcvfcy"))))
+         "0jpg5hx3y0mdxk5szd47dyijqimd2321brbqk2620pp5f4j0gvlq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
