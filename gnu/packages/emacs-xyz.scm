@@ -6973,9 +6973,9 @@ in Emacs.")
                   "0mad8sp5y9vyk28595qygspnyh8bfmb1fbxjlw70qwc1kdn822n4"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-markdown-mode" ,emacs-markdown-mode)
-         ("emacs-evil" ,emacs-evil)))
-      (home-page "http://jblevins.org/projects/evil-markdown/")
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-markdown-mode" ,emacs-markdown-mode)))
+      (home-page "https://github.com/Somelauw/evil-markdown/")
       (synopsis "Evil keybindings for @code{markdown-mode}")
       (description
        "This package provides custom text objects and bindings for
