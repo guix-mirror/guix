@@ -26985,7 +26985,7 @@ The type of an entry in the bootloader menu.
 @item @code{label}
 The label to show in the menu---e.g., @code{"GNU"}.
 
-@item @code{linux}
+@item @code{linux} (default: @code{#f})
 The Linux kernel image to boot, for example:
 
 @lisp
@@ -27007,9 +27007,10 @@ field is ignored entirely.
 The list of extra Linux kernel command-line arguments---e.g.,
 @code{("console=ttyS0")}.
 
-@item @code{initrd}
+@item @code{initrd} (default: @code{#f})
 A G-Expression or string denoting the file name of the initial RAM disk
 to use (@pxref{G-Expressions}).
+
 @item @code{device} (default: @code{#f})
 The device where the kernel and initrd are to be found---i.e., for GRUB,
 @dfn{root} for this menu entry (@pxref{root,,, grub, GNU GRUB manual}).
@@ -27019,6 +27020,28 @@ bytevector, @pxref{File Systems}), or @code{#f}, in which case
 the bootloader will search the device containing the file specified by
 the @code{linux} field (@pxref{search,,, grub, GNU GRUB manual}).  It
 must @emph{not} be an OS device name such as @file{/dev/sda1}.
+
+@item @code{multiboot-kernel} (default: @code{#f})
+The kernel to boot in Multiboot-mode (@pxref{multiboot,,, grub, GNU GRUB
+manual}).  When this field is set, a Multiboot menu-entry is generated.
+For example:
+
+@lisp
+(file-append mach "/boot/gnumach")
+@end lisp
+
+@item @code{multiboot-arguments} (default: @code{()})
+The list of extra command-line arguments for the multiboot-kernel.
+
+@item @code{multiboot-modules} (default: @code{()})
+The list of commands for loading Multiboot modules.  For example:
+
+@lisp
+(list (list (file-append hurd "/hurd/ext2fs.static") "ext2fs"
+             @dots{})
+      (list (file-append libc "/lib/ld.so.1") "exec"
+             @dots{}))
+@end lisp
 
 @end table
 @end deftp
