@@ -878,7 +878,7 @@ Prometheus metrics.")
 (define-public go-github-com-prometheus-procfs
     (package
       (name "go-github-com-prometheus-procfs")
-      (version "0.0.4")
+      (version "0.0.11")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -887,13 +887,15 @@ Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1z5jq5rjala0a0di4nwk1rai0z9f73qwqj6mgcbpjbg2qknlb544"))))
+                  "1msc8bfywsmrgr2ryqjdqwkxiz1ll08r3qgvaka2507z1wpcpj2c"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/procfs"
          ;; The tests require Go modules, which are not yet supported in Guix's
          ;; Go build system.
          #:tests? #f))
+      (propagated-inputs
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
       (synopsis "Go library for reading @file{/proc}")
       (description "The @code{procfs} Go package provides functions to retrieve
 system, kernel, and process metrics from the @file{/proc} pseudo file system.")
