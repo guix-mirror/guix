@@ -1401,7 +1401,7 @@ package provides command line tools using the Bio++ library.")
        ("python" ,python-wrapper)))
     (native-inputs
      `(("cpio" ,cpio)))
-    (home-page "http://blast.ncbi.nlm.nih.gov")
+    (home-page "https://blast.ncbi.nlm.nih.gov")
     (synopsis "Basic local alignment search tool")
     (description
      "BLAST is a popular method of performing a DNA or protein sequence
