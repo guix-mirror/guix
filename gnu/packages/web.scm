@@ -5173,7 +5173,7 @@ client applications.  It is developed as part of the NetSurf project.")
 (define-public libnsutils
   (package
     (name "libnsutils")
-    (version "0.0.5")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -5181,7 +5181,7 @@ client applications.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "09w1rixps1iiq6wirjwxmd6h87llvjzvw565rahjb3rlyhcplfqf"))))
+         "1w5fyy2i60a3v3if3iqcn9sy9sycx6966rcx53v85gja6hb6a33r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
