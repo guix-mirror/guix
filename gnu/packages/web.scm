@@ -5247,7 +5247,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.9")
+    (version "3.10")
     (source
      (origin
        (method url-fetch)
@@ -5255,7 +5255,7 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1hzcm2s2wh5sapgr000lg63hcdbj6hyajxl43xa1x80kc5piqbyp"))
+         "0plra64c5xyiw12yx2q13brxsv8apmany97zqa2lcqckw4ll8j1n"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
                                 "netsurf-longer-test-timeout.patch"
