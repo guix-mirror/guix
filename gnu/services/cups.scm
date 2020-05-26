@@ -869,7 +869,7 @@ IPP specifications.")
         (use-modules (guix build utils))
         (define (mkdir-p/perms directory owner perms)
           (mkdir-p directory)
-          (chown "/var/run/cups" (passwd:uid owner) (passwd:gid owner))
+          (chown directory (passwd:uid owner) (passwd:gid owner))
           (chmod directory perms))
         (define (build-subject parameters)
           (string-concatenate
