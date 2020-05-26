@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1817,10 +1818,11 @@ advanced research.")
     (build-system python-build-system)
     (propagated-inputs
      `(("ipython" ,python-ipython)
-       ("nose" ,python-nose)
        ("numpy" ,python-numpy)
        ("pandas" ,python-pandas)
        ("scipy" ,python-scipy)))
+    (native-inputs
+     `(("nose" ,python-nose)))
     (home-page "https://github.com/interpretable-ml/iml")
     (synopsis "Interpretable Machine Learning (iML) package")
     (description "Interpretable ML (iML) is a set of data type objects,
