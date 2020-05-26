@@ -4964,7 +4964,7 @@ developed as part of the Netsurf project.")
 (define-public libcss
   (package
     (name "libcss")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -4972,7 +4972,7 @@ developed as part of the Netsurf project.")
                            "libcss-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1vw9j3d2mr4wbvs8fyqmgslkbxknvac10456775hflxxcivbm3xr"))))
+         "1p66sdiiqm7w4jkq23hsf08khsnmq93hshh9f9m8sbirjdpf3p6j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
