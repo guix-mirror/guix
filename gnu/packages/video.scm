@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -283,7 +284,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "1.0.0-errata1-avif")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -292,7 +293,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "169yfgh7zigc21h71qclfyr7s4wwp2i9vbr4z6pkabypvass4v7m"))))
+                "1616xjhj6770ykn82ml741h8hx44v507iky3s9h7a5lnk9d4cxzy"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -3019,15 +3020,15 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "0.7.95")
+    (version "20.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
-                                  name "/" version"/"
-                                  name "_" version ".tar.bz2"))
+                                  name "/" version "/"
+                                  name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1kchh6285b07z5nixv619hc9gml2ysdayicdiv30frrlqiyxqw4b"))))
+                "0wkzj5s34m8dvy7hif4h8f90q8ncrzd930gij1zzw3h5nw732j38"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3077,7 +3078,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "18.12")
+    (version "20.03")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -3085,10 +3086,10 @@ MPEG-2, MPEG-4, DVD (VOB)...
               ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
                                   name "/" version "/"
-                                  name "_" version ".tar.bz2"))
+                                  name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1ix95ilcjlawcq6phh25cgplm3riqa2ii7ql82g8yagqs4ldqp6a"))))
+                "1f1shnycf0f1fwka9k9s250l228xjkg0k4k73h8bpld8msighgnw"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3693,7 +3694,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
       (origin
         (method url-fetch)
@@ -3701,7 +3702,7 @@ transitions, and effects and then export your film to many common formats.")
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
         (sha256
          (base32
-          "0w5k572jzxp7zwdbsa0jgjzri6hsrkydawzzilrw46nxpcak37q9"))))
+          "0xcykraf42gkymzqx1k1lcdclgk9y5yf7rr56vslrgmr0r849qnk"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

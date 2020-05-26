@@ -43,6 +43,7 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
@@ -101,16 +102,26 @@ system to use the host GPU to accelerate 3D rendering.")
 (define-public spice-protocol
   (package
     (name "spice-protocol")
-    (version "0.14.1")
+    (version "0.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                 "https://www.spice-space.org/download/releases/"
-                "spice-protocol-" version ".tar.bz2"))
+                "spice-protocol-" version ".tar.xz"))
               (sha256
                (base32
-                "0ahk5hlanwhbc64r80xmchdav3ls156cvh9l68a0l22bhdhxmrkr"))))
-    (build-system gnu-build-system)
+                "1sgi9ksb781qs47pdbw0bmnyg8dgayn5xrzj6vzdy043nv466flg"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/"
+                                        ,name "-" ,version)))
+               (install-file "COPYING" doc)
+               #t))))))
     (synopsis "Protocol headers for the SPICE protocol")
     (description "SPICE (the Simple Protocol for Independent Computing
 Environments) is a remote-display system built for virtual environments

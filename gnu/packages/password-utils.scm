@@ -21,7 +21,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018, 2019, 2020 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
@@ -196,7 +196,7 @@ algorithms AES or Twofish.")
 (define-public pwsafe
   (package
     (name "pwsafe")
-    (version "3.50.0")
+    (version "3.52.0")
     (home-page "https://www.pwsafe.org/")
     (source
      (origin
@@ -205,7 +205,7 @@ algorithms AES or Twofish.")
              (url "https://github.com/pwsafe/pwsafe.git")
              (commit version)))
        (sha256
-        (base32 "01kfssd2vr64yh4dqhch58x36n3aj3hpj5n560f41rsxym69c6qs"))
+        (base32 "1ka7xsl63v0559fzf3pwc1iqr37gwr4vq5iaxa2hzar2g28hsxvh"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
@@ -232,15 +232,7 @@ algorithms AES or Twofish.")
                                   (display "find_package(GTest)
 add_subdirectory(src/test)\n" cmake-port)
                                   (close cmake-port)
-                                  #t)))
-                            (add-after 'add-gtest 'patch-executables
-                              (lambda* (#:key inputs #:allow-other-keys)
-                                (chmod "src/test/OSTest.cpp" #o644)
-                                (substitute* "src/os/unix/media.cpp"
-                                  (("/usr/bin/file")
-                                   (string-append (assoc-ref inputs "file")
-                                                  "/bin/file")))
-                                #t)))))
+                                  #t))))))
     (synopsis "Password safe with automatic input and key generation")
     (description "pwsafe is a password manager originally designed by Bruce
 Schneier.  It offers a simple UI to manage passwords for different services.

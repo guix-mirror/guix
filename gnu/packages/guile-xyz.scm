@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
+;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -464,10 +465,23 @@ you send to a FIFO file.")
        ("automake" ,automake)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
-    (inputs `(("guile" ,guile-2.2)))
-    (propagated-inputs `(("guile2.2-lib" ,guile2.2-lib)))
+    (inputs `(("guile" ,guile-3.0)))
+    (propagated-inputs `(("guile-lib" ,guile-lib)))
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:modules (((guix build guile-build-system)
+                   #:select (target-guile-effective-version))
+                  ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build guile-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases (modify-phases %standard-phases
+                  ;; Support Guile 3.0 in configure from upstream commit
+                  ;; 4c724577ccf19bb88580f72f2f6b166a0447ce3f
+                  (add-before 'bootstrap 'configure-support-guile3.0
+                    (lambda _
+                      (substitute* "configure.ac"
+                                  (("GUILE_PKG.*")
+                                   "GUILE_PKG([3.0 2.0 2.2])"))
+                      #t))
                   (add-before 'configure 'set-guilesitedir
                     (lambda _
                       (substitute* "Makefile.in"
@@ -482,6 +496,24 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
                         (("^guilesitedir =.*$")
                          "guilesitedir = \
 $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
+                      #t))
+                  (add-after 'install 'wrap-program
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin"))
+                             (guile-lib (assoc-ref inputs "guile-lib"))
+                             (version (target-guile-effective-version))
+                             (scm (string-append "/share/guile/site/"
+                                                 version))
+                             (go (string-append  "/lib/guile/"
+                                                 version "/site-ccache")))
+                        (wrap-program (string-append bin "/dsv")
+                          `("GUILE_LOAD_PATH" prefix
+                            (,(string-append out scm)
+                             ,(string-append guile-lib scm)))
+                          `("GUILE_LOAD_COMPILED_PATH" prefix
+                            (,(string-append out go)
+                             ,(string-append guile-lib go)))))
                       #t)))))
     (home-page "https://github.com/artyom-poptsov/guile-dsv")
     (synopsis "DSV module for Guile")
@@ -490,6 +522,13 @@ $(datadir)/guile/site/$(GUILE_EFFECTIVE_VERSION)\n"))
 delimiter-separated values (DSV) data format.  Guile-DSV supports the
 Unix-style DSV format and RFC 4180 format.")
     (license license:gpl3+)))
+
+(define-public guile2.2-dsv
+  (package
+    (inherit guile-dsv)
+    (name "guile2.2-dsv")
+    (inputs `(("guile" ,guile-2.2)))
+    (propagated-inputs `(("guile-lib" ,guile2.2-lib)))))
 
 (define-public guile-fibers
   (package
@@ -523,7 +562,10 @@ Unix-style DSV format and RFC 4180 format.")
                     (("#:use-module \\(fibers\\)")
                      (string-append "#:use-module (fibers)\n"
                                     "#:use-module (ice-9 threads)\n")))
-                  #t))))
+                  #t))
+              (patches
+               ;; fixes a resource leak that causes crashes in the tests
+               (search-patches "guile-fibers-destroy-peer-schedulers.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The code uses 'scm_t_uint64' et al., which are deprecated in 3.0.

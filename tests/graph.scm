@@ -162,7 +162,11 @@ edges."
   (let-values (((backend nodes+edges) (make-recording-backend)))
     (let* ((m (lambda* (uri hash-type hash name #:key system)
                 (text-file "foo-1.2.3.tar.gz" "This is a fake!")))
-           (o (origin (method m) (uri "the-uri") (sha256 #vu8(0 1 2))))
+           (o (origin
+                (method m) (uri "the-uri")
+                (sha256
+                 (base32
+                  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))))
            (p (dummy-package "p" (source o))))
       (run-with-store %store
         (export-graph (list p) 'port

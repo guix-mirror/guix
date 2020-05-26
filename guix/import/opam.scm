@@ -115,7 +115,7 @@
 (define (get-opam-repository)
   "Update or fetch the latest version of the opam repository and return the
 path to the repository."
-  (receive (location commit)
+  (receive (location commit _)
     (update-cached-checkout "https://github.com/ocaml/opam-repository")
     location))
 

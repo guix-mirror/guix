@@ -48,6 +48,7 @@ REQUIRE=(
     "groupadd"
     "tail"
     "tr"
+    "xz"
 )
 
 PAS=$'[ \033[32;1mPASS\033[0m ] '
@@ -141,7 +142,7 @@ chk_init_sys()
         _msg "${INF}init system is: upstart"
         INIT_SYS="upstart"
         return 0
-    elif [[ $(systemctl) =~ -\.mount ]]; then
+    elif [[ $(systemctl 2>/dev/null) =~ -\.mount ]]; then
         _msg "${INF}init system is: systemd"
         INIT_SYS="systemd"
         return 0

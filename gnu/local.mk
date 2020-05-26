@@ -859,7 +859,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/dconf-meson-0.52.patch			\
   %D%/packages/patches/debops-constants-for-external-program-names.patch \
   %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
-  %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/desmume-gcc6-fixes.patch			\
   %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -978,7 +977,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
-  %D%/packages/patches/git-annex-S3v4.patch			\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
   %D%/packages/patches/glibc-CVE-2015-7547.patch		\
@@ -1052,6 +1050,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/guile-3.0-relocatable.patch		\
   %D%/packages/patches/guile-linux-syscalls.patch		\
   %D%/packages/patches/guile-3.0-linux-syscalls.patch		\
+  %D%/packages/patches/guile-fibers-destroy-peer-schedulers.patch \
   %D%/packages/patches/guile-gdbm-ffi-support-gdbm-1.14.patch	\
   %D%/packages/patches/guile-present-coding.patch		\
   %D%/packages/patches/guile-rsvg-pkgconfig.patch		\
@@ -1167,9 +1166,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libdrm-realpath-virtio.patch		\
-  %D%/packages/patches/libexif-CVE-2016-6328.patch		\
-  %D%/packages/patches/libexif-CVE-2017-7544.patch		\
-  %D%/packages/patches/libexif-CVE-2018-20030.patch		\
   %D%/packages/patches/libextractor-exiv2.patch			\
   %D%/packages/patches/libgeotiff-adapt-test-script-for-proj-6.2.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
@@ -1295,7 +1291,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/netsurf-y2038-tests.patch		\
   %D%/packages/patches/netsurf-longer-test-timeout.patch	\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
-  %D%/packages/patches/nm-plugin-path.patch			\
+  %D%/packages/patches/network-manager-plugin-path.patch	\
   %D%/packages/patches/nsis-env-passthru.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
@@ -1363,6 +1359,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/perl-www-curl-remove-symbol.patch	\
   %D%/packages/patches/picprog-non-intel-support.patch		\
   %D%/packages/patches/pidgin-add-search-path.patch		\
+  %D%/packages/patches/pidgin-libnm.patch			\
   %D%/packages/patches/pinball-const-fix.patch			\
   %D%/packages/patches/pinball-cstddef.patch			\
   %D%/packages/patches/pinball-missing-separators.patch		\
@@ -1411,6 +1408,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-CVE-2018-14647.patch		\
   %D%/packages/patches/python-aiohttp-3.6.2-no-warning-fail.patch	\
   %D%/packages/patches/python-alembic-exceptions-cause.patch	\
+  %D%/packages/patches/python-argcomplete-1.11.1-fish31.patch	\
   %D%/packages/patches/python-axolotl-AES-fix.patch		\
   %D%/packages/patches/python-cairocffi-dlopen-path.patch	\
   %D%/packages/patches/python-cross-compile.patch		\
@@ -1537,6 +1535,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ttfautohint-source-date-epoch.patch	\
   %D%/packages/patches/tomb-fix-errors-on-open.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
+  %D%/packages/patches/twinkle-bcg729.patch			\
   %D%/packages/patches/u-boot-riscv64-fix-extlinux.patch	\
   %D%/packages/patches/u-boot-DT-for-Pinebook-Pro.patch		\
   %D%/packages/patches/u-boot-add-boe-nv140fhmn49-display.patch	\

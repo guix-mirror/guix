@@ -70,6 +70,7 @@
 ;;; Copyright © 2020 Alberto Eleuterio Flores Guerrero <barbanegra+guix@posteo.mx>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1757,14 +1758,14 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "12.2.0")
+    (version "12.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/auctex-"
                            version ".tar"))
        (sha256
-        (base32 "0j919l3q5sq6h1k1kmk4kyv0vkzl4f98fxcd64v34x5q1ahjhg48"))))
+        (base32 "1map25xn7r28aldhcz9n8pbfk2l3gvnxx8hgih3ax8hyvnfi6brh"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -2765,6 +2766,26 @@ Emacs.")
     (synopsis "Emacs API for working with files and directories")
     (description "This package provides an Emacs library for working with
 files and directories.")
+    (license license:gpl3+)))
+
+(define-public emacs-fountain-mode
+  (package
+    (name "emacs-fountain-mode")
+    (version "3.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rnkn/fountain-mode")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "08giwg0jwk8zzj2i4cm08322qr6znrnv9a49za7c6j47bykpwj6s"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rnkn/fountain-mode")
+    (synopsis "Major mode for screenwriting in Fountain markup")
+    (description "Fountain Mode is a scriptwriting program for GNU Emacs
+using the Fountain plain text markup format.")
     (license license:gpl3+)))
 
 (define-public emacs-fringe-helper
@@ -3776,13 +3797,15 @@ for Flow files.")
        #:emacs ,emacs                   ;need libxml support
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-python-executable
-           ;; Hardcode python3 executable in the Emacs library.
+         (add-after 'unpack 'specify-python-location
+           ;; Hard-code python3 executable location in the library.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((python3 (string-append (assoc-ref inputs "python")
                                            "/bin/python3")))
                (substitute* "flycheck-grammalecte.el"
                  (("\"python3") (string-append "\"" python3)))
+               (substitute* '("conjugueur.py" "flycheck-grammalecte.py")
+                 (("/usr/bin/env python3?") python3))
                #t)))
          (add-before 'build 'link-to-grammalecte
            ;; XXX: The Python part of the package requires grammalecte, but

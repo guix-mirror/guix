@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
@@ -69,7 +69,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.23.3")
+    (version "1.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -77,7 +77,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "00b9lp3h65254kdb1ys15fv7p3ln7qsvf15jkw4kli5ymagadkjk"))))
+                "1xsbz5kl74cgzyzwmjy3p50m0iigvi53lklkp92v49k4j99zpak7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -93,6 +93,7 @@
        ("libraw" ,libraw)
        ("librsvg" ,librsvg)
        ("libspectre" ,libspectre)
+       ("libtiff" ,libtiff)
        ("libxau" ,libxau)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -102,18 +103,19 @@
        ("libxi" ,libxi)
        ("libxfixes" ,libxfixes)
        ("libxinerama" ,libxinerama)
-       ("libxp" ,libxp)
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
        ("libxss" ,libxscrnsaver)
        ("libxtst" ,libxtst)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
        ("poppler" ,poppler)
+       ("util-linux" ,util-linux "lib")
        ("wayland-protocols" ,wayland-protocols)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
      `(("avahi" ,avahi)
-       ("bullet" ,bullet)
        ("dbus" ,dbus)
        ("elogind" ,elogind)
        ("eudev" ,eudev)
@@ -122,30 +124,32 @@
        ("fribidi" ,fribidi)
        ("glib" ,glib)
        ("harfbuzz" ,harfbuzz)
-       ("luajit" ,luajit)
        ("libinput" ,libinput-minimal)
        ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
        ("libsndfile" ,libsndfile)
-       ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
+       ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxkbcommon" ,libxkbcommon)
+       ("luajit" ,luajit)
        ("lz4" ,lz4)
        ("openssl" ,openssl)
        ("pulseaudio" ,pulseaudio)
-       ("util-linux" ,util-linux "lib")
        ("wayland" ,wayland)
        ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-Dsystemd=false"
+                           "-Delogind=true"
                            "-Dembedded-lz4=false"
                            "-Devas-loaders-disabler=json"
                            "-Dbuild-examples=false"
+                           "-Decore-imf-loaders-disabler=scim"
+                           "-Davahi=true"
+                           "-Dglib=true"
+                           "-Dmount-path=/run/setuid-programs/mount"
+                           "-Dunmount-path=/run/setuid-programs/umount"
                            ;(string-append "-Ddictionaries-hyphen-dir="
                            ;               (assoc-ref %build-inputs "hyphen")
                            ;               "/share/hyphen")
-                           "-Delogind=true"
                            "-Dnetwork-backend=connman"
                            ,@(match (%current-system)
                                ("armhf-linux"
@@ -153,22 +157,27 @@
                                (_
                                 '("-Dopengl=full")))
                            ;; for wayland
-                           "-Dwl-deprecated=true" ; ecore_wayland
-                           "-Ddrm-deprecated=true" ; ecore_drm
                            "-Dwl=true"
                            "-Ddrm=true")
        #:tests? #f ; Many tests fail due to timeouts and network requests.
        #:phases
        (modify-phases %standard-phases
-         ;; If we don't hardcode the location of libcurl.so then we
-         ;; have to wrap the outputs of efl's dependencies in curl.
-         (add-after 'unpack 'hardcode-libcurl-location
+         ;; If we don't hardcode the location of libcurl.so and others then we
+         ;; have to wrap the outputs of efl's dependencies in those libraries.
+         (add-after 'unpack 'hardcode-dynamic-libraries
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((curl (assoc-ref inputs "curl"))
-                    (lib  (string-append curl "/lib/")))
+             (let ((curl    (assoc-ref inputs "curl"))
+                   (pulse   (assoc-ref inputs "pulseaudio"))
+                   (sndfile (assoc-ref inputs "libsndfile"))
+                   (lib     "/lib/"))
                (substitute* "src/lib/ecore_con/ecore_con_url_curl.c"
                  (("libcurl.so.?" libcurl) ; libcurl.so.[45]
-                  (string-append lib libcurl)))
+                  (string-append curl lib libcurl)))
+               (substitute* "src/lib/ecore_audio/ecore_audio.c"
+                 (("libpulse.so.0" libpulse)
+                  (string-append pulse lib libpulse))
+                 (("libsndfile.so.1" libsnd)
+                  (string-append sndfile lib libsnd)))
                #t)))
          (add-after 'unpack 'fix-install-paths
            (lambda _
@@ -283,7 +292,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.23.1")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -291,27 +300,27 @@ Libraries with some extra bells and whistles.")
                               "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "0d1cyl07w9pvi2pf029kablazks2q9aislzl46b6fq5m1465jc75"))
+                "01053hxdmyjfb6gmz1pqmw0llrgc4356np515h5vsqcn59mhvfz7"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dsystemd=false")
+     `(#:configure-flags
+       (let ((efl (assoc-ref %build-inputs "efl")))
+         (list "-Dsystemd=false"
+               "-Dpackagekit=false"
+               (string-append "-Dedje-cc=" efl "/bin/edje_cc")
+               (string-append "-Deldbus-codegen=" efl "/bin/eldbus-codegen")
+               (string-append "-Deet=" efl "/bin/eet")))
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap) ; We don't want to run the autogen script.
-         (add-after 'unpack 'fix-dot-desktop-creation
-           (lambda _
-             (substitute* "data/session/meson.build"
-               (("HAVE_WAYLAND'.*") "HAVE_WAYLAND') == true\n"))
-             #t))
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
-            (setenv "HOME" "/tmp")
+             (setenv "HOME" "/tmp")
              (let ((xkeyboard (assoc-ref inputs "xkeyboard-config"))
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc"))
-                   (bluez     (assoc-ref inputs "bluez"))
                    (bc        (assoc-ref inputs "bc"))
                    (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
@@ -328,23 +337,22 @@ Libraries with some extra bells and whistles.")
                                   "src/modules/conf_intl/e_int_config_intl.c"
                                   "src/modules/wizard/page_010.c")
                  (("locale -a") (string-append libc "/bin/locale -a")))
-               (substitute* "src/bin/e_import_config_dialog.c"
-                 (("%s/edje_cc -v %s %s %s\", e_prefix_bin_get\\(\\)")
-                  (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
+               (substitute* '("src/bin/e_sys_main.c"
+                              "src/bin/e_util_suid.h")
+                 (("PATH=/bin:/usr/bin:/sbin:/usr/sbin")
+                  (string-append "PATH=/run/setuid-programs:"
+                                 "/run/current-system/profile/bin:"
+                                 "/run/current-system/profile/sbin")))
                (substitute* "src/modules/everything/evry_plug_calc.c"
                  (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
                  (("/bin/mount") "/run/setuid-programs/mount")
                  (("/bin/umount") "/run/setuid-programs/umount")
-                 (("/usr/bin/eject") (string-append utils "/bin/eject"))
-                 (("/usr/bin/l2ping") (string-append bluez "/bin/l2ling"))
-                 (("/bin/rfkill") (string-append utils "/sbin/rfkill"))
-                 (("SUSPEND   = ''") "SUSPEND   = '/run/current-system/profile/bin/loginctl suspend'")
-                 (("HIBERNATE = ''") "HIBERNATE = '/run/current-system/profile/bin/loginctl hibernate'")
-                 (("/sbin/shutdown -h now") "/run/current-system/profile/bin/loginctl poweroff now")
-                 (("/sbin/shutdown -r now") "/run/current-system/profile/bin/loginctl reboot now"))
+                 (("/usr/bin/eject") (string-append utils "/bin/eject")))
+               (substitute* "src/bin/system/e_system_power.c"
+                 (("systemctl") "loginctl"))
                #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -389,7 +397,7 @@ embedded systems.")
 (define-public python-efl
   (package
     (name "python-efl")
-    (version "1.23.0")
+    (version "1.24.0")
     (source
       (origin
         (method url-fetch)
@@ -397,7 +405,7 @@ embedded systems.")
                             "python/python-efl-" version ".tar.xz"))
         (sha256
          (base32
-          "16yn6a1b9167nfmryyi44ma40m20ansfpwgrvqzfvwix7qaz9pib"))
+          "1vk1cdd959gia4a9qzyq56a9zw3lqf9ck66k8c9g3c631mp5cfpy"))
         (modules '((guix build utils)))
         ;; Remove files generated by Cython
         (snippet

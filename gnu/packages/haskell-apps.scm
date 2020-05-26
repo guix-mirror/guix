@@ -37,7 +37,6 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system haskell)
-  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gl)
@@ -342,15 +341,14 @@ to @code{cabal repl}).")
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "8.20200501")
+    (version "8.20200522")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
-       (patches (search-patches "git-annex-S3v4.patch"))
        (sha256
-        (base32 "19rggaymvqy7r61n2rl2nigwdi2hzq5l1afcd5l0k1vbacwgq4jl"))))
+        (base32 "1v71k5k9mcj1nq4pb8apx99rgw2rmckr6yshhvjl1dr6j70d67x8"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags

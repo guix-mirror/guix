@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -151,14 +151,14 @@ built for SYSTEM."
                    (format #f (G_ "could not find bootstrap binary '~a' \
 for system '~a'")
                            program system))))))
-        ((sha256)
+        ((bv)
          (origin
            (method url-fetch/executable)
            (uri (map (cute string-append <>
                            (bootstrap-executable-file-name system program))
                      %bootstrap-executable-base-urls))
            (file-name program)
-           (sha256 sha256)))))))
+           (hash (content-hash bv sha256))))))))
 
 
 ;;;

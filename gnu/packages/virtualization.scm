@@ -104,14 +104,14 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
-(define (qemu-patch commit file-name sha256)
+(define (qemu-patch commit file-name sha256-bv)
   "Return an origin for COMMIT."
   (origin
     (method url-fetch)
     (uri (string-append
           "http://git.qemu.org/?p=qemu.git;a=commitdiff_plain;h="
           commit))
-    (sha256 sha256)
+    (hash (content-hash sha256-bv sha256))
     (file-name file-name)))
 
 (define-public qemu

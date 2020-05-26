@@ -557,6 +557,7 @@ EXTRA_DIST +=						\
   build-aux/cuirass/guix-modular.scm			\
   build-aux/cuirass/hydra-to-cuirass.scm		\
   build-aux/check-final-inputs-self-contained.scm	\
+  build-aux/check-channel-news.scm			\
   build-aux/compile-as-derivation.scm			\
   build-aux/generate-authors.scm			\
   build-aux/git-authenticate.scm			\
@@ -885,6 +886,11 @@ assert-final-inputs-self-contained: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
 
+# Validate channel news.
+check-channel-news: $(GOBJECTS)
+	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"	\
+	  "$(top_srcdir)/build-aux/check-channel-news.scm"
+
 # Compute the Hydra jobs and write them in the target file.
 hydra-jobs.scm: $(GOBJECTS)
 	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
@@ -904,7 +910,7 @@ cuirass-jobs.scm: $(GOBJECTS)
 
 .PHONY: gen-ChangeLog gen-AUTHORS gen-tarball-version
 .PHONY: assert-no-store-file-names assert-binaries-available
-.PHONY: assert-final-inputs-self-contained
+.PHONY: assert-final-inputs-self-contained check-channel-news
 .PHONY: clean-go make-go as-derivation authenticate
 .PHONY: update-guix-package update-NEWS release
 

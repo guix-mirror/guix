@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014, 2016, 2020 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # This file is part of GNU Guix.
@@ -31,6 +31,11 @@ test `echo -n | guix hash -` = 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9
 test `guix hash -f nix-base32 /dev/null` = 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 test `guix hash -f hex /dev/null` = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 test `guix hash -f base32 /dev/null` = 4oymiquy7qobjgx36tejs35zeqt24qpemsnzgtfeswmrw6csxbkq
+test `guix hash -H sha512 -f hex /dev/null` = cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e
+test `guix hash -H sha1 -f base64 /dev/null` = "2jmj7l5rSw0yVb/vlWAYkK/YBwk="
+
+if guix hash -H abcd1234 /dev/null;
+then false; else true; fi
 
 mkdir "$tmpdir"
 echo -n executable > "$tmpdir/exe"

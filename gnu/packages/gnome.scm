@@ -51,6 +51,8 @@
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Naga Malleswari <nagamalli@riseup.net>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -643,9 +645,9 @@ extraction, and lookup for applications on the desktop.")
       ("json-glib" ,json-glib)
       ("krb5" ,mit-krb5)
       ("libgweather" ,libgweather)
+      ("libnma" ,libnma)
       ("libsecret" ,libsecret)
       ("network-manager" ,network-manager)
-      ("network-manager-applet" ,network-manager-applet)
       ("packagekit" ,packagekit)
       ("polkit" ,polkit)
       ("pwquality" ,libpwquality)
@@ -806,41 +808,50 @@ client devices can handle.")
 
 (define-public libnma
   (package
-   (name "libnma")
-   (version "1.8.26")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/" name "/"
-                                (version-major+minor version) "/"
-                                name "-" version ".tar.xz"))
-            (sha256
-             (base32
-              "1w9lld38risnk1krknfwln24kabdxnj274pyz4jhndphwigrshaf"))))
-   (build-system meson-build-system)
-   (arguments
-    `(#:glib-or-gtk? #t))
-   (native-inputs
-    `(("gettext" ,gettext-minimal)
-      ("glib:bin" ,glib "bin")
-      ("gtk-doc" ,gtk-doc)
-      ("gobject-introspection" ,gobject-introspection)
-      ("pkg-config" ,pkg-config)))
-   (inputs
-    `(("adwaita-icon-theme" ,adwaita-icon-theme)
-      ("gcr" ,gcr)
-      ("gtk+" ,gtk+)
-      ("iso-codes" ,iso-codes)
-      ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
-      ("network-manager" ,network-manager)))
-   (synopsis "Network Manager's applet library")
-   (description "Libnma is an applet library for Network Manager.  It was
+    (name "libnma")
+    (version "1.8.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09mp6k0hfam1vyyv9kcd8j4gb2r58i05ipx2nswb58ris599bxja"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook")))
+               (substitute* "libnma-docs.xml"
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               #t))))))
+    (native-inputs
+     `(("docbook-xml" ,docbook-xml-4.3)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (inputs
+     `(("gcr" ,gcr)
+       ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
+       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
+       ("network-manager" ,network-manager)))
+    (synopsis "Network Manager's applet library")
+    (description "Libnma is an applet library for Network Manager.  It was
 initially part of network-manager-applet and has now become a separate
 project.")
-   (home-page "https://gitlab.gnome.org/GNOME/libnma")
-
-   ;; Some files carry the "GPL-2.0+" SPDX identifier while others say
-   ;; "LGPL-2.1+".
-   (license license:gpl2+)))
+    (home-page "https://gitlab.gnome.org/GNOME/libnma")
+    ;; Some files carry the "GPL-2.0+" SPDX identifier while others say
+    ;; "LGPL-2.1+".
+    (license license:gpl2+)))
 
 (define-public gnome-menus
   (package
@@ -868,73 +879,72 @@ configuration files for the GNOME menu, as well as a simple menu editor.")
 (define-public deja-dup
   (package
     (name "deja-dup")
-    (version "34.3")
+    (version "40.6")
     (source (origin
-             (method url-fetch)
-             (uri "https://launchpadlibrarian.net/295170991/deja-dup-34.3.tar.xz")
-             (sha256
-              (base32
-               "1xqcr61hpbahbla7gdjn4ngjfz7w6f57y7f5pkb77yk05f60j2n9"))
-             (patches
-               (search-patches "deja-dup-use-ref-keyword-for-iter.patch"))))
-    (build-system glib-or-gtk-build-system)
+              (method url-fetch)
+              (uri (string-append "https://gitlab.gnome.org/World/deja-dup/-/archive/"
+                                  version "/deja-dup-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0lwazh6crby5wpy9fg6zvwy4plqbhs2f98bm5lbizjdlbh88n5q0"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  ((guix build cmake-build-system) #:prefix cmake:)
-                  (guix build glib-or-gtk-build-system)
-                  (guix build utils))
-       #:imported-modules (,@%glib-or-gtk-build-system-modules
-                           (guix build cmake-build-system))
-       #:test-target "test"
-       #:configure-flags (list (string-append
-                                "-DCMAKE_INSTALL_FULL_DATADIR=" %output)
-                               (string-append
-                                "-DCMAKE_INSTALL_LIBEXECDIR=" %output))
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       (list
+        ;; Otherwise, the RUNPATH will lack the final path component.
+        (string-append "-Dc_link_args=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib/deja-dup"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-lockfile-deletion
-           (lambda rest
-             (substitute* "libdeja/tools/duplicity/DuplicityInstance.vala"
-               (("/bin/rm")
-                (which "rm")))))
-         (replace 'configure
-           (assoc-ref cmake:%standard-phases 'configure))
-         (delete 'check) ;; Fails due to issues with DBus
-         (add-after 'install 'wrap-deja-dup
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((python      (assoc-ref inputs "python"))
-                   (python-path (getenv "PYTHONPATH"))
-                   (duplicity   (assoc-ref inputs "duplicity"))
-                   (out         (assoc-ref outputs "out")))
-               (for-each
-                (lambda (program)
-                  (wrap-program program
-                    `("PATH" ":" prefix (,(string-append python "/bin")
-                                         ,(string-append duplicity "/bin"))))
-                  (wrap-program program
-                    `("PYTHONPATH" ":" prefix (,python-path))))
-
-                (find-files (string-append out "/bin")))
-               #t))))))
+         (add-after 'unpack 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (substitute* '("libdeja/tools/duplicity/DuplicityInstance.vala"
+                              "libdeja/tests/scripts/instance-error.test")
+                 (("/bin/rm")
+                  (which "rm")))
+               (substitute* "libdeja/tests/runner.vala"
+                 (("/bin/sh")
+                  (which "sh")))
+               (substitute* "libdeja/tests/scripts/instance-error.test"
+                 (("`which python3`")
+                  (string-append python "/bin/python3"))))))
+         (add-after 'unpack 'patch-libgpg-error
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libgpg-error (assoc-ref inputs "libgpg-error")))
+               (substitute* "meson.build"
+                 (("(gpgerror_libs = ).*" _ var)
+                  (format #f "~a '-L~a/lib -lgpg-error'\n" var libgpg-error))))
+             #t))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/post-install.sh"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gobject-introspection" ,gobject-introspection)
        ("duplicity" ,duplicity)
-       ("python" ,python-2)
-       ("python-pygobject" ,python2-pygobject)
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)
        ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
        ("libnotify" ,libnotify)
-       ("libpeas" ,libpeas)
+       ("libgpg-error" ,libgpg-error)
        ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
        ("packagekit" ,packagekit)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("vala" ,vala)
+     `(("appstream-glib" ,appstream-glib)
+       ("desktop-file-utils" ,desktop-file-utils)
        ("gettext" ,gettext-minimal)
+       ("glib" ,glib "bin")             ; for glib-compile-schemas.
+       ("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
-       ("intltool" ,intltool)
-       ("cmake" ,cmake-minimal)))
-    (home-page "https://launchpad.net/deja-dup")
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Apps/DejaDup")
     (synopsis "Simple backup tool, for regular encrypted backups")
     (description
      "Déjà Dup is a simple backup tool, for regular encrypted backups.  It
@@ -3426,7 +3436,7 @@ and RDP protocols.")
                    ; or /etc/machine-id.
        #:glib-or-gtk? #t
        #:configure-flags '("-Denable-gtk-doc=true")))
-    (home-page "https://developer.gnome.org/dconf")
+    (home-page "https://developer.gnome.org/dconf/")
     (synopsis "Low-level GNOME configuration system")
     (description "Dconf is a low-level configuration system.  Its main purpose
 is to provide a backend to GSettings on platforms that don't already have
@@ -4148,10 +4158,14 @@ faster results and to avoid unnecessary server load.")
                   #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '( ;; The tests want to contact the system bus, which can't be done in the
-       ;; build environment.  The integration test can run, but the last of
-       ;; the up-self-tests doesn't.  Disable tests for now.
-       #:tests? #f
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((umockdev (string-append (assoc-ref inputs "umockdev")
+                                            "/lib")))
+               (setenv "LD_LIBRARY_PATH" umockdev))
+             #t)))
        #:configure-flags (list "--localstatedir=/var"
                                (string-append "--with-udevrulesdir="
                                               (assoc-ref %outputs "out")
@@ -4161,6 +4175,12 @@ faster results and to avoid unnecessary server load.")
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("python" ,python)
+
+       ;; For tests.
+       ("python-dbus" ,python-dbus)
+       ("python-dbusmock" ,python-dbusmock)
+       ("python-pygobject" ,python-pygobject)
+       ("umockdev" ,umockdev)
 
        ;; For man pages.
        ("libxslt" ,libxslt)                       ;for 'xsltproc'
@@ -6374,56 +6394,58 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.18.4")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
                                   (version-major+minor version) "/"
                                   "NetworkManager-" version ".tar.xz"))
-              (patches (search-patches "nm-plugin-path.patch"))
+              (patches (search-patches "network-manager-plugin-path.patch"))
               (sha256
                (base32
-                "0pnh1wr2p1fqa5pr945fr3lngfc5ccfrmgddqsg55lxnjpv0ggd3"))
+                "06044fl60bjlj7c6rqqfbm5795h61h6yzp7ch392hzcnm46wwhn3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (substitute* "src/devices/wwan/nm-modem-manager.c"
                     (("systemd") "elogind"))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
     (arguments
-     '(#:configure-flags
+     `(#:configure-flags
        (let ((out      (assoc-ref %outputs "out"))
-             (doc      (assoc-ref %outputs "doc"))
              (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
                                       "/sbin/dhclient")))
-         (list "--with-libnm-glib" ; needed by network-manager-applet
-               "--with-systemd-journal=no"
-               "--with-session-tracking=elogind"
-               "--with-suspend-resume=elogind"
-               "--with-consolekit=no"
-               "--with-crypto=gnutls"
-               "--disable-config-plugin-ibft"
-               "--sysconfdir=/etc"
-               "--localstatedir=/var"
-               (string-append "--with-udev-dir="
-                              out "/lib/udev")
-               (string-append "--with-dbus-sys-dir="
-                              out "/etc/dbus-1/system.d")
-               (string-append "--with-html-dir="
-                              doc "/share/gtk-doc/html")
-               (string-append "--with-dhclient=" dhclient)))
+         (list
+          ;; Otherwise, the RUNPATH will lack the final 'NetworkManager' path
+          ;; component.
+          (string-append "-Dc_link_args=-Wl,-rpath="
+                         out "/lib:"
+                         out "/lib/NetworkManager/" ,version)
+          "-Dsystemd_journal=false"
+          "-Dsession_tracking=elogind"
+          "-Dsuspend_resume=elogind"
+          "-Dsystemdsystemunitdir=no"
+          "-Dsession_tracking_consolekit=false"
+          "-Ddhcpcd=no"
+          "-Ddhcpcanon=no"
+          "-Dcrypto=gnutls"
+          "-Diwd=true"
+          "-Dlibaudit=yes"
+          "-Dqt=false"
+          "-Ddocs=true"
+          "--sysconfdir=/etc"
+          "--localstatedir=/var"
+          (string-append "-Dudev_dir="
+                         out "/lib/udev")
+          (string-append "-Ddbus_conf_dir="
+                         out "/etc/dbus-1/system.d")
+
+          (string-append "-Ddhclient=" dhclient)))
        #:phases
        (modify-phases %standard-phases
-         ;; This bare "ls" invocation breaks some tests.
-         (add-after 'unpack 'patch-ls-invocation
-           (lambda _
-             (substitute* "build-aux/ltmain.sh"
-               (("`ls -")
-                (string-append "`" (which "ls") " -")))
-             #t))
          (add-before 'configure 'pre-configure
            (lambda _
              ;; These tests try to test aspects of network-manager's
@@ -6431,65 +6453,64 @@ users.")
              ;; cope with being already in the Guix build jail as that jail
              ;; lacks some features that they would like to proxy over (like
              ;; a /sys mount).
-             (substitute* '("Makefile.in")
-               (("src/platform/tests/test-address-linux") " ")
-               (("src/platform/tests/test-cleanup-linux") " ")
-               (("src/platform/tests/test-link-linux") " ")
-               (("src/platform/tests/test-route-linux") " ")
-               (("src/devices/tests/test-acd") "")
-               (("src/devices/tests/test-arping") " ")
-               (("src/devices/tests/test-lldp") " ")
-               (("src/tests/test-route-manager-linux") " "))
+             (substitute* "src/platform/tests/meson.build"
+               ((".*test-address-linux.*") "")
+               ((".*test-cleanup-linux.*") "")
+               ((".*test-link-linux.*") "")
+               ((".*test-route-linux.*") ""))
+             (substitute* "src/devices/tests/meson.build"
+               ((".*test-acd.*") "")
+               ((".*test-lldp.*") ""))
              #t))
-         (add-after 'unpack 'delete-failing-tests
-           (lambda _
-             ;; FIXME: These three tests fail for unknown reasons.
-             ;; ERROR:libnm-core/tests/test-general.c:5842:
-             ;;   _json_config_check_valid: assertion failed (res == expected): (1 == 0)
-             ;; ERROR:libnm-core/tests/test-keyfile.c:647:
-             ;;   test_team_conf_read_invalid: assertion failed: (nm_setting_team_get_config (s_team) == NULL)
-             ;; ERROR:libnm-core/tests/test-setting.c:907:
-             ;;   _test_team_config_sync: assertion failed: (nm_streq0 (nm_setting_team_get_runner (s_team), runner))
-             (substitute* "Makefile.in"
-               (("libnm-core/tests/test-general") " ")
-               (("libnm-core/tests/test-keyfile") " ")
-               (("libnm-core/tests/test-setting\\$\\(EXEEXT\\)") " "))
-             #t))
+         (add-after 'unpack 'patch-docbook-xml
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xmldoc (string-append (assoc-ref inputs "docbook-xml")
+                                          "/xml/dtd/docbook")))
+               (substitute* (find-files "." ".*\\.(xsl|xml)")
+                 (("http://.*/docbookx\\.dtd")
+                  (string-append xmldoc "/docbookx.dtd")))
+               #t)))
          (add-before 'check 'pre-check
            (lambda _
              ;; For the missing /etc/machine-id.
              (setenv "DBUS_FATAL_WARNINGS" "0")
-
-             ;; XXX: Regenerate some of the tests that are dependent on Python version.
-             ;; Try removing this variable for newer versions of NetworkManager.
-             (setenv "NM_TEST_REGENERATE" "1")
              #t))
-         (replace 'install
+         (add-before 'install 'no-polkit-magic
+           ;; Meson ‘magically’ invokes pkexec, which fails (not setuid).
            (lambda _
-             (invoke "make"
-                     "sysconfdir=/tmp"
-                     "rundir=/tmp"
-                     "statedir=/tmp"
-                     "nmstatedir=/tmp/nm"
-                     "install")
-             #t)))))
+             (setenv "PKEXEC_UID" "something")
+             #t))
+         (add-after 'install 'move-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (doc (assoc-ref outputs "doc")))
+               (mkdir-p (string-append doc "/share"))
+               (for-each (lambda (directory)
+                           (copy-recursively (string-append out directory)
+                                             (string-append doc directory))
+                           (delete-file-recursively
+                            (string-append out directory)))
+                         '("/share/doc" "/share/gtk-doc"))
+               #t))))))
     (propagated-inputs
      `(("glib" ,glib)))
     (native-inputs
-     `(("glib:bin" ,glib "bin") ; for gdbus-codegen
+     `(("glib:bin" ,glib "bin")         ; for gdbus-codegen
+       ("gtk-doc" ,gtk-doc)
        ("gobject-introspection" ,gobject-introspection)
+       ("docbook-xml" ,docbook-xml)
        ("docbook-xsl" ,docbook-xsl)
        ("intltool" ,intltool)
        ("libxslt" ,libxslt)
        ("libxml2" ,libxml2)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ;; For testing.
        ("python" ,python-wrapper)
        ("python-dbus" ,python-dbus)
        ("python-pygobject" ,python-pygobject)))
     (inputs
-     `(("coreutils" ,coreutils) ; for ls
-       ("curl" ,curl)
+     `(("curl" ,curl)
        ("cyrus-sasl" ,cyrus-sasl)
        ("dbus-glib" ,dbus-glib)
        ("dnsmasq" ,dnsmasq)
@@ -6497,35 +6518,42 @@ users.")
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
        ("isc-dhcp" ,isc-dhcp)
+       ("iwd" ,iwd)                     ; wpa_supplicant alternative
        ("jansson" ,jansson)
+       ("libaudit" ,audit)
        ("libgcrypt" ,libgcrypt)
        ("libgudev" ,libgudev)
        ("libndp" ,libndp)
        ("libnl" ,libnl)
        ("libsoup" ,libsoup)
+       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)
        ("modem-manager" ,modem-manager)
        ("newt" ,newt)                       ;for the 'nmtui' console interface
+       ("openresolv" ,openresolv)           ; alternative resolv.conf manager
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
        ("util-linux" ,util-linux)
        ("elogind" ,elogind)))
     (synopsis "Network connection manager")
-    (home-page "https://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (description
      "NetworkManager is a system network service that manages your network
 devices and connections, attempting to keep active network connectivity when
 available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
-    (license license:gpl2+)
+    ;; “This NetworkManager project consists of the daemon, client tools, and
+    ;; libnm. libnm is licensed LGPL-2.1+, while the rest is licensed under
+    ;; GPL-2.0+.”
+    (license (list license:gpl2+
+                   license:lgpl2.1+))
     (properties '((upstream-name . "NetworkManager")))))
 
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
-    ;; Updating?  Check whether network-manager-applet still needs libnm_gtk.
-    (version "1.8.10")
+    (version "1.8.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -6534,7 +6562,7 @@ services.")
                     "/NetworkManager-openvpn-" version ".tar.xz"))
               (sha256
                (base32
-                "1vri49yff4lj13dnzkpq9nx3a4z1bmbrv807r151plj8m1mwhg5g"))))
+                "062kh4zj7jfbwy4zzcwpq2m457bzbpm3l18s0ysnw3mgia3siz8f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
@@ -6564,7 +6592,7 @@ services.")
        ("kmod" ,kmod)
        ("openvpn" ,openvpn)
        ("network-manager" ,network-manager)
-       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libnma" ,libnma)
        ("libsecret" ,libsecret)))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "OpenVPN plug-in for NetworkManager")
@@ -6589,7 +6617,11 @@ to virtual private networks (VPNs) via OpenVPN.")
                 "1js5lwcsqws4klgypfxl4ikmakv7v7xgddij1fj6b0y0qicx0kyy"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+     `(#:configure-flags '("--enable-absolute-paths"
+                           "--localstatedir=/var"
+                           ;; libnm-glib has been removed from network-manager
+                           ;; 1de8383ad9fdfc8f552117e5d109bdfa7005634b
+                           "--with-libnm-glib=no")
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'patch-path
@@ -6613,7 +6645,7 @@ to virtual private networks (VPNs) via OpenVPN.")
        ("kmod" ,kmod)
        ("vpnc" ,vpnc)
        ("network-manager" ,network-manager)
-       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libnma" ,libnma)
        ("libsecret" ,libsecret)))
     (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
     (synopsis "VPNC plug-in for NetworkManager")
@@ -6655,7 +6687,7 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
-       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libnma" ,libnma)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gcr" ,gcr)
@@ -6704,7 +6736,7 @@ Cisco's AnyConnect SSL VPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.24")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/network-manager-applet/"
@@ -6712,13 +6744,10 @@ Cisco's AnyConnect SSL VPN.")
                                   "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
-                "1gzvz4wfqfsfclqg56y954al8x6fmz71cnxlx1i4nqr7a25bp2qi"))))
+                "1rf3nm0hjcy9f8ajb4vmvwy503w8yj8d4daxkcb7w7i7b92qmyfn"))))
     (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       ;; ‘Nobody should be using this’ but network-manager-openvpn 1.8.10 does.
-       (list "-Dlibnm_gtk=true")
-       #:glib-or-gtk? #t))
+     '(#:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
@@ -6732,16 +6761,15 @@ Cisco's AnyConnect SSL VPN.")
        ("network-manager" ,network-manager)))
     (inputs
      `(("gcr" ,gcr)
-       ("iso-codes" ,iso-codes)
+       ("libnma" ,libnma)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
        ("libselinux" ,libselinux)
        ("jansson" ,jansson) ; for team support
-       ("modem-manager" ,modem-manager)
-       ("mobile-broadband-provider-info" ,mobile-broadband-provider-info)))
+       ("modem-manager" ,modem-manager)))
     (synopsis "Applet for managing network connections")
-    (home-page "https://www.gnome.org/projects/NetworkManager/")
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (description
      "This package contains a systray applet for NetworkManager.  It displays
 the available networks and allows users to easily switch between them.")
@@ -7130,6 +7158,7 @@ devices using the GNOME desktop.")
        ("libgnomekbd" ,libgnomekbd)
        ("libgudev" ,libgudev)
        ("libgtop" ,libgtop)
+       ("libnma" ,libnma)
        ("libpwquality" ,libpwquality)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
@@ -7293,6 +7322,7 @@ properties, screen resolution, and other GNOME parameters.")
        ("libcroco" ,libcroco)
        ("libgnomekbd" ,libgnomekbd)               ;for gkbd-keyboard-display
        ("libgweather" ,libgweather)
+       ("libnma" ,libnma)
        ("libsoup" ,libsoup)
        ("mesa-headers" ,mesa-headers)
        ("mutter" ,mutter)
@@ -10037,6 +10067,37 @@ to.")
               license:public-domain
               ;; snowball
               license:bsd-2))))
+
+(define-public glabels
+  (package
+    (name "glabels")
+    (version "3.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version)  "/"
+                           "glabels-" version ".tar.xz"))
+       (sha256
+        (base32 "0f2rki8i27pkd9r0gz03cdl1g4vnmvp0j49nhxqn275vi8lmgr0q"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)))
+    (home-page "https://glabels.org/")
+    (synopsis "Program for creating labels and business cards")
+    (description
+     "gLabels is a program for creating labels and business cards.  It is
+designed to work with various laser/ink-jet peel-off label and business
+card sheets that you’ll find at most office supply stores.")
+    (license license:gpl3+)))
 
 (define-public libratbag
   (package

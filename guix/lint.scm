@@ -1154,15 +1154,18 @@ try again later")
           ((? origin? origin)
            ;; Since "save" origins are not supported for non-VCS source, all
            ;; we can do is tell whether a given tarball is available or not.
-           (if (origin-sha256 origin)             ;XXX: for ungoogled-chromium
-               (match (lookup-content (origin-sha256 origin) "sha256")
-                 (#f
-                  (list (make-warning package
-                                      (G_ "source not archived on Software \
+           (if (origin-hash origin)               ;XXX: for ungoogled-chromium
+               (let ((hash (origin-hash origin)))
+                 (match (lookup-content (content-hash-value hash)
+                                        (symbol->string
+                                         (content-hash-algorithm hash)))
+                   (#f
+                    (list (make-warning package
+                                        (G_ "source not archived on Software \
 Heritage")
-                                      #:field 'source)))
-                 ((? content?)
-                  '()))
+                                        #:field 'source)))
+                   ((? content?)
+                    '())))
                '()))))
       (match-lambda*
         ((key url method response)

@@ -1617,6 +1617,47 @@ Then you need to add the following code to a StumpWM configuration file
 (set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
 @end lisp
 
+@node Session lock
+@subsection Session lock
+@cindex sessionlock
+
+Depending on your environment, locking the screen of your session might come built in
+or it might be something you have to set up yourself. If you use a desktop environment
+like GNOME or KDE, it's usually built in. If you use a plain window manager like
+StumpWM or EXWM, you might have to set it up yourself.
+
+@node Xorg
+@subsubsection Xorg
+
+If you use Xorg, you can use the utility
+@uref{https://www.mankier.com/1/xss-lock, xss-lock} to lock the screen of your session.
+xss-lock is triggered by DPMS which since Xorg 1.8 is auto-detected and enabled if
+ACPI is also enabled at kernel runtime.
+
+To use xss-lock, you can simple execute it and put it into the background before
+you start your window manager from e.g. your @file{~/.xsession}:
+
+@example
+xss-lock -- slock &
+exec stumpwm
+@end example
+
+In this example, xss-lock uses @code{slock} to do the actual locking of the screen when
+it determines it's appropriate, like when you suspend your device.
+
+For slock to be allowed to be a screen locker for the graphical session, it needs to
+be made setuid-root so it can authenticate users, and it needs a PAM service. This
+can be achieved by adding the following service to your @file{config.scm}:
+
+@lisp
+(screen-locker-service slock)
+@end lisp
+
+If you manually lock your screen, e.g. by directly calling slock when you want to lock
+your screen but not suspend it, it's a good idea to notify xss-lock about this so no
+confusion occurs. This can be done by executing @code{xset s activate} immediately
+before you execute slock.
+
 @node Setting up a bind mount
 @section Setting up a bind mount
 

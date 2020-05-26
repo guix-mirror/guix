@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,5 +121,45 @@
                     (list commit4))
              (lset= eq? (commit-difference commit4 commit1 (list commit5))
                     (list commit2 commit3 commit4)))))))
+
+(unless (which (git-command)) (test-skip 1))
+(test-equal "commit-relation"
+  '(self                                          ;master3 master3
+    ancestor                                      ;master1 master3
+    descendant                                    ;master3 master1
+    unrelated                                     ;master2 branch1
+    unrelated                                     ;branch1 master2
+    ancestor                                      ;branch1 merge
+    descendant                                    ;merge branch1
+    ancestor                                      ;master1 merge
+    descendant)                                   ;merge master1
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "first commit")
+        (branch "hack")
+        (checkout "hack")
+        (add "1.txt" "1")
+        (commit "branch commit")
+        (checkout "master")
+        (add "b.txt" "B")
+        (commit "second commit")
+        (add "c.txt" "C")
+        (commit "third commit")
+        (merge "hack" "merge"))
+    (with-repository directory repository
+      (let ((master1 (find-commit repository "first"))
+            (master2 (find-commit repository "second"))
+            (master3 (find-commit repository "third"))
+            (branch1 (find-commit repository "branch"))
+            (merge   (find-commit repository "merge")))
+        (list (commit-relation master3 master3)
+              (commit-relation master1 master3)
+              (commit-relation master3 master1)
+              (commit-relation master2 branch1)
+              (commit-relation branch1 master2)
+              (commit-relation branch1 merge)
+              (commit-relation merge branch1)
+              (commit-relation master1 merge)
+              (commit-relation merge master1))))))
 
 (test-end "git")

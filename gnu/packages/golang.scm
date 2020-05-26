@@ -623,8 +623,8 @@ Go programming language.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto
-  (let ((commit "9756ffdc24725223350eb3266ffb92590d28f278")
-        (revision "4"))
+  (let ((commit "2aa609cf4a9d7d1126360de73b55b6002f9e052a")
+        (revision "5"))
     (package
       (name "go-golang-org-x-crypto")
       (version (git-version "0.0.0" revision commit))
@@ -637,7 +637,7 @@ Go programming language.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0q7hxaaq6lp0v8qqzifvysl47z5rfdlrxkh3d29vsl3wyby3dxl8"))))
+                  "1yvis6fqbsd7f356aqyi18f76vnwj3bry6mxqnkvshq4cwrf92il"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "golang.org/x/crypto"
@@ -723,8 +723,8 @@ processing.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
-  (let ((commit "749cb33beabd9aa6d3178e3de05bcc914f70b2bf")
-        (revision "5"))
+  (let ((commit "c709ea063b76879dc9915358f55d4d77c16ab6d5")
+        (revision "6"))
     (package
       (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
@@ -736,7 +736,7 @@ processing.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0dm3257q3rv2kyn5lmqqim2fqg634v6rhrqq4glvbk4wx4l3v337"))))
+                  "15nq53a6kcqchng4j0d1pjw0m6hny6126nhjdwqw5n9dzh6a226d"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys"
@@ -2186,33 +2186,31 @@ Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
     (license license:bsd-3)))
 
-(define-public go-github-com-calmh-murmur3
-  (let ((commit "74e9af8f47ac56901c490d45546ca167b60c7066")
-        (revision "0"))
-    (package
-      (name "go-github-com-calmh-murmur3")
-      (version (git-version "1.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/calmh/murmur3.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0k8345ivx228qdbkl8bisd2wxwsinkb44ghba6r09538fr3fbr5w"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/calmh/murmur3"))
-      (home-page "https://github.com/calmh/murmur3")
-      (synopsis "Native MurmurHash3 Go implementation")
-      (description "Native Go implementation of Austin Appleby's third
+(define-public go-github-com-twmb-murmur3
+  (package
+    (name "go-github-com-twmb-murmur3")
+    (version "1.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/twmb/murmur3.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00riapwkyf23l5wyis47mbr8rwr4yrjw491jfc30wpzs111c1gyy"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/twmb/murmur3"))
+    (home-page "https://github.com/twmb/murmur3")
+    (synopsis "Native MurmurHash3 Go implementation")
+    (description "Native Go implementation of Austin Appleby's third
 MurmurHash revision (aka MurmurHash3).
 
 Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-multiformats-go-multihash
   (let ((commit "97cdb562a04c6ef66d8ed40cd62f8fbcddd396d6")
@@ -2803,7 +2801,7 @@ format in Go.")
 (define-public go-github-com-kr-pretty
   (package
     (name "go-github-com-kr-pretty")
-    (version "0.1.0")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2812,7 +2810,7 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18m4pwg2abd0j9cn5v3k2ksk9ig4vlwxmlw9rrglanziv9l967qp"))))
+                "1ywbfzz1h3a3qd8rpkiqwi1dm4w8ls9ijb4x1b7567grns9f0vnp"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-kr-text" ,go-github-com-kr-text)))
@@ -3044,7 +3042,7 @@ mutex, simply ignore the RLock/RUnlock functions.")
 (define-public go-github-com-marten-seemann-qtls
   (package
     (name "go-github-com-marten-seemann-qtls")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3053,7 +3051,7 @@ mutex, simply ignore the RLock/RUnlock functions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mdymj66qrqy80pfkwy9s9z9ifkg251whngw5lim09zm90wv2q7a"))))
+                "0dz60y98nm7l70hamq0v2vrs2dspyr5yqhnrds2dfh7hchxvq76j"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/marten-seemann/qtls"
@@ -3065,6 +3063,28 @@ mutex, simply ignore the RLock/RUnlock functions.")
     (description "This package provides @code{qtls}, a QUIC-capable variant of
 the Go standard library's TLS 1.3 implementation.")
     (home-page "https://github.com/marten-seemann/qtls")
+    (license license:bsd-3)))
+
+(define-public go-github-com-marten-seemann-chacha20
+  (package
+    (name "go-github-com-marten-seemann-chacha20")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/marten-seemann/chacha20")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0x1j4cvbap45zk962qkjalc1h3axhzzdy9cdzhcjmprmm1ql4gjm"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/marten-seemann/chacha20"))
+    (synopsis "ChaCha20 in Go")
+    (description "This package is an external copy of the Go standard library's
+internal ChaCha20 package.")
+    (home-page "https://github.com/marten-seemann/chacha20")
     (license license:bsd-3)))
 
 (define-public go-github-com-cheekybits-genny
@@ -3094,7 +3114,7 @@ implementation of generics.")
 (define-public go-github-com-lucas-clemente-quic-go
   (package
     (name "go-github-com-lucas-clemente-quic-go")
-    (version "0.12.1")
+    (version "0.14.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3103,7 +3123,7 @@ implementation of generics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "156nhq4dvw7mr08j952248v81q7702phbn4mp228319sahnbv65h"))))
+                "04l3gqbc3gh079n8vgnrsf8ypgv8sl63xjf28jqfrb45v2l73vyz"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/lucas-clemente/quic-go"
@@ -3112,6 +3132,7 @@ implementation of generics.")
     (propagated-inputs
      `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-github-com-cheekybits-genny" ,go-github-com-cheekybits-genny)
+       ("go-github-com-marten-seemann-chacha20" ,go-github-com-marten-seemann-chacha20)
        ("go-github-com-marten-seemann-qtls" ,go-github-com-marten-seemann-qtls)
        ("go-github-com-golang-protobuf-proto" ,go-github-com-golang-protobuf-proto)))
     (synopsis "QUIC in Go")
@@ -3496,14 +3517,14 @@ efficient space usage.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-import-path
            (lambda _
-             ;; See 'go.mod' in the source distribution of Syncthing 1.4.1 for
+             ;; See 'go.mod' in the source distribution of Syncthing 1.5.0 for
              ;; more information.
              ;; <https://github.com/spaolacci/murmur3/issues/29>
              (substitute* "src/github.com/willf/bloom/bloom.go"
-               (("spaolacci") "calmh"))
+               (("spaolacci") "twmb"))
              #t)))))
     (propagated-inputs
-     `(("go-github-com-calmh-murmur3" ,go-github-com-calmh-murmur3)
+     `(("go-github-com-twmb-murmur3" ,go-github-com-twmb-murmur3)
        ("go-github-com-willf-bitset" ,go-github-com-willf-bitset)))
     (synopsis "Bloom filters in Go")
     (description "This package provides a Go implementation of bloom filters,

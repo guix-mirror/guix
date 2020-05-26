@@ -77,6 +77,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5767,6 +5768,25 @@ them as the version argument or in a SCM managed file.")
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
 
+(define-public python-sexpdata
+  (package
+    (name "python-sexpdata")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sexpdata" version))
+       (sha256
+        (base32
+         "1q4lsjyzzqrdv64l0pv4ij9nd8gqhvxqcrpxc2xpxs652sk2gj0s"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/jd-boyd/sexpdata")
+    (synopsis "S-expression parser for Python")
+    (description
+     "Sexpdata is an S-expression parser/serializer.  It has load and dump
+functions like pickle, json or PyYAML module.")
+    (license license:bsd-3)))
+
 (define-public python-pathlib2
   (package
     (name "python-pathlib2")
@@ -5895,6 +5915,25 @@ need to use the older and less efficient @code{pkg_resources} package.")
        ("python-configparser" ,python2-configparser)
        ("python-contextlib2" ,python2-contextlib2-bootstrap)
        ("python-importlib-resources" ,python2-importlib-resources-bootstrap))))))
+
+(define-public python-importmagic
+  (package
+    (name "python-importmagic")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "importmagic" version))
+       (sha256
+        (base32
+         "1n7qxa1snj06aw45mcfz7bxc46zp7fxj687140g2k6jcnyjmfxrz"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/alecthomas/importmagic")
+    (synopsis "Library for adding, removing and managing Python imports")
+    (description
+     "Importmagic is a Python library for automatically managing imports by
+finding unresolved symbols in Python code and their corresponding imports.")
+    (license license:bsd-3)))
 
 (define-public python-jaraco-packaging
   (package
@@ -8785,6 +8824,29 @@ functions to find and load entry points.")
 
 (define-public python2-entrypoints
   (package-with-python2 python-entrypoints))
+
+(define-public python-epc
+  (package
+    (name "python-epc")
+    (version "0.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "epc" version))
+       (sha256
+        (base32
+         "09bx1ln1bwa00917dndlgs4k589h8qx2x080xch5m58p92kjwkd1"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-sexpdata" ,python-sexpdata)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://github.com/tkf/python-epc")
+    (synopsis "Remote procedure call (RPC) stack for Emacs Lisp and Python")
+    (description
+     "Python-EPC can call elisp functions from Python and Python functions
+from elisp.")
+    (license license:gpl3)))
 
 (define-public python-nbconvert
   (package
@@ -13008,33 +13070,16 @@ PNG, JPEG, JPEG2000 and GIF files in pure Python.")
 (define-public python-argcomplete
   (package
     (name "python-argcomplete")
-    (version "1.10.3")
+    (version "1.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "argcomplete" version))
        (sha256
         (base32
-         "02jkc44drb0yjz6x28lvg6rj607n8r2irdpdvyylm8xnycn54zx3"))))
+         "0h1przxffrhqvi46k40pzjsvdrq4zc3sl1pc96kkigqppq0vdrss"))
+       (patches (search-patches "python-argcomplete-1.11.1-fish31.patch"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'embed-tool-references
-           (lambda _
-             (substitute* "argcomplete/bash_completion.d/python-argcomplete.sh"
-               ((" grep")
-                (string-append " " (which "grep")))
-               ((" egrep")
-                (string-append " " (which "egrep")))
-               (("elif which")
-                (string-append "elif " (which "which")))
-               (("\\$\\(which")
-                (string-append "$(" (which "which"))))
-             #t)))))
-    (inputs
-     `(("grep" ,grep)
-       ("which" ,which)))
     (native-inputs
      `(("python-coverage" ,python-coverage)
        ("python-flake8" ,python-flake8)

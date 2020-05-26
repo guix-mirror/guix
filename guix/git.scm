@@ -43,6 +43,7 @@
             url+commit->name
             latest-repository-commit
             commit-difference
+            commit-relation
 
             git-checkout
             git-checkout?
@@ -261,14 +262,16 @@ definitely available in REPOSITORY, false otherwise."
                                  #:key
                                  (ref '(branch . "master"))
                                  recursive?
+                                 starting-commit
                                  (log-port (%make-void-port "w"))
                                  (cache-directory
                                   (url-cache-directory
                                    url (%repository-cache-directory)
                                    #:recursive? recursive?)))
-  "Update the cached checkout of URL to REF in CACHE-DIRECTORY.  Return two
+  "Update the cached checkout of URL to REF in CACHE-DIRECTORY.  Return three
 values: the cache directory name, and the SHA1 commit (a string) corresponding
-to REF.
+to REF, and the relation of the new commit relative to STARTING-COMMIT (if
+provided) as returned by 'commit-relation'.
 
 REF is pair whose key is [branch | commit | tag | tag-or-commit ] and value
 the associated data: [<branch name> | <sha1> | <tag name> | <string>].
@@ -301,7 +304,17 @@ When RECURSIVE? is true, check out submodules as well, if any."
            (remote-fetch (remote-lookup repository "origin"))))
      (when recursive?
        (update-submodules repository #:log-port log-port))
-     (let ((oid (switch-to-ref repository canonical-ref)))
+
+     ;; Note: call 'commit-relation' from here because it's more efficient
+     ;; than letting users re-open the checkout later on.
+     (let* ((oid      (switch-to-ref repository canonical-ref))
+            (new      (and starting-commit
+                           (commit-lookup repository oid)))
+            (old      (and starting-commit
+                           (commit-lookup repository
+                                          (string->oid starting-commit))))
+            (relation (and starting-commit
+                           (commit-relation old new))))
 
        ;; Reclaim file descriptors and memory mappings associated with
        ;; REPOSITORY as soon as possible.
@@ -309,7 +322,7 @@ When RECURSIVE? is true, check out submodules as well, if any."
                               'repository-close!)
          (repository-close! repository))
 
-       (values cache-directory (oid->string oid))))))
+       (values cache-directory (oid->string oid) relation)))))
 
 (define* (latest-repository-commit store url
                                    #:key
@@ -342,7 +355,7 @@ Log progress and checkout info to LOG-PORT."
 
   (format log-port "updating checkout of '~a'...~%" url)
   (let*-values
-      (((checkout commit)
+      (((checkout commit _)
         (update-cached-checkout url
                                 #:recursive? recursive?
                                 #:ref ref
@@ -404,6 +417,21 @@ that of OLD."
            (loop (append (commit-parents head) tail)
                  (cons head result)
                  (set-insert head visited)))))))
+
+(define (commit-relation old new)
+  "Return a symbol denoting the relation between OLD and NEW, two commit
+objects: 'ancestor (meaning that OLD is an ancestor of NEW), 'descendant, or
+'unrelated, or 'self (OLD and NEW are the same commit)."
+  (if (eq? old new)
+      'self
+      (let ((newest (commit-closure new)))
+        (if (set-contains? newest old)
+            'ancestor
+            (let* ((seen   (list->setq (commit-parents new)))
+                   (oldest (commit-closure old seen)))
+              (if (set-contains? oldest new)
+                  'descendant
+                  'unrelated))))))
 
 
 ;;;

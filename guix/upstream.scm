@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -441,7 +441,8 @@ new version string if an update was made, and #f otherwise."
     (if version-loc
         (let* ((loc         (package-location package))
                (old-version (package-version package))
-               (old-hash    (origin-sha256 (package-source package)))
+               (old-hash    (content-hash-value
+                             (origin-hash (package-source package))))
                (old-url     (match (origin-uri (package-source package))
                               ((? string? url) url)
                               (_ #f)))

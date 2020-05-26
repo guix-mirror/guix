@@ -1986,7 +1986,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
 (define-public libavif
   (package
     (name "libavif")
-    (version "0.7.1")
+    (version "0.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1995,7 +1995,7 @@ This package can be used to create @code{favicon.ico} files for web sites.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xybjbbprvfsrwgysrn7grg6yp7v6ch5vci7zvdcdzcgyrbph172"))))
+                "17hagdngpc4xzrr0aa48nx399y5lawyyx9cpcdhpds1mqk6p77lp"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DAVIF_CODEC_AOM=ON" "-DAVIF_CODEC_DAV1D=ON"

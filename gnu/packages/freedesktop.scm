@@ -1115,7 +1115,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
 (define-public modem-manager
   (package
     (name "modem-manager")
-    (version "1.10.8")
+    (version "1.12.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1123,15 +1123,11 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
                     "ModemManager-" version ".tar.xz"))
               (sha256
                (base32
-                "16hnl0sdriqgv4v30mfs64mdl9rw7lsh802zlm3ggwxxil3p9qfb"))))
+                "1apq9camys2gaw6y6ic1ld20cncfwpmxnzvh4j5zkbbjpf5hbcxj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev")
-         ;; FIXME: Without this flag the build fails with "error: assignment
-         ;; from incompatible pointer type" whenever the return value of
-         ;; "g_object_ref" is assigned to "ctx->self".
-         "--disable-more-warnings")))
+       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev"))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
