@@ -2237,61 +2237,66 @@ capabilities, custom envelopes, effects, etc.")
     (license license:gpl2)))
 
 (define-public yoshimi
-  (package
-    (name "yoshimi")
-    (version "1.7.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/yoshimi/"
-                                  (version-major+minor version)
-                                  "/yoshimi-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1pkqrrr51vlxh96vy0c0rf5ijjvymys4brsw9rv1bdp1bb8izw6c"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
-                            (assoc-ref %outputs "out") "/share"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'enter-dir
-           (lambda _ (chdir "src") #t))
-         ;; Move SSE compiler optimization flags from generic target to
-         ;; athlon64 and core2 targets, because otherwise the build would fail
-         ;; on non-Intel machines.
-         (add-after 'unpack 'remove-sse-flags-from-generic-target
-          (lambda _
-            (substitute* "src/CMakeLists.txt"
-              (("-msse -msse2 -mfpmath=sse") "")
-              (("-march=(athlon64|core2)" flag)
-               (string-append flag " -msse -msse2 -mfpmath=sse")))
-            #t)))))
-    (inputs
-     `(("boost" ,boost)
-       ("fftwf" ,fftwf)
-       ("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-1)
-       ("fontconfig" ,fontconfig)
-       ("minixml" ,minixml)
-       ("mesa" ,mesa)
-       ("fltk" ,fltk)
-       ("lv2" ,lv2)
-       ("readline" ,readline)
-       ("ncurses" ,ncurses)
-       ("cairo" ,cairo)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://yoshimi.sourceforge.net/")
-    (synopsis "Multi-paradigm software synthesizer")
-    (description
-     "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
+  ;; Release 1.7.1 doesn't build with our version of LV2.  Applying only
+  ;; 86996cbb235f0fe138ae814a6758c2c8ba1c2a38 is not enough.
+  (let ((commit "bfcadc6537dbcb301cd93346f21d36bcbffa36c7")
+        (revision "0"))
+    (package
+      (name "yoshimi")
+      (version (git-version "1.7.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.code.sf.net/p/yoshimi/code")
+               (commit commit)))
+         (sha256
+          (base32 "0vhdxj7ky4iyq11r5wj9jwavjih4xvcn2djbrlmwpkdhrzpy6myl"))
+         (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:configure-flags
+         (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
+                              (assoc-ref %outputs "out") "/share"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'enter-dir
+             (lambda _ (chdir "src") #t))
+           ;; Move SSE compiler optimization flags from generic target to
+           ;; athlon64 and core2 targets, because otherwise the build would fail
+           ;; on non-Intel machines.
+           (add-after 'unpack 'remove-sse-flags-from-generic-target
+             (lambda _
+               (substitute* "src/CMakeLists.txt"
+                 (("-msse -msse2 -mfpmath=sse") "")
+                 (("-march=(athlon64|core2)" flag)
+                  (string-append flag " -msse -msse2 -mfpmath=sse")))
+               #t)))))
+      (inputs
+       `(("boost" ,boost)
+         ("fftwf" ,fftwf)
+         ("alsa-lib" ,alsa-lib)
+         ("jack" ,jack-1)
+         ("fontconfig" ,fontconfig)
+         ("minixml" ,minixml)
+         ("mesa" ,mesa)
+         ("fltk" ,fltk)
+         ("lv2" ,lv2)
+         ("readline" ,readline)
+         ("ncurses" ,ncurses)
+         ("cairo" ,cairo)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "http://yoshimi.sourceforge.net/")
+      (synopsis "Multi-paradigm software synthesizer")
+      (description
+       "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
 synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
-    (license license:gpl2)))
+      (license license:gpl2))))
 
 (define-public libgig
   (package
@@ -2961,7 +2966,7 @@ websites such as Libre.fm.")
     (home-page "https://github.com/yask123/Instant-Music-Downloader")
     (synopsis "Command-line program to download a song from YouTube")
     (description "InstantMusic downloads a song from YouTube in MP3 format.
-Songs can be searched by artist, name or even by a part of the song text.")
+    Songs can be searched by artist, name or even by a part of the song text.")
     (license license:expat))))
 
 (define-public beets
@@ -3010,9 +3015,9 @@ Songs can be searched by artist, name or even by a part of the song text.")
     (home-page "https://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
-once and for all.  It catalogs your collection, automatically improving its
-metadata as it goes using the MusicBrainz database.  Then it provides a variety
-of tools for manipulating and accessing your music.")
+    once and for all.  It catalogs your collection, automatically improving its
+    metadata as it goes using the MusicBrainz database.  Then it provides a variety
+    of tools for manipulating and accessing your music.")
     (license license:expat)))
 
 (define-public beets-bandcamp
@@ -3038,8 +3043,8 @@ of tools for manipulating and accessing your music.")
     (synopsis "Bandcamp plugin for beets")
     (description
      "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
-https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
-using the beets FetchArt plugin.")
+                                                                      https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+    using the beets FetchArt plugin.")
     (license license:gpl2)))
 
 (define-public milkytracker
@@ -3080,9 +3085,9 @@ using the beets FetchArt plugin.")
      `(("pkg-config" ,pkg-config)))
     (synopsis "Music tracker for working with .MOD/.XM module files")
     (description "MilkyTracker is a music application for creating .MOD and .XM
-module files.  It attempts to recreate the module replay and user experience of
-the popular DOS program Fasttracker II, with special playback modes available
-for improved Amiga ProTracker 2/3 compatibility.")
+    module files.  It attempts to recreate the module replay and user experience of
+    the popular DOS program Fasttracker II, with special playback modes available
+    for improved Amiga ProTracker 2/3 compatibility.")
     (home-page "https://milkytracker.titandemo.org/")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
@@ -3106,8 +3111,8 @@ for improved Amiga ProTracker 2/3 compatibility.")
                `(begin
                   (substitute* "schism/version.c"
                     (("Schism Tracker built %s %s.*$")
-                     (string-append "Schism Tracker version " ,version "\");")))
-                  #t))))
+                     (string-append "Schism Tracker version " ,version "\") ;")))
+              #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
