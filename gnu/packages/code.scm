@@ -13,6 +13,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@goebel-consult.de>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,12 +44,14 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
@@ -57,7 +60,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
 
@@ -320,6 +325,83 @@ features that are not supported by the standard @code{stdio} implementation.")
     ;; slightly different.
     (license (license:non-copyleft
               "http://sourceforge.net/p/ctrio/git/ci/master/tree/README"))))
+
+(define-public universal-ctags
+  ;; The project is unable to decide whether to use 1.0 or 6.0 as the
+  ;; first public release version (it started as a fork of another ctags
+  ;; project that was on version 5.8), and five years later have been
+  ;; unable to tag a release.  Thus, we just take the master branch.
+  (let ((commit "0c78c0c4a68030df0d025c90bad291108b5e7107")
+        (revision "0"))
+    (package
+      (name "universal-ctags")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/universal-ctags/ctags")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0lnxc3kwi6srw0015m16vyjfdc7pdr9d1qzxjsbfv3c69ag87jhc"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             ;; Remove the bundled PackCC and associated build rules.
+             (substitute* "Makefile.am"
+               (("\\$\\(packcc_verbose\\)\\$\\(PACKCC\\)")
+                "packcc")
+               (("\\$\\(PEG_SRCS\\) \\$\\(PEG_HEADS\\): packcc\\$\\(EXEEXT\\)")
+                "$(PEG_SRCS) $(PEG_HEADS):")
+               (("noinst_PROGRAMS \\+= packcc")
+                ""))
+             (delete-file-recursively "misc/packcc")
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'make-files-writable
+                      (lambda _
+                        (for-each make-file-writable (find-files "."))
+                        #t))
+                    (add-before 'bootstrap 'patch-optlib2c
+                      (lambda _
+                        ;; The autogen.sh script calls out to optlib2c to
+                        ;; generate translations, so we can not wait for the
+                        ;; patch-source-shebangs phase.
+                        (patch-shebang "misc/optlib2c")
+                        #t))
+                    (add-before 'check 'patch-tests
+                      (lambda _
+                        (substitute* "misc/units"
+                          (("SHELL=/bin/sh")
+                           (string-append "SHELL=" (which "sh"))))
+                        (substitute* "Tmain/utils.sh"
+                          (("/bin/echo") (which "echo")))
+                        #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("packcc" ,packcc)
+         ("perl" ,perl)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("jansson" ,jansson)
+         ("libseccomp" ,libseccomp)
+         ("libxml2" ,libxml2)
+         ("libyaml" ,libyaml)))
+      (home-page "https://ctags.io/")
+      (synopsis "Generate tag files for source code")
+      (description
+       "Universal Ctags generates an index (or tag) file of language objects
+found in source files for many popular programming languages.  This index
+makes it easy for text editors and other tools to locate the indexed items.
+Universal Ctags improves on traditional ctags because of its multilanguage
+support, its ability for the user to define new languages searched by regular
+expressions, and its ability to generate emacs-style TAGS files.")
+      (license license:gpl2+))))
 
 (define-public withershins
   (package
