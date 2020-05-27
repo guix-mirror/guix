@@ -2839,6 +2839,28 @@ objects.")
     (home-page "https://github.com/floehopper/metaclass")
     (license license:expat)))
 
+(define-public ruby-mkmf-lite
+  (package
+    (name "ruby-mkmf-lite")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mkmf-lite" version))
+              (sha256
+               (base32
+                "0br9k6zijj1zc25n8p7f2j1mwl58nfgdknf3q13h9k156jvrir06"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-ptools" ,ruby-ptools)))
+    (synopsis "Lightweight alternative to @code{mkmf}")
+    (description
+     "@code{mkmf-lite} is a light version of Ruby's @code{mkmf.rb} designed
+for use as a library.  It does not create packages, builds, or log files of
+any kind.  Instead, it provides mixin methods that you can use in FFI or tests
+to check for the presence of header files, constants, and so on.")
+    (home-page "https://github.com/djberg96/mkmf-lite")
+    (license license:asl2.0)))
+
 (define-public ruby-mspec
   (package
     (name "ruby-mspec")
