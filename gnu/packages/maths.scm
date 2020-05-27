@@ -5349,20 +5349,20 @@ management via the GIMPS project's Primenet server.")
 (define-public nauty
   (package
     (name "nauty")
-    (version "2.6r12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://pallini.di.uniroma1.it/"
-                    "nauty" (string-join (string-split version #\.) "")
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "1p4mxf8q5wm47nxyskxbqwa5p1vvkycv1zgswvnk9nsn6vff0al6"))))
+    (version "2.7r1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pallini.di.uniroma1.it/"
+             "nauty" (string-join (string-split version #\.) "") ".tar.gz"))
+       (sha256
+        (base32 "0xsfqfcknbd6g6wzpa5l7crmmk3bf3zjh37rhylq6b20dqcmvjkn"))))
     (build-system gnu-build-system)
     (outputs '("out" "lib"))
     (arguments
      `(#:test-target "checks"
+       #:configure-flags '("--enable-generic") ;prevent -march-native
        #:phases
        (modify-phases %standard-phases
          ;; Default make target does not build all available
@@ -5382,15 +5382,16 @@ management via the GIMPS project's Primenet server.")
                     (include (string-append lib-output "/include/nauty"))
                     (lib (string-append lib-output "/lib/nauty")))
                (for-each (lambda (f) (install-file f bin))
-                         '("dreadnaut" "NRswitchg" "addedgeg" "amtog" "biplabg"
-                           "blisstog" "bliss2dre" "catg" "checks6" "complg"
-                           "converseg" "copyg" "countg" "cubhamg" "deledgeg"
-                           "delptg" "directg" "dretodot" "dretog" "genbg"
+                         '("addedgeg"  "amtog" "assembleg" "biplabg" "blisstog"
+                           "bliss2dre" "catg" "checks6" "complg" "converseg"
+                           "copyg" "countg" "cubhamg" "deledgeg" "delptg"
+                           "directg"  "dreadnaut" "dretodot" "dretog" "genbg"
                            "genbgL" "geng" "genquarticg" "genrang" "genspecialg"
                            "gentourng" "gentreeg" "hamheuristic" "labelg"
                            "linegraphg" "listg" "multig" "newedgeg" "pickg"
                            "planarg" "ranlabg" "shortg" "showg" "subdivideg"
-                           "sumlines" "twohamg" "vcolg" "watercluster2"))
+                           "sumlines" "twohamg" "underlyingg" "vcolg"
+                           "watercluster2" "NRswitchg"))
                (for-each (lambda (f) (install-file f include))
                          (find-files "." "\\.h$"))
                (for-each (lambda (f) (install-file f lib))
