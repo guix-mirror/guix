@@ -119,7 +119,7 @@ acronyms distributed as an info document.")
      "GCIDE is a free dictionary based on a combination of sources.  It can
 be used via the GNU Dico program or accessed online at
 http://gcide.gnu.org.ua/")
-    (home-page "http://gcide.gnu.org.ua/")
+    (home-page "https://gcide.gnu.org.ua/")
     (license license:gpl3+)))
 
 (define-public diction
