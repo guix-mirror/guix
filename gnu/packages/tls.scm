@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -1021,23 +1021,25 @@ relatively simple Bash script.")
     (license license:expat)))
 
 (define-public go-github-com-certifi-gocertifi
-  (package
-    (name "go-github-com-certifi-gocertifi")
-    (version "2020.02.11")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/certifi/gocertifi")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "018bsy1vclsdk2kns9f37giabibg3kggk3vpj0yr3dv0k72gzybk"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/certifi/gocertifi"))
-    (synopsis "X.509 TLS root certificate bundle for Go")
-    (description "This package is a Go language X.509 TLS root certificate bundle,
+  (let ((commit "a5e0173ced670013bfb649c7e806bc9529c986ec")
+        (revision "1"))
+    (package
+      (name "go-github-com-certifi-gocertifi")
+      (version (git-version "2018.01.18" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/certifi/gocertifi")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1n9drccl3q1rr8wg3nf60slkf1lgsmz5ahifrglbdrc6har3rryj"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/certifi/gocertifi"))
+      (synopsis "X.509 TLS root certificate bundle for Go")
+      (description "This package is a Go language X.509 TLS root certificate bundle,
 derived from Mozilla's collection.")
-    (home-page "https://certifi.io")
-    (license license:mpl2.0)))
+      (home-page "https://certifi.io")
+      (license license:mpl2.0))))

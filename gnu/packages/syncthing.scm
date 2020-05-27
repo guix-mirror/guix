@@ -232,7 +232,7 @@ configuration that is stored in a Go struct.")
         (revision "0"))
     (package
       (name "go-github-com-bkaradzic-go-lz4")
-      (version (git-version "1.0.0" revision commit))
+      (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -416,7 +416,7 @@ address of the default LAN gateway.")
 (define-public go-github-com-lib-pq
   (package
     (name "go-github-com-lib-pq")
-    (version "1.5.2")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -425,7 +425,7 @@ address of the default LAN gateway.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wjw5pfjgc63n9934mgvg8hr1v9381mcdz62jkn9xqxqcv6b95lw"))))
+                "08j1smm6rassdssdks4yh9aspa1dv1g5nvwimmknspvhx8a7waqz"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lib/pq"
@@ -468,7 +468,7 @@ GeoLite2 and GeoIP2 databases in Go.")
 (define-public go-github-com-oschwald-maxminddb-golang
   (package
     (name "go-github-com-oschwald-maxminddb-golang")
-    (version "1.6.0")
+    (version "1.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -477,7 +477,7 @@ GeoLite2 and GeoIP2 databases in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1xdqaazxddnajh0qic1c70skad44kxxr7m46fypbnawn61v3f7gc"))))
+                "100wd5qv00pkcm6cb8c4x5gavc9jnn7drh6xrqh85hzci4rils66"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
@@ -492,25 +492,27 @@ higher-level API for doing so.")
     (license isc)))
 
 (define-public go-github-com-stathat-go
-  (package
-    (name "go-github-com-stathat-go")
-    (version "1.0.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/stathat/go")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1zzlsl24dyr202qkr2pay22m6d0gb7ssms77wgdx0r0clgm7dihw"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "github.com/stathat/go"))
-    (synopsis "Post statistics to StatHat")
-    (description "This is a Go package for posting to a StatHat account.")
-    (home-page "https://github.com/stathat/go")
-    (license expat)))
+  (let ((commit "74669b9f388d9d788c97399a0824adbfee78400e")
+        (revision "0"))
+    (package
+      (name "go-github-com-stathat-go")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/stathat/go")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1zzlsl24dyr202qkr2pay22m6d0gb7ssms77wgdx0r0clgm7dihw"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/stathat/go"))
+      (synopsis "Post statistics to StatHat")
+      (description "This is a Go package for posting to a StatHat account.")
+      (home-page "https://github.com/stathat/go")
+      (license expat))))
 
 (define-public go-github-com-rcrowley-go-metrics
   (let ((commit "cac0b30c2563378d434b5af411844adff8e32960")
@@ -747,28 +749,30 @@ notification library in Go.")
       (license expat))))
 
 (define-public go-github-com-beorn7-perks-quantile
-  (package
-    (name "go-github-com-beorn7-perks-quantile")
-    (version "1.0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/beorn7/perks.git")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "17n4yygjxa6p499dj3yaqzfww2g7528165cl13haj97hlx94dgl7"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/beorn7/perks/quantile"
-       #:unpack-path "github.com/beorn7/perks"))
-    (synopsis "Compute approximate quantiles over an unbounded data stream")
-    (description "Perks contains the Go package @code{quantile} that computes
+  (let ((commit "4c0e84591b9aa9e6dcfdf3e020114cd81f89d5f9")
+        (revision "0"))
+    (package
+      (name "go-github-com-beorn7-perks-quantile")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/beorn7/perks.git")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1hrybsql68xw57brzj805xx2mghydpdiysv3gbhr7f5wlxj2514y"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/beorn7/perks/quantile"
+         #:unpack-path "github.com/beorn7/perks"))
+      (synopsis "Compute approximate quantiles over an unbounded data stream")
+      (description "Perks contains the Go package @code{quantile} that computes
 approximate quantiles over an unbounded data stream within low memory and CPU
 bounds.")
-    (home-page "https://github.com/beorn7/perks")
-    (license expat)))
+      (home-page "https://github.com/beorn7/perks")
+      (license expat))))
 
 (define-public go-github-com-prometheus-client-model
   (let ((commit "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016")
@@ -876,31 +880,29 @@ Prometheus metrics.")
       (license asl2.0)))
 
 (define-public go-github-com-prometheus-procfs
-  (package
-    (name "go-github-com-prometheus-procfs")
-    (version "0.0.11")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/prometheus/procfs.git")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1msc8bfywsmrgr2ryqjdqwkxiz1ll08r3qgvaka2507z1wpcpj2c"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/prometheus/procfs"
-       ;; The tests require Go modules, which are not yet supported in Guix's
-       ;; Go build system.
-       #:tests? #f))
-    (propagated-inputs
-     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
-    (synopsis "Go library for reading @file{/proc}")
-    (description "The @code{procfs} Go package provides functions to retrieve
+    (package
+      (name "go-github-com-prometheus-procfs")
+      (version "0.0.4")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/prometheus/procfs.git")
+                       (commit (string-append "v" version))))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1z5jq5rjala0a0di4nwk1rai0z9f73qwqj6mgcbpjbg2qknlb544"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/prometheus/procfs"
+         ;; The tests require Go modules, which are not yet supported in Guix's
+         ;; Go build system.
+         #:tests? #f))
+      (synopsis "Go library for reading @file{/proc}")
+      (description "The @code{procfs} Go package provides functions to retrieve
 system, kernel, and process metrics from the @file{/proc} pseudo file system.")
-    (home-page "https://github.com/prometheus/procfs")
-    (license asl2.0)))
+      (home-page "https://github.com/prometheus/procfs")
+      (license asl2.0)))
 
 (define-public go-github-com-prometheus-client-golang
     (package
@@ -943,7 +945,7 @@ server tools for Prometheus metrics.")
 (define-public go-github-com-go-asn1-ber-asn1-ber
   (package
     (name "go-github-com-go-asn1-ber-asn1-ber")
-    (version "1.4.1")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -952,7 +954,7 @@ server tools for Prometheus metrics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d7yl1f7ak0djkflw8wx1wlhym2whg7bh57m419arfym9ncwrhg1"))))
+                "0dxfmgk84fn0p6pz3i0cspynh6rly5pfk9wghm1q07mx99npln02"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/go-asn1-ber/asn1-ber"))
@@ -1035,27 +1037,29 @@ virtual connections from a single physical connection.")
     (license expat)))
 
 (define-public go-github-com-ccding-go-stun
-  (package
-    (name "go-github-com-ccding-go-stun")
-    (version "0.1.2")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/ccding/go-stun.git")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "133r2s4h9vv5lmjd680my2c5973gfi0gg5cxcwzjwdjad83a2dm0"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/ccding/go-stun"))
-    (synopsis "STUN client implementation")
-    (description "Go-stun is a go implementation of the STUN client (RFC 3489
+  (let ((commit "be486d185f3dfcb2dbf8429332da50a0da7f95a6")
+        (revision "2"))
+    (package
+      (name "go-github-com-ccding-go-stun")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ccding/go-stun.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1gr0rw1c1y7wh6913lyn5k4ig023by27i36bly6am8dwgrgp34ww"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/ccding/go-stun"))
+      (synopsis "STUN client implementation")
+      (description "Go-stun is a go implementation of the STUN client (RFC 3489
 and RFC 5389).")
-    (home-page "https://github.com/ccding/go-stun")
-    (license asl2.0)))
+      (home-page "https://github.com/ccding/go-stun")
+      (license asl2.0))))
 
 (define-public go-github-com-cespare-xxhash
   (package

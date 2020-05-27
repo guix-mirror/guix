@@ -978,26 +978,28 @@ optimized for performance yet simple to use.")
       (license license:expat))))
 
 (define-public go-github-com-blang-semver
-  (package
-    (name "go-github-com-blang-semver")
-    (version "4.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/blang/semver.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "14h9ys4n4kx9cbj42lkdf4i5k3nkll6sd62jcvl7cs565v6fiknz"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/blang/semver"))
-    (home-page "https://github.com/blang/semver")
-    (synopsis "Semantic versioning library written in Go")
-    (description "Semver is a library for Semantic versioning written in Go.")
-    (license license:expat)))
+  (let ((commit "60ec3488bfea7cca02b021d106d9911120d25fe9")
+        (revision "0"))
+    (package
+      (name "go-github-com-blang-semver")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/blang/semver.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "19pli07y5592g4dyjyj0jq5rn548vc3fz0qg3624vm1j5828p1c2"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/blang/semver"))
+      (home-page "https://github.com/blang/semver")
+      (synopsis "Semantic versioning library written in Go")
+      (description "Semver is a library for Semantic versioning written in Go.")
+      (license license:expat))))
 
 (define-public go-github-com-emicklei-go-restful
   (let ((commit "89ef8af493ab468a45a42bb0d89a06fccdd2fb22")
@@ -2341,31 +2343,29 @@ statistics for wrapped connections.")
       (license license:expat))))
 
 (define-public go-github-com-mitchellh-go-homedir
-  (package
-    (name "go-github-com-mitchellh-go-homedir")
-    (version "1.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/mitchellh/go-homedir.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0ydzkipf28hwj2bfxqmwlww47khyk6d152xax4bnyh60f4lq3nx1"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "github.com/mitchellh/go-homedir"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'set-home-directory
-           (lambda _
-             (setenv "HOME" "/")
-             #t)))))
-    (home-page "https://github.com/mitchellh/go-homedir")
-    (synopsis "Go library for detecting and expanding the user's home directory without cgo")
-    (description "This is a Go library for detecting the user's home
+  (let ((commit "ae18d6b8b3205b561c79e8e5f69bff09736185f4")
+        (revision "0"))
+    (package
+      (name "go-github-com-mitchellh-go-homedir")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mitchellh/go-homedir.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0f0z0aa4wivk4z1y503dmnw0k0g0g403dly8i4q263gfshs82sbq"))))
+      (build-system go-build-system)
+      (arguments
+       (quote (#:import-path "github.com/mitchellh/go-homedir"
+               ;; TODO: Tests fail because it tries to access home.
+               #:tests? #f)))
+      (home-page "https://github.com/mitchellh/go-homedir")
+      (synopsis "Go library for detecting and expanding the user's home directory without cgo")
+      (description "This is a Go library for detecting the user's home
 directory without the use of @command{cgo}, so the library can be used in
 cross-compilation environments.
 
@@ -2379,7 +2379,7 @@ package cannot cross compile.  But 99% of the time the use for
 @command{os/user} is just to retrieve the home directory, which we can do for
 the current user without cgo.  This library does that, enabling
 cross-compilation.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public go-github-com-multiformats-go-multiaddr
   (let ((commit "fe1c46f8be5af4aff4db286e08839295bd922efb")
@@ -2824,7 +2824,7 @@ format in Go.")
 (define-public go-github-com-kr-text
   (package
     (name "go-github-com-kr-text")
-    (version "0.2.0")
+    (version "0.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2833,7 +2833,7 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hf58ypz6rxsw6nx3i856whir9lvy4sdx946wbw1nfaf2rdmr9vx"))))
+                "1gm5bsl01apvc84bw06hasawyqm4q84vx1pm32wr9jnd7a8vjgj1"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/kr/text"))
@@ -3191,7 +3191,7 @@ error handling primitives in Go.")
 (define-public go-github-com-maruel-panicparse
   (package
     (name "go-github-com-maruel-panicparse")
-    (version "1.4.1")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3200,7 +3200,7 @@ error handling primitives in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0sff44kqmpwzpa6h84fssdsv9glfm8bjjcnspsr64qzmqxpbc7m4"))))
+                "13qkn7f64yln8jdmma37h6ra4c7anxkp3vfgvfyb6lb07dpr1ibq"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/maruel/panicparse"))
