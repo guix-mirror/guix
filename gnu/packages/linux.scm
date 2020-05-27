@@ -4504,8 +4504,8 @@ Ridge, Joliet, and zisofs.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.nico.schottelius.org/software/gpm/archives/gpm-"
-                    version ".tar.bz2"))
+                    "https://www.nico.schottelius.org/software/gpm/archives/"
+                    "gpm-" version ".tar.bz2"))
               (patches (search-patches "gpm-glibc-2.26.patch"))
               (sha256
                (base32
@@ -4534,7 +4534,7 @@ Ridge, Joliet, and zisofs.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (home-page "http://www.nico.schottelius.org/software/gpm/")
+    (home-page "https://www.nico.schottelius.org/software/gpm/")
     (synopsis "Mouse support for the Linux console")
     (description
      "The GPM (general-purpose mouse) daemon is a mouse server for
