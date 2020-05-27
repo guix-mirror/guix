@@ -48,16 +48,16 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages llvm)
-  #:use-module (gnu packages lua))
+  #:use-module (gnu packages texinfo))
 
 ;;; Tools to deal with source code: metrics, cross-references, etc.
 
