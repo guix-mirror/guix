@@ -441,8 +441,16 @@ history mechanism, job control and a C-like syntax.")
                (base32
                 "09yyaadq738zlrnlh1hd3ycj1mv3q5hh4xl1ank70mjnqm6bbi6w"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre"
-                                     "--enable-maildir-support")
+    (arguments `(#:configure-flags
+                 `("--with-tcsetpgrp"
+                  "--enable-pcre"
+                  "--enable-maildir-support"
+                  ;; share/zsh/site-functions isn't populated
+                  "--disable-site-fndir"
+                  ,(string-append
+                    "--enable-additional-fpath="
+                    "/usr/local/share/zsh/site-functions," ; for foreign OS
+                    "/run/current-system/profile/share/zsh/site-functions"))
                  #:phases
                  (modify-phases %standard-phases
                    (add-before 'configure 'fix-sh
