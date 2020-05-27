@@ -359,13 +359,13 @@ documentation.")
       (license license:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx@1.15.9.
-  (let ((revision 2345)
-        (changeset "7ef11708457e"))
+  ;; This documentation should be relevant for the current nginx package.
+  (let ((version "1.19.0")
+        (revision 2549)
+        (changeset "c13a55aae487"))
     (package
       (name "nginx-documentation")
-      (version
-       (simple-format #f "2019-03-01-~A-~A" revision changeset))
+      (version (simple-format #f "~A-~A-~A" version revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -374,7 +374,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "15975jvh53mnsgi4hhgrwdwy3by23v4kxnhy2vnkziq8v7wkmy4y"))))
+                 "0vwwvk6wf8f6c6n6yffmya9a287s6dbx1p739hdl3hwxfyh2ygc5"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
