@@ -1546,6 +1546,8 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
             (lambda _
               (substitute* "testing/CMakeLists.txt"
                 (("test_api") ""))
+              (substitute* "testing/CMakeLists.txt"
+                (("add_subdirectory\\(api\\)") ""))
               #t))
           (add-after 'configure 'set-build-info
             ;; Their genbuild.sh to generate a build.h fails in guix (no .git dir) .
