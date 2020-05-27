@@ -39,16 +39,15 @@
   #:use-module (gnu system)
   #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
-  #:export (cross-hurd-image
-            %base-packages/hurd
+  #:export (%base-packages/hurd
             %base-services/hurd
             %hurd-default-operating-system
             %hurd-default-operating-system-kernel))
 
 ;;; Commentary:
 ;;;
-;;; This module provides tools to (cross-)build GNU/Hurd virtual machine
-;;; images.
+;;; This module provides system-specifics for the GNU/Hurd operating system
+;;; and virtual machine.
 ;;;
 ;;; Code:
 
@@ -104,173 +103,3 @@
     (pam-services '())
     (setuid-programs '())
     (sudoers-file #f)))
-
-(define* (cross-hurd-image #:key (hurd hurd) (gnumach gnumach))
-  "Return a cross-built GNU/Hurd image."
-
-  (define (cross-built thing)
-    (with-parameters ((%current-target-system "i586-pc-gnu"))
-      thing))
-
-  (define (cross-built-entry entry)
-    (manifest-entry
-      (inherit entry)
-      (item (cross-built (manifest-entry-item entry)))
-      (dependencies (map cross-built-entry
-                         (manifest-entry-dependencies entry)))))
-
-  (define system-profile
-    (profile
-     (content
-      (map-manifest-entries cross-built-entry
-                            (packages->manifest %base-packages/hurd)))))
-
-  (define grub.cfg
-    (let ((hurd (cross-built hurd))
-          (mach (with-parameters ((%current-system "i686-linux"))
-                  gnumach))
-          (libc (cross-libc "i586-pc-gnu")))
-      (computed-file "grub.cfg"
-                     #~(call-with-output-file #$output
-                         (lambda (port)
-                           (format port "
-set timeout=2
-search.file ~a/boot/gnumach
-
-menuentry \"GNU\" {
-  multiboot ~a/boot/gnumach root=device:hd0s1
-  module ~a/hurd/ext2fs.static ext2fs \\
-    --multiboot-command-line='${kernel-command-line}' \\
-    --host-priv-port='${host-port}' \\
-    --device-master-port='${device-port}' \\
-    --exec-server-task='${exec-task}' -T typed '${root}' \\
-    '$(task-create)' '$(task-resume)'
-  module ~a/lib/ld.so.1 exec ~a/hurd/exec '$(exec-task=task-create)'
-}\n"
-                                   #+mach #+mach #+hurd
-                                   #+libc #+hurd))))))
-
-  (define fstab
-    (plain-file "fstab"
-                "# This file was generated from your Guix configuration.  Any changes
-# will be lost upon reboot or reconfiguration.
-
-/dev/hd0s1	/	ext2	defaults
-"))
-
-  (define passwd
-    (plain-file "passwd"
-                "root:x:0:0:root:/root:/bin/sh
-guixbuilder:x:1:1:guixbuilder:/var/empty:/bin/no-sh
-"))
-
-  (define group
-    (plain-file "group"
-                "guixbuild:x:1:guixbuilder
-"))
-
-  (define shadow
-    (plain-file "shadow"
-                "root::0:0:0:0:::
-"))
-
-  (define etc-profile
-    (plain-file "profile"
-                "\
-export PS1='\\u@\\h\\$ '
-
-GUIX_PROFILE=\"/run/current-system/profile\"
-. \"$GUIX_PROFILE/etc/profile\"
-
-GUIX_PROFILE=\"$HOME/.guix-profile\"
-if [ -f \"$GUIX_PROFILE/etc/profile\" ]; then
-  . \"$GUIX_PROFILE/etc/profile\"
-fi\n"))
-
-  (define hurd-directives
-    `((directory "/servers")
-      ,@(map (lambda (server)
-               `(file ,(string-append "/servers/" server)))
-             '("startup" "exec" "proc" "password"
-               "default-pager" "crash-dump-core"
-               "kill" "suspend"))
-      ("/servers/crash" -> "crash-dump-core")
-      (directory "/servers/socket")
-      (file "/servers/socket/1")
-      (file "/servers/socket/2")
-      (file "/servers/socket/16")
-      ("/servers/socket/local" -> "1")
-      ("/servers/socket/inet" -> "2")
-      ("/servers/socket/inet6" -> "16")
-      (directory "/boot")
-      ("/boot/grub.cfg" -> ,grub.cfg)   ;XXX: not strictly needed
-      ("/hurd" -> ,(file-append (with-parameters ((%current-target-system
-                                                   "i586-pc-gnu"))
-                                  hurd)
-                                "/hurd"))
-
-      ;; TODO: Create those during activation, eventually.
-      (directory "/root")
-      (file "/root/.guile"
-            ,(object->string
-              '(begin
-                 (use-modules (ice-9 readline) (ice-9 colorized))
-                 (activate-readline) (activate-colorized))))
-      (directory "/run")
-      (directory "/run/current-system")
-      ("/run/current-system/profile" -> ,system-profile)
-      ("/etc/profile" -> ,etc-profile)
-      ("/etc/fstab" -> ,fstab)
-      ("/etc/group" -> ,group)
-      ("/etc/passwd" -> ,passwd)
-      ("/etc/shadow" -> ,shadow)
-      (file "/etc/hostname" "guixygnu")
-      (file "/etc/resolv.conf"
-            "nameserver 10.0.2.3\n")
-      ("/etc/services" -> ,(file-append (with-parameters ((%current-target-system
-                                                           "i586-pc-gnu"))
-                                          net-base)
-                                        "/etc/services"))
-      ("/etc/protocols" -> ,(file-append (with-parameters ((%current-target-system
-                                                            "i586-pc-gnu"))
-                                           net-base)
-                                         "/etc/protocols"))
-      ("/etc/motd" -> ,(file-append (with-parameters ((%current-target-system
-                                                       "i586-pc-gnu"))
-                                      hurd)
-                                    "/etc/motd"))
-      ("/etc/login" -> ,(file-append (with-parameters ((%current-target-system
-                                                        "i586-pc-gnu"))
-                                       hurd)
-                                     "/etc/login"))
-
-
-      ;; XXX can we instead, harmlessly set _PATH_TTYS (from glibc) in runttys.c?
-      ("/etc/ttys" -> ,(file-append (with-parameters ((%current-target-system
-                                                       "i586-pc-gnu"))
-                                      hurd)
-                                    "/etc/ttys"))
-      ("/bin/sh" -> ,(file-append (with-parameters ((%current-target-system
-                                                     "i586-pc-gnu"))
-                                    bash)
-                                  "/bin/sh"))))
-
-  (qemu-image #:file-system-type "ext2"
-              #:file-system-options '("-o" "hurd")
-              #:device-nodes 'hurd
-              #:inputs `(("system" ,system-profile)
-                         ("grub.cfg" ,grub.cfg)
-                         ("fstab" ,fstab)
-                         ("passwd" ,passwd)
-                         ("group" ,group)
-                         ("etc-profile" ,etc-profile)
-                         ("shadow" ,shadow))
-              #:copy-inputs? #t
-              #:os system-profile
-              #:bootcfg-drv grub.cfg
-              #:bootloader grub-bootloader
-              #:register-closures? #f
-              #:extra-directives hurd-directives))
-
-;; Return this thunk so one can type "guix build -f gnu/system/hurd.scm".
-cross-hurd-image
