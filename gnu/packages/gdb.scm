@@ -130,3 +130,15 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
   ;; This is the fixed version that packages depend on.  Update it rarely
   ;; enough to avoid massive rebuilds.
   gdb-9.1)
+
+(define-public gdb-9.2
+  (package
+    (inherit gdb)
+    (version "9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdb/gdb-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0mf5fn8v937qwnal4ykn3ji1y2sxk0fa1yfqi679hxmpg6pdf31n"))))))
