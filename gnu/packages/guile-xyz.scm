@@ -26,6 +26,7 @@
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3608,3 +3609,40 @@ WebSocket protocol as defined by RFC 6455.")
 
 (define-public guile3.0-websocket
   (deprecated-package "guile3.0-websocket" guile-websocket))
+
+(define-public guile-rdf
+  (package
+    (name "guile-rdf")
+    (version "1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/guile-rdf")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0dwn3app1fscbpmpgvjs5jy1y0gwy3j5gdx8br79af6a88zjlnqf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)); tests require network
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://framagit.org/tyreunom/guile-rdf")
+    (synopsis "Guile implementation of the RDF abstract and concrete syntaxes")
+    (description "Guile RDF is an implementation of the RDF (Resource Description
+Framework) format defined by the W3C for GNU Guile.  RDF structures include
+triples (facts with a subject, a predicate and an object), graphs which are
+sets of triples, and datasets, which are collections of graphs.
+
+RDF specifications include the specification of concrete syntaxes and of
+operations on graphs.  This library implements some basic functionalities,
+such as parsing and producing turtle and nquads syntax, as well as
+manipulating graphs and datasets.")
+    (license license:gpl3+)))
