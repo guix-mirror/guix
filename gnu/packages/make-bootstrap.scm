@@ -706,7 +706,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
           ;; When `configure' checks for ltdl availability, it
           ;; doesn't try to link using libtool, and thus fails
           ;; because of a missing -ldl.  Work around that.
-          ''("LDFLAGS=-ldl"))
+
+          ;; XXX: On ARMv7, disable JIT: it causes crashes with 3.0.2,
+          ;; possibly related to <https://bugs.gnu.org/40737>.
+          (if (target-arm32?)
+              ''("LDFLAGS=-ldl" "--disable-jit")
+              ''("LDFLAGS=-ldl")))
          ((#:phases phases '%standard-phases)
           `(modify-phases ,phases
 
