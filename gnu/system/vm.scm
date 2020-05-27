@@ -317,6 +317,21 @@ system that is passed to 'populate-root-file-system'."
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
+  (define preserve-target
+    (if target
+        (lambda (obj)
+          (with-parameters ((%current-target-system target))
+            obj))
+        identity))
+
+  (define inputs*
+    (map (match-lambda
+           ((name thing)
+            `(,name ,(preserve-target thing)))
+           ((name thing output)
+            `(,name ,(preserve-target thing) ,output)))
+         inputs))
+
   (expression->derivation-in-linux-vm
    name
    (with-extensions gcrypt-sqlite3&co
@@ -355,7 +370,7 @@ system that is passed to 'populate-root-file-system'."
                   '#$(map (match-lambda
                             ((name thing) thing)
                             ((name thing output) `(,thing ,output)))
-                          inputs)))
+                          inputs*)))
 
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
@@ -367,7 +382,7 @@ system that is passed to 'populate-root-file-system'."
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
-                                 #:system-directory #$os
+                                 #:system-directory #$(preserve-target os)
 
                                  #:make-device-nodes
                                  #$(match device-nodes
@@ -423,7 +438,7 @@ system that is passed to 'populate-root-file-system'."
                                      #:grub-efi grub-efi
                                      #:bootloader-package
                                      #+(bootloader-package bootloader)
-                                     #:bootcfg #$bootcfg-drv
+                                     #:bootcfg #$(preserve-target bootcfg-drv)
                                      #:bootcfg-location
                                      #$(bootloader-configuration-file bootloader)
                                      #:bootloader-installer
@@ -432,7 +447,7 @@ system that is passed to 'populate-root-file-system'."
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
    #:disk-image-format disk-image-format
-   #:references-graphs inputs
+   #:references-graphs inputs*
    #:substitutable? substitutable?))
 
 (define* (system-docker-image os
