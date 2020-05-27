@@ -162,7 +162,7 @@ program.")
 (define-public autorandr
   (package
     (name "autorandr")
-    (version "1.9")
+    (version "1.10.1")
     (home-page "https://github.com/phillipberndt/autorandr")
     (source
      (origin
@@ -172,8 +172,10 @@ program.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bb0l7fcm5lcx9y02zdxv7pfdqf4v4gsc5br3v1x9gzjvqj64l7n"))))
+        (base32 "0msw9b1hdy3gbq9w5d04mfizhyirz1c648x84mlcbzl8salm7vpg"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("xrandr" ,xrandr)
        ("libxcb" ,libxcb)))
@@ -188,7 +190,11 @@ program.")
                  (("/usr") (assoc-ref outputs "out")))
                (substitute* "autorandr.py"
                  (("popen\\(\"xrandr") (string-append "popen(\"" xrandr))
-                 (("\\[\"xrandr") (string-append "[\"" xrandr))))
+                 (("\\[\"xrandr") (string-append "[\"" xrandr)))
+               (substitute* "contrib/autorandr_launcher/autorandr_launcher.c"
+                 (("/usr/bin/autorandr")
+                  (string-append (assoc-ref outputs "out") "/bin/autorandr")))
+               (setenv "CC" "gcc"))
              #t))
          (add-after 'install 'install-contrib
            (lambda* (#:key outputs #:allow-other-keys)
@@ -196,10 +202,8 @@ program.")
                      (string-append "DESTDIR=" (assoc-ref outputs "out"))
                      "PREFIX="
                      "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
-                     "install_manpage"
-                     "install_bash_completion"
-                     "install_launcher"
-                     "install_autostart_config"))))))
+                     "install"
+                     "TARGETS=autorandr launcher manpage bash_completion"))))))
     (synopsis "Auto-detect connected displays and load appropriate setup")
     (description "Autorandr wraps around xrandr to help with X11
 multi-screen configuration management.  It allows the user to create profiles
