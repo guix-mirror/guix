@@ -631,6 +631,7 @@ garbage collection and can be extended with plugins.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
+       #:configure-flags '("-DPHYSFS_BUILD_STATIC=OFF")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-CMakeLists.txt
                     (lambda _
