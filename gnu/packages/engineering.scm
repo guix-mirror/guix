@@ -535,7 +535,7 @@ featuring various improvements and bug fixes.")))
                (copy-recursively "doc" doc)
                (copy-recursively "examples" examples)
                #t))))))
-    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (home-page "https://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated capacitance extraction program")
     (description
      "Fastcap is a capacitance extraction program based on a
