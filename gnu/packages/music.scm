@@ -141,6 +141,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vim)       ;for 'xxd'
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
@@ -4939,6 +4940,49 @@ visualizing LV2 atom, MIDI and OSC events.  They can be used for monitoring
 and debugging of event signal flows inside plugin graphs.")
     (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
     (license license:artistic2.0)))
+
+(define-public spectacle-analyzer
+  (package
+    (name "spectacle-analyzer")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jpcima/spectacle.git")
+             (commit (string-append "v" version))
+             ;; Bundles a specific commit of the DISTRHO plugin framework.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xiqa6z8g68lcvnwhws4j7c4py35r9d20cirrili7ycyp3a6149a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xxd" ,xxd)))
+    (inputs
+     `(("cairo", cairo)
+       ("fftw", fftw)
+       ("fftwf", fftwf)
+       ("jack", jack-1)
+       ("lv2", lv2)
+       ("mesa", mesa)))
+    (synopsis "Realtime graphical spectrum analyzer")
+    (description "Spectacle is a real-time spectral analyzer using the
+short-time Fourier transform, available as LV2 audio plugin and JACK client.")
+    (home-page "https://github.com/jpcima/spectacle")
+    ;; The project is licensed under the ISC license, and files in
+    ;; sources/plugin carry the Expat license.
+    (license (list license:isc license:expat))))
 
 (define-public x42-plugins
   (package
