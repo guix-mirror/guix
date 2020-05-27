@@ -466,15 +466,15 @@ from the initrd."
   "Return the list of swap services for OS."
   (map swap-service (operating-system-swap-devices os)))
 
-(define* (system-linux-image-file-name)
-  "Return the basename of the kernel image file for SYSTEM."
-  ;; FIXME: Evaluate the conditional based on the actual current system.
-  (let ((target (or (%current-target-system) (%current-system))))
-    (cond
-     ((string-prefix? "arm" target) "zImage")
-     ((string-prefix? "mips" target) "vmlinuz")
-     ((string-prefix? "aarch64" target) "Image")
-     (else "bzImage"))))
+(define* (system-linux-image-file-name #:optional
+                                       (target (or (%current-target-system)
+                                                   (%current-system))))
+  "Return the basename of the kernel image file for TARGET."
+  (cond
+   ((string-prefix? "arm" target) "zImage")
+   ((string-prefix? "mips" target) "vmlinuz")
+   ((string-prefix? "aarch64" target) "Image")
+   (else "bzImage")))
 
 (define (operating-system-kernel-file os)
   "Return an object representing the absolute file name of the kernel image of
