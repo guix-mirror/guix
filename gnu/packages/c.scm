@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,6 +254,57 @@ structures and functions commonly needed, such as maps, deques, linked lists,
 string formatting and autoresizing, option and config file parsing, type
 checking casts and more.")
     (license license:lgpl2.1+)))
+
+(define-public packcc
+  (package
+    (name "packcc")
+    ;; We need a few fixes on top of the latest release to prevent test
+    ;; failures in Universal Ctags.
+    (version "1.2.5-19-g58d1b9d")
+    (home-page "https://github.com/enechaev/packcc")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0biyv835jlk43fvmmd3p8jafs7k2iw9qlaj37hvsl604ai6rd5aj"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:make-flags '("-DUSE_SYSTEM_STRNLEN=1")
+       #:phases (modify-phases %standard-phases
+                  ;; The project consists of a single source file and has
+                  ;; no actual build system, so we need to do it manually.
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      (apply invoke "gcc" "-o" "packcc" "packcc.c"
+                                      make-flags)))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "packcc" (string-append out "/bin"))
+                        (install-file "README.md"
+                                      (string-append out "/share/doc/packcc"))
+                        #t))))))
+    (synopsis "Packrat parser generator for C")
+    (description
+     "PackCC is a packrat parser generator for the C programming language.
+Its main features are:
+@itemize
+@item Generates a parser in C from a grammar described in a PEG.
+@item Gives your parser great efficiency by packrat parsing.
+@item Supports direct and indirect left-recursive grammar rules.
+@end itemize
+The grammar of your parser can be described in a @acronym{PEG, Parsing
+Expression Grammar}.  The PEG is a top-down parsing language, and is similar
+to the regular-expression grammar.  The PEG does not require tokenization to
+be a separate step, and tokenization rules can be written in the same way as
+any other grammar rules.")
+    (license license:expat)))
 
 (define-public sparse
   (package
