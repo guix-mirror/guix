@@ -345,7 +345,7 @@ system that is passed to 'populate-root-file-system'."
            (setlocale LC_ALL "en_US.utf8")
 
            (let ((inputs
-                  '#$(append (list parted e2fsprogs dosfstools)
+                  '#+(append (list parted e2fsprogs dosfstools)
                              (map canonical-package
                                   (list sed grep coreutils findutils gawk))))
 
@@ -422,12 +422,12 @@ system that is passed to 'populate-root-file-system'."
                                      #:partitions partitions
                                      #:grub-efi grub-efi
                                      #:bootloader-package
-                                     #$(bootloader-package bootloader)
+                                     #+(bootloader-package bootloader)
                                      #:bootcfg #$bootcfg-drv
                                      #:bootcfg-location
                                      #$(bootloader-configuration-file bootloader)
                                      #:bootloader-installer
-                                     #$(bootloader-installer bootloader)))))))
+                                     #+(bootloader-installer bootloader)))))))
    #:system system
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
