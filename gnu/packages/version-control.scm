@@ -1885,7 +1885,10 @@ accessed and migrated on modern systems.")
        ("ed" ,ed)))
     (arguments
      `(#:configure-flags (list "--with-no-aegis-configured"
-                               "--sharedstatedir=/var/com/aegis")
+                               "--sharedstatedir=/var/com/aegis"
+                               ;; Uses the old 'throw()' specifier with 'new'
+                               ;; which changed in C++11.
+                               "CXXFLAGS=-std=c++03")
        #:parallel-build? #f ; There are some nasty racy rules in the Makefile.
        #:phases
        (modify-phases %standard-phases
