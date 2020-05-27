@@ -4863,6 +4863,53 @@ effects.  It contains a bitcrusher, delay, distortion, equalizer, compressor,
 and reverb.")
     (license license:gpl2+)))
 
+(define-public lsp-plugins
+  (package
+    (name "lsp-plugins")
+    (version "1.1.21")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sadko4u/lsp-plugins.git")
+               (commit (string-append "lsp-plugins-" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1zw0iip6ki9k65kh8dp53x7l4va4mi5rj793n2yn4p9y84qzwrz9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list
+         (string-append "CC="
+                        (if ,(%current-target-system)
+                          (string-append (assoc-ref %build-inputs "cross-gcc")
+                                         "/bin/" ,(%current-target-system) "-gcc")
+                          "gcc"))
+         "BUILD_MODULES=\"lv2 ladspa jack\"" "VST_UI=0"
+         (string-append "PREFIX=" (assoc-ref %outputs "out"))
+         (string-append "ETC_PATH=" (assoc-ref %outputs "out") "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))   ; no configure
+       #:test-target "test"))
+    (inputs
+     `(("cairo", cairo)
+       ("hicolor-icon-theme", hicolor-icon-theme)
+       ("jack", jack-1)
+       ("ladspa", ladspa)
+       ("libsndfile", libsndfile)
+       ("lv2", lv2)
+       ("mesa", mesa)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (synopsis "Audio plugin collection")
+    (description "LSP (Linux Studio Plugins) is a collection of audio
+plugins available as LADSPA/LV2 plugins and as standalone JACK
+applications.")
+    (home-page "https://lsp-plug.in/")
+    (license license:lgpl3)))
+
 (define-public sherlock-lv2
   (package
     (name "sherlock-lv2")
