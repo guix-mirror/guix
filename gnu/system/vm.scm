@@ -764,6 +764,8 @@ environment with the store shared with the host.  MAPPINGS is a list of
 (define* (system-qemu-image/shared-store
           os
           #:key
+          (system (%current-system))
+          (target (%current-target-system))
           full-boot?
           (disk-image-size (* (if full-boot? 500 30) (expt 2 20))))
   "Return a derivation that builds a QEMU image of OS that shares its store
@@ -784,6 +786,8 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
   ;; This is more than needed (we only need the kernel, initrd, GRUB for its
   ;; font, and the background image), but it's hard to filter that.
   (qemu-image #:os os
+              #:system system
+              #:target target
               #:bootcfg-drv bootcfg
               #:bootloader (bootloader-configuration-bootloader
                             (operating-system-bootloader os))
@@ -824,6 +828,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
+                                                (system (%current-system))
+                                                (target (%current-target-system))
                                                 (qemu qemu)
                                                 (graphic? #t)
                                                 (memory-size 256)
@@ -847,6 +853,8 @@ it is mostly useful when FULL-BOOT?  is true."
   (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
                        (image  (system-qemu-image/shared-store
                                 os
+                                #:system system
+                                #:target target
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
     (define kernel-arguments
@@ -920,10 +928,11 @@ FORWARDINGS is a list of host-port/guest-port pairs."
 
 (define-gexp-compiler (virtual-machine-compiler (vm <virtual-machine>)
                                                 system target)
-  ;; XXX: SYSTEM and TARGET are ignored.
   (match vm
     (($ <virtual-machine> os qemu graphic? memory-size disk-image-size ())
      (system-qemu-image/shared-store-script os
+                                            #:system system
+                                            #:target target
                                             #:qemu qemu
                                             #:graphic? graphic?
                                             #:memory-size memory-size
@@ -936,6 +945,8 @@ FORWARDINGS is a list of host-port/guest-port pairs."
                        "user,model=virtio-net-pci,"
                        (port-forwardings->qemu-options forwardings)))))
        (system-qemu-image/shared-store-script os
+                                              #:system system
+                                              #:target target
                                               #:qemu qemu
                                               #:graphic? graphic?
                                               #:memory-size memory-size
