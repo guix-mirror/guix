@@ -583,7 +583,7 @@ multipole-accelerated algorithm.")
                       (copy-recursively "doc" doc)
                       (copy-recursively "examples" examples)
                       #t))))))
-    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (home-page "https://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated inductance analysis program")
     (description
      "Fasthenry is an inductance extraction program based on a
