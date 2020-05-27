@@ -7491,7 +7491,7 @@ names, e.g. #0000ff is displayed in white with a blue background.")
          (sha256
           (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
       (build-system emacs-build-system)
-      (home-page "http://github.com/Kungsgeten/ryo-modal")
+      (home-page "https://github.com/Kungsgeten/ryo-modal")
       (synopsis "Emacs minor mode for defining modal editing environments")
       (description "RYO modal provides a convenient way of defining modal
 keybindings in Emacs, and does not come with any predefined bindings.")
