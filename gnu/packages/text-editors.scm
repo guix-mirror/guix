@@ -43,6 +43,7 @@
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages code)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -196,7 +197,7 @@ bindings and many of the powerful features of GNU Emacs.")
 (define-public jucipp
   (package
     (name "jucipp")
-    (version "1.5.1")
+    (version "1.6.0")
     (home-page "https://gitlab.com/cppit/jucipp")
     (source (origin
               (method git-fetch)
@@ -208,7 +209,7 @@ bindings and many of the powerful features of GNU Emacs.")
                                   (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0v7fmsya2zn1xx59bkv4cbyinmcnv52hm4j40nbfwalcks631xrr"))))
+               (base32 "177myy6qvjlb6j3f3i3xmfml5r3p9in8xzpvm0n59dn56s81gpnr"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
@@ -225,19 +226,6 @@ bindings and many of the powerful features of GNU Emacs.")
                       (chdir "build")
                       #t))
 
-                  ;; This phase is necessary to fix a test failure, see
-                  ;; <https://gitlab.com/cppit/jucipp/-/issues/423>.
-                  (add-after 'unpack 'add-reference-to-clang-internal-header
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "src/compile_commands.cc"
-                        ((".*-I/usr/lib/clang.*" all)
-                         (string-append "arguments.emplace_back(\"-I"
-                                        (assoc-ref inputs "libclang")
-                                        "/lib/clang/"
-                                        ,@(list (package-version clang))
-                                        "/include\");\n"
-                                        all)))
-                      #t))
                   (add-after 'unpack 'patch-tiny-process-library
                     (lambda _
                       (with-directory-excursion "lib/tiny-process-library"
@@ -269,6 +257,7 @@ bindings and many of the powerful features of GNU Emacs.")
     (inputs
      `(("aspell" ,aspell)
        ("boost" ,boost)
+       ("ctags" ,universal-ctags)
        ("gtkmm" ,gtkmm)
        ("gtksourceviewmm" ,gtksourceviewmm)
        ("libclang" ,clang)
