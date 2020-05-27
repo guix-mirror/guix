@@ -36,7 +36,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
-Copyright @copyright{} 2016 Julien Lepiller@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
@@ -567,17 +567,18 @@ Installing goes along these lines:
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz},
-where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
-already running the kernel Linux, and so on.
+@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.x86_64-linux.tar.xz},
+where @code{x86_64-linux} can be replaced with @code{i686-linux} for an
+@code{i686} (32-bits) machine already running the kernel Linux, and so on
+(@pxref{GNU Distribution}).
 
 @c The following is somewhat duplicated in ``System Installation''.
 Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
-$ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.x86_64-linux.tar.xz.sig
+$ gpg --verify guix-binary-@value{VERSION}.x86_64-linux.tar.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -603,7 +604,7 @@ you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 @example
 # cd /tmp
 # tar --warning=no-timestamp -xf \
-     /path/to/guix-binary-@value{VERSION}.@var{system}.tar.xz
+     /path/to/guix-binary-@value{VERSION}.x86_64-linux.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
@@ -1917,8 +1918,8 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
-where @var{system} is one of:
+@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz},
+where you can replace @code{x86_64-linux} with one of:
 
 @table @code
 @item x86_64-linux
@@ -1933,8 +1934,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
-$ gpg --verify guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
+$ gpg --verify guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -1965,7 +1966,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
 @end example
 
 @item
@@ -1974,7 +1975,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guix-system-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
+dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
 sync
 @end example
 
@@ -1990,7 +1991,7 @@ To copy the image to a DVD, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
 @end example
 
 @item
@@ -1999,7 +2000,7 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.@var{system}.iso
+growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.x86_64-linux.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
