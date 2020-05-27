@@ -920,7 +920,17 @@ computations.")
                (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
                 (string-append prefix (string-take hash 10) "...")))
              #t))
-         )))
+         (add-after 'install 'provide-absolute-libjpeg-reference
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libjpeg (assoc-ref inputs "libjpeg")))
+               ;; libjpeg-turbo does not provide a .la file, so libtool is
+               ;; unable to add an absolute reference for -ljpeg in the .la
+               ;; files.  Fix it manually to avoid having to propagate it.
+               (substitute* (find-files (string-append out "/lib") "\\.la$")
+                 (("-ljpeg")
+                  (string-append "-L" libjpeg "/lib -ljpeg")))
+               #t))))))
     (home-page "https://www.hdfgroup.org/products/hdf4/")
     (synopsis
      "Library and multi-object file format for storing and managing data")
