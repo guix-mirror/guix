@@ -3116,14 +3116,14 @@ everyone's screenshots nowadays.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "2.8.1")
+    (version "3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1g47bndxld875d0xb3pgmlw223mz47p1xcvwym861y6l4zkgiyp0"))))
+        (base32 "1zflz7yj5wzdnl0728g8qrld2z6dqn7sblbmkjvyqlv1fwjd1fsf"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
