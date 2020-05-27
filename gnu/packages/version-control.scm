@@ -1931,7 +1931,7 @@ accessed and migrated on modern systems.")
 
                ;; The author decided to call the check rule "sure".
                (invoke "make" "sure")))))))
-    (home-page "http://aegis.sourceforge.net")
+    (home-page "https://sourceforge.net/projects/aegis/")
     (synopsis "Project change supervisor")
     (description "Aegis is a project change supervisor, and performs some of
 the Software Configuration Management needed in a CASE environment.  Aegis
