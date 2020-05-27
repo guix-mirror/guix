@@ -58,6 +58,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system ruby)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -121,6 +122,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -428,6 +430,71 @@ services.")
     "dfc (df color) is a modern version of df.  It uses colors, draws pretty
 graphs and can export its output to different formats.")
    (license license:bsd-3)))
+
+(define-public facter
+  (package
+    (name "facter")
+    (version "4.0.24")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/puppetlabs/facter-ng")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1n8yd2p7m0jf0wld6q43f2gqxyz8fiamz3p79wbl53q5qih0vba2"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-facter-ng-gemspec
+                    (lambda _
+                      ;; XXX: ruby-build-system incorrectly finds
+                      ;; facter-ng.gemspec from this directory and tries to
+                      ;; build that instead of the proper facter.gemspec.
+                      ;; Just delete it as a workaround, as it appears to
+                      ;; only exist for backwards-compatibility after the
+                      ;; facter-ng->facter rename.
+                      (delete-file "agent/facter-ng.gemspec")
+                      #t))
+                  (add-after 'unpack 'embed-iproute-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((iproute (assoc-ref inputs "iproute")))
+                        ;; Provide an absolute reference to the 'ip' executable
+                        ;; to avoid propagating it.
+                        (substitute* "lib/resolvers/networking_linux_resolver.rb"
+                          (("execute\\('ip")
+                           (string-append "execute('" iproute "/sbin/ip")))
+                        #t)))
+                  (delete 'check)
+                  (add-after 'wrap 'check
+                    (lambda* (#:key tests? outputs #:allow-other-keys)
+                      ;; XXX: The test suite wants to run Bundler and
+                      ;; complains that the gemspec is invalid.  For now
+                      ;; just make sure that we can run the wrapped
+                      ;; executable directly.
+                      (if tests?
+                          (invoke (string-append (assoc-ref outputs "out")
+                                                 "/bin/facter")
+                                  ;; Many facts depend on /sys, /etc/os-release,
+                                  ;; etc, so we only run a small sample.
+                                  "facterversion" "architecture"
+                                  "kernel" "kernelversion")
+                          (format #t "tests disabled~%"))
+                      #t)))))
+    (inputs
+     `(("iproute" ,iproute)
+       ("ruby-hocon" ,ruby-hocon)
+       ("ruby-sys-filesystem" ,ruby-sys-filesystem)
+       ("ruby-thor" ,ruby-thor)))
+    (synopsis "Collect and display system facts")
+    (description
+     "Facter is a tool that gathers basic facts about nodes (systems) such
+as hardware details, network settings, OS type and version, and more.  These
+facts can be collected on the command line with the @command{facter} command
+or via the @code{facter} Ruby library.")
+    (home-page "https://github.com/puppetlabs/facter-ng")
+    (license license:expat)))
 
 (define-public htop
   (package
