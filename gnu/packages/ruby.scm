@@ -1680,18 +1680,70 @@ Ruby.")
 (define-public ruby-thor
   (package
     (name "ruby-thor")
-    (version "0.19.4")
+    (version "1.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "thor" version))
+              ;; Pull from git because the gem has no tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/erikhuda/thor")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "01n5dv9kql60m6a00zc0r66jvaxx98qhdny3klyj0p3w34pad2ns"))))
+                "1anrx5vynk57hn5c8ig5pgkmcsbj9q5mvckd5rviw1jid7n89k57"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; no test suite
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-readline-tests
+                    (lambda _
+                      ;; Ensure Readline is initialized before running the
+                      ;; test to avoid a type clash with the mock ::Readline.
+                      ;; See <https://github.com/erikhuda/thor/pull/717>.
+                      (substitute* "spec/line_editor/readline_spec.rb"
+                        (("unless defined\\? ::Readline" all)
+                         (string-append "Thor::LineEditor::Readline.available?\n"
+                                        all)))
+                      #t))
+                  (add-after 'unpack 'remove-coveralls-dependency
+                    (lambda _
+                      ;; Do not hook the test suite into the online
+                      ;; coveralls service.
+                      (substitute* "Gemfile"
+                        ((".*coveralls.*") ""))
+                      (substitute* "spec/helper.rb"
+                        (("require \"coveralls\"") "")
+                        (("Coveralls::SimpleCov::Formatter") "")
+                        ;; Also drop the WebMock dependency which is only
+                        ;; present to allow a coveralls.io connection, and
+                        ;; would otherwise introduce a circular dependency.
+                        (("require \"webmock/rspec\"") "")
+                        (("WebMock\\.disable_net_connect.*") ""))
+                      #t))
+                  (add-after 'unpack 'disable-network-tests
+                    (lambda _
+                      ;; These tests attempt to look up example.com.
+                      (substitute* "spec/actions/file_manipulation_spec.rb"
+                        (("it \"accepts (https?) remote sources" _ proto)
+                         (string-append "xit \"accepts " proto " remote sources")))
+                      #t))
+                  (add-after 'unpack 'disable-quality-tests
+                    (lambda _
+                      ;; These tests attempt to check the git repository for
+                      ;; tabs vs spaces, double vs single quotes, etc, and
+                      ;; depend on the git checkout.
+                      (delete-file "spec/quality_spec.rb")
+                      #t))
+                  (add-before 'check 'make-files-writable
+                    (lambda _
+                      ;; The tests needs rw access to the test suite.
+                      (for-each make-file-writable (find-files "spec"))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (invoke "rspec" "spec"))))))
     (native-inputs
-     `(("bundler" ,bundler)))
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (synopsis "Ruby toolkit for building command-line interfaces")
     (description "Thor is a toolkit for building powerful command-line
 interfaces.")
