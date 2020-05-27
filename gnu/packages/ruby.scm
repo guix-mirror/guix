@@ -9320,6 +9320,35 @@ the Thin library.")
     (home-page "https://github.com/sj26/skinny")
     (license license:expat)))
 
+(define-public ruby-sys-filesystem
+  (package
+    (name "ruby-sys-filesystem")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sys-filesystem" version))
+              (sha256
+               (base32
+                "0mizqnsiagagmracadr16s5na2ks2j3ih1w0f3gp4ssrda6szl01"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-HOME
+                    (lambda _
+                      ;; Some tests attempt to stat $HOME.  Let them.
+                      (setenv "HOME" "/tmp")
+                      #t)))))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (native-inputs
+     `(("ruby-mkmf-lite" ,ruby-mkmf-lite)))
+    (synopsis "Gather file system information")
+    (description
+     "The @code{sys-filesystem} library provides a cross-platform interface
+for gathering file system information, such as disk space and mount points.")
+    (home-page "https://github.com/djberg96/sys-filesystem")
+    (license license:asl2.0)))
+
 (define-public mailcatcher
   (package
     (name "mailcatcher")
