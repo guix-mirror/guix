@@ -141,7 +141,7 @@
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
-                                             (system (%current-system)) target
+                                             (system (%current-system))
                                              (linux linux-libre)
                                              initrd
                                              (qemu qemu-minimal)
@@ -226,10 +226,11 @@ substitutable."
 
               (let* ((native-inputs
                       '#+(list qemu (canonical-package coreutils)))
-                     (linux   (string-append #$linux "/"
-                                             #$(system-linux-image-file-name)))
-                     (initrd  #$initrd)
-                     (loader  #$loader)
+                     (linux   (string-append
+                               #+linux "/"
+                               #+(system-linux-image-file-name system)))
+                     (initrd  #+initrd)
+                     (loader  #+loader)
                      (graphs  '#$(match references-graphs
                                    (((graph-files . _) ...) graph-files)
                                    (_ #f)))
@@ -249,8 +250,6 @@ substitutable."
                                   #:memory-size #$memory-size
                                   #:make-disk-image? #$make-disk-image?
                                   #:single-file-output? #$single-file-output?
-                                  #:target-arm32? #$(check target-arm32?)
-                                  #:target-aarch64? #$(check target-aarch64?)
                                   #:disk-image-format #$disk-image-format
                                   #:disk-image-size size
                                   #:references-graphs graphs))))))
@@ -258,7 +257,7 @@ substitutable."
     (gexp->derivation name builder
                       ;; TODO: Require the "kvm" feature.
                       #:system system
-                      #:target target
+                      #:target #f             ;EXP is always executed natively
                       #:env-vars env-vars
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs
@@ -430,7 +429,6 @@ system that is passed to 'populate-root-file-system'."
                                      #:bootloader-installer
                                      #$(bootloader-installer bootloader)))))))
    #:system system
-   #:target target
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
    #:disk-image-format disk-image-format
