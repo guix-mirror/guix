@@ -41,16 +41,6 @@
 ;;;
 ;;; Code:
 
-;; XXX: Surely this belongs in (guix profiles), but perhaps we need high-level
-;; <profile> objects so one can specify hooks, etc.?
-(define-gexp-compiler (compile-manifest (manifest
-                                         (@@ (guix profiles) <manifest>))
-                                        system target)
-  "Lower MANIFEST as a profile."
-  (profile-derivation manifest
-                      #:system system
-                      #:target target))
-
 (define %base-packages/hurd
   (list hurd bash coreutils file findutils grep sed
         guile-3.0 guile-colorized guile-readline
@@ -71,8 +61,10 @@
                          (manifest-entry-dependencies entry)))))
 
   (define system-profile
-    (map-manifest-entries cross-built-entry
-                          (packages->manifest %base-packages/hurd)))
+    (profile
+     (content
+      (map-manifest-entries cross-built-entry
+                            (packages->manifest %base-packages/hurd)))))
 
   (define grub.cfg
     (let ((hurd (cross-built hurd))
