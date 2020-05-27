@@ -862,7 +862,8 @@ it is mostly useful when FULL-BOOT?  is true."
               #+@(operating-system-kernel-arguments os "/dev/vda1")))
 
     (define qemu-exec
-      #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))
+      #~(list #+(file-append qemu "/bin/"
+                             (qemu-command (or target system)))
               #$@(if full-boot?
                      #~()
                      #~("-kernel" #$(operating-system-kernel-file os)
@@ -879,7 +880,7 @@ it is mostly useful when FULL-BOOT?  is true."
       #~(call-with-output-file #$output
           (lambda (port)
             (format port "#!~a~% exec ~a \"$@\"~%"
-                    #$(file-append bash "/bin/sh")
+                    #+(file-append bash "/bin/sh")
                     (string-join #$qemu-exec " "))
             (chmod port #o555))))
 
