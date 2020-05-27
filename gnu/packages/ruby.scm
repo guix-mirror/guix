@@ -1799,6 +1799,41 @@ and inspect the environment.")
     (home-page "https://github.com/e2/nenv")
     (license license:expat)))
 
+(define-public ruby-ptools
+  (package
+    (name "ruby-ptools")
+    (version "1.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ptools" version))
+              (sha256
+               (base32
+                "1jb1h1nsk9zwykpniw8filbsk26kjsdlpk5wz6w0zyamcd41h87j"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-/bin/ls
+                    (lambda _
+                      (substitute* "test/test_binary.rb"
+                        (("/bin/ls")
+                         (which "ls")))
+                      #t))
+                   (add-before 'install 'create-gem
+                     (lambda _
+                       ;; Do not attempt to sign the gem.
+                       (substitute* "Rakefile"
+                         (("spec\\.signing_key = .*")
+                          ""))
+                       (invoke "rake" "gem:create"))))))
+    (synopsis "Extra methods for Ruby's @code{File} class")
+    (description
+     "The @dfn{ptools} (power tools) library extends Ruby's core @code{File}
+class with many additional methods modelled after common POSIX tools, such as
+@code{File.which} for finding executables, @code{File.tail} to print the last
+lines of a file, @code{File.wc} to count words, and so on.")
+    (home-page "https://github.com/djberg96/ptools")
+    (license license:artistic2.0)))
+
 (define-public ruby-permutation
   (package
     (name "ruby-permutation")
