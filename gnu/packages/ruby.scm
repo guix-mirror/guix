@@ -2265,13 +2265,13 @@ two hashes.")
 (define-public ruby-rubygems-tasks
   (package
     (name "ruby-rubygems-tasks")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rubygems-tasks" version))
               (sha256
                (base32
-                "16cp45qlbcglnqdm4f1vj3diywdz4v024saqpgrz6palf0wmgz2j"))))
+                "1x3sz3n2dlknd3v7w1mrq6f0ag6pwzhjvg7z29p75w3p42ma1gbx"))))
     (build-system ruby-build-system)
     ;; Tests need Internet access.
     (arguments `(#:tests? #f))
