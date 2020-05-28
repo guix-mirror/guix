@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -793,47 +794,44 @@ Shell (pdksh).")
 (define-public oil
   (package
     (name "oil")
-    (version "0.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.oilshell.org/download/oil-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "12c9s462879adb6mwd3fqafk0dnqsm16s18rhym6cmzfzy8v8zm3"))))
+    ;; https://www.oilshell.org/blog/2020/04/release-0.8.pre4.html#comment-on-version-numbering
+    (version "0.8.pre5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.oilshell.org/download/oil-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "02llxx10izxpv1y32qn8k6r0y7al01rzxjirc8h6x8nd9kiaqknl"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; the tests are not distributed in the tarballs
-       #:strip-binaries? #f ; the binaries cannot be stripped
+     `(#:strip-binaries? #f             ; strip breaks the binary
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-compiler-invocation
-           (lambda _
-             (substitute* "configure"
-               ((" cc ") " gcc "))
-             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CC" "gcc")
-               ;; The configure script doesn't recognize CONFIG_SHELL.
-               (setenv "CONFIG_SHELL" (which "sh"))
+               (substitute* "configure"
+                 ((" cc ") " $CC "))
                (invoke "./configure" (string-append "--prefix=" out)
                        "--with-readline"))))
-         (add-before 'install 'make-destination
+         (replace 'check
+           ;; The tests are not distributed in the tarballs but upstream
+           ;; recommends running this smoke test.
+           ;; https://github.com/oilshell/oil/blob/release/0.8.pre5/INSTALL.txt#L38-L48
            (lambda _
-             ;; The build scripts don't create the destination directory.
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin")))))))
+             (let* ((oil "_bin/oil.ovm"))
+               (invoke/quiet oil "osh" "-c" "echo hi")
+               (invoke/quiet oil "osh" "-n" "configure")))))))
     (inputs
      `(("readline" ,readline)))
-    (synopsis "Bash-compatible Unix shell")
-    (description "Oil is a Unix / POSIX shell, compatible with Bash.  It
-implements the Oil language, which is a new shell language to which Bash can be
-automatically translated.  The Oil language is a superset of Bash.  It also
-implements the OSH language, a statically-parseable language based on Bash as it
-is commonly written.")
-    (home-page "https://www.oilshell.org/")
-    (license (list psfl ; The Oil sources include a patched Python 2 source tree
+    (home-page "https://www.oilshell.org")
+    (synopsis "Programming language and Bash-compatible Unix shell")
+    (description "Oil is a programming language with automatic translation for
+Bash.  It includes osh, a Unix/POSIX shell that runs unmodified Bash
+scripts.")
+    (license (list psfl                 ; tarball includes python2.7
                    asl2.0))))
 
 (define-public oil-shell
