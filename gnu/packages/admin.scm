@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1455,6 +1456,53 @@ commands and their arguments.")
 
     ;; See <http://www.sudo.ws/sudo/license.html>.
     (license license:x11)))
+
+(define-public opendoas
+  (package
+    (name "opendoas")
+    (version "6.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Duncaen/OpenDoas.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07kkc5729p654jrgfsc8zyhiwicgmq38yacmwfvay2b3gmy728zn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; The configure script doesn't accept most of the default flags.
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             ;; The configure script can only be told which compiler to use
+             ;; through environment variables.
+             (setenv "CC" ,(cc-for-target))
+             (apply invoke "./configure" configure-flags)))
+         (add-before 'install 'fix-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "bsd.prog.mk"
+               (("^\tchown.*$") ""))
+             #t)))
+       #:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             (string-append "--target=" (or ,(%current-target-system) ""))
+             "--with-timestamp")
+       ;; Compiler choice is not carried over from the configure script.
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:tests? #f))                 ; no test suite
+    (native-inputs
+     `(("bison" ,bison)))
+    (home-page "https://github.com/Duncaen/OpenDoas")
+    (synopsis "Portable version of OpenBSD's doas command")
+    (description "Doas is a minimal replacement for the venerable sudo.  It was
+initially written by Ted Unangst of the OpenBSD project to provide 95% of the
+features of sudo with a fraction of the codebase.")
+    (license (list license:bsd-3        ; libbsd/*
+                   license:isc))))      ; everything else
 
 (define-public wpa-supplicant-minimal
   (package
