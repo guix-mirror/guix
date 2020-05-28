@@ -1118,7 +1118,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
 
     (generate-config-file bootloader-conf (list entry)
                           #:old-entries old-entries
-                          #:btrfs-subvolume-file-name
+                          #:store-directory-prefix
 			  (btrfs-store-subvolume-file-name file-systems))))
 
 (define* (operating-system-boot-parameters os root-device

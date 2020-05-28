@@ -58,8 +58,8 @@
 ;;;
 ;;; Code:
 
-(define* (normalize-file file mount-point btrfs-subvolume-file-name)
-  "Strip MOUNT-POINT and prepend BTRFS-SUBVOLUME-FILE-NAME to FILE, a
+(define* (normalize-file file mount-point store-directory-prefix)
+  "Strip MOUNT-POINT and prepend STORE-DIRECTORY-PREFIX, if any, to FILE, a
 G-expression or other lowerable object denoting a file name."
 
   (define (strip-mount-point mount-point file)
@@ -72,13 +72,13 @@ G-expression or other lowerable object denoting a file name."
                     file)))
         file))
 
-  (define (prepend-btrfs-subvolume-file-name btrfs-subvolume-file-name file)
-    (if btrfs-subvolume-file-name
-        #~(string-append #$btrfs-subvolume-file-name #$file)
+  (define (prepend-store-directory-prefix store-directory-prefix file)
+    (if store-directory-prefix
+        #~(string-append #$store-directory-prefix #$file)
         file))
 
-  (prepend-btrfs-subvolume-file-name btrfs-subvolume-file-name
-                                     (strip-mount-point mount-point file)))
+  (prepend-store-directory-prefix store-directory-prefix
+                                  (strip-mount-point mount-point file)))
 
 
 
@@ -135,14 +135,14 @@ file with the resolution provided in CONFIG."
            (_ #f)))))
 
 (define* (eye-candy config store-device store-mount-point
-                    #:key btrfs-store-subvolume-file-name system port)
+                    #:key store-directory-prefix system port)
   "Return a gexp that writes to PORT (a port-valued gexp) the 'grub.cfg' part
 concerned with graphics mode, background images, colors, and all that.
 STORE-DEVICE designates the device holding the store, and STORE-MOUNT-POINT is
 its mount point; these are used to determine where the background image and
 fonts must be searched for.  SYSTEM must be the target system string---e.g.,
-\"x86_64-linux\".  BTRFS-STORE-SUBVOLUME-FILE-NAME is the file name of the
-Btrfs subvolume, to be prepended to any store path, if any."
+\"x86_64-linux\".  STORE-DIRECTORY-PREFIX is a directory prefix to prepend to
+any store file name."
   (define setup-gfxterm-body
     (let ((gfxmode
            (or (and-let* ((theme (bootloader-configuration-theme config))
@@ -181,12 +181,12 @@ fi~%" #+font-file)
   (define font-file
     (normalize-file (file-append grub "/share/grub/unicode.pf2")
                     store-mount-point
-                    btrfs-store-subvolume-file-name))
+                    store-directory-prefix))
 
   (define image
     (normalize-file (grub-background-image config)
                     store-mount-point
-                    btrfs-store-subvolume-file-name))
+                    store-directory-prefix))
 
   (and image
        #~(format #$port "
@@ -320,13 +320,13 @@ code."
                                   #:key
                                   (system (%current-system))
                                   (old-entries '())
-                                  btrfs-subvolume-file-name)
+                                  store-directory-prefix)
   "Return the GRUB configuration file corresponding to CONFIG, a
 <bootloader-configuration> object, and where the store is available at
-STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list
-of menu entries corresponding to old generations of the system.
-BTRFS-SUBVOLUME-FILE-NAME may be used to specify on which subvolume a
-Btrfs root file system resides."
+STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
+entries corresponding to old generations of the system.
+STORE-DIRECTORY-PREFIX may be used to specify a store prefix, as is required
+when booting a root file system on a Btrfs subvolume."
   (define all-entries
     (append entries (bootloader-configuration-menu-entries config)))
   (define (menu-entry->gexp entry)
@@ -336,17 +336,14 @@ Btrfs root file system resides."
            (arguments (menu-entry-linux-arguments entry))
            (kernel (normalize-file (menu-entry-linux entry)
                                    device-mount-point
-                                   btrfs-subvolume-file-name))
+                                   store-directory-prefix))
            (initrd (normalize-file (menu-entry-initrd entry)
                                    device-mount-point
-                                   btrfs-subvolume-file-name)))
+                                   store-directory-prefix)))
       ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
       ;; Use the right file names for KERNEL and INITRD in case
       ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
       ;; separate partition.
-
-      ;; When BTRFS-SUBVOLUME-FILE-NAME is defined, prepend it the kernel and
-      ;; initrd paths, to allow booting from a Btrfs subvolume.
       #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
@@ -360,7 +357,7 @@ Btrfs root file system resides."
     (eye-candy config
                (menu-entry-device (first all-entries))
                (menu-entry-device-mount-point (first all-entries))
-               #:btrfs-store-subvolume-file-name btrfs-subvolume-file-name
+               #:store-directory-prefix store-directory-prefix
                #:system system
                #:port #~port))
 
@@ -371,8 +368,8 @@ Btrfs root file system resides."
            (keymap* (and layout
                          (keyboard-layout-file layout #:grub grub)))
            (keymap (and keymap*
-                        (if btrfs-subvolume-file-name
-                            #~(string-append #$btrfs-subvolume-file-name
+                        (if store-directory-prefix
+                            #~(string-append #$store-directory-prefix
                                              #$keymap*)
                             keymap*))))
       #~(when #$keymap
