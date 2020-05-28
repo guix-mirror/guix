@@ -4850,15 +4850,6 @@ NetSurf project.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'include-PERL5LIB-in-wrapper
-           (lambda _
-             (substitute* "IkiWiki/Wrapper.pm"
-               (("^@wrapper\\_hooks")
-                (string-append
-                 "@wrapper_hooks\n"
-                 "        addenv(\"PERL5LIB\", \""
-                 (getenv "PERL5LIB")
-                 "\");")))))
          (add-after 'patch-source-shebangs 'patch-Makefiles
            (lambda _
              (substitute* "Makefile.PL"
