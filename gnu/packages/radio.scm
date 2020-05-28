@@ -1018,11 +1018,8 @@ gain and standing wave ratio.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               "BLADERF=no"))
+       (list (string-append "CC=" ,(cc-for-target))
+             "BLADERF=no")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

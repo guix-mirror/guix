@@ -1222,11 +1222,8 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let* ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "prefix=" (assoc-ref %outputs "out"))))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
@@ -3377,12 +3374,9 @@ interface.")
                        #t))))
        #:test-target "verify"
        #:make-flags (let ((out     (assoc-ref %outputs "out"))
-                          (regdb   (assoc-ref %build-inputs "wireless-regdb"))
-                          (target ,(%current-target-system)))
+                          (regdb   (assoc-ref %build-inputs "wireless-regdb")))
                       (list
-                       (string-append
-                        "CC=" (if target
-                                  (string-append target "-gcc") "gcc"))
+                       (string-append "CC=" ,(cc-for-target))
                        "V=1"
 
                        ;; Disable signature-checking on 'regulatory.bin'.
@@ -7040,12 +7034,8 @@ system boot process.")
      `(#:tests? #f ; there are no tests
        #:make-flags
        (let ((prefix-dir (lambda (var dir)
-                           (string-append var "=" %output "/" dir)))
-             (target ,(%current-target-system)))
-         (list (string-append "CC="
-                              (if target
-                                  (string-append target "-gcc")
-                                  "gcc"))
+                           (string-append var "=" %output "/" dir))))
+         (list (string-append "CC=" ,(cc-for-target))
                (prefix-dir "SBINDIR" "sbin/")
                (prefix-dir "ETCDIR" "etc/")
                (prefix-dir "MANDIR" "share/man/")))

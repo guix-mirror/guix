@@ -4886,11 +4886,7 @@ and reverb.")
     (arguments
      `(#:make-flags
        (list
-         (string-append "CC="
-                        (if ,(%current-target-system)
-                          (string-append (assoc-ref %build-inputs "cross-gcc")
-                                         "/bin/" ,(%current-target-system) "-gcc")
-                          "gcc"))
+         (string-append "CC=" ,(cc-for-target))
          "BUILD_MODULES=\"lv2 ladspa jack\"" "VST_UI=0"
          (string-append "PREFIX=" (assoc-ref %outputs "out"))
          (string-append "ETC_PATH=" (assoc-ref %outputs "out") "/etc"))
