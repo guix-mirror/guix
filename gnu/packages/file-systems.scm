@@ -491,8 +491,9 @@ network.  LIBNFS offers three different APIs, for different use :
                    ))))
 
 (define-public apfs-fuse
-  (let ((commit "c7036a3030d128bcecefc1eabc47c039ccfdcec9")
-        (revision "0"))
+  ;; Later versions require FUSE 3.
+  (let ((commit "7b89418e8dc27103d3c4f8fa348086ffcd634c17")
+        (revision "1"))
     (package
       (name "apfs-fuse")
       (version (git-version "0.0.0" revision commit))
@@ -504,11 +505,13 @@ network.  LIBNFS offers three different APIs, for different use :
                        (commit commit)))
          (sha256
           (base32
-           "1akd4cx1f9cyq6sfk9ybv4chhjwjlnqi8ic4z5ajnd5x0g76nz3r"))
+           "0x2siy3cmnm9wsdfazg3xc8r3kbg73gijmnn1vjw33pp71ckylxr"))
          (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; No test suite
+         #:configure-flags
+         '("-DUSE_FUSE3=OFF") ; FUSE 3 is not packaged yet.
          #:phases
          (modify-phases %standard-phases
            ;; No 'install' target in CMakeLists.txt
@@ -523,6 +526,7 @@ network.  LIBNFS offers three different APIs, for different use :
                  (install-file "apfs-dump-quick" bin)
                  (install-file "apfs-fuse" bin)
                  (install-file "libapfs.a" lib)
+                 (install-file "../source/README.md" doc)
                  #t))))))
       (inputs
        `(("bzip2" ,bzip2)
