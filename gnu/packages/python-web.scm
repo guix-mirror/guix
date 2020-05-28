@@ -2371,13 +2371,13 @@ applications.")
 (define-public python-flask-sqlalchemy
   (package
     (name "python-flask-sqlalchemy")
-    (version "2.4.0")
+    (version "2.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask-SQLAlchemy" version))
               (sha256
                (base32
-                "0nnllf0ddbh9jlhngnyjj98lbxgxr1csaplllx0caw98syq0k5hc"))))
+                "1ryb2y5gvpcglrmhk25hwzpi8a5q69m33gfqwxdcl67gjwdggnbc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
