@@ -73,6 +73,7 @@
               (uri (string-append
                     "https://github.com/transmission/transmission-releases/raw/"
                     "master/transmission-" version ".tar.xz"))
+              (patches (search-patches "transmission-CVE-2018-10756.patch"))
               (sha256
                (base32
                 "0zbbj7rlm6m7vb64x68a64cwmijhsrwx9l63hbwqs7zr9742qi1m"))))
