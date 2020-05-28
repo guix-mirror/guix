@@ -9080,6 +9080,27 @@ known loosely as deftheme.  Many mode-specific customizations are included.")
 by zenburn, sinburn and similar themes, but slowly diverging from them.")
       (license license:gpl3+))))
 
+(define-public emacs-dracula-theme
+  (package
+    (name "emacs-dracula-theme")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dracula/emacs")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15y2djc5jljlvls1x9kp50m1kp0dcksmyixafsyimj66xpq9ngh0"))))
+    (build-system emacs-build-system)
+    (home-page "https://draculatheme.com/")
+    (synopsis "Dark theme for Emacs")
+    (description
+     "Dracula is a dark color theme for many editors, shells and more.  This
+package provides the Emacs theme.")
+    (license license:expat)))
+
 (define-public emacs-auto-complete
   (package
     (name "emacs-auto-complete")
