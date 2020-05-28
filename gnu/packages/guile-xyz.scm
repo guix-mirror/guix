@@ -3646,3 +3646,40 @@ operations on graphs.  This library implements some basic functionalities,
 such as parsing and producing turtle and nquads syntax, as well as
 manipulating graphs and datasets.")
     (license license:gpl3+)))
+
+(define-public guile-jsonld
+  (package
+    (name "guile-jsonld")
+    (version "1.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/guile-jsonld")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0zfn3nwlz6xzip1j8xbj768dc299r037cfc81bk6kwl9xhzkjbrg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)); require network
+    (propagated-inputs
+     `(("guile-gnutls" ,gnutls)
+       ("guile-json" ,guile-json-3)
+       ("guile-rdf" ,guile-rdf)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://framagit.org/tyreunom/guile-jsonld")
+    (synopsis "Guile implementation of the JsonLD API specification")
+    (description "Guile JsonLD is an implementation of the JsonLD (Json for
+Linked Data) API defined by the W3C for GNU Guile.  It allows you to express links
+between data, in a way that is very similar to WikiData or RDF for instance.
+An object can have relations (in the form of an IRI) that relates it to one or
+more objects or strings, represented by a Json object or an IRI.")
+    (license license:gpl3+)))
