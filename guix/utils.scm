@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +78,8 @@
             target-aarch64?
             target-arm?
             target-64bit?
+            cc-for-target
+
             version-compare
             version>?
             version>=?
@@ -505,6 +507,11 @@ a character other than '@'."
 (define* (target-64bit? #:optional (system (or (%current-target-system)
                                                (%current-system))))
   (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "ppc64")))
+
+(define* (cc-for-target #:optional (target (%current-target-system)))
+  (if target
+      (string-append target "-gcc")
+      "gcc"))
 
 (define version-compare
   (let ((strverscmp
