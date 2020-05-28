@@ -103,7 +103,7 @@ readers and is needed to communicate with such devices through the
 (define-public eid-mw
   (package
     (name "eid-mw")
-    (version "4.4.23")
+    (version "4.4.27")
     (source
      (origin
        (method git-fetch)
@@ -112,7 +112,7 @@ readers and is needed to communicate with such devices through the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kf147zxsp5ilghr46hjxa2nsikhv8198n04q81qzn9zln69av04"))))
+        (base32 "17lw8iwp7h5cs3db80sysr84ffi333cf2vrhncs9l6hy6glfl2v1"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -139,7 +139,7 @@ readers and is needed to communicate with such devices through the
              ;; Patch it to just return the real version number directly.
              (substitute* "scripts/build-aux/genver.sh"
                (("/bin/sh") (which "sh"))
-               (("^(GITDESC=).*" match) (string-append match ,version "\n")))
+               (("^(GITDESC=).*" _ match) (string-append match ,version "\n")))
              (invoke "sh" "./bootstrap.sh"))))))
     (synopsis "Belgian eID Middleware")
     (description "The Belgian eID Middleware is required to authenticate with
