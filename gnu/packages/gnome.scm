@@ -9911,7 +9911,7 @@ integrate seamlessly with the GNOME desktop.")
 (define-public gnome-boxes
   (package
     (name "gnome-boxes")
-    (version "3.35.91")
+    (version "3.36.4")
     (source
      (origin
        (method url-fetch)
@@ -9919,8 +9919,7 @@ integrate seamlessly with the GNOME desktop.")
                            (version-major+minor version) "/"
                            "gnome-boxes-" version ".tar.xz"))
        (sha256
-        (base32
-         "0l96spz6pc8q4l5p9a58cc0kgvdr7pbc89hy6ixn72k5pl3s7fxj"))))
+        (base32 "16l0mq2ydmywcdya1795mcy8syg4zkmz9ws3pzjcqv5y4m7cjj03"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
