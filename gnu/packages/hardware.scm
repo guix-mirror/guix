@@ -387,7 +387,7 @@ applications.")
 (define-public usbguard
   (package
     (name "usbguard")
-    (version "0.7.6")
+    (version "0.7.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -395,7 +395,7 @@ applications.")
                     version "/usbguard-" version ".tar.gz"))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0gzhs8s4aka86mkcjib36z54si939ki4bmk46p6v8kln1fixad3j"))))
+               (base32 "1il5immqfxh2cj8wn1bfk7l42inflzgjf07yqprpz7r3lalbxc25"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
