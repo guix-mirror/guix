@@ -62,13 +62,11 @@ line syntax.")
     (version "1.16")
     (source (origin
              (method url-fetch)
-             (uri (list (string-append "http://rpm5.org/files/popt/popt-"
-                                       version ".tar.gz")
-                        ;; The rpm5.org domain does not resolve since 2019-06-13,
-                        ;; so fallback to Debians copy.
-                        (string-append "https://deb.debian.org/debian/pool/main"
-                                       "/p/popt/popt_" version ".orig.tar.gz")))
-             ;; Ensure the file name stays the same.
+             ;; The original rpm5.org domain is not accessible since
+             ;; 2019-06-13, so use Debians copy of the tarball.
+             (uri (string-append "https://deb.debian.org/debian/pool/main"
+                                 "/p/popt/popt_" version ".orig.tar.gz"))
+             ;; Ensure the file name stays the same to prevent rebuilds.
              (file-name (string-append "popt-" version ".tar.gz"))
              (sha256
               (base32
