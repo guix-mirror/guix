@@ -236,15 +236,14 @@ whose behaviour is inconsistent across *NIX flavours.")
 (define-public libhx
   (package
     (name "libhx")
-    (version "3.24")
+    (version "3.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/libhx/libHX/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32
-         "0i8v2464p830c15myknvvs6bhxaf663lrqgga95l94ygfynkw6x5"))))
+        (base32 "12avn16f8aqb0cq6jplz0sv7rh6f07m85dwc8dasnnwsvijwbpbj"))))
     (build-system gnu-build-system)
     (home-page "http://libhx.sourceforge.net")
     (synopsis "C library with common data structures and functions")
