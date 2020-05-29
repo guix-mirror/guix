@@ -57,6 +57,18 @@
           #f
           (apply throw args)))))
 
+(define (requires-guile-2.2? source)
+  "Return true if SOURCE uses Guile 2.2 for the shebang of
+'compute-guix-derivation'."
+  (define content
+    (call-with-input-file (string-append source "/" %self-build-file)
+      read-string))
+
+  ;; The 'find-best-packages-by-name' call is inserted by %BUG-41214-PATCH.
+  (string-contains content
+                   (object->string
+                    '(find-best-packages-by-name "guile" "2.2"))))
+
 (define (guile-2.2.4)
   (module-ref (resolve-interface '(gnu packages guile))
               'guile-2.2.4))
@@ -66,7 +78,8 @@
   ;; about specific Guile versions that old Guix revisions might need to use
   ;; just to be able to build and run the trampoline in %SELF-BUILD-FILE.  See
   ;; <https://bugs.gnu.org/37506>
-  `((,syscalls-reexports-local-variables? . ,guile-2.2.4)))
+  `((,syscalls-reexports-local-variables? . ,guile-2.2.4)
+    (,requires-guile-2.2? . ,guile-2.2.4)))
 
 
 ;;;
@@ -143,6 +156,7 @@ corresponds to the given Guix COMMIT, a SHA1 hexadecimal string."
     (define (build-with-guile-2.2 source)
       (substitute* (string-append source "/" %self-build-file)
         (("\\(default-guile\\)")
+         ;; Note: This goes hand in hand with the 'requires-guile-2.2?' quirk.
          (object->string '(car (find-best-packages-by-name "guile" "2.2"))))
         (("\\(find-best-packages-by-name \"guile-gcrypt\" #f\\)")
          (object->string '(find-best-packages-by-name "guile2.2-gcrypt" #f))))
