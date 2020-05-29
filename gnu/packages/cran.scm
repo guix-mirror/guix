@@ -21778,3 +21778,29 @@ are flexible and explicitly encourage users to apply prior distributions that
 actually reflect their beliefs. Model fit can easily be assessed and compared
 with posterior predictive checks and leave-one-out cross-validation.")
     (license license:gpl2)))
+
+(define-public r-mstate
+  (package
+    (name "r-mstate")
+    (version "0.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mstate" version))
+       (sha256
+        (base32
+         "0qnhivbibzss8yfsg44cvbf73n4jj4i28rbdysl88g14ig5sabgv"))))
+    (properties `((upstream-name . "mstate")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-survival" ,r-survival)))
+    (home-page
+     "https://www.lumc.nl/org/bds/research/medische-statistiek/survival-analysis/")
+    (synopsis
+     "Data Preparation, Estimation and Prediction in Multi-State Models")
+    (description
+     "Contains functions for data preparation, descriptives, hazard estimation
+and prediction with Aalen-Johansen or simulation in competing risks and
+multi-state models.")
+    (license license:gpl2+)))
