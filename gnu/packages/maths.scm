@@ -1612,14 +1612,14 @@ interfaces.")
 (define-public clp
   (package
     (name "clp")
-    (version "1.17.1")
+    (version "1.17.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.coin-or.org/download/source/"
                                   "Clp/Clp-" version ".tgz"))
               (sha256
                (base32
-                "1wdg820g3iikf9344ijwsc8sy6c0m6im42bzzizm6rlmkvnmxhk9"))
+                "0ap1f0lxppa6pnbc4bg7ih7a96avwaki482nig8w5fr3vg9wvkzr"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
