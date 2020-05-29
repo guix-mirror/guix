@@ -65,9 +65,17 @@
 ;;; Images definitions.
 ;;;
 
+;; This is the offset before the first partition. GRUB will install itself in
+;; this post-MBR gap.
+(define root-offset (* 512 2048))
+
+;; Generic root partition label.
+(define root-label "Guix_image")
+
 (define esp-partition
   (partition
    (size (* 40 (expt 2 20)))
+   (offset root-offset)
    (label "GNU-ESP") ;cosmetic only
    ;; Use "vfat" here since this property is used when mounting.  The actual
    ;; FAT-ness is based on file system size (16 in this case).
@@ -78,7 +86,7 @@
 (define root-partition
   (partition
    (size 'guess)
-   (label "Guix_image")
+   (label root-label)
    (file-system "ext4")
    (flags '(boot))
    (initializer (gexp initialize-root-partition))))
