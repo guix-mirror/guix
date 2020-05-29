@@ -2495,7 +2495,7 @@ interface for Ruby programs.")
 (define-public ruby-fast-gettext
   (package
     (name "ruby-fast-gettext")
-    (version "2.0.2")
+    (version "2.0.3")
     (home-page "https://github.com/grosser/fast_gettext")
     (source (origin
               (method git-fetch)
@@ -2504,7 +2504,7 @@ interface for Ruby programs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rd48fp89k1sclgn2v26br2glwl3iv7z72mizzzmkdmqalqfn1sa"))))
+                "1dg14apq5sfjshhcq0idphhs7aq9ikzswhqmn689p1h76mxqr1v6"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
