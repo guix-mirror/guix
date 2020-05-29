@@ -3853,7 +3853,7 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
 (define-public ruby-hocon
   (package
     (name "ruby-hocon")
-    (version "1.3.0")
+    (version "1.3.1")
     (home-page "https://github.com/puppetlabs/ruby-hocon")
     (source (origin
               (method git-fetch)
@@ -3861,7 +3861,7 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wz4cswjg3gs1y1bar7j4j88wjimfa9zhvy51jyi177i5dzax416"))))
+                "172hh2zr0n9nnszv0qvlgwszgkrq84yahrg053m68asy79zpmbqr"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
