@@ -324,20 +324,20 @@ over a different origin than that of the web application.")
 (define-public python-furl
   (package
     (name "python-furl")
-    (version "0.5.6")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "furl" version))
         (sha256
           (base32
-            "0lzpfpm686hvz3sr1mcrnd1b3lgmnw8v59gb43wfi98r3b671pqc"))))
+            "1v2lakx03d5w8954a39ki44xv5mllnq0a0avhxykv9hrzg0yvjpx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-orderedmultidict" ,python-orderedmultidict)))
     (native-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     `(("python-flake8" ,python-flake8)))
     (home-page "https://github.com/gruns/furl")
     (synopsis "URL manipulation in Python")
     (description "Furl provides an easy-to-use alternative to the
