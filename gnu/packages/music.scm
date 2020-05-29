@@ -5589,3 +5589,66 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
 It is provided as an LV2 plugin and as a standalone Jack application.")
     (home-page "https://github.com/pdesaulniers/wolf-spectrum")
     (license license:gpl3)))
+
+(define-public shiru-lv2
+  (let ((commit "08853f99140012234649e67e5647906fda74f6cc")
+        (revision "1"))
+    (package
+      (name "shiru-lv2")
+      (version (git-version "0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/linuxmao-org/shiru-plugins.git")
+                 (commit commit)
+                 ;; Bundles a specific commit of the DISTRHO plugin framework.
+                 (recursive? #t)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "00rf6im3rhg98h60sgl1r2s37za5vr5h14pybwi07h8zbc8mi6fm"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; no check target
+         #:make-flags (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)            ;no configure target
+           (replace 'install              ;no install target
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (lv2 (string-append out "/lib/lv2")))
+                 ;; Install LV2.
+                 (for-each
+                  (lambda (file)
+                    (copy-recursively file
+                                      (string-append lv2 "/" (basename file))))
+                  (find-files "bin" "\\.lv2$" #:directories? #t))
+                 ;; Install executables.
+                 (for-each
+                   (lambda (file)
+                     (install-file file bin))
+                   (find-files "bin"
+                               (lambda (name stat)
+                                 (and
+                                   (equal? (dirname name) "bin")
+                                   (not (string-suffix? ".so" name))
+                                   (not (string-suffix? ".lv2" name))))))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+        `(("cairo", cairo)
+          ("glu", glu)
+          ("jack", jack-1)
+          ("lv2", lv2)
+          ("mesa", mesa)
+          ("pango", pango)))
+      (synopsis "Audio plugin collection")
+      (description "Shiru plugins is a collection of audio plugins created
+  by Shiru, ported to LV2 by the Linux MAO project using the DISTRHO plugin
+  framework.")
+      (home-page "http://shiru.untergrund.net/software.shtml")
+      (license license:wtfpl2))))
