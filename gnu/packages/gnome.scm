@@ -2174,8 +2174,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                 "023gx8rj51njn8fsb6ma5kz1irjpxi4js0n8rwy22inc4ysldd8r"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:tests? #f ; needs X, GL, and software rendering
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-docbook
            (lambda* (#:key inputs #:allow-other-keys)
@@ -2185,18 +2184,27 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                "/xml/xsl/docbook-xsl-"
                                ,(package-version docbook-xsl)
                                "/manpages/docbook.xsl")))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
              #t)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xml" ,docbook-xml-4.2)
        ("docbook-xsl" ,docbook-xsl)
        ("python" ,python-2)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://glade.gnome.org")
     (synopsis "GTK+ rapid application development tool")
     (description "Glade is a rapid application development (RAD) tool to
