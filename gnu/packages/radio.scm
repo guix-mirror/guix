@@ -203,7 +203,15 @@ memory contents between them.")
      `(("libpng" ,libpng)
        ("libsndfile" ,libsndfile)))
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (list
+        (string-append "CC="
+                       (if ,(%current-target-system)
+                           (string-append (assoc-ref %build-inputs "cross-gcc")
+                                          "/bin/" ,(%current-target-system) "-gcc")
+                           "gcc"))
+        (string-append "PREFIX=" %output)
+        (string-append "RPM_BUILD_ROOT=" %output))
        #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
