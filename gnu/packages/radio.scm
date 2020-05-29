@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
@@ -192,7 +192,7 @@ memory contents between them.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/csete/aptdec")
+             (url "https://github.com/Xerbo/aptdec")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -213,7 +213,7 @@ memory contents between them.")
              (let ((out (assoc-ref outputs "out")))
                (install-file "atpdec" (string-append out "/bin")))
              #t)))))
-    (home-page "https://github.com/csete/aptdec")
+    (home-page "https://github.com/Xerbo/aptdec")
     (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
     (description "Aptdec decodes Automatic Picture Transmission (APT) images.
 These are medium resolution images of the Earth transmitted by, among other
