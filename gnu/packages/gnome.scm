@@ -10161,7 +10161,8 @@ your operating-system definition:
              (url "https://github.com/libratbag/piper.git")
              (commit version)))
        (sha256
-        (base32 "00vrcsbsv2477l1ncpyzc61lhxgac84dsgr3sjs8qxw3nh1gaasv"))))
+        (base32 "00vrcsbsv2477l1ncpyzc61lhxgac84dsgr3sjs8qxw3nh1gaasv"))
+       (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
