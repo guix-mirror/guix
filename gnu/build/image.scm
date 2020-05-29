@@ -148,7 +148,7 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
                                    #:key
                                    grub-efi
                                    #:allow-other-keys)
-  "Install in ROOT directory, an EFI loader using BOOTLOADER-PACKAGE."
+  "Install in ROOT directory, an EFI loader using GRUB-EFI."
   (install-efi-loader grub-efi root))
 
 (define* (initialize-root-partition root
