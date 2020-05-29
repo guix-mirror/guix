@@ -8350,7 +8350,7 @@ news items, openrc and runscripts.")
 (define-public emacs-evil
   (package
     (name "emacs-evil")
-    (version "1.2.14")
+    (version "1.14.0")
     (source
      (origin
        (method git-fetch)
@@ -8360,7 +8360,7 @@ news items, openrc and runscripts.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
+         "17xrn3s6a4afmls8fw8nnxa1jq9dmj2qqrxa2vngh50hxpz8840p"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
