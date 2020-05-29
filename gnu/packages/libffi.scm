@@ -4,7 +4,7 @@
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <ricardo.wurmus@mdc-berlin.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019, 2020 Marius Bakke <marius@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -28,6 +28,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -182,17 +183,60 @@ project.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.10.0")
+    (version "1.12.2")
     (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "ffi" version))
+              ;; Pull from git because the RubyGems release bundles LibFFI,
+              ;; and comes with a gemspec that makes it difficult to unbundle.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ffi/ffi")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0j8pzj8raxbir5w5k6s7a042sb5k02pg0f8s4na1r5lan901j00p"))))
+                "1cvqsbjr2gfjgqggq9kdx90qhhzr7qkyr9wmxdsfsik6cnxnnpmd"))))
     (build-system ruby-build-system)
-    ;; FIXME: Before running tests the build system attempts to build libffi
-    ;; from sources.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-depend-on-ccache
+           (lambda _
+             (substitute* "spec/ffi/fixtures/GNUmakefile"
+               (("^CCACHE := .*")
+                ""))
+             #t))
+         (replace 'replace-git-ls-files
+           (lambda _
+             ;; Do not try to execute git, or include the (un)bundled LibFFI.
+             (substitute* "ffi.gemspec"
+               (("git ls-files -z")
+                "find * -type f -print0 | sort -z")
+               (("lfs \\+?= .*")
+                "lfs = []\n"))
+             (substitute* "Rakefile"
+               (("LIBFFI_GIT_FILES = .*")
+                "LIBFFI_GIT_FILES = []\n"))
+             #t))
+         (replace 'build
+          (lambda _
+            ;; Tests depend on the native extensions, so we build it
+            ;; beforehand without going through the gem machinery.
+             (invoke "rake" "compile")
+
+             ;; XXX: Ideally we'd use "rake native gem" here to prevent the
+             ;; install phase from needlessly rebuilding everything, but that
+             ;; requires the bundled LibFFI, and the install phase can not
+             ;; deal with such gems anyway.
+             (invoke "gem" "build" "ffi.gemspec")))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (begin
+                   (setenv "MAKE" "make")
+                   (setenv "CC" "gcc")
+                   (invoke "rspec" "spec"))
+                 (format #t "test suite not run~%"))
+             #t)))))
     (native-inputs
      `(("ruby-rake-compiler" ,ruby-rake-compiler)
        ("ruby-rspec" ,ruby-rspec)

@@ -62,7 +62,7 @@
 (define-public nagios
   (package
     (name "nagios")
-    (version "4.3.4")
+    (version "4.4.6")
     ;; XXX: Nagios 4.2.x and later bundle a copy of AngularJS.
     (source (origin
               (method url-fetch)
@@ -71,7 +71,7 @@
                     version "/nagios-" version ".tar.gz"))
               (sha256
                (base32
-                "1wa4m952sb23dqi5w759adimsp21bkhp598rpq9dnhz3v497h2y9"))
+                "1x5hb97zbvkm73q53ydp1gwj8nnznm72q9c4rm6ny7phr995l3db"))
               (modules '((guix build utils)))
               (snippet
                ;; Ensure reproducibility.

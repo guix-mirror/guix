@@ -1242,7 +1242,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.1.2")
+    (version "2.1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1251,7 +1251,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pf8hjn15isf772nz8qcqja700aay8nhdwmr24djkj42c7chf96j"))))
+                "0dv6jprz2bzasvk91x2rv2pqyyvxkc72s4r6vsqw723a3kqa5bhc"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -3930,15 +3930,15 @@ other Gnaural instances, allowing synchronous sessions between many users.")
 (define-public darkice
   (package
     (name "darkice")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/darkice/darkice/"
-                                  version "/darkice-" version ".tar.gz"))
+              (uri (string-append "https://github.com/rafael2k/darkice/releases/"
+                                  "download/v" version "/darkice-"
+                                  version ".tar.gz"))
               (sha256
-               (base32 "1rlxds7ssq7nk2in4s46xws7xy9ylxsqgcz85hxjgh17lsm0y39c"))
-              (patches
-               (search-patches "darkice-workaround-fpermissive-error.patch"))))
+               (base32
+                "05yq7lggxygrkd76yiqby3msrgdn082p0qlvmzzv9xbw8hmyra76"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("lame" ,lame)
@@ -3988,7 +3988,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -3997,8 +3997,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1747w1kg8y9jbl11xi018d85dm38xk7843pz26sh0k5fdv87a10q"))))
+        (base32 "17kv2jc4jvn3sdicz3sf8dnf25wbvv7ijzkr0mm0sbrrjz6vrwz0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included

@@ -163,7 +163,7 @@ refreshed, and more.")
 (define-public colordiff
   (package
     (name "colordiff")
-    (version "1.0.18")
+    (version "1.0.19")
     (source
       (origin
         (method url-fetch)
@@ -172,8 +172,7 @@ refreshed, and more.")
                    (string-append "http://www.colordiff.org/archive/colordiff-"
                                   version ".tar.gz")))
       (sha256
-       (base32
-        "1q6n60n4b9fnzccxyxv04mxjsql4ddq17vl2c74ijvjdhpcfrkr9"))))
+       (base32 "069vzzgs7b44bmfh3ks2psrdb26s1w19gp9w4xxbgi7nhx6w3s26"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

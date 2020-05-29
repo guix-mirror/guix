@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +37,14 @@
 (define-public mc
   (package
     (name "mc")
-    (version "4.8.23")
+    (version "4.8.24")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://ftp.midnight-commander.org/mc-"
+      (uri (string-append "https://ftp.midnight-commander.org/mc-"
                           version ".tar.xz"))
       (sha256
-       (base32 "077z7phzq3m1sxyz7li77lyzv4rjmmh3wp2vy86pnc4387kpqzyx"))))
+       (base32 "0ikd2yql44p7nagmb08dmjqdwadclnvgr7ri9pmzc2s5f301r7w5"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))

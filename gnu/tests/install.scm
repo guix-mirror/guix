@@ -228,18 +228,18 @@ packages defined in installation-os."
   (mlet* %store-monad ((_      (set-grafting #f))
                        (system (current-system))
                        (target (operating-system-derivation target-os))
+                       (base-image (find-image
+                                    installation-disk-image-file-system-type))
 
                        ;; Since the installation system has no network access,
                        ;; we cheat a little bit by adding TARGET to its GC
                        ;; roots.  This way, we know 'guix system init' will
                        ;; succeed.  Also add guile-final, which is pulled in
                        ;; through provenance.drv and may not always be present.
-                       (image
+                       (image ->
                         (system-image
                          (image
-                          (inherit
-                           (find-image
-                            installation-disk-image-file-system-type))
+                          (inherit base-image)
                           (size install-size)
                           (operating-system
                             (operating-system-with-gc-roots

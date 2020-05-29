@@ -46,6 +46,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages))
 
 (define-public blind
@@ -62,12 +63,8 @@
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
-       #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       #:make-flags (list (string-append "CC=" ,(cc-for-target))
+                          (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -152,14 +149,11 @@ optimising the environment for the application in use and the task performed.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)
-               (string-append "FREETYPEINC="
-                              (assoc-ref %build-inputs "freetype")
-                              "/include/freetype2")))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output)
+             (string-append "FREETYPEINC="
+                            (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))
        #:phases
        (modify-phases %standard-phases (delete 'configure))))
     (inputs
@@ -190,11 +184,8 @@ numbers of user-defined menu items efficiently.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))))
     (inputs
      `(("libx11" ,libx11)
        ("libxkbfile" ,libxkbfile)
@@ -221,11 +212,8 @@ numbers of user-defined menu items efficiently.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)
@@ -253,11 +241,8 @@ numbers of user-defined menu items efficiently.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -298,11 +283,8 @@ drawing.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -347,14 +329,11 @@ point surf to another URI by setting its XProperties.")
                   (delete 'configure))  ; no configuration
        #:tests? #f                      ; no test suite
        #:make-flags
-       (let ((target ,(%current-target-system))
-             (pkg-config (lambda (flag)
+       (let ((pkg-config (lambda (flag)
                            (string-append
                             "$(shell pkg-config " flag " "
                             "xft fontconfig x11 libpng)"))))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
+         (list (string-append "CC=" ,(cc-for-target))
                (string-append "PREFIX=" %output)
                (string-append "INCS=-I. " (pkg-config "--cflags"))
                (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
@@ -390,11 +369,8 @@ few minutes.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))))
     (inputs
      `(("libx11" ,libx11)))
     (home-page "https://git.2f30.org/xbattmon/")
@@ -452,11 +428,8 @@ drivers capable of injecting packets in wireless networks.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -484,11 +457,8 @@ left.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -514,11 +484,8 @@ left.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -550,11 +517,8 @@ cups server to be installed.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -588,11 +552,8 @@ cups server to be installed.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -621,11 +582,8 @@ environment variable.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -666,11 +624,8 @@ initially intended to be used on musl-based Linux distributions.
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -707,11 +662,8 @@ colormap to stdout.")
       (arguments
        `(#:tests? #f                    ; no tests
          #:make-flags
-         (let ((target ,(%current-target-system)))
-           (list (string-append "CC=" (if target
-                                          (string-append target "-gcc")
-                                          "gcc"))
-                 (string-append "PREFIX=" %output)))
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "PREFIX=" %output))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure))))       ; no configure script
@@ -756,11 +708,8 @@ as -1, to be used instead of U+FFFD.
       (arguments
        `(#:test-target "test"
          #:make-flags
-         (let ((target ,(%current-target-system)))
-           (list (string-append "CC=" (if target
-                                          (string-append target "-gcc")
-                                          "gcc"))
-                 (string-append "PREFIX=" %output)))
+         (list (string-append "CC=" ,(cc-for-target))
+               (string-append "PREFIX=" %output))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)          ; no configure script
@@ -805,11 +754,8 @@ chat output in the background.")
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "PREFIX=" %output)))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script

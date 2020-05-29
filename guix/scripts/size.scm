@@ -230,8 +230,8 @@ the name of a PNG file."
 ;;;
 
 (define (show-help)
-  (display (G_ "Usage: guix size [OPTION]... PACKAGE
-Report the size of PACKAGE and its dependencies.\n"))
+  (display (G_ "Usage: guix size [OPTION]... PACKAGE|STORE-ITEM
+Report the size of the PACKAGE or STORE-ITEM, with its dependencies.\n"))
   (display (G_ "
       --substitute-urls=URLS
                          fetch substitute from URLS if they are authorized"))

@@ -31,7 +31,7 @@
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2017, 2018, 2019, 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
 ;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019, 2020 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -71,6 +71,8 @@
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 pinoaffe <pinoaffe@airmail.cc>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
+;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
+;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -316,13 +318,88 @@ For remote processes a substitute is provided, which communicates with Emacs
 on stdout instead of using a socket as the Emacsclient does.")
     (license license:gpl3+)))
 
+(define-public emacs-libgit
+  (let ((commit "0ef8b13aef011a98b7da756e4f1ce3bb18e4d55a")
+        (revision "1"))
+    (package
+      (name "emacs-libgit")
+      (version (git-version "20200515" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/magit/libegit2.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0pnjr3bg6y6354dfjjxfj0g51swzgl1fncpprah75x4k94rd369f"))
+                (patches (search-patches
+                          ;; Submitted for inclusion upstream (see:
+                          ;; https://github.com/magit/libegit2/pull/96).
+                          "emacs-libgit-use-system-libgit2.patch"))))
+      ;; Use the cmake-build-system as it provides support for cross builds.
+      (build-system cmake-build-system)
+      (arguments
+       `(#:configure-flags '("-DUSE_SYSTEM_LIBGIT2=x")
+         ;; Add the emacs-build-system byte compilation and install phases.
+         #:imported-modules (,@%cmake-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:modules ((guix build cmake-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build emacs-utils)
+                    (guix build utils))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-libgit--module-file
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (make-file-writable "libgit.el")
+                 (emacs-substitute-variables "libgit.el"
+                   ("libgit--module-file"
+                    (string-append out "/share/emacs/site-lisp/libegit2.so")))
+                 #t)))
+           (add-before 'install 'prepare-for-install
+             (lambda _
+               (let ((s (string-append "../" ,name "-" ,version "-checkout")))
+                 (copy-file "libegit2.so" (string-append s "/libegit2.so"))
+                 (chdir s)
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((install (assoc-ref emacs:%standard-phases 'install)))
+                 (install #:outputs outputs
+                          #:include (cons "\\.so$"
+                                          emacs:%default-include)))))
+           (add-after 'install 'make-autoloads
+             (assoc-ref emacs:%standard-phases 'make-autoloads))
+           (add-after 'make-autoloads 'enable-autoloads-compilation
+             (assoc-ref emacs:%standard-phases 'enable-autoloads-compilation))
+           (add-after 'enable-autoloads-compilation 'patch-el-files
+             (assoc-ref emacs:%standard-phases 'patch-el-files))
+           (add-after 'patch-el-files 'emacs-build
+             (assoc-ref emacs:%standard-phases 'build))
+           (add-after 'emacs-build 'validate-compiled-autoloads
+             (assoc-ref emacs:%standard-phases 'validate-compiled-autoloads)))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("emacs" ,emacs-no-x)
+         ("git" ,git-minimal)))
+      (inputs
+       `(("libgit2" ,libgit2)))
+      (home-page "https://github.com/magit/libegit2")
+      (synopsis "Emacs bindings for libgit2")
+      (description "This is an experimental module written in C providing
+libgit2 bindings for Emacs, intended to boost the performance of Magit.")
+      ;; The LICENSE file says GPL v2+, but libgit.el says GPL v3+.
+      (license license:gpl3+))))
+
 (define-public emacs-magit
-  ;; `magit-setup-buffer' macro introduced in c761d28d and required in
-  ;; `emacs-forge'.
-  (let ((commit "c761d28d49e5238037512b898db0ec9b40d85770"))
+  ;; There hasn't been an official release since 2018-11-16.
+  (let ((commit "d05545ec2fd7edf915eaf1b9c15c785bb08975cc"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "3" commit))
+      (version (git-version "2.90.1" "4" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -331,93 +408,76 @@ on stdout instead of using a socket as the Emacsclient does.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "16qx0404l05q1m6w7y5j8ck1z5nfmpinm00w0p2yh1hn5zzwy6dd"))
-                ;; FIXME: emacs-forge uses a function defined in this patch,
-                ;; which is newer than the current commit.
-                (patches
-                 (search-patches
-                  "emacs-magit-log-format-author-margin.patch"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    ;; Fix syntax error
-                    (substitute* "lisp/magit-extras.el"
-                      (("rev\\)\\)\\)\\)\\)\\)") "rev)))))"))
-                    #t))))
-      (build-system gnu-build-system)
-      (native-inputs `(("texinfo" ,texinfo)
-                       ("emacs" ,emacs-minimal)))
+                  "11aqyy4r9hrdi9nlypd70hn8384b6q89c7xavgv8c5q7f2g5z9qg"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:emacs ,emacs-no-x            ;module support is required
+         #:tests? #t
+         #:test-command '("make" "test")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'build-info-manual
+             (lambda _
+               (invoke "make" "info")
+               ;; Copy info files to the lisp directory, which acts as
+               ;; the root of the project for the emacs-build-system.
+               (for-each (lambda (f)
+                           (install-file f "lisp"))
+                         (find-files "Documentation" "\\.info$"))
+               (chdir "lisp")
+               #t))
+           (add-after 'build-info-manual 'set-magit-version
+             (lambda _
+               (make-file-writable "magit.el")
+               (emacs-substitute-variables "magit.el"
+                 ("magit-version" ,version))
+               #t))
+           (add-after 'set-magit-version 'patch-exec-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((perl (assoc-ref inputs "perl")))
+                 (make-file-writable "magit-sequence.el")
+                 (emacs-substitute-variables "magit-sequence.el"
+                   ("magit-perl-executable" (string-append perl "/bin/perl")))
+                 #t)))
+           (add-before 'check 'configure-git
+             (lambda _
+               ;; Otherwise some tests fail with error "unable to auto-detect
+               ;; email address".
+               (setenv "HOME" (getcwd))
+               (invoke "git" "config" "--global" "user.name" "toto")
+               (invoke "git" "config" "--global" "user.email"
+                       "toto@toto.com")))
+           (add-after 'configure-git 'disable-tramp-test
+             (lambda _
+               ;; There is an issue causing TRAMP to fail in the build
+               ;; environment.  Setting the tramp-remote-shell parameter of
+               ;; the sudo-method to the file name of the shell didn't help.
+               (chdir "..")
+               (substitute* "t/magit-tests.el"
+                 (("^\\(ert-deftest magit-toplevel:tramp.*" all)
+                  (string-append all "  (skip-unless nil)")))
+               #t))
+           (add-before 'install 'enter-lisp-directory
+             (lambda _
+               (chdir "lisp")
+               #t)))))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
       (inputs
        `(("git" ,git)
          ("perl" ,perl)))
       (propagated-inputs
-       `(("dash" ,emacs-dash)
-         ("with-editor" ,emacs-with-editor)
-         ("transient" ,emacs-transient)))
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:test-target "test"
-         #:tests? #f                   ; tests are not included in the release
-         #:make-flags
-         (list (string-append "PREFIX=" %output)
-               ;; Don't put .el files in a sub-directory.
-               (string-append "lispdir=" %output "/share/emacs/site-lisp"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'patch
-             (lambda _
-               (chmod "lisp/magit-extras.el" #o644)
-               (emacs-batch-edit-file "lisp/magit-extras.el"
-                 `(progn (progn
-                          (goto-char (point-min))
-                          (re-search-forward "(defun magit-copy-buffer-revision ()")
-                          (forward-sexp 2)
-                          (kill-sexp)
-                          (insert ,(format #f "~S"
-                                           '(if (use-region-p)
-                                                (copy-region-as-kill nil nil 'region)
-                                                (when-let ((rev (cl-case major-mode
-                                                                         ((magit-cherry-mode
-                                                                           magit-log-select-mode
-                                                                           magit-reflog-mode
-                                                                           magit-refs-mode
-                                                                           magit-revision-mode
-                                                                           magit-stash-mode
-                                                                           magit-stashes-mode)
-                                                                          (car magit-refresh-args))
-                                                                         ((magit-diff-mode magit-log-mode)
-                                                                          (let ((r (caar magit-refresh-args)))
-                                                                            (if (string-match "\\.\\.\\.?\\(.+\\)" r)
-                                                                                (match-string 1 r)
-                                                                                r)))
-                                                                         (magit-status-mode "HEAD"))))
-                                                          (when (magit-commit-p rev)
-                                                            (setq rev (magit-rev-parse rev))
-                                                            (push (list rev default-directory) magit-revision-stack)
-                                                            (kill-new (message "%s" rev))))))))
-                         (basic-save-buffer)))
-               #t))
-           (delete 'configure)
-           (add-before
-               'build 'patch-exec-paths
-             (lambda* (#:key inputs #:allow-other-keys)
-               (let ((perl (assoc-ref inputs "perl")))
-                 (make-file-writable "lisp/magit-sequence.el")
-                 (emacs-substitute-variables "lisp/magit-sequence.el"
-                   ("magit-perl-executable" (string-append perl "/bin/perl")))
-                 #t))))))
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-libgit" ,emacs-libgit)
+         ("emacs-transient" ,emacs-transient)
+         ("emacs-with-editor" ,emacs-with-editor)))
       (home-page "https://magit.vc/")
       (synopsis "Emacs interface for the Git version control system")
-      (description
-       "With Magit, you can inspect and modify your Git repositories with Emacs.
-You can review and commit the changes you have made to the tracked files, for
-example, and you can browse the history of past changes.  There is support for
-cherry picking, reverting, merging, rebasing, and other common Git
-operations.")
+      (description "With Magit, you can inspect and modify your Git
+repositories with Emacs.  You can review and commit the changes you have made
+to the tracked files, for example, and you can browse the history of past
+changes.  There is support for cherry picking, reverting, merging, rebasing,
+and other common Git operations.")
       (license license:gpl3+))))
 
 (define-public emacs-magit-svn
@@ -1904,7 +1964,7 @@ Lock key.")
 (define-public emacs-chronometrist
   (package
     (name "emacs-chronometrist")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method git-fetch)
@@ -1913,7 +1973,7 @@ Lock key.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1ccy7qz1wcmggqlf3hwigbqq4wrx1amds4x9bxz9py6bypglyjc5"))))
+        (base32 "1ljjqzghcap4admv0hvw6asm148b80mfgjgxjjcw6qc95fkjjjlr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
@@ -5581,7 +5641,7 @@ orange and red as accent colors.")
         (base32
          "0gy2pvz79whpavp4jmz8h9krzn7brmvv3diixi1d4w51pcdvaldd"))))
     (build-system emacs-build-system)
-    (home-page "https://bitbucket.org/zck/2048.el")
+    (home-page "https://hg.sr.ht/~zck/game-2048")
     (synopsis "Implementation of the game 2048 in Emacs Lisp")
     (description
      "This program is an implementation of 2048 for Emacs.
@@ -5911,7 +5971,7 @@ test tags.  It supports both interactive and non-interactive use.")
        (sha256
         (base32 "1m37scr82lqqy954fchjxrmdh4lngrl4d1yzxhp3yfjhsydizhrj"))))
     (build-system emacs-build-system)
-    (home-page "http://github.com/rocky/emacs-load-relative")
+    (home-page "https://github.com/rocky/emacs-load-relative")
     (synopsis "Emacs Lisp relative file loading related functions")
     (description
      "Provides functions which facilitate writing multi-file Emacs packages
@@ -6074,6 +6134,28 @@ Hydra.  Note that the final binding, besides vanquishing the Hydra, will still
 serve its original purpose, calling the command assigned to it.  This makes
 the Hydra very seamless; it's like a minor mode that disables itself
 automatically.")
+    (license license:gpl3+)))
+
+(define-public emacs-interleave
+  (package
+    (name "emacs-interleave")
+    (version "1.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rudolfochrist/interleave")
+         (commit (string-append "interleave-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0l5b681mrpk12lx5c16m7kc13p29z6zismwg1llsjg7cdmrmsrcb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/rudolfochrist/interleave")
+    (synopsis "Emacs minor mode to interleave notes and text books")
+    (description
+     "Interleave is a minor mode that presents a document viewer side
+by side to an Org buffer with your notes relevant to the current page.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy
@@ -6933,25 +7015,25 @@ in Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-markdown
-  (let ((commit "46cd81b37991c4325fc24015a610f832b0ff995d")
-        (revision "1"))
+  (let ((commit "685d7fbb81bc02fa32779d2a127b99a0c8c7436b")
+        (revision "2"))
     (package
       (name "emacs-evil-markdown")
       (version (git-version "0.0.2" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/Somelauw/evil-markdown.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mad8sp5y9vyk28595qygspnyh8bfmb1fbxjlw70qwc1kdn822n4"))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Somelauw/evil-markdown.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1z1sjn6dcqv8mmkh6nfcwhnql2z6xr9yx3hs77bfxj79pf3c466p"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-markdown-mode" ,emacs-markdown-mode)
-         ("emacs-evil" ,emacs-evil)))
-      (home-page "http://jblevins.org/projects/evil-markdown/")
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-markdown-mode" ,emacs-markdown-mode)))
+      (home-page "https://github.com/Somelauw/evil-markdown/")
       (synopsis "Evil keybindings for @code{markdown-mode}")
       (description
        "This package provides custom text objects and bindings for
@@ -7467,7 +7549,7 @@ names, e.g. #0000ff is displayed in white with a blue background.")
          (sha256
           (base32 "1cyvp3bi6yhckbdnq98xvghmhdzghya5y9wd7hxjawibs75rza95"))))
       (build-system emacs-build-system)
-      (home-page "http://github.com/Kungsgeten/ryo-modal")
+      (home-page "https://github.com/Kungsgeten/ryo-modal")
       (synopsis "Emacs minor mode for defining modal editing environments")
       (description "RYO modal provides a convenient way of defining modal
 keybindings in Emacs, and does not come with any predefined bindings.")
@@ -8268,7 +8350,7 @@ news items, openrc and runscripts.")
 (define-public emacs-evil
   (package
     (name "emacs-evil")
-    (version "1.2.14")
+    (version "1.14.0")
     (source
      (origin
        (method git-fetch)
@@ -8278,7 +8360,7 @@ news items, openrc and runscripts.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
+         "17xrn3s6a4afmls8fw8nnxa1jq9dmj2qqrxa2vngh50hxpz8840p"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -15437,8 +15519,8 @@ bookmarks and history.")
     (license license:gpl3+)))
 
 (define-public emacs-stumpwm-mode
-  (let ((commit "dd5b037923ec7d3cc27c55806bcec5a1b8cf4e91")
-        (revision "2"))
+    (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
+        (revision "3"))
     (package
       (name "emacs-stumpwm-mode")
       (version (git-version "0.0.1" revision commit))
@@ -15450,7 +15532,7 @@ bookmarks and history.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ahxdj9f884afpzxczx6mx7l4nwg4kw6afqaq7lwhf7lxcwylldn"))))
+                  "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -16071,8 +16153,8 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-magit
-  (let ((commit "4b66a1db8285457147a5436f209391016a819ea1")
-        (revision "3"))
+  (let ((commit "253c644807013fe92429acdef418748794b8f254")
+        (revision "4"))
     (package
       (name "emacs-evil-magit")
       (version (git-version "0.4.2" revision commit))
@@ -16085,7 +16167,7 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0kkmbswfh34k3amfl3v140vsnz1gq4n4mg9g4khjd9yjph3zms4h"))))
+           "08mh7phxsdb9w4dfs0pmr4l4fdzzr2rm88z2s8karfi5j5ik2ag5"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -16457,10 +16539,10 @@ you searched for and execute it, or view its documentation.")
     (license license:gpl3+))))
 
 (define-public emacs-helm-emms
-  (let ((commit "b785cb845a98a643eba9d5d53c9c0b4e6810a3cd"))
+  (let ((commit "37e5aa029abfa5a5c48636314de8157142944fa2"))
     (package
       (name "emacs-helm-emms")
-      (version (git-version "1.3" "2" commit))
+      (version (git-version "1.3" "3" commit))
       (source
        (origin
          (method git-fetch)
@@ -16470,7 +16552,7 @@ you searched for and execute it, or view its documentation.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1595r09y3rmwd46nnhvjja3hb8j2ila295ijxv61cg52ws4wginh"))))
+           "0r1ai6xhzayyik30w2sx9n62bxxwm12vfmjspv0daqif9az8y3vg"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-helm" ,emacs-helm)
@@ -19211,11 +19293,11 @@ as Emacs Lisp.")
       (license license:gpl3+))))
 
 (define-public emacs-transient
-  ;; 0.1.0 depends on lv.el but not later versions.
-  (let ((commit "7e45a57ec81185631fe763733f64c99021df2a06"))
+  (let ((revision "1")
+        (commit "a6e4cced303b3febd59412b24a97eaf1e855e6d7"))
     (package
       (name "emacs-transient")
-      (version (git-version "0.1.0" "1" commit))
+      (version (git-version "0.2.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -19224,48 +19306,40 @@ as Emacs Lisp.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0r6d4c1lga3bk0s7q7y4v4hbpxnd9h40cjxybqvax2z902931fz1"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("texinfo" ,texinfo)
-                       ("emacs" ,emacs-minimal)))
-      (propagated-inputs
-       `(("dash" ,emacs-dash)))
+                  "01xsw9sxr50valc2q590ngy3ra2ll01p39l9cbzvqqz6mxyymxmd"))))
+      (build-system emacs-build-system)
       (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (srfi srfi-26)
-                    (guix build emacs-utils))
-         #:imported-modules (,@%gnu-build-system-modules
-                             (guix build emacs-utils))
-         #:tests? #f                   ; tests are not included in the release
-         #:make-flags (list "lisp" "info")
+       `(#:tests? #f                      ;no test suite
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure)
-           (replace 'install
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (lisp (string-append out "/share/emacs/site-lisp"))
-                      (info (string-append out "/share/info")))
-                 (for-each (cut install-file <> lisp)
-                           (find-files "." "\\.elc*$"))
-                 (install-file "docs/transient.info" (string-append info)))
+           (add-after 'unpack 'build-info-manual
+             (lambda _
+               (invoke "make" "info")
+               ;; Move the info file to lisp so that it gets installed by the
+               ;; emacs-build-system.
+               (rename-file "docs/transient.info" "lisp/transient.info")))
+           (add-after 'build-info-manual 'enter-lisp-directory
+             (lambda _
+               (chdir "lisp")
                #t)))))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (propagated-inputs
+       `(("dash" ,emacs-dash)))
       (home-page "https://magit.vc/manual/transient")
       (synopsis "Transient commands in Emacs")
-      (description
-       "Taking inspiration from prefix keys and prefix arguments in Emacs,
-Transient implements a similar abstraction involving a prefix command, infix
-arguments and suffix commands.  We could call this abstraction a \"transient
-command\", but because it always involves at least two commands (a prefix and
-a suffix) we prefer to call it just a \"transient\".")
+      (description "Taking inspiration from prefix keys and prefix arguments
+in Emacs, Transient implements a similar abstraction involving a prefix
+command, infix arguments and suffix commands.  We could call this abstraction
+a \"transient command\", but because it always involves at least two
+commands (a prefix and a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
 (define-public emacs-forge
-  (let ((commit "63cbf81f166fc71861d8e3d246df8e5ccedcb9bb"))
+  (let ((commit "09bf8adc9c9afb492632e612f51f39e1cc15fca0"))
     (package
       (name "emacs-forge")
-      (version (git-version "0.1.0" "3" commit))
+      (version (git-version "0.1.0" "4" commit))
       (source
        (origin
          (method git-fetch)
@@ -19275,11 +19349,10 @@ a suffix) we prefer to call it just a \"transient\".")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1yf2xjx3459py6rji740jm8bmh2pv66ghnbjxsvjd4jf9kcdav83"))))
+           "148h1rvmfmxyrfy2q5l0vzblr7lpsyw1si30hfwhzsj8fvj21qcr"))))
       (build-system emacs-build-system)
       (native-inputs
-       `(("texinfo" ,texinfo)
-         ("emacs" ,emacs-minimal)))
+       `(("texinfo" ,texinfo)))
       (propagated-inputs
        `(("emacs-closql" ,emacs-closql)
          ("emacs-dash" ,emacs-dash)

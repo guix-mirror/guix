@@ -162,7 +162,7 @@ program.")
 (define-public autorandr
   (package
     (name "autorandr")
-    (version "1.9")
+    (version "1.10.1")
     (home-page "https://github.com/phillipberndt/autorandr")
     (source
      (origin
@@ -172,8 +172,10 @@ program.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bb0l7fcm5lcx9y02zdxv7pfdqf4v4gsc5br3v1x9gzjvqj64l7n"))))
+        (base32 "0msw9b1hdy3gbq9w5d04mfizhyirz1c648x84mlcbzl8salm7vpg"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("xrandr" ,xrandr)
        ("libxcb" ,libxcb)))
@@ -188,7 +190,11 @@ program.")
                  (("/usr") (assoc-ref outputs "out")))
                (substitute* "autorandr.py"
                  (("popen\\(\"xrandr") (string-append "popen(\"" xrandr))
-                 (("\\[\"xrandr") (string-append "[\"" xrandr))))
+                 (("\\[\"xrandr") (string-append "[\"" xrandr)))
+               (substitute* "contrib/autorandr_launcher/autorandr_launcher.c"
+                 (("/usr/bin/autorandr")
+                  (string-append (assoc-ref outputs "out") "/bin/autorandr")))
+               (setenv "CC" "gcc"))
              #t))
          (add-after 'install 'install-contrib
            (lambda* (#:key outputs #:allow-other-keys)
@@ -196,10 +202,8 @@ program.")
                      (string-append "DESTDIR=" (assoc-ref outputs "out"))
                      "PREFIX="
                      "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
-                     "install_manpage"
-                     "install_bash_completion"
-                     "install_launcher"
-                     "install_autostart_config"))))))
+                     "install"
+                     "TARGETS=autorandr launcher manpage bash_completion"))))))
     (synopsis "Auto-detect connected displays and load appropriate setup")
     (description "Autorandr wraps around xrandr to help with X11
 multi-screen configuration management.  It allows the user to create profiles
@@ -614,7 +618,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -624,7 +628,7 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "08gkdby0ysx2mki57z81zlm7vfnq9c1gq692xw67cg5vv2p3320w"))))
+        (base32 "0x70hd59ik37kqd8xqpwrz46np01jv324iz28x2s0kk36d7sblsj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -792,7 +796,7 @@ to find buttons, etc, on the screen to click on.")
 (define-public xbanish
   (package
     (name "xbanish")
-    (version "1.6")
+    (version "1.7")
     (home-page "https://github.com/jcs/xbanish")
     (source (origin
               (method git-fetch)
@@ -801,14 +805,14 @@ to find buttons, etc, on the screen to click on.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vp8ja68hpmqkl61zyjar3czhmny1hbm74m8f393incfz1ymr3i8"))))
+                "0ic5f7zgc32p5g1wxas9y5h8dhik0pvsa8wmn6skdry56gw9vg9q"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ;no tests
+     `(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)))) ; no configure script
     (inputs
      `(("libx11" ,libx11)
        ("libxfixes" ,libxfixes)
@@ -1571,13 +1575,13 @@ program for X11.  It was designed to be fast, tiny and scriptable in any languag
        #:make-flags
        (let ((out (assoc-ref %outputs "out")))
          (list (string-append "DESTDIR=" out)))))
+    (home-page "https://github.com/vixus0/xftwidth")
     (synopsis "Calculator for determining pixel widths of displayed text using Xft fonts")
     (description "xftwidth is a small C program for calculating the pixel
 widths of displayed text using Xft fonts. It is especially useful in scripts
 for displaying text in graphical panels, menus, popups, and notification
 windows generated using dzen. These scripts are often used in conjunction with
 minimalistic tiling window managers such as herbstluftwm and bspwm.")
-    (home-page "http://github.com/vixus0/xftwidth")
     (license license:expat)))
 
 (define-public xcb-util-xrm

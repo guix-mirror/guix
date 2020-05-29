@@ -112,7 +112,8 @@ COMMIT."
                                       #:select? version-controlled?))
               (hash     (query-path-hash store source))
               (location (package-definition-location))
-              (old-hash (origin-sha256 (package-source guix))))
+              (old-hash (content-hash-value
+                          (origin-hash (package-source guix)))))
          (edit-expression location
                           (update-definition commit hash
                                              #:old-hash old-hash

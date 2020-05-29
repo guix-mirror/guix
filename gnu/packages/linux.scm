@@ -370,50 +370,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.14")
+(define-public linux-libre-5.6-version "5.6.15")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "18vyxi64i93v4qyky5q62kkasm1da7wmz91xfkx3j7ki84skyxik")))
+        (hash (base32 "0kh34f9vdfsi9g83fa1i1926djyzfi466w02c4y4d46ljf9pkav5")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.42")
+(define-public linux-libre-5.4-version "5.4.43")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0cdwazpzfrrb2y5fp87v9yihy7v8mlbqjzxpzmv7p83609y1nhsf")))
+        (hash (base32 "0i07g72138xdf1l8x593jndq0waf3fx7plz3m6n5f9fl885bjrr6")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.124")
+(define-public linux-libre-4.19-version "4.19.125")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "005dznldnj1m03cbkc5pd2q2cv9jj1j6a0x2vh4p79ypg4c01nfm")))
+        (hash (base32 "0zmxs6q2rgssvsh76xq9xgcax7bps19x2448d1q1fj9pzc7g8hwq")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.181")
+(define-public linux-libre-4.14-version "4.14.182")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0kaasqhmg9in7pf4ldk9z4z1cjgv1c9xdr1ca0pznngygibym6xb")))
+        (hash (base32 "142v7qnfska86jqzilwq00kxdrq08iaaaw7f47xp9bnhb8fiy7b7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.224")
+(define-public linux-libre-4.9-version "4.9.225")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0jf92cx0b3wq9fxa3169wk4wqvy58hglfk6lsynszy8kjplhfvfz")))
+        (hash (base32 "1s63aymgsc4lsysy9d972ps9cyrf6bncyy5wcpv5a3wbaj678iz5")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.224")
+(define-public linux-libre-4.4-version "4.4.225")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1lb8ypn558vk73bj4a20wq40cig9vmzjn2xzzdws78gfair6hxpg")))
+        (hash (base32 "0pn66hf9yrjg15skq1inscr5m0slvgsd2qm8rg5id70llrb4jis9")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1223,11 +1223,8 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let* ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "prefix=" (assoc-ref %outputs "out"))))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
@@ -3386,12 +3383,9 @@ interface.")
                        #t))))
        #:test-target "verify"
        #:make-flags (let ((out     (assoc-ref %outputs "out"))
-                          (regdb   (assoc-ref %build-inputs "wireless-regdb"))
-                          (target ,(%current-target-system)))
+                          (regdb   (assoc-ref %build-inputs "wireless-regdb")))
                       (list
-                       (string-append
-                        "CC=" (if target
-                                  (string-append target "-gcc") "gcc"))
+                       (string-append "CC=" ,(cc-for-target))
                        "V=1"
 
                        ;; Disable signature-checking on 'regulatory.bin'.
@@ -4512,8 +4506,8 @@ Ridge, Joliet, and zisofs.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.nico.schottelius.org/software/gpm/archives/gpm-"
-                    version ".tar.bz2"))
+                    "https://www.nico.schottelius.org/software/gpm/archives/"
+                    "gpm-" version ".tar.bz2"))
               (patches (search-patches "gpm-glibc-2.26.patch"))
               (sha256
                (base32
@@ -4542,7 +4536,7 @@ Ridge, Joliet, and zisofs.")
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (home-page "http://www.nico.schottelius.org/software/gpm/")
+    (home-page "https://www.nico.schottelius.org/software/gpm/")
     (synopsis "Mouse support for the Linux console")
     (description
      "The GPM (general-purpose mouse) daemon is a mouse server for
@@ -5992,16 +5986,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.5")
+    (version "1.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "1wqlxf76bkqf3qhka9sw32qhb2ni20q1k6rn3iril2kw482lvpk6"))
-       (patches
-        (search-patches "libnftnl-dont-check-NFTNL_FLOWTABLE_SIZE.patch"))))
+        (base32 "1jhyxsfrfqjascrm5lnxlcyzj6n0gc0qc1bp2asb7m61dxlmmsy1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -7050,12 +7042,8 @@ system boot process.")
      `(#:tests? #f ; there are no tests
        #:make-flags
        (let ((prefix-dir (lambda (var dir)
-                           (string-append var "=" %output "/" dir)))
-             (target ,(%current-target-system)))
-         (list (string-append "CC="
-                              (if target
-                                  (string-append target "-gcc")
-                                  "gcc"))
+                           (string-append var "=" %output "/" dir))))
+         (list (string-append "CC=" ,(cc-for-target))
                (prefix-dir "SBINDIR" "sbin/")
                (prefix-dir "ETCDIR" "etc/")
                (prefix-dir "MANDIR" "share/man/")))

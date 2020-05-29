@@ -187,6 +187,38 @@ caching system, and lets you assign different roles to each device based on its
 performance and other characteristics.")
       (license license:gpl2+))))
 
+(define-public exfatprogs
+  (package
+    (name "exfatprogs")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/exfatprogs/exfatprogs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1s47qvhr702z5c19wfqz8cwl9ammmincs7a8vjc6p974wnnjg77y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/exfatprogs/exfatprogs")
+    (synopsis "Tools to create, check, and repair exFAT file systems")
+    (description
+     "These are command-line user space tools for the @acronym{exFAT,
+Extensible File Allocation Table} file systems.  Included are
+@command{mkfs.exfat} to create (format) new exFAT file systems, and
+@command{fsck.exfat} to check their consistency and repair them.")
+    (license license:gpl2+)))
+
 (define-public httpfs2
   (package
     (name "httpfs2")
@@ -323,7 +355,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.9")
+    (version "0.5.10")
     (source
      (origin
        (method git-fetch)
@@ -333,7 +365,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0irgr9hkm9icx1s44m9382484yx8hddzjxbsz621ip9c946pif0g"))))
+         "0lsisx5118k0qk0b5klbxl03rvhycnznyfx05yxmjawh85bfhmlh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -491,8 +523,9 @@ network.  LIBNFS offers three different APIs, for different use :
                    ))))
 
 (define-public apfs-fuse
-  (let ((commit "c7036a3030d128bcecefc1eabc47c039ccfdcec9")
-        (revision "0"))
+  ;; Later versions require FUSE 3.
+  (let ((commit "7b89418e8dc27103d3c4f8fa348086ffcd634c17")
+        (revision "1"))
     (package
       (name "apfs-fuse")
       (version (git-version "0.0.0" revision commit))
@@ -504,11 +537,13 @@ network.  LIBNFS offers three different APIs, for different use :
                        (commit commit)))
          (sha256
           (base32
-           "1akd4cx1f9cyq6sfk9ybv4chhjwjlnqi8ic4z5ajnd5x0g76nz3r"))
+           "0x2siy3cmnm9wsdfazg3xc8r3kbg73gijmnn1vjw33pp71ckylxr"))
          (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; No test suite
+         #:configure-flags
+         '("-DUSE_FUSE3=OFF") ; FUSE 3 is not packaged yet.
          #:phases
          (modify-phases %standard-phases
            ;; No 'install' target in CMakeLists.txt
@@ -523,6 +558,7 @@ network.  LIBNFS offers three different APIs, for different use :
                  (install-file "apfs-dump-quick" bin)
                  (install-file "apfs-fuse" bin)
                  (install-file "libapfs.a" lib)
+                 (install-file "../source/README.md" doc)
                  #t))))))
       (inputs
        `(("bzip2" ,bzip2)

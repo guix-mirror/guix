@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
@@ -423,18 +423,65 @@ fi~%"))))
 
 (define install-grub
   #~(lambda (bootloader device mount-point)
-      ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT.
       (let ((grub (string-append bootloader "/sbin/grub-install"))
             (install-dir (string-append mount-point "/boot")))
-        ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
-        ;; root partition.
-        (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+        ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT. If DEVICE
+        ;; is #f, then we populate the disk-image rooted at MOUNT-POINT.
+        (if device
+            (begin
+              ;; Tell 'grub-install' that there might be a LUKS-encrypted
+              ;; /boot or root partition.
+              (setenv "GRUB_ENABLE_CRYPTODISK" "y")
 
-        ;; Hide potentially confusing messages from the user, such as
-        ;; "Installing for i386-pc platform."
-        (invoke/quiet grub "--no-floppy" "--target=i386-pc"
-                      "--boot-directory" install-dir
-                      device))))
+              ;; Hide potentially confusing messages from the user, such as
+              ;; "Installing for i386-pc platform."
+              (invoke/quiet grub "--no-floppy" "--target=i386-pc"
+                            "--boot-directory" install-dir
+                            device))
+            ;; When creating a disk-image, only install GRUB modules.
+            (copy-recursively (string-append bootloader "/lib/")
+                              install-dir)))))
+
+(define install-grub-disk-image
+  #~(lambda (bootloader root-index image)
+      ;; Install GRUB on the given IMAGE. The root partition index is
+      ;; ROOT-INDEX.
+      (let ((grub-mkimage
+             (string-append bootloader "/bin/grub-mkimage"))
+            (modules '("biosdisk" "part_msdos" "fat" "ext2"))
+            (grub-bios-setup
+             (string-append bootloader "/sbin/grub-bios-setup"))
+            (root-device (format #f "hd0,msdos~a" root-index))
+            (boot-img (string-append bootloader "/lib/grub/i386-pc/boot.img"))
+            (device-map "device.map"))
+
+        ;; Create a minimal, standalone GRUB image that will be written
+        ;; directly in the MBR-GAP (space between the end of the MBR and the
+        ;; first partition).
+        (apply invoke grub-mkimage
+               "-O" "i386-pc"
+               "-o" "core.img"
+               "-p" (format #f "(~a)/boot/grub" root-device)
+               modules)
+
+        ;; Create a device mapping file.
+        (call-with-output-file device-map
+          (lambda (port)
+            (format port "(hd0) ~a~%" image)))
+
+        ;; Copy the default boot.img, that will be written on the MBR sector
+        ;; by GRUB-BIOS-SETUP.
+        (copy-file boot-img "boot.img")
+
+        ;; Install both the "boot.img" and the "core.img" files on the given
+        ;; IMAGE. On boot, the MBR sector will execute the minimal GRUB
+        ;; written in the MBR-GAP. GRUB configuration and missing modules will
+        ;; be read from ROOT-DEVICE.
+        (invoke grub-bios-setup
+                "-m" device-map
+                "-r" root-device
+                "-d" "."
+                image))))
 
 (define install-grub-efi
   #~(lambda (bootloader efi-dir mount-point)
@@ -465,21 +512,20 @@ fi~%"))))
    (name 'grub)
    (package grub)
    (installer install-grub)
+   (disk-image-installer install-grub-disk-image)
    (configuration-file "/boot/grub/grub.cfg")
    (configuration-file-generator grub-configuration-file)))
 
-(define grub-minimal-bootloader
+(define* grub-minimal-bootloader
   (bootloader
-   (name 'grub)
-   (package grub-minimal)
-   (installer install-grub)
-   (configuration-file "/boot/grub/grub.cfg")
-   (configuration-file-generator grub-configuration-file)))
+   (inherit grub-bootloader)
+   (package grub-minimal)))
 
 (define* grub-efi-bootloader
   (bootloader
    (inherit grub-bootloader)
    (installer install-grub-efi)
+   (disk-image-installer #f)
    (name 'grub-efi)
    (package grub-efi)))
 

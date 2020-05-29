@@ -70,7 +70,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "143"))
+  (let ((version "145"))
     (package
       (name "diffoscope")
       (version version)
@@ -82,7 +82,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0j58dqdk8ln8y0bcnfy37ljs37nkl56lzxqns396300ysln0qiwm"))))
+                  "01n7q3q0hib4bd8gcq0yjghy5zhp0fh0bq1jxrn2ww8zyd4knmc3"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases

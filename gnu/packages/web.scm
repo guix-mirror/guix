@@ -229,14 +229,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.9")
+    (version "1.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "12dnrdxwnlid0wr797vdxj9z1fmxnk7ib55bznvl2g3mbi05vmkx"))))
+                "1j1n3rlvan6l9j3vw8axbbdm96w7s0x6ygmgqvbplzfd3wbid9j4"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -278,7 +278,6 @@ Interface} specification.")
                              (string-append "--crossbuild="
                                             system ":" release ":" machine)))))
                (setenv "CC" "gcc")
-               (format #t "environment variable `CC' set to `gcc'~%")
                (format #t "configure flags: ~s~%" flags)
                (apply invoke "./configure" flags)
                #t)))
@@ -360,13 +359,13 @@ documentation.")
       (license license:bsd-2))))
 
 (define-public nginx-documentation
-  ;; This documentation should be relevant for nginx@1.15.9.
-  (let ((revision 2345)
-        (changeset "7ef11708457e"))
+  ;; This documentation should be relevant for the current nginx package.
+  (let ((version "1.19.0")
+        (revision 2549)
+        (changeset "c13a55aae487"))
     (package
       (name "nginx-documentation")
-      (version
-       (simple-format #f "2019-03-01-~A-~A" revision changeset))
+      (version (simple-format #f "~A-~A-~A" version revision changeset))
       (source
        (origin (method hg-fetch)
                (uri (hg-reference
@@ -375,7 +374,7 @@ documentation.")
                (file-name (string-append name "-" version))
                (sha256
                 (base32
-                 "15975jvh53mnsgi4hhgrwdwy3by23v4kxnhy2vnkziq8v7wkmy4y"))))
+                 "0vwwvk6wf8f6c6n6yffmya9a287s6dbx1p739hdl3hwxfyh2ygc5"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; no test suite
@@ -2620,7 +2619,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.46")
+    (version "4.47")
     (source
      (origin
        (method url-fetch)
@@ -2628,7 +2627,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "16225vmdsfa2y7i1ydv7634nd0qxxb0ccwnfszjq58rwqgfri2bq"))))
+         "1a9cylhqsm5icvbg09m21nj0xx4zy5gbk4p74npm1ch3qlryzyyr"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -4748,7 +4747,7 @@ tools they trust (e.g. wget).")
 (define netsurf-buildsystem
   (package
     (name "netsurf-buildsystem")
-    (version "1.7")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
@@ -4756,7 +4755,7 @@ tools they trust (e.g. wget).")
                            "buildsystem-" version ".tar.gz"))
        (sha256
         (base32
-         "1q23aaycv35ma5471l1gxib8lfq2s9kprrkaqgfc926d04rlbmhw"))))
+         "0alsmaig9ln8dgllb3z63gq90fiz75jz0ic71fi0k0k898qix14k"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -4812,7 +4811,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public hubbub
   (package
     (name "hubbub")
-    (version "0.3.6")
+    (version "0.3.7")
     (source
      (origin
        (method url-fetch)
@@ -4820,7 +4819,7 @@ C.  It is developed as part of the NetSurf project.")
                            "libhubbub-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1x3v7xvagx85v9h3pypzc86rcxs4mij87mmcqkp8pq50q6awfmnp"))
+         "1dimfyblmym98qa1b80c5jslv2zk8r44xbdrgrsrw1n9wr9y4yly"))
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4951,7 +4950,7 @@ commenting.")
 (define-public libwapcaplet
   (package
     (name "libwapcaplet")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method url-fetch)
@@ -4959,7 +4958,7 @@ commenting.")
                            "libwapcaplet-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1fjwzbn7j8bi1b9bvwxsy3i2cr6byq2s2d29866801pjnf528g86"))))
+         "0p0c2q9lsj4vs97aa7vjllfhw33zv3dpysdkjblzhib6dpfs2alv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4977,7 +4976,7 @@ developed as part of the Netsurf project.")
 (define-public libcss
   (package
     (name "libcss")
-    (version "0.9.0")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -4985,7 +4984,7 @@ developed as part of the Netsurf project.")
                            "libcss-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1vw9j3d2mr4wbvs8fyqmgslkbxknvac10456775hflxxcivbm3xr"))))
+         "1p66sdiiqm7w4jkq23hsf08khsnmq93hshh9f9m8sbirjdpf3p6j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -5045,7 +5044,7 @@ in which the loaded data is arranged in memory.")
 (define-public libdom
   (package
     (name "libdom")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
@@ -5053,7 +5052,7 @@ in which the loaded data is arranged in memory.")
                            "libdom-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1ixkqsl3f7dl1kajksm0c231w1v5xy8z6hm3v67hgm9nh4qcvfcy"))))
+         "0jpg5hx3y0mdxk5szd47dyijqimd2321brbqk2620pp5f4j0gvlq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -5112,7 +5111,7 @@ project.")
 (define-public libnsbmp
   (package
     (name "libnsbmp")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -5120,7 +5119,7 @@ project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0lib2m07d1i0k80m4blkwnj0g7rha4jbm5vrgd0wwbkyfa0hvk35"))))
+         "0krjg69a2amxjsahdgm3wmy9ngnyr3gfs2a1zhdlbvb0z1jr7i3r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -5158,7 +5157,7 @@ C.  It is developed as part of the NetSurf project.")
 (define-public libnslog
   (package
     (name "libnslog")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
@@ -5166,12 +5165,12 @@ C.  It is developed as part of the NetSurf project.")
                            "libnslog-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1ggs6xvxp8fbg5w8pifalipm458ygr9ab6j2yvj8fnnmxwvdh4jd"))))
+         "1l2k0kdv9iv18svhv360vszjavhl4g09cp8a8yb719pgsylxr67w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
        ("pkg-config" ,pkg-config)
-       ("check" ,check-0.12)            ; For tests
+       ("check" ,check)                 ; For tests
        ("bison" ,bison)
        ("flex" ,flex)))
     (arguments netsurf-buildsystem-arguments)
@@ -5186,7 +5185,7 @@ client applications.  It is developed as part of the NetSurf project.")
 (define-public libnsutils
   (package
     (name "libnsutils")
-    (version "0.0.5")
+    (version "0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -5194,7 +5193,7 @@ client applications.  It is developed as part of the NetSurf project.")
                            name "-" version "-src.tar.gz"))
        (sha256
         (base32
-         "09w1rixps1iiq6wirjwxmd6h87llvjzvw565rahjb3rlyhcplfqf"))))
+         "1w5fyy2i60a3v3if3iqcn9sy9sycx6966rcx53v85gja6hb6a33r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -5209,7 +5208,7 @@ developed as part of the NetSurf project.")
 (define-public libnspsl
   (package
     (name "libnspsl")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -5217,7 +5216,7 @@ developed as part of the NetSurf project.")
                            "libnspsl-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0siq8zjfxv75i9fw6q5hkaijpdm1w3zskd5qk6vsvz8cqan4vifd"))))
+         "02q28n5i6fwqcz1nn167rb71k1q95mx38mfah6zi1lvqrc2q5ifk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -5232,7 +5231,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.7")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
@@ -5240,7 +5239,7 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
                            "nsgenbind-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0rplmky4afsjwiwh7grkmcdmzg86zksa55j93dvq92f91yljwqqq"))))
+         "1cqwgwca49jvmijwiyaab2bwxicgxdrnlpinf8kp3nha02nm73ad"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -5260,7 +5259,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.9")
+    (version "3.10")
     (source
      (origin
        (method url-fetch)
@@ -5268,7 +5267,7 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1hzcm2s2wh5sapgr000lg63hcdbj6hyajxl43xa1x80kc5piqbyp"))
+         "0plra64c5xyiw12yx2q13brxsv8apmany97zqa2lcqckw4ll8j1n"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
                                 "netsurf-longer-test-timeout.patch"
@@ -5335,18 +5334,18 @@ w3c webidl files and a binding configuration file.")
                  (display (read-line in 'concat) out)
                  (sxml->xml
                   (let rec ((sxml (xml->sxml in
-					     #:default-entity-handler
-					     (lambda (port name)
-					       (string-append "<ENTITY>"
-							      (symbol->string name)
-							      "</ENTITY>")))))
+                                             #:default-entity-handler
+                                             (lambda (port name)
+                                               (string-append "<ENTITY>"
+                                                              (symbol->string name)
+                                                              "</ENTITY>")))))
                     ;; We'd like to use sxml-match here, but it can't
                     ;; match against generic tag symbols...
                     (match sxml
                       (`(div (@ (class "links")) . ,rest)
                        '())
-		      (`(ENTITY ,ent)
-		       `(*ENTITY* ,ent))
+                      (`(ENTITY ,ent)
+                       `(*ENTITY* ,ent))
                       ((x ...)
                        (map rec x))
                       (x x)))

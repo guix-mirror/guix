@@ -456,7 +456,7 @@ more.")
                       #t)))))
     (inputs
      `(("zeromq" ,zeromq)))
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "High-level C bindings for ØMQ")
     (description
      "czmq provides bindings for the ØMQ core API that hides the differences
@@ -487,7 +487,7 @@ between different versions of ØMQ.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("zeromq" ,zeromq)))
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "C++ bindings for the ØMQ messaging library")
     (description
      "This package provides header-only C++ bindings for ØMQ.  The header
@@ -767,14 +767,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.3")
+    (version "3.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1fpsfjrap7j84sy728yhcr2gad9nq3n5gq03mwrmxnc6ijwf81zh"))))
+        (base32 "1amqgn94g6h6cfnsccm2zb4c73pfv1qmzi1i6h1hnbcyhhg4czfi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1723,25 +1723,29 @@ the bandwidth, loss, and other parameters.")
 (define-public nethogs
   (package
     (name "nethogs")
-    (version "0.8.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/raboof/nethogs/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1k4x8r7s4dgcb6n2rjn28h2yyij92mwm69phncl3597cdxr954va"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (version "0.8.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raboof/nethogs")
+             (commit (string-append "v" version))))
+       (hash
+        (content-hash
+         (base32 "0sn1sdp86akwlm4r1vmkxjjl50c0xaisk91bbz57z7kcsaphxna9")
+         sha256))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)
        ("ncurses" ,ncurses)))
     (arguments
      `(#:make-flags `("CC=gcc"
-                      ,(string-append "PREFIX=" %output))
+                      ,(string-append "PREFIX=" %output)
+                      ,(string-append "VERSION=" ,version))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No ./configure script.
+         (delete 'configure))))         ; no ./configure script.
     (home-page "https://github.com/raboof/nethogs")
     (synopsis "Per-process bandwidth monitor")
     (description "NetHogs is a small 'net top' tool for Linux.  Instead of
@@ -2897,14 +2901,14 @@ maximum extent possible.")
 (define-public batctl
   (package
    (name "batctl")
-   (version "2020.0")
+   (version "2020.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32 "01414ywhlb2b9ng9d5kd5rr1s7wzvi234j8hj6ra2spn92qykvv0"))))
+      (base32 "0fy252q1my3a57v6pfz8i97h6zv7v03di01dhwjkj47pqnx1rqm3"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs
@@ -3099,7 +3103,7 @@ cables.")
 (define-public haproxy
   (package
     (name "haproxy")
-    (version "2.1.3")
+    (version "2.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.haproxy.org/download/"
@@ -3107,7 +3111,7 @@ cables.")
                                   "/src/haproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "0n8bw3d6gikr8c56ycrvksp1sl0b4yfzp19867cxkl3l0daqwrxv"))))
+                "1kcizs5r538chhpwqykdngxyqfi98i03akfjnii721npjvv0y0si"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

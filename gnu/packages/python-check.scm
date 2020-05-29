@@ -6,6 +6,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -335,6 +336,28 @@ testing framework.")
     (synopsis "Virtualenv fixture for py.test")
     (description "This package provides a virtualenv fixture for the py.test
 framework.")
+    (license license:expat)))
+
+(define-public python-pytest-pycodestyle
+  (package
+    (name "python-pytest-pycodestyle")
+    (version "2.0.0")               ;later versions require python-pytest~=5.4
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-pycodestyle" version))
+       (sha256
+        (base32
+         "02i5gl7pm9cwxk15sn29inz3n8flpj1r3p1l110h43f2na5w8h7z"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pycodestyle" ,python-pycodestyle)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/henry0312/pytest-pycodestyle")
+    (synopsis "Pytest plugin to run pycodestyle")
+    (description "This package provides a plugin to run @code{pycodestyle}
+for the @code{pytest} framework.")
     (license license:expat)))
 
 (define-public python-codacy-coverage

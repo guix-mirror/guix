@@ -4786,12 +4786,12 @@ back to a full directory scan if none of these are available.")
 (define-public perl-getopt-long
   (package
     (name "perl-getopt-long")
-    (version "v2.49.1")
+    (version "2.49.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/J/JV/JV/"
-                           "Getopt-Long-" (substring version 1) ".tar.gz"))
+                           "Getopt-Long-v" (substring version 1) ".tar.gz"))
        (sha256
         (base32
          "0bw8gbhj8s5gmkqvs3m7pk9arqhgqssrby4yimh29ah9alix9ylq"))))
@@ -5268,14 +5268,14 @@ filehandles; in particular, IO::Scalar, IO::ScalarArray, and IO::Lines.")
 (define-public perl-io-tty
   (package
     (name "perl-io-tty")
-    (version "1.12")
+    (version "1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/IO-Tty-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0399anjy3bc0w8xzsc3qx5vcyqryc9gc52lc7wh7i49hsdq8gvx2"))))
+                "1dcmxdhrapxvvzlfp6yzz7655f3c6x8jrw0md8ndp2qj27iy9wsi"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IO-Tty")
     (synopsis "Perl interface to pseudo ttys")
@@ -10034,14 +10034,14 @@ still work as expected.")
 (define-public perl-timedate
   (package
     (name "perl-timedate")
-    (version "2.32")
+    (version "2.33")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                            "TimeDate-" version ".tar.gz"))
        (sha256
-        (base32 "1mmk9dy4a26a4d4c5rswqqhxr0295j93bjbcx91d3qkmwfcs1v1l"))))
+        (base32 "1cjyc0yi873597r7xcp9yz0l1c46ik2kxwfrn00zbrlx0d5rrdn0"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/TimeDate")
     (synopsis "Date parsing/formatting subroutines")
@@ -10052,12 +10052,12 @@ time values and formatting dates into ASCII strings.")
 (define-public perl-time-mock
   (package
     (name "perl-time-mock")
-    (version "v0.0.2")
+    (version "0.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/EW/EWILHELM/"
-                           "Time-Mock-" version ".tar.gz"))
+                           "Time-Mock-v" version ".tar.gz"))
        (sha256
         (base32
          "0bwqyg8z98m8cjw1qcm4wg502n225k33j2fp8ywxkgfjdd1zgllv"))))
@@ -10790,14 +10790,13 @@ such that being individual extensions would be wasteful.")
 (define-public perl-file-find-object
  (package
   (name "perl-file-find-object")
-  (version "v0.2.13")
+  (version "0.2.13")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
-             "mirror://cpan/authors/id/S/SH/SHLOMIF/File-Find-Object-"
-             version
-             ".tar.gz"))
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/File-Find-Object-v"
+             version ".tar.gz"))
       (sha256
         (base32
           "0gf13b76b824s73r5rp00v8xrd6dnb5yi5jjavfc394scqv6ldh4"))))

@@ -114,7 +114,7 @@
        ("texi2html" ,texi2html)
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
-    (home-page "http://gcompris.net")
+    (home-page "https://gcompris.net")
     (synopsis "Educational software suite")
     (description "GCompris is an educational software suite comprising of
 numerous activities for children aged 2 to 10.  Some of the activities are
@@ -606,14 +606,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.44.4")
+    (version "5.44.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "1bji4910v6adhngdh5ajz5bxam9z3yqnh8d1h1xajy6npm6qq3nx"))))
+        (base32 "19b22brpb2mpvg14c2a0xmv8ipq5jg7yjmly8y3gfy8gmc3wqg5m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

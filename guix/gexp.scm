@@ -51,6 +51,7 @@
             local-file-absolute-file-name
             local-file-name
             local-file-recursive?
+            local-file-select?
 
             plain-file
             plain-file?
@@ -270,7 +271,9 @@ expand to file names, but it's possible to expand to a plain data type."
              (if (not expand)
                  (loop lowered (lookup-expander lowered))
                  (return (expand obj lowered output)))
-             (return lowered)))))))               ;self-quoting
+             (if (not expand)                     ;self-quoting
+                 (return lowered)
+                 (return (expand obj lowered output)))))))))
 
 (define-syntax define-gexp-compiler
   (syntax-rules (=> compiler expander)
@@ -1440,6 +1443,7 @@ to the source files instead of copying them."
                       #:system system
                       #:guile-for-build guile
                       #:local-build? #t
+                      #:substitutable? #f
 
                       ;; Avoid deprecation warnings about the use of the _IO*
                       ;; constants in (guix build utils).

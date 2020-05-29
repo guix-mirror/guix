@@ -22,7 +22,9 @@
             partition?
             partition-device
             partition-size
+            partition-offset
             partition-file-system
+            partition-file-system-options
             partition-label
             partition-uuid
             partition-flags
@@ -45,13 +47,16 @@
 
 (define-record-type* <partition> partition make-partition
   partition?
-  (device      partition-device (default #f))
-  (size        partition-size)
-  (file-system partition-file-system (default "ext4"))
-  (label       partition-label (default #f))
-  (uuid        partition-uuid (default #f))
-  (flags       partition-flags (default '()))
-  (initializer partition-initializer (default #f)))
+  (device               partition-device (default #f))
+  (size                 partition-size)
+  (offset               partition-offset (default 0))
+  (file-system          partition-file-system (default "ext4"))
+  (file-system-options  partition-file-system-options
+                        (default '()))
+  (label                partition-label (default #f))
+  (uuid                 partition-uuid (default #f))
+  (flags                partition-flags (default '()))
+  (initializer          partition-initializer (default #f)))
 
 
 ;;;

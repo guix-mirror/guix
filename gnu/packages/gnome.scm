@@ -53,6 +53,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1010,11 +1011,12 @@ useful as a tutorial and users' guide for new or less experienced users.")
   ;; This version from GNOME's repository includes fixes for compiling with
   ;; recent versions of the build tools.  The latest activity on the
   ;; pre-GNOME version has been in 2014, while GNOME has continued applying
-  ;; fixes in 2016.
-  (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
+  ;; fixes since.
+  (let ((commit "3cf7ec4c2e5bca139a7f3e17f9fc9009c237fcc5")
+        (revision "2"))
     (package
       (name "dia")
-      (version (git-version "0.97.3" "1" commit))
+      (version (git-version "0.97.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1023,24 +1025,23 @@ useful as a tutorial and users' guide for new or less experienced users.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
-      (build-system gnu-build-system)
+                  "04r8dspa6nmicrifhi3sh46hqvyy88hzq37xx99q3q1mwsrpmwy8"))))
+      (build-system meson-build-system)
       (inputs
-       `(("freetype" ,freetype)
-         ("gdk-pixbuf" ,gdk-pixbuf)
+       `(("graphene" ,graphene)
          ("gtk+" ,gtk+-2)
-         ("libart-lgpl" ,libart-lgpl)
          ("libxml2" ,libxml2)
-         ("pango" ,pango)))
+         ("libxslt" ,libxslt)
+         ("poppler" ,poppler)
+         ;; Without Python 2, build fails: plug-ins/python/meson.build:4:0:
+         ;; ERROR: Unknown method "dependency" in object.
+         ("python-2" ,python-2)))
       (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("intltool" ,intltool)
+       `(("appstream-glib" ,appstream-glib)
+         ("docbook-xsl" ,docbook-xsl)
          ("glib" ,glib "bin")
-         ("libtool" ,libtool)
-         ("perl" ,perl)
-         ("pkg-config" ,pkg-config)
-         ("python-wrapper" ,python-wrapper)))
+         ("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)))
       (home-page "https://wiki.gnome.org/Apps/Dia")
       (synopsis "Diagram creation for GNOME")
       (description "Dia can be used to draw different types of diagrams, and
@@ -2090,7 +2091,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.22.1")
+    (version "3.36.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2098,7 +2099,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16p38xavpid51qfy0s26n0n21f9ws1w9k5s65bzh1w7ay8p9my6z"))))
+                "023gx8rj51njn8fsb6ma5kz1irjpxi4js0n8rwy22inc4ysldd8r"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; needs X, GL, and software rendering
@@ -7920,7 +7921,7 @@ world.")
        ("evince" ,evince)
        ("file-roller" ,file-roller)
        ("gedit" ,gedit)
-       ; TODO: ("gnome-boxes" ,gnome-boxes)
+       ("gnome-boxes" ,gnome-boxes)
        ("gnome-calculator" ,gnome-calculator)
        ("gnome-calendar" ,gnome-calendar)
        ("gnome-characters" ,gnome-characters)
@@ -8874,8 +8875,9 @@ from gi.repository import Atspi"))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python)
-       ("python-pygobject" ,python-pygobject)))
+     `(("python" ,python)))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)))
     (synopsis "Python client bindings for D-Bus AT-SPI")
     (home-page "https://wiki.linuxfoundation.org/accessibility\
 /atk/at-spi/at-spi_on_d-bus")
@@ -8884,6 +8886,15 @@ from gi.repository import Atspi"))
 accessibility infrastructure.")
     (license license:lgpl2.0)
     (properties '((upstream-name . "pyatspi")))))
+
+(define-public python2-pyatspi
+  (package
+    (inherit python-pyatspi)
+    (name "python2-pyatspi")
+    (inputs
+     `(("python" ,python-2)))
+    (propagated-inputs
+     `(("python-pygobject" ,python2-pygobject)))))
 
 (define-public orca
   (package
@@ -9926,7 +9937,7 @@ integrate seamlessly with the GNOME desktop.")
 (define-public gnome-boxes
   (package
     (name "gnome-boxes")
-    (version "3.35.91")
+    (version "3.36.4")
     (source
      (origin
        (method url-fetch)
@@ -9934,8 +9945,7 @@ integrate seamlessly with the GNOME desktop.")
                            (version-major+minor version) "/"
                            "gnome-boxes-" version ".tar.xz"))
        (sha256
-        (base32
-         "0l96spz6pc8q4l5p9a58cc0kgvdr7pbc89hy6ixn72k5pl3s7fxj"))))
+        (base32 "16l0mq2ydmywcdya1795mcy8syg4zkmz9ws3pzjcqv5y4m7cjj03"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -10169,7 +10179,7 @@ your operating-system definition:
 (define-public piper
   (package
     (name "piper")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -10177,7 +10187,8 @@ your operating-system definition:
              (url "https://github.com/libratbag/piper.git")
              (commit version)))
        (sha256
-        (base32 "17h06j8lxpbfygq8fzycl7lml4vv7r05bsyhh3gga2hp0zms4mvg"))))
+        (base32 "00vrcsbsv2477l1ncpyzc61lhxgac84dsgr3sjs8qxw3nh1gaasv"))
+       (file-name (git-file-name name version))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)

@@ -655,9 +655,10 @@ virtualization library.")
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f          ; uses custom distutils 'install' command
-       ;; Some of the tests seem to require network access to install virtual
-       ;; machines.
-       #:tests? #f
+       #:test-target "test_ui"
+       #:tests? #f                      ; TODO The tests currently fail
+                                        ; RuntimeError: Loop condition wasn't
+                                        ; met
        #:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%python-build-system-modules)
        #:modules ((ice-9 match)
@@ -704,6 +705,16 @@ virtualization library.")
                                ,(filter identity paths))))
                          bin-files))
              #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               ;; Dogtail requires that Assistive Technology support be enabled
+               (setenv "GTK_MODULES" "gail:atk-bridge")
+               (invoke "dbus-run-session" "--" "python" "setup.py" "test_ui"))
+             #t))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap
@@ -732,7 +743,14 @@ virtualization library.")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ;; The following are required for running the tests
+       ;; ("python-dogtail" ,python-dogtail)
+       ;; ("xvfb" ,xorg-server-for-tests)
+       ;; ("dbus" ,dbus)
+       ;; ("at-spi2-core" ,at-spi2-core)
+       ;; ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ))
     (home-page "https://virt-manager.org/")
     (synopsis "Manage virtual machines")
     (description

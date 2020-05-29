@@ -36,7 +36,7 @@ Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
-Copyright @copyright{} 2016 Julien Lepiller@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
@@ -464,11 +464,12 @@ and Linux-Libre kernel.
 @item aarch64-linux
 little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
 
-@item mips64el-linux
+@item mips64el-linux (deprecated)
 little-endian 64-bit MIPS processors, specifically the Loongson series,
 n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
-supported; in particular, the project's build farms no longer provide
-substitutes for this architecture.
+supported; in particular, there is no ongoing work to ensure that this
+architecture still works. Should someone decide they wish to revive this
+architecture then the code is still available.
 
 @end table
 
@@ -567,17 +568,18 @@ Installing goes along these lines:
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz},
-where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
-already running the kernel Linux, and so on.
+@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.x86_64-linux.tar.xz},
+where @code{x86_64-linux} can be replaced with @code{i686-linux} for an
+@code{i686} (32-bits) machine already running the kernel Linux, and so on
+(@pxref{GNU Distribution}).
 
 @c The following is somewhat duplicated in ``System Installation''.
 Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
-$ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.x86_64-linux.tar.xz.sig
+$ gpg --verify guix-binary-@value{VERSION}.x86_64-linux.tar.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -603,13 +605,13 @@ you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 @example
 # cd /tmp
 # tar --warning=no-timestamp -xf \
-     /path/to/guix-binary-@value{VERSION}.@var{system}.tar.xz
+     /path/to/guix-binary-@value{VERSION}.x86_64-linux.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
 This creates @file{/gnu/store} (@pxref{The Store}) and @file{/var/guix}.
 The latter contains a ready-to-use profile for @code{root} (see next
-step.)
+step).
 
 Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
@@ -617,10 +619,10 @@ would overwrite its own essential files.
 The @option{--warning=no-timestamp} option makes sure GNU@tie{}tar does
 not emit warnings about ``implausibly old time stamps'' (such
 warnings were triggered by GNU@tie{}tar 1.26 and older; recent
-versions are fine.)
+versions are fine).
 They stem from the fact that all the
 files in the archive have their modification time set to zero (which
-means January 1st, 1970.)  This is done on purpose to make sure the
+means January 1st, 1970).  This is done on purpose to make sure the
 archive content is independent of its creation time, thus making it
 reproducible.
 
@@ -705,7 +707,7 @@ there:
 That way, assuming @file{/usr/local/share/info} is in the search path,
 running @command{info guix} will open this manual (@pxref{Other Info
 Directories,,, texinfo, GNU Texinfo}, for more details on changing the
-Info search path.)
+Info search path).
 
 @item
 @cindex substitutes, authorization thereof
@@ -1059,8 +1061,8 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
         (speed 2.))     ;incredibly fast!
 
       (build-machine
-        (name "meeps.example.org")
-        (system "mips64el-linux")
+        (name "armeight.example.org")
+        (system "aarch64-linux")
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
@@ -1070,7 +1072,7 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @noindent
 In the example above we specify a list of two build machines, one for
-the @code{x86_64} architecture and one for the @code{mips64el}
+the @code{x86_64} architecture and one for the @code{aarch64}
 architecture.
 
 In fact, this file is---not surprisingly!---a Scheme file that is
@@ -1363,7 +1365,7 @@ build failed and the client specified @option{--keep-failed}
 (@pxref{Invoking guix build, @option{--keep-failed}}).
 
 The daemon listens for connections and spawns one sub-process for each session
-started by a client (one of the @command{guix} sub-commands.)  The
+started by a client (one of the @command{guix} sub-commands).  The
 @command{guix processes} command allows you to get an overview of the activity
 on your system by viewing each of the active sessions and clients.
 @xref{Invoking guix processes}, for more information.
@@ -1917,8 +1919,8 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
-where @var{system} is one of:
+@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz},
+where you can replace @code{x86_64-linux} with one of:
 
 @table @code
 @item x86_64-linux
@@ -1933,8 +1935,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
-$ gpg --verify guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
+$ gpg --verify guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -1965,7 +1967,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
 @end example
 
 @item
@@ -1974,7 +1976,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guix-system-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
+dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
 sync
 @end example
 
@@ -1990,7 +1992,7 @@ To copy the image to a DVD, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
 @end example
 
 @item
@@ -1999,7 +2001,7 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.@var{system}.iso
+growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.x86_64-linux.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
@@ -2292,7 +2294,7 @@ mkfs.ext4 -L my-root /dev/sda2
 If you are instead planning to encrypt the root partition, you can use
 the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
-@code{man cryptsetup}} for more information.)  Assuming you want to
+@code{man cryptsetup}} for more information).  Assuming you want to
 store the root partition on @file{/dev/sda2}, the command sequence would
 be along these lines:
 
@@ -2764,7 +2766,7 @@ Install the specified @var{package}s.
 Each @var{package} may specify either a simple package name, such as
 @code{guile}, or a package name followed by an at-sign and version number,
 such as @code{guile@@1.8.8} or simply @code{guile@@1.8} (in the latter
-case, the newest version prefixed by @code{1.8} is selected.)
+case, the newest version prefixed by @code{1.8} is selected).
 
 If no version number is specified, the
 newest available version will be selected.  In addition, @var{package}
@@ -3368,7 +3370,7 @@ When using HTTPS, the server's X.509 certificate is @emph{not} validated
 HTTPS clients such as Web browsers usually do.  This is because Guix
 authenticates substitute information itself, as explained above, which
 is what we care about (whereas X.509 certificates are about
-authenticating bindings between domain names and public keys.)
+authenticating bindings between domain names and public keys).
 
 @node Proxy Settings
 @subsection Proxy Settings
@@ -4578,7 +4580,7 @@ The main options are:
 
 @table @code
 @item --export
-Export the specified store files or packages (see below.)  Write the
+Export the specified store files or packages (see below).  Write the
 resulting archive to the standard output.
 
 Dependencies are @emph{not} included in the output, unless
@@ -4595,7 +4597,7 @@ exported store items.
 Read an archive from the standard input, and import the files listed
 therein into the store.  Abort if the archive has an invalid digital
 signature, or if it is signed by a public key not among the authorized
-keys (see @option{--authorize} below.)
+keys (see @option{--authorize} below).
 
 @item --missing
 Read a list of store file names from the standard input, one per line,
@@ -4611,7 +4613,7 @@ to generate the key pair.
 
 The generated key pair is typically stored under @file{/etc/guix}, in
 @file{signing-key.pub} (public key) and @file{signing-key.sec} (private
-key, which must be kept secret.)  When @var{parameters} is omitted,
+key, which must be kept secret).  When @var{parameters} is omitted,
 an ECDSA key using the Ed25519 curve is generated, or, for Libgcrypt
 versions before 1.6.0, it is a 4096-bit RSA key.
 Alternatively, @var{parameters} can specify
@@ -4927,7 +4929,7 @@ interpreted as packages that will be added to the environment directly.
 
 @item --pure
 Unset existing environment variables when building the new environment, except
-those specified with @option{--preserve} (see below.)  This has the effect of
+those specified with @option{--preserve} (see below).  This has the effect of
 creating an environment in which search paths only contain package inputs.
 
 @item --preserve=@var{regexp}
@@ -4945,7 +4947,7 @@ guix environment --pure --preserve=^SLURM --ad-hoc openmpi @dots{} \
 This example runs @command{mpirun} in a context where the only environment
 variables defined are @env{PATH}, environment variables whose name starts
 with @samp{SLURM}, as well as the usual ``precious'' variables (@env{HOME},
-@env{USER}, etc.)
+@env{USER}, etc.).
 
 @item --search-paths
 Display the environment variable definitions that make up the
@@ -4966,7 +4968,7 @@ directory is created that matches the current user's home directory, and
 
 The spawned process runs as the current user outside the container.  Inside
 the container, it has the same UID and GID as the current user, unless
-@option{--user} is passed (see below.)
+@option{--user} is passed (see below).
 
 @item --network
 @itemx -N
@@ -5329,7 +5331,7 @@ the system type of the build host.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+as @code{"aarch64-linux-gnu"} (@pxref{Specifying target triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @item --compression=@var{tool}
@@ -5718,7 +5720,7 @@ Return the @code{<derivation>} object of @var{package} cross-built from
 @var{system} to @var{target}.
 
 @var{target} must be a valid GNU triplet denoting the target hardware
-and operating system, such as @code{"mips64el-linux-gnu"}
+and operating system, such as @code{"aarch64-linux-gnu"}
 (@pxref{Specifying Target Triplets,,, autoconf, Autoconf}).
 @end deffn
 
@@ -5867,7 +5869,7 @@ Lastly, @code{propagated-inputs} is similar to @code{inputs}, but the
 specified packages will be automatically installed alongside the package
 they belong to (@pxref{package-cmd-propagated-inputs, @command{guix
 package}}, for information on how @command{guix package} deals with
-propagated inputs.)
+propagated inputs).
 
 For example this is necessary when a C/C++ library needs headers of
 another library to compile, or when a pkg-config file refers to another
@@ -7070,7 +7072,7 @@ argument.
 Return @code{#t} when @var{path} designates a valid store item and
 @code{#f} otherwise (an invalid item may exist on disk but still be
 invalid, for instance because it is the result of an aborted or failed
-build.)
+build).
 
 A @code{&store-protocol-error} condition is raised if @var{path} is not
 prefixed by the store directory (@file{/gnu/store}).
@@ -7115,7 +7117,7 @@ directory in the store, but may produce more.
 @cindex dependencies, build-time
 The inputs of the derivations---i.e., its build-time dependencies---which may
 be other derivations or plain files in the store (patches, build scripts,
-etc.)
+etc.).
 
 @item
 The system type targeted by the derivation---e.g., @code{x86_64-linux}.
@@ -7537,7 +7539,7 @@ The store monad---an alias for @code{%state-monad}.
 
 Values in the store monad encapsulate accesses to the store.  When its
 effect is needed, a value of the store monad must be ``evaluated'' by
-passing it to the @code{run-with-store} procedure (see below.)
+passing it to the @code{run-with-store} procedure (see below).
 @end defvr
 
 @deffn {Scheme Procedure} run-with-store @var{store} @var{mval} [#:guile-for-build] [#:system (%current-system)]
@@ -7675,7 +7677,7 @@ into gexps.  For example, a useful type of high-level objects that can be
 inserted in a gexp is ``file-like objects'', which make it easy to
 add files to the store and to refer to them in
 derivations and such (see @code{local-file} and @code{plain-file}
-below.)
+below).
 
 To illustrate the idea, here is an example of a gexp:
 
@@ -7719,7 +7721,7 @@ native package build:
                 "-s"
                 (string-append #$emacs "/bin/emacs")
                 (string-append #$output "/bin/vi")))
-   #:target "mips64el-linux-gnu")
+   #:target "aarch64-linux-gnu")
 @end lisp
 
 @noindent
@@ -7846,7 +7848,7 @@ Like the above, but refers to native builds of the objects listed in
 @end table
 
 G-expressions created by @code{gexp} or @code{#~} are run-time objects
-of the @code{gexp?} type (see below.)
+of the @code{gexp?} type (see below).
 @end deffn
 
 @deffn {Scheme Syntax} with-imported-modules @var{modules} @var{body}@dots{}
@@ -7892,7 +7894,7 @@ Return @code{#t} if @var{obj} is a G-expression.
 G-expressions are meant to be written to disk, either as code building
 some derivation, or as plain files in the store.  The monadic procedures
 below allow you to do that (@pxref{The Store Monad}, for more
-information about monads.)
+information about monads).
 
 @deffn {Monadic Procedure} gexp->derivation @var{name} @var{exp} @
        [#:system (%current-system)] [#:target #f] [#:graft? #t] @
@@ -8839,7 +8841,7 @@ also be offloaded to a remote machine of the right architecture.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
+as @code{"aarch64-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
@@ -8903,13 +8905,13 @@ guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
 
 If a log is unavailable locally, and unless @option{--no-substitutes} is
 passed, the command looks for a corresponding log on one of the
-substitute servers (as specified with @option{--substitute-urls}.)
+substitute servers (as specified with @option{--substitute-urls}).
 
 So for instance, imagine you want to see the build log of GDB on MIPS,
 but you are actually on an @code{x86_64} machine:
 
 @example
-$ guix build --log-file gdb -s mips64el-linux
+$ guix build --log-file gdb -s aarch64-linux
 https://@value{SUBSTITUTE-SERVER}/log/@dots{}-gdb-7.10
 @end example
 
@@ -9142,7 +9144,7 @@ hash (@pxref{Invoking guix archive}).
 @item --exclude-vcs
 @itemx -x
 When combined with @option{--recursive}, exclude version control system
-directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.)
+directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.).
 
 @vindex git-fetch
 As an example, here is how you would compute the hash of a Git checkout,
@@ -9675,7 +9677,7 @@ guix refresh -l -e '(@@@@ (gnu packages commencement) glibc-final)'
 @end example
 
 This command lists the dependents of the ``final'' libc (essentially all
-the packages.)
+the packages).
 
 @item --update
 @itemx -u
@@ -9782,7 +9784,7 @@ be used when passing @command{guix refresh} one or more package names:
 
 @item --list-updaters
 @itemx -L
-List available updaters and exit (see @option{--type} above.)
+List available updaters and exit (see @option{--type} above).
 
 For each updater, display the fraction of packages it covers; at the
 end, display the fraction of packages covered by all these updaters.
@@ -9846,7 +9848,7 @@ When this option is omitted, @command{guix refresh} uses
 @file{~/.config/guix/upstream/trustedkeys.kbx} as the keyring for upstream
 signing keys.  OpenPGP signatures are checked against keys from this keyring;
 missing keys are downloaded to this keyring as well (see
-@option{--key-download} below.)
+@option{--key-download} below).
 
 You can export keys from your default GPG keyring into a keybox file using
 commands like this one:
@@ -10110,6 +10112,13 @@ libraries.  (That libc and GCC's libraries represent a large fraction of
 the closure is not a problem @i{per se} because they are always available
 on the system anyway.)
 
+Since the command also accepts store file names, assessing the size of
+a build result is straightforward:
+
+@example
+guix size $(guix system build config.scm)
+@end example
+
 When the package(s) passed to @command{guix size} are available in the
 store@footnote{More precisely, @command{guix size} looks for the
 @emph{ungrafted} variant of the given package(s), as returned by
@@ -10258,7 +10267,7 @@ guix graph --type=reverse-package ocaml
 
 ...@: yields the graph of packages that @emph{explicitly} depend on OCaml (if
 you are also interested in cases where OCaml is an implicit dependency, see
-@code{reverse-bag} below.)
+@code{reverse-bag} below).
 
 Note that for core packages this can yield huge graphs.  If all you want
 is to know the number of packages that depend on a given package, use
@@ -10832,7 +10841,7 @@ When a difference is found between the hash of a locally-built item and
 that of a server-provided substitute, or among substitutes provided by
 different servers, the command displays it as in the example above and
 its exit code is 2 (other non-zero exit codes denote other kinds of
-errors.)
+errors).
 
 The one option that matters is:
 
@@ -11158,7 +11167,7 @@ integration tool; their process identifier (PID) is given by the
 The @code{LockHeld} fields show which store items are currently locked by this
 session, which corresponds to store items being built or substituted (the
 @code{LockHeld} field is not displayed when @command{guix processes} is not
-running as root.)  Last, by looking at the @code{ChildProcess} field, we
+running as root).  Last, by looking at the @code{ChildProcess} field, we
 understand that these three builds are being offloaded (@pxref{Daemon Offload
 Setup}).
 
@@ -11800,7 +11809,7 @@ variables.
 @defvr {Scheme Variable} %base-file-systems
 These are essential file systems that are required on normal systems,
 such as @code{%pseudo-terminal-file-system} and @code{%immutable-store} (see
-below.)  Operating system declarations should always contain at least
+below).  Operating system declarations should always contain at least
 these.
 @end defvr
 
@@ -12629,7 +12638,7 @@ Since this is part of @code{%base-services}, you can use
 @code{modify-services} to customize the set of special files
 (@pxref{Service Reference, @code{modify-services}}).  But the simple way
 to add a special file is @i{via} the @code{extra-special-file} procedure
-(see below.)
+(see below).
 @end defvr
 
 @deffn {Scheme Procedure} extra-special-file @var{file} @var{target}
@@ -14940,7 +14949,7 @@ definition (@pxref{operating-system Reference, system-wide packages}).
 This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
 Desktop Manager} (GDM), a program that manages graphical display servers and
 handles graphical user logins.  Its value must be a @code{gdm-configuration}
-(see below.)
+(see below).
 
 @cindex session types (X11)
 @cindex X11 session types
@@ -16211,7 +16220,7 @@ gnome-session``.  Currently only GNOME has support for Wayland.
 @defvr {Scheme Variable} gnome-desktop-service-type
 This is the type of the service that adds the @uref{https://www.gnome.org,
 GNOME} desktop environment.  Its value is a @code{gnome-desktop-configuration}
-object (see below.)
+object (see below).
 
 This service adds the @code{gnome} package to the system profile, and extends
 polkit with the actions from @code{gnome-settings-daemon}.
@@ -16229,7 +16238,7 @@ The GNOME package to use.
 @defvr {Scheme Variable} xfce-desktop-service-type
 This is the type of a service to run the @uref{Xfce, https://xfce.org/}
 desktop environment.  Its value is an @code{xfce-desktop-configuration} object
-(see below.)
+(see below).
 
 This service adds the @code{xfce} package to the system profile, and
 extends polkit with the ability for @code{thunar} to manipulate the file
@@ -16249,7 +16258,7 @@ The Xfce package to use.
 @deffn {Scheme Variable} mate-desktop-service-type
 This is the type of the service that runs the @uref{https://mate-desktop.org/,
 MATE desktop environment}.  Its value is a @code{mate-desktop-configuration}
-object (see below.)
+object (see below).
 
 This service adds the @code{mate} package to the system
 profile, and extends polkit with the actions from
@@ -16563,7 +16572,7 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @defvr {Scheme Variable} gnome-keyring-service-type
 This is the type of the service that adds the
 @uref{https://wiki.gnome.org/Projects/GnomeKeyring, GNOME Keyring}.  Its
-value is a @code{gnome-keyring-configuration} object (see below.)
+value is a @code{gnome-keyring-configuration} object (see below).
 
 This service adds the @code{gnome-keyring} package to the system profile
 and extends PAM with entries using @code{pam_gnome_keyring.so}, unlocking
@@ -22310,10 +22319,10 @@ configuration:
 
 Note that ddclient needs to access credentials that are stored in a
 @dfn{secret file}, by default @file{/etc/ddclient/secrets} (see
-@code{secret-file} below.)  You are expected to create this file manually, in
+@code{secret-file} below).  You are expected to create this file manually, in
 an ``out-of-band'' fashion (you @emph{could} make this file part of the
 service configuration, for instance by using @code{plain-file}, but it will be
-world-readable @i{via} @file{/gnu/store}.)  See the examples in the
+world-readable @i{via} @file{/gnu/store}).  See the examples in the
 @file{share/ddclient} directory of the @code{ddclient} package.
 
 @c %start of fragment
@@ -24476,7 +24485,7 @@ emulated:
 @lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
+           (platforms (lookup-qemu-platforms "arm" "aarch64"))))
 @end lisp
 
 In this example, we enable transparent emulation for the ARM and aarch64
@@ -26388,7 +26397,7 @@ password, and which needs to access the @file{/etc/passwd} and
 obvious security reasons.  To address that, these executables are
 @dfn{setuid-root}, meaning that they always run with root privileges
 (@pxref{How Change Persona,,, libc, The GNU C Library Reference Manual},
-for more info about the setuid mechanism.)
+for more info about the setuid mechanism).
 
 The store itself @emph{cannot} contain setuid programs: that would be a
 security issue since any user on the system can write derivations that
@@ -27525,7 +27534,7 @@ each other:
 Emit in Dot/Graphviz format to standard output the @dfn{service
 extension graph} of the operating system defined in @var{file}
 (@pxref{Service Composition}, for more information on service
-extensions.)
+extensions).
 
 The command:
 
@@ -28086,7 +28095,7 @@ services and service types.  This interface is provided by the
 
 @deffn {Scheme Procedure} service @var{type} [@var{value}]
 Return a new service of @var{type}, a @code{<service-type>} object (see
-below.)  @var{value} can be any object; it represents the parameters of
+below).  @var{value} can be any object; it represents the parameters of
 this particular service instance.
 
 When @var{value} is omitted, the default value specified by @var{type}
@@ -28642,7 +28651,7 @@ Occasionally, important security vulnerabilities are discovered in software
 packages and must be patched.  Guix developers try hard to keep track of
 known vulnerabilities and to apply fixes as soon as possible in the
 @code{master} branch of Guix (we do not yet provide a ``stable'' branch
-containing only security updates.)  The @command{guix lint} tool helps
+containing only security updates).  The @command{guix lint} tool helps
 developers find out about vulnerable versions of software packages in the
 distribution:
 
@@ -29089,7 +29098,7 @@ reason.
 Guix is based on the @uref{https://nixos.org/nix/, Nix package manager},
 which was designed and
 implemented by Eelco Dolstra, with contributions from other people (see
-the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
+the @file{nix/AUTHORS} file in Guix).  Nix pioneered functional package
 management, and promoted unprecedented features, such as transactional
 package upgrades and rollbacks, per-user profiles, and referentially
 transparent build processes.  Without this work, Guix would not exist.

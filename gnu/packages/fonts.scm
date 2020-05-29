@@ -677,7 +677,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.01")
+    (version "13.0.02")
     (source
      (origin
        (method url-fetch)
@@ -687,7 +687,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "1svzm3xahb2m8r79ha9gb1z3zlckykx9d87cghswj7dxn9868j4b"))))
+        (base32 "1fg908qadh14kfbpzqfj3vgzlxgx68sdlwhl2prz7arq5r45dami"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -1121,16 +1121,14 @@ later hand-tweaked with the gbdfed(1) editor:
 (define-public font-comic-neue
   (package
     (name "font-comic-neue")
-    ;; The ‘v2.3’ and ‘v2.4’ releases at https://github.com/crozynski/comicneue
-    ;; are equivalent.  The home page hosts 2.3, not 2.4, so we use that here.
-    (version "2.3")
+    (version "2.5")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
                     "http://www.comicneue.com/comic-neue-" version ".zip"))
               (sha256
                (base32
-                "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+                "1ng0m0zs7qr91qy5ff0l01l27npr76961c6zfkxnhxf68zpwz5k4"))))
     (build-system font-build-system)
     (arguments
      `(#:phases

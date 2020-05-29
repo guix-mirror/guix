@@ -381,13 +381,13 @@ announcement.")
 (define-public ruby-rake-compiler
   (package
     (name "ruby-rake-compiler")
-    (version "1.0.4")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rake-compiler" version))
               (sha256
                (base32
-                "1xpdi4w8zaklk1i9ps8g3k0icw3v5fcks092l84w28rgrpx82qip"))))
+                "0l4hg21v0phfrfsc2hilgmwvn2imxr0byqh8dv16bya1s5d3km0q"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; needs cucumber
@@ -645,10 +645,12 @@ outcomes of a code example.")
                (("rspec rspec-core rspec-expectations rspec-mocks rspec-support")
                 ""))
              #t))
-         (add-before 'build 'update-ffi-in-gemfile
+         (add-before 'build 'loosen-ffi-requirement
            (lambda _
+             ;; Accept any version of ruby-ffi.
              (substitute* "Gemfile"
-               (("  gem 'ffi', '~> 1.9.25'") "  gem 'ffi', '~> 1.10.0'"))
+               (("  gem 'ffi', '~> 1\\.9\\.25'")
+                "  gem 'ffi'"))
              #t))
          (add-before 'build 'remove-unnecessary-dependency-versions-from-gemfile
            (lambda _
@@ -1680,18 +1682,70 @@ Ruby.")
 (define-public ruby-thor
   (package
     (name "ruby-thor")
-    (version "0.19.4")
+    (version "1.0.1")
     (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "thor" version))
+              ;; Pull from git because the gem has no tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/erikhuda/thor")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "01n5dv9kql60m6a00zc0r66jvaxx98qhdny3klyj0p3w34pad2ns"))))
+                "1anrx5vynk57hn5c8ig5pgkmcsbj9q5mvckd5rviw1jid7n89k57"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; no test suite
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-readline-tests
+                    (lambda _
+                      ;; Ensure Readline is initialized before running the
+                      ;; test to avoid a type clash with the mock ::Readline.
+                      ;; See <https://github.com/erikhuda/thor/pull/717>.
+                      (substitute* "spec/line_editor/readline_spec.rb"
+                        (("unless defined\\? ::Readline" all)
+                         (string-append "Thor::LineEditor::Readline.available?\n"
+                                        all)))
+                      #t))
+                  (add-after 'unpack 'remove-coveralls-dependency
+                    (lambda _
+                      ;; Do not hook the test suite into the online
+                      ;; coveralls service.
+                      (substitute* "Gemfile"
+                        ((".*coveralls.*") ""))
+                      (substitute* "spec/helper.rb"
+                        (("require \"coveralls\"") "")
+                        (("Coveralls::SimpleCov::Formatter") "")
+                        ;; Also drop the WebMock dependency which is only
+                        ;; present to allow a coveralls.io connection, and
+                        ;; would otherwise introduce a circular dependency.
+                        (("require \"webmock/rspec\"") "")
+                        (("WebMock\\.disable_net_connect.*") ""))
+                      #t))
+                  (add-after 'unpack 'disable-network-tests
+                    (lambda _
+                      ;; These tests attempt to look up example.com.
+                      (substitute* "spec/actions/file_manipulation_spec.rb"
+                        (("it \"accepts (https?) remote sources" _ proto)
+                         (string-append "xit \"accepts " proto " remote sources")))
+                      #t))
+                  (add-after 'unpack 'disable-quality-tests
+                    (lambda _
+                      ;; These tests attempt to check the git repository for
+                      ;; tabs vs spaces, double vs single quotes, etc, and
+                      ;; depend on the git checkout.
+                      (delete-file "spec/quality_spec.rb")
+                      #t))
+                  (add-before 'check 'make-files-writable
+                    (lambda _
+                      ;; The tests needs rw access to the test suite.
+                      (for-each make-file-writable (find-files "spec"))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (invoke "rspec" "spec"))))))
     (native-inputs
-     `(("bundler" ,bundler)))
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-simplecov" ,ruby-simplecov)))
     (synopsis "Ruby toolkit for building command-line interfaces")
     (description "Thor is a toolkit for building powerful command-line
 interfaces.")
@@ -1798,6 +1852,41 @@ high-level toolkit for building cryptographic systems and protocols.")
 and inspect the environment.")
     (home-page "https://github.com/e2/nenv")
     (license license:expat)))
+
+(define-public ruby-ptools
+  (package
+    (name "ruby-ptools")
+    (version "1.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ptools" version))
+              (sha256
+               (base32
+                "1jb1h1nsk9zwykpniw8filbsk26kjsdlpk5wz6w0zyamcd41h87j"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-/bin/ls
+                    (lambda _
+                      (substitute* "test/test_binary.rb"
+                        (("/bin/ls")
+                         (which "ls")))
+                      #t))
+                   (add-before 'install 'create-gem
+                     (lambda _
+                       ;; Do not attempt to sign the gem.
+                       (substitute* "Rakefile"
+                         (("spec\\.signing_key = .*")
+                          ""))
+                       (invoke "rake" "gem:create"))))))
+    (synopsis "Extra methods for Ruby's @code{File} class")
+    (description
+     "The @dfn{ptools} (power tools) library extends Ruby's core @code{File}
+class with many additional methods modelled after common POSIX tools, such as
+@code{File.which} for finding executables, @code{File.tail} to print the last
+lines of a file, @code{File.wc} to count words, and so on.")
+    (home-page "https://github.com/djberg96/ptools")
+    (license license:artistic2.0)))
 
 (define-public ruby-permutation
   (package
@@ -2176,13 +2265,13 @@ two hashes.")
 (define-public ruby-rubygems-tasks
   (package
     (name "ruby-rubygems-tasks")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rubygems-tasks" version))
               (sha256
                (base32
-                "16cp45qlbcglnqdm4f1vj3diywdz4v024saqpgrz6palf0wmgz2j"))))
+                "1x3sz3n2dlknd3v7w1mrq6f0ag6pwzhjvg7z29p75w3p42ma1gbx"))))
     (build-system ruby-build-system)
     ;; Tests need Internet access.
     (arguments `(#:tests? #f))
@@ -2408,7 +2497,7 @@ interface for Ruby programs.")
 (define-public ruby-fast-gettext
   (package
     (name "ruby-fast-gettext")
-    (version "2.0.2")
+    (version "2.0.3")
     (home-page "https://github.com/grosser/fast_gettext")
     (source (origin
               (method git-fetch)
@@ -2417,7 +2506,7 @@ interface for Ruby programs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rd48fp89k1sclgn2v26br2glwl3iv7z72mizzzmkdmqalqfn1sa"))))
+                "1dg14apq5sfjshhcq0idphhs7aq9ikzswhqmn689p1h76mxqr1v6"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"
@@ -2803,6 +2892,28 @@ HTML, and PDF through LaTeX.")
 objects.")
     (home-page "https://github.com/floehopper/metaclass")
     (license license:expat)))
+
+(define-public ruby-mkmf-lite
+  (package
+    (name "ruby-mkmf-lite")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mkmf-lite" version))
+              (sha256
+               (base32
+                "0br9k6zijj1zc25n8p7f2j1mwl58nfgdknf3q13h9k156jvrir06"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-ptools" ,ruby-ptools)))
+    (synopsis "Lightweight alternative to @code{mkmf}")
+    (description
+     "@code{mkmf-lite} is a light version of Ruby's @code{mkmf.rb} designed
+for use as a library.  It does not create packages, builds, or log files of
+any kind.  Instead, it provides mixin methods that you can use in FFI or tests
+to check for the presence of header files, constants, and so on.")
+    (home-page "https://github.com/djberg96/mkmf-lite")
+    (license license:asl2.0)))
 
 (define-public ruby-mspec
   (package
@@ -3744,7 +3855,7 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
 (define-public ruby-hocon
   (package
     (name "ruby-hocon")
-    (version "1.3.0")
+    (version "1.3.1")
     (home-page "https://github.com/puppetlabs/ruby-hocon")
     (source (origin
               (method git-fetch)
@@ -3752,7 +3863,7 @@ and manipulate Git repositories by wrapping system calls to the git binary.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wz4cswjg3gs1y1bar7j4j88wjimfa9zhvy51jyi177i5dzax416"))))
+                "172hh2zr0n9nnszv0qvlgwszgkrq84yahrg053m68asy79zpmbqr"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -4012,13 +4123,13 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.10.5")
+    (version "1.10.9")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "185g3dwba73jqxjr94bd2zk6fil6n9hmcfnfyzh3p1w47vm296r7"))))
+                "12j76d0bp608932xkzmfi638c7aqah57l437q8494znzbj610qnm"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -5158,117 +5269,82 @@ multibyte strings, internationalization, time zones, and testing.")
 (define-public ruby-crass
   (package
     (name "ruby-crass")
-    (version "1.0.4")
+    (version "1.0.6")
+    (home-page "https://github.com/rgrove/crass")
     (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "crass" version))
+              ;; The gem does not contain tests, so pull from git.
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bpxzy6gjw9ggjynlxschbfsgmx8lv3zw1azkjvnb8b9i895dqfi"))))
+                "1gbsb81psgb6xhnwpx4s409jc0mk0gijh039sy5xyi8jpaaadp40"))))
     (build-system ruby-build-system)
-    (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)))
     (synopsis "Pure Ruby CSS parser")
     (description
      "Crass is a pure Ruby CSS parser based on the CSS Syntax Level 3 spec.")
-    (home-page "https://github.com/rgrove/crass/")
     (license license:expat)))
 
 (define-public ruby-nokogumbo
-  (let ((commit "fb51ff299a1c34346837580b6d1d9a60fadf5dbd"))
-    (package
-      (name "ruby-nokogumbo")
-      (version (string-append "1.4.7-1." (string-take commit 8)))
-      (source (origin
-                ;; We use the git reference, because there's no Rakefile in the
-                ;; published gem and the tarball on Github is outdated.
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rubys/nokogumbo.git")
-                      (commit "d56f954d20a")))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "0bnppjy96xiadrsrc9dp8y6wvdwnkfa930n7acrp0mqm4qywl2wl"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:modules ((guix build ruby-build-system)
-                    (guix build utils)
-                    (ice-9 rdelim))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'build-gemspec
-            (lambda _
-              (substitute* "Rakefile"
-                ;; Build Makefile even without a copy of gumbo-parser sources
-                (("'gumbo-parser/src',") "")
-                ;; We don't bundle gumbo-parser sources
-                (("'gumbo-parser/src/\\*',") "")
-                (("'gumbo-parser/visualc/include/\\*',") "")
-                ;; The definition of SOURCES will be cut in gemspec, and
-                ;; "FileList" will be undefined.
-                (("SOURCES \\+ FileList\\[")
-                 "['ext/nokogumboc/extconf.rb', 'ext/nokogumboc/nokogumbo.c', "))
-
-              ;; Copy the Rakefile and cut out the gemspec.
-              (copy-file "Rakefile" ".gemspec")
-              (with-atomic-file-replacement ".gemspec"
-                (lambda (in out)
-                  (let loop ((line (read-line in 'concat))
-                             (skipping? #t))
-                    (if (eof-object? line)
-                        #t
-                        (let ((skip-next? (if skipping?
-                                              (not (string-prefix? "SPEC =" line))
-                                              (string-prefix? "end" line))))
-                          (when (or (not skipping?)
-                                    (and skipping? (not skip-next?)))
-                                (format #t "~a" line)
-                                (display line out))
-                          (loop (read-line in 'concat) skip-next?))))))
-              #t)))))
-      (inputs
-       `(("gumbo-parser" ,gumbo-parser)))
-      (propagated-inputs
-       `(("ruby-nokogiri" ,ruby-nokogiri)))
-      (synopsis "Ruby bindings to the Gumbo HTML5 parser")
-      (description
-       "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
+  (package
+    (name "ruby-nokogumbo")
+    (version "2.0.2")
+    (source (origin
+              ;; We use the git reference, because there's no Rakefile in the
+              ;; published gem and the tarball on Github is outdated.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rubys/nokogumbo.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1qg0iyw450lw6d0j1ghzg79a6l60nm1m4qmrzwzybi585861jxcx"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (inputs
+     `(("gumbo-parser" ,gumbo-parser)))
+    (propagated-inputs
+     `(("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Ruby bindings to the Gumbo HTML5 parser")
+    (description
+     "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
 access the result as a Nokogiri parsed document.")
-      (home-page "https://github.com/rubys/nokogumbo/")
-      (license license:asl2.0))))
+    (home-page "https://github.com/rubys/nokogumbo/")
+    (license license:asl2.0)))
 
 (define-public ruby-sanitize
   (package
     (name "ruby-sanitize")
-    (version "4.6.3")
+    (version "5.1.0")
+    (home-page "https://github.com/rgrove/sanitize")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; The gem does not include the Rakefile, so we download the
-              ;; release tarball from Github.
-              (uri (string-append "https://github.com/rgrove/"
-                                  "sanitize/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              ;; source from Github.
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (patches (search-patches "ruby-sanitize-system-libxml.patch"))
               (sha256
                (base32
-                "1fmqppwif3cm8h79006jfzkdnlxxzlry9kzk03psk0d5xpg55ycc"))))
+                "0lj0q9yhjp0q0in5majkshnki07mw8m2vxgndx4m5na6232aszl0"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-crass" ,ruby-crass)
        ("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-nokogumbo" ,ruby-nokogumbo)))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-redcarpet" ,ruby-redcarpet)
-       ("ruby-yard" ,ruby-yard)))
+     `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Whitelist-based HTML and CSS sanitizer")
     (description
      "Sanitize is a whitelist-based HTML and CSS sanitizer.  Given a list of
 acceptable elements, attributes, and CSS properties, Sanitize will remove all
 unacceptable HTML and/or CSS from a string.")
-    (home-page "https://github.com/rgrove/sanitize/")
     (license license:expat)))
 
 (define-public ruby-oj
@@ -9262,6 +9338,35 @@ and stability,
 the Thin library.")
     (home-page "https://github.com/sj26/skinny")
     (license license:expat)))
+
+(define-public ruby-sys-filesystem
+  (package
+    (name "ruby-sys-filesystem")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sys-filesystem" version))
+              (sha256
+               (base32
+                "0mizqnsiagagmracadr16s5na2ks2j3ih1w0f3gp4ssrda6szl01"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'set-HOME
+                    (lambda _
+                      ;; Some tests attempt to stat $HOME.  Let them.
+                      (setenv "HOME" "/tmp")
+                      #t)))))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (native-inputs
+     `(("ruby-mkmf-lite" ,ruby-mkmf-lite)))
+    (synopsis "Gather file system information")
+    (description
+     "The @code{sys-filesystem} library provides a cross-platform interface
+for gathering file system information, such as disk space and mount points.")
+    (home-page "https://github.com/djberg96/sys-filesystem")
+    (license license:asl2.0)))
 
 (define-public mailcatcher
   (package

@@ -347,7 +347,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.1")
+    (version "6.4.5")
     (source
      (origin
        (method url-fetch)
@@ -355,21 +355,14 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1859wvfc9fq72mwp4njdiy0x89hnddlfr3nix71qqglcs0fz2crz"))))
+        (base32 "073bjh8qbvww7f5gbd6pq640qspi7dc6cjndvm0h2jcl0a90c3yk"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ssl="
-                            (assoc-ref %build-inputs "openssl")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'create-test-environment
-           (lambda _
-             ;; Fix ‘Cannot find absolute path for user's home directory’.
-             (setenv "HOME" "/tmp")
-             #t)))))
+                            (assoc-ref %build-inputs "openssl")))))
     (home-page "https://www.fetchmail.info/")
     (synopsis "Remote-mail retrieval and forwarding utility")
     (description
@@ -389,7 +382,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.13.5")
+    (version "1.14.2")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -399,7 +392,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0lx65a44b03rbvcrz0y9syrik67fx3hvblxyyvz5l9bb7rdipmvc"))
+               "0cdcls0x6f2w99hkjz48hxhnx86w3bnyxzibchdc9yspih770bz2"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -423,8 +416,8 @@ aliasing facilities to work just as they would on normal mail.")
                            "--with-sasl"
                            "--with-sqlite3" ; required for Autocrypt
                            "--with-idn2" ; recommended for Autocrypt
-                           ;; so that mutt does not check whether the path
-                           ;; exists, which it does not in the chroot
+                           ;; So that mutt does not check whether the path
+                           ;; exists, which it does not in the chroot.
                            "--with-mailpath=/var/mail")))
     (home-page "http://www.mutt.org/")
     (synopsis "Mail client")
@@ -718,15 +711,15 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.6")
+    (version "1.4.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/"  version "/"
+                                  "download/1,4.7/" ; sic
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "15spbplf9p8cdxqfwnv3x67451sfpna9q5n2kgqqwh2y78i7zlhc"))))
+                "19qmz9fgnjpj0cxb8y9nb2dfk7pc0a9kwfiysa0f13ps3d5k4mhm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2704,10 +2697,7 @@ operators and scripters.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))))
+       (list (string-append "CC=" ,(cc-for-target)))
        #:configure-flags (list (string-append "--with-ssl-include-dir="
                                               (assoc-ref %build-inputs "openssl")
                                               "/include/openssl")
@@ -2762,14 +2752,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
-                           name "-" version ".tar.bz2"))
+                           "balsa-" version ".tar.bz2"))
        (sha256
-        (base32 "0ycidvgy9npd6avxk88sf2ca609m7zb0hzrk1yajrgwb1rfqx68a"))))
+        (base32 "1xkxx801p7sbfkn0bh3cz85wra4xf1z1zhjqqc80z1z1nln7fhb4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

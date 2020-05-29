@@ -1307,7 +1307,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.7")
+    (version "3.6.11")
     (source
      (origin
        (method git-fetch)
@@ -1316,7 +1316,7 @@ also walk each side of a merge and test those changes individually.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rmyzr66lxh2ildf3h1nh3hh2ndwk21rjdin50r5vhwbdd7jg8vb"))))
+        (base32 "1rkj7gknwjlc5ij9w39zf5mr647bm45la57yjczydmvrb8c56yrh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -1718,14 +1718,14 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.51")
+    (version "1.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "0nn5cf8syb5nbjvkn8w561pk25clv187h4hs9pnc700g9w56chzf"))))
+                "06y2myhhv2ap08bq7d7shq0b7lq6wgznwrpz6622xq66cxkf2n5g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1885,7 +1885,10 @@ accessed and migrated on modern systems.")
        ("ed" ,ed)))
     (arguments
      `(#:configure-flags (list "--with-no-aegis-configured"
-                               "--sharedstatedir=/var/com/aegis")
+                               "--sharedstatedir=/var/com/aegis"
+                               ;; Uses the old 'throw()' specifier with 'new'
+                               ;; which changed in C++11.
+                               "CXXFLAGS=-std=c++03")
        #:parallel-build? #f ; There are some nasty racy rules in the Makefile.
        #:phases
        (modify-phases %standard-phases
@@ -1928,7 +1931,7 @@ accessed and migrated on modern systems.")
 
                ;; The author decided to call the check rule "sure".
                (invoke "make" "sure")))))))
-    (home-page "http://aegis.sourceforge.net")
+    (home-page "https://sourceforge.net/projects/aegis/")
     (synopsis "Project change supervisor")
     (description "Aegis is a project change supervisor, and performs some of
 the Software Configuration Management needed in a CASE environment.  Aegis
@@ -2168,7 +2171,7 @@ by rclone usable with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method url-fetch)
@@ -2176,8 +2179,7 @@ by rclone usable with git-annex.")
               "https://www.fossil-scm.org/index.html/uv/"
               "fossil-src-" version ".tar.gz"))
        (sha256
-        (base32
-         "041bs4fgk52fw58p7s084pxk9d9vs5v2f2pjbznqawz75inpg8yq"))
+        (base32 "0c9nzx42wxfmym9vf1pnbdb1c7gp7a7zqky60izxsph7w2xh8nix"))
        (modules '((guix build utils)))
        (snippet
         '(begin

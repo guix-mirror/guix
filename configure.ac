@@ -136,9 +136,9 @@ if test "x$guix_cv_have_recent_guile_sqlite3" != "xyes"; then
   AC_MSG_ERROR([A recent Guile-SQLite3 could not be found; please install it.])
 fi
 
-GUILE_MODULE_AVAILABLE([have_guile_gcrypt], [(gcrypt hash)])
-if test "x$have_guile_gcrypt" != "xyes"; then
-  AC_MSG_ERROR([Guile-Gcrypt could not be found; please install it.])
+GUIX_CHECK_GUILE_GCRYPT
+if test "x$guix_cv_have_recent_guile_gcrypt" != "xyes"; then
+  AC_MSG_ERROR([A recent Guile-Gcrypt could not be found; please install it.])
 fi
 
 dnl Guile-newt is used by the graphical installer.

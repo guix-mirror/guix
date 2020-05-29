@@ -930,7 +930,7 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2.2")
+    (version "4.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
@@ -939,7 +939,7 @@ operate properly.")
              (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
-               "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
+               "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -1530,7 +1530,7 @@ projects while introducing many more.")
 (define-public mpv-mpris
   (package
     (name "mpv-mpris")
-    (version "0.4")
+    (version "0.5")
     (source
       (origin
         (method git-fetch)
@@ -1540,7 +1540,7 @@ projects while introducing many more.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fr3jvja8s2gdpx8qyk9r17977flms3qpm8zci62nd9r5wjdvr5i"))))
+          "07p6li5z38pkfd40029ag2jqx917vyl3ng5p2i4v5a0af14slcnk"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -2423,7 +2423,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "25.0.7")
+    (version "25.0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2432,10 +2432,12 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02ppkp1j5yxnxv663nz5wv4vbcg3k53l43xq94d1p1b3j4wxwq8b"))))
+                "0j2k65q3wfyfxhvkl6icz4qy0s3kfqhksizy2i3ah7yml266axbj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests
+     `(#:tests? #f ; no test suite
+       #:configure-flags
+       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -2449,6 +2451,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("jansson" ,jansson)
        ("libx264" ,libx264)
        ("libxcomposite" ,libxcomposite)
+       ("mbedtls" ,mbedtls-apache)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)

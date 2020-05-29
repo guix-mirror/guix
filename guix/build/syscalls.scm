@@ -1404,7 +1404,7 @@ bytevector BV at INDEX."
            (error "unsupported socket address" sockaddr)))))
 
 (define write-socket-address!
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       write-socket-address!/linux
       write-socket-address!/hurd))
 
@@ -1436,7 +1436,7 @@ bytevector BV at INDEX."
            (vector family)))))
 
 (define read-socket-address
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       read-socket-address/linux
       read-socket-address/hurd))
 
@@ -2052,8 +2052,8 @@ correspond to a terminal, return the value returned by FALL-BACK."
         ;; would return EINVAL instead in some cases:
         ;; <https://bugs.ruby-lang.org/issues/10494>.
         ;; Furthermore, some FUSE file systems like unionfs return ENOSYS for
-        ;; that ioctl.
-        (if (memv errno (list ENOTTY EINVAL ENOSYS))
+        ;; that ioctl, and bcachefs returns EPERM.
+        (if (memv errno (list ENOTTY EINVAL ENOSYS EPERM))
             (fall-back)
             (apply throw args))))))
 

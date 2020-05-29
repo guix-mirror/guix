@@ -1,10 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019, 2020 Christopher Howard <christopher@librehacker.com>
 ;;; Copyright © 2019, 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Charlie Ritter <chewzerita@posteo.net>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -191,7 +192,7 @@ memory contents between them.")
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/csete/aptdec")
+             (url "https://github.com/Xerbo/aptdec")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
@@ -202,7 +203,15 @@ memory contents between them.")
      `(("libpng" ,libpng)
        ("libsndfile" ,libsndfile)))
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (list
+        (string-append "CC="
+                       (if ,(%current-target-system)
+                           (string-append (assoc-ref %build-inputs "cross-gcc")
+                                          "/bin/" ,(%current-target-system) "-gcc")
+                           "gcc"))
+        (string-append "PREFIX=" %output)
+        (string-append "RPM_BUILD_ROOT=" %output))
        #:tests? #f ; no tests
        #:phases
        (modify-phases %standard-phases
@@ -212,7 +221,7 @@ memory contents between them.")
              (let ((out (assoc-ref outputs "out")))
                (install-file "atpdec" (string-append out "/bin")))
              #t)))))
-    (home-page "https://github.com/csete/aptdec")
+    (home-page "https://github.com/Xerbo/aptdec")
     (synopsis "NOAA Automatic Picture Transmission (APT) decoder")
     (description "Aptdec decodes Automatic Picture Transmission (APT) images.
 These are medium resolution images of the Earth transmitted by, among other
@@ -573,14 +582,14 @@ using GNU Radio and the Qt GUI toolkit.")
 (define-public fldigi
   (package
     (name "fldigi")
-    (version "4.1.12")
+    (version "4.1.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.w1hkj.com/files/fldigi/fldigi-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1yjjv2ss84xfiaidypp476mhrbpnw4zf7mb5cdqwhdh604x0svr1"))))
+        (base32 "0mlq4z5k3h466plij8hg9xn5xbjxk557g4pw13cplpf32fhng224"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1017,11 +1026,8 @@ gain and standing wave ratio.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               "BLADERF=no"))
+       (list (string-append "CC=" ,(cc-for-target))
+             "BLADERF=no")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)

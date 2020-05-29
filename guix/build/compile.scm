@@ -98,7 +98,8 @@
   (define (override-option option value lst)
     `(,option ,value ,@(strip-option option lst)))
 
-  (cond ((string-contains file "gnu/packages/")
+  (cond ((or (string-contains file "gnu/packages/")
+             (string-contains file "gnu/tests/"))
          ;; Level 0 is good enough but partial evaluation helps preserve the
          ;; "macro writer's bill of rights".
          (override-option #:partial-eval? #t

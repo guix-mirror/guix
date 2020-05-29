@@ -61,6 +61,7 @@
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages digest)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -82,6 +83,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
@@ -535,7 +537,7 @@ featuring various improvements and bug fixes.")))
                (copy-recursively "doc" doc)
                (copy-recursively "examples" examples)
                #t))))))
-    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (home-page "https://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated capacitance extraction program")
     (description
      "Fastcap is a capacitance extraction program based on a
@@ -583,7 +585,7 @@ multipole-accelerated algorithm.")
                       (copy-recursively "doc" doc)
                       (copy-recursively "examples" examples)
                       #t))))))
-    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (home-page "https://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated inductance analysis program")
     (description
      "Fasthenry is an inductance extraction program based on a
@@ -1334,7 +1336,7 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "4.2.1")
+    (version "4.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1342,39 +1344,37 @@ bindings for Python, Java, OCaml and more.")
                     (commit version)))
               (sha256
                (base32
-                "14b9433cgc2nabhz836zfgvgh2dwailcmvy05krsa0inmzbvx9fg"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "libr/asm/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  (substitute* "libr/parse/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  (substitute* "libr/bin/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  #t))))
+                "0gwdnrnk7wdgkajp2qwg4fyplh7nsbmf01bzx07px6xmiscd9z2s"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; tests require git and network access
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'mklibdir
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
              #t)))
        #:configure-flags
-       (list "--with-sysmagic" "--with-syszip" "--with-openssl"
-             "--without-nonpic" "--with-rpath" "--with-syscapstone")
+       (list "--with-openssl"
+             "--with-rpath"
+             "--with-syscapstone"
+             "--with-sysmagic"
+             "--with-syszip"
+             "--with-sysxxhash")
        #:make-flags
        (list "CC=gcc")))
+    ;; TODO: Add gmp and libzip and make the build system actually find them.
     (inputs
-     `(("openssl" ,openssl)
-       ("zip" ,zip)
-       ("gmp" ,gmp)
-       ("capstone" ,capstone)))
+     `(("capstone" ,capstone)
+       ("libuv" ,libuv)
+       ("openssl" ,openssl)
+       ("zip" ,zip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In the Libs: section of r_hash.pc.
+     `(("xxhash" ,xxhash)))
     (home-page "https://radare.org/")
     (synopsis "Reverse engineering framework")
     (description
@@ -2175,7 +2175,7 @@ simulation.")
 (define-public cutter
   (package
     (name "cutter")
-    (version "1.10.1")
+    (version "1.10.3")
     (source
      (origin
        (method git-fetch)
@@ -2184,8 +2184,7 @@ simulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gvsrcskcdd1hxrjpkpc657anmfs25f174vxk4wzvn385rnmrxd3"))))
+        (base32 "0qj8jyij02nif4jpirl09ygwnv8a9zi3vkb5sf5s8mg7qwlpnvyk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2194,8 +2193,8 @@ simulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (radare2 (assoc-ref inputs "radare2")))
-               ;; fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
-               ;; override `qmake PREFIX=`
+               ;; Fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
+               ;; override `qmake PREFIX=`.
                (substitute* "./src/lib_radare2.pri"
                  (("PREFIX") "R2PREFIX")
                  (("R2PREFIX=/usr") (string-append "R2PREFIX=" radare2)))

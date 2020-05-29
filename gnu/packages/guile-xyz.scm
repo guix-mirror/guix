@@ -26,6 +26,7 @@
 ;;; Copyright © 2019, 2020 Martin Becze <mjbecze@riseup.net>
 ;;; Copyright © 2020 Evan Straw <evan.straw99@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Julien Lepiler <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2872,11 +2873,11 @@ in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
 
 (define-public emacsy-minimal
-  (let ((commit "d459ca1d3d09e7624e662bc4cfc3596850796fc6"))
+  (let ((commit "v0.4.1-28-gd459ca1"))
     (package
       (inherit emacsy)
       (name "emacsy-minimal")
-      (version (git-version "v0.4.1" "28" commit))
+      (version (string-drop commit 1))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3608,3 +3609,77 @@ WebSocket protocol as defined by RFC 6455.")
 
 (define-public guile3.0-websocket
   (deprecated-package "guile3.0-websocket" guile-websocket))
+
+(define-public guile-rdf
+  (package
+    (name "guile-rdf")
+    (version "1.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/guile-rdf")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0dwn3app1fscbpmpgvjs5jy1y0gwy3j5gdx8br79af6a88zjlnqf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)); tests require network
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://framagit.org/tyreunom/guile-rdf")
+    (synopsis "Guile implementation of the RDF abstract and concrete syntaxes")
+    (description "Guile RDF is an implementation of the RDF (Resource Description
+Framework) format defined by the W3C for GNU Guile.  RDF structures include
+triples (facts with a subject, a predicate and an object), graphs which are
+sets of triples, and datasets, which are collections of graphs.
+
+RDF specifications include the specification of concrete syntaxes and of
+operations on graphs.  This library implements some basic functionalities,
+such as parsing and producing turtle and nquads syntax, as well as
+manipulating graphs and datasets.")
+    (license license:gpl3+)))
+
+(define-public guile-jsonld
+  (package
+    (name "guile-jsonld")
+    (version "1.0.1")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://framagit.org/tyreunom/guile-jsonld")
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0zfn3nwlz6xzip1j8xbj768dc299r037cfc81bk6kwl9xhzkjbrg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)); require network
+    (propagated-inputs
+     `(("guile-gnutls" ,gnutls)
+       ("guile-json" ,guile-json-3)
+       ("guile-rdf" ,guile-rdf)))
+    (inputs
+     `(("guile" ,guile-3.0)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    (home-page "https://framagit.org/tyreunom/guile-jsonld")
+    (synopsis "Guile implementation of the JsonLD API specification")
+    (description "Guile JsonLD is an implementation of the JsonLD (Json for
+Linked Data) API defined by the W3C for GNU Guile.  It allows you to express links
+between data, in a way that is very similar to WikiData or RDF for instance.
+An object can have relations (in the form of an IRI) that relates it to one or
+more objects or strings, represented by a Json object or an IRI.")
+    (license license:gpl3+)))

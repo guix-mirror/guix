@@ -690,7 +690,7 @@ extracting content or merging files.")
       (origin
         (method url-fetch)
         (uri (string-append "https://mupdf.com/downloads/archive/"
-                            name "-" version "-source.tar.xz"))
+                            "mupdf-" version "-source.tar.xz"))
         (sha256
          (base32
           "1npmy92lkj41nnc14b4fpq7z62pminy94zsdbrczj22jpn283rvg"))

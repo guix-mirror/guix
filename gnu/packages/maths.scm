@@ -227,15 +227,15 @@ programming languages.")
 (define-public qhull
   (package
     (name "qhull")
-    (version "2015.2")
+    (version "2019.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.qhull.org/download/qhull-"
                                   (car (string-split version #\.))
-                                  "-src-7.2.0.tgz"))
+                                  "-src-7.3.2.tgz"))
               (sha256
                (base32
-                "0dm4b2xr3asy6w74khq2zg4gf26zsy3qf9sq7pf7lmrvbj911c3q"))))
+                "1ys3vh3qq0v9lh452xb932vp63advds1pxk42lk7cc1niiar0y9b"))))
     (build-system cmake-build-system)
     (synopsis "Calculate convex hulls and related structures")
     (description
@@ -920,7 +920,17 @@ computations.")
                (("(/gnu/store/)([a-Z0-9]*)" all prefix hash)
                 (string-append prefix (string-take hash 10) "...")))
              #t))
-         )))
+         (add-after 'install 'provide-absolute-libjpeg-reference
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (libjpeg (assoc-ref inputs "libjpeg")))
+               ;; libjpeg-turbo does not provide a .la file, so libtool is
+               ;; unable to add an absolute reference for -ljpeg in the .la
+               ;; files.  Fix it manually to avoid having to propagate it.
+               (substitute* (find-files (string-append out "/lib") "\\.la$")
+                 (("-ljpeg")
+                  (string-append "-L" libjpeg "/lib -ljpeg")))
+               #t))))))
     (home-page "https://www.hdfgroup.org/products/hdf4/")
     (synopsis
      "Library and multi-object file format for storing and managing data")
@@ -1602,14 +1612,14 @@ interfaces.")
 (define-public clp
   (package
     (name "clp")
-    (version "1.17.1")
+    (version "1.17.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.coin-or.org/download/source/"
                                   "Clp/Clp-" version ".tgz"))
               (sha256
                (base32
-                "1wdg820g3iikf9344ijwsc8sy6c0m6im42bzzizm6rlmkvnmxhk9"))
+                "0ap1f0lxppa6pnbc4bg7ih7a96avwaki482nig8w5fr3vg9wvkzr"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -3183,7 +3193,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "20.03.1")
+    (version "20.04.0")
     (source
      (origin
        (method git-fetch)
@@ -3192,7 +3202,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09ciip0wkahps5jdsqqr72bwjrd15bacw38zp23v3hm71xfk8hky"))))
+        (base32 "0vrjxzfgmjdzm1rgl0crz4b4badl14jwh032y3xkcdvjl5j67lp3"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -5349,20 +5359,20 @@ management via the GIMPS project's Primenet server.")
 (define-public nauty
   (package
     (name "nauty")
-    (version "2.6r12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://pallini.di.uniroma1.it/"
-                    "nauty" (string-join (string-split version #\.) "")
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "1p4mxf8q5wm47nxyskxbqwa5p1vvkycv1zgswvnk9nsn6vff0al6"))))
+    (version "2.7r1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pallini.di.uniroma1.it/"
+             "nauty" (string-join (string-split version #\.) "") ".tar.gz"))
+       (sha256
+        (base32 "0xsfqfcknbd6g6wzpa5l7crmmk3bf3zjh37rhylq6b20dqcmvjkn"))))
     (build-system gnu-build-system)
     (outputs '("out" "lib"))
     (arguments
      `(#:test-target "checks"
+       #:configure-flags '("--enable-generic") ;prevent -march-native
        #:phases
        (modify-phases %standard-phases
          ;; Default make target does not build all available
@@ -5382,15 +5392,16 @@ management via the GIMPS project's Primenet server.")
                     (include (string-append lib-output "/include/nauty"))
                     (lib (string-append lib-output "/lib/nauty")))
                (for-each (lambda (f) (install-file f bin))
-                         '("dreadnaut" "NRswitchg" "addedgeg" "amtog" "biplabg"
-                           "blisstog" "bliss2dre" "catg" "checks6" "complg"
-                           "converseg" "copyg" "countg" "cubhamg" "deledgeg"
-                           "delptg" "directg" "dretodot" "dretog" "genbg"
+                         '("addedgeg"  "amtog" "assembleg" "biplabg" "blisstog"
+                           "bliss2dre" "catg" "checks6" "complg" "converseg"
+                           "copyg" "countg" "cubhamg" "deledgeg" "delptg"
+                           "directg"  "dreadnaut" "dretodot" "dretog" "genbg"
                            "genbgL" "geng" "genquarticg" "genrang" "genspecialg"
                            "gentourng" "gentreeg" "hamheuristic" "labelg"
                            "linegraphg" "listg" "multig" "newedgeg" "pickg"
                            "planarg" "ranlabg" "shortg" "showg" "subdivideg"
-                           "sumlines" "twohamg" "vcolg" "watercluster2"))
+                           "sumlines" "twohamg" "underlyingg" "vcolg"
+                           "watercluster2" "NRswitchg"))
                (for-each (lambda (f) (install-file f include))
                          (find-files "." "\\.h$"))
                (for-each (lambda (f) (install-file f lib))

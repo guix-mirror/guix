@@ -384,14 +384,14 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public denemo
   (package
     (name "denemo")
-    (version "2.3.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/denemo/"
                            "denemo-" version ".tar.gz"))
        (sha256
-        (base32 "1blkcl3slbsq9jlhwcf2m9v9g38a0sjfhh9advgi2qr1gxri08by"))))
+        (base32 "145kq0zfgdadykl3i6na221i4s5wzdrcqq48amzyfarnrqk2rmpd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2237,61 +2237,66 @@ capabilities, custom envelopes, effects, etc.")
     (license license:gpl2)))
 
 (define-public yoshimi
-  (package
-    (name "yoshimi")
-    (version "1.7.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/yoshimi/"
-                                  (version-major+minor version)
-                                  "/yoshimi-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1pkqrrr51vlxh96vy0c0rf5ijjvymys4brsw9rv1bdp1bb8izw6c"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
-                            (assoc-ref %outputs "out") "/share"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'enter-dir
-           (lambda _ (chdir "src") #t))
-         ;; Move SSE compiler optimization flags from generic target to
-         ;; athlon64 and core2 targets, because otherwise the build would fail
-         ;; on non-Intel machines.
-         (add-after 'unpack 'remove-sse-flags-from-generic-target
-          (lambda _
-            (substitute* "src/CMakeLists.txt"
-              (("-msse -msse2 -mfpmath=sse") "")
-              (("-march=(athlon64|core2)" flag)
-               (string-append flag " -msse -msse2 -mfpmath=sse")))
-            #t)))))
-    (inputs
-     `(("boost" ,boost)
-       ("fftwf" ,fftwf)
-       ("alsa-lib" ,alsa-lib)
-       ("jack" ,jack-1)
-       ("fontconfig" ,fontconfig)
-       ("minixml" ,minixml)
-       ("mesa" ,mesa)
-       ("fltk" ,fltk)
-       ("lv2" ,lv2)
-       ("readline" ,readline)
-       ("ncurses" ,ncurses)
-       ("cairo" ,cairo)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "http://yoshimi.sourceforge.net/")
-    (synopsis "Multi-paradigm software synthesizer")
-    (description
-     "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
+  ;; Release 1.7.1 doesn't build with our version of LV2.  Applying only
+  ;; 86996cbb235f0fe138ae814a6758c2c8ba1c2a38 is not enough.
+  (let ((commit "bfcadc6537dbcb301cd93346f21d36bcbffa36c7")
+        (revision "0"))
+    (package
+      (name "yoshimi")
+      (version (git-version "1.7.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.code.sf.net/p/yoshimi/code")
+               (commit commit)))
+         (sha256
+          (base32 "0vhdxj7ky4iyq11r5wj9jwavjih4xvcn2djbrlmwpkdhrzpy6myl"))
+         (file-name (git-file-name name version))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ; there are no tests
+         #:configure-flags
+         (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
+                              (assoc-ref %outputs "out") "/share"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'enter-dir
+             (lambda _ (chdir "src") #t))
+           ;; Move SSE compiler optimization flags from generic target to
+           ;; athlon64 and core2 targets, because otherwise the build would fail
+           ;; on non-Intel machines.
+           (add-after 'unpack 'remove-sse-flags-from-generic-target
+             (lambda _
+               (substitute* "src/CMakeLists.txt"
+                 (("-msse -msse2 -mfpmath=sse") "")
+                 (("-march=(athlon64|core2)" flag)
+                  (string-append flag " -msse -msse2 -mfpmath=sse")))
+               #t)))))
+      (inputs
+       `(("boost" ,boost)
+         ("fftwf" ,fftwf)
+         ("alsa-lib" ,alsa-lib)
+         ("jack" ,jack-1)
+         ("fontconfig" ,fontconfig)
+         ("minixml" ,minixml)
+         ("mesa" ,mesa)
+         ("fltk" ,fltk)
+         ("lv2" ,lv2)
+         ("readline" ,readline)
+         ("ncurses" ,ncurses)
+         ("cairo" ,cairo)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "http://yoshimi.sourceforge.net/")
+      (synopsis "Multi-paradigm software synthesizer")
+      (description
+       "Yoshimi is a fork of ZynAddSubFX, a feature-heavy real-time software
 synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
-    (license license:gpl2)))
+      (license license:gpl2))))
 
 (define-public libgig
   (package
@@ -2718,8 +2723,7 @@ tune-in sender list from @url{http://opml.radiotime.com}.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags (list "CC=gcc" "CFLAGS=-std=c99"
-                          (string-append "PREFIX=" %output))
+       #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
     (inputs
@@ -2962,7 +2966,7 @@ websites such as Libre.fm.")
     (home-page "https://github.com/yask123/Instant-Music-Downloader")
     (synopsis "Command-line program to download a song from YouTube")
     (description "InstantMusic downloads a song from YouTube in MP3 format.
-Songs can be searched by artist, name or even by a part of the song text.")
+    Songs can be searched by artist, name or even by a part of the song text.")
     (license license:expat))))
 
 (define-public beets
@@ -3011,9 +3015,9 @@ Songs can be searched by artist, name or even by a part of the song text.")
     (home-page "https://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
-once and for all.  It catalogs your collection, automatically improving its
-metadata as it goes using the MusicBrainz database.  Then it provides a variety
-of tools for manipulating and accessing your music.")
+    once and for all.  It catalogs your collection, automatically improving its
+    metadata as it goes using the MusicBrainz database.  Then it provides a variety
+    of tools for manipulating and accessing your music.")
     (license license:expat)))
 
 (define-public beets-bandcamp
@@ -3039,8 +3043,8 @@ of tools for manipulating and accessing your music.")
     (synopsis "Bandcamp plugin for beets")
     (description
      "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
-https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
-using the beets FetchArt plugin.")
+                                                                      https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+    using the beets FetchArt plugin.")
     (license license:gpl2)))
 
 (define-public milkytracker
@@ -3081,9 +3085,9 @@ using the beets FetchArt plugin.")
      `(("pkg-config" ,pkg-config)))
     (synopsis "Music tracker for working with .MOD/.XM module files")
     (description "MilkyTracker is a music application for creating .MOD and .XM
-module files.  It attempts to recreate the module replay and user experience of
-the popular DOS program Fasttracker II, with special playback modes available
-for improved Amiga ProTracker 2/3 compatibility.")
+    module files.  It attempts to recreate the module replay and user experience of
+    the popular DOS program Fasttracker II, with special playback modes available
+    for improved Amiga ProTracker 2/3 compatibility.")
     (home-page "https://milkytracker.titandemo.org/")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
@@ -3107,8 +3111,8 @@ for improved Amiga ProTracker 2/3 compatibility.")
                `(begin
                   (substitute* "schism/version.c"
                     (("Schism Tracker built %s %s.*$")
-                     (string-append "Schism Tracker version " ,version "\");")))
-                  #t))))
+                     (string-append "Schism Tracker version " ,version "\") ;")))
+              #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4864,6 +4868,49 @@ effects.  It contains a bitcrusher, delay, distortion, equalizer, compressor,
 and reverb.")
     (license license:gpl2+)))
 
+(define-public lsp-plugins
+  (package
+    (name "lsp-plugins")
+    (version "1.1.21")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/sadko4u/lsp-plugins.git")
+               (commit (string-append "lsp-plugins-" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1zw0iip6ki9k65kh8dp53x7l4va4mi5rj793n2yn4p9y84qzwrz9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list
+         (string-append "CC=" ,(cc-for-target))
+         "BUILD_MODULES=\"lv2 ladspa jack\"" "VST_UI=0"
+         (string-append "PREFIX=" (assoc-ref %outputs "out"))
+         (string-append "ETC_PATH=" (assoc-ref %outputs "out") "/etc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))   ; no configure
+       #:test-target "test"))
+    (inputs
+     `(("cairo", cairo)
+       ("hicolor-icon-theme", hicolor-icon-theme)
+       ("jack", jack-1)
+       ("ladspa", ladspa)
+       ("libsndfile", libsndfile)
+       ("lv2", lv2)
+       ("mesa", mesa)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (synopsis "Audio plugin collection")
+    (description "LSP (Linux Studio Plugins) is a collection of audio
+plugins available as LADSPA/LV2 plugins and as standalone JACK
+applications.")
+    (home-page "https://lsp-plug.in/")
+    (license license:lgpl3)))
+
 (define-public sherlock-lv2
   (package
     (name "sherlock-lv2")
@@ -5538,3 +5585,66 @@ It is provided as an LV2 plugin and as a standalone Jack application.")
 It is provided as an LV2 plugin and as a standalone Jack application.")
     (home-page "https://github.com/pdesaulniers/wolf-spectrum")
     (license license:gpl3)))
+
+(define-public shiru-lv2
+  (let ((commit "08853f99140012234649e67e5647906fda74f6cc")
+        (revision "1"))
+    (package
+      (name "shiru-lv2")
+      (version (git-version "0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/linuxmao-org/shiru-plugins.git")
+                 (commit commit)
+                 ;; Bundles a specific commit of the DISTRHO plugin framework.
+                 (recursive? #t)))
+          (file-name (git-file-name name version))
+          (sha256
+            (base32
+              "00rf6im3rhg98h60sgl1r2s37za5vr5h14pybwi07h8zbc8mi6fm"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; no check target
+         #:make-flags (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)            ;no configure target
+           (replace 'install              ;no install target
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (lv2 (string-append out "/lib/lv2")))
+                 ;; Install LV2.
+                 (for-each
+                  (lambda (file)
+                    (copy-recursively file
+                                      (string-append lv2 "/" (basename file))))
+                  (find-files "bin" "\\.lv2$" #:directories? #t))
+                 ;; Install executables.
+                 (for-each
+                   (lambda (file)
+                     (install-file file bin))
+                   (find-files "bin"
+                               (lambda (name stat)
+                                 (and
+                                   (equal? (dirname name) "bin")
+                                   (not (string-suffix? ".so" name))
+                                   (not (string-suffix? ".lv2" name))))))
+                 #t))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+        `(("cairo", cairo)
+          ("glu", glu)
+          ("jack", jack-1)
+          ("lv2", lv2)
+          ("mesa", mesa)
+          ("pango", pango)))
+      (synopsis "Audio plugin collection")
+      (description "Shiru plugins is a collection of audio plugins created
+  by Shiru, ported to LV2 by the Linux MAO project using the DISTRHO plugin
+  framework.")
+      (home-page "http://shiru.untergrund.net/software.shtml")
+      (license license:wtfpl2))))

@@ -256,15 +256,14 @@ necessary.
        (uri (string-append "https://binaries.openttd.org/extra/catcodec/"
                            version "/catcodec-" version "-source.tar.xz"))
        (sha256
-        (base32
-         "1qg0c2i4p29sxj0q6qp2jynlrzm5pphz2xhcjqlxa69ycrnlxzs7"))))
+        (base32 "1qg0c2i4p29sxj0q6qp2jynlrzm5pphz2xhcjqlxa69ycrnlxzs7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
        #:make-flags (list (string-append "prefix=" %output))
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
-    (home-page "http://dev.openttdcoop.org/projects/catcodec")
+    (home-page "https://dev.openttdcoop.org/projects/catcodec")
     (synopsis "Encode/decode OpenTTD sounds")
     (description "catcodec encodes and decodes sounds for OpenTTD.  These
 sounds are not much more than some metadata (description and filename) and raw
@@ -632,6 +631,7 @@ garbage collection and can be extended with plugins.")
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
+       #:configure-flags '("-DPHYSFS_BUILD_STATIC=OFF")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-CMakeLists.txt
                     (lambda _
@@ -681,7 +681,6 @@ archive on a per-file basis.")
        ("mesa" ,mesa)
        ("mpg123" ,mpg123)
        ("openal" ,openal)
-       ("physfs" ,physfs)
        ("sdl2" ,sdl2)
        ("zlib" ,zlib)))
     (synopsis "2D game framework for Lua")
@@ -1157,7 +1156,7 @@ developed mainly for Ren'py.")
     (native-inputs
      `(("python2-cython" ,python2-cython)
        ("xdg-utils" ,xdg-utils)))
-    (home-page "http://www.renpy.org/")
+    (home-page "https://www.renpy.org/")
     (synopsis "Ren'py python module")
     (description "This package contains the shared libraries and Python
 modules of Ren'py.")
@@ -1345,7 +1344,7 @@ if __name__ == \"__main__\":
        ("xorg-server" ,xorg-server)))
     (outputs
      (list "out" "tutorial" "the-question"))
-    (home-page "http://www.renpy.org/")
+    (home-page "https://www.renpy.org/")
     (synopsis "Visual Novel Engine")
     (description "Ren'Py is a visual novel engine that helps you use words,
 images, and sounds to tell interactive stories that run on computers and

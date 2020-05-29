@@ -19,7 +19,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
-;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019,2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Brett Gilio <brettg@gnu.org>
@@ -566,6 +566,21 @@ to a file atomically just by using the @code{mv} operation.  However, this
 will destroy the permissions on the original file.  This library preserves
 permissions while atomically writing to a file.")
     (license license:expat)))
+
+(define-public ghc-atomic-write-0.2.0.7
+  (package
+    (inherit ghc-atomic-write)
+    (version "0.2.0.7")
+    (source
+     (origin
+       (inherit (package-source ghc-atomic-write))
+       (uri (string-append
+             "https://hackage.haskell.org/package/atomic-write/atomic-write-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "03cn3ii74h0w3g4h78xsx9v2sn58r3qsr2dbdwq340xwhiwcgxdm"))))))
 
 (define-public ghc-attoparsec
   (package
@@ -1533,6 +1548,82 @@ call stacks with different versions of the compiler.")
 constructor which can be parameterised by a string-like type like:
 @code{String}, @code{ByteString}, @code{Text}, etc.  Comparisons of values of
 the resulting type will be insensitive to cases.")
+    (license license:bsd-3)))
+
+(define-public ghc-cborg
+  (package
+    (name "ghc-cborg")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/cborg/cborg-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1rdnvy0w17s70ikmbyrnwax5rvqh19l95sh8i7ipgxi23z1r0bp1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-half" ,ghc-half)
+       ("ghc-primitive" ,ghc-primitive)))
+    (native-inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "http://hackage.haskell.org/package/cborg")
+    (synopsis "Concise Binary Object Representation")
+    (description
+     "This package (formerly binary-serialise-cbor) provides an
+efficient implementation of the Concise Binary Object
+Representation (CBOR), as specified by RFC 7049 at
+https://tools.ietf.org/html/rfc7049.
+
+If you are looking for a library for serialisation of Haskell values, have a
+look at the @url{https://hackage.haskell.org/package/serialise} package, which
+is built upon this library.
+
+An implementation of the standard bijection between CBOR and JSON is provided
+by the @url{https://hackage.haskell.org/package/cborg-json} package.
+
+Also see @code{https://hackage.haskell.org/package/cbor-tool} for a convenient
+command-line utility for working with CBOR data.")
+    (license license:bsd-3)))
+
+(define-public ghc-cborg-json
+  (package
+    (name "ghc-cborg-json")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/cborg-json/cborg-json-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "0ysilz7rrjk94sqr3a61s98hr9qfi1xg13bskmlpc6mpgi2s4s5b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-aeson-pretty" ,ghc-aeson-pretty)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-cborg" ,ghc-cborg)))
+    (home-page "https://github.com/well-typed/cborg")
+    (synopsis "A library for encoding JSON as CBOR")
+    (description
+     "This package implements the bijection between JSON and CBOR
+defined in the CBOR specification, RFC 7049.")
     (license license:bsd-3)))
 
 (define-public ghc-cereal
@@ -2724,6 +2815,28 @@ package.")
   package.")
     (license license:bsd-3)))
 
+(define-public ghc-data-fix
+  (package
+    (name "ghc-data-fix")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/data-fix/"
+             "data-fix-" version ".tar.gz"))
+       (sha256
+        (base32 "14hk6hq5hdb3l5bhmzhw086jpzlvp9qbw9dzw30wlz5jbh2ihmvy"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/spell-music/data-fix")
+    (synopsis "Fixpoint data types")
+    (description
+     "Fixpoint types and recursion schemes.  If you define your AST as
+fixpoint type, you get fold and unfold operations for free.
+
+Thanks for contribution to: Matej Kollar, Herbert Valerio Riedel")
+    (license license:bsd-3)))
+
 (define-public ghc-data-hash
   (package
     (name "ghc-data-hash")
@@ -3243,6 +3356,30 @@ Writer monad), where list append quickly becomes too expensive.")
 It is modeled after doctest for Python, see
 @uref{https://docs.python.org/library/doctest.html, the Doctest website}.")
     (license license:expat)))
+
+(define-public ghc-dotgen
+  (package
+    (name "ghc-dotgen")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/dotgen/dotgen-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "148q93qsmqgr5pzdwvpjqfd6bdm1pwzcp2rblfwswx2x8c5f43fg"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/ku-fpg/dotgen")
+    (synopsis
+     "Simple interface for building .dot graph files")
+    (description
+     "This package provides a simple interface for building .dot graph
+files, for input into the dot and graphviz tools.  It includes a
+monadic interface for building graphs.")
+    (license license:bsd-3)))
 
 (define-public ghc-double-conversion
   (package
@@ -4359,6 +4496,60 @@ specific Windows, Mac, and Linux file system event notification.")
 deriving mechanism in Haskell to arbitrary classes.")
     (license license:bsd-3)))
 
+(define-public ghc-generic-random
+  (package
+    (name "ghc-generic-random")
+    (version "1.2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/generic-random/"
+             "generic-random-" version ".tar.gz"))
+       (sha256
+        (base32 "130lmblycxnpqbsl7vf6a90zccibnvcb5zaclfajcn3by39007lv"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (native-inputs
+     `(("ghc-inspection-testing" ,ghc-inspection-testing)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1d0hx41r7yq2a86ydnfh2fv540ah8cz05l071s2z4wxcjw0ymyn4")))
+    (home-page
+     "https://github.com/lysxia/generic-random")
+    (synopsis
+     "Generic random generators for QuickCheck")
+    (description
+     "Derive instances of @code{Arbitrary} for QuickCheck, with various options
+to customize implementations.
+
+Automating the arbitrary boilerplate also ensures that when a type changes to
+have more or fewer constructors, then the generator either fixes itself to
+generate that new case (when using the uniform distribution) or causes a
+compilation error so you remember to fix it (when using an explicit
+distribution).
+
+This package also offers a simple (optional) strategy to ensure termination
+for recursive types: make @code{Test.QuickCheck.Gen}'s size parameter decrease
+at every recursive call; when it reaches zero, sample directly from a
+trivially terminating generator given explicitly (@code{genericArbitraryRec}
+and @code{withBaseCase}) or implicitly (@code{genericArbitrary'}).")
+    (license license:expat)))
+
+(define-public ghc-generic-random-1.3.0.1
+  (package
+    (inherit ghc-generic-random)
+    (version "1.3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/generic-random/"
+             "generic-random-" version ".tar.gz"))
+       (sha256
+        (base32 "0d9w7xcmsb31b95fr9d5jwbsajcl1yi4347dlbw4bybil2vjwd7k"))))
+    (arguments '())))
+
 (define-public ghc-generics-sop
   (package
     (name "ghc-generics-sop")
@@ -5110,6 +5301,37 @@ combine hash values.")
 couple of different implementations of mutable hash tables in the ST
 monad, as well as a typeclass abstracting their common operations, and
 a set of wrappers to use the hash tables in the IO monad.")
+    (license license:bsd-3)))
+
+(define-public ghc-haskeline-0.8
+  (package
+    (name "ghc-haskeline")
+    (version "0.8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/haskeline/haskeline-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gqsa5s0drim9m42hv4wrq61mnvcdylxysfxfw3acncwilfrn9pb"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-exceptions" ,ghc-exceptions)))
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)))
+    ;; FIXME: Tests failing
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/judah/haskeline")
+    (synopsis
+     "Command-line interface for user input, written in Haskell")
+    (description
+     "Haskeline provides a user interface for line input in command-line
+programs.  This library is similar in purpose to readline, but since it is
+written in Haskell it is (hopefully) more easily used in other Haskell
+programs.
+
+Haskeline runs both on POSIX-compatible systems and on Windows.")
     (license license:bsd-3)))
 
 (define-public ghc-haskell-lexer
@@ -6498,6 +6720,42 @@ of getters, folds, isomorphisms, traversals, setters and lenses and their
 indexed variants.")
     (license license:bsd-3)))
 
+(define-public ghc-lens-family-core
+  (package
+    (name "ghc-lens-family-core")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/lens-family-core/lens-family-core-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "009rf10pj1cb50v44cc1pq7qvfrmkkk9dikahs9qmvbvgl3mykwi"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/lens-family-core")
+    (synopsis "Haskell 98 Lens Families")
+    (description
+     "This package provides first class functional references.  In addition to
+the usual operations of getting, setting and composition, plus integration
+with the state monad, lens families provide some unique features:
+
+@itemize
+@item Polymorphic updating
+@item Traversals
+@item Cast projection functions to read-only lenses
+@item Cast @code{toList} functions to read-only traversals
+@item Cast semantic editor combinators to modify-only traversals
+@end itemize
+
+For optimal first-class support use the lens-family package with rank 2/rank N
+polymorphism.  @code{Lens.Family.Clone} allows for first-class support of
+lenses and traversals for those who require Haskell 98.")
+    (license license:bsd-3)))
+
 (define-public ghc-libffi
   (package
     (name "ghc-libffi")
@@ -6973,6 +7231,42 @@ compression algorithm used in the @code{.xz} file format.")
      "This package provides a full-featured binding to the C libmagic library.
 With it, you can determine the type of a file by examining its contents rather
 than its name.")
+    (license license:bsd-3)))
+
+(define-public ghc-managed
+  (package
+    (name "ghc-managed")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/managed/managed-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1kbrw99yh5x5blykmx2n88mplbbi4ss1ij5j17b7asw6q0ihm9zi"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/managed")
+    (synopsis "Monad for managed values")
+    (description
+     "In Haskell you very often acquire values using the with... idiom using
+functions of type (a -> IO r) -> IO r.  This idiom forms a Monad, which is a
+special case of the ContT monad (from transformers) or the Codensity
+monad (from kan-extensions).  The main purpose behind this package is to
+provide a restricted form of these monads specialized to this unusually common
+case.
+
+The reason this package defines a specialized version of these types
+is to:
+
+@itemize
+@item be more beginner-friendly,
+@item simplify inferred types and error messages, and:
+@item provide some additional type class instances that would otherwise be
+orphan instances
+@end itemize")
     (license license:bsd-3)))
 
 (define-public ghc-markdown-unlit
@@ -8211,6 +8505,29 @@ replay capababilities, implementing fast parser monads, designing monadic
 DSLs, etc.")
     (license license:bsd-3)))
 
+(define-public ghc-optional-args
+  (package
+    (name "ghc-optional-args")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/optional-args/optional-args-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1r5hhn6xvc01grggxdyy48daibwzi0aikgidq0ahpa6bfynm8d1f"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/optional-args")
+    (synopsis "Optional function arguments")
+    (description
+     "This library provides a type for specifying @code{Optional} function
+arguments.")
+    (license license:bsd-3)))
+
 (define-public ghc-options
   (package
     (name "ghc-options")
@@ -8999,6 +9316,45 @@ the persistent interface, not for users of the persistent suite of database
 libraries.")
     (license license:expat)))
 
+(define-public ghc-pgp-wordlist
+  (package
+    (name "ghc-pgp-wordlist")
+    (version "0.1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/pgp-wordlist/pgp-wordlist-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "15g6qh0fb7kjj3l0w8cama7cxgnhnhybw760md9yy7cqfq15cfzg"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/quchen/pgp-wordlist")
+    (synopsis
+     "Translate between binary data and a human-readable collection of words")
+    (description
+     "The PGP Word List consists of two phonetic alphabets, each with one word
+per possible byte value.  A string of bytes is translated with these
+alphabets, alternating between them at each byte.
+
+The PGP words corresponding to the bytes 5B 1D CA 6E are \"erase breakaway
+spellbind headwaters\", for example.
+
+For further information, see
+@url{http://en.wikipedia.org/wiki/PGP_word_list}.")
+    (license license:bsd-3)))
+
 (define-public ghc-pipes
   (package
     (name "ghc-pipes")
@@ -9160,6 +9516,76 @@ provides the pretty printing class and instances for the Prelude
 types.")
     (license license:bsd-3)))
 
+(define-public ghc-prettyprinter
+  (package
+    (name "ghc-prettyprinter")
+    (version "1.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/prettyprinter/prettyprinter-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "1p9c3q55hba4c0zyxc624g5df7wgsclpsmd8wqpdnmib882q9d1v"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-pgp-wordlist" ,ghc-pgp-wordlist)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://github.com/quchen/prettyprinter")
+    (synopsis
+     "Modern, easy to use, well-documented, extensible pretty-printer")
+    (description
+     "A prettyprinter/text rendering engine.  Easy to use, well-documented,
+ANSI terminal backend exists, HTML backend is trivial to implement, no name
+clashes, @code{Text}-based, extensible.")
+    (license license:bsd-2)))
+
+(define-public ghc-prettyprinter-1.6
+  (package
+    (inherit ghc-prettyprinter)
+    (version "1.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/prettyprinter/prettyprinter-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32 "10fphxh8lvdaw7i8jyllwmj87w02db92mf99zfw5vddp9mv6b5rz"))))
+    (inputs
+     `(("ghc-quickckeck-instances" , ghc-quickcheck-instances)
+       ,@(package-inputs ghc-prettyprinter)))))
+
+(define-public ghc-prettyprinter-ansi-terminal
+  (package
+    (name "ghc-prettyprinter-ansi-terminal")
+    (version "1.1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/prettyprinter-ansi-terminal/"
+             "prettyprinter-ansi-terminal-" version ".tar.gz"))
+       (sha256
+        (base32 "0ha6vz707qzb5ky7kdsnw2zgphg2dnxrpbrxy8gaw119vwhb9q6k"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-prettyprinter" ,ghc-prettyprinter-1.6)))
+    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/quchen/prettyprinter")
+    (synopsis
+     "ANSI terminal backend for the prettyprinter package")
+    (description "ANSI terminal backend for the prettyprinter package.")
+    (license license:bsd-2)))
+
 (define-public ghc-pretty-hex
   (package
     (name "ghc-pretty-hex")
@@ -9207,6 +9633,33 @@ which can be quite handy for debugging Haskell programs.  We can also render
 complex generic values into an interactive Html page, for easier
 examination.")
     (license license:expat)))
+
+(define-public ghc-pretty-simple
+  (package
+    (name "ghc-pretty-simple")
+    (version "2.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/pretty-simple/"
+             "pretty-simple-" version ".tar.gz"))
+       (sha256
+        (base32 "0wsi9235ihm15s145lxi7325vv2k4bhighc5m88kn1lk0pl81aqq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-glob" ,ghc-glob)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-aeson" ,ghc-aeson)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)))
+    (home-page "https://github.com/cdepillabout/pretty-simple")
+    (synopsis "Pretty printer for data types with a 'Show' instance")
+    (description
+     "Pretty-simple is a pretty printer for Haskell data types that have a
+Show instance.")
+    (license license:bsd-3)))
 
 (define-public ghc-primitive
   (package
@@ -9889,6 +10342,46 @@ inspired by libtre.")
     (description
      "This provides an extra text interface for regex-tdfa.")
     (license license:bsd-3)))
+
+(define-public ghc-repline
+  (package
+    (name "ghc-repline")
+    (version "0.2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/repline/repline-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ph21kbbanlcs8n5lwk16g9vqkb98mkbz5mzwrp8j2rls2921izc"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/sdiehl/repline")
+    (synopsis "Haskeline wrapper for GHCi-like REPL interfaces")
+    (description
+     "Haskeline wrapper for GHCi-like REPL interfaces.  Composable with
+normal mtl transformers.")
+    (license license:expat)))
+
+(define-public ghc-repline-0.3
+  (package
+    (inherit ghc-repline)
+    (version "0.3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/repline/repline-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0niihfyggg2qisadg7w49cr5k5qyyynia93iip0ng2bbmzwi88g8"))))
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-haskeline" ,ghc-haskeline-0.8)))))
 
 (define-public ghc-rerebase
   (package
@@ -10642,6 +11135,56 @@ semigroup.")
        ("ghc-hashable" ,ghc-hashable-bootstrap)))
     (properties '((hidden? #t)))))
 
+(define-public ghc-serialise
+  (package
+    (name "ghc-serialise")
+    (version "0.2.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/serialise/serialise-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19ary6ivzk8z7wcxhm860qmh7pwqj0qjqzav1h42y85l608zqgh4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-cborg" ,ghc-cborg)
+       ("ghc-half" ,ghc-half)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1rknhad1i8bpknsnphmcmb6dnb48c2p2c13ia2qqch3hkhsvfpr6")))
+    (home-page "https://github.com/well-typed/cborg")
+    (synopsis "Binary serialisation library for Haskell values")
+    (description
+     "This package (formerly binary-serialise-cbor) provides pure,
+efficient serialization of Haskell values directly into ByteStrings for
+storage or transmission purposes.  By providing a set of type class instances,
+you can also serialise any custom data type you have as well.
+
+The underlying binary format used is the 'Concise Binary Object
+Representation', or CBOR, specified in RFC 7049.  As a result, serialised
+Haskell values have implicit structure outside of the Haskell program itself,
+meaning they can be inspected or analyzed without custom tools.
+
+An implementation of the standard bijection between CBOR and JSON is
+provided by the https://hackage.haskell.org/package/cborg-json
+package.  Also see https://hackage.haskell.org/package/cbor-tool for a
+convenient command-line utility for working with CBOR data.")
+    (license license:bsd-3)))
+
 (define-public ghc-setenv
   (package
     (name "ghc-setenv")
@@ -10983,6 +11526,32 @@ core of @url{https://hackage.haskell.org/package/generics-sop,
 generics-sop}.")
     (license license:bsd-3)))
 
+(define-public ghc-special-values
+  (package
+    (name "ghc-special-values")
+    (version "0.1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/special-values/"
+             "special-values-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1kkdw2c4d2hha99v9f89ahmifjxp7fxmxyfwq9a8xk6s0h9xs51w"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-scientific" ,ghc-scientific)
+       ("ghc-ieee754" ,ghc-ieee754)
+       ("ghc-nats" ,ghc-nats)))
+    (home-page
+     "https://github.com/minad/special-values#readme")
+    (synopsis "Typeclass providing special values")
+    (description
+     "Special values are provided by a SpecialValues typeclass.  Those can be
+used for example by QuickCheck, see quickcheck-special."  )
+    (license license:expat)))
+
 (define-public ghc-split
   (package
     (name "ghc-split")
@@ -11055,6 +11624,37 @@ internal state).")
     (arguments `(#:tests? #f))
     (native-inputs '())
     (properties '((hidden? #t)))))
+
+(define-public ghc-spoon
+  (package
+    (name "ghc-spoon")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/spoon/spoon-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m41k0mfy6fpfrv2ym4m5jsjaj9xdfl2iqpppd3c4d0fffv51cxr"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1"
+        "09s5jjcsg4g4qxchq9g2l4i9d5zh3rixpkbiysqcgl69kj8mwv74")))
+    (home-page
+     "http://hackage.haskell.org/package/spoon")
+    (synopsis
+     "Catch errors thrown from pure computations")
+    (description
+     "Takes an error-throwing expression and puts it back in the Maybe it
+belongs in.
+
+Note that this suffers from the
+@url{https://ghc.haskell.org/trac/ghc/ticket/5902}.  Buyer beware.")
+    (license license:bsd-3)))
 
 (define-public ghc-statevar
   (package
@@ -11867,6 +12467,44 @@ instances for strict and lazy text types for versions older than 1.2.1 of the
 text package.")
     (license license:bsd-2)))
 
+(define-public ghc-text-manipulate
+  (package
+    (name "ghc-text-manipulate")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/text-manipulate"
+             "/text-manipulate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0bwxyjj3ll45srxhsp2ihikgqglvjc6m02ixr8xpvyqwkcfwgsg0"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page
+     "https://github.com/brendanhay/text-manipulate")
+    (synopsis
+     "Case conversion, word boundary manipulation, and textual subjugation")
+    (description
+     "Manipulate identifiers and structurally non-complex pieces of text by
+delimiting word boundaries via a combination of whitespace,
+control-characters, and case-sensitivity.
+
+Has support for common idioms like casing of programmatic variable names,
+taking, dropping, and splitting by word, and modifying the first character of
+a piece of text.
+
+Caution: this library makes heavy use of the text library's internal loop
+optimisation framework.  Since internal modules are not guaranteed to have a
+stable API there is potential for build breakage when the text dependency is
+upgraded.  Consider yourself warned!")
+    (license license:mpl2.0)))
+
 (define-public ghc-text-metrics
   (package
     (name "ghc-text-metrics")
@@ -12535,6 +13173,69 @@ for Haskell")
     (description "This Haskell package contains Template Haskell functions for
 generating functions similar to those in @code{Data.List} for tuples of
 statically known size.")
+    (license license:bsd-3)))
+
+(define-public ghc-turtle
+  (package
+    (name "ghc-turtle")
+    (version "1.5.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/turtle/turtle-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0yckgsc2a4g5x867gni80ldp226bsnhncfbil4ql6v2zwm4r8p7f"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-async" ,ghc-async)
+       ("ghc-clock" ,ghc-clock)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-foldl" ,ghc-foldl)
+       ("ghc-hostname" ,ghc-hostname)
+       ("ghc-managed" ,ghc-managed)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-system-fileio" ,ghc-system-fileio)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-optional-args" ,ghc-optional-args)
+       ("ghc-unix-compat" ,ghc-unix-compat)))
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)
+       ("ghc-fail" ,ghc-fail)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "02q1rv7zx31xz9wnmcqwd4w3iw7623p07iyi21zr0cqlignic5pg")))
+    (home-page
+     "http://hackage.haskell.org/package/turtle")
+    (synopsis "Shell programming, Haskell-style")
+    (description
+     "Turtle is a reimplementation of the Unix command line environment in
+Haskell so that you can use Haskell as both a shell and a scripting
+language.  Features include:
+
+@itemize
+@item Batteries included: Command an extended suite of predefined utilities.
+@item Interoperability: You can still run external shell commands.
+@item Portability: Works on Windows, OS X, and Linux.
+@item Exception safety: Safely acquire and release resources.
+@item Streaming: Transform or fold command output in constant space.
+@item Patterns: Use typed regular expressions that can parse structured values.
+@item Formatting: Type-safe printf-style text formatting.
+@item Modern: Supports text and system-filepath.
+@end itemize
+
+Read \"Turtle.Tutorial\" for a detailed tutorial or \"Turtle.Prelude\" for a
+quick-start guide.  Turtle is designed to be beginner-friendly, but as a
+result lacks certain features, like tracing commands.  If you feel comfortable
+using turtle then you should also check out the Shelly library which provides
+similar functionality.")
     (license license:bsd-3)))
 
 (define-public ghc-typed-process

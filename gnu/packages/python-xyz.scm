@@ -78,6 +78,8 @@
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -848,14 +850,14 @@ of the netcdf4 package before.")
 (define-public python-netcdf4
   (package
     (name "python-netcdf4")
-    (version "1.4.2")
+    (version "1.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "netCDF4" version))
        (sha256
         (base32
-         "0c0sklgrmv15ygliin8qq0hp7vanmbi74m6zpi0r1ksr0hssyd5r"))))
+         "1gn35mb2yc263pci720aik8ymz41lrvxlrn3z83vyjwghiashg1a"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -1748,23 +1750,44 @@ Python 3.3+.")
 (define-public python2-pyicu
   (package-with-python2 python-pyicu))
 
-(define-public python2-dogtail
-  ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
-  ;; spaces in indentation" with Python 3.
+(define-public python-dogtail
   (package
-    (name "python2-dogtail")
-    (version "0.9.9")
+    (name "python-dogtail")
+    (version "0.9.11")
     (source (origin
              (method url-fetch)
-             (uri (pypi-uri "dogtail" version))
+             (uri
+              (string-append
+               "https://gitlab.com/dogtail/dogtail/-/raw/released/"
+               "dogtail-" version ".tar.gz"))
              (sha256
               (base32
-               "0p5wfssvzr9w0bvhllzbbd8fnp4cca2qxcpcsc33dchrmh5n552x"))))
+               "0sr38z7b2n12bvfd4xw4b5dnnhkn5zl3h0ymmnnzavcihfqia6l0"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2
-                 #:tests? #f))                    ; invalid command "test"
-    ;; Currently no offical homepage.
-    (home-page "https://pypi.org/project/dogtail/")
+    (arguments
+     `(#:tests? #f                      ; TODO Launching dbus for the tests
+                                        ; fails
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               (invoke "dbus-run-session" "--" "nosetests" "-v" "tests/"))
+             #t)))))
+    (propagated-inputs
+     `(("python-pygobject" ,python-pygobject)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pyatspi" ,python-pyatspi)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("gtk+" ,gtk+)
+       ("xvfb" ,xorg-server)
+       ("dbus" ,dbus)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "https://gitlab.com/dogtail/dogtail/")
     (synopsis "GUI test tool and automation framework written in Python")
     (description
      "Dogtail is a GUI test tool and automation framework written in Python.
@@ -1772,6 +1795,9 @@ It uses Accessibility (a11y) technologies to communicate with desktop
 applications. dogtail scripts are written in Python and executed like any
 other Python program.")
     (license license:gpl2+)))
+
+(define-public python2-dogtail
+  (package-with-python2 python-dogtail))
 
 (define-public python-empy
   (package
@@ -7940,13 +7966,13 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.3.5")
+    (version "1.3.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "llfuse" version ".tar.bz2"))
               (sha256
                (base32
-                "1n7a90jww3ly49fm7x27m3xw3la3qfrnykcakga654g6kcyjlhbf"))))
+                "1j9fzxpgmb4rxxyl9jcf84zvznhgi3hnh4hg5vb0qaslxkvng8ii"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -19996,3 +20022,39 @@ allows you, from Python code, to “fix” invalid (X)HTML markup.")
     (description "This packages selects the fastest JSON functions available
 at import time.")
     (license license:expat)))
+
+(define-public python-bashlex
+  (package
+    (name "python-bashlex")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bashlex" version))
+       (sha256
+        (base32
+         "1z9g96fgsfpdwawp4sb5x6hbdhmda7kgmcrqlf9xx4bs1f8f14js"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pregenerate-yacc-tables
+           (lambda _
+             ;; parser.py caches tables, which attempts to write to site lib
+             ;; see https://github.com/idank/bashlex/issues/51
+             (invoke "python" "-c" "import bashlex"))))))
+    (home-page
+     "https://github.com/idank/bashlex")
+    (synopsis "Python parser for bash")
+    (description "@code{bashlex} is a Python port of the parser used
+internally by GNU bash.
+
+For the most part it's transliterated from C, the major differences are:
+
+@itemize
+@item it does not execute anything
+@item it is reentrant
+@item it generates a complete AST
+@end itemize
+")
+    (license license:gpl3+)))

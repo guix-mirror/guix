@@ -547,7 +547,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.15.0.5")
+    (version "0.16.0.0")
     (source
      (origin
        (method git-fetch)
@@ -568,7 +568,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "06zzwa0y8ic6x3y2fy501788r51p4klanyvmm76ywrwf087njlkv"))))
+         "0x74h5z0nxxxip97ibc854pqmrgd8r4d6w62m424f66i8gbzfskh"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -666,7 +666,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.15.0.4")
+    (version "0.16.0.0")
     (source
      (origin
        (method git-fetch)
@@ -676,14 +676,16 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "12m5fgnxkr11q2arx1m5ccpxqm5ljcvm6l547dwqn297zs5jim4z"))))
+         "06vdrsj5y9k0zn32hspyxc7sw1kkyrvi3chzkdbnxk9jvyj8k4ld"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("monero-source" ,(package-source monero))
+       ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("hidapi" ,hidapi)
+       ("libgcrypt" ,libgcrypt)
        ("libsodium" ,libsodium)
        ("libunwind" ,libunwind)
        ("libusb" ,libusb)
@@ -705,7 +707,16 @@ the Monero command line client and daemon.")
      `(#:tests? #f ; No tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-makefile-vars
+         (add-after 'unpack 'get-monero-extra-files
+           ;; Some headers and GnuPG public keys of the monero package source
+           ;; code are required to build the GUI.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "tar" "-xv" "--wildcards" "--strip-components=1"
+                     "-C" "monero"
+                     "-f" (assoc-ref inputs "monero-source")
+                     "*.asc" "*.h")
+             #t))
+         (add-after 'get-monero-extra-files 'fix-makefile-vars
            (lambda _
              (substitute* "src/zxcvbn-c/makefile"
                (("\\?=") "="))
@@ -1510,14 +1521,14 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
 (define-public flowee
   (package
     (name "flowee")
-    (version "2020.03.3")
+    (version "2020.04.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.com/FloweeTheHub/thehub/-/archive/"
                             version "/thehub-" version ".tar.gz"))
        (sha256
-         (base32 "0ksyh7ll3v9p8f5y15vcb2vkrpzb4h0ricag9j90ad4b4rfsnpjw"))))
+         (base32 "1vwvaxm3b71pfx8l4rrv06wqks6xdf2333w856b36s1bzvj53rhc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-Dbuild_tests=ON" "-Denable_gui=OFF")

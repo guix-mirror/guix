@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
-;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -450,7 +450,7 @@ possible, while battling many vicious aliens.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.E")
+    (version "0.E-2")
     (source
      (origin
        (method git-fetch)
@@ -458,7 +458,7 @@ possible, while battling many vicious aliens.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
              (commit version)))
        (sha256
-        (base32 "0pbi0fw37zimzdklfj58s1ql0wlqq7dy6idkcsib3hn910ajaxan"))
+        (base32 "15l6w6lxays7qmsv0ci2ry53asb9an9dh7l7fc13256k085qcg68"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -4819,24 +4819,27 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/cxong/cdogs-sdl.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "13gyv2hzk43za1n3lsjnd5v64xlzfzq7n10scd1rcbsnk1n007zr"))))
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cxong/cdogs-sdl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vx37zb2iw7sfw5a2bs97ydlmb301nvy485ybdm8g46c5hn9s13c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "-DCDOGS_DATA_DIR="
                             (assoc-ref %outputs "out")
                             "/share/cdogs-sdl/"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("mesa" ,mesa)
+     `(("gtk+" ,gtk+)
+       ("mesa" ,mesa)
        ("sdl2" ,sdl2)
        ("sdl2-image" ,sdl2-image)
        ("sdl2-mixer" ,sdl2-mixer)))
@@ -6384,7 +6387,7 @@ original.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.12.0")
+    (version "2.22.0")
     (source
      (origin
        (method git-fetch)
@@ -6394,7 +6397,7 @@ original.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0laxgqsdg7kvpvvm1f54b94ga9r0cr9g3ffii8avg8fy65x6pzc9"))))
+         "17h2g35j8nzljsqaqhrsx75jakbmlqnsa150g2xw414fcbnjbyps"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
@@ -6672,7 +6675,7 @@ quotation from a collection of quotes.")
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("gmp" ,gmp)))
-    (home-page "http://xonotic.org")
+    (home-page "https://xonotic.org")
     (synopsis "Fast-paced first-person shooter game")
     (description
      "Xonotic is a free, fast-paced first-person shooter.

@@ -1366,14 +1366,14 @@ I/O-free core, and integration modules for different event loops.")
 (define-public python-argon2-cffi
   (package
     (name "python-argon2-cffi")
-    (version "19.2.0")
+    (version "20.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "argon2-cffi" version))
         (sha256
          (base32
-          "18xxfw30gi3lwaz4vwb05iavzlrk3fa1x9fippzrgd3px8z65apz"))
+          "0zgr4mnnm0p4i99023safb0qb8cgvl202nly1rvylk2b7qnrn0nq"))
         (modules '((guix build utils)))
         (snippet '(begin (delete-file-recursively "extras") #t))))
     (build-system python-build-system)

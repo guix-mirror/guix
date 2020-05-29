@@ -21726,3 +21726,81 @@ of R without the need of linking to R code.  Rserve supports remote
 connection, user authentication and file transfer.  A simple R client is
 included in this package as well.")
     (license license:gpl2)))
+
+(define-public r-brms
+  (package
+    (name "r-brms")
+    (version "2.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "brms" version))
+       (sha256
+        (base32
+         "1699lwkklfhjz7fddawlig552g2zvrc34mqwrzqjgl35r9fm08gs"))))
+    (properties `((upstream-name . "brms")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-abind" ,r-abind)
+       ("r-backports" ,r-backports)
+       ("r-bayesplot" ,r-bayesplot)
+       ("r-bridgesampling" ,r-bridgesampling)
+       ("r-coda" ,r-coda)
+       ("r-future" ,r-future)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glue" ,r-glue)
+       ("r-loo" ,r-loo)
+       ("r-matrix" ,r-matrix)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mgcv" ,r-mgcv)
+       ("r-nleqslv" ,r-nleqslv)
+       ("r-nlme" ,r-nlme)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rstan" ,r-rstan)
+       ("r-rstantools" ,r-rstantools)
+       ("r-shinystan" ,r-shinystan)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page
+     "https://github.com/paul-buerkner/brms")
+    (synopsis
+     "Bayesian Regression Models using 'Stan'")
+    (description
+     "Fit Bayesian generalized (non-)linear multivariate multilevel models
+using 'Stan' for full Bayesian inference. A wide range of distributions and
+link functions are supported, allowing users to fit -- among others -- linear,
+robust linear, count data, survival, response times, ordinal, zero-inflated,
+hurdle, and even self-defined mixture models all in a multilevel context.
+Further modeling options include non-linear and smooth terms, auto-correlation
+structures, censored data, meta-analytic standard errors, and quite a few
+more. In addition, all parameters of the response distribution can be
+predicted in order to perform distributional regression. Prior specifications
+are flexible and explicitly encourage users to apply prior distributions that
+actually reflect their beliefs. Model fit can easily be assessed and compared
+with posterior predictive checks and leave-one-out cross-validation.")
+    (license license:gpl2)))
+
+(define-public r-mstate
+  (package
+    (name "r-mstate")
+    (version "0.2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "mstate" version))
+       (sha256
+        (base32
+         "0qnhivbibzss8yfsg44cvbf73n4jj4i28rbdysl88g14ig5sabgv"))))
+    (properties `((upstream-name . "mstate")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-survival" ,r-survival)))
+    (home-page
+     "https://www.lumc.nl/org/bds/research/medische-statistiek/survival-analysis/")
+    (synopsis
+     "Data Preparation, Estimation and Prediction in Multi-State Models")
+    (description
+     "Contains functions for data preparation, descriptives, hazard estimation
+and prediction with Aalen-Johansen or simulation in competing risks and
+multi-state models.")
+    (license license:gpl2+)))

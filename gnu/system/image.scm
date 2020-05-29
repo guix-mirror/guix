@@ -65,9 +65,17 @@
 ;;; Images definitions.
 ;;;
 
+;; This is the offset before the first partition. GRUB will install itself in
+;; this post-MBR gap.
+(define root-offset (* 512 2048))
+
+;; Generic root partition label.
+(define root-label "Guix_image")
+
 (define esp-partition
   (partition
    (size (* 40 (expt 2 20)))
+   (offset root-offset)
    (label "GNU-ESP") ;cosmetic only
    ;; Use "vfat" here since this property is used when mounting.  The actual
    ;; FAT-ness is based on file system size (16 in this case).
@@ -78,7 +86,7 @@
 (define root-partition
   (partition
    (size 'guess)
-   (label "Guix_image")
+   (label root-label)
    (file-system "ext4")
    (flags '(boot))
    (initializer (gexp initialize-root-partition))))
@@ -117,6 +125,7 @@
 'make-partition-image'."
   #~'(#$@(list (partition-size partition))
       #$(partition-file-system partition)
+      #$(partition-file-system-options partition)
       #$(partition-label partition)
       #$(and=> (partition-uuid partition)
                uuid-bytevector)))
@@ -145,6 +154,18 @@
                        (guix store database)
                        (guix build utils))
           gexp* ...))))
+
+(define (root-partition? partition)
+  "Return true if PARTITION is the root partition, false otherwise."
+  (member 'boot (partition-flags partition)))
+
+(define (find-root-partition image)
+  "Return the root partition of the given IMAGE."
+  (srfi-1:find root-partition? (image-partitions image)))
+
+(define (root-partition-index image)
+  "Return the index of the root partition of the given IMAGE."
+  (1+ (srfi-1:list-index root-partition? (image-partitions image))))
 
 
 ;;
@@ -221,8 +242,11 @@ used in the image."
                               #:references-graphs '#$graph
                               #:deduplicate? #f
                               #:system-directory #$os
+                              #:grub-efi #+grub-efi
                               #:bootloader-package
-                              #$(bootloader-package bootloader)
+                              #+(bootloader-package bootloader)
+                              #:bootloader-installer
+                              #+(bootloader-installer bootloader)
                               #:bootcfg #$bootcfg
                               #:bootcfg-location
                               #$(bootloader-configuration-file bootloader)))))
@@ -232,7 +256,7 @@ used in the image."
              (type (partition-file-system partition))
              (image-builder
               (with-imported-modules*
-               (let ((inputs '#$(list e2fsprogs dosfstools mtools)))
+               (let ((inputs '#+(list e2fsprogs dosfstools mtools)))
                  (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
                  (make-partition-image #$(partition->gexp partition)
                                        #$output
@@ -243,11 +267,17 @@ used in the image."
       ;; Return the genimage partition configuration for PARTITION.
       (let ((label (partition-label partition))
             (dos-type (partition->dos-type partition))
-            (image (partition-image partition)))
+            (image (partition-image partition))
+            (offset (partition-offset partition)))
         #~(format #f "~/partition ~a {
-                                      ~/~/partition-type = ~a
-                                      ~/~/image = \"~a\"
-                                      ~/}"  #$label #$dos-type #$image)))
+~/~/partition-type = ~a
+~/~/image = \"~a\"
+~/~/offset = \"~a\"
+~/}"
+                  #$label
+                  #$dos-type
+                  #$image
+                  #$offset)))
 
     (let* ((format (image-format image))
            (image-type (format->image-type format))
@@ -269,9 +299,17 @@ image ~a {
   (let* ((substitutable? (image-substitutable? image))
          (builder
           (with-imported-modules*
-           (let ((inputs '#$(list genimage coreutils findutils)))
+           (let ((inputs '#+(list genimage coreutils findutils))
+                 (bootloader-installer
+                  #+(bootloader-disk-image-installer bootloader)))
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
-             (genimage #$(image->genimage-cfg image) #$output))))
+             (genimage #$(image->genimage-cfg image) #$output)
+             ;; Install the bootloader directly on the disk-image.
+             (when bootloader-installer
+               (bootloader-installer
+                #+(bootloader-package bootloader)
+                #$(root-partition-index image)
+                (string-append #$output "/" #$genimage-name))))))
          (image-dir (computed-file "image-dir" builder)))
     (computed-file name
                    #~(symlink
@@ -364,14 +402,6 @@ used in the image. "
 ;; Image creation.
 ;;
 
-(define (root-partition? partition)
-  "Return true if PARTITION is the root partition, false otherwise."
-  (member 'boot (partition-flags partition)))
-
-(define (find-root-partition image)
-  "Return the root partition of the given IMAGE."
-  (srfi-1:find root-partition? (image-partitions image)))
-
 (define (image->root-file-system image)
   "Return the IMAGE root partition file-system type."
   (let ((format (image-format image)))
@@ -398,18 +428,18 @@ to OS.  Also set the UUID and the size of the root partition."
        (string=? (file-system-mount-point fs) "/"))
      (operating-system-file-systems os)))
 
-  (let*-values (((partitions) (image-partitions base-image))
-                ((root-partition other-partitions)
-                 (srfi-1:partition root-partition? partitions)))
-    (image
-     (inherit base-image)
-     (operating-system os)
-     (partitions
-      (cons (partition
-             (inherit (car root-partition))
-             (uuid (file-system-device root-file-system))
-             (size (root-size base-image)))
-            other-partitions)))))
+  (image
+   (inherit base-image)
+   (operating-system os)
+   (partitions
+    (map (lambda (p)
+           (if (root-partition? p)
+               (partition
+                (inherit p)
+                (uuid (file-system-device root-file-system))
+                (size (root-size base-image)))
+               p))
+         (image-partitions base-image)))))
 
 (define (operating-system-for-image image)
   "Return an operating-system based on the one specified in IMAGE, but
@@ -462,7 +492,7 @@ it can be used for bootloading."
                             (type root-file-system-type))
                           file-systems-to-keep)))))
 
-(define* (make-system-image image)
+(define* (system-image image)
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
   (define substitutable? (image-substitutable? image))
@@ -495,38 +525,10 @@ image, depending on IMAGE format."
   "Find and return an image that could match the given FILE-SYSTEM-TYPE.  This
 is useful to adapt to interfaces written before the addition of the <image>
 record."
-  ;; XXX: Add support for system and target here, or in the caller.
-  (match file-system-type
-    ("iso9660" iso9660-image)
-    (_ efi-disk-image)))
-
-(define (system-image image)
-  "Wrap 'make-system-image' call, so that it is used only if the given IMAGE
-is supported.  Otherwise, fallback to image creation in a VM.  This is
-temporary and should be removed once 'make-system-image' is able to deal with
-all types of images."
-  (define substitutable? (image-substitutable? image))
-  (define volatile-root? (image-volatile-root? image))
-
-  (let* ((image-os (image-operating-system image))
-         (image-root-filesystem-type (image->root-file-system image))
-         (bootloader (bootloader-configuration-bootloader
-                      (operating-system-bootloader image-os)))
-         (bootloader-name (bootloader-name bootloader))
-         (size (image-size image))
-         (format (image-format image)))
-    (mbegin %store-monad
-      (if (and (or (eq? bootloader-name 'grub)
-                   (eq? bootloader-name 'extlinux))
-               (eq? format 'disk-image))
-          ;; Fallback to image creation in a VM when it is not yet supported
-          ;; by this module.
-          (system-disk-image-in-vm image-os
-                                   #:disk-image-size size
-                                   #:file-system-type image-root-filesystem-type
-                                   #:volatile? volatile-root?
-                                   #:substitutable? substitutable?)
-          (lower-object
-           (make-system-image image))))))
+  (mbegin %store-monad
+    (return
+     (match file-system-type
+       ("iso9660" iso9660-image)
+       (_ efi-disk-image)))))
 
 ;;; image.scm ends here
