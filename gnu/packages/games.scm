@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
-;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -6376,7 +6376,7 @@ original.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.12.0")
+    (version "2.22.0")
     (source
      (origin
        (method git-fetch)
@@ -6386,7 +6386,7 @@ original.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0laxgqsdg7kvpvvm1f54b94ga9r0cr9g3ffii8avg8fy65x6pzc9"))))
+         "17h2g35j8nzljsqaqhrsx75jakbmlqnsa150g2xw414fcbnjbyps"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
