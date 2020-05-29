@@ -1121,16 +1121,14 @@ later hand-tweaked with the gbdfed(1) editor:
 (define-public font-comic-neue
   (package
     (name "font-comic-neue")
-    ;; The ‘v2.3’ and ‘v2.4’ releases at https://github.com/crozynski/comicneue
-    ;; are equivalent.  The home page hosts 2.3, not 2.4, so we use that here.
-    (version "2.3")
+    (version "2.5")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
                     "http://www.comicneue.com/comic-neue-" version ".zip"))
               (sha256
                (base32
-                "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+                "1ng0m0zs7qr91qy5ff0l01l27npr76961c6zfkxnhxf68zpwz5k4"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
