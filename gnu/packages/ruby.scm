@@ -645,10 +645,12 @@ outcomes of a code example.")
                (("rspec rspec-core rspec-expectations rspec-mocks rspec-support")
                 ""))
              #t))
-         (add-before 'build 'update-ffi-in-gemfile
+         (add-before 'build 'loosen-ffi-requirement
            (lambda _
+             ;; Accept any version of ruby-ffi.
              (substitute* "Gemfile"
-               (("  gem 'ffi', '~> 1.9.25'") "  gem 'ffi', '~> 1.10.0'"))
+               (("  gem 'ffi', '~> 1\\.9\\.25'")
+                "  gem 'ffi'"))
              #t))
          (add-before 'build 'remove-unnecessary-dependency-versions-from-gemfile
            (lambda _
