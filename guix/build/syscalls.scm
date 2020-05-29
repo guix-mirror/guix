@@ -1404,7 +1404,7 @@ bytevector BV at INDEX."
            (error "unsupported socket address" sockaddr)))))
 
 (define write-socket-address!
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       write-socket-address!/linux
       write-socket-address!/hurd))
 
@@ -1436,7 +1436,7 @@ bytevector BV at INDEX."
            (vector family)))))
 
 (define read-socket-address
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       read-socket-address/linux
       read-socket-address/hurd))
 
