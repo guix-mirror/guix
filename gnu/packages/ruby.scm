@@ -5269,21 +5269,22 @@ multibyte strings, internationalization, time zones, and testing.")
 (define-public ruby-crass
   (package
     (name "ruby-crass")
-    (version "1.0.4")
+    (version "1.0.6")
+    (home-page "https://github.com/rgrove/crass")
     (source (origin
-              (method url-fetch)
-              (uri (rubygems-uri "crass" version))
+              ;; The gem does not contain tests, so pull from git.
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0bpxzy6gjw9ggjynlxschbfsgmx8lv3zw1azkjvnb8b9i895dqfi"))))
+                "1gbsb81psgb6xhnwpx4s409jc0mk0gijh039sy5xyi8jpaaadp40"))))
     (build-system ruby-build-system)
-    (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)))
     (synopsis "Pure Ruby CSS parser")
     (description
      "Crass is a pure Ruby CSS parser based on the CSS Syntax Level 3 spec.")
-    (home-page "https://github.com/rgrove/crass/")
     (license license:expat)))
 
 (define-public ruby-nokogumbo
