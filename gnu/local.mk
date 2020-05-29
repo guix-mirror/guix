@@ -1464,7 +1464,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/retroarch-disable-online-updater.patch	\
-  %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
+  %D%/packages/patches/ruby-rack-ignore-failing-test.patch	\
+  %D%/packages/patches/ruby-sanitize-system-libxml.patch	\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/runc-CVE-2019-5736.patch			\
   %D%/packages/patches/rust-1.19-mrustc.patch			\

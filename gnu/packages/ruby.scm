@@ -5319,33 +5319,32 @@ access the result as a Nokogiri parsed document.")
 (define-public ruby-sanitize
   (package
     (name "ruby-sanitize")
-    (version "4.6.3")
+    (version "5.1.0")
+    (home-page "https://github.com/rgrove/sanitize")
     (source (origin
-              (method url-fetch)
+              (method git-fetch)
               ;; The gem does not include the Rakefile, so we download the
-              ;; release tarball from Github.
-              (uri (string-append "https://github.com/rgrove/"
-                                  "sanitize/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              ;; source from Github.
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (patches (search-patches "ruby-sanitize-system-libxml.patch"))
               (sha256
                (base32
-                "1fmqppwif3cm8h79006jfzkdnlxxzlry9kzk03psk0d5xpg55ycc"))))
+                "0lj0q9yhjp0q0in5majkshnki07mw8m2vxgndx4m5na6232aszl0"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-crass" ,ruby-crass)
        ("ruby-nokogiri" ,ruby-nokogiri)
        ("ruby-nokogumbo" ,ruby-nokogumbo)))
     (native-inputs
-     `(("bundler" ,bundler)
-       ("ruby-minitest" ,ruby-minitest)
-       ("ruby-redcarpet" ,ruby-redcarpet)
-       ("ruby-yard" ,ruby-yard)))
+     `(("ruby-minitest" ,ruby-minitest)))
     (synopsis "Whitelist-based HTML and CSS sanitizer")
     (description
      "Sanitize is a whitelist-based HTML and CSS sanitizer.  Given a list of
 acceptable elements, attributes, and CSS properties, Sanitize will remove all
 unacceptable HTML and/or CSS from a string.")
-    (home-page "https://github.com/rgrove/sanitize/")
     (license license:expat)))
 
 (define-public ruby-oj
