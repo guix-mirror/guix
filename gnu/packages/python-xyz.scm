@@ -79,6 +79,7 @@
 ;;; Copyright © 2020 Matthew Kraai <kraai@ftbfs.org>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20021,3 +20022,39 @@ allows you, from Python code, to “fix” invalid (X)HTML markup.")
     (description "This packages selects the fastest JSON functions available
 at import time.")
     (license license:expat)))
+
+(define-public python-bashlex
+  (package
+    (name "python-bashlex")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bashlex" version))
+       (sha256
+        (base32
+         "1z9g96fgsfpdwawp4sb5x6hbdhmda7kgmcrqlf9xx4bs1f8f14js"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pregenerate-yacc-tables
+           (lambda _
+             ;; parser.py caches tables, which attempts to write to site lib
+             ;; see https://github.com/idank/bashlex/issues/51
+             (invoke "python" "-c" "import bashlex"))))))
+    (home-page
+     "https://github.com/idank/bashlex")
+    (synopsis "Python parser for bash")
+    (description "@code{bashlex} is a Python port of the parser used
+internally by GNU bash.
+
+For the most part it's transliterated from C, the major differences are:
+
+@itemize
+@item it does not execute anything
+@item it is reentrant
+@item it generates a complete AST
+@end itemize
+")
+    (license license:gpl3+)))
