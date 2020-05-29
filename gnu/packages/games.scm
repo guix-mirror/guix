@@ -4819,24 +4819,27 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/cxong/cdogs-sdl.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "13gyv2hzk43za1n3lsjnd5v64xlzfzq7n10scd1rcbsnk1n007zr"))))
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cxong/cdogs-sdl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vx37zb2iw7sfw5a2bs97ydlmb301nvy485ybdm8g46c5hn9s13c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "-DCDOGS_DATA_DIR="
                             (assoc-ref %outputs "out")
                             "/share/cdogs-sdl/"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("mesa" ,mesa)
+     `(("gtk+" ,gtk+)
+       ("mesa" ,mesa)
        ("sdl2" ,sdl2)
        ("sdl2-image" ,sdl2-image)
        ("sdl2-mixer" ,sdl2-mixer)))
