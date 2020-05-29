@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1246,6 +1247,34 @@ programming.  Iosevka is completely generated from its source code.")
            (lambda _
              (for-each make-file-writable (find-files "." ".*"))
              #t)))))))
+
+(define-public font-sarasa-gothic
+  (package
+    (name "font-sarasa-gothic")
+    (version "0.12.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/be5invis/Sarasa-Gothic"
+                           "/releases/download/v" version
+                           "/sarasa-gothic-ttc-" version ".7z"))
+       (sha256
+        (base32 "1g6k9d5lajchbhsh3g12fk5cgilyy6yw09fals9vc1f9wsqvac86"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'unpack
+                    (lambda* (#:key source #:allow-other-keys)
+                      (mkdir "source")
+                      (chdir "source")
+                      (invoke "7z" "x" source))))))
+    (native-inputs `(("p7zip" ,p7zip)))
+    (home-page "https://github.com/be5invis/Sarasa-Gothic")
+    (license license:silofl1.1)
+    (synopsis "Sarasa Gothic / 更纱黑体 / 更紗黑體 / 更紗ゴシック / 사라사 고딕")
+    (description
+     "Sarasa Gothic is a programming font based on Iosevka and Source Han Sans,
+most CJK characters are same height, and double width as ASCII characters.")))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")
