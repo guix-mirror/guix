@@ -10153,7 +10153,7 @@ your operating-system definition:
 (define-public piper
   (package
     (name "piper")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method git-fetch)
@@ -10161,7 +10161,7 @@ your operating-system definition:
              (url "https://github.com/libratbag/piper.git")
              (commit version)))
        (sha256
-        (base32 "17h06j8lxpbfygq8fzycl7lml4vv7r05bsyhh3gga2hp0zms4mvg"))))
+        (base32 "00vrcsbsv2477l1ncpyzc61lhxgac84dsgr3sjs8qxw3nh1gaasv"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
