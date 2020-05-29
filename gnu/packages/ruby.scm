@@ -5288,68 +5288,33 @@ multibyte strings, internationalization, time zones, and testing.")
     (license license:expat)))
 
 (define-public ruby-nokogumbo
-  (let ((commit "fb51ff299a1c34346837580b6d1d9a60fadf5dbd"))
-    (package
-      (name "ruby-nokogumbo")
-      (version (string-append "1.4.7-1." (string-take commit 8)))
-      (source (origin
-                ;; We use the git reference, because there's no Rakefile in the
-                ;; published gem and the tarball on Github is outdated.
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/rubys/nokogumbo.git")
-                      (commit "d56f954d20a")))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "0bnppjy96xiadrsrc9dp8y6wvdwnkfa930n7acrp0mqm4qywl2wl"))))
-      (build-system ruby-build-system)
-      (arguments
-       `(#:modules ((guix build ruby-build-system)
-                    (guix build utils)
-                    (ice-9 rdelim))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'build-gemspec
-            (lambda _
-              (substitute* "Rakefile"
-                ;; Build Makefile even without a copy of gumbo-parser sources
-                (("'gumbo-parser/src',") "")
-                ;; We don't bundle gumbo-parser sources
-                (("'gumbo-parser/src/\\*',") "")
-                (("'gumbo-parser/visualc/include/\\*',") "")
-                ;; The definition of SOURCES will be cut in gemspec, and
-                ;; "FileList" will be undefined.
-                (("SOURCES \\+ FileList\\[")
-                 "['ext/nokogumboc/extconf.rb', 'ext/nokogumboc/nokogumbo.c', "))
-
-              ;; Copy the Rakefile and cut out the gemspec.
-              (copy-file "Rakefile" ".gemspec")
-              (with-atomic-file-replacement ".gemspec"
-                (lambda (in out)
-                  (let loop ((line (read-line in 'concat))
-                             (skipping? #t))
-                    (if (eof-object? line)
-                        #t
-                        (let ((skip-next? (if skipping?
-                                              (not (string-prefix? "SPEC =" line))
-                                              (string-prefix? "end" line))))
-                          (when (or (not skipping?)
-                                    (and skipping? (not skip-next?)))
-                                (format #t "~a" line)
-                                (display line out))
-                          (loop (read-line in 'concat) skip-next?))))))
-              #t)))))
-      (inputs
-       `(("gumbo-parser" ,gumbo-parser)))
-      (propagated-inputs
-       `(("ruby-nokogiri" ,ruby-nokogiri)))
-      (synopsis "Ruby bindings to the Gumbo HTML5 parser")
-      (description
-       "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
+  (package
+    (name "ruby-nokogumbo")
+    (version "2.0.2")
+    (source (origin
+              ;; We use the git reference, because there's no Rakefile in the
+              ;; published gem and the tarball on Github is outdated.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rubys/nokogumbo.git")
+                    (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "1qg0iyw450lw6d0j1ghzg79a6l60nm1m4qmrzwzybi585861jxcx"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (inputs
+     `(("gumbo-parser" ,gumbo-parser)))
+    (propagated-inputs
+     `(("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Ruby bindings to the Gumbo HTML5 parser")
+    (description
+     "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
 access the result as a Nokogiri parsed document.")
-      (home-page "https://github.com/rubys/nokogumbo/")
-      (license license:asl2.0))))
+    (home-page "https://github.com/rubys/nokogumbo/")
+    (license license:asl2.0)))
 
 (define-public ruby-sanitize
   (package
