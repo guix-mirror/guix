@@ -5641,7 +5641,7 @@ orange and red as accent colors.")
         (base32
          "0gy2pvz79whpavp4jmz8h9krzn7brmvv3diixi1d4w51pcdvaldd"))))
     (build-system emacs-build-system)
-    (home-page "https://bitbucket.org/zck/2048.el")
+    (home-page "https://hg.sr.ht/~zck/game-2048")
     (synopsis "Implementation of the game 2048 in Emacs Lisp")
     (description
      "This program is an implementation of 2048 for Emacs.
