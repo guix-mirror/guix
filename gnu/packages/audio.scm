@@ -851,30 +851,30 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.13.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/csound/csound.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "14822ybqyp31z18gky2y9zadr9dkbhabg97y139py73w7v3af1bh"))))
+    (version "6.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/csound/csound.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sr9knfhbm2m0wpkjq2l5n471vnl51wy4p6j4m95zqybimzb4s2j"))))
     (build-system cmake-build-system)
-    (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("pulseaudio" ,pulseaudio)
-       ("libsndfile" ,libsndfile)
-       ("liblo" ,liblo)
-       ("ladspa" ,ladspa)
-       ("jack" ,jack-1)
-       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
        ("zlib" ,zlib)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("liblo" ,liblo)
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)))
     (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
