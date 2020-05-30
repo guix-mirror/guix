@@ -177,7 +177,7 @@ precision and correctly rounds the results.")
     (propagated-inputs
      `(("gmp" ,gmp)                     ; <mpfi.h> refers to both
        ("mpfr" ,mpfr)))
-    (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")
+    (home-page "https://gforge.inria.fr/projects/mpfi/")
     (synopsis "C library for arbitrary-precision interval arithmetic")
     (description
      "@acronym{MPFI, Multiple Precision Floating-point Interval} is a portable C
