@@ -1488,7 +1488,8 @@ commands and their arguments.")
              #t)))
        #:configure-flags
        (list (string-append "--prefix=" (assoc-ref %outputs "out"))
-             (string-append "--target=" (or ,(%current-target-system) ""))
+             ;; Nothing is done with this value (yet?) but it's supported.
+             ;; (string-append "--target=" (or ,(%current-target-system) ""))
              "--with-timestamp")
        ;; Compiler choice is not carried over from the configure script.
        #:make-flags
