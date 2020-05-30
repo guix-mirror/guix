@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -475,7 +475,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.0.14")
+    (version "4.0.15")
     (source
      (origin
        (method git-fetch)
@@ -484,7 +484,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dp7cj1185h6xfz6jzh0iq58zvg3wq9hl96bkgxkf5h4ygni2vm6"))))
+        (base32 "0bvj64fdxpi0dbivhgv509kqq503zjp7r7xckl8q5c48j5h1zik2"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
