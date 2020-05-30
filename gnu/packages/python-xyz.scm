@@ -3727,14 +3727,14 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python-toml
   (package
     (name "python-toml")
-    (version "0.9.4")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "toml" version))
        (sha256
         (base32
-         "0bdbpbip67wdm6c7xwc6mmbmskyradj4cdxn1iibj4fcx1nbv1lf"))))
+         "03wbqm5cn685cwx2664hjdpz370njl7lf0yal8s0dkp5w4mn2swj"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                     ;no tests suite in release
