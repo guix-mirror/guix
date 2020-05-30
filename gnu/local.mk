@@ -1111,6 +1111,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
   %D%/packages/patches/java-commons-collections-fix-java8.patch \
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
+  %D%/packages/patches/java-openjfx-build-jdk_version.patch     \
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
   %D%/packages/patches/java-simple-xml-fix-tests.patch		\
   %D%/packages/patches/java-svg-salamander-Fix-non-det.patch	\

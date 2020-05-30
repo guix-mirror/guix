@@ -2499,7 +2499,8 @@ new Date();"))
                   #t))
               (sha256
                (base32
-                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))))
+                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))
+              (patches (search-patches "java-openjfx-build-jdk_version.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-openjfx.jar"
