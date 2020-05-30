@@ -1068,7 +1068,7 @@ vector graphics.")
 (define-public font-tamzen
   (package
     (name "font-tamzen")
-    (version "1.11.4")
+    (version "1.11.5")
     (source
      (origin
        (method git-fetch)
@@ -1077,8 +1077,7 @@ vector graphics.")
               (commit (string-append "Tamzen-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17kgmvg6q32mqhx9g44hjvzv0si0mnpprga4z7na930g2zdd8846"))))
+        (base32 "00x5fipzqimglvshhqwycdhaqslbvn3rl06jnswhyxfvz16ymj7s"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
