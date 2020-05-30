@@ -1218,7 +1218,7 @@ handler if the lock is already held by another process."
   ;; zero.
   16)
 
-(define (set-thread-name name)
+(define (set-thread-name!/linux name)
   "Set the name of the calling thread to NAME.  NAME is truncated to 15
 bytes."
   (let ((ptr (string->pointer name)))
@@ -1231,7 +1231,7 @@ bytes."
                (list (strerror err))
                (list err))))))
 
-(define (thread-name)
+(define (thread-name/linux)
   "Return the name of the calling thread as a string."
   (let ((buf (make-bytevector %max-thread-name-length)))
     (let-values (((ret err)
@@ -1244,6 +1244,16 @@ bytes."
                  "process-name: ~A"
                  (list (strerror err))
                  (list err))))))
+
+(define set-thread-name
+  (if (string-contains %host-type "linux")
+      set-thread-name!/linux
+      (cute const #f)))
+
+(define thread-name
+  (if (string-contains %host-type "linux")
+      thread-name/linux
+      (cute const "")))
 
 
 ;;;
