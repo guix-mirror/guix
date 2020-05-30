@@ -37,6 +37,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages ed)
@@ -317,6 +318,7 @@ used to apply commands with arbitrarily long arguments.")
             (patches (search-patches "coreutils-ls.patch"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
+             ("attr" ,attr)                       ;for xattrs in ls, mv, etc
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
 
              ;; Do not use libcap when cross-compiling since it's not quite
