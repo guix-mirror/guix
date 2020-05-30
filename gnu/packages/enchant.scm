@@ -22,16 +22,59 @@
 (define-module (gnu packages enchant)
   #:use-module (gnu packages)
   #:use-module (gnu packages aspell)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages version-control)
   #:use-module (guix packages)
+  #:use-module (guix git-download)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix licenses)
   #:use-module (srfi srfi-1))
+
+(define-public nuspell
+  (package
+    (name "nuspell")
+    (version "3.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/nuspell/nuspell.git")
+         (commit
+          (string-append "v" version))))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "18zz3rdzlb3knzsd98vw8cfyb3iq0ilipnlz7rz10zgb5ail73s2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("catch" ,catch-framework2)
+       ("git" ,git-minimal)
+       ("perl" ,perl)
+       ;;FIX-ME: Building with ronn fails.
+       ;;("ronn" ,ronn)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)))
+    (propagated-inputs
+     `(("icu4c" ,icu4c)))
+    (synopsis "Fast and safe spellchecking C++ library")
+    (description "Nuspell is a fast and safe spelling checker software
+program.  It is designed for languages with rich morphology and complex word
+compounding.  Nuspell is written in modern C++ and it supports Hunspell
+dictionaries.")
+    (home-page "https://nuspell.github.io/")
+    (license lgpl3+)))
 
 (define-public enchant
   (package
