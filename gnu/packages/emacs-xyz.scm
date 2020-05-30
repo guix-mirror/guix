@@ -1918,6 +1918,26 @@ code@{emacs-wiki.el}, it facilitates using hyperlinks and doing full-text
 searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
     (license license:gpl1+)))
 
+(define-public emacs-bm
+  (package
+    (name "emacs-bm")
+    (version "201905")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joodland/bm.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "180b3rc13asrmsdh7v405d54jkrininvaj52xhp71vw91ng51dkn"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/joodland/bm")
+    (synopsis "Visual bookmarks for Emacs")
+    (description "This package provides visible, buffer local bookmarks and
+the ability to jump forward and backward to the next bookmark.")
+    (license license:gpl2+)))
+
 (define-public emacs-calfw
   (package
     (name "emacs-calfw")
