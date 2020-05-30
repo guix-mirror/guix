@@ -73,6 +73,7 @@
 ;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
+;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22456,6 +22457,29 @@ a text quoting style that partially boxes in the left hand side of an area of
 text, such a marking style might be used to show externally included text or
 example code.")
       (license license:gpl3+))))
+
+(define-public emacs-buffer-move
+  (package
+    (name "emacs-buffer-move")
+    (version "0.6.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lukhas/buffer-move.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0xdks4jfqyhkh34y48iq3gz8swp0f526kwnaai5mhgvazvs4za8c"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/lukhas/buffer-move")
+    (synopsis "Functions for moving Emacs' buffers around")
+    (description
+     "This package define functions for swapping buffers between windows
+contained in the same frame.  An alternate behavior is to have the current
+window switch to the previous buffer instead of swapping with the other
+window.")
+    (license license:gpl3+)))
 
 (define-public emacs-company-ebdb
   (package
