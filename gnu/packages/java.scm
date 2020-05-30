@@ -2486,10 +2486,10 @@ new Date();"))
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
-                     (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
-                     (changeset (string-append
-                                  (string-join (string-split version #\.) "u")
-                                  "-ga"))))
+                    (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
+                    (changeset (string-append
+                                (string-join (string-split version #\.) "u")
+                                "-ga"))))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
               (snippet
