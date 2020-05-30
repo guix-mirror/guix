@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# A hook script that prevents the user from pushing unsigned commits.
+# This hook script prevents the user from pushing to Savannah if any of the new
+# commits' OpenPGP signatures cannot be verified, or if a commit is signed
+# with an unauthorized key.
 
 # Called by "git push" after it has checked the remote status, but before
 # anything has been pushed.  If this script exits with a non-zero status nothing
