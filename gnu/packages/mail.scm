@@ -711,15 +711,15 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.7")
+    (version "1.4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/1,4.7/" ; sic
+                                  "download/" version "/"
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "19qmz9fgnjpj0cxb8y9nb2dfk7pc0a9kwfiysa0f13ps3d5k4mhm"))))
+                "0vww8n7r6pfl4jyijhzas3fpdl6v1ndhc99zr1fsamjldxqpxk5m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
