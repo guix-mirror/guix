@@ -682,3 +682,50 @@ APFS.")
 originally developed for Solaris and is now maintained by the OpenZFS
 community.")
     (license license:cddl1.0)))
+
+(define-public mergerfs
+  (package
+    (name "mergerfs")
+    (version "2.29.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/trapexit/mergerfs/releases/download/"
+                           version "/mergerfs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17gizw4vgbqqjd2ykkfpp276942jb5qclp0lkiwkmq1yjgyjqfmk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             ;; These were copied from the package libfuse.
+             (substitute* '("libfuse/lib/mount_util.c" "libfuse/util/mount_util.c")
+               (("/bin/(u?)mount" _ maybe-u)
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin/" maybe-u "mount")))
+             (substitute* '("libfuse/util/mount.mergerfs.c")
+               (("/bin/sh")
+                (which "sh")))
+             ;; The Makefile does not allow overriding PREFIX via make variables.
+             (substitute* '("Makefile" "libfuse/Makefile")
+               (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
+               ;; cannot chown as build user
+               (("chown root:root") "true"))
+             #t)))))
+    ;; mergerfs bundles a heavily modified copy of libfuse.
+    (inputs `(("util-linux" ,util-linux)))
+    (home-page "https://github.com/trapexit/mergerfs")
+    (synopsis "Featureful union filesystem")
+    (description "mergerfs is a union filesystem geared towards simplifying
+storage and management of files across numerous commodity storage devices.  It
+is similar to mhddfs, unionfs, and aufs.")
+    (license (list
+              license:isc                   ; mergerfs
+              license:gpl2 license:lgpl2.0  ; Imported libfuse code.
+              ))))
