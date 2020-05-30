@@ -13917,11 +13917,9 @@ clone, while other processes access the original tree.")
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-six" ,python-six)
-       ("python-typed-ast" ,python-typed-ast)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "https://github.com/PyCQA/astroid")
