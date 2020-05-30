@@ -34,7 +34,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
