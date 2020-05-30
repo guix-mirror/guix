@@ -201,7 +201,7 @@ program.")
              (invoke "make"
                      (string-append "DESTDIR=" (assoc-ref outputs "out"))
                      "PREFIX="
-                     "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
+                     "BASH_COMPLETIONS_DIR=etc/bash_completion.d"
                      "install"
                      "TARGETS=autorandr launcher manpage bash_completion"))))))
     (synopsis "Auto-detect connected displays and load appropriate setup")
