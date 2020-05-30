@@ -4904,7 +4904,6 @@ discovery protocols.")
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)
-       ("python-pylint" ,python-pylint)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("dconf" ,dconf)))
