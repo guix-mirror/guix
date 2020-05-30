@@ -1036,7 +1036,7 @@ comfortably in a pager or editor.
 (define-public eternalterminal
   (package
     (name "eternalterminal")
-    (version "5.1.10")
+    (version "6.0.7")
     (source
       (origin
         (method git-fetch)
@@ -1045,7 +1045,7 @@ comfortably in a pager or editor.
                (commit (string-append "et-v" version))))
         (file-name (git-file-name name version))
        (sha256
-        (base32 "0jh89229bd9s82h3aj6faaybwr5xvnk8w2kgz47gq263pz021zpl"))))
+        (base32 "03pdspggqxkmz95qb96pig5x0xw18hy9a7ivszydr32ry6kxxx1h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TEST=ON")
@@ -1055,12 +1055,6 @@ comfortably in a pager or editor.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((tests (assoc-ref inputs "googletest")))
                (copy-recursively tests "external/googletest"))
-             #t))
-         (add-after 'install 'dont-provide-gtest-libraries
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively (string-append out "/include"))
-               (delete-file-recursively (string-append out "/lib")))
              #t)))))
     (inputs
      `(("gflags" ,gflags)
