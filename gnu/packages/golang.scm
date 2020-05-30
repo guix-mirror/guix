@@ -20,6 +20,7 @@
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.com>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 raingloom <raingloom@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -797,8 +798,8 @@ packages.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
-  (let ((commit "c709ea063b76879dc9915358f55d4d77c16ab6d5")
-        (revision "6"))
+  (let ((commit "05986578812163b26672dabd9b425240ae2bb0ad")
+        (revision "7"))
     (package
       (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
@@ -810,7 +811,7 @@ packages.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "15nq53a6kcqchng4j0d1pjw0m6hny6126nhjdwqw5n9dzh6a226d"))))
+                  "1q2rxb6z5l6pmlckjsz2l0b8lw7bqgk6frhzbmi1dv0y5irb2ka7"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys"
