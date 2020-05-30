@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ruby)
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gawk)
@@ -38,6 +39,30 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages linux))
+
+(define-public ronn
+  (package
+    (name "ronn")
+    (version "0.7.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/rtomayko/ronn.git")
+         (commit version)))
+       (file-name
+        (git-file-name name version))
+       (sha256
+        (base32 "0fkniz7j1jp8v3i05m6hks3nsh6rzvjfi0ichpi7h4gwk5byxb94"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f))                   ; Library hpricot not available
+    (synopsis "Manual authoring tool")
+    (description "Ronn builds manuals.  It converts simple, human readable
+textfiles to roff for terminal display, and also to HTML for the web.")
+    (home-page "https://rtomayko.github.io/ronn/")
+    (license expat)))
 
 (define-public libpipeline
   (package
