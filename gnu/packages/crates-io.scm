@@ -27434,7 +27434,7 @@ to XDG Base Directory specification")
 (define-public rust-xml-rs-0.8
   (package
     (name "rust-xml-rs")
-    (version "0.8.1")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -27443,7 +27443,7 @@ to XDG Base Directory specification")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0c905wsmk995xypxljpxzq6vv660r1pzgyrpsfiz13kw3hf0dzcs"))
+         "12ndxyhzxw2zdr76ql8nfdwb2vwhvdkrxwk4pbjafqfglmjv0zdh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
