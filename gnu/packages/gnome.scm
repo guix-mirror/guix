@@ -4889,9 +4889,9 @@ discovery protocols.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/totem/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "totem-" version ".tar.xz"))
        (sha256
         (base32
          "028sc6xbyi7rs884862d8f3di6zhcm0lhvlpc3r69ifzjsq9my3b"))))
