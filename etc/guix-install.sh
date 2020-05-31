@@ -271,7 +271,7 @@ guix_get_bin()
         exit 1
     fi
 
-    pushd $dl_path >/dev/null
+    pushd "${dl_path}" >/dev/null
     gpg --verify "${bin_ver}.tar.xz.sig" >/dev/null 2>&1
     if [[ "$?" -eq 0 ]]; then
         _msg "${PAS}Signature is valid."
