@@ -74,6 +74,7 @@
 ;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;; Copyright © 2020 Fredrik Salomonsson <plattfot@gmail.com>
+;;; Copyright © 2020 Ryan Desfosses <rdes@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23155,3 +23156,28 @@ files.")
 sources.  It features syntax highlighting, autocompletion, preview of buffer
 or region and use of locally installed binaries.")
     (license license:gpl3+)))
+
+(define-public emacs-shell-pop
+  (let ((commit "4b4394037940a890a313d715d203d9ead2d156a6")
+        (revision "0"))
+    (package
+      (name "emacs-shell-pop")
+      (version (git-version "0.64" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kyagi/shell-pop-el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0s77n6b9iw1x3dv91ybkpgy3zvqd12si7zw3lg0m2b6j1akrawsg"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kyagi/shell-pop-el")
+      (synopsis "Utility which helps with pop up shell buffer")
+      (description
+       "This Emacs utility helps you pop up and pop out shell buffer window
+easily.  Four pre-set options are: @samp{shell}, @samp{terminal},
+@samp{ansi-term}, and @samp{eshell}.  You can also set your custom shell if
+you use some other configuration.")
+      (license license:gpl3+))))
