@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
+;;; Copyright © 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1520,11 +1521,16 @@ score, the more relevant OBJ is to REGEXPS."
                     (+ relevance (* weight (apply + (map score-regexp lst)))))))))
             0 metrics)))
 
-  (let ((scores (map regexp->score regexps)))
-    ;; Return zero if one of REGEXPS doesn't match.
-    (if (any zero? scores)
-        0
-        (reduce + 0 scores))))
+  (let loop ((regexps regexps)
+             (total-score 0))
+    (match regexps
+      ((head . tail)
+       (let ((score (regexp->score head)))
+         ;; Return zero if one of PATTERNS doesn't match.
+         (if (zero? score)
+             0
+             (loop tail (+ total-score score)))))
+      (() total-score))))
 
 (define %package-metrics
   ;; Metrics used to compute the "relevance score" of a package against a set
