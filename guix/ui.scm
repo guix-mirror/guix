@@ -1470,10 +1470,8 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
           (string->recutils
            (string-trim-right
             (parameterize ((%text-width width*))
-              (texi->plain-text
-               (string-append "description: "
-                              (or (and=> (package-description p) P_)
-                                  ""))))
+              (string-append "description: "
+                             (or (package-description-string p) "")))
             #\newline)))
   (for-each (match-lambda
               ((field . value)
