@@ -183,9 +183,9 @@ chk_sys_arch()
         aarch64)
             local arch=aarch64
             ;;
-	armv7l)
-	    local arch=armhf
-	    ;;
+        armv7l)
+            local arch=armhf
+            ;;
         *)
             _err "${ERR}Unsupported CPU type: ${arch}"
             exit 1
@@ -379,15 +379,15 @@ sys_enable_guix_daemon()
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
 
-	      # Work around <https://bugs.gnu.org/36074>, present in 1.0.1.
-	      sed -i /etc/systemd/system/guix-daemon.service \
-	          -e "s/GUIX_LOCPATH='/'GUIX_LOCPATH=/";
+              # Work around <https://bugs.gnu.org/36074>, present in 1.0.1.
+              sed -i /etc/systemd/system/guix-daemon.service \
+                  -e "s/GUIX_LOCPATH='/'GUIX_LOCPATH=/";
 
-	      # Work around <https://bugs.gnu.org/35671>, present in 1.0.1.
-	      if ! grep en_US /etc/systemd/system/guix-daemon.service >/dev/null;
-	      then sed -i /etc/systemd/system/guix-daemon.service \
-		       -e 's/^Environment=\(.*\)$/Environment=\1 LC_ALL=en_US.UTF-8';
-	      fi;
+              # Work around <https://bugs.gnu.org/35671>, present in 1.0.1.
+              if ! grep en_US /etc/systemd/system/guix-daemon.service >/dev/null;
+              then sed -i /etc/systemd/system/guix-daemon.service \
+                       -e 's/^Environment=\(.*\)$/Environment=\1 LC_ALL=en_US.UTF-8';
+              fi;
 
               systemctl daemon-reload &&
                   systemctl enable guix-daemon &&
