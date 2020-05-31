@@ -12224,7 +12224,7 @@ features and provides Vim-like key bindings.")
 (define-public emacs-bongo
   (package
     (name "emacs-bongo")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -12233,7 +12233,7 @@ features and provides Vim-like key bindings.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1q3ws2vn062dh7ci6jn2k2bcn7szh3ap64sgwkzdd6f1pas37fnr"))))
+        (base32 "1nszph9mn98flyhn1jq3y6mdh6jymjkvj5ng36ql016dj92apvhv"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dbrock/bongo")
     (synopsis "Media player for Emacs")
