@@ -427,7 +427,7 @@ sys_enable_guix_daemon()
     ln -sf "${var_guix}/bin/guix"  "$local_bin"
 
     [ -e "$info_path" ] || mkdir -p "$info_path"
-    for i in ${var_guix}/share/info/*; do
+    for i in "${var_guix}"/share/info/*; do
         ln -sf "$i" "$info_path"
     done
 }
