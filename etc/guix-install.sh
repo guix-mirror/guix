@@ -233,7 +233,7 @@ guix_get_bin_list()
         | sed -n -e 's/.*guix-binary-\([0-9.]*[a-z0-9]*\)\..*.tar.xz.*/\1/p' \
         | sort -Vu)")
 
-    latest_ver="$(echo "$bin_ver_ls" \
+    latest_ver="$(echo "${bin_ver_ls[0]}" \
                        | grep -oE "([0-9]{1,2}\.){2}[0-9]{1,2}[a-z0-9]*" \
                        | tail -n1)"
 
@@ -247,7 +247,7 @@ guix_get_bin_list()
     fi
 
     # Use default to download according to the list and local ARCH_OS.
-    BIN_VER="$default_ver"
+    BIN_VER="${default_ver}"
 }
 
 guix_get_bin()
