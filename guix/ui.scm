@@ -1465,8 +1465,7 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
           (string-map (match-lambda
                         (#\newline #\space)
                         (chr       chr))
-                      (or (and=> (package-synopsis-string p) P_)
-                          "")))
+                      (or (package-synopsis-string p) "")))
   (format port "~a~%"
           (string->recutils
            (string-trim-right
