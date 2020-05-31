@@ -5916,8 +5916,11 @@ values (strings, macros, or numbers) pasted together.")
 
 (define-public biber
   (package
+    ;; Note: When updating Biber, make sure it matches our BibLaTeX version by
+    ;; checking the Biber/BibLaTeX compatibility matrix in the BibLaTeX manual
+    ;; at <https://ctan.org/pkg/biblatex>.
     (name "biber")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5930,7 +5933,7 @@ values (strings, macros, or numbers) pasted together.")
                                        "biber-sortinithash.patch"))
               (sha256
                (base32
-                "0qgkc1k9n36yfmndwz879pak6mjphld0p85lzn9g2ng0vhxsifzz"))))
+                "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
