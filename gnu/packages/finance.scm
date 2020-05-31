@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,9 +187,8 @@ line client and a client based on Qt.")
        ("intltool" ,intltool)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("libofx" ,libofx)
        ("libsoup" ,libsoup)))
-    (arguments
-     `(#:configure-flags (list "-without-ofx"))) ; libofx is not available yet
     (home-page "http://homebank.free.fr/")
     (synopsis "Graphical personal accounting application")
     (description "HomeBank allows you to manage your personal accounts at
