@@ -20349,14 +20349,14 @@ SSH servers.")
 (define-public emacs-tramp
   (package
     (name "emacs-tramp")
-    (version "2.4.3.4")
+    (version "2.4.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/"
                            "tramp-" version ".tar"))
        (sha256
-        (base32 "01il42xb6s38qnb7bhn9d7gscc5p5y4da5a4dp1i1cyi823sfp8f"))))
+        (base32 "14djizi4ivwv4ad4nymday86jbh45w14wdhlm96743ffwr45dd2m"))))
     (build-system emacs-build-system)
     (arguments
      `(#:emacs ,emacs                   ;need D-Bus
