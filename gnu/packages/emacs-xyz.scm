@@ -1605,36 +1605,21 @@ letter to each link using avy.")
 (define-public emacs-bbdb
   (package
     (name "emacs-bbdb")
-    (version "3.1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://savannah/bbdb/bbdb-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1gs16bbpiiy01w9pyg12868r57kx1v3hnw04gmqsmpc40l1hyy05"))
-              (modules '((guix build utils)))
-              (snippet
-               ;; We don't want to build and install the PDF.
-               '(begin
-                  (substitute* "doc/Makefile.in"
-                    (("^doc_DATA = .*$")
-                     "doc_DATA =\n"))
-                  #t))))
-    (build-system gnu-build-system)
+    (version "3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "bbdb-" version ".tar"))
+       (sha256
+        (base32 "1p56dg0mja2b2figy7yhdx714zd5j6njzn0k07zjka3jc06izvjx"))))
+    (build-system emacs-build-system)
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; Add an autoloads file with the right name for guix.el.
-             (let* ((out  (assoc-ref outputs "out"))
-                    (site (string-append out "/share/emacs/site-lisp")))
-               (with-directory-excursion site
-                 (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el")))
-             #t)))))
-    (native-inputs `(("emacs" ,emacs-minimal)))
-    (home-page "https://savannah.nongnu.org/projects/bbdb/")
+     ;; XXX: The following file cannot be byte-compiled, because et requires
+     ;; `vm-autoloads', from the VM package, with is neither in Emacs nor
+     ;; packaged in Guix.  So, don't bother for now.
+     `(#:exclude '("bbdb-vm\\.el")))
+    (home-page "http://elpa.gnu.org/packages/bbdb.html")
     (synopsis "Contact management utility for Emacs")
     (description
      "BBDB is the Insidious Big Brother Database for GNU Emacs.  It provides
