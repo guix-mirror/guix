@@ -2053,7 +2053,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.6")
+    (version "6.2.7")
     (source
      (origin
        (method url-fetch)
@@ -2061,7 +2061,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "0kxhdv01ia91v2y0cmzbll391ns2vbmn65jjrv37h4s1srszh5yn"))))
+         "0ilq4bfl0lwyzf11q7n2skydjhalfn3bgxhrp5hjxs5bc5d6fdp5"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
