@@ -2099,7 +2099,7 @@ database.")
              (substitute* "Makefile"
                (("/usr/local") (assoc-ref outputs "out")))
             #t)))))
-    (home-page "https://symas.com/products/lightning-memory-mapped-database")
+    (home-page "https://symas.com/lmdb/")
     (synopsis "Lightning Memory-Mapped Database library")
     (description
      "The @dfn{Lightning Memory-Mapped Database} (LMDB) is a high-performance
