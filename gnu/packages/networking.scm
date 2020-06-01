@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3287,3 +3288,49 @@ CDP.  The goal of LLDP is to provide an inter-vendor compatible mechanism to
 deliver Link-Layer notifications to adjacent network devices.  @code{lldpd} is
 an implementation of LLDP.  It also supports some proprietary protocols.")
     (license license:isc)))
+
+(define-public hashcash
+  (package
+    (name "hashcash")
+    (version "1.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.hashcash.org/source/hashcash-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "15kqaimwb2y8wvzpn73021bvay9mz1gqqfc40gk4hj6f84nz34h1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list (string-append "CC=" ,(cc-for-target)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         ;; No tests available.
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (bindir (string-append outdir "/bin"))
+                    (mandir (string-append outdir "/share/man/man1"))
+                    (docdir (string-append outdir "/share/doc/hashcash-" ,version)))
+               ;; Install manually, as we don't need the `sha1' binary
+               (install-file "hashcash" bindir)
+               (install-file "hashcash.1" mandir)
+               (install-file "README" docdir)
+               (install-file "LICENSE" docdir)
+               (install-file "CHANGELOG" docdir)
+               #t))))))
+    (home-page "https://www.hashcash.org/")
+    (synopsis "Denial-of-service countermeasure")
+    (description "Hashcash is a proof-of-work algorithm, which has been used
+as a denial-of-service countermeasure technique in a number of systems.
+
+A hashcash stamp constitutes a proof-of-work which takes a parametrizable
+amount of work to compute for the sender.  The recipient can verify received
+hashcash stamps efficiently.
+
+This package contains a command-line tool for computing and verifying hashcash
+stamps.")
+    (license license:public-domain)))
