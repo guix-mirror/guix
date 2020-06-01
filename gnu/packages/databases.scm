@@ -933,7 +933,7 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.6")
+    (version "3.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -942,13 +942,12 @@ as a drop-in replacement of MySQL.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "083724f5daaqyzdcx508caz6fk2hs89jff85zg28ih43vxkvnrnj"))))
+                "0yrzhsxmjiwkhchagx8dymzhvxl3k5h40wn9wpicqjvgjb9k8523"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
     (arguments
-     ;; No tests.
-     '(#:tests? #f))
+     '(#:tests? #f))                    ; no tests
     (home-page "https://mariadb.com/kb/en/mariadb-connector-c/")
     (synopsis "Client library to connect to MySQL or MariaDB")
     (description "The MariaDB Connector/C is used to connect applications
