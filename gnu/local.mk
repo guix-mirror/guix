@@ -638,6 +638,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/cross-toolchain.scm			\
   %D%/build/image.scm				\
   %D%/build/file-systems.scm			\
+  %D%/build/hurd-boot.scm			\
   %D%/build/install.scm				\
   %D%/build/linux-boot.scm			\
   %D%/build/linux-container.scm			\

@@ -344,9 +344,10 @@ system that is passed to 'populate-root-file-system'."
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build vm)
+                        ((gnu build hurd-boot)
+                         #:select (make-hurd-device-nodes))
                         ((gnu build linux-boot)
-                         #:select (make-essential-device-nodes
-                                   make-hurd-device-nodes))
+                         #:select (make-essential-device-nodes))
                         (guix store database)
                         (guix build utils)
                         (srfi srfi-26)

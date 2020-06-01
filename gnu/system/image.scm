@@ -167,6 +167,7 @@
     (with-imported-modules `(,@(source-module-closure
                                 '((gnu build vm)
                                   (gnu build image)
+                                  (gnu build hurd-boot)
                                   (gnu build linux-boot)
                                   (guix store database))
                                 #:select? not-config?)
@@ -174,6 +175,7 @@
       #~(begin
           (use-modules (gnu build vm)
                        (gnu build image)
+                       (gnu build hurd-boot)
                        (gnu build linux-boot)
                        (guix store database)
                        (guix build utils))

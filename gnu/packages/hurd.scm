@@ -31,6 +31,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu build hurd-boot)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -312,107 +313,26 @@ Hurd-minimal package which are needed for both glibc and GCC.")
 (define (hurd-rc-script)
   "Return a script to be installed as /libexec/rc in the 'hurd' package.  The
 script takes care of installing the relevant passive translators on the first
-boot, since this cannot be done from GNU/Linux."
-  (define translators
-    '(("/servers/crash-dump-core" ("/hurd/crash" "--dump-core"))
-      ("/servers/crash-kill" ("/hurd/crash" "--kill"))
-      ("/servers/crash-suspend" ("/hurd/crash" "--suspend"))
-      ("/servers/password" ("/hurd/password"))
-      ("/servers/socket/1" ("/hurd/pflocal"))
-      ("/servers/socket/2" ("/hurd/pfinet" "--interface" "eth0"
-                            "--address" "10.0.2.15" ;the default QEMU guest IP
-                            "--netmask" "255.255.255.0"
-                            "--gateway" "10.0.2.2"
-                            "--ipv6" "/servers/socket/16"))))
+boot, since this cannot be done from GNU/Linux.  Then, it runs system
+activation; starting the Shepherd."
 
   (define rc
-    (with-imported-modules '((guix build utils))
+    (with-imported-modules '((guix build utils)
+                             (gnu build hurd-boot)
+                             (guix build syscalls))
       #~(begin
           (use-modules (guix build utils)
+                       (gnu build hurd-boot)
+                       (guix build syscalls)
                        (ice-9 match)
                        (system repl repl)
                        (srfi srfi-1)
                        (srfi srfi-26))
 
-          (display "Welcome, this is GNU's early boot Guile.\n")
-          (display "Use '--repl' for an initrd REPL.\n\n")
-
-          ;; "@HURD@" and "@COREUTILS@" are a placeholders.
+          ;; "@HURD@" and "@COREUTILS@" are placeholders.
           (setenv "PATH" "@HURD@/bin:@HURD@/sbin:@COREUTILS@/bin")
 
-          ;; XXX FIXME c&p from linux-boot.scm
-          (define (find-long-option option arguments)
-            "Find OPTION among ARGUMENTS, where OPTION is something like \"--load\".
-Return the value associated with OPTION, or #f on failure."
-            (let ((opt (string-append option "=")))
-              (and=> (find (cut string-prefix? opt <>)
-                           arguments)
-                     (lambda (arg)
-                       (substring arg (+ 1 (string-index arg #\=)))))))
-
-          (define (translated? node)
-            ;; Return true if a translator is installed on NODE.
-            (with-output-to-port (%make-void-port "w")
-              (lambda ()
-                (with-error-to-port (%make-void-port "w")
-                  (lambda ()
-                    (zero? (system* "showtrans" "-s" node)))))))
-
-          (for-each (match-lambda
-                      ((node command)
-                       (unless (translated? node)
-                         (mkdir-p (dirname node))
-                         (apply invoke "settrans" "-c" node command))))
-                    '#$translators)
-
-          (format #t "Creating essential device nodes...\n")
-          (with-directory-excursion "/dev"
-            (invoke "MAKEDEV" "--devdir=/dev" "std")
-            (invoke "MAKEDEV" "--devdir=/dev" "vcs")
-            (invoke "MAKEDEV" "--devdir=/dev" "tty1""tty2" "tty3" "tty4" "tty5" "tty6")
-            (invoke "MAKEDEV" "--devdir=/dev" "ptyp0" "ptyp1" "ptyp2")
-            (invoke "MAKEDEV" "--devdir=/dev" "console"))
-
-          (let* ((args    (command-line))
-                 (system  (find-long-option "--system" args))
-                 (to-load (find-long-option "--load" args)))
-
-            (false-if-exception (delete-file "/hurd"))
-            (let ((hurd/hurd (string-append system "/profile/hurd")))
-              (symlink hurd/hurd "/hurd"))
-
-            (format #t "Starting pager...\n")
-            (unless (zero? (system* "/hurd/mach-defpager"))
-              (format #t "FAILED...Good luck!\n"))
-
-            (cond ((member "--repl" args)
-                   (format #t "Starting repl...\n")
-                   (start-repl))
-                  (to-load
-                   (format #t "loading '~a'...\n" to-load)
-                   (primitive-load to-load)
-                   (format (current-error-port)
-                           "boot program '~a' terminated, rebooting~%"
-                           to-load)
-                   (let ((shepherd.conf
-                          (if (file-exists? "/etc/shepherd.conf")
-                              "/etc/shepherd.conf"
-                              (let ((files (find-files "/gnu/store" ".*-shepherd.conf")))
-                                (and (pair? files) (car files))))))
-                     (unless shepherd.conf
-                       (format #t "No shepherd.conf found, dropping to a shell...\n")
-                       (invoke "/run/current-system/profile/bin/bash")
-                       (reboot))
-                     (false-if-exception (delete-file "/var/run/shepherd/socket"))
-                     (format #t "Starting the Shepherd... ~a\n" shepherd.conf)
-                     (execl "/run/current-system/profile/bin/shepherd" "shepherd"
-                            "--config" shepherd.conf))
-                   (sleep 2)
-                   (reboot))
-                  (else
-                   (display "no boot file passed via '--load'\n")
-                   (display "entering a warm and cozy REPL\n")
-                   (start-repl)))))))
+          (boot-hurd-system))))
 
   ;; FIXME: We want the program to use the cross-compiled Guile when
   ;; cross-compiling.  But why do we need to be explicit here?
