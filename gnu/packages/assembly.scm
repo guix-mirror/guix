@@ -149,14 +149,14 @@ to the clients.")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.22")
+    (version "1.73.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "1pb0rcfdsb0h89khjjrbikz5wjdllavj3ajim0rcyh7x12xr1hw5"))))
+        (base32 "142vxhs8mh8isvlzq7ir0asmqda410phzxmk9gk9b43dldskkj7k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
