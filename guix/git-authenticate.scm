@@ -41,7 +41,18 @@
             authenticate-commits
             load-keyring-from-reference
             previously-authenticated-commits
-            cache-authenticated-commit))
+            cache-authenticated-commit
+
+            git-authentication-error?
+            git-authentication-error-commit
+            unsigned-commit-error?
+            unauthorized-commit-error?
+            unauthorized-commit-error-signing-key
+            signature-verification-error?
+            signature-verification-error-keyring
+            signature-verification-error-signature
+            missing-key-error?
+            missing-key-error-signature))
 
 ;;; Commentary:
 ;;;
@@ -51,6 +62,27 @@
 ;;; '.guix-authorizations' file of the parent commit.
 ;;;
 ;;; Code:
+
+(define-condition-type &git-authentication-error &error
+  git-authentication-error?
+  (commit  git-authentication-error-commit))
+
+(define-condition-type &unsigned-commit-error &git-authentication-error
+  unsigned-commit-error?)
+
+(define-condition-type &unauthorized-commit-error &git-authentication-error
+  unauthorized-commit-error?
+  (signing-key unauthorized-commit-error-signing-key))
+
+(define-condition-type &signature-verification-error &git-authentication-error
+  signature-verification-error?
+  (signature signature-verification-error-signature)
+  (keyring   signature-verification-error-keyring))
+
+(define-condition-type &missing-key-error &git-authentication-error
+  missing-key-error?
+  (signature missing-key-error-signature))
+
 
 (define (commit-signing-key repo commit-id keyring)
   "Return the OpenPGP key that signed COMMIT-ID (an OID).  Raise an exception
@@ -64,9 +96,10 @@ not in KEYRING."
                     (values #f #f)))))
     (unless signature
       (raise (condition
+              (&unsigned-commit-error (commit commit-id))
               (&message
                (message (format #f (G_ "commit ~a lacks a signature")
-                                commit-id))))))
+                                (oid->string commit-id)))))))
 
     (let ((signature (string->openpgp-packet signature)))
       (with-fluids ((%default-port-encoding "UTF-8"))
@@ -77,12 +110,17 @@ not in KEYRING."
             ('bad-signature
              ;; There's a signature but it's invalid.
              (raise (condition
+                     (&signature-verification-error (commit commit-id)
+                                                    (signature signature)
+                                                    (keyring keyring))
                      (&message
                       (message (format #f (G_ "signature verification failed \
 for commit ~a")
                                        (oid->string commit-id)))))))
             ('missing-key
              (raise (condition
+                     (&missing-key-error (commit commit-id)
+                                         (signature signature))
                      (&message
                       (message (format #f (G_ "could not authenticate \
 commit ~a: key ~a is missing")
@@ -138,6 +176,8 @@ not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
                   (commit-authorized-keys repository commit
                                           default-authorizations))
     (raise (condition
+            (&unauthorized-commit-error (commit id)
+                                        (signing-key signing-key))
             (&message
              (message (format #f (G_ "commit ~a not signed by an authorized \
 key: ~a")
