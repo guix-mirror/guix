@@ -1518,16 +1518,6 @@ GNOME Desktop.")
                (base32
                 "154qcr0x6f68f4q526y87imv0rscmp34n47nk1pp82rsq52h2zna"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             ;; The autogen.sh script in gnome-common will run ./configure
-             ;; by default, which is problematic because source shebangs
-             ;; have not yet been patched.
-             (setenv "NOCONFIGURE" "t")
-             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -1554,19 +1544,18 @@ GNOME Desktop.")
     (inherit gdl)
     (name "gdl-minimal")
     (arguments
-     (substitute-keyword-arguments (package-arguments gdl)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'disable-doc-generation
-             ;; XXX: There is no easy way to disable generating the
-             ;; documentation.
-             (lambda _
-               (substitute* "configure.in"
-                 (("GTK_DOC_CHECK.*") "")
-                 (("docs/.*") ""))
-               (substitute* "Makefile.am"
-                 (("gdl docs po") "gdl po"))
-               #t))))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-doc-generation
+           ;; XXX: There is no easy way to disable generating the
+           ;; documentation.
+           (lambda _
+             (substitute* "configure.in"
+               (("GTK_DOC_CHECK.*") "")
+               (("docs/.*") ""))
+             (substitute* "Makefile.am"
+               (("gdl docs po") "gdl po"))
+             #t)))))
     (native-inputs (alist-delete "gtk-doc" (package-native-inputs gdl)))))
 
 (define-public libgnome-keyring
