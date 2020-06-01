@@ -1,0 +1,35 @@
+From ca11b53896365c948426974cb90e8f71c70d123b Mon Sep 17 00:00:00 2001
+From: Simon South <simon@simonsouth.net>
+Date: Sun, 31 May 2020 20:36:43 -0400
+Subject: [PATCH] Guard floating-point opcodes with explicit memory barrier
+
+---
+ src/interp/engine/interp-inlining.h | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/interp/engine/interp-inlining.h b/src/interp/engine/interp-inlining.h
+index 3339b0e..4ee5c5a 100644
+--- a/src/interp/engine/interp-inlining.h
++++ b/src/interp/engine/interp-inlining.h
+@@ -78,8 +78,17 @@
+    4.3, we need to insert a label, and ensure its address
+    is taken (to stop it being optimised out).  However,
+    this reduces performance on PowerPC by approx 1 - 2%.
++
++   With gcc 5 and newer an asm statement with a "memory"
++   clobber argument explicitly sets a memory barrier for the
++   compiler, preventing it from reordering memory accesses
++   in a way that breaks decaching.
+ */
+-#if (__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)
++#if (__GNUC__ > 4)
++#define DEF_GUARD_TABLE(level) /* none */
++#define GUARD(opcode, level)   __asm__("" ::: "memory");
++#define GUARD_TBLS             /* none */
++#elif (__GNUC__ == 4) && (__GNUC_MINOR__ >= 3)
+ #define DEF_GUARD_TABLE(level) DEF_HANDLER_TABLE(level, GUARD)
+ #define GUARD(opcode, level)   label(opcode, level, GUARD)
+ #define GUARD_TBLS             , HNDLR_TBLS(GUARD)
+-- 
+2.26.2
+
