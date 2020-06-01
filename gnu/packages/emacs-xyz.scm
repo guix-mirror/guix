@@ -9853,7 +9853,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "50.0")
+    (version "52.0")
     (source
      (origin
        (method url-fetch)
@@ -9861,14 +9861,17 @@ highlights quasi-quoted expressions.")
              "https://github.com/tvraman/emacspeak/releases/download/"
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
-        (base32
-         "0rsj7rzfyqmyidfsjrhjnxi2d43axx6r3gac1fhv5xkkbiiqzqkb"))))
+        (base32 "0x5b0s38r5ih2lk7f5hasi9arrgxlmmq5jaddadbxi8in2gw2jzl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'delete-broken-symlink
+           (lambda _
+             (delete-file "lisp/sudoku.el")
+             #t))
          (replace 'configure
            (lambda _
              (setenv "SHELL" (which "sh"))
@@ -9893,12 +9896,12 @@ highlights quasi-quoted expressions.")
                 '("etc" "info" "js" "lisp" "media" "servers" "sounds"
                   "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
-               (substitute* "etc/emacspeak.sh"
-                 (("/lisp/emacspeak-setup.el")
+               (substitute* "run"
+                 (("\\./lisp/emacspeak-setup.el")
                   (string-append lisp "/lisp/emacspeak-setup.el")))
                ;; Install the convenient startup script.
                (mkdir-p bin)
-               (copy-file "etc/emacspeak.sh" (string-append bin "/emacspeak")))
+               (copy-file "run" (string-append bin "/emacspeak")))
              #t))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -9911,10 +9914,10 @@ highlights quasi-quoted expressions.")
                (wrap-program emacspeak
                  `("DTK_PROGRAM" ":" prefix (,espeak)))
                #t))))
-       #:tests? #f)) ; no check target
+       #:tests? #f))                    ; no check target
     (inputs
      `(("emacs" ,emacs)
-       ("espeak" ,espeak)
+       ("espeak" ,espeak-ng)
        ("perl" ,perl)
        ("tcl" ,tcl)
        ("tclx" ,tclx)))
@@ -9922,12 +9925,12 @@ highlights quasi-quoted expressions.")
     (synopsis "Audio desktop interface for Emacs")
     (description
      "Emacspeak is a speech interface that allows visually impaired users to
-interact independently and efficiently with the computer.  Audio formatting
---a technique pioneered by AsTeR-- and full support for W3C's Aural CSS (ACSS)
-allows Emacspeak to produce rich aural presentations of electronic information.
-By seamlessly blending all aspects of the Internet such as Web-surfing and
-messaging, Emacspeak speech-enables local and remote information via a
-consistent and well-integrated user interface.")
+interact independently and efficiently with the computer.  Audio
+formatting---a technique pioneered by AsTeR---and full support for W3C's Aural
+CSS (ACSS) allows Emacspeak to produce rich aural presentations of electronic
+information.  By seamlessly blending all aspects of the Internet such as
+Web-surfing and messaging, Emacspeak speech-enables local and remote
+information via a consistent and well-integrated user interface.")
     (license license:gpl2+)))
 
 (define-public emacs-adaptive-wrap
