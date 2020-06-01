@@ -743,14 +743,14 @@ and Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.3.3")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "0zh8c19r1zd4kr9jg2ws0n2n5ic2siz5zbns6cvylyfbpf69ghy2"))))
+        (base32 "10qnab10gfkzdfyqpmsl4c3mhh7533l4q6jrdfy5ssvj4da6hawd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -758,20 +758,14 @@ and Octave.  TeXmacs is completely extensible via Guile.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ;no configure script
-         (add-after 'unpack 'build-shared-library
-           (lambda _
-             (substitute* "gtk/makefile"
-               (("scintilla\\.a") "libscintilla.so")
-               (("\\$\\(AR\\) \\$\\(ARFLAGS\\) \\$@ \\$\\^")
-                "$(CC) -shared $^ -o $@")
-               (("\\$\\(RANLIB\\) \\$@") ""))
-             #t))
          (replace 'install
+           ;; Upstream provides no install script.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
                     (include (string-append out "/include")))
-               (install-file "bin/libscintilla.so" lib)
+               (for-each (lambda (f) (install-file f lib))
+                         (find-files "bin/" "\\.so$"))
                (for-each (lambda (f) (install-file f include))
                          (find-files "include/" "."))
                #t))))))
