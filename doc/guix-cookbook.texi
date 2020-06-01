@@ -327,7 +327,7 @@ package definitions.
 @item
 Inheritance makes it easy to customize a package by inheriting from it and
 modifying only what is needed.
- 
+
 @item
 Batch processing: the whole package collection can be parsed, filtered and
 processed.  Building a headless server with all graphical interfaces stripped
@@ -1323,6 +1323,7 @@ reference.
 
 @menu
 * Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
+* Connecting to Wireguard VPN::  Connecting to a Wireguard VPN.
 * Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
 * Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
 @end menu
@@ -1566,6 +1567,83 @@ Left undiscussed however, is Guix's initrd and its customization.  It is
 likely that you'll need to modify the initrd on a machine using a custom
 kernel, since certain modules which are expected to be built may not be
 available for inclusion into the initrd.
+
+@node Connecting to Wireguard VPN
+@section Connecting to Wireguard VPN
+
+To connect to a Wireguard VPN server you need the kernel module to be
+loaded in memory and a package providing networking tools that support
+it (e.g.  @code{wireguard-tools} or @code{network-manager}).
+
+Here is a configuration example for Linux-Libre < 5.6, where the module
+is out of tree and need to be loaded manually---following revisions of
+the kernel have it built-in and so don't need such configuration:
+
+@lisp
+(use-modules (gnu))
+(use-service-modules desktop)
+(use-package-modules vpn)
+
+(operating-system
+  ;; …
+  (services (cons (simple-service 'wireguard-module
+                                  kernel-module-loader-service-type
+                                  '("wireguard"))
+                  %desktop-services))
+  (packages (cons wireguard-tools %base-packages))
+  (kernel-loadable-modules (list wireguard-linux-compat)))
+@end lisp
+
+After reconfiguring and restarting your system you can either use
+Wireguard tools or NetworkManager to connect to a VPN server.
+
+@subsection Using Wireguard tools
+
+To test your Wireguard setup it is convenient to use @command{wg-quick}.
+Just give it a configuration file @command{wg-quick up ./wg0.conf}; or
+put that file in @file{/etc/wireguard} and run @command{wg-quick up wg0}
+instead.
+
+@quotation Note
+Be warned that the author described this command as a: “[…] very quick
+and dirty bash script […]”.
+@end quotation
+
+@subsection Using NetworkManager
+
+Thanks to NetworkManager support for Wireguard we can connect to our VPN
+using @command{nmcli} command.  Up to this point this guide assumes that
+you're using Network Manager service provided by
+@code{%desktop-services}.  Ortherwise you need to adjust your services
+list to load @code{network-manager-service-type} and reconfigure your
+Guix system.
+
+To import your VPN configuration execute nmcli import command:
+
+@example shell
+# nmcli connection import type wireguard file wg0.conf
+Connection 'wg0' (edbee261-aa5a-42db-b032-6c7757c60fde) successfully added
+@end example
+
+This will create a configuration file in
+@file{/etc/NetworkManager/wg0.nmconnection}.  Next connect to the
+Wireguard server:
+
+@example shell
+$ nmcli connection up wg0
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/6)
+@end example
+
+By default NetworkManager will connect automatically on system boot.  To
+change that behaviour you need to edit your config:
+
+@example shell
+# nmcli connection modify wg0 connection.autoconnect no
+@end example
+
+For more specific information about NetworkManager and wireguard
+@uref{https://blogs.gnome.org/thaller/2019/03/15/wireguard-in-networkmanager/,see
+this post by thaller}.
 
 @node Customizing a Window Manager
 @section Customizing a Window Manager
