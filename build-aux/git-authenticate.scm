@@ -42,12 +42,13 @@
              (ice-9 pretty-print))
 
 
-(define %committers
-  ;; List of committers.  These are the user names found on
+(define %historical-committers
+  ;; List of "historical" committers---people once authorized committers
+  ;; before the '.guix-authorizations' file was created.
+  ;;
+  ;; These are the user names found on
   ;; <https://savannah.gnu.org/project/memberlist.php?group=guix> along with
   ;; the fingerprint of the signing (sub)key.
-  ;;
-  ;; TODO: Replace this statically-defined list by an in-repo list.
   '(("andreas"
      "AD17 A21E F8AE D8F1 CC02  DBD9 F7D5 C9BF 765C 61E3")
     ("ajgrf"
@@ -214,13 +215,13 @@
     ("wingo"
      "FF47 8FB2 64DE 32EC 2967  25A3 DDC0 F535 8812 F8F2")))
 
-(define %authorized-signing-keys
-  ;; Fingerprint of authorized signing keys.
+(define %historical-authorized-signing-keys
+  ;; Fingerprint of historically authorized signing keys.
   (map (match-lambda
          ((name fingerprint)
           (base16-string->bytevector
            (string-downcase (string-filter char-set:graphic fingerprint)))))
-       %committers))
+       %historical-committers))
 
 (define %commits-with-bad-signature
   ;; Commits with a known-bad signature.
@@ -312,7 +313,7 @@ Raise an error when authentication fails."
 
   (unless (member (openpgp-public-key-fingerprint signing-key)
                   (commit-authorized-keys repository commit
-                                          %authorized-signing-keys))
+                                          %historical-authorized-signing-keys))
     (raise (condition
             (&message
              (message (format #f (G_ "commit ~a not signed by an authorized \
