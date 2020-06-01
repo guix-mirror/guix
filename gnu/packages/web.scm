@@ -4867,11 +4867,31 @@ NetSurf project.")
                      "touch" "{}" "+")
              #t))
          (add-before 'check 'pre-check
-           ;; XDG_DATA_DIRS is needed by the podcast.t test.
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Six tests use IPC::Run.  For these tests the PERL5LIB
+             ;; variable is needed in the runtime environment and also
+             ;; in the search path list in the setup file.
+             (substitute*
+              '("t/aggregate-file.t" "t/git-cgi.t" "t/git-untrusted.t"
+                "t/passwordauth.t" "t/relativity.t" "t/wrapper-environ.t")
+              (("(.*)\"perl\"(.*)$" _ prefix suffix)
+               (string-append prefix "qw(env), 'PERL5LIB='.$ENV{PERL5LIB}"
+                              ", qw(perl)" suffix))
+              (("(.*) PERL5LIB=(.*) perl(.*)$" _ prefix middle suffix)
+               (string-append prefix "), 'PERL5LIB='.$ENV{PERL5LIB}.':"
+                              middle "', qw(perl" suffix))
+              (("(.*)setup(.* )getcwd(.*)$" _ prefix middle suffix)
+               (string-append prefix "setup" middle
+                              "$ENV{PERL5LIB}.':'.getcwd" suffix))
+              (("^ENV(.*): '(.*)$" _ middle suffix)
+               (string-append "ENV" middle
+                              ": '$ENV{PERL5LIB}:" suffix)))
+             ;; XDG_DATA_DIRS is needed by the podcast.t test.
              (setenv "XDG_DATA_DIRS"
                      (string-append (assoc-ref inputs "shared-mime-info")
                                     "/share"))
+             ;; CC is needed by IkiWiki/Wrapper.pm.
+             (setenv "CC" "gcc")
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4899,6 +4919,7 @@ NetSurf project.")
        ("perl-file-mimeinfo" ,perl-file-mimeinfo)
        ("perl-html-tagset" ,perl-html-tagset)
        ("perl-image-magick" ,perl-image-magick)
+       ("perl-ipc-run" ,perl-ipc-run)
        ("perl-lwpx-paranoidagent" ,perl-lwpx-paranoidagent)
        ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-sax" ,perl-xml-sax)
