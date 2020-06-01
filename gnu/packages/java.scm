@@ -288,7 +288,8 @@ language.")
               (uri (string-append "mirror://sourceforge/jamvm/jamvm/"
                                   "JamVM%20" version "/jamvm-"
                                   version ".tar.gz"))
-              (patches (search-patches "jamvm-arm.patch"))
+              (patches (search-patches "jamvm-1.5.1-aarch64-support.patch"
+                                       "jamvm-1.5.1-armv7-support.patch"))
               (sha256
                (base32
                 "06lhi03l3b0h48pc7x58bk9my2nrcf1flpmglvys3wyad6yraf36"))
@@ -304,13 +305,30 @@ language.")
                             (assoc-ref %build-inputs "classpath"))
              "--disable-int-caching"
              "--enable-runtime-reloc-checks"
-             "--enable-ffi")))
+             "--enable-ffi")
+       #:phases
+       ,(if (string-prefix? "aarch64" (or (%current-system)
+                                          (%current-target-system)))
+            ;; Makefiles and the configure script need to be regenerated to
+            ;; incorporate support for AArch64.
+            '(modify-phases %standard-phases
+               (replace 'bootstrap
+                 (lambda _ (invoke "autoreconf" "-vif"))))
+            '%standard-phases)))
     (inputs
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
        ("libffi" ,libffi)
        ("zip" ,zip)
        ("zlib" ,zlib)))
+    (native-inputs
+     (if (string-prefix? "aarch64" (or (%current-system)
+                                       (%current-target-system)))
+         ;; Additional packages needed for autoreconf.
+         `(("autoconf" ,autoconf)
+           ("automake" ,automake)
+           ("libtool" ,libtool))
+         '()))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
