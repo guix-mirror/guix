@@ -319,7 +319,8 @@ MODULES += $(STORE_MODULES)
 dist_noinst_DATA =				\
   guix/tests.scm				\
   guix/tests/http.scm				\
-  guix/tests/git.scm
+  guix/tests/git.scm				\
+  guix/tests/gnupg.scm
 
 # Auxiliary files for packages.
 AUX_FILES =						\
@@ -404,6 +405,7 @@ SCM_TESTS =					\
   tests/gem.scm				\
   tests/gexp.scm				\
   tests/git.scm					\
+  tests/git-authenticate.scm			\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
   tests/grafts.scm				\
@@ -576,6 +578,8 @@ EXTRA_DIST +=						\
   tests/dsa.key						\
   tests/ed25519.key					\
   tests/ed25519.sec					\
+  tests/ed25519bis.key					\
+  tests/ed25519bis.sec					\
   build-aux/config.rpath				\
   bootstrap						\
   doc/build.scm						\

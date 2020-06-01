@@ -21,6 +21,7 @@
   #:use-module ((guix git) #:select (with-repository))
   #:use-module (guix utils)
   #:use-module (guix build utils)
+  #:use-module ((guix tests gnupg) #:select (with-environment-variables))
   #:use-module (ice-9 match)
   #:use-module (ice-9 control)
   #:export (git-command
@@ -29,24 +30,6 @@
 
 (define git-command
   (make-parameter "git"))
-
-(define (call-with-environment-variables variables thunk)
-  "Call THUNK with the environment VARIABLES set."
-  (let ((environment (environ)))
-    (dynamic-wind
-      (lambda ()
-        (for-each (match-lambda
-                    ((variable value)
-                     (setenv variable value)))
-                  variables))
-      thunk
-      (lambda ()
-        (environ environment)))))
-
-(define-syntax-rule (with-environment-variables variables exp ...)
-  "Evaluate EXP with the given environment VARIABLES set."
-  (call-with-environment-variables variables
-                                   (lambda () exp ...)))
 
 (define (populate-git-repository directory directives)
   "Initialize a new Git checkout and repository in DIRECTORY and apply
@@ -97,6 +80,9 @@ Return DIRECTORY on success."
       ((('commit text) rest ...)
        (git "commit" "-m" text)
        (loop rest))
+      ((('commit text ('signer fingerprint)) rest ...)
+       (git "commit" "-m" text (string-append "--gpg-sign=" fingerprint))
+       (loop rest))
       ((('tag name) rest ...)
        (git "tag" name)
        (loop rest))
@@ -108,6 +94,10 @@ Return DIRECTORY on success."
        (loop rest))
       ((('merge branch message) rest ...)
        (git "merge" branch "-m" message)
+       (loop rest))
+      ((('merge branch message ('signer fingerprint)) rest ...)
+       (git "merge" branch "-m" message
+            (string-append "--gpg-sign=" fingerprint))
        (loop rest)))))
 
 (define (call-with-temporary-git-repository directives proc)
