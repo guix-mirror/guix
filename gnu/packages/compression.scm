@@ -2101,7 +2101,7 @@ file compression algorithm.")
 (define-public xarchiver
   (package
     (name "xarchiver")
-    (version "0.5.4.14")
+    (version "0.5.4.15")
     (source
      (origin
        (method git-fetch)
@@ -2110,7 +2110,7 @@ file compression algorithm.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1iklwgykgymrwcc5p1cdbh91v0ih1m58s3w9ndl5kyd44bwlb7px"))))
+        (base32 "0a3y54r5zp2c0cqm77r07qrl1vh200wvqmbhm35diy22fvkq5mwc"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -2118,7 +2118,7 @@ file compression algorithm.")
        ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; Hard-coded theme
+     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; hard-coded theme
        ("gtk+" ,gtk+)))
     (home-page "https://github.com/ib/xarchiver")
     (synopsis "Graphical front-end for archive operations")
