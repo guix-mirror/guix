@@ -104,6 +104,7 @@ MODULES =					\
   guix/lint.scm				\
   guix/glob.scm					\
   guix/git.scm					\
+  guix/git-authenticate.scm			\
   guix/graph.scm				\
   guix/cache.scm				\
   guix/cve.scm					\
@@ -632,7 +633,7 @@ commit_v1_0_1 = d68de958b60426798ed62797ff7c96c327a672ac
 
 # Authenticate the current Git checkout by checking signatures on every commit
 # starting from $(commit_v1_0_1).
-authenticate: guix/openpgp.go guix/git.go
+authenticate: guix/openpgp.go guix/git-authenticate.go guix/git.go
 	$(AM_V_at)echo "Authenticating Git checkout..." ;	\
 	"$(top_builddir)/pre-inst-env" $(GUILE)			\
 	  --no-auto-compile -e git-authenticate			\
