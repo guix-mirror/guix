@@ -2078,16 +2078,16 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.24")
+    (version "0.9.25")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LMDB/lmdb.git")
+             (url "https://git.openldap.org/openldap/openldap.git")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "088q6m8fvr12w43s461h7cvpg5hj8csaqj6n9pci150dz7bk5lxm"))))
+        (base32 "0i60zlca8r6fib23gdgl4c80gxpx24772ggpvz94yr7zaai4k11w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
