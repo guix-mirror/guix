@@ -130,6 +130,17 @@ transaction after it finishes."
 If FILE doesn't exist, create it and initialize it as a new database."
   (call-with-database file (lambda (db) exp ...)))
 
+(define (sqlite-finalize stmt)
+  ;; As of guile-sqlite3 0.1.0, cached statements aren't reset when
+  ;; sqlite-finalize is invoked on them (see
+  ;; https://notabug.org/guile-sqlite3/guile-sqlite3/issues/12).  This can
+  ;; cause problems with automatically-started transactions, so we work around
+  ;; it by wrapping sqlite-finalize so that sqlite-reset is always called.
+  ;; This always works, because resetting a statement twice has no adverse
+  ;; effects.  We can remove this once the fixed guile-sqlite3 is widespread.
+  (sqlite-reset stmt)
+  ((@ (sqlite3) sqlite-finalize) stmt))
+
 (define (last-insert-row-id db)
   ;; XXX: (sqlite3) currently lacks bindings for 'sqlite3_last_insert_rowid'.
   ;; Work around that.
