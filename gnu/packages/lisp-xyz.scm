@@ -11555,3 +11555,37 @@ accompaniment to the standard ANSI facilities.")
 
 (define-public cl-osicat
   (sbcl-package->cl-source-package sbcl-osicat))
+
+(define-public sbcl-quantile-estimator
+  (package
+    (name "sbcl-quantile-estimator")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deadtrickster/quantile-estimator.cl")
+             (commit "84d0ea405d793f5e808c68c4ddaf25417b0ff8e5")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0rlswkf0siaabsvvch3dgxmg45fw5w8pd9b7ri2w7a298aya52z9"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     '(#:asd-system-name "quantile-estimator"))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)))
+    (home-page "https://github.com/deadtrickster/quantile-estimator.cl")
+    (synopsis
+     "Effective computation of biased quantiles over data streams")
+    (description
+     "Common Lisp implementation of Graham Cormode and S.
+Muthukrishnan's Effective Computation of Biased Quantiles over Data
+Streams in ICDE’05.")
+    (license license:expat)))
+
+(define-public cl-quantile-estimator
+  (sbcl-package->cl-source-package sbcl-quantile-estimator))
+
+(define-public ecl-quantile-estimator
+  (sbcl-package->ecl-package sbcl-quantile-estimator))
