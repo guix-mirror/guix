@@ -161,9 +161,7 @@ may not be ASCII-armored."
 (define (load-keyring-from-reference repository reference)
   "Load the '.key' files from the tree at REFERENCE in REPOSITORY and return
 an OpenPGP keyring."
-  (let* ((reference (branch-lookup repository
-                                   (string-append "origin/" reference)
-                                   BRANCH-REMOTE))
+  (let* ((reference (branch-lookup repository reference BRANCH-ALL))
          (target    (reference-target reference))
          (commit    (commit-lookup repository target))
          (tree      (commit-tree commit)))
