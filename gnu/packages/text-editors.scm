@@ -821,7 +821,12 @@ and multiple fonts.")
      `(("gtk+" ,gtk+)
        ("scintilla" ,scintilla)))
     (arguments
-     `(#:phases
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'use-scintilla-shared-library
            (lambda* (#:key inputs #:allow-other-keys)
@@ -838,7 +843,9 @@ and multiple fonts.")
              (substitute* "tests/Makefile.am"
                (("AM_LDFLAGS =" all) (string-append all " -lscintilla")))
              (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
-             #t)))))
+             #t))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://www.geany.org")
     (synopsis "Fast and lightweight IDE")
     (description "Geany is a small and fast Integrated Development
