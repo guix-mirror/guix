@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -2622,7 +2622,7 @@ on the fly.  Both programs are written in C and are very fast.")
 (define-public swaks
   (package
     (name "swaks")
-    (version "20181104.0")
+    (version "20190914.0")
     (source
      (origin
        (method url-fetch)
@@ -2631,7 +2631,7 @@ on the fly.  Both programs are written in C and are very fast.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0n1yd27xcyb1ylp5gln3yv5gzi9r377hjy1j32367kgb3247ygq2"))))
+         "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-net-dns" ,perl-net-dns)
