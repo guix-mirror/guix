@@ -796,17 +796,13 @@ and multiple fonts.")
   (package
     (name "geany")
     (version "1.36")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.geany.org/"
-                                  "geany-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0gnm17cr4rf3pmkf0axz4a0fxwnvp55ji0q0lzy88yqbshyxv14i"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          (delete-file-recursively "scintilla")
-                          #t))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.geany.org/"
+                           "geany-" version ".tar.bz2"))
+       (sha256
+        (base32 "0gnm17cr4rf3pmkf0axz4a0fxwnvp55ji0q0lzy88yqbshyxv14i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -819,7 +815,10 @@ and multiple fonts.")
        ("python-docutils" ,python-docutils))) ;for rst2html
     (inputs
      `(("gtk+" ,gtk+)
-       ("scintilla" ,scintilla)))
+       ;; FIXME: Geany bundles a 3.X release of Scintilla.  It is not
+       ;; currently possible to replace it with our Scintilla package.
+       ;; ("scintilla" ,scintilla)
+       ))
     (arguments
      `(#:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%gnu-build-system-modules)
@@ -828,22 +827,6 @@ and multiple fonts.")
                   (guix build utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'use-scintilla-shared-library
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "configure.ac"
-               (("scintilla/Makefile") "")
-               (("scintilla/include/Makefile") ""))
-             (substitute* "Makefile.am"
-               (("scintilla ") ""))
-             (substitute* "src/Makefile.am"
-               (("\\$\\(top_builddir\\)/scintilla/libscintilla.la") "")
-               (("geany_LDFLAGS =" all) (string-append all " -lscintilla")))
-             (substitute* "doc/Makefile.am"
-               (("\\$\\(INSTALL_DATA\\) \\$\\(top_srcdir\\)/scintilla/License.txt \\$\\(DOCDIR\\)/ScintillaLicense.txt") ""))
-             (substitute* "tests/Makefile.am"
-               (("AM_LDFLAGS =" all) (string-append all " -lscintilla")))
-             (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
-             #t))
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://www.geany.org")
