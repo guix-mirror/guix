@@ -11830,3 +11830,42 @@ learn about each of the parameters.")
 
 (define-public ecl-exponential-backoff
   (sbcl-package->ecl-package sbcl-exponential-backoff))
+
+(define-public sbcl-sxql
+  (let ((commit "5aa8b739492c5829e8623432b5d46482263990e8"))
+    (package
+      (name "sbcl-sxql")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fukamachi/sxql.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k25p6w2ld9cn8q8s20lda6yjfyp4q89219sviayfgixnj27avnj"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:test-asd-file "sxql-test.asd"))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-syntax-annot" ,sbcl-cl-syntax-annot)
+         ("iterate" ,sbcl-iterate)
+         ("optima" ,sbcl-optima)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("trivial-types" ,sbcl-trivial-types)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (home-page "https://github.com/fukamachi/sxql")
+      (synopsis "SQL generator for Common Lisp")
+      (description "SQL generator for Common Lisp.")
+      (license license:bsd-3))))
+
+(define-public cl-sxql
+  (sbcl-package->cl-source-package sbcl-sxql))
+
+(define-public ecl-sxql
+  (sbcl-package->ecl-package sbcl-sxql))
