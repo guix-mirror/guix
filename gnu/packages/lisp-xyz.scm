@@ -11869,3 +11869,32 @@ learn about each of the parameters.")
 
 (define-public ecl-sxql
   (sbcl-package->ecl-package sbcl-sxql))
+
+(define-public sbcl-1am
+  (let ((commit "8b1da94eca4613fd8a20bdf63f0e609e379b0ba5"))
+    (package
+      (name "sbcl-1am")
+      (version (git-version "0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/lmj/1am.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "05ss4nz1jb9kb796295482b62w5cj29msfj8zis33sp2rw2vmv2g"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-system-name "1am"))
+      (home-page "https://github.com/lmj/1am")
+      (synopsis "Minimal testing framework for Common Lisp")
+      (description "A minimal testing framework for Common Lisp.")
+      (license license:expat))))
+
+(define-public cl-1am
+  (sbcl-package->cl-source-package sbcl-1am))
+
+(define-public ecl-1am
+  (sbcl-package->ecl-package sbcl-1am))
