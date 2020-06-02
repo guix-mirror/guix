@@ -90,7 +90,7 @@
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -99,7 +99,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13djibj3s7ig13c57ywy38pxy3qfmqihii2c0g15fy2h9q8xp1gx"))))
+                "0psq0f4s0s92bba6wwcf6b0j7i59b76svqxhvpavwv53yvhmmamn"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
