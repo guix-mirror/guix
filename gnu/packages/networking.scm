@@ -532,16 +532,16 @@ written in the C programming language.")
 (define-public librdkafka
   (package
     (name "librdkafka")
-    (version "0.9.1")
+    (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/edenhill/librdkafka/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/edenhill/librdkafka.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "10ldx7g7ymmg17snzx78vy4n8ma1rjx0agzi34g15j2fk867xmas"))))
+                "05mgrdzacn9kdpr68r5j0cvsvl54s52glnsc1ww9rcxx6p7hq1ly"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
