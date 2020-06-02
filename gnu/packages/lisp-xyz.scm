@@ -11764,3 +11764,39 @@ and active restarts.")
 
 (define-public ecl-dissect
   (sbcl-package->ecl-package sbcl-dissect))
+
+;; TODO: Uses ASDF's package-inferred-system which is not supported by
+;; asdf-build-system/sbcl as of 2020-05-21. We should fix
+;; asdf-build-system/sbcl.
+(define-public sbcl-rove
+  (package
+    (name "sbcl-rove")
+    (version "0.9.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fukamachi/rove.git")
+             (commit "f3695db08203bf26f3b861dc22ac0f4257d3ec21")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07ala4l2fncxf540fzxj3h5mhi9i4wqllhj0rqk8m2ljl5zbz89q"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("dissect" ,sbcl-dissect)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (home-page "https://github.com/fukamachi/rove")
+    (synopsis
+     "Yet another common lisp testing library")
+    (description
+     "Rove is a unit testing framework for Common Lisp applications.
+This is intended to be a successor of Prove.")
+    (license license:bsd-3)))
+
+(define-public cl-rove
+  (sbcl-package->cl-source-package sbcl-rove))
+
+(define-public ecl-rove
+  (sbcl-package->ecl-package sbcl-rove))
