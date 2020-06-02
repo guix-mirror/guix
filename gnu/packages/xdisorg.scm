@@ -2271,9 +2271,9 @@ configuring visual settings in different UI toolkits separately.")
                (install-file "clipnotify" bin)
                (install-file "README.md" doc)
                #t))))
-       #:make-flags (list "CC=gcc")
-       ;; the package provides no test suite:
-       #:tests? #f))
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
+       #:tests? #f))                    ; no test suite
     (inputs
      `(("libx11" ,libx11)
        ("libXfixes" ,libxfixes)))
