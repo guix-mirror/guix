@@ -4112,7 +4112,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
      `(("udev" ,eudev)))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
+                      (list ,(string-append "CC=" (cc-for-target))
                             "INSTALL=install"
                             "CHECK_RUN_DIR=0"
                             ;; TODO: tell it where to find 'sendmail'
