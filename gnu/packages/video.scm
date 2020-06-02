@@ -1798,7 +1798,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.5")
+    (version "3.7.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1807,7 +1807,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1caz56sxy554avz2vdv9gm7gyqcq0gyixzrh5v9ixmg6vxif5d4f"))))
+                "1c7wynx0fzs8awb1s4rdrl8xavqlj64z95yckhl1m1gnhahhq291"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
