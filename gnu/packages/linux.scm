@@ -2150,7 +2150,7 @@ inadequately in modern network environments, and both should be deprecated.")
       (home-page "http://net-tools.sourceforge.net/")
       (build-system gnu-build-system)
       (arguments
-       '(#:modules ((guix build gnu-build-system)
+       `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
                     (srfi srfi-1)
                     (srfi srfi-26))
@@ -2190,7 +2190,7 @@ inadequately in modern network environments, and both should be deprecated.")
 
          #:tests? #f                                ; no test suite
          #:make-flags (let ((out (assoc-ref %outputs "out")))
-                        (list "CC=gcc"
+                        (list ,(string-append "CC=" (cc-for-target))
                               (string-append "BASEDIR=" out)
                               (string-append "INSTALLNLSDIR=" out "/share/locale")
                               (string-append "mandir=/share/man")))))
