@@ -99,27 +99,44 @@ create it and initialize it as a new database."
 ;; XXX: missing in guile-sqlite3@0.1.0
 (define SQLITE_BUSY 5)
 
-(define (call-with-transaction db proc)
-  "Start a transaction with DB (make as many attempts as necessary) and run
-PROC.  If PROC exits abnormally, abort the transaction, otherwise commit the
-transaction after it finishes."
+(define (call-with-SQLITE_BUSY-retrying thunk)
+  "Call THUNK, retrying as long as it exits abnormally due to SQLITE_BUSY
+errors."
   (catch 'sqlite-error
+    thunk
+    (lambda (key who code errmsg)
+      (if (= code SQLITE_BUSY)
+          (call-with-SQLITE_BUSY-retrying thunk)
+          (throw key who code errmsg)))))
+
+
+
+(define* (call-with-transaction db proc #:key restartable?)
+  "Start a transaction with DB and run PROC.  If PROC exits abnormally, abort
+the transaction, otherwise commit the transaction after it finishes.
+RESTARTABLE? may be set to a non-#f value when it is safe to run PROC multiple
+times.  This may reduce contention for the database somewhat."
+  (define (exec sql)
+    (with-statement db sql stmt
+      (sqlite-fold cons '() stmt)))
+  ;; We might use begin immediate here so that if we need to retry, we figure
+  ;; that out immediately rather than because some SQLITE_BUSY exception gets
+  ;; thrown partway through PROC - in which case the part already executed
+  ;; (which may contain side-effects!) might have to be executed again for
+  ;; every retry.
+  (exec (if restartable? "begin;" "begin immediate;"))
+  (catch #t
     (lambda ()
-      ;; We use begin immediate here so that if we need to retry, we
-      ;; figure that out immediately rather than because some SQLITE_BUSY
-      ;; exception gets thrown partway through PROC - in which case the
-      ;; part already executed (which may contain side-effects!) would be
-      ;; executed again for every retry.
-      (sqlite-exec db "begin immediate;")
-      (let ((result (proc)))
-        (sqlite-exec db "commit;")
-        result))
-    (lambda (key who error description)
-      (if (= error SQLITE_BUSY)
-          (call-with-transaction db proc)
-          (begin
-            (sqlite-exec db "rollback;")
-            (throw 'sqlite-error who error description))))))
+      (let-values ((result (proc)))
+        (exec "commit;")
+        (apply values result)))
+    (lambda args
+      ;; The roll back may or may not have occurred automatically when the
+      ;; error was generated. If it has occurred, this does nothing but signal
+      ;; an error. If it hasn't occurred, this needs to be done.
+      (false-if-exception (exec "rollback;"))
+      (apply throw args))))
+
 (define* (call-with-savepoint db proc
                               #:optional (savepoint-name "SomeSavepoint"))
   "Call PROC after creating a savepoint named SAVEPOINT-NAME.  If PROC exits
@@ -140,6 +157,18 @@ prior to returning."
           (apply throw args))))
     (lambda ()
       (exec (string-append "RELEASE " savepoint-name ";")))))
+
+(define* (call-with-retrying-transaction db proc #:key restartable?)
+  (call-with-SQLITE_BUSY-retrying
+   (lambda ()
+     (call-with-transaction db proc #:restartable? restartable?))))
+
+(define* (call-with-retrying-savepoint db proc
+                                       #:optional (savepoint-name
+                                                   "SomeSavepoint"))
+  (call-with-SQLITE_BUSY-retrying
+   (lambda ()
+     (call-with-savepoint db proc savepoint-name))))
 
 (define %default-database-file
   ;; Default location of the store database.
@@ -412,7 +441,7 @@ Write a progress report to LOG-PORT."
   (mkdir-p db-dir)
   (parameterize ((sql-schema schema))
     (with-database (string-append db-dir "/db.sqlite") db
-      (call-with-transaction db
+      (call-with-retrying-transaction db
           (lambda ()
             (let* ((prefix   (format #f "registering ~a items" (length items)))
                    (progress (progress-reporter/bar (length items)
