@@ -1297,6 +1297,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/network-manager-plugin-path.patch	\
   %D%/packages/patches/nsis-env-passthru.patch			\
+  %D%/packages/patches/nss-CVE-2020-12399.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
