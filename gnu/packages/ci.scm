@@ -123,7 +123,7 @@
        `(("guile" ,guile-3.0)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-3)
+         ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-git" ,guile-git)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among

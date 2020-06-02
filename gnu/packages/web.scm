@@ -7346,7 +7346,7 @@ compressed JSON header blocks.
       (propagated-inputs
        `(("guile" ,guile-3.0)
          ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json-3)))
+         ("guile-json" ,guile-json-4)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages
