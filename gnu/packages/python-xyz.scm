@@ -10081,6 +10081,24 @@ interface to the Amazon Web Services (AWS) API.")
 (define-public python2-botocore
   (package-with-python2 python-botocore))
 
+(define-public python-pyfiglet
+  (package
+    (name "python-pyfiglet")
+    (version "0.8.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyfiglet" version))
+       (sha256
+        (base32
+         "0f9n2076ga2ccsg174k2d7n0z4d44ml96yzc72s6g4nhalbk5hn6"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/pwaller/pyfiglet")
+    (synopsis "Draw ASCII art big letters in Python")
+    (description "This module lets you draw large letter from ordinary characters
+in pure Python.")
+    (license license:expat)))
+
 (define-public python-xdo
   (package
     (name "python-xdo")
