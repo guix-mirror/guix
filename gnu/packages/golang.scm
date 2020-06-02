@@ -15,7 +15,7 @@
 ;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
 ;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -3214,7 +3214,7 @@ and aid debugging.")
 (define-public go-github-com-robfig-cron
   (package
     (name "go-github-com-robfig-cron")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method git-fetch)
@@ -3224,7 +3224,7 @@ and aid debugging.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bvq5gxkhyj21lq32nma23i4dpwp7bswnp2yks6372ilkcyisx2z"))))
+         "1agzbw2dfk2d1mpmddr85s5vh6ygm8kqrvfg87i9d2wqnlsnliqm"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/robfig/cron"))
