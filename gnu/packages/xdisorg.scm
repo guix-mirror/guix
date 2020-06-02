@@ -899,7 +899,7 @@ transparent text on your screen.")
 (define-public xbindkeys
   (package
     (name "xbindkeys")
-    (version "1.8.6")
+    (version "1.8.7")
     (source (origin
               (method url-fetch)
               ;; Download from the savannah mirror list fails
@@ -909,11 +909,13 @@ transparent text on your screen.")
                     ".tar.gz"))
               (sha256
                (base32
-                "060df6d8y727jp1inp7blp44cs8a7jig7vcm8ndsn6gw36z1h3bc"))))
+                "1wl2vc5alisiwyk8m07y1ryq8w3ll9ym83j27g4apm4ixjl8d6x2"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libx11" ,libx11)
-       ("guile" ,guile-2.0)))
+       ("guile" ,guile-2.2)))
     (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
