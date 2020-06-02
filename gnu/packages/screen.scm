@@ -5,7 +5,7 @@
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,7 +104,7 @@ controlling terminal and attach to it later.")
 (define-public byobu
   (package
     (name "byobu")
-    (version "5.127")
+    (version "5.133")
     (source
      (origin
        (method url-fetch)
@@ -112,8 +112,7 @@ controlling terminal and attach to it later.")
                            version "/+download/byobu_"
                            version ".orig.tar.gz"))
        (sha256
-        (base32
-         "0fznlj454vgxgzfw3avmvvjpawggs66da5l8k6v0lnzzd75wgbsb"))
+        (base32 "0qvmmdnvwqbgbhn5c8asmrmjhclcl029py2d2zvmd7h5ij7s93jd"))
        (patches (search-patches "byobu-writable-status.patch"))))
     (build-system gnu-build-system)
     (inputs
