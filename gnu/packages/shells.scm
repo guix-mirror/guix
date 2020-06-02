@@ -600,8 +600,9 @@ operating system.")
            "1z16qwix8z6a40fskdgxsibkqgdrp4q6ncp4n6hnv4r9iihy2d8r"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ;No tests are included
-         #:make-flags (list "CC=gcc")
+       `(#:tests? #f                    ; no tests are included
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target)))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
