@@ -1922,8 +1922,9 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
         (base32 "0lrhx771iccbw04wrhj0ygids1pzmjfc4hvklm30m3p3flvhqf0m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc")
-       #:tests? #f ; No tests exist.
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
