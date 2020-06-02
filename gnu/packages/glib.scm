@@ -88,6 +88,7 @@
   (package
     (name "dbus")
     (version "1.12.16")
+    (replacement dbus/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -163,6 +164,15 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
+
+;; Replacement package to fix CVE-2020-12049.
+(define dbus/fixed
+  (package
+    (inherit dbus)
+    (source (origin
+              (inherit (package-source dbus))
+              (patches (append (search-patches "dbus-CVE-2020-12049.patch")
+                               (origin-patches (package-source dbus))))))))
 
 (define glib
   (package
