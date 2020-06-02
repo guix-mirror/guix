@@ -7306,7 +7306,7 @@ to what constitutes a good table in this context.  The package offers
                    (list "/doc/latex/csquotes/"
                          "/tex/latex/csquotes/")
                    (base32
-                    "15hgn37zg433skn7ijqs1kl2z56fhy29cjxn01b5pjrnrkdar4i4")
+                    "088gvi60d7sdl6fgg68fbz30fnpqc3yrpkx80sfw7vwgar3wm3av")
                    #:trivial? #t)))
     (package
       (inherit template)
