@@ -626,8 +626,9 @@ tired of cows, a variety of other ASCII-art messengers are available.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ;; no check target
-         #:make-flags (list "CC=gcc")
+       `(#:tests? #f                    ; no check target
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target)))
          #:phases
          (modify-phases %standard-phases
            (delete 'bootstrap)
