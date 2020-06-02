@@ -88,7 +88,9 @@
   #:use-module (gnu packages language)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages parallel)
@@ -98,6 +100,7 @@
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
@@ -105,6 +108,8 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages regex)
+  #:use-module (gnu packages rpc)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
@@ -3216,20 +3221,22 @@ Monitor read/write activity on a mongo server
 @end table")
     (license license:asl2.0)))
 
+;; There are many wrappers for this in other languages. When touching, please
+;; be sure to ensure all dependencies continue to build.
 (define-public apache-arrow
   (package
     (name "apache-arrow")
-    (version "0.10.0")
+    (version "0.17.1")
     (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/apache/arrow")
-               (commit (string-append "apache-arrow-" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "04xkp922b8qrrnpvv9ixxnvk7151n1plzx6aqdff6frn9651zvxs"))))
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/apache/arrow")
+             (commit (string-append "apache-arrow-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "02r6yx3yhywzikd3b0vfkjgddhfiriyx2vpm3jf5880wq59x798a"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
@@ -3242,91 +3249,135 @@ Monitor read/write activity on a mongo server
              (setenv "BOOST_ROOT" (assoc-ref %build-inputs "boost"))
              (setenv "BROTLI_HOME" (assoc-ref %build-inputs "brotli"))
              (setenv "FLATBUFFERS_HOME" (assoc-ref %build-inputs "flatbuffers"))
-             (setenv "JEMALLOC_HOME" (assoc-ref %build-inputs "jemalloc"))
              (setenv "RAPIDJSON_HOME" (assoc-ref %build-inputs "rapidjson"))
              #t)))
        #:build-type "Release"
        #:configure-flags
        (list "-DARROW_PYTHON=ON"
+             "-DARROW_GLOG=ON"
+             ;; Parquet options
+             "-DARROW_PARQUET=ON"
+             "-DPARQUET_BUILD_EXECUTABLES=ON"
+             ;; The maintainers disallow using system versions of
+             ;; jemalloc:
+             ;; https://issues.apache.org/jira/browse/ARROW-3507. This
+             ;; is unfortunate because jemalloc increases performance:
+             ;; https://arrow.apache.org/blog/2018/07/20/jemalloc/.
+             "-DARROW_JEMALLOC=OFF"
 
-             ;; Install to PREFIX/lib (the default is
-             ;; PREFIX/lib64).
-             (string-append "-DCMAKE_INSTALL_LIBDIR="
-                            (assoc-ref %outputs "out")
+             ;; The CMake option ARROW_DEPENDENCY_SOURCE is a global
+             ;; option that instructs the build system how to resolve
+             ;; each dependency. SYSTEM = Finding the dependency in
+             ;; system paths using CMake's built-in find_package
+             ;; function, or using pkg-config for packages that do not
+             ;; have this feature
+             "-DARROW_DEPENDENCY_SOURCE=SYSTEM"
+
+             ;; Split output into its component packages.
+             (string-append "-DCMAKE_INSTALL_PREFIX="
+                            (assoc-ref %outputs "lib"))
+             (string-append "-DCMAKE_INSTALL_RPATH="
+                            (assoc-ref %outputs "lib")
                             "/lib")
+             (string-append "-DCMAKE_INSTALL_BINDIR="
+                            (assoc-ref %outputs "out")
+                            "/bin")
+             (string-append "-DCMAKE_INSTALL_INCLUDEDIR="
+                            (assoc-ref %outputs "include")
+                            "/share/include")
 
-             ;; XXX These Guix package offer static
-             ;; libraries that are not position independent,
-             ;; and ld fails to link them into the arrow .so
-             "-DARROW_WITH_SNAPPY=OFF"
-             "-DARROW_WITH_ZLIB=OFF"
-             "-DARROW_WITH_ZSTD=OFF"
-             "-DARROW_WITH_LZ4=OFF"
+
+             "-DARROW_WITH_SNAPPY=ON"
+             "-DARROW_WITH_ZLIB=ON"
+             "-DARROW_WITH_ZSTD=ON"
+             "-DARROW_WITH_LZ4=ON"
+             "-DARROW_COMPUTE=ON"
+             "-DARROW_CSV=ON"
+             "-DARROW_DATASET=ON"
+             "-DARROW_FILESYSTEM=ON"
+             "-DARROW_HDFS=ON"
+             "-DARROW_JSON=ON"
+             ;; Arrow Python C++ integration library (required for
+             ;; building pyarrow). This library must be built against
+             ;; the same Python version for which you are building
+             ;; pyarrow. NumPy must also be installed. Enabling this
+             ;; option also enables ARROW_COMPUTE, ARROW_CSV,
+             ;; ARROW_DATASET, ARROW_FILESYSTEM, ARROW_HDFS, and
+             ;; ARROW_JSON.
+             "-DARROW_PYTHON=ON"
 
              ;; Building the tests forces on all the
              ;; optional features and the use of static
              ;; libraries.
              "-DARROW_BUILD_TESTS=OFF"
+             "-DBENCHMARK_ENABLE_GTEST_TESTS=OFF"
+             ;;"-DBENCHMARK_ENABLE_TESTING=OFF"
              "-DARROW_BUILD_STATIC=OFF")))
     (inputs
      `(("boost" ,boost)
-       ("rapidjson" ,rapidjson)
        ("brotli" ,google-brotli)
-       ("flatbuffers" ,flatbuffers)
-       ("jemalloc" ,jemalloc)
+       ("double-conversion" ,double-conversion)
+       ("snappy" ,snappy)
+       ("gflags" ,gflags)
+       ("glog" ,glog)
+       ("apache-thrift" ,apache-thrift "lib")
+       ("protobuf" ,protobuf)
+       ("rapidjson" ,rapidjson)
+       ("zlib" ,zlib)
+       ("bzip2" ,bzip2)
+       ("lz4" ,lz4)
+       ("zstd" ,zstd "lib")
+       ("re2" ,re2)
+       ("grpc" ,grpc)
        ("python-3" ,python)
        ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (outputs '("out" "lib" "include"))
     (home-page "https://arrow.apache.org/")
     (synopsis "Columnar in-memory analytics")
     (description "Apache Arrow is a columnar in-memory analytics layer
-designed to accelerate big data. It houses a set of canonical in-memory
+designed to accelerate big data.  It houses a set of canonical in-memory
 representations of flat and hierarchical data along with multiple
-language-bindings for structure manipulation. It also provides IPC and common
+language-bindings for structure manipulation.  It also provides IPC and common
 algorithm implementations.")
     (license license:asl2.0)))
 
 (define-public python-pyarrow
   (package
+    (inherit apache-arrow)
     (name "python-pyarrow")
-    (version "0.10.0")
-    (source
-      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/apache/arrow")
-             (commit (string-append "apache-arrow-" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "04xkp922b8qrrnpvv9ixxnvk7151n1plzx6aqdff6frn9651zvxs"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f ; XXX There are no tests in the "python" directory
+     '(#:tests? #f          ; XXX There are no tests in the "python" directory
        #:phases
        (modify-phases %standard-phases
          (delete 'build) ; XXX the build is performed again during the install phase
          (add-after 'unpack 'enter-source-directory
            (lambda _ (chdir "python") #t))
-         (add-after 'unpack 'set-env
+         (add-after 'unpack 'make-git-checkout-writable
            (lambda _
-             (setenv "ARROW_HOME" (assoc-ref %build-inputs "apache-arrow"))
+             (for-each make-file-writable (find-files "."))
              #t)))))
     (propagated-inputs
-     `(("apache-arrow" ,apache-arrow)
+     `(("apache-arrow" ,apache-arrow "lib")
        ("python-numpy" ,python-numpy)
        ("python-pandas" ,python-pandas)
        ("python-six" ,python-six)))
     (native-inputs
      `(("cmake" ,cmake-minimal)
+       ("pkg-config" ,pkg-config)
        ("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)
        ("python-setuptools-scm" ,python-setuptools-scm)))
+    (outputs '("out"))
     (home-page "https://arrow.apache.org/docs/python/")
     (synopsis "Python bindings for Apache Arrow")
-    (description "This library provides a Pythonic API wrapper for the reference
-Arrow C++ implementation, along with tools for interoperability with pandas,
-NumPy, and other traditional Python scientific computing packages.")
+    (description
+     "This library provides a Pythonic API wrapper for the reference Arrow C++
+implementation, along with tools for interoperability with pandas, NumPy, and
+other traditional Python scientific computing packages.")
     (license license:asl2.0)))
 
 (define-public python2-pyarrow
