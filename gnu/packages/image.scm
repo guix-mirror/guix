@@ -903,8 +903,8 @@ compose, and analyze GIF images.")
     (home-page "http://libuemf.sourceforge.net/")
     (synopsis "Library for working with WFM, EMF and EMF+ images")
     (description "The libUEMF library is a portable C99 implementation for
-reading and writing @abbr{WFM, Windows Metafile}, @abbr{EMF, Enhanced
-Metafile}, and @abbr{EMF+, Enhanced Metafile Plus} files.")
+reading and writing @acronym{WFM, Windows Metafile}, @acronym{EMF, Enhanced
+Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
     (license license:gpl2+)))
 
 (define-public libungif
