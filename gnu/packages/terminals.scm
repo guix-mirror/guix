@@ -676,8 +676,8 @@ eye-candy, customizable, and reasonably lightweight.")
     (version "3.7.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://launchpad.net/" name "/trunk/"
-                                  version "/+download/" name "-" version
+              (uri (string-append "https://launchpad.net/sakura/trunk/"
+                                  version "/+download/sakura-" version
                                   ".tar.gz"))
               (sha256
                (base32
