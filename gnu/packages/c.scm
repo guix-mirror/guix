@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright @ 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,3 +340,36 @@ address space pointers point to, or what locks a function acquires or
 releases.")
     (home-page "https://sparse.wiki.kernel.org/index.php/Main_Page")
     (license license:expat)))
+
+(define-public libestr
+  (package
+    (name "libestr")
+    (version "0.1.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/libestr.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ca4rj90c0dn7kqpbcchkflxjw88a7rxcnwbr0gply4a28i01nd8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/rsyslog/libestr")
+    (synopsis "Helper functions for handling strings")
+    (description
+     "This C library contains some essential string manipulation functions and
+more, like escaping special characters.")
+    (license license:lgpl2.1+)))
