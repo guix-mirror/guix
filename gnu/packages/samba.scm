@@ -159,11 +159,15 @@ the Linux kernel CIFS client.")
                          '("AUTHORS" "INSTALL" "LICENSE" "README.md"))
                #t))))))
     (home-page "https://github.com/ndevilla/iniparser")
-    (synopsis "Standalone ini file parsing library")
+    (synopsis "Simple @file{.ini} configuration file parsing library")
     (description
-     "iniparser is a free stand-alone @code{ini} file parsing library (Windows
-configuration files).  It is written in portable ANSI C and should compile
-anywhere.")
+     "The iniParser C library reads and writes Windows-style @file{.ini}
+configuration files.  These are simple text files with a basic structure
+composed of sections, properties, and values.  While not expressive, they
+are easy to read, write, and modify.
+
+The library is small, thread safe, and written in portable ANSI C with no
+external dependencies.")
     (license x11)))
 
 (define-public samba
