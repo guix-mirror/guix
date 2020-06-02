@@ -635,17 +635,14 @@ python-axolotl.")
 (define-public python-axolotl
   (package
     (name "python-axolotl")
-    (version "0.1.39")
+    (version "0.2.3")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/tgalal/python-axolotl")
-              (commit version)))
-       (file-name (git-file-name name version))
-       (patches (search-patches "python-axolotl-AES-fix.patch"))
+       (method url-fetch)
+       (uri (pypi-uri "python-axolotl" version))
        (sha256
-        (base32 "0xm9qgcwf6fq7rhzfcviwhbzcbj4i7wkxkab2z55fy1x82lya9g6"))))
+        (base32
+         "1bwdp24fmriffwx91aigs9k162albb51iskp23nc939z893q23py"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -658,9 +655,8 @@ python-axolotl.")
              #t)))))
     (propagated-inputs
      `(("python-axolotl-curve25519" ,python-axolotl-curve25519)
-       ("python-dateutil" ,python-dateutil)
-       ("python-protobuf" ,python-protobuf)
-       ("python-pycrypto" ,python-pycrypto)))
+       ("python-cryptography" ,python-cryptography)
+       ("python-protobuf" ,python-protobuf)))
     (home-page "https://github.com/tgalal/python-axolotl")
     (synopsis "Python port of libaxolotl-android")
     (description "This is a python port of libaxolotl-android.  This
