@@ -386,7 +386,10 @@ to open the application in a web browser, for offline usage.")
                             Type=Application~%"
                            out)))
                #t))))))
-    (inputs `(("python-pyqt" ,python-pyqt)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("python-pyqt" ,python-pyqt)))
     (synopsis "School tools for physically disabled children")
     (description "ToutEnClic is intended to facilitate the schooling
 of physically disabled children in ordinary schools.  It is both
