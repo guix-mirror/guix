@@ -30,14 +30,14 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.9.2.0")
+    (version "2.9.2.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://skarnet.org/software/skalibs/skalibs-"
                           version ".tar.gz"))
       (sha256
-       (base32 "1i9d7w031kh338aq6xdsf8vl5amxbwxbny8lnrxlzydqvn8nxhz4"))))
+       (base32 "0ff551181vv9d1z5sv7yg6n4b88ajcdircs4p4nif4yl7nsrj2r5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no tests exist
