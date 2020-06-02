@@ -373,3 +373,30 @@ releases.")
      "This C library contains some essential string manipulation functions and
 more, like escaping special characters.")
     (license license:lgpl2.1+)))
+
+(define-public libfastjson
+  (package
+    (name "libfastjson")
+    (version "0.99.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/libfastjson.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0qhs0g9slj3p0v2z4s3cnsx44msrlb4k78ljg7714qiziqbrbwyl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/rsyslog/libfastjson")
+    (synopsis "Fast JSON library for C")
+    (description
+     "libfastjson is a fork from json-c aiming to provide: a small library
+with essential JSON handling functions, sufficiently good JSON support (not
+100% standards compliant), and very fast processing.")
+    (license license:expat)))
