@@ -11800,3 +11800,33 @@ This is intended to be a successor of Prove.")
 
 (define-public ecl-rove
   (sbcl-package->ecl-package sbcl-rove))
+
+(define-public sbcl-exponential-backoff
+  (let ((commit "8d9e8444d8b3184a524c12ce3449f91613ab714f"))
+    (package
+      (name "sbcl-exponential-backoff")
+      (version (git-version "0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/death/exponential-backoff.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1389hm9hxv85s0125ja4js1bvh8ay4dsy9q1gaynjv27ynik6gmv"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/death/exponential-backoff")
+      (synopsis "Exponential backoff algorithm in Common Lisp")
+      (description
+       "An implementation of the exponential backoff algorithm in Common Lisp.
+Inspired by the implementation found in Chromium.  Read the header file to
+learn about each of the parameters.")
+      (license license:expat))))
+
+(define-public cl-exponential-backoff
+  (sbcl-package->cl-source-package sbcl-exponential-backoff))
+
+(define-public ecl-exponential-backoff
+  (sbcl-package->ecl-package sbcl-exponential-backoff))
