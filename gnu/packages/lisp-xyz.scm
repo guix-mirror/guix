@@ -11700,3 +11700,35 @@ Streams in ICDE’05.")
 
 (define-public ecl-prometheus.pushgateway
   (sbcl-package->ecl-package sbcl-prometheus.pushgateway))
+
+(define-public sbcl-uuid
+  (let ((commit "e7d6680c3138385c0708f7aaf0c96622eeb140e8"))
+    (package
+      (name "sbcl-uuid")
+      (version (git-version "2012.12.26" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dardoria/uuid.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0jnyp2kibcf5cwi60l6grjrj8wws9chasjvsw7xzwyym2lyid46f"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("ironclad" ,sbcl-ironclad)
+         ("trivial-utf-8" ,sbcl-trivial-utf-8)))
+      (home-page "https://github.com/dardoria/uuid")
+      (synopsis
+       "Common Lisp implementation of UUIDs according to RFC4122")
+      (description
+       "Common Lisp implementation of UUIDs according to RFC4122.")
+      (license license:llgpl))))
+
+(define-public cl-uuid
+  (sbcl-package->cl-source-package sbcl-uuid))
+
+(define-public ecl-uuid
+  (sbcl-package->ecl-package sbcl-uuid))
