@@ -2414,12 +2414,11 @@ configuration and monitoring interfaces.")
     (arguments
      `(#:make-flags
        (let* ((target ,(%current-target-system))
-              (gcc (if target (string-append target "-gcc") "gcc"))
               (pkg-config (if target
                               (string-append target "-pkg-config")
                               "pkg-config")))
          (list
-          (string-append "CC=" gcc)
+          ,(string-append "CC=" (cc-for-target))
           (string-append "PKG_CONFIG="
                          (assoc-ref %build-inputs "pkg-config")
                          "/bin/" pkg-config)
