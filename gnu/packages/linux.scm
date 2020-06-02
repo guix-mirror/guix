@@ -3007,7 +3007,7 @@ from the module-init-tools project.")
                         (install-file "contrib/notify_all_users.py" contrib)
                         #t))))
        #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
+                      (list ,(string-append "CC=" (cc-for-target))
                             (string-append "VERSION=v" ,version)
                             (string-append "PREFIX=" prefix)
                             (string-append "SYSCONFDIR=" prefix "/etc")))
