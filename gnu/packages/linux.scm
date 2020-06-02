@@ -3859,15 +3859,17 @@ Translation (@dfn{SAT}) are also supported.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure) ; No ./configure script
+                  (delete 'configure)   ; no ./configure script
                   (replace 'install
                     (lambda _
                       (invoke "make" "install-spec" "PREFIX="
                               (string-append "DESTDIR=" %output)))))
-       #:tests? #f)) ; The tests require sysfs, which is not accessible from
-                     ; the build environment
+       ;; The tests require sysfs, which is not accessible from from the build
+       ;; environment
+       #:tests? #f))
     (synopsis "NVM-Express user space tooling for Linux")
     (description "Nvme-cli is a utility to provide standards compliant tooling
 for NVM-Express drives.  It was made specifically for Linux as it relies on the
