@@ -4331,12 +4331,13 @@ applications.")
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       '(#:make-flags
-         (list "CC=gcc" (string-append "prefix=" %output))
-         #:tests? #f ; no tests
+       `(#:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "prefix=" %output))
+         #:tests? #f                    ; no tests
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure) ; no configure script
+           (delete 'configure)          ; no configure script
            (add-after 'unpack 'fix-gnuplot-path
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((gnuplot (assoc-ref inputs "gnuplot")))
