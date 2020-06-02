@@ -34,12 +34,27 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages c)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages geo)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages kerberos)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages autotools))
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages tls))
 
 (define-public log4cpp
   (package
@@ -201,3 +216,144 @@ library.")
     ;; spdlog is under Expat license, but the bundled fmt library in
     ;; "include/spdlog/fmt/bundled" is under BSD 2 clause license.
     (license (list license:expat license:bsd-2))))
+
+(define-public rsyslog
+  (package
+    (name "rsyslog")
+    (version "8.2004.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/rsyslog.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0h40vvrjbxkvxy1sjqjwlyjfndj81llrisp7hkqm5j4mcl4pbzb3"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:phases
+      '(modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))
+      #:configure-flags
+      ;; Rsyslog comes with a plethora of optional modules.  We enable most of
+      ;; them for a full-featured build.
+      '(list "--enable-kmsg"
+             "--enable-liblogging_stdlog"
+             "--enable-mmanon"
+             "--enable-mmcount"
+             "--enable-unlimited_select"
+         
+             ;; Input plugins
+             "--enable-imbatchreport"
+             "--enable-imczmq"
+             "--enable-imdiag"          ;for full tests
+             "--enable-imdocker"
+             "--enable-imfile"
+             "--enable-imkafka"
+             "--enable-improg"
+             "--enable-impstats"
+             "--enable-imptcp"
+             "--enable-imtuxedoulog"
+       
+             ;; Output plugins
+             "--enable-clickhouse"
+             "--enable-elasticsearch"
+             "--enable-mail"
+             "--enable-omczmq"
+             "--enable-omfile_hardened"
+             "--enable-omhttp"
+             "--enable-omhttpfs"
+             "--enable-omkafka"
+             "--enable-omprog"
+             "--enable-omruleset"
+             "--enable-omstdout"
+             "--enable-omtcl"
+             "--enable-omudpspoof"
+             "--enable-omuxsock"
+
+             ;; Parser Modules
+             "--enable-pmaixforwardedfrom"
+             "--enable-pmciscoios"
+             "--enable-pmcisconames"
+             "--enable-pmdb2diag"
+             "--enable-pmlastmsg"
+             "--enable-pmnormalize"
+             "--enable-pmnull"
+             "--enable-pmpanngfw"
+             "--enable-pmsnare"
+
+             ;; Message Modification Modules
+             "--enable-mmaudit"
+             "--enable-mmdarwin"
+             "--enable-mmdblookup"
+             "--enable-mmfields"
+             "--enable-mmjsonparse"
+             "--enable-mmkubernetes"
+             "--enable-mmnormalize"
+             "--enable-mmpstrucdata"
+             "--enable-mmrfc5424addhmac"
+             "--enable-mmrm1stspace"
+             "--enable-mmsequence"
+             "--enable-mmsnmptrapd"
+             "--enable-mmtaghostname"
+             "--enable-mmutf8fix"
+
+             ;; Database Support
+             "--enable-libdbi"
+             "--enable-mysql"
+             "--enable-pgsql"
+
+             ;; Protocol Support
+             "--enable-openssl"
+             "--enable-gnutls"
+             "--enable-gssapi-krb5"
+             "--enable-snmp"
+
+             ;; Function modules
+             "--enable-fmhash_xxhash")))
+    (native-inputs
+     (list autoconf automake bison flex libtool pkg-config))
+    (inputs
+     (list curl
+           cyrus-sasl
+           czmq
+           gnutls
+           libdbi
+           libestr
+           libfastjson
+           libgcrypt
+           liblogging
+           liblognorm
+           libmaxminddb
+           libnet
+           librdkafka
+           lz4
+           (list mariadb "dev")
+           (list mariadb "lib")
+           mit-krb5
+           net-snmp
+           openssl
+           postgresql
+           tcl
+           (list util-linux "lib")
+           zeromq
+           zlib))
+    (home-page "https://www.rsyslog.com/")
+    (synopsis "RSYSLOG is a flexible and fast system for log processing")
+    (description
+     "Rsyslog offers high-performance, great security features and a modular
+design.  While it started as a regular syslogd, rsyslog has evolved into a
+kind of swiss army knife of logging, being able to accept inputs from a wide
+variety of sources, transform them, and output the results to diverse
+destinations.")
+    ;; Most of the source code is licensed under the LGPL3+ with many source
+    ;; files licensed under the terms of the ASL2.0.  Some modules are
+    ;; licensed under GPL3+.
+    (license (list license:lgpl3+
+                   license:gpl3+
+                   license:asl2.0))))
