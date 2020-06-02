@@ -169,15 +169,15 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.12.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.samba.org/pub/samba/stable/"
-                                 "samba-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0l514s2xhsy1lspzgvibbzs80zi84zxr2wx4d40hq85yb2lg5434"))
-                    (modules '((guix build utils)))
+    (version "4.12.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.samba.org/pub/samba/stable/"
+                           "samba-" version ".tar.gz"))
+       (sha256
+        (base32 "09w7aap1cjc41ayhaksm1igc7p7gl40fad4a1l6q4ds9a2jbrb9z"))
+       (modules '((guix build utils)))
        (snippet
         '(begin
            ;; TODO: also remove the bundled ‘third_party/popt’.
