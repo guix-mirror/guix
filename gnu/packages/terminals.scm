@@ -673,15 +673,15 @@ eye-candy, customizable, and reasonably lightweight.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.7.0")
+    (version "3.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/sakura/trunk/"
                                   version "/+download/sakura-" version
-                                  ".tar.gz"))
+                                  ".tar.bz2"))
               (sha256
                (base32
-                "15gskj5yv5qs3cj4ps43735kfx2nzjlhq4dk9ghirl8lvhhxsm5m"))))
+                "12wjmckf03qbnm8cb7qma0980anzajn3l92rj2yr8hhafl74x6kj"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check phase
