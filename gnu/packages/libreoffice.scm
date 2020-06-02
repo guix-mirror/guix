@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -998,7 +998,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.4.2.2")
+    (version "6.4.4.2")
     (source
      (origin
        (method url-fetch)
@@ -1009,7 +1009,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        (patches (search-patches "libreoffice-poppler-compat.patch"))
        (sha256
         (base32
-         "06acm41q9nda8r30b13cn9zafsw1gszjdphh6lx90s09d2sf7f23"))))
+         "0y6026h374787yy2f3as1q7clxmgywsfdrj62kw3577wvybqaf2l"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1205,7 +1205,6 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
           ;; patching the build scripts to work with GCC5.  Try enabling this
           ;; when our default compiler is >=GCC 6.
           "--disable-pdfium"
-          "--disable-gtk" ; disable use of GTK+ 2
           "--without-doxygen"
           "--enable-build-opensymbol")))
     (home-page "https://www.libreoffice.org/")
