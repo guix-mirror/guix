@@ -6490,10 +6490,10 @@ interface to this kernel feature.")
         (base32 "0aijyxrqh01x0s80yr4cgxgd001iiqqph65pxvby7f0wz8lnxnqj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; tests ask to be run as root
+     `(#:tests? #f                      ; tests ask to be run as root
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
-                            "CC=gcc"))
+                            ,(string-append "CC=" (cc-for-target))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths
