@@ -42,6 +42,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pkg-config)
@@ -400,3 +401,38 @@ more, like escaping special characters.")
 with essential JSON handling functions, sufficiently good JSON support (not
 100% standards compliant), and very fast processing.")
     (license license:expat)))
+
+(define-public liblogging
+  (package
+    (name "liblogging")
+    (version "1.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/liblogging.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1l32m0y65svf5vxsgw935jnqs6842rcqr56dmzwqvr00yfrjhjkp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ;; For rst2man.py
+       ("python-docutils" ,python-docutils)))
+    (home-page "https://github.com/rsyslog/liblogging")
+    (synopsis "Easy to use and lightweight signal-safe logging library")
+    (description
+     "Liblogging is an easy to use library for logging.  It offers an enhanced
+replacement for the syslog() call, but retains its ease of use.")
+    (license license:bsd-2)))
