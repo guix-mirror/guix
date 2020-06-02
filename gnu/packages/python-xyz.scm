@@ -19494,6 +19494,25 @@ using “=” characters.  However this conveys no benefit so many protocols
 choose to use Base64 without the “=” padding.")
     (license license:asl2.0)))
 
+(define-public python-py-cpuinfo
+  (package
+    (name "python-py-cpuinfo")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py-cpuinfo" version))
+       (sha256
+        (base32
+         "0045y6832gqjg63jmw0qj2jwyypgjwr7sfdq3lfv49b6fxpl5xic"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/workhorsy/py-cpuinfo")
+    (synopsis "Get CPU info with Python")
+    (description
+     "This Python module returns the CPU info by using the best sources of
+information for your operating system.")
+    (license license:expat)))
+
 (define-public python-canonicaljson
   (package
     (name "python-canonicaljson")
