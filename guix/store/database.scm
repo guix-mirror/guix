@@ -141,14 +141,26 @@ If FILE doesn't exist, create it and initialize it as a new database."
   (sqlite-reset stmt)
   ((@ (sqlite3) sqlite-finalize) stmt))
 
+(define (call-with-statement db sql proc)
+  (let ((stmt (sqlite-prepare db sql #:cache? #t)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (proc stmt))
+      (lambda ()
+        (sqlite-finalize stmt)))))
+
+(define-syntax-rule (with-statement db sql stmt exp ...)
+  "Run EXP... with STMT bound to a prepared statement corresponding to the sql
+string SQL for DB."
+  (call-with-statement db sql
+                       (lambda (stmt) exp ...)))
+
 (define (last-insert-row-id db)
   ;; XXX: (sqlite3) currently lacks bindings for 'sqlite3_last_insert_rowid'.
   ;; Work around that.
-  (let* ((stmt   (sqlite-prepare db "SELECT last_insert_rowid();"
-                                 #:cache? #t))
-         (result (sqlite-fold cons '() stmt)))
-    (sqlite-finalize stmt)
-    (match result
+  (with-statement db "SELECT last_insert_rowid();" stmt
+    (match (sqlite-fold cons '() stmt)
       ((#(id)) id)
       (_ #f))))
 
@@ -158,13 +170,11 @@ If FILE doesn't exist, create it and initialize it as a new database."
 (define* (path-id db path)
   "If PATH exists in the 'ValidPaths' table, return its numerical
 identifier.  Otherwise, return #f."
-  (let ((stmt (sqlite-prepare db path-id-sql #:cache? #t)))
+  (with-statement db path-id-sql stmt
     (sqlite-bind-arguments stmt #:path path)
-    (let ((result (sqlite-fold cons '() stmt)))
-      (sqlite-finalize stmt)
-      (match result
-        ((#(id) . _) id)
-        (_ #f)))))
+    (match (sqlite-fold cons '() stmt)
+      ((#(id) . _) id)
+      (_ #f))))
 
 (define update-sql
   "UPDATE ValidPaths SET hash = :hash, registrationTime = :time, deriver =
@@ -181,20 +191,17 @@ and re-inserting instead of updating, which causes problems with foreign keys,
 of course. Returns the row id of the row that was modified or inserted."
   (let ((id (path-id db path)))
     (if id
-        (let ((stmt (sqlite-prepare db update-sql #:cache? #t)))
+        (with-statement db update-sql stmt
           (sqlite-bind-arguments stmt #:id id
                                  #:deriver deriver
                                  #:hash hash #:size nar-size #:time time)
-          (sqlite-fold cons '() stmt)
-          (sqlite-finalize stmt)
-          (last-insert-row-id db))
-        (let ((stmt (sqlite-prepare db insert-sql #:cache? #t)))
+          (sqlite-fold cons '() stmt))
+        (with-statement db insert-sql stmt
           (sqlite-bind-arguments stmt
                                  #:path path #:deriver deriver
                                  #:hash hash #:size nar-size #:time time)
-          (sqlite-fold cons '() stmt)             ;execute it
-          (sqlite-finalize stmt)
-          (last-insert-row-id db)))))
+          (sqlite-fold cons '() stmt)))
+    (last-insert-row-id db)))
 
 (define add-reference-sql
   "INSERT OR REPLACE INTO Refs (referrer, reference) VALUES (:referrer, :reference);")
@@ -202,15 +209,13 @@ of course. Returns the row id of the row that was modified or inserted."
 (define (add-references db referrer references)
   "REFERRER is the id of the referring store item, REFERENCES is a list
 ids of items referred to."
-  (let ((stmt (sqlite-prepare db add-reference-sql #:cache? #t)))
+  (with-statement db add-reference-sql stmt
     (for-each (lambda (reference)
                 (sqlite-reset stmt)
                 (sqlite-bind-arguments stmt #:referrer referrer
                                        #:reference reference)
-                (sqlite-fold cons '() stmt)       ;execute it
-                (last-insert-row-id db))
-              references)
-    (sqlite-finalize stmt)))
+                (sqlite-fold cons '() stmt))
+              references)))
 
 (define* (sqlite-register db #:key path (references '())
                           deriver hash nar-size time)
