@@ -13,7 +13,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -611,22 +611,15 @@ library.")
 (define-public python-axolotl-curve25519
   (package
     (name "python-axolotl-curve25519")
-    (version "0.1")
+    (version "0.4.1.post2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tgalal/python-axolotl-curve25519")
-             (commit "e4a9c4de0eae27223200579c58d1f8f6d20637e2")))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (pypi-uri "python-axolotl-curve25519" version))
        (sha256
         (base32
-         "0agap5q0hmvf6cwzjqc05kw53pjgf6942pcivpazksmg1vk400ra"))))
+         "18v3rfyv7xi26fb97nw1xc0l6x8wi0i4xj8dlq4gblpbjxiac187"))))
     (build-system python-build-system)
-    (arguments
-     `(;; Prevent creation of the egg. This works around
-       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
-       #:configure-flags '("--root=/")))
     (home-page "https://github.com/tgalal/python-axolotl-curve25519")
     (synopsis "Python wrapper for curve25519 library")
     (description "This is a python wrapper for the curve25519 library
