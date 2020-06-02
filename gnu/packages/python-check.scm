@@ -384,6 +384,29 @@ for the @code{pytest} framework.")
 rounds that are calibrated to the chosen timer.")
     (license license:bsd-2)))
 
+(define-public python-pytest-flask
+  (package
+    (name "python-pytest-flask")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-flask" version))
+       (sha256
+        (base32
+         "1hln7mwgdzfi5ma0kqfsi768l7p24jhkw8l0imhifwy08nh7hmjd"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-werkzeug" ,python-werkzeug)))
+    (home-page "https://github.com/pytest-dev/pytest-flask")
+    (synopsis "Pytest fixtures to test Flask applications")
+    (description
+     "This pytest plugin provides fixtures to simplify Flask app testing.")
+    (license license:expat)))
+
 (define-public python-codacy-coverage
   (package
     (name "python-codacy-coverage")
