@@ -1911,7 +1911,7 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
 (define-public sct
   (package
     (name "sct")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -1919,8 +1919,7 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
         (string-append "https://www.umaxx.net/dl/sct-"
                        version ".tar.gz"))
        (sha256
-        (base32
-         "0r57z9ki8pvxhawfxys0v5h85z2x211sqxki0xvk1bga88ryldlv"))))
+        (base32 "0lrhx771iccbw04wrhj0ygids1pzmjfc4hvklm30m3p3flvhqf0m"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc")
