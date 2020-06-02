@@ -3595,10 +3595,10 @@ create a firmware image suitable for the Linux kernel, and more.")
                 "000pvg995qy1b15ks59gd0klri55hb33kqpg5czy84hw1pbdgm0l"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; no 'check' target
+     `(#:tests? #f                      ; no 'check' target
        #:make-flags (list (string-append "prefix=" %output)
-                          "CC=gcc")
-       ;; no configure script
+                          ,(string-append "CC=" (cc-for-target)))
+       ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("perl" ,perl)))
