@@ -3821,10 +3821,13 @@ isolation or root privileges.")
                 "03z1qm8zbgpxagk3994lvp24yqsshjibkwg05v9p3q1w7y48xrws"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "binprefix=" out)
-                            (string-append "manprefix=" out)
-                            "CC=gcc"))
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "binprefix=" out)
+               (string-append "manprefix=" out)
+               ,(string-append "CC=" (cc-for-target))
+               ;; Let Guix strip the binaries and not break cross-compilation.
+               "STRIP=true"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))           ; no configure script
