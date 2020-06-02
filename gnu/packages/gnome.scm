@@ -6807,10 +6807,11 @@ Cisco's AnyConnect SSL VPN.")
      ;; libnm-gtk.pc refers to all these.
      `(("dbus-glib" ,dbus-glib)
        ("gtk+" ,gtk+)
-       ("network-manager" ,network-manager)))
+       ("network-manager" ,network-manager)
+       ;; nm-applet need by org.gnome.nm-applet.gschema.xml
+       ("libnma" ,libnma)))
     (inputs
      `(("gcr" ,gcr)
-       ("libnma" ,libnma)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
