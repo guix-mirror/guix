@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2021 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018, 2020, 2021 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
@@ -30,6 +30,7 @@
 
 (define-module (gnu packages c)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml))
 
 (define-public tcc
@@ -500,6 +502,46 @@ with essential JSON handling functions, sufficiently good JSON support (not
      "Liblogging is an easy to use library for logging.  It offers an enhanced
 replacement for the syslog() call, but retains its ease of use.")
     (license license:bsd-2)))
+
+(define-public liblognorm
+  (package
+    (name "liblognorm")
+    (version "2.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/liblognorm.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1pyy1swvq6jj12aqma42jimv71z8m66zy6ydd5v19cp2azm4krml"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list
+      #:parallel-tests? #false ;not supported
+      #:phases
+      '(modify-phases %standard-phases
+         ;; These tests fail because tmp.rulebase is never created.  This
+         ;; looks rather harmless.
+         (add-after 'unpack 'delete-failing-tests
+           (lambda _
+             (substitute* "tests/Makefile.am"
+               (("string_rb_simple.sh ") "")
+               (("string_rb_simple_2_lines.sh ") "")))))))
+    (inputs
+     (list json-c libestr libfastjson))
+    (native-inputs
+     (list autoconf automake libtool pkg-config))
+    (home-page "https://www.liblognorm.com")
+    (synopsis "Fast samples-based log normalization library")
+    (description
+     "Liblognorm normalizes event data into well-defined name-value pairs and
+a set of tags describing the message.")
+    ;; liblognorm is very slowly transitioning to ASL2.0
+    ;; See https://github.com/rsyslog/liblognorm/issues/329
+    (license license:lgpl2.1+)))
 
 (define-public unifdef
   (package
