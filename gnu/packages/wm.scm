@@ -1838,9 +1838,10 @@ between windows.")
                   "1wwqbph392iwz8skaqxb0xpklb1l6yganqz80g4x1fhrnz7idmlh"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:tests? #f ; no test suite
-         #:make-flags (list "CC=gcc"
-                            (string-append "PREFIX=" %output))
+       `(#:tests? #f                    ; no test suite
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PREFIX=" %output))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure))))
