@@ -3289,6 +3289,31 @@ appropriate console.")
 IRC bouncer with ERC.")
     (license license:expat)))
 
+(define-public emacs-erc-status-sidebar
+  (let ((commit "ea4189a1dbfe60117359c36e681ad7c389e2968c")
+        (revision "1"))
+    (package
+      (name "emacs-erc-status-sidebar")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/drewbarbs/erc-status-sidebar.git")
+               (commit commit)))
+         (sha256
+          (base32 "1hwlhzgx03z8891sblz56zdp8zj0izh72kxykgcnz5rrkyc3vfi3"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-seq" ,emacs-seq)))
+      (home-page "https://github.com/drewbarbs/erc-status-sidebar")
+      (synopsis "A hexchat-like activity overview for ERC channels")
+      (description
+       "This package is provides a hexchat-like status bar for joined
+channels in ERC.  It relies on the `erc-track' module, and displays
+all the same information erc-track does in the mode line, but in an
+alternative format.")
+      (license license:expat))))
+
 (define-public emacs-shut-up
   (package
     (name "emacs-shut-up")
