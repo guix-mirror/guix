@@ -11732,3 +11732,35 @@ Streams in ICDE’05.")
 
 (define-public ecl-uuid
   (sbcl-package->ecl-package sbcl-uuid))
+
+(define-public sbcl-dissect
+  (let ((commit "cffd38479f0e64e805f167bbdb240b783ecc8d45"))
+    (package
+      (name "sbcl-dissect")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Shinmera/dissect.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rmsjkgjl90gl6ssvgd60hb0d5diyhsiyypvw9hbc0ripvbmk5r5"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)))
+      (home-page "https://shinmera.github.io/dissect/")
+      (synopsis
+       "Introspection library for the call stack and restarts")
+      (description
+       "Dissect is a small Common Lisp library for introspecting the call stack
+and active restarts.")
+      (license license:zlib))))
+
+(define-public cl-dissect
+  (sbcl-package->cl-source-package sbcl-dissect))
+
+(define-public ecl-dissect
+  (sbcl-package->ecl-package sbcl-dissect))
