@@ -120,6 +120,26 @@ transaction after it finishes."
           (begin
             (sqlite-exec db "rollback;")
             (throw 'sqlite-error who error description))))))
+(define* (call-with-savepoint db proc
+                              #:optional (savepoint-name "SomeSavepoint"))
+  "Call PROC after creating a savepoint named SAVEPOINT-NAME.  If PROC exits
+abnormally, rollback to that savepoint.  In all cases, remove the savepoint
+prior to returning."
+  (define (exec sql)
+    (with-statement db sql stmt
+      (sqlite-fold cons '() stmt)))
+
+  (dynamic-wind
+    (lambda ()
+      (exec (string-append "SAVEPOINT " savepoint-name ";")))
+    (lambda ()
+      (catch #t
+        proc
+        (lambda args
+          (exec (string-append "ROLLBACK TO " savepoint-name ";"))
+          (apply throw args))))
+    (lambda ()
+      (exec (string-append "RELEASE " savepoint-name ";")))))
 
 (define %default-database-file
   ;; Default location of the store database.
@@ -189,19 +209,41 @@ VALUES (:path, :hash, :time, :deriver, :size)")
 doesn't exactly have... they've got something close, but it involves deleting
 and re-inserting instead of updating, which causes problems with foreign keys,
 of course. Returns the row id of the row that was modified or inserted."
-  (let ((id (path-id db path)))
-    (if id
-        (with-statement db update-sql stmt
-          (sqlite-bind-arguments stmt #:id id
-                                 #:deriver deriver
-                                 #:hash hash #:size nar-size #:time time)
-          (sqlite-fold cons '() stmt))
-        (with-statement db insert-sql stmt
-          (sqlite-bind-arguments stmt
-                                 #:path path #:deriver deriver
-                                 #:hash hash #:size nar-size #:time time)
-          (sqlite-fold cons '() stmt)))
-    (last-insert-row-id db)))
+
+  ;; It's important that querying the path-id and the insert/update operation
+  ;; take place in the same transaction, as otherwise some other
+  ;; process/thread/fiber could register the same path between when we check
+  ;; whether it's already registered and when we register it, resulting in
+  ;; duplicate paths (which, due to a 'unique' constraint, would cause an
+  ;; exception to be thrown). With the default journaling mode this will
+  ;; prevent writes from occurring during that sensitive time, but with WAL
+  ;; mode it will instead arrange to return SQLITE_BUSY when a write occurs
+  ;; between the start of a read transaction and its upgrading to a write
+  ;; transaction (see https://sqlite.org/rescode.html#busy_snapshot).
+  ;; Experimentally, it seems this SQLITE_BUSY will ignore a busy_timeout and
+  ;; immediately return (makes sense, since waiting won't change anything).
+
+  ;; Note that when that kind of SQLITE_BUSY error is returned, it will keep
+  ;; being returned every time we try to upgrade the same outermost
+  ;; transaction to a write transaction.  So when retrying, we have to restart
+  ;; the *outermost* write transaction.  We can't inherently tell whether
+  ;; we're the outermost write transaction, so we leave the retry-handling to
+  ;; the caller.
+  (call-with-savepoint db
+    (lambda ()
+      (let ((id (path-id db path)))
+        (if id
+            (with-statement db update-sql stmt
+              (sqlite-bind-arguments stmt #:id id
+                                     #:deriver deriver
+                                     #:hash hash #:size nar-size #:time time)
+              (sqlite-fold cons '() stmt))
+            (with-statement db insert-sql stmt
+              (sqlite-bind-arguments stmt
+                                     #:path path #:deriver deriver
+                                     #:hash hash #:size nar-size #:time time)
+              (sqlite-fold cons '() stmt)))
+        (last-insert-row-id db)))))
 
 (define add-reference-sql
   "INSERT OR REPLACE INTO Refs (referrer, reference) VALUES (:referrer, :reference);")
