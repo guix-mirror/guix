@@ -1686,7 +1686,7 @@ of archives.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc")))
+       (list ,(string-append "CC=" (cc-for-target)))))
     (home-page "https://www.nongnu.org/lzip/lunzip.html")
     (synopsis "Small, stand-alone lzip decompressor")
     (description
