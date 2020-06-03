@@ -806,12 +806,13 @@ intended to behave exactly the same as the original BWK awk.")
        ;; See https://github.com/daler/pybedtools/issues/192
        #:phases
        (modify-phases %standard-phases
-         ;; See https://github.com/daler/pybedtools/issues/261
          (add-after 'unpack 'disable-broken-tests
            (lambda _
-             ;; This test (pybedtools.test.test_scripts.test_venn_mpl) needs a
-             ;; graphical environment.
              (substitute* "pybedtools/test/test_scripts.py"
+               ;; This test freezes.
+               (("def test_intron_exon_reads")
+                "def _do_not_test_intron_exon_reads")
+               ;; This test fails in the Python 2 build.
                (("def test_venn_mpl")
                 "def _do_not_test_venn_mpl"))
              (substitute* "pybedtools/test/test_helpers.py"
@@ -868,7 +869,7 @@ intended to behave exactly the same as the original BWK awk.")
              (mkdir-p "/tmp/test")
              (copy-recursively "pybedtools/test" "/tmp/test")
              (with-directory-excursion "/tmp/test"
-               (invoke "pytest")))))))
+               (invoke "pytest" "-v" "--doctest-modules")))))))
     (propagated-inputs
      `(("bedtools" ,bedtools)
        ("samtools" ,samtools)
