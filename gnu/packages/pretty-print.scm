@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
@@ -168,14 +168,14 @@ different programming languages.")
 (define-public fmt
   (package
     (name "fmt")
-    (version "6.1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
-                                  version "/fmt-" version ".zip"))
-              (sha256
-               (base32
-                "1s1hxaby5byb07rgmrk4a0q11fxhz7b42khch7sp2qx974y0yrb3"))))
+    (version "6.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fmtlib/fmt/releases/download/"
+                           version "/fmt-" version ".zip"))
+       (sha256
+        (base32 "06l8g59frbsbwj15kg6x2bbn6p8yidh6wzsigdhbdjncvm1agzll"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))
