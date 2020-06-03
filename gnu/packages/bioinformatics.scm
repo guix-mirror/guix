@@ -972,6 +972,64 @@ e.g. microbiome samples, genomes, metagenomes.")
                    (("install_requires.append\\(\"pyqi\"\\)") "pass"))
                  #t)))))))))
 
+(define-public python-pairtools
+  (package
+    (name "python-pairtools")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mirnylab/pairtools")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gr8y13q7sd6yai6df4aavl2470n1f9s3cib6r473z4hr8hcbwmc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references
+           (lambda _
+             (substitute* '("pairtools/pairtools_merge.py"
+                            "pairtools/pairtools_sort.py")
+               (("/bin/bash") (which "bash")))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (invoke "pytest" "-v")))))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("htslib" ,htslib)               ; for bgzip, looked up in PATH
+       ("samtools" ,samtools)           ; looked up in PATH
+       ("lz4" ,lz4) ; for lz4c
+       ("python-click" ,python-click)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/mirnylab/pairtools")
+    (synopsis "Process mapped Hi-C data")
+    (description "Pairtools is a simple and fast command-line framework to
+process sequencing data from a Hi-C experiment.  Process pair-end sequence
+alignments and perform the following operations:
+
+@itemize
+@item detect ligation junctions (a.k.a. Hi-C pairs) in aligned paired-end
+  sequences of Hi-C DNA molecules
+@item sort @code{.pairs} files for downstream analyses
+@item detect, tag and remove PCR/optical duplicates
+@item generate extensive statistics of Hi-C datasets
+@item select Hi-C pairs given flexibly defined criteria
+@item restore @code{.sam} alignments from Hi-C pairs.
+@end itemize
+")
+    (license license:expat)))
+
 (define-public bioperl-minimal
   (let* ((inputs `(("perl-module-build" ,perl-module-build)
                    ("perl-data-stag" ,perl-data-stag)
