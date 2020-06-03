@@ -1804,14 +1804,14 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "12.2.2")
+    (version "12.2.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/auctex-"
-                           version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "auctex-" version ".tar"))
        (sha256
-        (base32 "1map25xn7r28aldhcz9n8pbfk2l3gvnxx8hgih3ax8hyvnfi6brh"))))
+        (base32 "1rbn6pghkll5apjv1fyn82v523fch9l5ksi5lnh439nq460wx1yf"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -1829,8 +1829,8 @@ as a library for other Emacs packages.")
                (with-directory-excursion "doc"
                  (setenv "HOME" (getenv  "TMPDIR")) ; for mktextfm
                  (invoke "pdftex" "tex-ref")
-                 (install-file "tex-ref.pdf" (string-append etc-dir
-                                                            "/refcards")))
+                 (install-file "tex-ref.pdf"
+                               (string-append etc-dir "/refcards")))
                #t))))))
     (native-inputs
      `(("perl" ,perl)))
