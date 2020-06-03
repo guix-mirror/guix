@@ -101,7 +101,7 @@
 (define-public grantlee
   (package
     (name "grantlee")
-    (version "5.1.0")
+    (version "5.2.0")
     (source
       (origin
         (method git-fetch)
@@ -110,30 +110,18 @@
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1dmah2gd6zd4fgz2f4ir11dazqg067hjz8xshhywhfsmavchi626"))))
+         (base32 "02dyqxjyxiqxrlz5g7v9ly8f095vs3iha39l75q6s8axs36y01lq"))))
     (native-inputs
      ;; Optional: lcov and cccc, both are for code coverage
      `(("doxygen" ,doxygen)))
     (inputs
      `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
        ("qtscript" ,qtscript)))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags '("-DCMAKE_CXX_STANDARD=11")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'delete-broken-tests
-           (lambda _
-             ;; TODO: Two date tests (for date01 and date02) fail for unknown
-             ;; reasons.
-             ;;   Actual   (result): ""
-             ;;   Expected (output): "01"
-             ;;   Actual   (result): ""
-             ;;   Expected (output): "Jan. 1, 2008"
-             (delete-file "templates/tests/testfilters.cpp")
-             (substitute* "templates/tests/CMakeLists.txt"
-               (("testfilters") ""))
-             #t))
          (add-before 'check 'check-setup
            (lambda _
              ;; make Qt render "offscreen", required for tests
