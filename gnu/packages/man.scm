@@ -62,14 +62,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.9.1")
+    (version "2.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ky7aq8313xa1y0zdwdbz5yvjfjb3xy0xymbimd2d9q9bky8lgds"))))
+                "0z04kwv5ymmd0pzadpaag696jfckg6rbz8x4jrgj09bmqqk3yf3v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
