@@ -140,7 +140,8 @@ highlighting your own code that seemed comprehensible when you wrote it.")
        (list (string-append "--with-ncurses="
                             (assoc-ref %build-inputs "ncurses"))
              (string-append "--with-sqlite3="
-                            (assoc-ref %build-inputs "sqlite")))
+                            (assoc-ref %build-inputs "sqlite"))
+             "--disable-static")
 
        #:phases
        (modify-phases %standard-phases
