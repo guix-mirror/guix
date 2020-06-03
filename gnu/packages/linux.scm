@@ -385,10 +385,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.125")
+(define-public linux-libre-4.19-version "4.19.126")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0zmxs6q2rgssvsh76xq9xgcax7bps19x2448d1q1fj9pzc7g8hwq")))
+        (hash (base32 "129ziwvk3f4xh8jvnq2krajc0bnrl2zxffqsiz63j7p3vc57wakf")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
