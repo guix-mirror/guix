@@ -3374,6 +3374,7 @@ with support for HD extensions.")
   (package
     (name "bs1770gain")
     (version "0.7.0")
+    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (source
      (origin
        (method url-fetch)
@@ -3383,7 +3384,7 @@ with support for HD extensions.")
         (base32 "0a2dcaxvxy5m3a5sb1lhplsymvz3ypaiidc5xn9qy01h53zvyvkp"))
        (modules '((guix build utils)))
        (snippet
-        '(begin
+        `(begin
            ;; XXX
            (substitute* (find-files "." "\\.[ch]$")
              (("^ \\* N..o.*") ""))
@@ -3395,12 +3396,11 @@ with support for HD extensions.")
                               "configure.ac"
                               "configure")
              (("https?://bs1770gain[^/]*/")
-              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html"))
+              ,home-page))
            #t))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
-    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (synopsis "Tool to adjust loudness of media files")
     (description
      "BS1770GAIN is a loudness scanner compliant with ITU-R BS.1770 and its
