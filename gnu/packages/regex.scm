@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 John Darrington
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016, 2020 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2020-05-01")
+     (version "2020-06-01")
      (home-page "https://github.com/google/re2")
      (source (origin
                (method git-fetch)
@@ -38,7 +38,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "0daav6ja99v5hdlwh1xzmja950y7767yw0phcbd0wpn42km39i20"))
+                 "10jdgnp5dvkj3ay7grmdy539vv1srglnfxaqc5kb9v53cbql5hm8"))
                (modules '((guix build utils)))
                (snippet
                 '(begin
