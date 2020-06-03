@@ -14,6 +14,7 @@ Copyright @copyright{} 2019 Pierre Neidhardt@*
 Copyright @copyright{} 2020 Oleg Pykhalov@*
 Copyright @copyright{} 2020 Matthew Brooks@*
 Copyright @copyright{} 2020 Marcin Karpezo@*
+Copyright @copyright{} 2020 Brice Waegeneire@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1326,6 +1327,7 @@ reference.
 * Connecting to Wireguard VPN::  Connecting to a Wireguard VPN.
 * Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
 * Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
+* Getting substitutes from Tor:: Configuring Guix daemon to get substitutes through Tor.
 @end menu
 
 @node Customizing the Kernel
@@ -1784,6 +1786,62 @@ mount itself.
 
                 ))
 @end lisp
+
+@node Getting substitutes from Tor
+@section Getting substitutes from Tor
+
+Guix daemon can use a HTTP proxy to get substitutes, here we are
+configuring it to get them via Tor.
+
+@quotation Warning
+@emph{Not all} Guix daemon's traffic will go through Tor!  Only
+HTTP/HTTPS will get proxied; FTP, Git protocol, SSH, etc connections
+will still go through the clearnet.  Again, this configuration isn't
+foolproof some of your traffic won't get routed by Tor at all.  Use it
+at your own risk.
+@end quotation
+
+Guix's substitute server is available as a Onion service, if you want
+to use it to get your substitutes from Tor configure your system as
+follow:
+
+@lisp
+(use-modules (gnu))
+(use-service-module base networking)
+
+(operating-system
+  …
+  (services
+    (cons
+      (service tor-service-type
+              (tor-configuration
+                (config-file (plain-file "tor-config"
+                                         "HTTPTunnelPort 127.0.0.1:9250"))))
+      (modify-services %base-services
+        (guix-service-type
+          config => (guix-configuration
+                      (inherit config)
+                      ;; ci.guix.gnu.org's Onion service
+                      (substitute-urls "https://bp7o7ckwlewr4slm.onion")
+                      (http-proxy "http://localhost:9250")))))))
+@end lisp
+
+This will keep a tor process running that provides a HTTP CONNECT tunnel
+which will be used by @command{guix-daemon}.  The daemon can use other
+protocols than HTTP(S) to get remote resources, request using those
+protocols won't go through Tor since we are only setting a HTTP tunnel
+here.  Note that @code{substitutes-urls} is using HTTPS and not HTTP or
+it won't work, that's a limitation of Tor's tunnel; you may want to use
+@command{privoxy} instead to avoid such limitations.
+
+If you don't want to always get substitutes through Tor but using it just
+some of the times, then skip the @code{guix-configuration}.  When you
+want to get a substitute from the Tor tunnel run:
+
+@example
+sudo herd set-http-proxy guix-daemon http://localhost:9250
+guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …
+@end example
 
 @c *********************************************************************
 @node Advanced package management
