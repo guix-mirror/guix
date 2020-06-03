@@ -1207,17 +1207,25 @@ class.")
 (define-public python-can
   (package
     (name "python-can")
-    (version "3.3.2")
+    (version "3.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-can" version))
        (sha256
         (base32
-         "0bkbxi45sckzir6s0j3h01pkfn4vkz3ymih2zjp7zw77wz0vbvsz"))))
+         "123lz1bl6xf3d0fvxzr4bg4884yg4m9s21z6xd2m68zhnbv9rmpc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-version-requirements
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("mock~=2\\.0") "mock")
+                        (("coverage<5") "coverage")
+                        (("pytest~=4\\.3") "pytest")
+                        (("hypothesis~=4\\.56") "hypothesis"))
+                      #t))
                   (add-after 'unpack 'fix-broken-tests
                     ;; The tests try to run two scripts it expects should be
                     ;; in PATH, but they aren't at this time (see:
@@ -1232,6 +1240,7 @@ class.")
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
        ("python-future" ,python-future)
        ("python-hypothesis" ,python-hypothesis)
        ("python-mock" ,python-mock)
@@ -1246,7 +1255,7 @@ class.")
 controller area network (CAN) support for Python developers; providing common
 abstractions to different hardware devices, and a suite of utilities for
 sending and receiving messages on a CAN bus.")
-    (license license:gpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python-diskcache
   (package
