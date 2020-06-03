@@ -267,14 +267,14 @@ for building OCaml library and programs.")
 (define-public ocaml-extlib
   (package
     (name "ocaml-extlib")
-    (version "1.7.6")
+    (version "1.7.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://ygrek.org.ua/p/release/ocaml-extlib/"
+              (uri (string-append "https://ygrek.org/p/release/ocaml-extlib/"
                                   "extlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0wfs20v1yj5apdbj7214wdsr17ayh0qqq7ihidndvc8nmmwfa1dz"))))
+                "1sxmzc1mx3kg62j8kbk0dxkx8mkf1rn70h542cjzrziflznap0s1"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
