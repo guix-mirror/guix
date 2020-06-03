@@ -2888,18 +2888,22 @@ of modern, widely supported codecs.")
 (define-public intel-vaapi-driver
   (package
     (name "intel-vaapi-driver")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/intel/intel-vaapi-driver/"
-                           "releases/download/" version "/intel-vaapi-driver-"
-                           version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/intel/intel-vaapi-driver")
+             (commit version)))
        (sha256
-        (base32 "12fhydgwpvyh97gxqlgv77wsf9yax321h46vi49j4sxghpcxvqki"))))
+        (base32 "1cidki3av9wnkgwi7fklxbg3bh6kysf8w3fk2qadjr05a92mx3zp"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libdrm" ,libdrm)
        ("libva" ,libva)
