@@ -1440,7 +1440,7 @@ which is a hypervisor.")
 (define-public osinfo-db-tools
   (package
     (name "osinfo-db-tools")
-    (version "1.7.0")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-tools-"
@@ -1448,7 +1448,7 @@ which is a hypervisor.")
 
               (sha256
                (base32
-                "08x8mrafphyll0d35xdc143rip3ahrz6bmzhc85nwhq7yk2vxpab"))))
+                "038q3gzdbkfkhpicj0755mw1q4gbvn57pslpw8n2dp3lds9im0g9"))))
     (build-system meson-build-system)
     (inputs
      `(("libsoup" ,libsoup)
