@@ -1819,6 +1819,28 @@ between windows.")
      (filter (lambda (a) (string-contains a "linux")) %supported-systems))
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-stumptray
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-stumptray")
+    (arguments
+     '(#:asd-system-name "stumptray"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "modeline/stumptray") #t)))))
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("xembed" ,sbcl-clx-xembed)
+       ("alexandria" ,sbcl-alexandria)))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/stumptray")
+    (synopsis "Modeline support for stumptray connectivity")
+    (description "Modeline support for stumptray connectivity.")
+    (supported-systems
+     (filter (lambda (a) (string-contains a "linux")) %supported-systems))
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
