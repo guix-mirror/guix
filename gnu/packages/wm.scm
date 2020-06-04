@@ -1801,6 +1801,24 @@ between windows.")
      (filter (lambda (a) (string-contains a "linux")) %supported-systems))
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-wifi
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-wifi")
+    (arguments
+     '(#:asd-system-name "wifi"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "modeline/wifi") #t)))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/wifi")
+    (synopsis "Modeline support for wifi connectivity")
+    (description "Modeline support for wifi connectivity.")
+    (supported-systems
+     (filter (lambda (a) (string-contains a "linux")) %supported-systems))
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
