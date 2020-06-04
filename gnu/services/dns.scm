@@ -861,12 +861,20 @@ cache.size = 100 * MB
                 #:pid-file "/run/dnsmasq.pid"))
       (stop #~(make-kill-destructor))))))
 
+(define (dnsmasq-activation config)
+  #~(begin
+      (use-modules (guix build utils))
+      ;; create directory to store dnsmasq lease file
+      (mkdir-p "/var/lib/misc")))
+
 (define dnsmasq-service-type
   (service-type
    (name 'dnsmasq)
    (extensions
     (list (service-extension shepherd-root-service-type
-                             (compose list dnsmasq-shepherd-service))))
+                             (compose list dnsmasq-shepherd-service))
+          (service-extension activation-service-type
+                             dnsmasq-activation)))
    (default-value (dnsmasq-configuration))
    (description "Run the dnsmasq DNS server.")))
 
