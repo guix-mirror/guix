@@ -13788,18 +13788,31 @@ bound.")
 (define-public python-pypairix
   (package
     (name "python-pypairix")
-    (version "0.3.6")
+    (version "0.3.7")
+    ;; The tarball on pypi does not include the makefile to build the
+    ;; programs.
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pypairix" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/4dn-dcic/pairix.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zs92b74s5v4xy2h16s15f3z6l4nnbw8x8zyif7xx5xpafjn0xss"))))
+         "1snr3lrmsld8sy77ng6ba6wcmd33xjccf1l2f3m6pi29xis9nd6p"))))
     (build-system python-build-system)
-    ;; FIXME: the tests fail because test.support cannot be loaded:
-    ;; ImportError: cannot import name 'support'
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-programs
+           (lambda _ (invoke "make")))
+         (add-after 'install 'install-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively "bin" (string-append
+                                      (assoc-ref outputs "out")
+                                      "/bin"))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/4dn-dcic/pairix")
