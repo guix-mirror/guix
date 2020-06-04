@@ -1841,6 +1841,22 @@ between windows.")
      (filter (lambda (a) (string-contains a "linux")) %supported-systems))
     (license license:gpl3+)))
 
+(define-public sbcl-stumpwm-kbd-layouts
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-kbd-layouts")
+    (arguments
+     '(#:asd-system-name "kbd-layouts"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "util/kbd-layouts") #t)))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/kbd-layouts")
+    (synopsis "Keyboard layout switcher for StumpWM")
+    (description "Keyboard layout switcher for StumpWM")
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
