@@ -19047,7 +19047,7 @@ processes for Emacs")
 (define-public emacs-treemacs
   (package
     (name "emacs-treemacs")
-    (version "2.6")
+    (version "2.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -19056,7 +19056,7 @@ processes for Emacs")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13gs8g05xj7np3i2q3bbxg6zgdiazzn1spxii4x0cyd4pg83c0i1"))))
+                "0m083g3pg0n4ymi1w0jx34awr7cqbm4r561adij9kklblxsz7sc2"))))
     (build-system emacs-build-system)
     (propagated-inputs
       `(("emacs-dash" ,emacs-dash)
@@ -19078,7 +19078,9 @@ processes for Emacs")
          (add-after 'unpack 'fix-makefile
            (lambda _
              (substitute* "Makefile"
-               (("@\\$\\(CASK\\) exec ") ""))
+               (("@\\$\\(CASK\\) exec ") "")
+               ;; Guix does not need to prepare dependencies before testing.
+               (("test: prepare") "test:"))
              #t))
          (add-after 'fix-makefile 'chdir-elisp
            ;; Elisp directory is not in root of the source.
