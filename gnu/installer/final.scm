@@ -128,7 +128,7 @@ USERS."
                      (match (string-tokenize (read-string port) %not-nul)
                        ((argv0 _ ...)
                         (unless (member (pk (basename argv0)) spare)
-                          (syslog "Killing process ~a~%" pid)
+                          (syslog "Killing process ~a (~a)~%" pid argv0)
                           (kill pid SIGKILL)))
                        (_ #f))))))
               pids)))
@@ -146,6 +146,8 @@ be much appreciated."
   (catch #t
     (lambda ()
       (let ((tmp-dir "/remove"))
+        (syslog "Unmounting cow-store.~%")
+
         (mkdir-p tmp-dir)
         (mount (%store-directory) tmp-dir "" MS_MOVE)
 
