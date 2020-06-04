@@ -8747,9 +8747,9 @@ library implementing most of the pipeline's features.")
     (inputs
      `(("r-minimal" ,r-minimal)
        ("r-rcas" ,r-rcas)
-       ("guile-next" ,guile-2.2)
+       ("guile" ,guile-2.2)
        ("guile-json" ,guile-json-1)
-       ("guile-redis" ,guile-redis)))
+       ("guile-redis" ,guile2.2-redis)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BIMSBbioinfo/rcas-web")
