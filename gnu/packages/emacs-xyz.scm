@@ -12426,36 +12426,39 @@ the format.")
     (license license:gpl3+)))
 
 (define-public emacs-nov-el
-  (package
-    (name "emacs-nov-el")
-    (version "0.3.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://depp.brause.cc/nov.el.git")
-                    (commit "ea0c835c1b5e6e70293f4bd64e9c89bdc42f8596")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "04phmm14ywgicjsl2bsg6w9rapd71vdkxdp5wp0brj6px27y85jz"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'embed-path-to-unzip
-           (lambda _
-             (substitute* "nov.el"
-               (("\\(executable-find \"unzip\"\\)")
-                (string-append "\"" (which "unzip") "\"")))
-             #t)))))
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-esxml" ,emacs-esxml)))
-    (inputs
-     `(("unzip" ,unzip)))
-    (home-page "https://depp.brause.cc/nov.el/")
-    (synopsis "Major mode for reading EPUBs in Emacs")
-    (description "@code{nov.el} provides a major mode for reading EPUB
+  ;; Upstream does not tag releases.  Specify raw commit hash matching the
+  ;; release.
+  (let ((commit "ea0c835c1b5e6e70293f4bd64e9c89bdc42f8596"))
+    (package
+      (name "emacs-nov-el")
+      (version "0.3.0")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://depp.brause.cc/nov.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "04phmm14ywgicjsl2bsg6w9rapd71vdkxdp5wp0brj6px27y85jz"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'embed-path-to-unzip
+             (lambda _
+               (substitute* "nov.el"
+                 (("\\(executable-find \"unzip\"\\)")
+                  (string-append "\"" (which "unzip") "\"")))
+               #t)))))
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-esxml" ,emacs-esxml)))
+      (inputs
+       `(("unzip" ,unzip)))
+      (home-page "https://depp.brause.cc/nov.el/")
+      (synopsis "Major mode for reading EPUBs in Emacs")
+      (description "@code{nov.el} provides a major mode for reading EPUB
 documents.
 
 Features:
@@ -12472,7 +12475,7 @@ Features:
 @item Image rescaling
 @end itemize
 ")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public epipe
   (package
