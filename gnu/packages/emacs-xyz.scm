@@ -22671,6 +22671,28 @@ two user-defined directories, as well as using more descriptive names for
 files and subdirectories when appropriate.")
     (license license:gpl3+)))
 
+(define-public emacs-meson-mode
+  (package
+    (name "emacs-meson-mode")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wentasah/meson-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1720b3hpfqd989zrgcns51jbjrv4vzl9di9mccl55vkmkbqzfin0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/wentasah/meson-mode")
+    (synopsis "Major mode for Meson build system files")
+    (description
+     "This is an Emacs major mode for Meson build system files.  Syntax
+highlighting works reliably.  Indentation works too, but there are probably
+cases where it breaks.")
+    (license license:gpl3+)))
+
 (define-public emacs-message-x
   ;; Use the latest commit, as there are no tagged releases.
   (let ((commit "5524de7bbfdd8749c110f48de5afb024d9f83133")
