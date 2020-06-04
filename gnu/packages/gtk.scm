@@ -943,13 +943,13 @@ exceptions, macros, and a dynamic programming environment.")
       (version (string-append "2.18.1-" revision "."
                               (string-take commit 7)))
       (source (origin
-                (method url-fetch)
-                (uri (string-append "https://gitlab.com/wingo/guile-rsvg/"
-                                    "repository/archive.tar.gz?ref="
-                                    commit))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/wingo/guile-rsvg/")
+                      (commit commit)))
                 (sha256
                  (base32
-                  "0vdzjx8l5nc4y2xjqs0g1rqn1zrwfsm30brh5gz00r1x41a2pvv2"))
+                  "0cnbl40df2sbhpc32cma6j6w312rfvcgbxxqaixgf0ymim3fb248"))
                 (patches (search-patches "guile-rsvg-pkgconfig.patch"))
                 (modules '((guix build utils)))
                 (snippet
