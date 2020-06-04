@@ -22693,6 +22693,32 @@ sense in the @samp{To} and @samp{Cc} headers).  When in the message body, this
 executes a different function (default: @code{indent-relative}).")
       (license license:gpl2+))))
 
+(define-public emacs-glsl-mode
+  ;; No tag, version grabbed from source .el file.
+  (let ((commit "b07112016436d9634cd4ef747f9af6b01366d136")
+        (revision "0"))
+    (package
+      (name "emacs-glsl-mode")
+      (version (git-version "2.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jimhourihan/glsl-mode")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0bav9ipfm0vy26n74ngsmjzc7fsyqz6xmriadzx55s44h8p5dn1s"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jimhourihan/glsl-mode")
+      (synopsis "Major mode for Open GLSL shader files")
+      (description
+       "This package provides a major mode for editing OpenGLSL grammar files,
+usually files ending with @file{.vert}, @file{.frag}, @file{.glsl} or
+@file{.geom}.  It is based on C mode plus some features and pre-specified
+fontifications.")
+      (license license:gpl3+))))
+
 (define-public emacs-gnus-harvest
   (let ((commit "feda071a87b799bd5d23cacde3ee71f0b166e75d")
         (revision "0"))
