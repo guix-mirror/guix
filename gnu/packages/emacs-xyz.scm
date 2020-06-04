@@ -12428,16 +12428,16 @@ the format.")
 (define-public emacs-nov-el
   (package
     (name "emacs-nov-el")
-    (version "0.2.9")
+    (version "0.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/wasamasa/nov.el.git")
-                    (commit version)))
+                    (url "https://depp.brause.cc/nov.el.git")
+                    (commit "ea0c835c1b5e6e70293f4bd64e9c89bdc42f8596")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0v01l1p35mcigixs6j4c5bpc7n7bd51kxa0p3l1xl0gr92774yq3"))))
+                "04phmm14ywgicjsl2bsg6w9rapd71vdkxdp5wp0brj6px27y85jz"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -12453,7 +12453,7 @@ the format.")
        ("emacs-esxml" ,emacs-esxml)))
     (inputs
      `(("unzip" ,unzip)))
-    (home-page "https://github.com/wasamasa/nov.el/")
+    (home-page "https://depp.brause.cc/nov.el/")
     (synopsis "Major mode for reading EPUBs in Emacs")
     (description "@code{nov.el} provides a major mode for reading EPUB
 documents.
