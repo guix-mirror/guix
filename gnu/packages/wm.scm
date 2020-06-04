@@ -1783,6 +1783,24 @@ windows in the current X session.")
 between windows.")
     (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
 
+(define-public sbcl-stumpwm-net
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-net")
+    (arguments
+     '(#:asd-system-name "net"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "modeline/net") #t)))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/net")
+    (synopsis "Modeline support for network connectivity")
+    (description "Modeline support for network connectivity.")
+    (supported-systems
+     (filter (lambda (a) (string-contains a "linux")) %supported-systems))
+    (license license:gpl3+)))
+
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")
         (revision "1"))
