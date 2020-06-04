@@ -148,6 +148,17 @@ _guix_complete_pid ()
 
 declare _guix_subcommands
 
+_guix_complete_subcommand ()
+{
+    if [ -z "$_guix_subcommands" ]
+    then
+	# Cache the list of subcommands to speed things up.
+	_guix_subcommands="$(guix --help 2> /dev/null \
+                                     | grep '^  ' | cut -c 2-)"
+    fi
+    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
+}
+
 _guix_complete ()
 {
     local word_count=${#COMP_WORDS[*]}
@@ -165,13 +176,7 @@ _guix_complete ()
 
     case $COMP_CWORD in
 	1)
-	    if [ -z "$_guix_subcommands" ]
-	    then
-		# Cache the list of subcommands to speed things up.
-		_guix_subcommands="$(guix --help 2> /dev/null \
-                                     | grep '^  ' | cut -c 2-)"
-	    fi
-	    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
+	    _guix_complete_subcommand
 	    ;;
 	*)
 	    if _guix_is_command "package"
@@ -237,6 +242,8 @@ _guix_complete ()
                 if _guix_is_dash_C
                 then
                     _guix_complete_file
+		else
+		    _guix_complete_subcommand
                 fi
 	    elif _guix_is_command "container"
 	    then
