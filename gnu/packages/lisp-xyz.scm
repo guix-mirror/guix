@@ -11667,3 +11667,19 @@ Streams in ICDE’05.")
 
 (define-public ecl-prometheus.formats.text
   (sbcl-package->ecl-package sbcl-prometheus.formats.text))
+
+(define-public sbcl-prometheus.exposers.hunchentoot
+  (package
+    (inherit sbcl-prometheus)
+    (name "sbcl-prometheus.exposers.hunchentoot")
+    (inputs
+     `(("hunchentoot" ,sbcl-hunchentoot)
+       ("prometheus" ,sbcl-prometheus)
+       ("prometheus.formats.text" ,sbcl-prometheus.formats.text)
+       ("salza2" ,sbcl-salza2)
+       ("trivial-utf-8" ,sbcl-trivial-utf-8)))
+    (synopsis "Prometheus collector for Hunchentoot metrics")
+    (description "Prometheus collector for Hunchentoot metrics")))
+
+(define-public cl-prometheus.exposers.hunchentoot
+  (sbcl-package->cl-source-package sbcl-prometheus.exposers.hunchentoot))
