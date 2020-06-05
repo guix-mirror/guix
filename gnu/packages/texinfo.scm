@@ -5,7 +5,7 @@
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
-;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
@@ -59,16 +59,16 @@
      ;; with the native compiler, the environment is reset. This leads to
      ;; multiple environment variables missing. Do not reset the environment
      ;; to prevent that.
-     (if (%current-target-system)
-         '(#:phases
-           (modify-phases %standard-phases
-             (add-before 'configure 'fix-cross-configure
-               (lambda _
-                 (substitute* "configure"
-                   (("env -i")
-                    "env "))
-                 #t))))
-         '()))
+     `(#:phases
+       (if ,(%current-target-system)
+            (modify-phases %standard-phases
+              (add-before 'configure 'fix-cross-configure
+                (lambda _
+                  (substitute* "configure"
+                    (("env -i")
+                     "env "))
+                  #t)))
+            %standard-phases)))
     (inputs `(("ncurses" ,ncurses)
               ;; TODO: remove `if' in the next rebuild cycle.
               ,@(if (%current-target-system)
