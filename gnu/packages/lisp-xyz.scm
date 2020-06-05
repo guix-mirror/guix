@@ -11651,3 +11651,19 @@ Streams in ICDE’05.")
 
 (define-public ecl-prometheus.collectors.process
   (sbcl-package->ecl-package sbcl-prometheus.collectors.process))
+
+(define-public sbcl-prometheus.formats.text
+  (package
+    (inherit sbcl-prometheus)
+    (name "sbcl-prometheus.formats.text")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("prometheus" ,sbcl-prometheus)))
+    (synopsis "Prometheus client text format")
+    (description "Prometheus client text format.")))
+
+(define-public cl-prometheus.formats.text
+  (sbcl-package->cl-source-package sbcl-prometheus.formats.text))
+
+(define-public ecl-prometheus.formats.text
+  (sbcl-package->ecl-package sbcl-prometheus.formats.text))
