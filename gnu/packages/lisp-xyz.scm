@@ -11632,3 +11632,22 @@ Streams in ICDE’05.")
 
 (define-public cl-prometheus.collectors.sbcl
   (sbcl-package->cl-source-package sbcl-prometheus.collectors.sbcl))
+
+(define-public sbcl-prometheus.collectors.process
+  (package
+    (inherit sbcl-prometheus)
+    (name "sbcl-prometheus.collectors.process")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("cffi-grovel" ,sbcl-cffi-grovel)
+       ("cl-fad" ,sbcl-cl-fad)
+       ("prometheus" ,sbcl-prometheus)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (synopsis "Prometheus collector for process metrics")
+    (description "Prometheus collector for process metrics.")))
+
+(define-public cl-prometheus.collectors.process
+  (sbcl-package->cl-source-package sbcl-prometheus.collectors.process))
+
+(define-public ecl-prometheus.collectors.process
+  (sbcl-package->ecl-package sbcl-prometheus.collectors.process))
