@@ -70,10 +70,7 @@
                   #t)))
             %standard-phases)))
     (inputs `(("ncurses" ,ncurses)
-              ;; TODO: remove `if' in the next rebuild cycle.
-              ,@(if (%current-target-system)
-                    `(("perl" ,perl))
-                    '())))
+              ("perl" ,perl)))
     ;; When cross-compiling, texinfo will build some of its own binaries with
     ;; the native compiler. This means ncurses is needed both in both inputs
     ;; and native-inputs.
