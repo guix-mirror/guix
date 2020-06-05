@@ -2263,7 +2263,9 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
                            ".src.tar.gz"))
        (sha256
         (base32
-         "0nbgk5q5pgnw53la0kccdcpz2f4xf6d6076rkn0q08z57hkc85ha"))))
+         "0nbgk5q5pgnw53la0kccdcpz2f4xf6d6076rkn0q08z57hkc85ha"))
+       (patches (search-patches
+                 "openscad-parser-boost-1.72.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost)
