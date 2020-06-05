@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2020 Simon South <simon@simonsouth.net>
+;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -276,8 +277,14 @@
   (let ((key "user.translator")
         (value "/hurd/pfinet\0")
         (file (open-file temp-file "w0")))
-    (setxattr temp-file key value)
-    (string=? (getxattr temp-file key) value)))
+    (catch 'system-error
+      (lambda ()
+        (setxattr temp-file key value)
+        (string=? (getxattr temp-file key) value))
+      (lambda args
+        ;; Accept ENOTSUP, if the file-system does not support extended user
+        ;; attributes.
+        (memv (system-error-errno args) (list ENOTSUP))))))
 
 (false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"
