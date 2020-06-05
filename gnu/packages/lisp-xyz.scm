@@ -11589,3 +11589,35 @@ Streams in ICDE’05.")
 
 (define-public ecl-quantile-estimator
   (sbcl-package->ecl-package sbcl-quantile-estimator))
+
+(define-public sbcl-prometheus
+  (package
+    (name "sbcl-prometheus")
+    (version "0.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/deadtrickster/prometheus.cl.git")
+             (commit "7352b92296996ff383503e19bdd3bcea30409a15")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fzczls2kfgdx18pja4lqxjrz72i583185d8nq0pb3s331hhzh0z"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("local-time" ,sbcl-local-time)
+       ("quantile-estimator" ,sbcl-quantile-estimator)))
+    (home-page "https://github.com/deadtrickster/prometheus.cl")
+    (synopsis "Prometheus.io Common Lisp client")
+    (description "Prometheus.io Common Lisp client.")
+    (license license:expat)))
+
+(define-public cl-prometheus
+  (sbcl-package->cl-source-package sbcl-prometheus))
+
+(define-public ecl-prometheus
+  (sbcl-package->ecl-package sbcl-prometheus))
