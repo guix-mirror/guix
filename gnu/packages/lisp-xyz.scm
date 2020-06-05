@@ -11683,3 +11683,20 @@ Streams in ICDE’05.")
 
 (define-public cl-prometheus.exposers.hunchentoot
   (sbcl-package->cl-source-package sbcl-prometheus.exposers.hunchentoot))
+
+(define-public sbcl-prometheus.pushgateway
+  (package
+    (inherit sbcl-prometheus)
+    (name "sbcl-prometheus.pushgateway")
+    (inputs
+     `(("drakma" ,sbcl-drakma)
+       ("prometheus" ,sbcl-prometheus)
+       ("prometheus.formats.text" ,sbcl-prometheus.formats.text)))
+    (synopsis "Prometheus Pushgateway client")
+    (description "Prometheus Pushgateway client.")))
+
+(define-public cl-prometheus.pushgateway
+  (sbcl-package->cl-source-package sbcl-prometheus.pushgateway))
+
+(define-public ecl-prometheus.pushgateway
+  (sbcl-package->ecl-package sbcl-prometheus.pushgateway))
