@@ -11621,3 +11621,14 @@ Streams in ICDE’05.")
 
 (define-public ecl-prometheus
   (sbcl-package->ecl-package sbcl-prometheus))
+
+(define-public sbcl-prometheus.collectors.sbcl
+  (package
+    (inherit sbcl-prometheus)
+    (name "sbcl-prometheus.collectors.sbcl")
+    (inputs `(("prometheus" ,sbcl-prometheus)))
+    (synopsis "Prometheus collector for SBCL metrics")
+    (description "Prometheus collector for SBCL metrics.")))
+
+(define-public cl-prometheus.collectors.sbcl
+  (sbcl-package->cl-source-package sbcl-prometheus.collectors.sbcl))
