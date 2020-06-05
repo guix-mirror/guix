@@ -1178,7 +1178,7 @@ other systems that want to manipulate WebAssembly files.")
 (define-public websocketpp
   (package
     (name "websocketpp")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -1187,8 +1187,8 @@ other systems that want to manipulate WebAssembly files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12ffczcrryh74c1xssww35ic6yiy2l2xgdd30lshiq9wnzl2brgy"))
-       (patches (search-patches "websocketpp-fix-for-boost-1.70.patch"))))
+        (base32 "1ww4fhl8qf12hkv6jaild8zzsygdspxm1gqpk2f63gv1xfi31wpm"))
+       (patches (search-patches "websocketpp-fix-for-cmake-3.15.patch"))))
     (build-system cmake-build-system)
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
