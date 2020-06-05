@@ -18216,20 +18216,20 @@ advice to be recorded and displayed.")
       (license license:gpl3+))))
 
 (define-public emacs-general
-  (let ((commit "f38fb2294bd29261374b772f765730f2fa168b3e")
-        (revision "3"))
+  (let ((commit "a0b17d207badf462311b2eef7c065b884462cb7c")
+        (revision "4"))
     (package
       (name "emacs-general")
       (version (git-version "0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/noctuid/general.el.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1aqi5axkwfng6rm52sblf738c7rffp10sqs69dvkh2fv3ps8q28i"))
-                (file-name (git-file-name name version))))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/noctuid/general.el.git")
+               (commit commit)))
+         (sha256
+          (base32 "0wn5rk3gkimdklip392mnjrmkymgrb7q9skifi03cbpjam1anzvv"))
+         (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (native-inputs
        `(("emacs-buttercup" ,emacs-buttercup)
@@ -18237,15 +18237,8 @@ advice to be recorded and displayed.")
          ("emacs-which-key" ,emacs-which-key)
          ("emacs-use-package" ,emacs-use-package)))
       (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'check 'fix-makefile
-             (lambda _
-               (substitute* "Makefile"
-                 (("cask exec ") ""))
-               #t)))
-         #:tests? #t
-         #:test-command '("make" "test")))
+       `(#:tests? #t
+         #:test-command '("buttercup" "-L" "test/test-general.el")))
       (home-page "https://github.com/noctuid/general.el")
       (synopsis "More convenient key definitions in emacs")
       (description "@code{general.el} provides a more convenient method for
