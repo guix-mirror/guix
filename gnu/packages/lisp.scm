@@ -800,7 +800,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "238")
+    (version "239")
     (source
      (origin
        (method git-fetch)
@@ -809,15 +809,12 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0asdq4n828xb1m31s7f47mqcbjqkzxz11bwnw8v3f2249m93ync4"))))
+        (base32 "1jldpkd5f855m3z4zjpd1ha64f405pcdwwrnr8jnk66v22dsvdwx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "cc=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "--prefix=" (assoc-ref %outputs "out"))))
+       (list ,(string-append "cc=" (cc-for-target))
+             (string-append "--prefix=" (assoc-ref %outputs "out")))
        #:test-target "tests"
        #:phases
        (modify-phases %standard-phases
