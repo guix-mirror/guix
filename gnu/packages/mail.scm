@@ -32,6 +32,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Justus Winter <justus@sequoia-pgp.org>
 ;;; Copyright © 2020 Eric Brown <ecbrown@ericcbrown.com>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +146,44 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
+
+(define-public anubis
+  (package
+    (name "anubis")
+    ;; This 4.2.90 alpha release adds support for Guile 3 and has fixes for
+    ;; other issues.
+    (version "4.2.90")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://alpha.gnu.org/gnu/anubis/anubis-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0dvm6acl32dv8bixx9z50gzwfp6kj4kxnn1j3dcwjlp7sasjp41s"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("gettext" ,gettext-minimal)
+       ("m4" ,m4)))                     ;for the test suite
+    (inputs
+     `(("gdbm" ,gdbm)
+       ("gnutls" ,gnutls)
+       ("gpgme" ,gpgme)
+       ("gsasl" ,gsasl)
+       ("guile" ,guile-3.0)
+       ("libgcrypt" ,libgcrypt)         ;gnutls support depends on libgcrypt
+       ("libgpg-error" ,libgpg-error)))
+    (outputs '("out" "debug"))
+    (synopsis "SMTP message submission daemon")
+    (description "Anubis is a daemon that sits between the Mail User
+Agent (MUA) and the Mail Transfer Agent (MTA).  When a mail is sent by a user
+in the MUA, it is first passed to Anubis, which performs additional processing
+to the message before passing it on for delivery by the MTA.  Anubis may, for
+example, modify the message headers or body, or encrypt or sign the message.")
+    (home-page "https://www.gnu.org/software/anubis/manual/")
+    (license gpl3+)))
 
 (define-public mailutils
   (package
