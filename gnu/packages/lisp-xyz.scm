@@ -11898,3 +11898,32 @@ learn about each of the parameters.")
 
 (define-public ecl-1am
   (sbcl-package->ecl-package sbcl-1am))
+
+(define-public sbcl-cl-ascii-table
+  (let ((commit "d9f5e774a56fad1b416e4dadb8f8a5b0e84094e2")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-ascii-table")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/telephil/cl-ascii-table.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "125fdif9sgl7k0ngjhxv0wjas2q27d075025hvj2rx1b1x948z4s"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Library to make ascii-art tables")
+      (description
+       "This is a Common Lisp library to present tabular data in ascii-art
+tables.")
+      (home-page "https://github.com/telephil/cl-ascii-table")
+      (license license:expat))))
+
+(define-public cl-ascii-table
+  (sbcl-package->cl-source-package sbcl-cl-ascii-table))
+
+(define-public ecl-cl-ascii-table
+  (sbcl-package->ecl-package sbcl-cl-ascii-table))
