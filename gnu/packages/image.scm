@@ -2075,54 +2075,48 @@ AOM, including with alpha.")
                    license:expat)))) ; cJSON in the test suite
 
 (define-public mtpaint
-  (let ((commit "03b1b0938067b88d86d9f1b1088730f1934d411e")
-        (revision "1"))
-    (package
-      (name "mtpaint")
-      ;; The author neither releases tarballs nor uses git version tags.
-      ;; Instead, author puts version in git commit title.
-      (version (git-version "3.49.25" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/wjaguar/mtPaint/")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0izm2wvj26566fd8mqvypr7bmv7jnq8qhp4760m7z2wrc4y8pjn1"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("gettext" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)
-         ("which" ,which)))
-      (inputs
-       `(("imlib2" ,imlib2)
-         ("libtiff" ,libtiff)
-         ("libpng" ,libpng)
-         ("libungif", libungif)
-         ("libjpeg", libjpeg-turbo)
-         ("libwebp" ,libwebp)
-         ("openjpeg" ,openjpeg)
-         ("lcms" ,lcms)
-         ("zlib", zlib)
-         ("glib" ,glib)
-         ;; support for gtk3 is in testing stage
-         ("gtk+" ,gtk+-2)))
-      (arguments
-       `(#:configure-flags
-         (list
-          ;; internationalized version
-          "intl"
-          ;; install man page
-          "man")
-         ;; no check target
-         #:tests? #f))
-      (home-page "http://mtpaint.sourceforge.net/")
-      (synopsis "Create pixel art and manipulate digital images")
-      (description
-       "Mtpaint is a graphic editing program which uses the GTK+ toolkit.
+  (package
+    (name "mtpaint")
+    ;; The author neither releases tarballs nor uses git version tags.
+    ;; Instead, author puts version in git commit title.
+    (version "3.49.25")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wjaguar/mtPaint")
+             (commit "03b1b0938067b88d86d9f1b1088730f1934d411e")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0izm2wvj26566fd8mqvypr7bmv7jnq8qhp4760m7z2wrc4y8pjn1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("imlib2" ,imlib2)
+       ("libtiff" ,libtiff)
+       ("libpng" ,libpng)
+       ("libungif", libungif)
+       ("libjpeg", libjpeg-turbo)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
+       ("lcms" ,lcms)
+       ("zlib", zlib)
+       ("glib" ,glib)
+       ;; Support for gtk3 is in the testing stage.
+       ("gtk+" ,gtk+-2)))
+    (arguments
+     `(#:configure-flags
+       (list "intl"                     ; build internationalized version
+             "man")                     ; build the man page
+       #:tests? #f))                    ; no test suite
+    (home-page "http://mtpaint.sourceforge.net/")
+    (synopsis "Create pixel art and manipulate digital images")
+    (description
+     "Mtpaint is a graphic editing program which uses the GTK+ toolkit.
 It can create and edit indexed palette or 24bit RGB images, offers basic
 painting and palette manipulation tools.  It also handles JPEG, JPEG2000,
 GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
