@@ -12564,31 +12564,26 @@ the same values you get in a terminal.")
     (license license:gpl3+)))
 
 (define-public emacs-frog-menu
-  (let ((commit "740bbc88b8535d31f783f3b2043a2a6683afbf31")
-        (revision "1"))
-    (package
-      (name "emacs-frog-menu")
-      (version (git-version "0.2.9" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/clemera/frog-menu")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1g77424jwq62qj06rvld44s5hp0dw8rw2pwmmag6gd536zf65xrj"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-posframe" ,emacs-posframe)
-         ("emacs-avy" ,emacs-avy)))
-      (home-page "https://github.com/clemera/frog-menu")
-      (synopsis "Quickly pick items from ad hoc menus")
-      (description
-       "This package provides a popup offering a preview of a list of
-candidates on which user-defined dispatch actions can act.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-frog-menu")
+    (version "0.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "frog-menu-" version ".el"))
+       (sha256
+        (base32 "06iw11z61fd0g4w3562k3smcmzaq3nivvvc6gzm8y8k5pcrqzdff"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-avy" ,emacs-avy)
+       ("emacs-posframe" ,emacs-posframe)))
+    (home-page "https://github.com/clemera/frog-menu")
+    (synopsis "Quickly pick items from ad hoc menus")
+    (description
+     "This package provides a popup offering a preview of a list of candidates
+on which user-defined dispatch actions can act.")
+    (license license:gpl3+)))
 
 (define-public emacs-frog-jump-buffer
   (let ((commit "2d7b342785ae27d45f5d252272df6eb773c78e20")
