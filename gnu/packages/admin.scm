@@ -2758,7 +2758,7 @@ a new command using the matched rule, and runs it.")
          (delete 'configure)            ; no configure script
          (add-before 'build 'setup-environment
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              (setenv "prefix" (assoc-ref outputs "out"))
              #t)))
        #:make-flags (list "--environment-overrides")))
