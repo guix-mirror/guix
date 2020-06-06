@@ -14107,7 +14107,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
 (define-public emacs-edit-server
   (package
     (name "emacs-edit-server")
-    (version "1.13")
+    (version "1.15")
     (source
      (origin
        (method git-fetch)
@@ -14116,7 +14116,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12dp1xj09jrp0kxp9xb6cak9dn6zkyis1wfn4fnhzmxxnrd8c5rn"))))
+        (base32 "0xxby3ghs38i1l7kag12rnzlzcg9297pm8k6kqq3aqzsg9d2950y"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
