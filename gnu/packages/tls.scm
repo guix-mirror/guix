@@ -166,7 +166,7 @@ living in the same process.")
   (package
     (name "gnutls")
     ;; XXX Unversion openconnect's "gnutls" input when ungrafting.
-    (replacement gnutls-3.6.13)
+    (replacement gnutls-3.6.14)
     (version "3.6.12")
     (source (origin
              (method url-fetch)
@@ -254,20 +254,20 @@ required structures.")
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
 
-(define-public gnutls-3.6.13
+(define-public gnutls-3.6.14
   (package
     (inherit gnutls)
-    (version "3.6.13")
+    (version "3.6.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnutls/v"
                                   (version-major+minor version)
-                                  "/gnutls-3.6.13.tar.xz"))
+                                  "/gnutls-" version ".tar.xz"))
               (patches (search-patches "gnutls-skip-trust-store-test.patch"
                                        "gnutls-cross.patch"))
               (sha256
                (base32
-                "0f1gnm0756qms5cpx6yn6xb8d3imc2gkqmygf12n9x6r8zs1s11j"))))
+                "0qwxsfizynly0ns537vnhnlm5lh03la4vbsmz675n0n7vqd7ac2n"))))
     (native-inputs
      `(,@(if (%current-target-system)             ;for cross-build
              `(("guile" ,guile-3.0))              ;to create .go files

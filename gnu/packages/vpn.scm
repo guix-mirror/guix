@@ -261,7 +261,7 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
     `(("libxml2" ,libxml2)
       ;; XXX ‘DTLS is insecure in GnuTLS v3.6.3 through v3.6.12.’
       ;; See <https://gitlab.com/gnutls/gnutls/-/issues/960>.
-      ("gnutls" ,gnutls-3.6.13)
+      ("gnutls" ,gnutls-3.6.14)
       ("zlib" ,zlib)))
    (inputs
     `(("lz4" ,lz4)
