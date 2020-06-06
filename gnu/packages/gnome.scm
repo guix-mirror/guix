@@ -4124,7 +4124,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.5.5")
+    (version "2.5.6")
     (source
      (origin
        (method url-fetch)
@@ -4132,8 +4132,7 @@ output devices.")
         (string-append "https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/"
                        version "/geoclue-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1b7jqrsn4x7mxjxj8hvb2dl2cmhrpb9vibs4rvkkanky5nsx3sai"))
+        (base32 "0a833x5apzabxj80ywvsh8crd635vni2i9v9c1p095f6hvmfc45k"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system meson-build-system)
     (arguments
