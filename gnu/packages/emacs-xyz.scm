@@ -15637,12 +15637,12 @@ the previously visible buffer part after each scroll.")
     (license license:gpl3+)))
 
 (define-public emacs-highlight-escape-sequences
+  ;; No release upstream.  Extract version from main file.
   (let ((commit "08d846a7aa748209d65fecead2b6a766c3e5cb41")
-        (revision "1"))
+        (revision "0"))
     (package
       (name "emacs-highlight-escape-sequences")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -15651,8 +15651,7 @@ the previously visible buffer part after each scroll.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32
-           "05mc3w1f8ykf80914a1yddw6j8cmh0h57llm07xh89s53821v2is"))))
+          (base32 "05mc3w1f8ykf80914a1yddw6j8cmh0h57llm07xh89s53821v2is"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/dgutov/highlight-escape-sequences")
       (synopsis "Highlight escape sequences in Emacs")
