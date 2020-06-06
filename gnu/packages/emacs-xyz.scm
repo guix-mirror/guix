@@ -7512,20 +7512,20 @@ of its name.")
 (define-public emacs-rainbow-mode
   (package
     (name "emacs-rainbow-mode")
-    (version "1.0.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://elpa.gnu.org/packages/rainbow-mode-" version ".el"))
-              (sha256
-               (base32
-                "1zfqj63sr07pdlwy7caz4fxsjhmbhh939n81z6jxq9xggm8ajxkd"))))
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "rainbow-mode-" version ".el"))
+       (sha256
+        (base32 "0rp76gix1ph1wrmdax6y2m3i9y1dmgv7ikjz8xsl5lizkygsy9cg"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/rainbow-mode.html")
     (synopsis "Colorize color names in buffers")
     (description
      "This minor mode sets background color to strings that match color
-names, e.g. #0000ff is displayed in white with a blue background.")
+names, e.g., @samp{#0000ff} is displayed in white with a blue background.")
     (license license:gpl3+)))
 
 (define-public emacs-ryo-modal
