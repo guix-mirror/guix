@@ -1561,11 +1561,13 @@ integrated it into your application's other widgets.")
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
-     `(("kcodecs" ,kcodecs)
+     `(("qtbase" ,qtbase)))
+    (propagated-inputs
+     `(;; As required by KF5ContactsConfig.cmake.
+       ("kcodecs" ,kcodecs)
        ("kconfig" ,kconfig)
        ("kcoreaddons" ,kcoreaddons)
-       ("ki18n" ,ki18n)
-       ("qtbase" ,qtbase)))
+       ("ki18n" ,ki18n)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
