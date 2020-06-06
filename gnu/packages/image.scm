@@ -2067,9 +2067,9 @@ This package can be used to create @code{favicon.ico} files for web sites.")
      `(("libaom" ,libaom)
        ("dav1d" ,dav1d)))
     (synopsis "Encode and decode AVIF files")
-    (description "Libavif is a C implementation of the AV1 Image File Format
-(AVIF).  It can encode and decode all YUV formats and bit depths supported by
-AOM, including with alpha.")
+    (description "Libavif is a C implementation of @acronym{AVIF, the AV1 Image
+File Format}.  It can encode and decode all YUV formats and bit depths supported
+by AOM, including with alpha.")
     (home-page "https://github.com/AOMediaCodec/libavif")
     (license (list license:bsd-2    ; libavif itself
                    license:expat)))) ; cJSON in the test suite
