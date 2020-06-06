@@ -11791,31 +11791,22 @@ database of references on life sciences.")
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
-    (version "1.10")
+    (version "1.12")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/ahyatt/emacs-websocket.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "websocket-" version ".tar"))
        (sha256
-        (base32
-         "1dgrf7na6r6mmkknphzshlbd5fnzisg0qn0j7vfpa38wgsymaq52"))))
+        (base32 "0ap4z80c6pzpb69wrx0hsvwzignxmd2b9xy974by9gf5xm2wpa8w"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #t
-       ;; TODO: also enable websocket-functional-test.el
-       #:test-command '("emacs" "--batch"
-                        "-l" "websocket-test.el"
-                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://elpa.gnu.org/packages/websocket.html")
     (synopsis "Emacs WebSocket client and server")
-    (description "This is an Elisp library for WebSocket clients to talk to
-WebSocket servers, and for WebSocket servers to accept connections from
-WebSocket clients.  This library is designed to be used by other library
-writers, to write applications that use WebSockets, and is not useful by
-itself.")
+    (description
+     "This is an Elisp library for WebSocket clients to talk to WebSocket
+servers, and for WebSocket servers to accept connections from WebSocket
+clients.  This library is designed to be used by other library writers, to
+write applications that use WebSockets, and is not useful by itself.")
     (license license:gpl3+)))
 
 (define-public emacs-oauth2
