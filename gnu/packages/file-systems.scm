@@ -41,26 +41,102 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nfs)
   #:use-module (gnu packages onc-rpc)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages sssd)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml))
+
+(define-public autofs
+  (package
+    (name "autofs")
+    (version "5.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kernel.org/linux/daemons/autofs/"
+                           "v" (version-major version) "/"
+                           "autofs-" version ".tar.xz"))
+       (sha256
+        (base32 "1vya21mb4izj3khcr3flibv7xc15vvx2v0rjfk5yd31qnzcy7pnx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-ignore-busy"     ; during shutdown
+             "--enable-sloppy-mount"    ; support mount(8) -s
+             "--with-libtirpc"
+             (string-append "--with-openldap="
+                            (assoc-ref %build-inputs "openldap"))
+             (string-append "--with-sasl="
+                            (assoc-ref %build-inputs "cyrus-sasl"))
+             "HAVE_SSS_AUTOFS=1"        ; required to make sssldir click
+             (string-append "sssldir="
+                            (assoc-ref %build-inputs "sssd")
+                            "/lib/sssd/modules"))
+       #:tests? #f                      ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-hard-coded-search-path
+           (lambda _
+             (substitute* "configure"
+               (("^searchpath=\".*\"")
+                "searchpath=\"$PATH\""))
+             #t))
+         (add-before 'install 'omit-obsolete-lookup_nis.so-link
+           ;; Building lookup_yp.so depends on $(YPCLNT) but this doesn't,
+           ;; leading to a make error.  Since it's broken, comment it out.
+           (lambda _
+             (substitute* "modules/Makefile"
+               (("ln -fs lookup_yp.so" match)
+                (string-append "# " match)))
+             #t)))))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("pkg-config" ,pkg-config)
+       ("rpcsvc-proto" ,rpcsvc-proto)))
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("e2fsprogs" ,e2fsprogs)         ; for e[234]fsck
+       ("libtirpc" ,libtirpc)
+       ("libxml2" ,libxml2)             ; needed for LDAP, SASL
+       ("mit-krb5" ,mit-krb5)           ; needed for LDAP, SASL
+       ("nfs-utils" ,nfs-utils)         ; for mount.nfs
+       ("openldap" ,openldap)
+       ("openssl" ,openssl)             ; needed for SASL
+       ("sssd" ,sssd)
+       ("util-linux" ,util-linux)))     ; for mount, umount
+    ;; XXX A directory index is the closest thing this has to a home page.
+    (home-page "https://www.kernel.org/pub/linux/daemons/autofs/")
+    (synopsis "Kernel-based automounter for Linux")
+    (description
+     "Autofs is a kernel-based automounter for use with the Linux autofs4
+module.  It automatically mounts selected file systems when they are used and
+unmounts them after a set period of inactivity.  This provides
+centrally-managed, consistent file names for users and applications, even in a
+large and/or frequently changing (network) environment.")
+    ;; fedfs/ is GPL-2-only but not built.
+    (license (list license:bsd-3        ; modules/cyrus-sasl.c
+                   license:gpl2+))))    ; the rest
 
 (define-public fsarchiver
   (package
