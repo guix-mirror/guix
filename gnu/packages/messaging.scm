@@ -755,7 +755,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.29")
+    (version "2.7.4")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -763,7 +763,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "1mif5qkrvxclqbqmq6njini4laznbs5nn82w2f1hkl8c1284dvgi"))))
+                "00zrj57n86c2m99n0swmmaws4f8zccbgbi8fknv6f9b1vif9jc8p"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -779,7 +779,7 @@ end-to-end encryption support; XML console.")
     (propagated-inputs
      `(("python-axolotl" ,python-axolotl)))
     (home-page
-     "https://dev.gajim.org/gajim/gajim-plugins/wikis/OmemoGajimPlugin")
+     "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OmemoGajimPlugin")
     (synopsis "Gajim OMEMO plugin")
     (description
      "This package provides the Gajim OMEMO plugin.  OMEMO is an XMPP

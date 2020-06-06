@@ -209,7 +209,7 @@ projects.")
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.5.1")
+    (version "5.5.2")
     (source
       (origin
         (method url-fetch)
@@ -217,7 +217,7 @@ projects.")
                             "/" version "/src/kdevelop-"
                             version ".tar.xz"))
         (sha256
-         (base32 "18hxwkdbfw0qs3p19jv6d8wwwdzb9m087891i8w2bzkn21fd5pmy"))))
+         (base32 "1nkl3z1n1l7ly2zvmbx2sdhx5q72wcvpwhzsz3qgw1474qd9i3i2"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

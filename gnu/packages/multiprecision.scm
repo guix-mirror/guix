@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2018 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
@@ -29,6 +29,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -156,17 +157,27 @@ precision and correctly rounds the results.")
 (define-public mpfi
   (package
     (name "mpfi")
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gforge.inria.fr/frs/download.php"
-                           "/latestfile/181/" name "-" version ".tar.bz2"))
+                           "/latestfile/181/mpfi-" version ".tgz"))
        (sha256
-        (base32 "0bqr8yibl7jbrp0bw7xk1lm7nis7rv26jsz6y8ycvih8n9bx90r3"))))
+        (base32 "0mismr1ll3wp788dq2n22s5irm0dziy75byyfdwz22kjbmckhf9v"))))
     (build-system gnu-build-system)
-    (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
-                         ("mpfr" ,mpfr)))
+    (arguments
+     `(#:tests? #f                      ;tests are broken in this release
+       #:configure-flags '("--enable-static=no")))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoreconf" ,autoconf)
+       ("libtool" ,libtool)
+       ("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("gmp" ,gmp)                     ; <mpfi.h> refers to both
+       ("mpfr" ,mpfr)))
+    (home-page "https://gforge.inria.fr/projects/mpfi/")
     (synopsis "C library for arbitrary-precision interval arithmetic")
     (description
      "@acronym{MPFI, Multiple Precision Floating-point Interval} is a portable C
@@ -178,8 +189,7 @@ Floating-Point Reliably} libraries.
 The purpose of arbitrary-precision interval arithmetic is to get results that
 are both guaranteed, thanks to interval computation, and accurate, thanks to
 multiple-precision arithmetic.")
-    (license lgpl2.1+)
-    (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")))
+    (license lgpl2.1+)))
 
 (define-public irram
   (package

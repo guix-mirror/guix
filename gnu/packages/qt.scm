@@ -144,7 +144,7 @@
     (description "Grantlee Templates can be used for theming and generation of
 other text such as code.  The syntax uses the syntax of the Django template
 system, and the core design of Django is reused in Grantlee.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.1+)))
 
 (define-public qt-4
   (package

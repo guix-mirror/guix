@@ -102,10 +102,6 @@
                  `("LUA_PATH" ":" prefix (,LUA_PATH))
                  `("LUA_CPATH" ":" prefix (,LUA_CPATH)))
                #t))))))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "VIS_PATH")
-            (files '("share/vis")))))
     (inputs `(("lua" ,lua)
               ("ncurses" ,ncurses)
               ("libtermkey" ,libtermkey)
@@ -502,7 +498,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
 (define-public ghostwriter
   (package
     (name "ghostwriter")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -511,7 +507,7 @@ scripts/input/X11/C/Shell/HTML/Dired): 49KB.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13yn82m1l2pq93wbl569a2lzpc3sn8a8g30hsgdch1l9xlmhwran"))))
+                "0jc6szfh5sdnafhwsr1xv7cn1fznniq58bix41hb9wlbkvq7wzi6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -747,14 +743,14 @@ and Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.3.3")
+    (version "4.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (let ((v (apply string-append (string-split version #\.))))
               (string-append "https://www.scintilla.org/scintilla" v ".tgz")))
        (sha256
-        (base32 "0zh8c19r1zd4kr9jg2ws0n2n5ic2siz5zbns6cvylyfbpf69ghy2"))))
+        (base32 "10qnab10gfkzdfyqpmsl4c3mhh7533l4q6jrdfy5ssvj4da6hawd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -762,20 +758,14 @@ and Octave.  TeXmacs is completely extensible via Guile.")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ;no configure script
-         (add-after 'unpack 'build-shared-library
-           (lambda _
-             (substitute* "gtk/makefile"
-               (("scintilla\\.a") "libscintilla.so")
-               (("\\$\\(AR\\) \\$\\(ARFLAGS\\) \\$@ \\$\\^")
-                "$(CC) -shared $^ -o $@")
-               (("\\$\\(RANLIB\\) \\$@") ""))
-             #t))
          (replace 'install
+           ;; Upstream provides no install script.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
                     (include (string-append out "/include")))
-               (install-file "bin/libscintilla.so" lib)
+               (for-each (lambda (f) (install-file f lib))
+                         (find-files "bin/" "\\.so$"))
                (for-each (lambda (f) (install-file f include))
                          (find-files "include/" "."))
                #t))))))
@@ -800,17 +790,13 @@ and multiple fonts.")
   (package
     (name "geany")
     (version "1.36")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://download.geany.org/"
-                                  "geany-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0gnm17cr4rf3pmkf0axz4a0fxwnvp55ji0q0lzy88yqbshyxv14i"))
-              (modules '((guix build utils)))
-              (snippet '(begin
-                          (delete-file-recursively "scintilla")
-                          #t))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.geany.org/"
+                           "geany-" version ".tar.bz2"))
+       (sha256
+        (base32 "0gnm17cr4rf3pmkf0axz4a0fxwnvp55ji0q0lzy88yqbshyxv14i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -823,26 +809,20 @@ and multiple fonts.")
        ("python-docutils" ,python-docutils))) ;for rst2html
     (inputs
      `(("gtk+" ,gtk+)
-       ("scintilla" ,scintilla)))
+       ;; FIXME: Geany bundles a 3.X release of Scintilla.  It is not
+       ;; currently possible to replace it with our Scintilla package.
+       ;; ("scintilla" ,scintilla)
+       ))
     (arguments
-     `(#:phases
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules (((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'use-scintilla-shared-library
-           (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* "configure.ac"
-               (("scintilla/Makefile") "")
-               (("scintilla/include/Makefile") ""))
-             (substitute* "Makefile.am"
-               (("scintilla ") ""))
-             (substitute* "src/Makefile.am"
-               (("\\$\\(top_builddir\\)/scintilla/libscintilla.la") "")
-               (("geany_LDFLAGS =" all) (string-append all " -lscintilla")))
-             (substitute* "doc/Makefile.am"
-               (("\\$\\(INSTALL_DATA\\) \\$\\(top_srcdir\\)/scintilla/License.txt \\$\\(DOCDIR\\)/ScintillaLicense.txt") ""))
-             (substitute* "tests/Makefile.am"
-               (("AM_LDFLAGS =" all) (string-append all " -lscintilla")))
-             (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
-             #t)))))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://www.geany.org")
     (synopsis "Fast and lightweight IDE")
     (description "Geany is a small and fast Integrated Development

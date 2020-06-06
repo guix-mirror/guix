@@ -124,7 +124,7 @@ the Linux kernel CIFS client.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc")
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -159,25 +159,29 @@ the Linux kernel CIFS client.")
                          '("AUTHORS" "INSTALL" "LICENSE" "README.md"))
                #t))))))
     (home-page "https://github.com/ndevilla/iniparser")
-    (synopsis "Standalone ini file parsing library")
+    (synopsis "Simple @file{.ini} configuration file parsing library")
     (description
-     "iniparser is a free stand-alone @code{ini} file parsing library (Windows
-configuration files).  It is written in portable ANSI C and should compile
-anywhere.")
+     "The iniParser C library reads and writes Windows-style @file{.ini}
+configuration files.  These are simple text files with a basic structure
+composed of sections, properties, and values.  While not expressive, they
+are easy to read, write, and modify.
+
+The library is small, thread safe, and written in portable ANSI C with no
+external dependencies.")
     (license x11)))
 
 (define-public samba
   (package
     (name "samba")
-    (version "4.12.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.samba.org/pub/samba/stable/"
-                                 "samba-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0l514s2xhsy1lspzgvibbzs80zi84zxr2wx4d40hq85yb2lg5434"))
-                    (modules '((guix build utils)))
+    (version "4.12.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.samba.org/pub/samba/stable/"
+                           "samba-" version ".tar.gz"))
+       (sha256
+        (base32 "09w7aap1cjc41ayhaksm1igc7p7gl40fad4a1l6q4ds9a2jbrb9z"))
+       (modules '((guix build utils)))
        (snippet
         '(begin
            ;; TODO: also remove the bundled ‘third_party/popt’.

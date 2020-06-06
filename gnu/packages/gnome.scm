@@ -145,6 +145,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
+  #:use-module (gnu packages php)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
@@ -182,6 +183,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu artwork)
+  #:use-module ((guix build utils) #:select (modify-phases))
   #:use-module (guix build-system cargo)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
@@ -1499,6 +1501,63 @@ accessing key stores.  It also provides the viewer for crypto files on the
 GNOME Desktop.")
     (license license:lgpl2.1+)))
 
+(define-public gdl
+  (package
+    (name "gdl")
+    (version "3.34.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/gdl.git")
+                    (commit (string-append "GDL_" (string-map (match-lambda
+                                                                (#\. #\_)
+                                                                (c c))
+                                                              version)))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "154qcr0x6f68f4q526y87imv0rscmp34n47nk1pp82rsq52h2zna"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("gnome-common" ,gnome-common)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("which" ,which)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; The gdl-3.0.pc file 'Requires' GTK+.
+     `(("gtk+" ,gtk+)))
+    (home-page "https://gitlab.gnome.org/GNOME/gdl/")
+    (synopsis "GNOME docking library")
+    (description "This library provides docking features for gtk+.")
+    (license license:lgpl2.1+)))
+
+;;; A minimal variant used to break a cycle with Inkscape.
+(define-public gdl-minimal
+  (package
+    (inherit gdl)
+    (name "gdl-minimal")
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-doc-generation
+           ;; XXX: There is no easy way to disable generating the
+           ;; documentation.
+           (lambda _
+             (substitute* "configure.in"
+               (("GTK_DOC_CHECK.*") "")
+               (("docs/.*") ""))
+             (substitute* "Makefile.am"
+               (("gdl docs po") "gdl po"))
+             #t)))))
+    (native-inputs (alist-delete "gtk-doc" (package-native-inputs gdl)))))
+
 (define-public libgnome-keyring
   (package
     (name "libgnome-keyring")
@@ -1609,7 +1668,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.34.2")
+    (version "3.36.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/evince/"
@@ -1617,7 +1676,7 @@ forgotten when the session ends.")
                                  "evince-" version ".tar.xz"))
              (sha256
               (base32
-               "05q6v9lssd21623mnj2p49clj9v9csw9kay7n4nklki025grbh1w"))))
+               "1msbb66lasikpfjpkwsvi7h22hqmk275850ilpdqwbd0b39vzf4c"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus" "--enable-introspection")
@@ -1667,8 +1726,7 @@ forgotten when the session ends.")
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
-    (home-page
-     "https://www.gnome.org/projects/evince/")
+    (home-page "https://www.gnome.org/projects/evince/")
     (synopsis "GNOME's document viewer")
     (description
      "Evince is a document viewer for multiple document formats.  It
@@ -3718,8 +3776,7 @@ libxml to ease remote use of the RESTful API.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
        ("vala" ,vala)
-       ;; These are needed for the tests.
-       ;; FIXME: Add PHP once available.
+       ("php" ,php)
        ("curl" ,curl)
        ("gnutls" ,gnutls)                         ;for 'certtool'
        ("httpd" ,httpd)))
@@ -3740,6 +3797,22 @@ libxml to ease remote use of the RESTful API.")
      "LibSoup is an HTTP client/server library for GNOME.  It uses GObjects
 and the GLib main loop, to integrate well with GNOME applications.")
     (license license:lgpl2.0+)))
+
+
+;;; A minimal version of libsoup used to prevent a cycle with Inkscape.
+(define-public libsoup-minimal
+  (package
+    (inherit libsoup)
+    (name "libsoup-minimal")
+    (outputs (delete "doc" (package-outputs libsoup)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments libsoup)
+       ((#:configure-flags configure-flags)
+        `(delete "-Dgtk_doc=true" ,configure-flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'move-doc)))))
+    (native-inputs (alist-delete "gtk-doc" (package-native-inputs libsoup)))))
 
 (define-public libsecret
   (package
@@ -4051,7 +4124,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.5.5")
+    (version "2.5.6")
     (source
      (origin
        (method url-fetch)
@@ -4059,8 +4132,7 @@ output devices.")
         (string-append "https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/"
                        version "/geoclue-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1b7jqrsn4x7mxjxj8hvb2dl2cmhrpb9vibs4rvkkanky5nsx3sai"))
+        (base32 "0a833x5apzabxj80ywvsh8crd635vni2i9v9c1p095f6hvmfc45k"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -4900,9 +4972,9 @@ discovery protocols.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/totem/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "totem-" version ".tar.xz"))
        (sha256
         (base32
          "028sc6xbyi7rs884862d8f3di6zhcm0lhvlpc3r69ifzjsq9my3b"))))
@@ -4915,7 +4987,6 @@ discovery protocols.")
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)
-       ("python-pylint" ,python-pylint)
        ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("dconf" ,dconf)))
@@ -6759,10 +6830,11 @@ Cisco's AnyConnect SSL VPN.")
      ;; libnm-gtk.pc refers to all these.
      `(("dbus-glib" ,dbus-glib)
        ("gtk+" ,gtk+)
-       ("network-manager" ,network-manager)))
+       ("network-manager" ,network-manager)
+       ;; nm-applet need by org.gnome.nm-applet.gschema.xml
+       ("libnma" ,libnma)))
     (inputs
      `(("gcr" ,gcr)
-       ("libnma" ,libnma)
        ("libgudev" ,libgudev)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)

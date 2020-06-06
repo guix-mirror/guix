@@ -2890,8 +2890,8 @@ in C using Gtk+-3 and WebKitGtk.")
       (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)
-         ("guile-lib" ,guile-lib)
-         ("guile-readline" ,guile-readline)))
+         ("guile-lib" ,guile2.2-lib)
+         ("guile-readline" ,guile2.2-readline)))
       (propagated-inputs '())
       (arguments
        `(#:configure-flags '("--without-examples")

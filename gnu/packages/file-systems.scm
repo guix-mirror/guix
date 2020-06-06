@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
   #:use-module (guix build-system trivial)
@@ -53,7 +54,9 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -682,3 +685,100 @@ APFS.")
 originally developed for Solaris and is now maintained by the OpenZFS
 community.")
     (license license:cddl1.0)))
+
+(define-public mergerfs
+  (package
+    (name "mergerfs")
+    (version "2.29.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/trapexit/mergerfs/releases/download/"
+                           version "/mergerfs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17gizw4vgbqqjd2ykkfpp276942jb5qclp0lkiwkmq1yjgyjqfmk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             ;; These were copied from the package libfuse.
+             (substitute* '("libfuse/lib/mount_util.c" "libfuse/util/mount_util.c")
+               (("/bin/(u?)mount" _ maybe-u)
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin/" maybe-u "mount")))
+             (substitute* '("libfuse/util/mount.mergerfs.c")
+               (("/bin/sh")
+                (which "sh")))
+             ;; The Makefile does not allow overriding PREFIX via make variables.
+             (substitute* '("Makefile" "libfuse/Makefile")
+               (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
+               ;; cannot chown as build user
+               (("chown root:root") "true"))
+             #t)))))
+    ;; mergerfs bundles a heavily modified copy of libfuse.
+    (inputs `(("util-linux" ,util-linux)))
+    (home-page "https://github.com/trapexit/mergerfs")
+    (synopsis "Featureful union filesystem")
+    (description "mergerfs is a union filesystem geared towards simplifying
+storage and management of files across numerous commodity storage devices.  It
+is similar to mhddfs, unionfs, and aufs.")
+    (license (list
+              license:isc                   ; mergerfs
+              license:gpl2 license:lgpl2.0  ; Imported libfuse code.
+              ))))
+
+(define-public mergerfs-tools
+  (let ((commit "c926779d87458d103f3b674603bf97801ae2486d")
+        (revision "1"))
+    (package
+      (name "mergerfs-tools")
+      ;; No released version exists.
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/trapexit/mergerfs-tools.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "04hhwcib0xv4cf1mkj8zrp2aqpxkncml9iqg4m1mz6a5zhzsk0vm"))))
+      (build-system copy-build-system)
+      (inputs
+       `(("python" ,python)
+         ("python-xattr" ,python-xattr)
+         ("rsync" ,rsync)))
+      (arguments
+       '(#:install-plan
+         '(("src/" "bin/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* (find-files "src" "^mergerfs\\.")
+                 (("'rsync'")
+                  (string-append "'" (assoc-ref inputs "rsync") "/bin/rsync'"))
+                 (("'rm'")
+                  (string-append "'" (assoc-ref inputs "coreutils") "/bin/rm'")))
+               (substitute* "src/mergerfs.mktrash"
+                 (("xattr")
+                  (string-append (assoc-ref inputs "python-xattr") "/bin/xattr"))
+                 (("mkdir")
+                  (string-append (assoc-ref inputs "coreutils") "/bin/mkdir")))
+               #t)))))
+      (synopsis "Tools to help manage data in a mergerfs pool")
+      (description "mergerfs-tools is a suite of programs that can audit
+permissions and ownership of files and directories on a mergerfs volume,
+duplicates files and directories across branches in its pool, find and remove
+duplicate files, balance pool drives, consolidate files in a single mergerfs
+directory onto a single drive and create FreeDesktop.org Trash specification
+compatible directories.")
+      (home-page "https://github.com/trapexit/mergerfs-tools")
+      (license license:isc))))

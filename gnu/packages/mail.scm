@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -347,7 +347,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.5")
+    (version "6.4.6")
     (source
      (origin
        (method url-fetch)
@@ -355,7 +355,7 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "073bjh8qbvww7f5gbd6pq640qspi7dc6cjndvm0h2jcl0a90c3yk"))))
+        (base32 "04b0sq1xad6gs1bfhkbmhsn1kq6y4gsx9l9ywjvd5d0rc15yrvqn"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -711,15 +711,15 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.7")
+    (version "1.4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/1,4.7/" ; sic
+                                  "download/" version "/"
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "19qmz9fgnjpj0cxb8y9nb2dfk7pc0a9kwfiysa0f13ps3d5k4mhm"))))
+                "0vww8n7r6pfl4jyijhzas3fpdl6v1ndhc99zr1fsamjldxqpxk5m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1259,7 +1259,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.93.0.4")
+    (version "4.94")
     (source
      (origin
        (method url-fetch)
@@ -1273,7 +1273,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "01g4sfycv13glnmfrapwhjbdw6z1z7w5bwjldxjmglwfw5p3czak"))))
+        (base32 "1nsb2i5mqxfz1sl1bmbxmpb2qiaf3wffhfiw4j9vfpagy3xfhzpp"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -2622,7 +2622,7 @@ on the fly.  Both programs are written in C and are very fast.")
 (define-public swaks
   (package
     (name "swaks")
-    (version "20181104.0")
+    (version "20190914.0")
     (source
      (origin
        (method url-fetch)
@@ -2631,7 +2631,7 @@ on the fly.  Both programs are written in C and are very fast.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0n1yd27xcyb1ylp5gln3yv5gzi9r377hjy1j32367kgb3247ygq2"))))
+         "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-net-dns" ,perl-net-dns)

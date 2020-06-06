@@ -18967,14 +18967,14 @@ rust.")
 (define-public rust-rpassword-4
   (package
     (name "rust-rpassword")
-    (version "4.0.3")
+    (version "4.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rpassword" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0jnl8wzmdazkpzqs0vsw0n0vm0v4b8chqifd6s84nl9w2ybhx7ym"))))
+        (base32 "17z99xazhhbaczw0ib1vnnq450j0zacdn8b2zcbdir68sdbicdwr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs

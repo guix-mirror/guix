@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 R Veera Kumar <vkor@vkten.in>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -855,6 +857,55 @@ algorithm was patented.  Tools are also included to convert, manipulate,
 compose, and analyze GIF images.")
     (home-page "http://giflib.sourceforge.net/")
     (license license:x11)))
+
+(define-public libuemf
+  (package
+    (name "libuemf")
+    (version "0.2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/libuemf/libUEMF-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "05djs99vqf067x81xfpskh7a66y5x7b4mmjavybcy7swnm0swg7v"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Overriding CMAKE_INSTALL_PREFIX is not a good idea.
+         (add-after 'unpack 'fix-CMakeLists.txt
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               ((".*SET\\(CMAKE_INSTALL_PREFIX.*") ""))
+             #t))
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (sources (string-append "../libUEMF-" ,version))
+                    (drm-tools (assoc-ref inputs "drm-tools"))
+                    (extract (string-append drm-tools "/bin/extract"))
+                    (execinput (string-append drm-tools "/bin/execinput")))
+               (with-directory-excursion sources
+                 (substitute* "testit.sh"
+                   (("^EPATH=.*")
+                    (format #f "EPATH=~a~%" bin))
+                   (("`which diff`")
+                    "diff")
+                   (("^EXTRACT=.*")
+                    (format #f "EXTRACT=~a~%" extract))
+                   (("^EXECINPUT=.*")
+                    (format #f "EXECINPUT=~a~%" execinput)))
+                 (invoke "sh" "testit.sh"))))))))
+    (native-inputs `(("drm-tools" ,drm-tools))) ;for tests
+    (home-page "http://libuemf.sourceforge.net/")
+    (synopsis "Library for working with WFM, EMF and EMF+ images")
+    (description "The libUEMF library is a portable C99 implementation for
+reading and writing @acronym{WFM, Windows Metafile}, @acronym{EMF, Enhanced
+Metafile}, and @acronym{EMF+, Enhanced Metafile Plus} files.")
+    (license license:gpl2+)))
 
 (define-public libungif
   (package
@@ -2016,62 +2067,56 @@ This package can be used to create @code{favicon.ico} files for web sites.")
      `(("libaom" ,libaom)
        ("dav1d" ,dav1d)))
     (synopsis "Encode and decode AVIF files")
-    (description "Libavif is a C implementation of the AV1 Image File Format
-(AVIF).  It can encode and decode all YUV formats and bit depths supported by
-AOM, including with alpha.")
+    (description "Libavif is a C implementation of @acronym{AVIF, the AV1 Image
+File Format}.  It can encode and decode all YUV formats and bit depths supported
+by AOM, including with alpha.")
     (home-page "https://github.com/AOMediaCodec/libavif")
     (license (list license:bsd-2    ; libavif itself
                    license:expat)))) ; cJSON in the test suite
 
 (define-public mtpaint
-  (let ((commit "03b1b0938067b88d86d9f1b1088730f1934d411e")
-        (revision "1"))
-    (package
-      (name "mtpaint")
-      ;; The author neither releases tarballs nor uses git version tags.
-      ;; Instead, author puts version in git commit title.
-      (version (git-version "3.49.25" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/wjaguar/mtPaint/")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0izm2wvj26566fd8mqvypr7bmv7jnq8qhp4760m7z2wrc4y8pjn1"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("gettext" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)
-         ("which" ,which)))
-      (inputs
-       `(("imlib2" ,imlib2)
-         ("libtiff" ,libtiff)
-         ("libpng" ,libpng)
-         ("libungif", libungif)
-         ("libjpeg", libjpeg-turbo)
-         ("libwebp" ,libwebp)
-         ("openjpeg" ,openjpeg)
-         ("lcms" ,lcms)
-         ("zlib", zlib)
-         ("glib" ,glib)
-         ;; support for gtk3 is in testing stage
-         ("gtk+" ,gtk+-2)))
-      (arguments
-       `(#:configure-flags
-         (list
-          ;; internationalized version
-          "intl"
-          ;; install man page
-          "man")
-         ;; no check target
-         #:tests? #f))
-      (home-page "http://mtpaint.sourceforge.net/")
-      (synopsis "Create pixel art and manipulate digital images")
-      (description
-       "Mtpaint is a graphic editing program which uses the GTK+ toolkit.
+  (package
+    (name "mtpaint")
+    ;; The author neither releases tarballs nor uses git version tags.
+    ;; Instead, author puts version in git commit title.
+    (version "3.49.27")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/wjaguar/mtPaint")
+             (commit "26751cd0336414e2f16cbe25c9fe2702f34e7b5c")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12mzai9pqvyb342m21rjz0jxiy75q24sjw6ax147pzy8frzkgd54"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("imlib2" ,imlib2)
+       ("libtiff" ,libtiff)
+       ("libpng" ,libpng)
+       ("libungif", libungif)
+       ("libjpeg", libjpeg-turbo)
+       ("libwebp" ,libwebp)
+       ("openjpeg" ,openjpeg)
+       ("lcms" ,lcms)
+       ("zlib", zlib)
+       ("glib" ,glib)
+       ;; Support for gtk3 is in the testing stage.
+       ("gtk+" ,gtk+-2)))
+    (arguments
+     `(#:configure-flags
+       (list "intl"                     ; build internationalized version
+             "man")                     ; build the man page
+       #:tests? #f))                    ; no test suite
+    (home-page "http://mtpaint.sourceforge.net/")
+    (synopsis "Create pixel art and manipulate digital images")
+    (description
+     "Mtpaint is a graphic editing program which uses the GTK+ toolkit.
 It can create and edit indexed palette or 24bit RGB images, offers basic
 painting and palette manipulation tools.  It also handles JPEG, JPEG2000,
 GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))

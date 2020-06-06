@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
@@ -1017,7 +1017,8 @@ tools, and more.")
                   (guix build utils)
                   (ice-9 regex)         ; for string-match
                   (srfi srfi-26))       ; for cut
-       #:make-flags (list "CC=gcc")
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases

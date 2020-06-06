@@ -1,0 +1,27 @@
+Subject: [PATCH] openjfx: Determine the version of Java in JDK_HOME
+
+Icedtea contains guix in its version, so build.gradle failes to run. Openjfx
+packaging is not trivial, so you will probably need to try build it with
+gradlew.
+
+---
+ build.gradle | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index df82f63..2c626cd 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -742,9 +742,9 @@ try {
+     if (inStream.readLine() != null) {
+         String v = inStream.readLine();
+         if (v != null) {
+-            int ib = v.indexOf(" (build ");
++            int ib = v.indexOf(" (guix build ");
+             if (ib != -1) {
+-                String ver = v.substring(ib + 8, v.size() - 1);
++                String ver = v.substring(ib + 13, v.size() - 1);
+
+                 defineProperty("jdkRuntimeVersion", ver)
+                 defineProperty("jdkVersion", jdkRuntimeVersion.split("-")[0])
+2.24.1

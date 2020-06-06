@@ -191,3 +191,11 @@ applications.  Applications built with NSS can support SSL v2 and v3, TLS,
 PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other
 security standards.")
     (license license:mpl2.0)))
+
+(define nss/fixed
+  (package
+    (inherit nss)
+    (source (origin
+              (inherit (package-source nss))
+              (patches (append (search-patches "nss-CVE-2020-12399.patch")
+                               (origin-patches (package-source nss))))))))

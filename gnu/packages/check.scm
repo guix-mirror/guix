@@ -396,7 +396,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.3.7")
+    (version "2.3.8")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -404,7 +404,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "134lx7pjnglrl4wdmyr9dz3rjb6d4ir6rvapg00gp52n44dbhnrq"))))
+                "16w907750jnp98vdzkn72lzwy1zyryaqvfi80lbdp398pj23rq65"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
@@ -584,14 +584,13 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
-        (base32
-         "0g1q6n7fkanjv7i1djzw62f46xf573jvza7afabh3baqjqxy7rpd"))))
+        (base32 "1444fdz5bj0k10nmhxv0bv2gfrfisi7hfzqdndb0pvhf4g3qq3qr"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1887,12 +1886,10 @@ unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
 
-;; Further releases, up to 2.4.3, have failing unit tests. See:
-;; https://github.com/PyCQA/pylint/issues/3198.
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.3.1")
+    (version "2.5.2")
     (source
      (origin
        (method git-fetch)
@@ -1902,8 +1899,11 @@ statements in the module it tests.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17vvzbcqmkhr4icq5p3737nbiiyj1y3g1pa08n9mb1bsnvxmqq0z"))))
+         "150x679mrlgm1s4ym7irf9mnsjilqyaakss4spc4pbrzkl11agnh"))))
     (build-system python-build-system)
+    ;; FIXME: Tests are failing since version 2.4.3, see:
+    ;; https://github.com/PyCQA/pylint/issues/3198.
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)
@@ -1912,7 +1912,8 @@ statements in the module it tests.")
      `(("python-astroid" ,python-astroid)
        ("python-isort" ,python-isort)
        ("python-mccabe" ,python-mccabe)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-toml" ,python-toml)))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
 errors")
@@ -1945,7 +1946,7 @@ possible to write plugins to add your own checks.")
                  (base32
                   "02a89d8a47s7nfiv1ady3j0sg2sbyja3np145brarfp5x9qxz9x2"))))
              (arguments
-              `(,@(package-arguments pylint)
+              `(,@(strip-keyword-arguments '(#:tests?) (package-arguments pylint))
                 #:phases
                 (modify-phases %standard-phases
                   (replace 'check

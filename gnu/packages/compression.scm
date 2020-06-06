@@ -875,7 +875,8 @@ extract such file systems.")
                       (symlink "pigz" (string-append bin  "/unpigz"))
                       (install-file "pigz.1" man)
                       #t))))
-       #:make-flags (list "CC=gcc")
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:test-target "tests"))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://zlib.net/pigz/")
@@ -1685,7 +1686,7 @@ of archives.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc")))
+       (list ,(string-append "CC=" (cc-for-target)))))
     (home-page "https://www.nongnu.org/lzip/lunzip.html")
     (synopsis "Small, stand-alone lzip decompressor")
     (description
@@ -1712,7 +1713,7 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc")))
+       (list ,(string-append "CC=" (cc-for-target)))))
     (home-page "https://www.nongnu.org/lzip/clzip.html")
     (synopsis "Small, stand-alone lzip compressor and decompressor")
     (description
@@ -2101,7 +2102,7 @@ file compression algorithm.")
 (define-public xarchiver
   (package
     (name "xarchiver")
-    (version "0.5.4.14")
+    (version "0.5.4.15")
     (source
      (origin
        (method git-fetch)
@@ -2110,7 +2111,7 @@ file compression algorithm.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1iklwgykgymrwcc5p1cdbh91v0ih1m58s3w9ndl5kyd44bwlb7px"))))
+        (base32 "0a3y54r5zp2c0cqm77r07qrl1vh200wvqmbhm35diy22fvkq5mwc"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -2118,7 +2119,7 @@ file compression algorithm.")
        ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; Hard-coded theme
+     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; hard-coded theme
        ("gtk+" ,gtk+)))
     (home-page "https://github.com/ib/xarchiver")
     (synopsis "Graphical front-end for archive operations")

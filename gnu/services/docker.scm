@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +53,10 @@
 loop-back communications.")
   (enable-proxy?
    (boolean #t)
-   "Enable or disable the user-land proxy (enabled by default)."))
+   "Enable or disable the user-land proxy (enabled by default).")
+  (debug?
+   (boolean #f)
+   "Enable or disable debug output."))
 
 (define %docker-accounts
   (list (user-group (name "docker") (system? #t))))
@@ -71,19 +75,24 @@ loop-back communications.")
         (mkdir-p #$state-dir))))
 
 (define (containerd-shepherd-service config)
-  (let* ((package (docker-configuration-containerd config)))
+  (let* ((package (docker-configuration-containerd config))
+         (debug? (docker-configuration-debug? config)))
     (shepherd-service
            (documentation "containerd daemon.")
            (provision '(containerd))
            (start #~(make-forkexec-constructor
-                     (list (string-append #$package "/bin/containerd"))
+                     (list (string-append #$package "/bin/containerd")
+                           #$@(if debug?
+                                  '("--log-level=debug")
+                                  '()))
                      #:log-file "/var/log/containerd.log"))
            (stop #~(make-kill-destructor)))))
 
 (define (docker-shepherd-service config)
   (let* ((docker (docker-configuration-docker config))
          (enable-proxy? (docker-configuration-enable-proxy? config))
-         (proxy (docker-configuration-proxy config)))
+         (proxy (docker-configuration-proxy config))
+         (debug? (docker-configuration-debug? config)))
     (shepherd-service
            (documentation "Docker daemon.")
            (provision '(dockerd))
@@ -101,6 +110,9 @@ loop-back communications.")
            (start #~(make-forkexec-constructor
                      (list (string-append #$docker "/bin/dockerd")
                            "-p" "/var/run/docker.pid"
+                           #$@(if debug?
+                                  '("--debug" "--log-level=debug")
+                                  '())
                            (if #$enable-proxy? "--userland-proxy" "")
                            "--userland-proxy-path" (string-append #$proxy
                                                                   "/bin/proxy"))

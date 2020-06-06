@@ -933,7 +933,7 @@ as a drop-in replacement of MySQL.")
 (define-public mariadb-connector-c
   (package
     (name "mariadb-connector-c")
-    (version "3.1.6")
+    (version "3.1.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -942,13 +942,12 @@ as a drop-in replacement of MySQL.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "083724f5daaqyzdcx508caz6fk2hs89jff85zg28ih43vxkvnrnj"))))
+                "0yrzhsxmjiwkhchagx8dymzhvxl3k5h40wn9wpicqjvgjb9k8523"))))
     (inputs
      `(("openssl" ,openssl)))
     (build-system cmake-build-system)
     (arguments
-     ;; No tests.
-     '(#:tests? #f))
+     '(#:tests? #f))                    ; no tests
     (home-page "https://mariadb.com/kb/en/mariadb-connector-c/")
     (synopsis "Client library to connect to MySQL or MariaDB")
     (description "The MariaDB Connector/C is used to connect applications
@@ -2078,16 +2077,16 @@ database.")
 (define-public lmdb
   (package
     (name "lmdb")
-    (version "0.9.24")
+    (version "0.9.25")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/LMDB/lmdb.git")
+             (url "https://git.openldap.org/openldap/openldap.git")
              (commit (string-append "LMDB_" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "088q6m8fvr12w43s461h7cvpg5hj8csaqj6n9pci150dz7bk5lxm"))))
+        (base32 "0i60zlca8r6fib23gdgl4c80gxpx24772ggpvz94yr7zaai4k11w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2099,7 +2098,7 @@ database.")
              (substitute* "Makefile"
                (("/usr/local") (assoc-ref outputs "out")))
             #t)))))
-    (home-page "https://symas.com/products/lightning-memory-mapped-database")
+    (home-page "https://symas.com/lmdb/")
     (synopsis "Lightning Memory-Mapped Database library")
     (description
      "The @dfn{Lightning Memory-Mapped Database} (LMDB) is a high-performance
@@ -2179,14 +2178,14 @@ on another machine, accessed via TCP/IP.")
 (define-public python-peewee
   (package
     (name "python-peewee")
-    (version "2.10.2")
+    (version "3.9.6")
       (source
         (origin
         (method url-fetch)
         (uri (pypi-uri "peewee" version))
         (sha256
          (base32
-          "10f2mrd5hw6rjklrzaix2lsxlgc8vx3xak54arcy6yd791zhchi3"))))
+          "1j4sh946k0736m7pd54z0y6i2hjhgg3kdllx1pwq8xkzzcgrx1xw"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ; Fails to import test data

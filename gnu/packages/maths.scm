@@ -4046,30 +4046,69 @@ evaluates expressions using the standard order of operations.")
 (define-public xaos
   (package
     (name "xaos")
-    (version "3.6")
+    (version "4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/xaos/XaoS/" version
-                                  "/xaos-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xaos-project/XaoS")
+                    (commit (string-append "release-" version))))
               (sha256
                (base32
-                "15cd1cx1dyygw6g2nhjqq3bsfdj8sj8m4va9n75i0f3ryww3x7wq"))))
+                "00110p5xscjsmn7avfqgydn656zbmdj3l3y2fpv9b4ihzpid8n7a"))))
     (build-system gnu-build-system)
-    (native-inputs `(("gettext" ,gettext-minimal)))
+    (native-inputs `(("gettext" ,gettext-minimal)
+                     ("qtbase" ,qtbase)
+                     ("qttools" ,qttools)))
     (inputs `(("libx11" ,libx11)
               ("zlib" ,zlib)
               ("libpng" ,libpng)
               ("gsl" ,gsl)))
+    ;; The upstream project file ("XaoS.pro") and the Makefile it generates are
+    ;; not enough for this package to install properly.  These phases fix that.
     (arguments
      `(#:tests? #f ;no "check" target
-       #:make-flags '("LOCALEDIR=$DATAROOTDIR/locale")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'make-qt-deterministic
+           (lambda _
+             ;; Make Qt deterministic.
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; The DESTDIR is originally set to install the xaos binary to
+               ;; the "bin" folder inside the build directory.  Setting make
+               ;; flags doesn't seem to change this.
+               (substitute* "XaoS.pro"
+                 (("DESTDIR.*$")
+                  (string-append "DESTDIR=" out "/bin")))
+               (substitute* "src/include/config.h"
+                 (("/usr/share/XaoS")
+                  (string-append out "/share/XaoS")))
+               (invoke "qmake"))))
+         (add-after 'install 'install-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share")))
+               (mkdir-p share)
+               (for-each
+                (lambda (folder)
+                  (copy-recursively folder
+                                    (string-append share "/XaoS/" folder)))
+                '("catalogs" "examples" "tutorial"))
+               (install-file "xdg/xaos.png"
+                             (string-append share "/pixmaps"))
+               (install-file "xdg/xaos.desktop"
+                             (string-append share "/applications")))
+             #t)))))
     (synopsis "Real-time fractal zoomer")
     (description "GNU XaoS is a graphical program that generates fractal
 patterns and allows you to zoom in and out of them infinitely in a fluid,
 continuous manner.  It also includes tutorials that help to explain how fractals
 are built.  It can generate many different fractal types such as the Mandelbrot
 set.")
-    (home-page "https://www.gnu.org/software/xaos/")
+    (home-page "https://xaos-project.github.io/")
     (license license:gpl2+)))
 
 (define-public hypre

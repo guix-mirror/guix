@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
@@ -140,18 +140,26 @@ highlighting your own code that seemed comprehensible when you wrote it.")
        (list (string-append "--with-ncurses="
                             (assoc-ref %build-inputs "ncurses"))
              (string-append "--with-sqlite3="
-                            (assoc-ref %build-inputs "sqlite")))
+                            (assoc-ref %build-inputs "sqlite"))
+             "--disable-static")
 
        #:phases
        (modify-phases %standard-phases
         (add-after 'install 'post-install
           (lambda* (#:key outputs #:allow-other-keys)
-            ;; Install the Emacs Lisp file in the right place.
+            ;; Install the plugin files in the right place.
             (let* ((out  (assoc-ref outputs "out"))
                    (data (string-append out "/share/gtags"))
+                   (vim  (string-append out "/share/vim/vimfiles/plugin"))
                    (lisp (string-append out "/share/emacs/site-lisp")))
-              (install-file (string-append data "/gtags.el") lisp)
-              (delete-file (string-append data "/gtags.el"))
+              (mkdir-p lisp)
+              (mkdir-p vim)
+              (rename-file (string-append data "/gtags.el")
+                           (string-append lisp "/gtags.el"))
+              (rename-file (string-append data "/gtags.vim")
+                           (string-append vim "/gtags.vim"))
+              (rename-file (string-append data "/gtags-cscope.vim")
+                           (string-append vim "/gtags-cscope.vim"))
               #t))))))
     (home-page "https://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
@@ -222,7 +230,7 @@ COCOMO model or user-provided parameters.")
 (define-public cloc
   (package
     (name "cloc")
-    (version "1.84")
+    (version "1.86")
     (source
      (origin
        (method git-fetch)
@@ -231,7 +239,7 @@ COCOMO model or user-provided parameters.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "14xikdwcr6pcnkk2i43zrsj88z8b3mrv0svbnbvxvarw1id83pnn"))))
+        (base32 "082gj2b3x11bilz8c572dd60vn6n0fhld5zhi7wk7g1wy9wlgm9w"))))
     (build-system gnu-build-system)
     (inputs
      `(("coreutils" ,coreutils)

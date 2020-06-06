@@ -370,50 +370,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.15")
+(define-public linux-libre-5.6-version "5.6.16")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "0kh34f9vdfsi9g83fa1i1926djyzfi466w02c4y4d46ljf9pkav5")))
+        (hash (base32 "1xvwk6yxi5nhiwhskpmr89a31286mw9hpm0y3l3i5ydswx6lnl15")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.43")
+(define-public linux-libre-5.4-version "5.4.44")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0i07g72138xdf1l8x593jndq0waf3fx7plz3m6n5f9fl885bjrr6")))
+        (hash (base32 "0fc4nsv1zwlknvfv1bzkjlq2vlx28wfl09hg2p7r8cn7a77bphlp")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.125")
+(define-public linux-libre-4.19-version "4.19.126")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0zmxs6q2rgssvsh76xq9xgcax7bps19x2448d1q1fj9pzc7g8hwq")))
+        (hash (base32 "129ziwvk3f4xh8jvnq2krajc0bnrl2zxffqsiz63j7p3vc57wakf")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.182")
+(define-public linux-libre-4.14-version "4.14.183")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "142v7qnfska86jqzilwq00kxdrq08iaaaw7f47xp9bnhb8fiy7b7")))
+        (hash (base32 "11c0vd2pwplm8wafich4zg2mnp10vvnap987c5jh96w1avpsyra2")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.225")
+(define-public linux-libre-4.9-version "4.9.226")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1s63aymgsc4lsysy9d972ps9cyrf6bncyy5wcpv5a3wbaj678iz5")))
+        (hash (base32 "1jj5ydz5cy87z7hrv54bkyl9739lpzja8580ngjhrip5iwb8q2j6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.225")
+(define-public linux-libre-4.4-version "4.4.226")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0pn66hf9yrjg15skq1inscr5m0slvgsd2qm8rg5id70llrb4jis9")))
+        (hash (base32 "1dwvm81i62b06jsl38spfn719zrsbwq5z8viwckrpw4ma4w9k0j1")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1789,7 +1789,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.5")
+    (version "5.7")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -1797,7 +1797,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "1zrhpzjlgfwfl8dd53llswmmharm5rbi0zch7lln5sjris69an4z"))))
+               "1n6cfz3i2krkyvxpdp3kmxhf7sy5xp0danzaiirbk5fdkfgvb15j"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1806,6 +1806,12 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
            (lambda _
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             ;; XXX These hang forever even if the test time-out is extended.
+             (substitute* "tests/Makefile.in"
+               (("^\tstrace-DD?D?\\.test \\\\.*") ""))
              #t)))
        ;; Don't fail if the architecture doesn't support different personalities.
        #:configure-flags '("--enable-mpers=check")
@@ -2073,7 +2079,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.5.0")
+    (version "5.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2081,7 +2087,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ywg70f98wgfai35jl47xzpjp45a6n7crja4vc8ql85cbi1l7ids"))))
+                "088gs56iqhdlpw1iqjwrss4zxd4zbl2wl8s2implrrdajjxcfpbj"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
@@ -2151,7 +2157,7 @@ inadequately in modern network environments, and both should be deprecated.")
       (home-page "http://net-tools.sourceforge.net/")
       (build-system gnu-build-system)
       (arguments
-       '(#:modules ((guix build gnu-build-system)
+       `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
                     (srfi srfi-1)
                     (srfi srfi-26))
@@ -2191,7 +2197,7 @@ inadequately in modern network environments, and both should be deprecated.")
 
          #:tests? #f                                ; no test suite
          #:make-flags (let ((out (assoc-ref %outputs "out")))
-                        (list "CC=gcc"
+                        (list ,(string-append "CC=" (cc-for-target))
                               (string-append "BASEDIR=" out)
                               (string-append "INSTALLNLSDIR=" out "/share/locale")
                               (string-append "mandir=/share/man")))))
@@ -2415,12 +2421,11 @@ configuration and monitoring interfaces.")
     (arguments
      `(#:make-flags
        (let* ((target ,(%current-target-system))
-              (gcc (if target (string-append target "-gcc") "gcc"))
               (pkg-config (if target
                               (string-append target "-pkg-config")
                               "pkg-config")))
          (list
-          (string-append "CC=" gcc)
+          ,(string-append "CC=" (cc-for-target))
           (string-append "PKG_CONFIG="
                          (assoc-ref %build-inputs "pkg-config")
                          "/bin/" pkg-config)
@@ -3016,7 +3021,7 @@ from the module-init-tools project.")
                         (install-file "contrib/notify_all_users.py" contrib)
                         #t))))
        #:make-flags (let* ((prefix (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
+                      (list ,(string-append "CC=" (cc-for-target))
                             (string-append "VERSION=v" ,version)
                             (string-append "PREFIX=" prefix)
                             (string-append "SYSCONFDIR=" prefix "/etc")))
@@ -3604,10 +3609,10 @@ create a firmware image suitable for the Linux kernel, and more.")
                 "000pvg995qy1b15ks59gd0klri55hb33kqpg5czy84hw1pbdgm0l"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; no 'check' target
+     `(#:tests? #f                      ; no 'check' target
        #:make-flags (list (string-append "prefix=" %output)
-                          "CC=gcc")
-       ;; no configure script
+                          ,(string-append "CC=" (cc-for-target)))
+       ;; No configure script.
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (inputs
      `(("perl" ,perl)))
@@ -3830,10 +3835,13 @@ isolation or root privileges.")
                 "03z1qm8zbgpxagk3994lvp24yqsshjibkwg05v9p3q1w7y48xrws"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "binprefix=" out)
-                            (string-append "manprefix=" out)
-                            "CC=gcc"))
+     `(#:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "binprefix=" out)
+               (string-append "manprefix=" out)
+               ,(string-append "CC=" (cc-for-target))
+               ;; Let Guix strip the binaries and not break cross-compilation.
+               "STRIP=true"))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))           ; no configure script
@@ -3868,15 +3876,17 @@ Translation (@dfn{SAT}) are also supported.")
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc")
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure) ; No ./configure script
+                  (delete 'configure)   ; no ./configure script
                   (replace 'install
                     (lambda _
                       (invoke "make" "install-spec" "PREFIX="
                               (string-append "DESTDIR=" %output)))))
-       #:tests? #f)) ; The tests require sysfs, which is not accessible from
-                     ; the build environment
+       ;; The tests require sysfs, which is not accessible from from the build
+       ;; environment
+       #:tests? #f))
     (synopsis "NVM-Express user space tooling for Linux")
     (description "Nvme-cli is a utility to provide standards compliant tooling
 for NVM-Express drives.  It was made specifically for Linux as it relies on the
@@ -4116,7 +4126,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
      `(("udev" ,eudev)))
     (arguments
      `(#:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list "CC=gcc"
+                      (list ,(string-append "CC=" (cc-for-target))
                             "INSTALL=install"
                             "CHECK_RUN_DIR=0"
                             ;; TODO: tell it where to find 'sendmail'
@@ -4335,12 +4345,13 @@ applications.")
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       '(#:make-flags
-         (list "CC=gcc" (string-append "prefix=" %output))
-         #:tests? #f ; no tests
+       `(#:make-flags
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "prefix=" %output))
+         #:tests? #f                    ; no tests
          #:phases
          (modify-phases %standard-phases
-           (delete 'configure) ; no configure script
+           (delete 'configure)          ; no configure script
            (add-after 'unpack 'fix-gnuplot-path
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((gnuplot (assoc-ref inputs "gnuplot")))
@@ -5469,14 +5480,14 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
 (define-public mcelog
   (package
     (name "mcelog")
-    (version "168")
+    (version "170")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.kernel.org/cgit/utils/cpu/mce/"
                                   "mcelog.git/snapshot/v" version ".tar.gz"))
               (sha256
                (base32
-                "1c4faayg1gcm3002b2fdrfnv76z92mvfzccvx8w9crjp0d17sp24"))
+                "1m11v1y7cvpm7hwsghj23z77ps1w5jzn8000iwiyxpb939h2km5l"))
               (file-name (string-append name "-" version ".tar.gz"))
               (modules '((guix build utils)))
               (snippet
@@ -5493,7 +5504,8 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "CC=gcc"
                             (string-append "prefix=" out)
-                            (string-append "DOCDIR=" out "/share/doc/mcelog")
+                            (string-append "DOCDIR=" out "/share/doc/"
+                                           ,name "-" ,version)
                             "etcprefix=$(DOCDIR)/examples"))
        ;; The tests will only run as root on certain supported CPU models.
        #:tests? #f))
@@ -5501,10 +5513,10 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (home-page "https://mcelog.org/")
     (synopsis "Machine check monitor for x86 Linux systems")
     (description
-     "The mcelog daemon is required by the Linux kernel to log memory, I/O, CPU,
-and other hardware errors on x86 systems.  It can also perform user-defined
-tasks, such as bringing bad pages off-line, when configurable error thresholds
-are exceeded.")
+     "The mcelog daemon logs memory, I/O, CPU, and other hardware errors on x86
+systems running the kernel Linux.  It can also perform user-defined tasks, such
+as bringing bad pages off-line, when configurable error thresholds are
+exceeded.")
     (license license:gpl2)))
 
 (define-public mtd-utils
@@ -6496,10 +6508,10 @@ interface to this kernel feature.")
         (base32 "0aijyxrqh01x0s80yr4cgxgd001iiqqph65pxvby7f0wz8lnxnqj"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f                      ; tests ask to be run as root
+     `(#:tests? #f                      ; tests ask to be run as root
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
-                            "CC=gcc"))
+                            ,(string-append "CC=" (cc-for-target))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-paths

@@ -58,12 +58,13 @@
 
 ;; This block was copied from make-linux-libre--only took the "modules_install"
 ;; part.
-(define* (install #:key inputs native-inputs outputs #:allow-other-keys)
+(define* (install #:key make-flags inputs native-inputs outputs
+                  #:allow-other-keys)
   (let* ((out (assoc-ref outputs "out"))
          (moddir (string-append out "/lib/modules")))
     ;; Install kernel modules
     (mkdir-p moddir)
-    (invoke "make" "-C"
+    (apply invoke "make" "-C"
             (string-append (assoc-ref inputs "linux-module-builder")
                            "/lib/modules/build")
             (string-append "M=" (getcwd))
@@ -76,7 +77,8 @@
             (string-append "INSTALL_PATH=" out)
             (string-append "INSTALL_MOD_PATH=" out)
             "INSTALL_MOD_STRIP=1"
-            "modules_install")))
+            "modules_install"
+            (or make-flags '()))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
@@ -84,7 +86,8 @@
     (replace 'build build)
     (replace 'install install)))
 
-(define* (linux-module-build #:key inputs (phases %standard-phases)
+(define* (linux-module-build #:key inputs
+                             (phases %standard-phases)
                              #:allow-other-keys #:rest args)
   "Build the given package, applying all of PHASES in order, with a Linux
 kernel in attendance."

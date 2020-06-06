@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
@@ -47,7 +47,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "19.03.7")
+(define %docker-version "19.03.9")
 
 (define-public python-docker-py
   (package
@@ -314,7 +314,7 @@ built-in registry server of Docker.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sik109lxmiwgrsnvfip1nnal1xkh8z1mlvys6aknjyh29ll1iq8"))
+        (base32 "1a9hkprkix5d7lqi88r8svvfpzh1qbzw9nrkp11lxrcf9wdan4hg"))
        (patches
         (search-patches "docker-fix-tests.patch"))))
     (build-system gnu-build-system)
@@ -592,7 +592,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "164l33npy8acdbbrz8vcyiwx18vi55wwwikkasg0w43b5bdhz8sx"))))
+       (base32 "1599ff7699p3m925rdyfg7gl3cga6gy0lli7qh2ybyiw2kwf4gj9"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"

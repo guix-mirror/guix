@@ -118,8 +118,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.1.0")
-        (commit "bdc801e1cfa8e436890da5bd755dd7759cb0f748")
-        (revision 4))
+        (commit "ea924134f819eef072ba7df9080d39de97fd73e6")
+        (revision 6))
     (package
       (name "guix")
 
@@ -135,7 +135,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1wf30g45kh4nmcapd4vrcl6m2wjzly7v7dv8z0r584770i2yh836"))
+                  "08likdidf3k1zqf8821h6a84dsrvgbdhridhkzpjymc2c884j0w4"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -322,7 +322,7 @@ $(prefix)/etc/init.d\n")))
                        ("guile" ,guile-3.0)
                        ("gnutls" ,gnutls)
                        ("guile-gcrypt" ,guile-gcrypt)
-                       ("guile-json" ,guile-json-3)
+                       ("guile-json" ,guile-json-4)
                        ("guile-sqlite3" ,guile-sqlite3)
                        ("guile-ssh" ,guile-ssh)
                        ("guile-git" ,guile-git)
@@ -371,9 +371,9 @@ $(prefix)/etc/init.d\n")))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
-       `(("gnutls" ,(if (%current-target-system) gnutls-3.6.13 guile3.0-gnutls))
+       `(("gnutls" ,(if (%current-target-system) gnutls-3.6.14 guile3.0-gnutls))
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-3)
+         ("guile-json" ,guile-json-4)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)))
@@ -542,14 +542,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.4")
+    (version "2.3.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "03fhbb8088sgz3709zd9n9rydavar79w87l9n4q9iimcw06nlqhw"))))
+               "1hbqsrp1ii2sfq8x2mahjrl2182qck76n8blrl1jfz3xq99m6i15"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("boost" ,boost)
@@ -982,7 +982,7 @@ environments.")
      `(("guix" ,guix)
        ("guile" ,guile-3.0)))
     (propagated-inputs
-     `(("guile-json" ,guile-json-3)
+     `(("guile-json" ,guile-json-4)
        ("guile-simple-zmq" ,guile-simple-zmq)
        ("guile-gcrypt" ,guile-gcrypt)))
     (synopsis "Guix kernel for Jupyter")

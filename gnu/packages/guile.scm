@@ -554,11 +554,24 @@ specification.  These are the main features:
                      ("guile" ,guile-3.0)))
     (inputs `(("guile" ,guile-3.0)))))
 
-(define-public guile2.2-json
-  (package-for-guile-2.2 guile-json-3))
-
 (define-public guile3.0-json
   (deprecated-package "guile3.0-json" guile-json-3))
+
+(define-public guile-json-4
+  (package
+    (inherit guile-json-3)
+    (name "guile-json")
+    (version "4.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0f25qak4i57c3x0q9hlrll911l57bb8nz57rjkd02mn2fc2h3730"))))))
+
+(define-public guile2.2-json
+  (package-for-guile-2.2 guile-json-4))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.

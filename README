@@ -18,27 +18,12 @@ Guix is based on the [[https://nixos.org/nix/][Nix]] package manager.
 
 * Requirements
 
-GNU Guix currently depends on the following packages:
+If you are building Guix from source, please see the manual for build
+instructions and requirements, either by running:
 
-  - [[https://gnu.org/software/guile/][GNU Guile 2.2.x]]
-  - [[https://notabug.org/cwebber/guile-gcrypt][Guile-Gcrypt]] 0.1.0 or later
-  - [[https://www.gnu.org/software/make/][GNU Make]]
-  - [[https://www.gnutls.org][GnuTLS]] compiled with guile support enabled
-  - [[https://notabug.org/guile-sqlite3/guile-sqlite3][Guile-SQLite3]], version 0.1.0 or later
-  - [[https://gitlab.com/guile-git/guile-git][Guile-Git]]
-  - [[http://www.zlib.net/][zlib]]
-  - [[https://savannah.nongnu.org/projects/guile-json/][Guile-JSON]]
+  info -f doc/guix.info "Requirements"
 
-Unless `--disable-daemon' was passed, the following packages are needed:
-
-  - [[https://gnupg.org/][GNU libgcrypt]]
-  - [[https://sqlite.org/][SQLite 3]]
-  - [[https://gcc.gnu.org][GCC's g++]]
-  - optionally [[http://www.bzip.org][libbz2]]
-
-When `--disable-daemon' was passed, you instead need the following:
-
-  - [[https://nixos.org/nix/][Nix]]
+or by checking the [[https://guix.gnu.org/manual/en/html_node/Requirements.html][web copy of the manual]].
 
 * Installation
 
@@ -46,7 +31,7 @@ See the manual for the installation instructions, either by running
 
   info -f doc/guix.info "Installation"
 
-or by checking the [[https://www.gnu.org/software/guix/manual/guix.html#Installation][web copy of the manual]].
+or by checking the [[https://guix.gnu.org/manual/en/html_node/Installation.html][web copy of the manual]].
 
 For information on installation from a Git checkout, please see the section
 "Building from Git" in the manual.

@@ -43,7 +43,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 ;; This is a module for packages related to physical hardware that don't (yet)
 ;; have a more specific home like gps.scm, security-token.scm, &c.
@@ -203,7 +204,7 @@ Memtest86+ cannot currently be used on computers booted with UEFI.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc")
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

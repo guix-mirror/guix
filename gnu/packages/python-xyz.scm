@@ -80,6 +80,7 @@
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;; Copyright © 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1206,17 +1207,25 @@ class.")
 (define-public python-can
   (package
     (name "python-can")
-    (version "3.3.2")
+    (version "3.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-can" version))
        (sha256
         (base32
-         "0bkbxi45sckzir6s0j3h01pkfn4vkz3ymih2zjp7zw77wz0vbvsz"))))
+         "123lz1bl6xf3d0fvxzr4bg4884yg4m9s21z6xd2m68zhnbv9rmpc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'relax-version-requirements
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("mock~=2\\.0") "mock")
+                        (("coverage<5") "coverage")
+                        (("pytest~=4\\.3") "pytest")
+                        (("hypothesis~=4\\.56") "hypothesis"))
+                      #t))
                   (add-after 'unpack 'fix-broken-tests
                     ;; The tests try to run two scripts it expects should be
                     ;; in PATH, but they aren't at this time (see:
@@ -1231,6 +1240,7 @@ class.")
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-codecov" ,python-codecov)
+       ("python-coverage" ,python-coverage)
        ("python-future" ,python-future)
        ("python-hypothesis" ,python-hypothesis)
        ("python-mock" ,python-mock)
@@ -1245,7 +1255,7 @@ class.")
 controller area network (CAN) support for Python developers; providing common
 abstractions to different hardware devices, and a suite of utilities for
 sending and receiving messages on a CAN bus.")
-    (license license:gpl3+)))
+    (license license:lgpl3+)))
 
 (define-public python-diskcache
   (package
@@ -3726,14 +3736,14 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python-toml
   (package
     (name "python-toml")
-    (version "0.9.4")
+    (version "0.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "toml" version))
        (sha256
         (base32
-         "0bdbpbip67wdm6c7xwc6mmbmskyradj4cdxn1iibj4fcx1nbv1lf"))))
+         "03wbqm5cn685cwx2664hjdpz370njl7lf0yal8s0dkp5w4mn2swj"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                     ;no tests suite in release
@@ -5082,14 +5092,14 @@ where key might be occurred more than once in the container.")
 (define-public python-orderedmultidict
   (package
     (name "python-orderedmultidict")
-    (version "0.7.11")
+    (version "1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "orderedmultidict" version))
         (sha256
           (base32
-            "0dls862ibm7qbq4fnvwx0xn1v9hwyzywbff8xjjdr42dd75208yw"))))
+            "1idjbl933avgaadscrjw1np3xkvnz3phq0l8vw5qs0rqcjx9b65q"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -7326,14 +7336,13 @@ It is written entirely in Python.")
 (define-public python-backports-csv
   (package
     (name "python-backports-csv")
-    (version "1.0.5")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "backports.csv" version))
        (sha256
-        (base32
-         "1imzbrradkfn8s2m1qcimyn74dn1mz2p3j381jljn166rf2i6hlc"))))
+        (base32 "0vdx5jlhs91iizc8j8l8811nqprwvdx39pgkdc82w2qkfgzxyxqj"))))
     (build-system python-build-system)
     (home-page "https://github.com/ryanhiebert/backports.csv")
     (synopsis "Backport of Python 3's csv module for Python 2")
@@ -8996,17 +9005,18 @@ interactive computing.")
 (define-public python-widgetsnbextension
   (package
     (name "python-widgetsnbextension")
-    (version "3.4.2")
+    (version "3.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "widgetsnbextension" version))
        (sha256
         (base32
-         "0rc2nivdy7k4m3vljx7wdh2jh11djapcgwhvzlbs0isl8gl8nqgs"))))
+         "1ismyaxbv9d56yqqqb8xl58hg0iq0bbyy014a53y1g3hfbc8g7q7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
+     `(("python-ipykernel"
+        ,(prompt-toolkit-2-instead-of-prompt-toolkit python-ipykernel))
        ("python-notebook" ,python-notebook)))
     (native-inputs
      `(("python-certifi" ,python-certifi)
@@ -9023,17 +9033,18 @@ notebooks.")
 (define-public python-ipywidgets
   (package
     (name "python-ipywidgets")
-    (version "5.2.2")
+    (version "7.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipywidgets" version))
        (sha256
         (base32
-         "1lk0qrr5l9a0z7qkkn30hv5832whxwxymf1l576fmmad0n7hkxms"))))
+         "15sww2mvnkqlvx55gwa82v05062a8j1xpncnqna4k9sl53hgcig9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipython" ,python-ipython)
+     `(("python-ipython" ,(prompt-toolkit-2-instead-of-prompt-toolkit
+                           python-ipython))
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
     (native-inputs
@@ -9053,19 +9064,20 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
-    (version "6.0.0")
+    (version "6.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_console" version))
        (sha256
         (base32
-         "1xdjw11cppf1fxvwkw2bk13ckkwas3bdah8baingn9296mvfi31h"))))
+         "06s3kr5vx0l1y1b7fxb04dmrppscl7q69sl9yyfr0d057d1ssvkg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
+     `(("python-ipykernel" ,(prompt-toolkit-2-instead-of-prompt-toolkit
+        python-ipykernel))
        ("python-jupyter-client" ,python-jupyter-client)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-pygments" ,python-pygments)))
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -12131,14 +12143,14 @@ collections of data.")
 (define-public python-prompt-toolkit
   (package
     (name "python-prompt-toolkit")
-    (version "2.0.7")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "prompt_toolkit" version ".tar.gz"))
+       (uri (pypi-uri "prompt_toolkit" version))
        (sha256
         (base32
-         "0fgacqk73w7s932vy46pan2yp8rvjmlkag20xvaydh9mhf6h85zx"))))
+         "1j3x5s4gp4ih73sbcni0a0vffbzvrxbrbnkvb3fzjgxn810ilgan"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -12152,12 +12164,11 @@ collections of data.")
              (add-installed-pythonpath inputs outputs)
              (invoke "py.test"))))))
     (propagated-inputs
-     `(("python-wcwidth" ,python-wcwidth)
-       ("python-six" ,python-six)
-       ("python-pygments" ,python-pygments)))
+     `(("python-wcwidth" ,python-wcwidth)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
-    (home-page "https://github.com/jonathanslenders/python-prompt-toolkit")
+    (home-page
+     "https://github.com/prompt-toolkit/python-prompt-toolkit")
     (synopsis "Library for building command line interfaces in Python")
     (description
      "Prompt-Toolkit is a library for building interactive command line
@@ -12167,11 +12178,31 @@ code completion, incremental search, support for Chinese double-width
 characters, mouse support, and auto suggestions.")
     (license license:bsd-3)))
 
+(define-public python-prompt-toolkit-2
+  (package (inherit python-prompt-toolkit)
+    (name "python-prompt-toolkit")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "prompt_toolkit" version))
+       (sha256
+        (base32
+         "0fgacqk73w7s932vy46pan2yp8rvjmlkag20xvaydh9mhf6h85zx"))))
+    (propagated-inputs
+     `(("python-wcwidth" ,python-wcwidth)
+       ("python-six" ,python-six)
+       ("python-pygments" ,python-pygments)))))
+
+(define-public prompt-toolkit-2-instead-of-prompt-toolkit
+  (package-input-rewriting/spec
+   `(("python-prompt-toolkit" . ,(const python-prompt-toolkit-2)))))
+
 (define-public python2-prompt-toolkit
-  (package-with-python2 python-prompt-toolkit))
+  (package-with-python2 python-prompt-toolkit-2))
 
 (define-public python-prompt-toolkit-1
-  (package (inherit python-prompt-toolkit)
+  (package (inherit python-prompt-toolkit-2)
     (version "1.0.15")
     (source
      (origin
@@ -13883,37 +13914,22 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.3.3")
+    (version "2.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
-        (base32 "0fnibsl2cb5mvzbfm7sycj85smx48f8w8m7ks1sqlmpr9ps0gski"))))
+        (base32 "1h99jal7ax07xna1djw5z7hpgb8vjrl3hrrg49p1phljwniww5sc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-six" ,python-six)
-       ("python-typed-ast" ,python-typed-ast)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
-       ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'remove-spurious-test
-           (lambda _
-             ;; This can be removed after upgrading from python-3.7
-             ;; https://github.com/PyCQA/astroid/issues/593
-             ;; https://bugs.python.org/issue34056
-             (delete-file "astroid/tests/unittest_modutils.py")
-             #t))
-         (replace 'check
-           (lambda _
-             (invoke "pytest" "astroid"))))))
     (home-page "https://github.com/PyCQA/astroid")
     (synopsis "Common base representation of python source code for pylint and
 other projects")

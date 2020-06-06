@@ -96,6 +96,8 @@
 
    (eval . (put 'call-with-progress-reporter 'scheme-indent-function 1))
    (eval . (put 'with-temporary-git-repository 'scheme-indent-function 2))
+   (eval . (put 'with-environment-variables 'scheme-indent-function 1))
+   (eval . (put 'with-fresh-gnupg-setup 'scheme-indent-function 1))
 
    ;; This notably allows '(' in Paredit to not insert a space when the
    ;; preceding symbol is one of these.

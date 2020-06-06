@@ -386,7 +386,10 @@ to open the application in a web browser, for offline usage.")
                             Type=Application~%"
                            out)))
                #t))))))
-    (inputs `(("python-pyqt" ,python-pyqt)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (inputs
+     `(("python-pyqt" ,python-pyqt)))
     (synopsis "School tools for physically disabled children")
     (description "ToutEnClic is intended to facilitate the schooling
 of physically disabled children in ordinary schools.  It is both
@@ -606,14 +609,14 @@ Portuguese, Spanish and Italian.")
 (define-public fet
   (package
     (name "fet")
-    (version "5.44.7")
+    (version "5.44.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
                            "fet-" version ".tar.bz2"))
        (sha256
-        (base32 "19b22brpb2mpvg14c2a0xmv8ipq5jg7yjmly8y3gfy8gmc3wqg5m"))))
+        (base32 "1i59xpkdnrd3qzgqs11vsws57g33zvkad5q3an56vd94aw7z3kpw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Alex ter Weele <alex.ter.weele@gmail.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,15 +60,15 @@ an LDAP server.")
 (define-public synapse
   (package
     (name "synapse")
-    (version "1.11.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "matrix-synapse" version))
               (sha256
                (base32
-                "0cqbwcz0fi4w413s1kcxvf696qi4n46n1k4ggnygqri5yq26qlfy"))))
+                "09drdqcjvpk9s3hq5rx9yxsxq0wak5fg5gfaiqfnbnxav2c2v7kq"))))
     (build-system python-build-system)
-    ;; TODO I think there are custom tests
+    ;; TODO Run tests with ‘PYTHONPATH=. trial3 tests’.
     (propagated-inputs
      `(("python-simplejson" ,python-simplejson) ; not attested but required
        ;; requirements (synapse/python_dependencies.py)
@@ -100,6 +101,7 @@ an LDAP server.")
        ("python-bleach" ,python-bleach)
        ("python-typing-extensions" ,python-typing-extensions)
        ;; conditional requirements (synapse/python_dependencies.py)
+       ;;("python-hiredis" ,python-hiredis)
        ("python-matrix-synapse-ldap3" ,python-matrix-synapse-ldap3)
        ("python-psycopg2" ,python-psycopg2)
        ("python-jinja2" ,python-jinja2)

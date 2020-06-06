@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -246,14 +247,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02lbc8z5gd8v8wfi4yh1zww8mk03w0zcwnmk4l4p3vpjlvlb63ll"))))
+                "0x9zr0x3xvk4qkb6jnda451d5iyrl06cz1bjzjsm0lxvjj3fabyk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -434,7 +435,7 @@ graphs and can export its output to different formats.")
 (define-public facter
   (package
     (name "facter")
-    (version "4.0.24")
+    (version "4.0.25")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -443,7 +444,7 @@ graphs and can export its output to different formats.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1n8yd2p7m0jf0wld6q43f2gqxyz8fiamz3p79wbl53q5qih0vba2"))))
+                "04nbk9rn5lfhbivsx68dggsp05czm7mzfr1i7yv6168bl92d233y"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1456,6 +1457,54 @@ commands and their arguments.")
     ;; See <http://www.sudo.ws/sudo/license.html>.
     (license license:x11)))
 
+(define-public opendoas
+  (package
+    (name "opendoas")
+    (version "6.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Duncaen/OpenDoas.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07kkc5729p654jrgfsc8zyhiwicgmq38yacmwfvay2b3gmy728zn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; The configure script doesn't accept most of the default flags.
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             ;; The configure script can only be told which compiler to use
+             ;; through environment variables.
+             (setenv "CC" ,(cc-for-target))
+             (apply invoke "./configure" configure-flags)))
+         (add-before 'install 'fix-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "bsd.prog.mk"
+               (("^\tchown.*$") ""))
+             #t)))
+       #:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             ;; Nothing is done with this value (yet?) but it's supported.
+             ;; (string-append "--target=" (or ,(%current-target-system) ""))
+             "--with-timestamp")
+       ;; Compiler choice is not carried over from the configure script.
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:tests? #f))                 ; no test suite
+    (native-inputs
+     `(("bison" ,bison)))
+    (home-page "https://github.com/Duncaen/OpenDoas")
+    (synopsis "Portable version of OpenBSD's doas command")
+    (description "Doas is a minimal replacement for the venerable sudo.  It was
+initially written by Ted Unangst of the OpenBSD project to provide 95% of the
+features of sudo with a fraction of the codebase.")
+    (license (list license:bsd-3        ; libbsd/*
+                   license:isc))))      ; everything else
+
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
@@ -1756,7 +1805,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200430")
+    (version "20200528")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1764,7 +1813,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hiaz9lrmjzdbi5zl0ajfflja41cixzx2j76iyx02qbjlmy9cfjc"))))
+                "01ajxnz9dpnvdbib7yv20dw21a1yyfgwiw3whg0xi57cf4app2md"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -3401,7 +3450,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.1.00-1")
+      (version "3.1.01-1")
       (source
        (origin
          (method git-fetch)
@@ -3410,7 +3459,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "0md6yfd297l8695g0rsbs4mm74dc3k00rfjl4x2n4i33mkylp6qa"))))
+          (base32 "0r204w0r06ibdr4dck7yw2nmvj7xq68bjr7xwwiy7liqdml0n0yc"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

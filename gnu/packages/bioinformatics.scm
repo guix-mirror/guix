@@ -475,20 +475,6 @@ BED, GFF/GTF, VCF.")
                          (find-files "bin" ".*")))
              #t)))))))
 
-;; Needed for pybedtools.
-(define-public bedtools-2.26
-  (package (inherit bedtools)
-    (name "bedtools")
-    (version "2.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/arq5x/bedtools2/releases/"
-                                  "download/v" version "/"
-                                  "bedtools-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0jhavwifnf7lmkb11h9y7dynr8d699h0rd2l52j1pfgircr2zwv5"))))))
-
 (define-public pbbam
   (package
     (name "pbbam")
@@ -806,12 +792,13 @@ intended to behave exactly the same as the original BWK awk.")
        ;; See https://github.com/daler/pybedtools/issues/192
        #:phases
        (modify-phases %standard-phases
-         ;; See https://github.com/daler/pybedtools/issues/261
          (add-after 'unpack 'disable-broken-tests
            (lambda _
-             ;; This test (pybedtools.test.test_scripts.test_venn_mpl) needs a
-             ;; graphical environment.
              (substitute* "pybedtools/test/test_scripts.py"
+               ;; This test freezes.
+               (("def test_intron_exon_reads")
+                "def _do_not_test_intron_exon_reads")
+               ;; This test fails in the Python 2 build.
                (("def test_venn_mpl")
                 "def _do_not_test_venn_mpl"))
              (substitute* "pybedtools/test/test_helpers.py"
@@ -868,7 +855,7 @@ intended to behave exactly the same as the original BWK awk.")
              (mkdir-p "/tmp/test")
              (copy-recursively "pybedtools/test" "/tmp/test")
              (with-directory-excursion "/tmp/test"
-               (invoke "pytest")))))))
+               (invoke "pytest" "-v" "--doctest-modules")))))))
     (propagated-inputs
      `(("bedtools" ,bedtools)
        ("samtools" ,samtools)
@@ -984,6 +971,64 @@ e.g. microbiome samples, genomes, metagenomes.")
                  (substitute* "setup.py"
                    (("install_requires.append\\(\"pyqi\"\\)") "pass"))
                  #t)))))))))
+
+(define-public python-pairtools
+  (package
+    (name "python-pairtools")
+    (version "0.3.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mirnylab/pairtools")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gr8y13q7sd6yai6df4aavl2470n1f9s3cib6r473z4hr8hcbwmc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-references
+           (lambda _
+             (substitute* '("pairtools/pairtools_merge.py"
+                            "pairtools/pairtools_sort.py")
+               (("/bin/bash") (which "bash")))
+             #t))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (with-directory-excursion "/tmp"
+               (invoke "pytest" "-v")))))))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("htslib" ,htslib)               ; for bgzip, looked up in PATH
+       ("samtools" ,samtools)           ; looked up in PATH
+       ("lz4" ,lz4) ; for lz4c
+       ("python-click" ,python-click)
+       ("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/mirnylab/pairtools")
+    (synopsis "Process mapped Hi-C data")
+    (description "Pairtools is a simple and fast command-line framework to
+process sequencing data from a Hi-C experiment.  Process pair-end sequence
+alignments and perform the following operations:
+
+@itemize
+@item detect ligation junctions (a.k.a. Hi-C pairs) in aligned paired-end
+  sequences of Hi-C DNA molecules
+@item sort @code{.pairs} files for downstream analyses
+@item detect, tag and remove PCR/optical duplicates
+@item generate extensive statistics of Hi-C datasets
+@item select Hi-C pairs given flexibly defined criteria
+@item restore @code{.sam} alignments from Hi-C pairs.
+@end itemize
+")
+    (license license:expat)))
 
 (define-public bioperl-minimal
   (let* ((inputs `(("perl-module-build" ,perl-module-build)
@@ -8702,9 +8747,9 @@ library implementing most of the pipeline's features.")
     (inputs
      `(("r-minimal" ,r-minimal)
        ("r-rcas" ,r-rcas)
-       ("guile-next" ,guile-2.2)
+       ("guile" ,guile-2.2)
        ("guile-json" ,guile-json-1)
-       ("guile-redis" ,guile-redis)))
+       ("guile-redis" ,guile2.2-redis)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/BIMSBbioinfo/rcas-web")
@@ -13743,18 +13788,31 @@ bound.")
 (define-public python-pypairix
   (package
     (name "python-pypairix")
-    (version "0.3.6")
+    (version "0.3.7")
+    ;; The tarball on pypi does not include the makefile to build the
+    ;; programs.
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "pypairix" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/4dn-dcic/pairix.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0zs92b74s5v4xy2h16s15f3z6l4nnbw8x8zyif7xx5xpafjn0xss"))))
+         "1snr3lrmsld8sy77ng6ba6wcmd33xjccf1l2f3m6pi29xis9nd6p"))))
     (build-system python-build-system)
-    ;; FIXME: the tests fail because test.support cannot be loaded:
-    ;; ImportError: cannot import name 'support'
-    (arguments '(#:tests? #f))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-programs
+           (lambda _ (invoke "make")))
+         (add-after 'install 'install-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (copy-recursively "bin" (string-append
+                                      (assoc-ref outputs "out")
+                                      "/bin"))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/4dn-dcic/pairix")

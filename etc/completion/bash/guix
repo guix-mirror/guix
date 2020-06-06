@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -115,6 +115,24 @@ _guix_is_dash_m ()
 	     esac }
 }
 
+_guix_is_dash_C ()
+{
+    [ "${COMP_WORDS[$COMP_CWORD - 1]}" = "-C" ] \
+	|| { case "${COMP_WORDS[$COMP_CWORD]}" in
+		 --channels=*)  true;;
+		 *)             false;;
+	     esac }
+}
+
+_guix_is_dash_p ()
+{
+    [ "${COMP_WORDS[$COMP_CWORD - 1]}" = "-p" ] \
+	|| { case "${COMP_WORDS[$COMP_CWORD]}" in
+		 --profile=*)   true;;
+		 *)             false;;
+	     esac }
+}
+
 _guix_complete_file ()
 {
     # Let Readline complete file names.
@@ -129,6 +147,17 @@ _guix_complete_pid ()
 }
 
 declare _guix_subcommands
+
+_guix_complete_subcommand ()
+{
+    if [ -z "$_guix_subcommands" ]
+    then
+	# Cache the list of subcommands to speed things up.
+	_guix_subcommands="$(guix --help 2> /dev/null \
+                                     | grep '^  ' | cut -c 2-)"
+    fi
+    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
+}
 
 _guix_complete ()
 {
@@ -147,13 +176,7 @@ _guix_complete ()
 
     case $COMP_CWORD in
 	1)
-	    if [ -z "$_guix_subcommands" ]
-	    then
-		# Cache the list of subcommands to speed things up.
-		_guix_subcommands="$(guix --help 2> /dev/null \
-                                     | grep '^  ' | cut -c 2-)"
-	    fi
-	    COMPREPLY=($(compgen -W "$_guix_subcommands" -- "$word_at_point"))
+	    _guix_complete_subcommand
 	    ;;
 	*)
 	    if _guix_is_command "package"
@@ -169,13 +192,28 @@ _guix_complete ()
 		fi
 	    elif _guix_is_command "install"
 	    then
-		_guix_complete_available_package "$word_at_point"
+                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
+                then
+                    _guix_complete_file
+		else
+		    _guix_complete_available_package "$word_at_point"
+		fi
 	    elif _guix_is_command "remove"
 	    then
-		_guix_complete_installed_package "$word_at_point"
+                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
+                then
+                    _guix_complete_file
+		else
+		    _guix_complete_installed_package "$word_at_point"
+		fi
 	    elif _guix_is_command "upgrade"
 	    then
-		_guix_complete_installed_package "$word_at_point"
+                if _guix_is_dash_L || _guix_is_dash_m || _guix_is_dash_p
+                then
+                    _guix_complete_file
+		else
+		    _guix_complete_installed_package "$word_at_point"
+		fi
             elif _guix_is_command "build"
             then
                 if _guix_is_dash_L || _guix_is_dash_m
@@ -193,6 +231,20 @@ _guix_complete ()
 		    2) _guix_complete_subcommand;;
 		    *) _guix_complete_file;; # TODO: restrict to *.scm
 		esac
+            elif _guix_is_command "pull"
+            then
+                if _guix_is_dash_C || _guix_is_dash_p
+                then
+                    _guix_complete_file
+                fi
+            elif _guix_is_command "time-machine"
+            then
+                if _guix_is_dash_C
+                then
+                    _guix_complete_file
+		else
+		    _guix_complete_subcommand
+                fi
 	    elif _guix_is_command "container"
 	    then
 		case $COMP_CWORD in

@@ -626,8 +626,9 @@ tired of cows, a variety of other ASCII-art messengers are available.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ;; no check target
-         #:make-flags (list "CC=gcc")
+       `(#:tests? #f                    ; no check target
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target)))
          #:phases
          (modify-phases %standard-phases
            (delete 'bootstrap)
@@ -2053,7 +2054,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.6")
+    (version "6.2.7")
     (source
      (origin
        (method url-fetch)
@@ -2061,7 +2062,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "0kxhdv01ia91v2y0cmzbll391ns2vbmn65jjrv37h4s1srszh5yn"))))
+         "0ilq4bfl0lwyzf11q7n2skydjhalfn3bgxhrp5hjxs5bc5d6fdp5"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
@@ -6387,7 +6388,7 @@ original.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.22.0")
+    (version "2.28.0")
     (source
      (origin
        (method git-fetch)
@@ -6396,8 +6397,7 @@ original.")
              (commit (string-append "fortune-mod-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17h2g35j8nzljsqaqhrsx75jakbmlqnsa150g2xw414fcbnjbyps"))))
+        (base32 "1ppzgnffgdcmq6fq4gmdq2ig10ip2bnfgklkb3i8nc6bdxm7pb89"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"

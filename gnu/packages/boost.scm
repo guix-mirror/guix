@@ -322,7 +322,7 @@ Boost.Thread.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nayaqshhzr1n6jj43bpvvay36d5gn075h0b95psii5x8ingszdk"))))
+                "13i5j43nggb46i6qpaf7gk53i7zp7pimphl7sydyfqz2m9yx5cdy"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

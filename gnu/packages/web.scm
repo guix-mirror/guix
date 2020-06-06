@@ -1191,7 +1191,7 @@ other systems that want to manipulate WebAssembly files.")
 (define-public websocketpp
   (package
     (name "websocketpp")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -1200,8 +1200,8 @@ other systems that want to manipulate WebAssembly files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12ffczcrryh74c1xssww35ic6yiy2l2xgdd30lshiq9wnzl2brgy"))
-       (patches (search-patches "websocketpp-fix-for-boost-1.70.patch"))))
+        (base32 "1ww4fhl8qf12hkv6jaild8zzsygdspxm1gqpk2f63gv1xfi31wpm"))
+       (patches (search-patches "websocketpp-fix-for-cmake-3.15.patch"))))
     (build-system cmake-build-system)
     (inputs `(("boost" ,boost)
               ("openssl" ,openssl)))
@@ -4863,15 +4863,6 @@ NetSurf project.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'include-PERL5LIB-in-wrapper
-           (lambda _
-             (substitute* "IkiWiki/Wrapper.pm"
-               (("^@wrapper\\_hooks")
-                (string-append
-                 "@wrapper_hooks\n"
-                 "        addenv(\"PERL5LIB\", \""
-                 (getenv "PERL5LIB")
-                 "\");")))))
          (add-after 'patch-source-shebangs 'patch-Makefiles
            (lambda _
              (substitute* "Makefile.PL"
@@ -4889,11 +4880,31 @@ NetSurf project.")
                      "touch" "{}" "+")
              #t))
          (add-before 'check 'pre-check
-           ;; XDG_DATA_DIRS is needed by the podcast.t test.
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Six tests use IPC::Run.  For these tests the PERL5LIB
+             ;; variable is needed in the runtime environment and also
+             ;; in the search path list in the setup file.
+             (substitute*
+              '("t/aggregate-file.t" "t/git-cgi.t" "t/git-untrusted.t"
+                "t/passwordauth.t" "t/relativity.t" "t/wrapper-environ.t")
+              (("(.*)\"perl\"(.*)$" _ prefix suffix)
+               (string-append prefix "qw(env), 'PERL5LIB='.$ENV{PERL5LIB}"
+                              ", qw(perl)" suffix))
+              (("(.*) PERL5LIB=(.*) perl(.*)$" _ prefix middle suffix)
+               (string-append prefix "), 'PERL5LIB='.$ENV{PERL5LIB}.':"
+                              middle "', qw(perl" suffix))
+              (("(.*)setup(.* )getcwd(.*)$" _ prefix middle suffix)
+               (string-append prefix "setup" middle
+                              "$ENV{PERL5LIB}.':'.getcwd" suffix))
+              (("^ENV(.*): '(.*)$" _ middle suffix)
+               (string-append "ENV" middle
+                              ": '$ENV{PERL5LIB}:" suffix)))
+             ;; XDG_DATA_DIRS is needed by the podcast.t test.
              (setenv "XDG_DATA_DIRS"
                      (string-append (assoc-ref inputs "shared-mime-info")
                                     "/share"))
+             ;; CC is needed by IkiWiki/Wrapper.pm.
+             (setenv "CC" "gcc")
              #t))
          (add-after 'install 'wrap-programs
            (lambda* (#:key outputs #:allow-other-keys)
@@ -4916,28 +4927,29 @@ NetSurf project.")
     (inputs
      `(("python" ,python-wrapper)
        ("perl-authen-passphrase" ,perl-authen-passphrase)
-       ("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
-       ("perl-cgi-session" ,perl-cgi-session)
        ("perl-cgi-simple" ,perl-cgi-simple)
        ("perl-db-file" ,perl-db-file)
        ("perl-file-mimeinfo" ,perl-file-mimeinfo)
        ("perl-html-tagset" ,perl-html-tagset)
        ("perl-image-magick" ,perl-image-magick)
+       ("perl-ipc-run" ,perl-ipc-run)
        ("perl-lwpx-paranoidagent" ,perl-lwpx-paranoidagent)
-       ("perl-mail-sendmail" ,perl-mail-sendmail)
-       ("perl-timedate" ,perl-timedate)
        ("perl-xml-feed" ,perl-xml-feed)
        ("perl-xml-sax" ,perl-xml-sax)
-       ("perl-xml-simple" ,perl-xml-simple)
        ("perl-xml-twig" ,perl-xml-twig)
        ("po4a" ,po4a)))
     (propagated-inputs
-     `(("perl-html-parser" ,perl-html-parser)
+     `(("perl-cgi-formbuilder" ,perl-cgi-formbuilder)
+       ("perl-cgi-session" ,perl-cgi-session)
+       ("perl-html-parser" ,perl-html-parser)
        ("perl-html-scrubber" ,perl-html-scrubber)
        ("perl-html-template" ,perl-html-template)
        ("perl-json" ,perl-json)
+       ("perl-mail-sendmail" ,perl-mail-sendmail)
        ("perl-text-markdown-discount" ,perl-text-markdown-discount)
+       ("perl-timedate" ,perl-timedate)
        ("perl-uri" ,perl-uri)
+       ("perl-xml-simple" ,perl-xml-simple)
        ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
     (home-page "https://ikiwiki.info/")
     (synopsis "Wiki compiler, capable of generating HTML")
@@ -7347,7 +7359,7 @@ compressed JSON header blocks.
       (propagated-inputs
        `(("guile" ,guile-3.0)
          ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json-3)))
+         ("guile-json" ,guile-json-4)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages

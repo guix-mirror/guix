@@ -2486,10 +2486,10 @@ new Date();"))
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
-                     (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
-                     (changeset (string-append
-                                  (string-join (string-split version #\.) "u")
-                                  "-ga"))))
+                    (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
+                    (changeset (string-append
+                                (string-join (string-split version #\.) "u")
+                                "-ga"))))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
               (snippet
@@ -2499,7 +2499,8 @@ new Date();"))
                   #t))
               (sha256
                (base32
-                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))))
+                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))
+              (patches (search-patches "java-openjfx-build-jdk_version.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-openjfx.jar"

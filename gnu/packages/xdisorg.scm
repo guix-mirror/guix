@@ -27,7 +27,7 @@
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
-;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2019, 2020 Josh Holland <josh@inv.alid.pw>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 David Wilson <david@daviwil.com>
@@ -201,7 +201,7 @@ program.")
              (invoke "make"
                      (string-append "DESTDIR=" (assoc-ref outputs "out"))
                      "PREFIX="
-                     "BASH_COMPLETIONS_DIR=etc/bash_completiond.d"
+                     "BASH_COMPLETIONS_DIR=etc/bash_completion.d"
                      "install"
                      "TARGETS=autorandr launcher manpage bash_completion"))))))
     (synopsis "Auto-detect connected displays and load appropriate setup")
@@ -215,7 +215,7 @@ used to further tweak the behaviour of the different profiles.")
 (define-public bemenu
   (package
     (name "bemenu")
-    (version "0.2.0")
+    (version "0.4.1")
     (source
      (origin
        (method git-fetch)
@@ -224,10 +224,18 @@ used to further tweak the behaviour of the different profiles.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0piax49az5kp96r1g6dcgj87fi6p4jl286wlkxsdvljzpkn8q6gv"))))
-    (build-system cmake-build-system)
+        (base32 "1fjcs9d3533ay3nz79cx3c0lmy2chgragr2lhsy0xl2ckr0iins0"))))
+    (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("-DBEMENU_WAYLAND_RENDERER=ON")))
+     '(#:tests? #f
+       #:make-flags (list "CC=gcc"
+                          "CFLAGS=-O2 -fPIC"
+                          (string-append "LDFLAGS=-Wl,-rpath="
+                                         (assoc-ref %outputs "out") "/lib")
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (inputs
      `(("cairo" ,cairo)
        ("libx11" ,libx11)
@@ -246,7 +254,7 @@ used to further tweak the behaviour of the different profiles.")
      "bemenu is a dynamic menu which allows the user to flexibly select from a
 list of options (usually programs to launch).  It renders the menu graphically
 with X11 or Wayland, or in a text terminal with ncurses.")
-    (license (list license:gpl3+        ; client program[s] and other sources
+    (license (list license:gpl3+ ; client program[s] and other sources
                    license:lgpl3+))))   ; library and bindings
 
 (define-public copyq
@@ -889,7 +897,7 @@ transparent text on your screen.")
 (define-public xbindkeys
   (package
     (name "xbindkeys")
-    (version "1.8.6")
+    (version "1.8.7")
     (source (origin
               (method url-fetch)
               ;; Download from the savannah mirror list fails
@@ -899,11 +907,13 @@ transparent text on your screen.")
                     ".tar.gz"))
               (sha256
                (base32
-                "060df6d8y727jp1inp7blp44cs8a7jig7vcm8ndsn6gw36z1h3bc"))))
+                "1wl2vc5alisiwyk8m07y1ryq8w3ll9ym83j27g4apm4ixjl8d6x2"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("libx11" ,libx11)
-       ("guile" ,guile-2.0)))
+       ("guile" ,guile-2.2)))
     (home-page "https://www.nongnu.org/xbindkeys/")
     (synopsis "Associate a combination of keys with a shell command")
     (description
@@ -1899,7 +1909,7 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
 (define-public sct
   (package
     (name "sct")
-    (version "0.4")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -1907,12 +1917,12 @@ colors on all monitors attached to an XRandR-capable X11 display server.")
         (string-append "https://www.umaxx.net/dl/sct-"
                        version ".tar.gz"))
        (sha256
-        (base32
-         "0r57z9ki8pvxhawfxys0v5h85z2x211sqxki0xvk1bga88ryldlv"))))
+        (base32 "0lrhx771iccbw04wrhj0ygids1pzmjfc4hvklm30m3p3flvhqf0m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags (list "CC=gcc")
-       #:tests? #f ; No tests exist.
+     `(#:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
+       #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -2259,9 +2269,9 @@ configuring visual settings in different UI toolkits separately.")
                (install-file "clipnotify" bin)
                (install-file "README.md" doc)
                #t))))
-       #:make-flags (list "CC=gcc")
-       ;; the package provides no test suite:
-       #:tests? #f))
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
+       #:tests? #f))                    ; no test suite
     (inputs
      `(("libx11" ,libx11)
        ("libXfixes" ,libxfixes)))

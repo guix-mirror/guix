@@ -141,6 +141,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vim)       ;for 'xxd'
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
@@ -4131,14 +4132,14 @@ specification and header.")
 (define-public rosegarden
   (package
     (name "rosegarden")
-    (version "19.12")
+    (version "20.06")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/rosegarden/rosegarden/"
                            version "/rosegarden-" version ".tar.bz2"))
        (sha256
-        (base32 "1qcaxc6hdzva7kwxxhgl95437fagjbxzv4mihsgpr7y9qk08ppw1"))))
+        (base32 "1i9x9rkqwwdrk77xl5ra8i48cjirbc7fbisnj0nnclccwaq0wk6r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
@@ -4871,7 +4872,7 @@ and reverb.")
 (define-public lsp-plugins
   (package
     (name "lsp-plugins")
-    (version "1.1.21")
+    (version "1.1.22")
     (source
       (origin
         (method git-fetch)
@@ -4880,8 +4881,7 @@ and reverb.")
                (commit (string-append "lsp-plugins-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "1zw0iip6ki9k65kh8dp53x7l4va4mi5rj793n2yn4p9y84qzwrz9"))))
+         (base32 "0s0i0kf5nqxxywckg03fds1w7696ly60rnlljzqvp7qfgzps1r6c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -4939,6 +4939,49 @@ visualizing LV2 atom, MIDI and OSC events.  They can be used for monitoring
 and debugging of event signal flows inside plugin graphs.")
     (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
     (license license:artistic2.0)))
+
+(define-public spectacle-analyzer
+  (package
+    (name "spectacle-analyzer")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jpcima/spectacle.git")
+             (commit (string-append "v" version))
+             ;; Bundles a specific commit of the DISTRHO plugin framework.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0xiqa6z8g68lcvnwhws4j7c4py35r9d20cirrili7ycyp3a6149a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no check target
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("xxd" ,xxd)))
+    (inputs
+     `(("cairo", cairo)
+       ("fftw", fftw)
+       ("fftwf", fftwf)
+       ("jack", jack-1)
+       ("lv2", lv2)
+       ("mesa", mesa)))
+    (synopsis "Realtime graphical spectrum analyzer")
+    (description "Spectacle is a real-time spectral analyzer using the
+short-time Fourier transform, available as LV2 audio plugin and JACK client.")
+    (home-page "https://github.com/jpcima/spectacle")
+    ;; The project is licensed under the ISC license, and files in
+    ;; sources/plugin carry the Expat license.
+    (license (list license:isc license:expat))))
 
 (define-public x42-plugins
   (package

@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2020 Marcin Karpezo <sirmacik@wioo.waw.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -920,6 +921,56 @@ library.")
   "toutesvariantes"
   (synopsis "Hunspell dictionary for all variants of French"))
 
+(define-public hunspell-dict-pl
+  (package
+    (name "hunspell-dict-pl")
+    (version "20200327")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Since creators of dictionary host only the latest daily release,
+       ;; we're using version mirrored by Arch Linux, which seems good
+       ;; enough. They're mirroring hunspell-pl releases since 2011.
+       (uri (string-append "https://sources.archlinux.org/other/community/"
+                           "hunspell-pl/sjp-myspell-pl-"
+                           version ".zip"))
+       (sha256 (base32
+                "14mzf8glxkp2775dcqisb1zv6r8ncm3bvzl46q352rwyl2dg1c59"))))
+
+    (build-system trivial-build-system)
+    (native-inputs `(("unzip" ,unzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let* ((out      (assoc-ref %outputs "out"))
+                          (hunspell (string-append out "/share/hunspell"))
+                          (myspell  (string-append out "/share/myspell"))
+                          (doc      (string-append out "/share/doc/"
+                                                   ,name))
+                          (unzip (string-append (assoc-ref %build-inputs "unzip")
+                                                "/bin/unzip")))
+                     (invoke unzip "-j" "-o" (assoc-ref %build-inputs "source"))
+                     (invoke unzip "-j" "-o" "pl_PL.zip")
+                     (for-each (cut install-file <> hunspell)
+                               (find-files "."
+                                           ,(string-append "pl_PL"
+                                                           "\\.(dic|aff)$")))
+                     (mkdir-p myspell)
+                     (symlink hunspell (string-append myspell "/dicts"))
+                     (for-each (cut install-file <> doc)
+                               (find-files "." "\\.(txt|org|md)$"))
+                     #t))))
+    (synopsis "Hunspell dictionary for Polish")
+    (description
+     "This package provides a dictionary for the Hunspell spell-checking
+library.")
+    (home-page "https://sjp.pl/slownik/ort/")
+    (license
+     (list license:gpl2 license:mpl1.1 license:cc-by4.0 license:lgpl2.1 license:asl2.0))))
+
 (define-public hyphen
   (package
     (name "hyphen")
@@ -998,7 +1049,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.4.2.2")
+    (version "6.4.4.2")
     (source
      (origin
        (method url-fetch)
@@ -1009,7 +1060,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        (patches (search-patches "libreoffice-poppler-compat.patch"))
        (sha256
         (base32
-         "06acm41q9nda8r30b13cn9zafsw1gszjdphh6lx90s09d2sf7f23"))))
+         "0y6026h374787yy2f3as1q7clxmgywsfdrj62kw3577wvybqaf2l"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1205,7 +1256,6 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
           ;; patching the build scripts to work with GCC5.  Try enabling this
           ;; when our default compiler is >=GCC 6.
           "--disable-pdfium"
-          "--disable-gtk" ; disable use of GTK+ 2
           "--without-doxygen"
           "--enable-build-opensymbol")))
     (home-page "https://www.libreoffice.org/")

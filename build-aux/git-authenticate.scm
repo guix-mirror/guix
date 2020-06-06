@@ -22,32 +22,28 @@
 ;;;
 
 (use-modules (git)
-             (guix git)
-             (guix openpgp)
              (guix base16)
-             ((guix utils)
-              #:select (cache-directory with-atomic-file-output))
-             ((guix build utils) #:select (mkdir-p))
+             (guix git)
+             (guix git-authenticate)
              (guix i18n)
+             ((guix openpgp)
+              #:select (openpgp-public-key-fingerprint
+                        openpgp-format-fingerprint))
              (guix progress)
              (srfi srfi-1)
-             (srfi srfi-11)
              (srfi srfi-26)
-             (srfi srfi-34)
-             (srfi srfi-35)
-             (rnrs bytevectors)
-             (rnrs io ports)
              (ice-9 match)
              (ice-9 format)
              (ice-9 pretty-print))
 
 
-(define %committers
-  ;; List of committers.  These are the user names found on
+(define %historical-committers
+  ;; List of "historical" committers---people once authorized committers
+  ;; before the '.guix-authorizations' file was created.
+  ;;
+  ;; These are the user names found on
   ;; <https://savannah.gnu.org/project/memberlist.php?group=guix> along with
   ;; the fingerprint of the signing (sub)key.
-  ;;
-  ;; TODO: Replace this statically-defined list by an in-repo list.
   '(("andreas"
      "AD17 A21E F8AE D8F1 CC02  DBD9 F7D5 C9BF 765C 61E3")
     ("ajgrf"
@@ -214,13 +210,13 @@
     ("wingo"
      "FF47 8FB2 64DE 32EC 2967  25A3 DDC0 F535 8812 F8F2")))
 
-(define %authorized-signing-keys
-  ;; Fingerprint of authorized signing keys.
+(define %historical-authorized-signing-keys
+  ;; Fingerprint of historically authorized signing keys.
   (map (match-lambda
          ((name fingerprint)
           (base16-string->bytevector
            (string-downcase (string-filter char-set:graphic fingerprint)))))
-       %committers))
+       %historical-committers))
 
 (define %commits-with-bad-signature
   ;; Commits with a known-bad signature.
@@ -230,194 +226,8 @@
   ;; Commits lacking a signature.
   '())
 
-(define (commit-signing-key repo commit-id keyring)
-  "Return the OpenPGP key that signed COMMIT-ID (an OID).  Raise an exception
-if the commit is unsigned, has an invalid signature, or if its signing key is
-not in KEYRING."
-  (let-values (((signature signed-data)
-                (catch 'git-error
-                  (lambda ()
-                    (commit-extract-signature repo commit-id))
-                  (lambda _
-                    (values #f #f)))))
-    (unless signature
-      (raise (condition
-              (&message
-               (message (format #f (G_ "commit ~a lacks a signature")
-                                commit-id))))))
-
-    (let ((signature (string->openpgp-packet signature)))
-      (with-fluids ((%default-port-encoding "UTF-8"))
-        (let-values (((status data)
-                      (verify-openpgp-signature signature keyring
-                                                (open-input-string signed-data))))
-          (match status
-            ('bad-signature
-             ;; There's a signature but it's invalid.
-             (raise (condition
-                     (&message
-                      (message (format #f (G_ "signature verification failed \
-for commit ~a")
-                                       (oid->string commit-id)))))))
-            ('missing-key
-             (raise (condition
-                     (&message
-                      (message (format #f (G_ "could not authenticate \
-commit ~a: key ~a is missing")
-                                       (oid->string commit-id)
-                                       data))))))
-            ('good-signature data)))))))
-
-(define (read-authorizations port)
-  "Read authorizations in the '.guix-authorizations' format from PORT, and
-return a list of authorized fingerprints."
-  (match (read port)
-    (('authorizations ('version 0)
-                      (((? string? fingerprints) _ ...) ...)
-                      _ ...)
-     (map (lambda (fingerprint)
-            (base16-string->bytevector
-             (string-downcase (string-filter char-set:graphic fingerprint))))
-          fingerprints))))
-
-(define* (commit-authorized-keys repository commit
-                                 #:optional (default-authorizations '()))
-  "Return the list of OpenPGP fingerprints authorized to sign COMMIT, based on
-authorizations listed in its parent commits.  If one of the parent commits
-does not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
-  (define (commit-authorizations commit)
-    (catch 'git-error
-      (lambda ()
-        (let* ((tree  (commit-tree commit))
-               (entry (tree-entry-bypath tree ".guix-authorizations"))
-               (blob  (blob-lookup repository (tree-entry-id entry))))
-          (read-authorizations
-           (open-bytevector-input-port (blob-content blob)))))
-      (lambda (key error)
-        (if (= (git-error-code error) GIT_ENOTFOUND)
-            default-authorizations
-            (throw key error)))))
-
-  (apply lset-intersection bytevector=?
-         (map commit-authorizations (commit-parents commit))))
-
-(define (authenticate-commit repository commit keyring)
-  "Authenticate COMMIT from REPOSITORY and return the signing key fingerprint.
-Raise an error when authentication fails."
-  (define id
-    (commit-id commit))
-
-  (define signing-key
-    (commit-signing-key repository id keyring))
-
-  (unless (member (openpgp-public-key-fingerprint signing-key)
-                  (commit-authorized-keys repository commit
-                                          %authorized-signing-keys))
-    (raise (condition
-            (&message
-             (message (format #f (G_ "commit ~a not signed by an authorized \
-key: ~a")
-                              (oid->string id)
-                              (openpgp-format-fingerprint
-                               (openpgp-public-key-fingerprint
-                                signing-key))))))))
-
-  signing-key)
-
-(define (load-keyring-from-blob repository oid keyring)
-  "Augment KEYRING with the keyring available in the blob at OID, which may or
-may not be ASCII-armored."
-  (let* ((blob (blob-lookup repository oid))
-         (port (open-bytevector-input-port (blob-content blob))))
-    (get-openpgp-keyring (if (port-ascii-armored? port)
-                             (open-bytevector-input-port (read-radix-64 port))
-                             port)
-                         keyring)))
-
-(define (load-keyring-from-reference repository reference)
-  "Load the '.key' files from the tree at REFERENCE in REPOSITORY and return
-an OpenPGP keyring."
-  (let* ((reference (branch-lookup repository
-                                   (string-append "origin/" reference)
-                                   BRANCH-REMOTE))
-         (target    (reference-target reference))
-         (commit    (commit-lookup repository target))
-         (tree      (commit-tree commit)))
-    (fold (lambda (name keyring)
-            (if (string-suffix? ".key" name)
-                (let ((entry (tree-entry-bypath tree name)))
-                  (load-keyring-from-blob repository
-                                          (tree-entry-id entry)
-                                          keyring))
-                keyring))
-          %empty-keyring
-          (tree-list tree))))
-
-(define* (authenticate-commits repository commits
-                               #:key
-                               (keyring-reference "keyring")
-                               (report-progress (const #t)))
-  "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
-each of them.  Return an alist showing the number of occurrences of each key.
-The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY."
-  (define keyring
-    (load-keyring-from-reference repository keyring-reference))
-
-  (fold (lambda (commit stats)
-          (report-progress)
-          (let ((signer (authenticate-commit repository commit keyring)))
-            (match (assq signer stats)
-              (#f          (cons `(,signer . 1) stats))
-              ((_ . count) (cons `(,signer . ,(+ count 1))
-                                 (alist-delete signer stats))))))
-        '()
-        commits))
-
 (define commit-short-id
   (compose (cut string-take <> 7) oid->string commit-id))
-
-
-;;;
-;;; Caching.
-;;;
-
-(define (authenticated-commit-cache-file)
-  "Return the name of the file that contains the cache of
-previously-authenticated commits."
-  (string-append (cache-directory) "/authentication/channels/guix"))
-
-(define (previously-authenticated-commits)
-  "Return the previously-authenticated commits as a list of commit IDs (hex
-strings)."
-  (catch 'system-error
-    (lambda ()
-      (call-with-input-file (authenticated-commit-cache-file)
-        read))
-    (lambda args
-      (if (= ENOENT (system-error-errno args))
-          '()
-          (apply throw args)))))
-
-(define (cache-authenticated-commit commit-id)
-  "Record in ~/.cache COMMIT-ID and its closure as authenticated (only
-COMMIT-ID is written to cache, though)."
-  (define %max-cache-length
-    ;; Maximum number of commits in cache.
-    200)
-
-  (let ((lst  (delete-duplicates
-               (cons commit-id (previously-authenticated-commits))))
-        (file (authenticated-commit-cache-file)))
-    (mkdir-p (dirname file))
-    (with-atomic-file-output file
-      (lambda (port)
-        (let ((lst (if (> (length lst) %max-cache-length)
-                       (take lst %max-cache-length) ;truncate
-                       lst)))
-          (chmod port #o600)
-          (display ";; List of previously-authenticated commits.\n\n"
-                   port)
-          (pretty-print lst port))))))
 
 
 ;;;
@@ -461,6 +271,8 @@ COMMIT-ID is written to cache, though)."
        (let ((stats (call-with-progress-reporter reporter
                       (lambda (report)
                         (authenticate-commits repository commits
+                                              #:default-authorizations
+                                              %historical-authorized-signing-keys
                                               #:report-progress report)))))
          (cache-authenticated-commit (oid->string (commit-id end-commit)))
 

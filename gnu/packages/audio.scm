@@ -851,30 +851,30 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.13.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/csound/csound.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "14822ybqyp31z18gky2y9zadr9dkbhabg97y139py73w7v3af1bh"))))
+    (version "6.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/csound/csound.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sr9knfhbm2m0wpkjq2l5n471vnl51wy4p6j4m95zqybimzb4s2j"))))
     (build-system cmake-build-system)
-    (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("pulseaudio" ,pulseaudio)
-       ("libsndfile" ,libsndfile)
-       ("liblo" ,liblo)
-       ("ladspa" ,ladspa)
-       ("jack" ,jack-1)
-       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
        ("zlib" ,zlib)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("liblo" ,liblo)
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)))
     (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
@@ -1961,14 +1961,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.6")
+    (version "0.24.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1p3hafsxgs5d4za7n66lf5nz74qssfqpmk520cm7iq2njvvlqm2z"))))
+               "0063i5zgf3d3accwmyx651hw0wh5ik7kji2hvfkcdbl1qia3dp6a"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -3373,17 +3373,18 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.6.9")
+    (version "0.7.0")
+    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32 "1hcbff3q6xl9rj1pzy3fwy91y6fa99wwrhb31461j9kgc173ls7r"))
+        (base32 "0a2dcaxvxy5m3a5sb1lhplsymvz3ypaiidc5xn9qy01h53zvyvkp"))
        (modules '((guix build utils)))
        (snippet
-        '(begin
+        `(begin
            ;; XXX
            (substitute* (find-files "." "\\.[ch]$")
              (("^ \\* N..o.*") ""))
@@ -3395,12 +3396,11 @@ with support for HD extensions.")
                               "configure.ac"
                               "configure")
              (("https?://bs1770gain[^/]*/")
-              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html"))
+              ,home-page))
            #t))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
-    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (synopsis "Tool to adjust loudness of media files")
     (description
      "BS1770GAIN is a loudness scanner compliant with ITU-R BS.1770 and its

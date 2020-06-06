@@ -532,16 +532,16 @@ written in the C programming language.")
 (define-public librdkafka
   (package
     (name "librdkafka")
-    (version "0.9.1")
+    (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/edenhill/librdkafka/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/edenhill/librdkafka.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "10ldx7g7ymmg17snzx78vy4n8ma1rjx0agzi34g15j2fk867xmas"))))
+                "05mgrdzacn9kdpr68r5j0cvsvl54s52glnsc1ww9rcxx6p7hq1ly"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1286,7 +1286,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.21")
+  (version "1.24")
   (source
     (origin
       (method url-fetch)
@@ -1297,7 +1297,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "0yknrsh0wqr9s43c0wf3dyzrsi2r7k0v75hay74gqkq850xy3vyx"))))
+       (base32 "0qyy5k4k0llqjjmkkfg96919gqybdc1z5fy9047n9imidjxc59hi"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -1605,14 +1605,14 @@ HTTP proxies.")
 (define-public enet
   (package
     (name "enet")
-    (version "1.3.14")
+    (version "1.3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://enet.bespin.org/download/"
                                   "enet-" version ".tar.gz"))
               (sha256
                (base32
-                "0w780zc6cy8yq4cskpphx0f91lzh51vh9lwyc5ll8hhamdxgbxlq"))))
+                "1yxxf9bkx6dx3j8j70fj17c05likyfibb1419ls74hp58qrzdgas"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2539,7 +2539,7 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.16")
+    (version "0.9.18")
     (source
      (origin
        (method git-fetch)
@@ -2548,11 +2548,12 @@ SNMP v3 using both IPv4 and IPv6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bind7ylgxs743vfdmpdrpp4iamy461bc3i7nxza91kj7hyyjz6h"))))
+        (base32 "0jg66jhhpv4c9340fsdp64hf9h253i8r81fknxa0gq241ripp3jn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags '("CC=gcc")
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -2611,7 +2612,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "5.2.0")
+    (version "6.0.6")
     (source
      (origin
        (method git-fetch)
@@ -2619,17 +2620,19 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool.git")
              (commit version)))
        (sha256
-        (base32 "0pg1pvg029gm4rj0fj5kcsjb32hixgn4cxsgiir7spkmacf1qm4q"))
+        (base32 "1b4d543y64ib92w9gcmiyjn5hz2vyjqmxk3f3yr1zk04fhw16gmf"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "https://github.com/ZerBea/hcxdumptool")
     (synopsis "Small tool to capture packets from wlan devices")
     (description
@@ -3103,7 +3106,7 @@ cables.")
 (define-public haproxy
   (package
     (name "haproxy")
-    (version "2.1.4")
+    (version "2.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.haproxy.org/download/"
@@ -3111,7 +3114,7 @@ cables.")
                                   "/src/haproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "1kcizs5r538chhpwqykdngxyqfi98i03akfjnii721npjvv0y0si"))))
+                "188ff33610jj11knjwjqwxci4p0i63n9k0l8bdb47ckahg2ll5s2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

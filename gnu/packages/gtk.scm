@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -649,6 +650,24 @@ is part of the GNOME accessibility project.")
    (license license:lgpl2.0+)
    (home-page "https://projects.gnome.org/accessibility/")))
 
+;;; A minimal variant used to prevent a cycle with Inkscape.
+(define at-spi2-core-minimal
+  (package
+    (inherit at-spi2-core)
+    (name "at-spi2-core-minimal")
+    (outputs (delete "doc" (package-outputs at-spi2-core)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments at-spi2-core)
+       ((#:configure-flags configure-flags)
+        `(delete "-Ddocs=true" ,configure-flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'set-documentation-path)
+           (delete 'prepare-doc-directory)
+           (delete 'move-documentation)))))
+    (native-inputs
+     (alist-delete "gtk-doc" (package-native-inputs at-spi2-core)))))
+
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
@@ -671,6 +690,8 @@ is part of the GNOME accessibility project.")
                    (setenv "DBUS_FATAL_WARNINGS" "0")
                    (invoke "dbus-launch" "meson" "test"))))))
    (propagated-inputs
+    ;; TODO: Replace by at-spi2-core-minimal in the next staging window, or
+    ;; when Inkscape 0.92 is upgraded to 1.0 to avoid a cycle.
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
    (inputs
     `(("atk" ,atk)))
@@ -922,13 +943,13 @@ exceptions, macros, and a dynamic programming environment.")
       (version (string-append "2.18.1-" revision "."
                               (string-take commit 7)))
       (source (origin
-                (method url-fetch)
-                (uri (string-append "https://gitlab.com/wingo/guile-rsvg/"
-                                    "repository/archive.tar.gz?ref="
-                                    commit))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/wingo/guile-rsvg/")
+                      (commit commit)))
                 (sha256
                  (base32
-                  "0vdzjx8l5nc4y2xjqs0g1rqn1zrwfsm30brh5gz00r1x41a2pvv2"))
+                  "0cnbl40df2sbhpc32cma6j6w312rfvcgbxxqaixgf0ymim3fb248"))
                 (patches (search-patches "guile-rsvg-pkgconfig.patch"))
                 (modules '((guix build utils)))
                 (snippet

@@ -5,6 +5,7 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages ncurses)
@@ -596,3 +598,37 @@ GDB with very efficient reverse-execution, which in combination with standard
 GDB/x86 features like hardware data watchpoints, makes debugging much more
 fun.")
     (license license:expat)))
+
+(define-public mspdebug
+  (package
+    (name "mspdebug")
+    (version "0.25")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dlbeer/mspdebug.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "0prgwb5vx6fd4bj12ss1bbb6axj2kjyriyjxqrzd58s5jyyy8d3c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                         ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))              ; no configure script
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target))
+             "INSTALL=install"
+             (string-append "PREFIX=" %output))))
+  (inputs
+     `(("libusb-compat" ,libusb-compat)
+       ("readline" ,readline)))
+    (synopsis "Debugging tool for MSP430 MCUs")
+    (description "MspDebug supports FET430UIF, eZ430, RF2500 and Olimex
+MSP430-JTAG-TINY programmers, as well as many other compatible
+devices.  It can be used as a proxy for gdb or as an independent
+debugger with support for programming, disassembly and reverse
+engineering.")
+    (home-page "https://github.com/dlbeer/mspdebug")
+    (license license:gpl2+)))
