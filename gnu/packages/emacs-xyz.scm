@@ -984,6 +984,31 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
       (license license:gpl3+))))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-flymake-shellcheck
+  ;; No tag, version grabbed from source .el file.
+  (let ((commit "78956f0e5bb9c4d35989657a55929e8e3f5691e6")
+        (revision "0"))
+    (package
+      (name "emacs-flymake-shellcheck")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/federicotdn/flymake-shellcheck.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "068mx5p4drwgppy4ry1rfq6qi79w6d82b4rnpl2jm37grsg94lix"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/federicotdn/flymake-shellcheck")
+      (synopsis "Flymake backend for Bash/Sh powered by ShellCheck")
+      (description
+       "This package provides a backend for Flymake to use the
+tool ShellCheck for static analyzing @command{bash} and @command{sh}
+scripts.")
+      (license license:gpl3+))))
+
 (define-public emacs-a
   (package
     (name "emacs-a")
