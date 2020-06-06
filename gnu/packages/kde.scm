@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages kde-pim)
   #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -565,7 +567,7 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "1.3.5")
+    (version "1.4")
     (source
       (origin
         (method url-fetch)
@@ -574,11 +576,22 @@ different notification systems.")
                             version ".tar.xz"))
         (sha256
          (base32
-          "02lr3xx5s2mgddac4n3lkgr7ppf1z5m6ajs90rjix0vs8a271kp5"))))
+          "06i6spspqpl79x6z2bfvbgd08b3h1pyx5j1xjhd8ifyrm52pkvna"))))
     (build-system qt-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
                            "-DLIBEXEC_INSTALL_DIR=libexec")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'set-paths 'extend-CPLUS_INCLUDE_PATH
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; FIXME: <kcmutils_version.h> is not found during one
+                      ;; of the compilation steps without this hack.
+                      (setenv "CPLUS_INCLUDE_PATH"
+                              (string-append (assoc-ref inputs "kcmutils")
+                                             "/include/KF5:"
+                                             (or (getenv "CPLUS_INCLUDE_PATH")
+                                                 "")))
+                      #t)))
        #:tests? #f)) ; tests fail hard in our build environment
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -593,12 +606,17 @@ different notification systems.")
        ("ki18n" ,ki18n)
        ("kiconthemes" ,kiconthemes)
        ("kio" ,kio)
+       ("kirigami" ,kirigami)
        ("knotifications" ,knotifications)
+       ("kpeople" ,kpeople)
+       ("kpeoplevcard" ,kpeoplevcard)
        ("kwayland" ,kwayland)
        ("libfakekey" ,libfakekey)
+       ("pulseaudio-qt" ,pulseaudio-qt)
        ("qca" ,qca)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/KDEConnect")
     (synopsis "Enable your devices to communicate with each other")
