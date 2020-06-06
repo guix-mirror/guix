@@ -46,14 +46,14 @@
 (define-public audiocd-kio
   (package
     (name "audiocd-kio")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/audiocd-kio-" version ".tar.xz"))
        (sha256
-        (base32 "1924w7li16qkmqsvbgfihjd7id6mb00m9k3acfwkkf32yzg3dn4q"))))
+        (base32 "0qlnxxbayqhz25jbvzis27jw2zbw1pmacp8rv7v5wa7zfqn3kmyk"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -86,14 +86,14 @@ This package is part of the KDE multimedia module.")
 (define-public dragon
   (package
     (name "dragon")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dragon-" version ".tar.xz"))
        (sha256
-        (base32 "02l16k4sgrxbczxp8rlnxbylb5fmjh4zhl4xw55qxkvmvxnjy5zr"))))
+        (base32 "1sssg20a1vpwk816lp5jgwahilaswb9f3hgfqvc73il4g11ky1xj"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -201,14 +201,14 @@ its own database.  You can build and play your own playlist.")
 (define-public ffmpegthumbs
   (package
     (name "ffmpegthumbs")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ffmpegthumbs-" version ".tar.xz"))
        (sha256
-        (base32 "1w6070ng40nf99wpl6p5s8nx0icfx2c26vvnz4f9fx7l7pldh6n9"))))
+        (base32 "17l50z33a1h5zkrrfkb261yi2hms66qj36l1mndq7mvs97y2ggmc"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -232,14 +232,14 @@ This package is part of the KDE multimedia module.")
 (define-public juk
   (package
     (name "juk")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/juk-" version ".tar.xz"))
        (sha256
-        (base32 "0c1hrd1n4ah7qm8xr7bfswgbcmbvnnhai4bfawx6v6ab3frl7wvf"))))
+        (base32 "06vsh7knyhcbcbf632jhldbqpzfkdyils2l8dbcdw5nj5hhgzzmr"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -287,14 +287,14 @@ This package is part of the KDE multimedia module.")
 (define-public k3b
   (package
     (name "k3b")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/k3b-" version ".tar.xz"))
        (sha256
-        (base32 "08rbiy1hz650srdksr7ciq8dpcz20wczs22613pghrpgm5zsczhr"))))
+        (base32 "0r01ninrrmqk7pl5jg0g51fcky1ammw0yyq572wyhibw7q8y7ly7"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -400,14 +400,14 @@ autoloading of subtitle files for use while playing video.")
 (define-public kamoso
   (package
     (name "kamoso")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kamoso-" version ".tar.xz"))
        (sha256
-        (base32 "0j0lr2gwaxwchgfp54dashm1b39gsaw4ly9p8ybavwwzhjkdqza3"))))
+        (base32 "0c47j315kjfikd3b6x18786k3gqymicjjslpm0a58zdxl3wpqfay"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -447,14 +447,14 @@ camera.  Use it to take pictures and make videos to share.")
 (define-public kmix
   (package
     (name "kmix")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kmix-" version ".tar.xz"))
       (sha256
-       (base32 "1g42hlmpdf0rrgqapps6v47z9cnwpkfzpwgavaq26m5k3bpanwfg"))))
+       (base32 "1na52ypp57wqrc6pl1khinx9i6fidv1k97nnxcy8zb4l7d5sh1nd"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -560,14 +560,14 @@ Some features:
 (define-public kwave
   (package
     (name "kwave")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/kwave-" version ".tar.xz"))
        (sha256
-        (base32 "1vv3m3h9mvjr9sxajccqnvcgvz901n3qxhki0g7vsljvh31x5s5x"))))
+        (base32 "0ysa873pc2gip95cxr8yv7ifd9qql5zg6h67i9n9q3iqa6v58iyw"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -637,14 +637,14 @@ Its features include:
 (define-public libkcddb
   (package
     (name "libkcddb")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/libkcddb-" version ".tar.xz"))
        (sha256
-        (base32 "1rla9sfzpdfiki0p265ga6d1axqpq37825maaw85hm84mg7hkzjn"))))
+        (base32 "1fwryaj8ldmsqhl5qxjda8by9i7xlb97r8p9rqzckw697hkfhs0h"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -668,14 +668,14 @@ Its features include:
 (define-public libkcompactdisc
   (package
     (name "libkcompactdisc")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/libkcompactdisc-" version ".tar.xz"))
        (sha256
-        (base32 "09gl2dww5i50rpj92ryw4vq5ryy96cv9kflg6yqgdbznmmdqhawi"))))
+        (base32 "0iy4i0hxqsrnndd4iqkww7v1rqry7kvi5paxdw5qjfffwn8kcsbx"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))

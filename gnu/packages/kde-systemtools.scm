@@ -38,14 +38,14 @@
 (define-public dolphin
   (package
     (name "dolphin")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-" version ".tar.xz"))
        (sha256
-        (base32 "0klxyvcj1bmzpsyahj9kq3smvwzww30pjk5c90j6jpf14hizawfy"))))
+        (base32 "0xr5s0s40i2bsfjfapvpa7dxh9s4604cxirg97xcaacd6fdvhpds"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -97,14 +97,14 @@ The main features of Dolphin are:
 (define-public dolphin-plugins
   (package
     (name "dolphin-plugins")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/dolphin-plugins-" version ".tar.xz"))
        (sha256
-        (base32 "0m9sl5fybk60h7r91a5qfxvwzksg2kxn1bc2ygrr8klm2pv0x1l2"))))
+        (base32 "12g44s6g7ma6avp15l45l42qyzbglswvahm2wji79zdls5vjnz7r"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -125,14 +125,14 @@ Dolphin with the version control systems: Bzr, Git, Mercurial, Subversion.")
 (define-public khelpcenter
   (package
     (name "khelpcenter")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/khelpcenter-" version ".tar.xz"))
        (sha256
-        (base32 "0ympq1qm5h14mw18wry7l02ndg1f5kddwkf5bliip6vk2vxiff50"))))
+        (base32 "0wxzjragvjcfc7c4qja8wzpshhaywficj7f7wkmppzybcsxwn9qb"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -175,14 +175,14 @@ document meta data file.")
 (define-public konsole
   (package
     (name "konsole")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/konsole-" version ".tar.xz"))
        (sha256
-        (base32 "09bhgqjnqlpxkkgdpn35pvj747ab7waz10zalvpwdpgqkw811iic"))))
+        (base32 "0ckr7bjkyaw0gr5kx569jfnhkhwmlk4lqk41ng61qwxlb4bsdbdm"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -230,14 +230,14 @@ This package is part of the KDE base applications module.")
 (define-public krfb
   (package
     (name "krfb")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krfb-" version ".tar.xz"))
        (sha256
-        (base32 "079f4jlmd69a5nppmn7khsxrnswlfbdzjni0cbixwlcij05y2267"))))
+        (base32 "092ijn88jpmgk2zwz37vzf35jisl234mc3krc9jl7bd955akx51k"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -282,14 +282,14 @@ This package is part of the KDE networking module.")
 (define-public ksystemlog
   (package
     (name "ksystemlog")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/ksystemlog-" version ".tar.xz"))
        (sha256
-        (base32 "079r2xnj168y9kz37rhxr3rcwh6fksljsj1ihmi7f7a8wmdabz4p"))))
+        (base32 "1826h89ynvlxdwzyqil2d79cvynglww6fax7qp41wxasgarxhsni"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)

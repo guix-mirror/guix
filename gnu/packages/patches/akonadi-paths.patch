@@ -1,31 +1,31 @@
 This is based on the respectve patch from NixPkgs, but with the parts pinning
 mysql and postgresql executables removed. The our package definition on why.
 
-
-Index: akonadi-19.08.0/src/akonadicontrol/agentmanager.cpp
-===================================================================
---- akonadi-19.08.0.orig/src/akonadicontrol/agentmanager.cpp
-+++ akonadi-19.08.0/src/akonadicontrol/agentmanager.cpp
-@@ -78,12 +78,12 @@ AgentManager::AgentManager(bool verbose,
-     mStorageController = new Akonadi::ProcessControl;
-     mStorageController->setShutdownTimeout(15 * 1000);   // the server needs more time for shutdown if we are using an internal mysqld
-     connect(mStorageController, &Akonadi::ProcessControl::unableToStart, this, &AgentManager::serverFailure);
--    mStorageController->start(QStringLiteral("akonadiserver"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
-+    mStorageController->start(QLatin1String(NIX_OUT "/bin/akonadiserver"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
- 
-     if (mAgentServerEnabled) {
-         mAgentServer = new Akonadi::ProcessControl;
-         connect(mAgentServer, &Akonadi::ProcessControl::unableToStart, this, &AgentManager::agentServerFailure);
--        mAgentServer->start(QStringLiteral("akonadi_agent_server"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
-+        mAgentServer->start(QLatin1String(NIX_OUT "/bin/akonadi_agent_server"), serviceArgs, Akonadi::ProcessControl::RestartOnCrash);
+diff --git a/src/akonadicontrol/agentmanager.cpp b/src/akonadicontrol/agentmanager.cpp
+--- a/src/akonadicontrol/agentmanager.cpp
++++ b/src/akonadicontrol/agentmanager.cpp
+@@ -61,7 +61,7 @@ public:
+                 []() {
+                     QCoreApplication::instance()->exit(255);
+                 });
+-        start(QStringLiteral("akonadiserver"), args, RestartOnCrash);
++        start(QLatin1String(NIX_OUT "/bin/akonadiserver"), args, RestartOnCrash);
      }
- }
  
-Index: akonadi-19.08.0/src/akonadicontrol/agentprocessinstance.cpp
-===================================================================
---- akonadi-19.08.0.orig/src/akonadicontrol/agentprocessinstance.cpp
-+++ akonadi-19.08.0/src/akonadicontrol/agentprocessinstance.cpp
-@@ -62,7 +62,7 @@ bool AgentProcessInstance::start(const A
+     ~StorageProcessControl() override
+@@ -84,7 +84,7 @@ public:
+                 []() {
+                     qCCritical(AKONADICONTROL_LOG) << "Failed to start AgentServer!";
+                 });
+-        start(QStringLiteral("akonadi_agent_server"), args, RestartOnCrash);
++        start(QLatin1String(NIX_OUT "/bin/akonadi_agent_server"), args, RestartOnCrash);
+     }
+ 
+     ~AgentServerProcessControl() override
+diff --git a/src/akonadicontrol/agentprocessinstance.cpp b/src/akonadicontrol/agentprocessinstance.cpp
+--- a/src/akonadicontrol/agentprocessinstance.cpp
++++ b/src/akonadicontrol/agentprocessinstance.cpp
+@@ -62,7 +62,7 @@ bool AgentProcessInstance::start(const AgentType &agentInfo)
      } else {
          Q_ASSERT(agentInfo.launchMethod == AgentType::Launcher);
          const QStringList arguments = QStringList() << executable << identifier();
@@ -34,11 +34,10 @@ Index: akonadi-19.08.0/src/akonadicontrol/agentprocessinstance.cpp
          mController->start(agentLauncherExec, arguments);
      }
      return true;
-Index: akonadi-19.08.0/src/server/storage/dbconfigmysql.cpp
-===================================================================
---- akonadi-19.08.0.orig/src/server/storage/dbconfigmysql.cpp
-+++ akonadi-19.08.0/src/server/storage/dbconfigmysql.cpp
-@@ -209,7 +193,7 @@ bool DbConfigMysql::startInternalServer(
+diff --git a/src/server/storage/dbconfigmysql.cpp b/src/server/storage/dbconfigmysql.cpp
+--- a/src/server/storage/dbconfigmysql.cpp
++++ b/src/server/storage/dbconfigmysql.cpp
+@@ -209,7 +209,7 @@ bool DbConfigMysql::startInternalServer()
  #endif
  
      // generate config file

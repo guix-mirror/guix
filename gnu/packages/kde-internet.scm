@@ -116,14 +116,14 @@ Other notable features include:
 (define-public kget
   (package
     (name "kget")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kget-" version ".tar.xz"))
        (sha256
-        (base32 "004qqq93iqidh2m9q2p2cwlbc2kfrz0g8a2mgd712c9p66l7s42s"))))
+        (base32 "1swx58wcig8zq8ibhczhcw7l8mqjm7pq8zca9gmny9kda5q04f5m"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -249,14 +249,14 @@ Features are:
 (define-public kopete
   (package
     (name "kopete")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/kopete-" version ".tar.xz"))
        (sha256
-        (base32 "088jya4v04l7r38pph1hxkr6ln4023s3ji3y8ipzdkalcx8hgr6l"))))
+        (base32 "149gi9hkyl825kf046iqkam3gkzfwdc2sihbf8gs6njachzvb81y"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -327,14 +327,14 @@ This package is part of the KDE networking module.")
 (define-public krdc
   (package
     (name "krdc")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/krdc-" version ".tar.xz"))
        (sha256
-        (base32 "1p6g994whzjz9aarzrblh70xzs3jvygd1898qxgfymndlfxaxjyl"))))
+        (base32 "1hp23k3nsrcxpv2qiynjgm71zn3l6ds00cpd4frc68szgiblrw9r"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -429,14 +429,14 @@ a full-featured client for BitTorrent.")
 (define-public libgravatar
   (package
     (name "libgravatar")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/libgravatar-" version ".tar.xz"))
        (sha256
-        (base32 "1yzq9d0hzqh1hdfpnh7fp44fyjk169gvm4pqgwg24ra00z8j2d3z"))))
+        (base32 "0981ci2kr20v4fk11h57rqya0brgslfazpgq1yk5yqiwyqqm49r2"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
