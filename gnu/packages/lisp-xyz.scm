@@ -3197,6 +3197,17 @@ WebKit browsing engine.")
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("trivial-garbage" ,sbcl-trivial-garbage)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependency
+           ;; lparallel loads a SBCL specific system in its asd file. This is
+           ;; not carried over into the fasl which is generated. In order for
+           ;; it to be carried over, it needs to be listed as a dependency.
+           (lambda _
+             (substitute* "lparallel.asd"
+               ((":depends-on \\(:alexandria" all)
+                (string-append all " #+sbcl :sb-cltl2"))))))))
     (home-page "https://lparallel.org/")
     (synopsis "Parallelism for Common Lisp")
     (description
