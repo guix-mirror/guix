@@ -10236,25 +10236,25 @@ configuration of Chinese fonts.")
 (define-public emacs-php-mode
   (package
     (name "emacs-php-mode")
-    (version "1.22.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/ejmr/php-mode.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1r4bpyavlndd4c78cv5cc97bc0gkd4cggiyz4kd2vg6zlyc1nld3"))))
+    (version "1.23.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ejmr/php-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wnkcxg6djy4jvxhshiy1iw6b5cf79pjwjhfd1a060cavhfm4v5c"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ejmr/php-mode")
     (synopsis "Major mode for editing PHP code")
-    (description "@code{php-mode} is a major mode for editing PHP source
-code.  It's an extension of C mode; thus it inherits all C mode's navigation
-functionality.  But it colors according to the PHP grammar and indents
-according to the PEAR coding guidelines.  It also includes a couple handy
-IDE-type features such as documentation search and a source and class
-browser.")
+    (description
+     "PHP mode is a major mode for editing PHP source code.  It's an extension
+of C mode; thus it inherits all C mode's navigation functionality.  But it
+colors according to the PHP grammar and indents according to the PEAR coding
+guidelines.  It also includes a couple handy IDE-type features such as
+documentation search and a source and class browser.")
     (license license:gpl3+)))
 
 (define-public emacs-pos-tip
