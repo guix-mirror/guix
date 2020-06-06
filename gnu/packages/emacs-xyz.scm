@@ -6570,7 +6570,7 @@ allowing unprefixed keys to insert their respective characters as expected.")
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
-    (version "5.6.1")
+    (version "5.11.0")
     (source
      (origin
        (method git-fetch)
@@ -6579,21 +6579,21 @@ allowing unprefixed keys to insert their respective characters as expected.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qadymqzs5fn1sb347xzfw8lqq6s85vvkh4kzm35m61g5i2lm86y"))))
+        (base32 "1x1yszp6waa778ki6sw66w1pzcz389wd01gkcldfxxnd7z89ad5d"))))
     (build-system emacs-build-system)
     (native-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-s" ,emacs-s)
-       ("ert-runner" ,emacs-ert-runner)))
+     `(("emacs-buttercup" ,emacs-buttercup)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
     (arguments
      `(#:tests? #t
-       #:test-command '("ert-runner")))
+       #:test-command '("buttercup")))
     (home-page "https://github.com/clojure-emacs/clojure-mode")
     (synopsis "Major mode for Clojure code")
     (description
      "This Emacs package provides font-lock, indentation, navigation and basic
 refactoring for the @uref{http://clojure.org, Clojure programming language}.
-It is recommended to use @code{clojure-mode} with paredit or smartparens.")
+It is recommended to use @code{clojure-mode} with Paredit or Smartparens.")
     (license license:gpl3+)))
 
 (define-public emacs-epl
