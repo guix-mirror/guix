@@ -650,42 +650,39 @@ deliver data to mobile and web apps.")
     (license license:gpl3+)))
 
 (define-public emacs-ghub
-  ;; We need a newer commit to avoid problems in emacs-forge.
-  (let ((commit "e19cd86ca4768a6d89285123933baa3f1460d696")
-        (revision "2"))
-    (package
-      (name "emacs-ghub")
-      (version (git-version "3.2.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/magit/ghub")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1d6f8sxlsl0fpkzwbpnaw77d1a5pkg63zfvf6a2fxir357lbdizx"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'make-info
-             (lambda _
-               (invoke "make" "info"))))))
-      (native-inputs
-       `(("texinfo" ,texinfo)))
-      (propagated-inputs
-       `(("dash" ,emacs-dash)
-         ("emacs-let-alist" ,emacs-let-alist)
-         ("treepy" ,emacs-treepy)))
-      (home-page "https://github.com/magit/ghub")
-      (synopsis "Emacs client libraries for the APIs of various Git forges")
-      (description
-       "Ghub provides basic support for using the APIs of various Git forges from
+  (package
+    (name "emacs-ghub")
+    (version "3.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magit/ghub")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1229g0d9f4ywwjndx32x4z5jdr0kzyi44hjxmy0sifwfmg9nn251"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda _
+             (invoke "make" "info"))))))
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("emacs-let-alist" ,emacs-let-alist)
+       ("treepy" ,emacs-treepy)))
+    (home-page "https://github.com/magit/ghub")
+    (synopsis "Emacs client libraries for the APIs of various Git forges")
+    (description
+     "Ghub provides basic support for using the APIs of various Git forges from
 Emacs packages.  It supports the REST APIs of Github, Github GraphQL, Gitlab,
 Gitea, Gogs and Bitbucket.  It abstracts access to API resources using only a
 handful of functions that are not resource-specific.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-typit
   ;; Last release is from 2017.
