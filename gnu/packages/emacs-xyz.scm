@@ -9311,33 +9311,26 @@ customizable by the user.")
     (license license:gpl2+)))
 
 (define-public emacs-zones
-  (let ((commit "3169815c323966ff8e252b44e3558d6d045243fe")
-        (revision "2"))
-    (package
-      (name "emacs-zones")
-      (version (git-version "0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/emacsmirror/zones.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "039msns5596rz0my7fxpanpxwg1lkhpiibm9ppnlzaajx1hszbzl"))
-         (patches
-          (search-patches
-           "emacs-zones-called-interactively.patch"))))
-      (build-system emacs-build-system)
-      (home-page "https://www.emacswiki.org/emacs/Zones")
-      (synopsis "Define and act on multiple zones of buffer text")
-      (description "Library @file{zones.el} lets you easily define and
-subsequently act on multiple zones of buffer text.  You can think of this as
-enlarging the notion of region.  In effect, it can remove the requirement of
-target text being a contiguous sequence of characters.  A set of buffer zones
-is, in effect, a (typically) noncontiguous set of text.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-zones")
+    (version "2019.7.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "zones-" version ".el"))
+       (sha256
+        (base32 "0qp1ba2pkqx9d35g7z8hf8qs2k455krf2a92l4rka3ipsbnmq5k1"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/Zones")
+    (synopsis "Define and act on multiple zones of buffer text")
+    (description
+     "Library @file{zones.el} lets you easily define and subsequently act on
+multiple zones of buffer text.  You can think of this as enlarging the notion
+of region.  In effect, it can remove the requirement of target text being
+a contiguous sequence of characters.  A set of buffer zones is, in effect,
+a (typically) noncontiguous set of text.")
+    (license license:gpl3+)))
 
 (define-public emacs-mu4e-alert
   (package
