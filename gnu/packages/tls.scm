@@ -165,6 +165,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
+    ;; XXX Unversion openconnect's "gnutls" input when ungrafting.
     (replacement gnutls-3.6.13)
     (version "3.6.12")
     (source (origin

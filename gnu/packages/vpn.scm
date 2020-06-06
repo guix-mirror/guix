@@ -259,6 +259,8 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
    (build-system gnu-build-system)
    (propagated-inputs
     `(("libxml2" ,libxml2)
+      ;; XXX ‘DTLS is insecure in GnuTLS v3.6.3 through v3.6.12.’
+      ;; See <https://gitlab.com/gnutls/gnutls/-/issues/960>.
       ("gnutls" ,gnutls-3.6.13)
       ("zlib" ,zlib)))
    (inputs
