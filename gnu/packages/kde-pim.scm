@@ -1595,6 +1595,37 @@ and exchanging calendar data, vCalendar and iCalendar.")
     (license ;; GPL for programs, LGPL for libraries, FDL for documentation
      (list license:gpl2+ license:lgpl2.0+ license:fdl1.2+))))
 
+(define-public kpeoplevcard
+  (package
+    (name "kpeoplevcard")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.kde.org/stable/kpeoplevcard/"
+                                  version "/kpeoplevcard-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hv3fq5k0pps1wdvq9r1zjnr0nxf8qc3vwsnzh9jpvdy79ddzrcd"))))
+    (build-system qt-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (replace 'check-setup
+                    (lambda _
+                      (setenv "HOME" "/tmp")
+                      #t)))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcontacts" ,kcontacts)
+       ("kpeople" ,kpeople)
+       ("qtbase" ,qtbase)))
+    (home-page "https://invent.kde.org/pim/kpeoplevcard")
+    (synopsis "Expose vCard contacts to KPeople")
+    (description
+     "This plugins adds support for vCard (also known as @acronym{VCF,
+Virtual Contact File}) files to the KPeople contact management library.")
+    (license license:lgpl2.1+)))
+
 (define-public kpimcommon
   (package
     (name "kpimcommon")
