@@ -330,6 +330,15 @@ from forcing GEXP-PROMISE."
                    (force-output)
                    (invoke "tar" "xf" #+chromium-source)
 
+                   (format #t "Removing non-free file...~%")
+                   (force-output)
+                   ;; This file has a CC-BY-NC clause according to LICENSES from
+                   ;; the same directory, making it non-free.
+                   (delete-file
+                    (string-append
+                     chromium-dir
+                     "/third_party/blink/perf_tests/svg/resources/HarveyRayner.svg"))
+
                    ;; Ungoogled-Chromium contains a forked subset of the Debian
                    ;; patches.  Disable those, as we apply newer versions later.
                    (substitute* "patches/series"
