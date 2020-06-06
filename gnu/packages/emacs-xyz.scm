@@ -8012,7 +8012,7 @@ target will call @code{compile} on it.")
 (define-public emacs-cider
   (package
     (name "emacs-cider")
-    (version "0.23.0")
+    (version "0.25.0")
     (source
      (origin
        (method git-fetch)
@@ -8021,20 +8021,18 @@ target will call @code{compile} on it.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "05yjkqc6d4grq9z5pxmv3anqh4zlhfg4v46jlccp6ynh030g7axs"))))
+        (base32 "1sdd7vzw948q01kc8im1asiq1j06q0mnn2s8kj83f8sbdnfy0qbk"))))
     (build-system emacs-build-system)
     (arguments
-     '(#:exclude                        ; Don't exclude 'cider-test.el'.
+     '(#:exclude                        ;don't exclude 'cider-test.el'
        '("^\\.dir-locals\\.el$" "^test/")))
     (propagated-inputs
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
-       ("emacs-sesman" ,emacs-sesman)
-       ("emacs-seq" ,emacs-seq)
-       ("emacs-spinner" ,emacs-spinner)
        ("emacs-parseedn" ,emacs-parseedn)
        ("emacs-pkg-info" ,emacs-pkg-info)
-       ("emacs-queue" ,emacs-queue)))
+       ("emacs-queue" ,emacs-queue)
+       ("emacs-sesman" ,emacs-sesman)
+       ("emacs-spinner" ,emacs-spinner)))
     (home-page "https://cider.mx/")
     (synopsis "Clojure development environment for Emacs")
     (description
