@@ -2079,16 +2079,16 @@ AOM, including with alpha.")
     (name "mtpaint")
     ;; The author neither releases tarballs nor uses git version tags.
     ;; Instead, author puts version in git commit title.
-    (version "3.49.25")
+    (version "3.49.27")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/wjaguar/mtPaint")
-             (commit "03b1b0938067b88d86d9f1b1088730f1934d411e")))
+             (commit "26751cd0336414e2f16cbe25c9fe2702f34e7b5c")))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0izm2wvj26566fd8mqvypr7bmv7jnq8qhp4760m7z2wrc4y8pjn1"))))
+        (base32 "12mzai9pqvyb342m21rjz0jxiy75q24sjw6ax147pzy8frzkgd54"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
