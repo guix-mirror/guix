@@ -1375,6 +1375,7 @@ system administrator.")
                   (delete-file-recursively "lib/zlib")
                   #t))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
@@ -1432,7 +1433,22 @@ system administrator.")
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
                 (string-append match "\ndisabled-" match)))
-             #t)))
+             #t))
+         (add-after 'install 'separate-python-output
+           (lambda* (#:key target outputs #:allow-other-keys)
+             (let ((out        (assoc-ref outputs "out"))
+                   (out:python (assoc-ref outputs "python")))
+               (if target
+                   (mkdir-p (string-append out:python "/empty"))
+                   (for-each
+                    (lambda (file)
+                      (let ((old (string-append out "/" file))
+                            (new (string-append out:python "/" file)))
+                        (mkdir-p (dirname new))
+                        (rename-file old new)))
+                    (list "libexec/sudo/python_plugin.so"
+                          "libexec/sudo/python_plugin.la")))
+               #t))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
