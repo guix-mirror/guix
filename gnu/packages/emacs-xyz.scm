@@ -19854,40 +19854,22 @@ invoked.")
       (license license:gpl3+))))
 
 (define-public emacs-web-server
-  (let ((commit "cafa5b7582c57252a0884b2c33da9b18fb678713")
-        (revision "1"))
-    (package
-      (name "emacs-web-server")
-      (version (git-version "0.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/eschulte/emacs-web-server/")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1c0lfqmbs5hvz3fh3c8wgp6ipwmxrwx9xj264bjpj3phixd5419y"))))
-      (build-system emacs-build-system)
-      (native-inputs
-       `(("curl" ,curl)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'set-shell
-             ;; Setting the SHELL environment variable is required for the tests
-             ;; to find sh.
-             (lambda _
-               (setenv "SHELL" (which "sh"))
-               #t)))
-         #:tests? #t
-         #:test-command '("make" "check")))
-      (home-page "https://github.com/eschulte/emacs-web-server/")
-      (synopsis "Web server with handlers in Emacs Lisp")
-      (description "This package supports HTTP GET and POST requests with
+  (package
+    (name "emacs-web-server")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "web-server-" version ".tar"))
+       (sha256
+        (base32 "10lcsl4dg2yr9zjd99gq9jz150wvvh6r5y9pd88l8y9vz16f2lim"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/eschulte/emacs-web-server/")
+    (synopsis "Web server with handlers in Emacs Lisp")
+    (description "This package supports HTTP GET and POST requests with
 url-encoded parameters, as well as web sockets.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-markdown-preview-mode
   (package
