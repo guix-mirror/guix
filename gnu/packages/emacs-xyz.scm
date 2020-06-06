@@ -20427,15 +20427,14 @@ as:
 (define-public emacs-nhexl-mode
   (package
     (name "emacs-nhexl-mode")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/nhexl-mode-"
-             version ".el"))
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "nhexl-mode-" version ".el"))
        (sha256
-        (base32 "1c2q4w6hkvc7z4026hiqdcsm2scd6q35x7b0dk80h8qicsbi14c8"))))
+        (base32 "0qvxfg7sv4iqyjxzaim6b4v9k5hav36qd4vkf9jwzw6p5fri8w8d"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/nhexl-mode.html")
     (synopsis "Minor mode to edit files via hex-dump format")
@@ -20459,7 +20458,7 @@ moving text.  In this minor mode, not only self-inserting keys overwrite
 existing text, but commands like `yank' and @command{kill-region} as well.
 @item It overrides @code{C-u} to use hexadecimal, so you can do @code{C-u a 4
 C-f} to advance by #xa4 characters.
-@end itemize\n")
+@end itemize")
     (license license:gpl3+)))
 
 (define-public emacs-helm-wikipedia
