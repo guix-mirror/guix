@@ -10322,20 +10322,18 @@ and cangjie.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "0.5.0")
+    (version "0.7.0")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tumashu/posframe")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "posframe-" version ".el"))
        (sha256
-        (base32
-         "1fhjxj7gi2pj5rdnmf0gddiwd8iifgjgjp01c01npz1gwwixyqh3"))))
+        (base32 "1kwl83jb5k1hnx0s2qw972v0gjqbbvk4sdcdb1qbdxsyw36sylc9"))))
     (build-system emacs-build-system)
-    ;; emacs-minimal does not include the function font-info
-    (arguments `(#:emacs ,emacs))
+    ;; emacs-minimal does not include the function font-info.
+    (arguments
+     `(#:emacs ,emacs))
     (home-page "https://github.com/tumashu/posframe")
     (synopsis "Pop a posframe (a child frame) at point")
     (description "@code{emacs-posframe} can pop a posframe at point.  A
