@@ -2675,20 +2675,19 @@ in the center.")
 (define-public emacs-undo-tree
   (package
     (name "emacs-undo-tree")
-    (version "0.7.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "http://dr-qubit.org/git/undo-tree.git")
-                    (commit (string-append "release/" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1nr0149y2nvrxj56gc12jqnfl01g6z9ypfsgl6pfg85cw73hnggk"))))
+    (version "0.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "undo-tree-" version ".el"))
+       (sha256
+        (base32 "018ixl802f076sfyf4gkacpgrdpybin88jd8vq9zgyvc6x2dalfa"))))
     (build-system emacs-build-system)
     (home-page "http://www.dr-qubit.org/emacs.php")
     (synopsis "Treat undo history as a tree")
-    (description "Tree-like interface to Emacs undo system, providing
+    (description
+     "Tree-like interface to Emacs undo system, providing
 graphical tree presentation of all previous states of buffer that
 allows easily move between them.")
     (license license:gpl3+)))
