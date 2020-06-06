@@ -10448,15 +10448,15 @@ It should enable you to implement low-level X11 applications.")
 (define-public emacs-exwm
   (package
     (name "emacs-exwm")
-    (version "0.23")
+    (version "0.24")
     (synopsis "Emacs X window manager")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://elpa.gnu.org/packages/exwm-"
-                                  version ".tar"))
-              (sha256
-               (base32
-                "05w1v3wrp1lzz20zd9lcvr5nhk809kgy6svvkbs15xhnr6x55ad5"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "exwm-" version ".tar"))
+       (sha256
+        (base32 "0lj1a3cmbpf4h6x8k6x8cdm1qb51ca6filydnvi5zcda8zpl060s"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-xelb" ,emacs-xelb)))
@@ -10508,8 +10508,9 @@ It should enable you to implement low-level X11 applications.")
                (chmod exwm-executable #o555)
                #t))))))
     (home-page "https://github.com/ch11ng/exwm")
-    (description "EXWM is a full-featured tiling X window manager for Emacs
-built on top of XELB.")
+    (description
+     "EXWM is a full-featured tiling X window manager for Emacs built on top
+of XELB.")
     (license license:gpl3+)))
 
 (define-public emacs-switch-window
