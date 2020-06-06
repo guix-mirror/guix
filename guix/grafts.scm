@@ -20,10 +20,12 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix records)
+  #:use-module (guix combinators)
   #:use-module (guix derivations)
   #:use-module ((guix utils) #:select (%current-system))
   #:use-module (guix sets)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -183,32 +185,47 @@ references."
            (set-current-state (vhash-cons key result cache))
            (return result)))))))
 
-(define (reference-origin drv item)
-  "Return the derivation/output pair among the inputs of DRV, recursively,
-that produces ITEM.  Return #f if ITEM is not produced by a derivation (i.e.,
-it's a content-addressed \"source\"), or if it's not produced by a dependency
-of DRV."
+(define (reference-origins drv items)
+  "Return the derivation/output pairs among the inputs of DRV, recursively,
+that produce ITEMS.  Elements of ITEMS not produced by a derivation (i.e.,
+it's a content-addressed \"source\"), or not produced by a dependency of DRV,
+have no corresponding element in the resulting list."
+  (define (lookup-derivers drv result items)
+    ;; Return RESULT augmented by all the drv/output pairs producing one of
+    ;; ITEMS, and ITEMS stripped of matching items.
+    (fold2 (match-lambda*
+             (((output . file) result items)
+              (if (member file items)
+                  (values (alist-cons drv output result)
+                          (delete file items))
+                  (values result items))))
+           result items
+           (derivation->output-paths drv)))
+
   ;; Perform a breadth-first traversal of the dependency graph of DRV in
-  ;; search of the derivation that produces ITEM.
+  ;; search of the derivations that produce ITEMS.
   (let loop ((drv (list drv))
+             (items items)
+             (result '())
              (visited (setq)))
     (match drv
       (()
-       #f)
+       result)
       ((drv . rest)
-       (if (set-contains? visited drv)
-           (loop rest visited)
-           (let ((inputs (derivation-inputs drv)))
-             (or (any (lambda (input)
-                        (let ((drv (derivation-input-derivation input)))
-                          (any (match-lambda
-                                 ((output . file)
-                                  (and (string=? file item)
-                                       (cons drv output))))
-                               (derivation->output-paths drv))))
-                      inputs)
-                 (loop (append rest (map derivation-input-derivation inputs))
-                       (set-insert drv visited)))))))))
+       (cond ((null? items)
+              result)
+             ((set-contains? visited drv)
+              (loop rest items result visited))
+             (else
+              (let*-values (((inputs)
+                             (map derivation-input-derivation
+                                  (derivation-inputs drv)))
+                            ((result items)
+                             (fold2 lookup-derivers
+                                    result items inputs)))
+                (loop (append rest inputs)
+                      items result
+                      (set-insert drv visited)))))))))
 
 (define* (cumulative-grafts store drv grafts
                             #:key
@@ -233,25 +250,27 @@ derivations to the corresponding set of grafts."
       (_
        #f)))
 
-  (define (dependency-grafts item)
-    (match (reference-origin drv item)
-      ((drv . output)
-       ;; If GRAFTS already contains a graft from DRV, do not override it.
-       (if (find (cut graft-origin? drv <>) grafts)
-           (state-return grafts)
-           (cumulative-grafts store drv grafts
-                              #:outputs (list output)
-                              #:guile guile
-                              #:system system)))
-      (#f
-       (state-return grafts))))
+  (define (dependency-grafts items)
+    (mapm %store-monad
+          (lambda (drv+output)
+            (match drv+output
+              ((drv . output)
+               ;; If GRAFTS already contains a graft from DRV, do not
+               ;; override it.
+               (if (find (cut graft-origin? drv <>) grafts)
+                   (state-return grafts)
+                   (cumulative-grafts store drv grafts
+                                      #:outputs (list output)
+                                      #:guile guile
+                                      #:system system)))))
+          (reference-origins drv items)))
 
   (with-cache (cons (derivation-file-name drv) outputs)
     (match (non-self-references store drv outputs)
       (()                                         ;no dependencies
        (return grafts))
       (deps                                       ;one or more dependencies
-       (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps)))
+       (mlet %state-monad ((grafts (dependency-grafts deps)))
          (let ((grafts (delete-duplicates (concatenate grafts) equal?)))
            (match (filter (lambda (graft)
                             (member (graft-origin-file-name graft) deps))
