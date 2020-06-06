@@ -1277,23 +1277,27 @@ to (see 'graft-derivation'.)"
 
   (define native-grafts
     (let ((->graft (input-graft store system)))
-      (fold-bag-dependencies (lambda (package grafts)
-                               (match (->graft package)
-                                 (#f    grafts)
-                                 (graft (cons graft grafts))))
-                             '()
-                             bag)))
+      (parameterize ((%current-system system)
+                     (%current-target-system #f))
+        (fold-bag-dependencies (lambda (package grafts)
+                                 (match (->graft package)
+                                   (#f    grafts)
+                                   (graft (cons graft grafts))))
+                               '()
+                               bag))))
 
   (define target-grafts
     (if target
         (let ((->graft (input-cross-graft store target system)))
-          (fold-bag-dependencies (lambda (package grafts)
-                                   (match (->graft package)
-                                     (#f    grafts)
-                                     (graft (cons graft grafts))))
-                                 '()
-                                 bag
-                                 #:native? #f))
+          (parameterize ((%current-system system)
+                         (%current-target-system target))
+            (fold-bag-dependencies (lambda (package grafts)
+                                     (match (->graft package)
+                                       (#f    grafts)
+                                       (graft (cons graft grafts))))
+                                   '()
+                                   bag
+                                   #:native? #f)))
         '()))
 
   ;; We can end up with several identical grafts if we stumble upon packages

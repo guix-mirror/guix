@@ -1006,6 +1006,39 @@
           (assoc-ref (bag-build-inputs bag) "libc")
           (assoc-ref (bag-build-inputs bag) "coreutils"))))
 
+(test-assert "package->bag, sensitivity to %current-target-system"
+  ;; https://bugs.gnu.org/41713
+  (let* ((lower (lambda* (name #:key system target inputs native-inputs
+                               #:allow-other-keys)
+                  (and (not target)
+                       (bag (name name) (system system) (target target)
+                            (build-inputs native-inputs)
+                            (host-inputs inputs)
+                            (build (lambda* (store name inputs
+                                                   #:key system target
+                                                   #:allow-other-keys)
+                                     (build-expression->derivation
+                                      store "foo" '(mkdir %output))))))))
+         (bs    (build-system
+                  (name 'build-system-without-cross-compilation)
+                  (description "Does not support cross compilation.")
+                  (lower lower)))
+         (dep   (dummy-package "dep" (build-system bs)))
+         (pkg   (dummy-package "example"
+                  (native-inputs `(("dep" ,dep)))))
+         (do-not-build (lambda (continue store lst . _) lst)))
+    (equal? (with-build-handler do-not-build
+              (parameterize ((%current-target-system "powerpc64le-linux-gnu")
+                             (%graft? #t))
+                (package-cross-derivation %store pkg
+                                          (%current-target-system)
+                                          #:graft? #t)))
+            (with-build-handler do-not-build
+              (package-cross-derivation %store
+                                        (package (inherit pkg))
+                                        "powerpc64le-linux-gnu"
+                                        #:graft? #t)))))
+
 (test-equal "package->bag, cross-compilation"
   `(,(%current-system) "foo86-hurd"
     (,(package-source gnu-make))
