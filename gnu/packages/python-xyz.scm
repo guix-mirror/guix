@@ -7336,14 +7336,13 @@ It is written entirely in Python.")
 (define-public python-backports-csv
   (package
     (name "python-backports-csv")
-    (version "1.0.5")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "backports.csv" version))
        (sha256
-        (base32
-         "1imzbrradkfn8s2m1qcimyn74dn1mz2p3j381jljn166rf2i6hlc"))))
+        (base32 "0vdx5jlhs91iizc8j8l8811nqprwvdx39pgkdc82w2qkfgzxyxqj"))))
     (build-system python-build-system)
     (home-page "https://github.com/ryanhiebert/backports.csv")
     (synopsis "Backport of Python 3's csv module for Python 2")
