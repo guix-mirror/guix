@@ -239,6 +239,15 @@ Additionally, various channel-specific options can be negotiated.")
                                "See LICENSE in the distribution."))
    (home-page "https://www.openssh.com/")))
 
+;; OpenSSH without X support. This allows to use OpenSSH without dragging X
+;; libraries to the closure.
+(define-public openssh-sans-x
+  (package
+    (inherit openssh)
+    (name "openssh-sans-x")
+    (inputs (alist-delete "xauth" (package-inputs openssh)))
+    (synopsis "OpenSSH client and server without X11 support")))
+
 (define-public guile-ssh
   (package
     (name "guile-ssh")
