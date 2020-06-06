@@ -21,7 +21,6 @@
   #:use-module ((guix git) #:select (with-repository))
   #:use-module (guix utils)
   #:use-module (guix build utils)
-  #:use-module ((guix tests gnupg) #:select (with-environment-variables))
   #:use-module (ice-9 match)
   #:use-module (ice-9 control)
   #:export (git-command

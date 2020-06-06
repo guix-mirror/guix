@@ -22,27 +22,7 @@
   #:use-module (ice-9 match)
   #:export (gpg-command
             gpgconf-command
-            with-fresh-gnupg-setup
-
-            with-environment-variables))
-
-(define (call-with-environment-variables variables thunk)
-  "Call THUNK with the environment VARIABLES set."
-  (let ((environment (environ)))
-    (dynamic-wind
-      (lambda ()
-        (for-each (match-lambda
-                    ((variable value)
-                     (setenv variable value)))
-                  variables))
-      thunk
-      (lambda ()
-        (environ environment)))))
-
-(define-syntax-rule (with-environment-variables variables exp ...)
-  "Evaluate EXP with the given environment VARIABLES set."
-  (call-with-environment-variables variables
-                                   (lambda () exp ...)))
+            with-fresh-gnupg-setup))
 
 (define gpg-command
   (make-parameter "gpg"))
