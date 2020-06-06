@@ -66,6 +66,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -1292,6 +1293,37 @@ which are used in DBus communication.")
     (description "Prison is a Qt-based barcode abstraction layer/library and
 provides uniform access to generation of barcodes with data.")
     (license license:lgpl2.1+)))
+
+(define-public pulseaudio-qt
+  (package
+    (name "pulseaudio-qt")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.kde.org/stable/pulseaudio-qt"
+                                  "/pulseaudio-qt-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1i0ql68kxv9jxs24rsd3s7jhjid3f2fq56fj4wbp16zb4wd14099"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("pulseaudio" ,pulseaudio)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtbase" ,qtbase)))
+    (home-page "https://invent.kde.org/libraries/pulseaudio-qt/")
+    (synopsis "Qt bindings for PulseAudio")
+    (description
+     "pulseaudio-qt is a Qt-style wrapper for libpulse.  It allows querying
+and manipulation of various PulseAudio objects such as @code{Sinks},
+@code{Sources} and @code{Streams}.  It does not wrap the full feature set of
+libpulse.")
+    ;; User can choose between LGPL version 2.1 or 3.0; or
+    ;; "any later version accepted by the membership of KDE e.V".
+    (license (list license:lgpl2.1 license:lgpl3))))
 
 (define-public qqc2-desktop-style
   (package
