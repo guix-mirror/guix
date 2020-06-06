@@ -2247,28 +2247,20 @@ window).")
 (define-public emacs-mmm-mode
   (package
     (name "emacs-mmm-mode")
-    (version "0.5.7")
+    (version "0.5.8")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/purcell/mmm-mode.git")
-             (commit version)))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "mmm-mode-" version ".tar"))
        (sha256
-        (base32
-         "0lxd55yhz0ag7v1ydff55bg4h8snq5lbk8cjwxqpyq6gh4v7md1h"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("emacs" ,emacs-minimal)
-       ("texinfo" ,texinfo-5)))               ;fails to build with Texinfo 6.7
+        (base32 "05ckf4zapdpvnd3sqpw6kxaa567zh536a36m9qzx3sqyjbyn5fb4"))))
+    (build-system emacs-build-system)
     (home-page "https://github.com/purcell/mmm-mode")
     (synopsis "Allow multiple major modes in an Emacs buffer")
     (description
-     "MMM Mode is a minor mode that allows multiple major modes to coexist in a
-single buffer.")
+     "MMM Mode is a minor mode that allows multiple major modes to coexist in
+a single buffer.")
     (license license:gpl3+)))
 
 (define-public emacs-mmt
