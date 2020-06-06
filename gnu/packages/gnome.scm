@@ -1668,7 +1668,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.34.2")
+    (version "3.36.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/evince/"
@@ -1676,7 +1676,7 @@ forgotten when the session ends.")
                                  "evince-" version ".tar.xz"))
              (sha256
               (base32
-               "05q6v9lssd21623mnj2p49clj9v9csw9kay7n4nklki025grbh1w"))))
+               "1msbb66lasikpfjpkwsvi7h22hqmk275850ilpdqwbd0b39vzf4c"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus" "--enable-introspection")
@@ -1726,8 +1726,7 @@ forgotten when the session ends.")
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
-    (home-page
-     "https://www.gnome.org/projects/evince/")
+    (home-page "https://www.gnome.org/projects/evince/")
     (synopsis "GNOME's document viewer")
     (description
      "Evince is a document viewer for multiple document formats.  It
