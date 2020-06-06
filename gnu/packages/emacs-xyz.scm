@@ -20809,21 +20809,24 @@ acting like notes that are made @emph{in} the document.")
       (license license:gpl3+))))
 
 (define-public emacs-multi-term
-  (let ((commit "0804b11e52b960c80f5cd0712ee1e53ae70d83a4"))
+  ;; No upstream release.  Extract version from main file.
+  (let ((commit "017c77c550115936860e2ea71b88e585371475d5")
+        (revision "0"))
     (package
       (name "emacs-multi-term")
-      (version "1.2")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/manateelazycat/multi-term.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0apvidmvb7rv05qjnjhax42ma8wrimik5vxx620dlbv17svz7iyf"))))
+      (version (git-version "1.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/manateelazycat/multi-term.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "043dqd8i8h6hbcg11rzprxin2yq5lb902zlrb7mxah44vyp8wrdi"))))
       (build-system emacs-build-system)
-      (inputs `(("zsh" ,zsh)))
+      (inputs
+       `(("zsh" ,zsh)))
       (home-page "https://github.com/manateelazycat/multi-term")
       (synopsis "Manage multiple terminal buffers in Emacs")
       (description
