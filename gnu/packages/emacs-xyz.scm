@@ -9139,31 +9139,23 @@ editing nginx config files.")
     (license license:gpl2+)))
 
 (define-public emacs-stream
-  (let ((commit "a3f3da155a49c133e2692bd8789b35492bfdc4f7")
-        (revision "1"))
-    (package
-      (name "emacs-stream")
-      (version (git-version "2.2.4" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Emacsmirror/stream.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0aig0yjb9z752ijh0mzildjmh44j051inchga8qll01dr8wf7332"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:tests? #t
-         #:test-command '("emacs" "--batch"
-                          "-l" "tests/stream-tests.el"
-                          "-f" "ert-run-tests-batch-and-exit")))
-      (home-page "https://github.com/Emacsmirror/stream")
-      (synopsis "Implementation of streams for Emacs")
-      (description "This library provides an implementation of streams for Emacs.
+  (package
+    (name "emacs-stream")
+    (version "2.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "stream-" version ".tar"))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00c3n4gyxzv7vczqms0d62kl8zsmjfyxa92mwxn2snyx857a9jfw"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/stream.html")
+    (synopsis "Implementation of streams for Emacs")
+    (description "This library provides an implementation of streams for Emacs.
 Streams are implemented as delayed evaluation of cons cells.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-cl-print
   (let ((commit "1a70c553dfb04352afb5b8696fe0cef8acc8f991")
