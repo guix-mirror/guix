@@ -8292,11 +8292,11 @@ using package inferred style.")
       (license license:gpl3+))))
 
 (define-public emacs-lua-mode
-  (let ((commit "1f596a93b3f1caadd7bba01030f8c179b029600b")
-        (revision "1"))
+  (let ((commit "35b6e4c20b8b4eaf783ccc8e613d0dd06dbd165c")
+        (revision "0"))
     (package
       (name "emacs-lua-mode")
-      (version (git-version "20191204" revision commit))
+      (version (git-version "20200508" revision commit))
       (home-page "https://github.com/immerrr/lua-mode/")
       (source (origin
                 (method git-fetch)
@@ -8306,14 +8306,14 @@ using package inferred style.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0i4adlaik3qjx1wkb7rwk2clvj7ci2g8pm0siyb3yk90r6z5mspi"))))
+                  "1hai6rqjm5py0bp57nhggmj9qigwdj3a46ngacpnjc1qmy9kkgfk"))))
       (build-system emacs-build-system)
       (arguments
        `(#:tests? #t
-	 #:test-command '("buttercup" "-l" "lua-mode.el")))
+         #:test-command '("buttercup" "-l" "lua-mode.el")))
       (native-inputs
        `(("emacs-buttercup" ,emacs-buttercup)
-	 ("lua" ,lua)))
+         ("lua" ,lua)))
       (synopsis "Major mode for lua")
       (description
        "This Emacs package provides a mode for @uref{https://www.lua.org/,
