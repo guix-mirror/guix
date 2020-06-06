@@ -5505,10 +5505,10 @@ the default @code{nsswitch} and the experimental @code{umich_ldap}.")
     (home-page "https://mcelog.org/")
     (synopsis "Machine check monitor for x86 Linux systems")
     (description
-     "The mcelog daemon is required by the Linux kernel to log memory, I/O, CPU,
-and other hardware errors on x86 systems.  It can also perform user-defined
-tasks, such as bringing bad pages off-line, when configurable error thresholds
-are exceeded.")
+     "The mcelog daemon logs memory, I/O, CPU, and other hardware errors on x86
+systems running the kernel Linux.  It can also perform user-defined tasks, such
+as bringing bad pages off-line, when configurable error thresholds are
+exceeded.")
     (license license:gpl2)))
 
 (define-public mtd-utils
