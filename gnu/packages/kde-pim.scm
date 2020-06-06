@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -308,7 +309,10 @@ wrapping notes into KMime::Message objects.")
         (base32 "16qzs2cs4nxwrpwcdgwry95qn6wmg8s1p4w3qajx1ahkgwmsh11s"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+
+       ;; For tests.
+       ("dbus" ,dbus)))
     (inputs
      `(("akonadi" ,akonadi)
        ("akonadi-mime" ,akonadi-mime)
@@ -327,7 +331,19 @@ wrapping notes into KMime::Message objects.")
        ("qtbase" ,qtbase)
        ("xapian" ,xapian)))
     (arguments
-     `(#:tests? #f)) ;; TODO: needs dbus
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-failing-test
+                    (lambda _
+                      ;; FIXME: This test fails because it fails to establish
+                      ;; a socket connection, seemingly due to failure during
+                      ;; DBus communication.
+                      (substitute* "agent/autotests/CMakeLists.txt"
+                        ((".*schedulertest\\.cpp.*")
+                         ""))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (invoke "dbus-launch" "ctest"))))))
     (home-page "https://api.kde.org/stable/kdepimlibs-apidocs/akonadi/html/")
     (synopsis "Akonadi search library")
     (description "This package provides a library used to search in the
