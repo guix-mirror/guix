@@ -14147,7 +14147,7 @@ exception message with a traceback that points to the culprit.")
 (define-public python-mwclient
   (package
     (name "python-mwclient")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -14157,8 +14157,7 @@ exception message with a traceback that points to the culprit.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1c3q6lwmb05yqywc4ya98ca7hsl15niili8rccl4n1yqp77c103v"))))
+        (base32 "120snnsh9n5svfwkyj1w9jrxf99jnqm0jk282yypd3lpyca1l9hj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests-oauthlib" ,python-requests-oauthlib)
