@@ -3980,7 +3980,7 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.0.0.3")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3989,7 +3989,7 @@ tactics.")
                     (version-major+minor version) "-src.tar.gz"))
               (sha256
                (base32
-                "13vi5kh9ahws4f52421cbyw0jn7pmbnld358lqfmr6flql7ilj3b"))))
+                "1ldd9cbvl694ps4sapr8213m3zjrci7gii5x3kjjfalkikmndpd2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
