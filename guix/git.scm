@@ -243,18 +243,23 @@ Return true on success, false on failure."
               (G_ "Support for submodules is missing; \
 please upgrade Guile-Git.~%"))))
 
+(define-syntax-rule (false-if-git-not-found exp)
+  "Evaluate EXP, returning #false if a GIT_ENOTFOUND error is raised."
+  (catch 'git-error
+    (lambda ()
+      exp)
+    (lambda (key error . rest)
+      (if (= GIT_ENOTFOUND (git-error-code error))
+          #f
+          (apply throw key error rest)))))
+
 (define (reference-available? repository ref)
   "Return true if REF, a reference such as '(commit . \"cabba9e\"), is
 definitely available in REPOSITORY, false otherwise."
   (match ref
     (('commit . commit)
-     (catch 'git-error
-       (lambda ()
-         (->bool (commit-lookup repository (string->oid commit))))
-       (lambda (key error . rest)
-         (if (= GIT_ENOTFOUND (git-error-code error))
-             #f
-             (apply throw key error rest)))))
+     (false-if-git-not-found
+      (->bool (commit-lookup repository (string->oid commit)))))
     (_
      #f)))
 
@@ -311,10 +316,13 @@ When RECURSIVE? is true, check out submodules as well, if any."
             (new      (and starting-commit
                            (commit-lookup repository oid)))
             (old      (and starting-commit
-                           (commit-lookup repository
-                                          (string->oid starting-commit))))
+                           (false-if-git-not-found
+                            (commit-lookup repository
+                                           (string->oid starting-commit)))))
             (relation (and starting-commit
-                           (commit-relation old new))))
+                           (if old
+                               (commit-relation old new)
+                               'unrelated))))
 
        ;; Reclaim file descriptors and memory mappings associated with
        ;; REPOSITORY as soon as possible.
