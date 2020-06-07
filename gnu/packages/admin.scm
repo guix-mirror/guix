@@ -85,6 +85,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -3909,4 +3910,77 @@ file-types for easier parsing in scripts.")
     (synopsis "Command-line tool to print JSON data as a table in the terminal")
     (description "@code{jtbl} accepts piped JSON data from stdin and outputs a
 text table representation to stdout.")
+    (license license:expat)))
+
+(define-public hosts
+  (package
+    (name "hosts")
+    (version "3.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/xwmx/hosts.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ni4z89kxzgwm26hhx908g04f2h0fypy7lgfa0rvsz8d0wslgcsn"))))
+    (build-system trivial-build-system)
+    (inputs
+     `(("bats" ,bats) ;for test
+       ("awk" ,gawk)
+       ("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("diffutils" ,diffutils)
+       ("grep" ,grep)
+       ("ncurses" ,ncurses) ;tput
+       ("sed" ,sed)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         ;; copy source
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+         ;; patch-shebang phase
+         (setenv "PATH"
+                 (string-append (assoc-ref %build-inputs "bash") "/bin"
+                                ":" (assoc-ref %build-inputs "awk") "/bin"
+                                ":" (assoc-ref %build-inputs "coreutils") "/bin"
+                                ":" (assoc-ref %build-inputs "diffutils") "/bin"
+                                ":" (assoc-ref %build-inputs "grep") "/bin"
+                                ":" (assoc-ref %build-inputs "ncurses") "/bin"
+                                ":" (assoc-ref %build-inputs "sed") "/bin"
+                                ":" "/run/setuid-programs"
+                                ":" (getenv "PATH")))
+         (substitute* "hosts"
+           (("#!/usr/bin/env bash")
+            (string-append "#!" (which "bash")
+                           "\nPATH=" (getenv "PATH"))))
+         ;; check phase
+         (setenv "TERM" "linux") ;set to tty for test
+         (invoke (string-append (assoc-ref %build-inputs "bats") "/bin/bats")
+                 "test")
+         ;; install phase
+         (install-file "hosts" (string-append %output "/bin"))
+         (let ((bash-completion
+                (string-append %output "/etc/bash_completion.d")))
+           (mkdir-p bash-completion)
+           (copy-file "etc/hosts-completion.bash"
+                      (string-append bash-completion "/hosts")))
+         (let ((zsh-completion
+                (string-append %output "/share/zsh/site-functions")))
+           (mkdir-p zsh-completion)
+           (copy-file "etc/hosts-completion.zsh"
+                      (string-append zsh-completion "/_hosts")))
+         (let ((doc (string-append %output "/share/doc/" ,name "-" ,version)))
+           (mkdir-p doc)
+           (install-file "LICENSE" doc)
+           (install-file "README.md" doc))
+         #t)))
+    (home-page "https://github.com/xwmx/hosts/")
+    (synopsis "Bash script for editing @file{/etc/hosts} file")
+    (description "Hosts is a command line program for managing
+@file{/etc/hosts} entries.  @command{hosts} works with existing hosts files
+and entries, providing commands to add, remove, comment, and search.")
     (license license:expat)))
