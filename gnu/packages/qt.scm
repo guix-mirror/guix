@@ -1887,7 +1887,7 @@ and binaries removed, and adds modular support for using system libraries.")
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.19.18")
+    (version "4.19.22")
     (source
       (origin
         (method url-fetch)
@@ -1895,7 +1895,7 @@ and binaries removed, and adds modular support for using system libraries.")
                             "Downloads/sip/" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "07kyd56xgbb40ljb022rq82shgxprlbl0z27mpf1b6zd00w8dgf0"))))
+          "0idywc326l8v1m3maprg1aq2gph67mmnnsskvlwfx8n19s16idz1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
