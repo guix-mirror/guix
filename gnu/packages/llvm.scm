@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -510,7 +511,11 @@ output), and Binutils.")
        (uri (llvm-download-uri "llvm" version))
        (sha256
         (base32
-         "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))))))
+         "16hwp3qa54c3a3v7h8nlw0fh5criqh0hlr1skybyk0cz70gyx880"))
+       (patch-flags '("-p2"))
+       (patches (search-patches
+                  "llvm-9-fix-scev-miscompilation.patch"
+                  "llvm-9-fix-lpad-miscompilation.patch"))))))
 
 (define-public clang-runtime-9
   (clang-runtime-from-llvm

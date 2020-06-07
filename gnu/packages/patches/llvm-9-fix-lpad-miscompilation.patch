@@ -1,0 +1,97 @@
+From 011fb5bf8b31316472fccb1a19c91912246df9b2 Mon Sep 17 00:00:00 2001
+From: Reid Kleckner <rnk@google.com>
+Date: Sat, 28 Mar 2020 11:03:14 -0700
+Subject: [PATCH] [CodeGen] Fix sinking local values in lpads with phis
+
+There was already a test case for landingpads to handle this case, but I
+had forgotten to consider PHI instructions preceding the EH_LABEL in the
+landingpad.
+
+PR45261
+---
+ llvm/lib/CodeGen/SelectionDAG/FastISel.cpp | 17 +++++++++-
+ llvm/test/CodeGen/X86/sink-local-value.ll  | 36 ++++++++++++++++++++++
+ 2 files changed, 52 insertions(+), 1 deletion(-)
+
+diff --git a/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp b/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
+index 5ac3606dc662..2638b1e8a05c 100644
+--- a/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
++++ b/llvm/lib/CodeGen/SelectionDAG/FastISel.cpp
+@@ -225,6 +225,21 @@ static bool isRegUsedByPhiNodes(unsigned DefReg,
+   return false;
+ }
+ 
++static bool isTerminatingEHLabel(MachineBasicBlock *MBB, MachineInstr &MI) {
++  // Ignore non-EH labels.
++  if (!MI.isEHLabel())
++    return false;
++
++  // Any EH label outside a landing pad must be for an invoke. Consider it a
++  // terminator.
++  if (!MBB->isEHPad())
++    return true;
++
++  // If this is a landingpad, the first non-phi instruction will be an EH_LABEL.
++  // Don't consider that label to be a terminator.
++  return MI.getIterator() != MBB->getFirstNonPHI();
++}
++
+ /// Build a map of instruction orders. Return the first terminator and its
+ /// order. Consider EH_LABEL instructions to be terminators as well, since local
+ /// values for phis after invokes must be materialized before the call.
+@@ -233,7 +248,7 @@ void FastISel::InstOrderMap::initialize(
+   unsigned Order = 0;
+   for (MachineInstr &I : *MBB) {
+     if (!FirstTerminator &&
+-        (I.isTerminator() || (I.isEHLabel() && &I != &MBB->front()))) {
++        (I.isTerminator() || isTerminatingEHLabel(MBB, I))) {
+       FirstTerminator = &I;
+       FirstTerminatorOrder = Order;
+     }
+diff --git a/llvm/test/CodeGen/X86/sink-local-value.ll b/llvm/test/CodeGen/X86/sink-local-value.ll
+index b0e511ac1189..f7d861ac9b6c 100644
+--- a/llvm/test/CodeGen/X86/sink-local-value.ll
++++ b/llvm/test/CodeGen/X86/sink-local-value.ll
+@@ -145,6 +145,42 @@ try.cont:                                         ; preds = %entry, %lpad
+ ; CHECK:         retl
+ 
+ 
++define i32 @lpad_phi() personality i32 (...)* @__gxx_personality_v0 {
++entry:
++  store i32 42, i32* @sink_across
++  invoke void @may_throw()
++          to label %try.cont unwind label %lpad
++
++lpad:                                             ; preds = %entry
++  %p = phi i32 [ 11, %entry ]  ; Trivial, but -O0 keeps it
++  %0 = landingpad { i8*, i32 }
++          catch i8* null
++  store i32 %p, i32* @sink_across
++  br label %try.cont
++
++try.cont:                                         ; preds = %entry, %lpad
++  %r.0 = phi i32 [ 13, %entry ], [ 55, %lpad ]
++  ret i32 %r.0
++}
++
++; The constant materialization should be *after* the stores to sink_across, but
++; before any EH_LABEL.
++
++; CHECK-LABEL: lpad_phi:
++; CHECK:         movl    $42, sink_across
++; CHECK:         movl    $13, %{{[a-z]*}}
++; CHECK: .Ltmp{{.*}}:
++; CHECK:         calll   may_throw
++; CHECK: .Ltmp{{.*}}:
++; CHECK:         jmp     .LBB{{.*}}
++; CHECK: .LBB{{.*}}:                                # %lpad
++; CHECK-NEXT: .Ltmp{{.*}}:
++; CHECK:         movl    {{.*}}, sink_across
++; CHECK:         movl    $55, %{{[a-z]*}}
++; CHECK: .LBB{{.*}}:                                # %try.cont
++; CHECK:         retl
++
++
+ ; Function Attrs: nounwind readnone speculatable
+ declare void @llvm.dbg.value(metadata, metadata, metadata) #0
+ 
