@@ -2064,7 +2064,6 @@ contain over 620 classes.")
        ("qtsvg" ,qtsvg)
        ("qtdeclarative" ,qtdeclarative)
        ("qtwebchannel" ,qtwebchannel)
-       ("python-pyqt" ,python-pyqt)
        ("qtwebengine" ,qtwebengine)))
     (arguments
      `(#:modules ((srfi srfi-1)
