@@ -6490,8 +6490,8 @@ S-expression.")
     (license license:gpl3+)))
 
 (define-public emacs-lispyville
-  (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
-        (revision "1"))
+  (let ((commit "1bf38088c981f5ab4ef2e2684952ab6af96378db")
+        (revision "2"))
     (package
       (name "emacs-lispyville")
       (version (git-version "0.1" revision commit))
@@ -6501,31 +6501,12 @@ S-expression.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0f6srwj1qqkfkbmp5n5pjvi6gm7b7xav05p5hrs2i83rjrakzzqx"))
+                  "07z8qqvaxf963kwn7l2gk47989zb7r3d8ybqjs2cg6hzmzb77wbw"))
                 (file-name (git-file-name name version))))
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
          ("emacs-lispy" ,emacs-lispy)))
       (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         ;; XXX: mysterious whitespace issue with one test
-         (modify-phases %standard-phases
-           (add-before 'check 'make-test-writable
-             (lambda _
-               (make-file-writable "lispyville-test.el")
-               #t))
-           (add-after 'make-test-writable 'remove-test
-             (lambda _
-               (emacs-batch-edit-file "lispyville-test.el"
-                 `(progn (progn (goto-char (point-min))
-                                (re-search-forward
-                                 "ert-deftest lispyville-comment-and-clone-dwim")
-                                (beginning-of-line)
-                                (kill-sexp))
-                         (basic-save-buffer))))))
-         #:tests? #t
-         #:test-command '("make" "test")))
       (synopsis "Minor mode for integrating Evil with lispy")
       (description
        "LispyVille's main purpose is to provide a Lisp editing environment
