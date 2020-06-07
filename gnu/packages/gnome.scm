@@ -1286,6 +1286,19 @@ offline sources, providing a centralized place for managing your contacts.")
                  (("\"locale\"")
                   (string-append "\"" libc "/bin/locale\"")))
                #t)))
+         (add-before 'configure 'patch-bubblewrap
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libgnome-desktop/gnome-desktop-thumbnail-script.c"
+               (("\"bwrap\",")
+                (string-append "\"" (which "bwrap") "\","))
+               (("\"--ro-bind\", \"/usr\", \"/usr\",")
+                (string-append "\"--ro-bind\", \""
+                               (%store-directory)
+                               "\", \""
+                               (%store-directory)
+                               "\","))
+               (("\"--ro-bind\", \"/etc/ld.so.cache\", \"/etc/ld.so.cache\",") ""))
+             #t))
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Tests require a running X server and locales.
@@ -1315,6 +1328,7 @@ offline sources, providing a centralized place for managing your contacts.")
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
+       ("bubblewrap" ,bubblewrap)
        ("libxext" ,libxext)
        ("libxkbfile" ,libxkbfile)
        ("libxrandr" ,libxrandr)))
