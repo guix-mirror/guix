@@ -1945,18 +1945,21 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.12.3")
+    (version "5.14.2")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://www.riverbankcomputing.com/static/"
-                            "Downloads/PyQt5/" version "/PyQt5_gpl-"
-                            version ".tar.gz"))
+        ;; PyPI is the canonical distribution point of PyQt.  Older
+        ;; releases are available from the web site.
+        (uri (list (pypi-uri "PyQt5" version)
+                   (string-append "https://www.riverbankcomputing.com/static/"
+                                  "Downloads/PyQt5/" version "/PyQt5-"
+                                  version ".tar.gz")))
+        (file-name (string-append "PyQt5-"version ".tar.gz"))
         (sha256
          (base32
-          "041155bdzp57jy747p5d59740c55yy3241cy1x2lgcdsvqvzmc0d"))
+          "1c4y4qi1l540gd125ikj0al00k5pg65kmqaixcfbzslrsrphq8xx"))
        (patches (search-patches "pyqt-configure.patch"
-                                "pyqt-unbundled-qt.patch"
                                 "pyqt-public-sip.patch"))))
     (build-system gnu-build-system)
     (native-inputs
