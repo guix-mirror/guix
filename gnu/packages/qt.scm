@@ -2037,16 +2037,19 @@ contain over 620 classes.")
 (define-public python-pyqtwebengine
   (package
     (name "python-pyqtwebengine")
-    (version "5.12.1")
+    (version "5.14.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://www.riverbankcomputing.com/static/Downloads/PyQtWebEngine/"
-            version "/PyQtWebEngine_gpl-" version ".tar.gz"))
+       ;; The newest releases are only available on PyPI.  Older ones
+       ;; are mirrored at the upstream home page.
+       (uri (list (pypi-uri "PyQtWebEngine" version)
+                  (string-append "https://www.riverbankcomputing.com/static"
+                                 "/Downloads/PyQtWebEngine/" version
+                                 "/PyQtWebEngine-" version ".tar.gz")))
        (sha256
         (base32
-         "0wylkd7fh2g27y3710rpxmj9wx0wpi3z7qbv6khiddm15rkh81w6"))))
+         "14hw49akb35n9pgiw564x8ykmsifihn9p2ax2x4zmywb3w2ra5g1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python)
