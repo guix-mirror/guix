@@ -39,6 +39,7 @@
             honor-system-x509-certificates!
 
             with-repository
+            false-if-git-not-found
             update-cached-checkout
             url+commit->name
             latest-repository-commit
