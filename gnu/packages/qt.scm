@@ -1901,7 +1901,10 @@ and binaries removed, and adds modular support for using system libraries.")
      `(("python" ,python-wrapper)))
     (arguments
      `(#:tests? #f ; no check target
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
        #:modules ((srfi srfi-1)
+                  ((guix build python-build-system) #:select (python-version))
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
@@ -1911,14 +1914,8 @@ and binaries removed, and adds modular support for using system libraries.")
                     (bin (string-append out "/bin"))
                     (include (string-append out "/include"))
                     (python (assoc-ref inputs "python"))
-                    (python-version
-                      (last (string-split python #\-)))
-                    (python-major+minor
-                      (string-join
-                        (take (string-split python-version #\.) 2)
-                        "."))
                     (lib (string-append out "/lib/python"
-                                        python-major+minor
+                                        (python-version python)
                                         "/site-packages")))
                (invoke "python" "configure.py"
                        "--bindir" bin
