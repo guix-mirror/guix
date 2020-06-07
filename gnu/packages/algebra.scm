@@ -440,15 +440,14 @@ or text interfaces) or as a C++ library.")
 (define-public flint
   (package
    (name "flint")
-   (version "2.5.2")
+   (version "2.6.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://flintlib.org/flint-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "11syazv1a8rrnac3wj3hnyhhflpqcmq02q8pqk2m6g2k6h0gxwfb"))
-            (patches (search-patches "flint-ldconfig.patch"))))
+                     "0h08a71kn8347zsqjamqnmrxjpsnnzpmhvxb6d2xmfrcs6nyv2ch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gmp" ,gmp)
