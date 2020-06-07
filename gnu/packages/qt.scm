@@ -1984,7 +1984,10 @@ module provides support functions to the automatically generated code.")
        ("qtxmlpatterns" ,qtxmlpatterns)))
     (arguments
      `(#:modules ((srfi srfi-1)
+                  ((guix build python-build-system) #:select (python-version))
                   ,@%gnu-build-system-modules)
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
          ;; When building python-pyqtwebengine, <qprinter.h> can not be
@@ -2007,14 +2010,8 @@ module provides support functions to the automatically generated code.")
                     (designer (string-append plugins "/designer"))
                     (qml (string-append plugins "/PyQt5"))
                     (python (assoc-ref inputs "python"))
-                    (python-version
-                      (last (string-split python #\-)))
-                    (python-major+minor
-                      (string-join
-                        (take (string-split python-version #\.) 2)
-                        "."))
                     (lib (string-append out "/lib/python"
-                                        python-major+minor
+                                        (python-version python)
                                         "/site-packages"))
                     (stubs (string-append lib "/PyQt5")))
                (invoke "python" "configure.py"
