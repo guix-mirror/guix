@@ -6010,22 +6010,35 @@ after buffer changes.")
      `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-realgud:run-process-void-error
+           ;; See: https://github.com/realgud/realgud/issues/269.
+           (lambda _
+             (substitute* '("realgud/debugger/gdb/gdb.el"
+                            "realgud/debugger/gub/gub.el")
+               (("^\\(require 'load-relative\\).*" anchor)
+                (string-append anchor
+                               "(require-relative-list \
+'(\"../../common/run\") \"realgud:\")\n")))
+             #t))
          (add-after 'unpack 'fix-autogen-script
            (lambda _
              (substitute* "autogen.sh"
-               (("./configure") "sh configure"))))
+               (("./configure") "sh configure"))
+             #t))
          (add-after 'fix-autogen-script 'autogen
            (lambda _
              (setenv "CONFIG_SHELL" "sh")
              (invoke "sh" "autogen.sh")))
          (add-after 'fix-autogen-script 'set-home
            (lambda _
-             (setenv "HOME" (getenv "TMPDIR"))))
+             (setenv "HOME" (getenv "TMPDIR"))
+             #t))
          (add-before 'patch-el-files 'remove-realgud-pkg.el
            (lambda _
              ;; FIXME: `patch-el-files' crashes on this file with error:
              ;; unable to locate "bashdb".
-             (delete-file "./test/test-regexp-bashdb.el"))))
+             (delete-file "./test/test-regexp-bashdb.el")
+             #t)))
        #:include (cons* ".*\\.el$" %default-include)))
     (native-inputs
      `(("autoconf" ,autoconf)
