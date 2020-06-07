@@ -10,6 +10,7 @@
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;; Copyright © 2020 Yuval Kogman <nothingmuch@woobling.org>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,12 +37,16 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ninja)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -275,6 +280,80 @@ other lower-level build files.")
     (description "@code{premake5} is a command line utility that reads a
 scripted definition of a software project and outputs @file{Makefile}s or
 other lower-level build files.")))
+
+(define-public tup
+  (package
+    (name "tup")
+    (version "0.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://gittup.org/tup/releases/tup-v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1z8d5mmddiw3ckdvy88bi48aa5bm0hrid6g9c9hp2ynmpzywmp2h"))
+              (patches (search-patches "tup-unbundle-dependencies.patch"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; NOTE: Tup uses a slightly modified Lua, so it cannot be
+                  ;; unbundled.  See: src/lula/tup-lua.patch
+                  (delete-file-recursively "src/pcre")
+                  (delete-file-recursively "src/sqlite3")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; There is a bootstrap script, but it doesn't do what you think - it
+         ;; builds tup.
+         (delete 'bootstrap)
+         (replace 'configure
+           (lambda _
+             (substitute* "src/tup/link.sh"
+               (("`git describe`") ,version))
+             (with-output-to-file "tup.config"
+               (lambda _
+                 (format #t "CONFIG_TUP_USE_SYSTEM_SQLITE=y~%")))
+             #t))
+         (delete 'check)
+         (replace 'build
+           (lambda _
+             ;; Based on bootstrap-nofuse.sh, but with a detour to patch-shebang.
+             (invoke "./build.sh")
+             (invoke "./build/tup" "init")
+             (invoke "./build/tup" "generate" "--verbose" "build-nofuse.sh")
+             (patch-shebang "build-nofuse.sh")
+             (invoke "./build-nofuse.sh")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((outdir (assoc-ref outputs "out"))
+                    (ftdetect (string-append outdir
+                                             "/share/vim/vimfiles/ftdetect")))
+               (install-file "tup" (string-append outdir "/bin"))
+               (install-file "tup.1" (string-append outdir "/share/man/man1"))
+               (install-file "contrib/syntax/tup.vim"
+                             (string-append outdir "/share/vim/vimfiles/syntax"))
+               (mkdir-p ftdetect)
+               (with-output-to-file (string-append ftdetect "/tup.vim")
+                 (lambda _
+                   (display "au BufNewFile,BufRead Tupfile,*.tup setf tup")))
+               #t))))))
+    (inputs
+     `(("fuse" ,fuse)
+       ("pcre" ,pcre)
+       ("pcre" ,pcre "bin") ; pcre-config
+       ("sqlite" ,sqlite)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://gittup.org/tup/")
+    (synopsis "Fast build system that's hard to get wrong")
+    (description "Tup is a generic build system based on a directed acyclic
+graphs of commands to be executed.  Tup instruments your build to detect the
+exact dependencies of the commands, allowing you to take advantage of ideal
+parallelism during incremental builds, and detecting any situations where
+a build worked by accident.")
+    (license license:gpl2)))
 
 (define-public osc
   (package

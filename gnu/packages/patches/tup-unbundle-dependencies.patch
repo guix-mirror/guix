@@ -1,0 +1,66 @@
+Allow building tup after removing some bundled sources from the source
+tree.
+
+diff --git a/build.sh b/build.sh
+index 2937116d..eab650f7 100755
+--- a/build.sh
++++ b/build.sh
+@@ -16,7 +16,7 @@ else
+ 	echo "Error: invalid TUP_SERVER \"$server\"" 1>&2
+ 	exit 1
+ fi
+-LDFLAGS="$LDFLAGS -lm"
++LDFLAGS="$LDFLAGS -lm -lsqlite3 `pcre-config --libs`"
+ : ${CC:=gcc}
+ case "$os" in
+ 	Linux)
+@@ -65,17 +65,15 @@ mkdir luabuiltin
+ 
+ CFLAGS="$CFLAGS -DTUP_SERVER=\"$server\""
+ CFLAGS="$CFLAGS -DHAVE_CONFIG_H"
++CFLAGS="$CFLAGS `pcre-config --cflags`"
+ 
+-for i in ../src/tup/*.c ../src/tup/tup/main.c ../src/tup/monitor/null.c ../src/tup/flock/fcntl.c ../src/inih/ini.c ../src/pcre/*.c $plat_files; do
++for i in ../src/tup/*.c ../src/tup/tup/main.c ../src/tup/monitor/null.c ../src/tup/flock/fcntl.c ../src/inih/ini.c $plat_files; do
+ 	echo "  bootstrap CC $CFLAGS $i"
+ 	# Put -I. first so we find our new luabuiltin.h file, not one built
+ 	# by a previous 'tup upd'.
+-	$CC $CFLAGS -c $i -I. -I../src -I../src/pcre $plat_cflags
++	$CC $CFLAGS -c $i -I. -I../src $plat_cflags
+ done
+ 
+-echo "  bootstrap CC $CFLAGS ../src/sqlite3/sqlite3.c"
+-$CC $CFLAGS -c ../src/sqlite3/sqlite3.c -DSQLITE_TEMP_STORE=2 -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION $plat_cflags
+-
+ echo "  bootstrap LD tup $LDFLAGS"
+ echo "const char *tup_version(void) {return \"$label\";}" | $CC -x c -c - -o tup_version.o
+ $CC *.o -o tup -lpthread $plat_ldflags $LDFLAGS
+diff --git a/src/tup/db.c b/src/tup/db.c
+index 55ee3edd..9bdf7a80 100644
+--- a/src/tup/db.c
++++ b/src/tup/db.c
+@@ -46,7 +46,7 @@
+ #include <errno.h>
+ #include <ctype.h>
+ #include <sys/stat.h>
+-#include "sqlite3/sqlite3.h"
++#include <sqlite3.h>
+ 
+ #define DB_VERSION 17
+ #define PARSER_VERSION 12
+diff --git a/src/tup/tupid.h b/src/tup/tupid.h
+index 7b36ae46..19aed438 100644
+--- a/src/tup/tupid.h
++++ b/src/tup/tupid.h
+@@ -21,7 +21,7 @@
+ #ifndef tup_tupid_h
+ #define tup_tupid_h
+ 
+-#include "sqlite3/sqlite3.h"
++#include <sqlite3.h>
+ 
+ typedef sqlite3_int64 tupid_t;
+ 
+-- 
+2.26.2
+
