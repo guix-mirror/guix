@@ -2322,6 +2322,13 @@ transfer protocols.")
              "--with-table-db")
        #:phases
        (modify-phases %standard-phases
+         ;; See: https://github.com/OpenSMTPD/OpenSMTPD/issues/1069.
+         (add-after 'unpack 'fix-smtpctl-encrypt-bug
+           (lambda _
+             (substitute* "smtpd/smtpctl.c"
+               (("\"encrypt\", \"--\",")
+                "\"encrypt\","))
+             #t))
          ;; Fix some incorrectly hard-coded external tool file names.
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
