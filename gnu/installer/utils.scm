@@ -22,8 +22,13 @@
   #:use-module (guix build utils)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -67,50 +72,6 @@ number. If no percentage is found, return #f"
   (let ((result (string-match "^([0-9]+)%$" percentage)))
     (and result
          (string->number (match:substring result 1)))))
-
-(define* (run-command command #:key locale)
-  "Run COMMAND, a list of strings, in the given LOCALE.  Return true if
-COMMAND exited successfully, #f otherwise."
-  (define env (environ))
-
-  (define (pause)
-    (format #t (G_ "Press Enter to continue.~%"))
-    (send-to-clients '(pause))
-    (environ env)                               ;restore environment variables
-    (match (select (cons (current-input-port) (current-clients))
-             '() '())
-      (((port _ ...) _ _)
-       (read-line port))))
-
-  (setenv "PATH" "/run/current-system/profile/bin")
-
-  (when locale
-    (let ((supported? (false-if-exception
-                       (setlocale LC_ALL locale))))
-      ;; If LOCALE is not supported, then set LANGUAGE, which might at
-      ;; least give us translated messages.
-      (if supported?
-          (setenv "LC_ALL" locale)
-          (setenv "LANGUAGE"
-                  (string-take locale
-                               (or (string-index locale #\_)
-                                   (string-length locale)))))))
-
-  (guard (c ((invoke-error? c)
-             (newline)
-             (format (current-error-port)
-                     (G_ "Command failed with exit code ~a.~%")
-                     (invoke-error-exit-status c))
-             (syslog "command ~s failed with exit code ~a"
-                     command (invoke-error-exit-status c))
-             (pause)
-             #f))
-    (syslog "running command ~s~%" command)
-    (apply invoke command)
-    (syslog "command ~s succeeded~%" command)
-    (newline)
-    (pause)
-    #t))
 
 
 ;;;
@@ -219,3 +180,118 @@ accepting socket."
 
   (current-clients (reverse remainder))
   exp)
+
+
+;;;
+;;; Run commands.
+;;;
+
+;; XXX: This is taken from (guix build utils) and could be factorized.
+(define (open-pipe-with-stderr program . args)
+  "Run PROGRAM with ARGS in an input pipe, but, unlike 'open-pipe*', redirect
+both its standard output and standard error to the pipe.  Return two value:
+the pipe to read PROGRAM's data from, and the PID of the child process running
+PROGRAM."
+  ;; 'open-pipe*' doesn't attempt to capture stderr in any way, which is why
+  ;; we need to roll our own.
+  (match (pipe)
+    ((input .  output)
+     (match (primitive-fork)
+       (0
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (close-port input)
+            (close-port (syslog-port))
+            (dup2 (fileno output) 1)
+            (dup2 (fileno output) 2)
+            (apply execlp program program args))
+          (lambda ()
+            (primitive-exit 127))))
+       (pid
+        (close-port output)
+        (values input pid))))))
+
+(define invoke-log-port
+  ;; Port used by INVOKE-WITH-LOG for logging.
+  (make-parameter #f))
+
+(define* (invoke-with-log program . args)
+  "Invoke PROGRAM with ARGS and log PROGRAM's standard output and standard
+error to INVOKE-LOG-PORT.  If PROGRAM succeeds, print nothing and return the
+unspecified value; otherwise, raise a '&message' error condition with the
+status code.  This procedure is very similar to INVOKE/QUIET with the
+noticeable difference that the program output, that can be quite heavy, is not
+stored but directly sent to INVOKE-LOG-PORT if defined."
+  (let-values (((pipe pid)
+                (apply open-pipe-with-stderr program args)))
+    (let loop ()
+      (match (read-line pipe)
+        ((? eof-object?)
+         (close-port pipe)
+         (match (waitpid pid)
+           ((_ . status)
+            (unless (zero? status)
+              (raise
+               (condition (&invoke-error
+                           (program program)
+                           (arguments args)
+                           (exit-status (status:exit-val status))
+                           (term-signal (status:term-sig status))
+                           (stop-signal (status:stop-sig status)))))))))
+        (line
+         (and=> (invoke-log-port) (cut format <> "~a~%" line))
+         (loop))))))
+
+(define* (run-command command #:key locale)
+  "Run COMMAND, a list of strings, in the given LOCALE.  Return true if
+COMMAND exited successfully, #f otherwise."
+  (define env (environ))
+
+  (define (pause)
+    (format #t (G_ "Press Enter to continue.~%"))
+    (send-to-clients '(pause))
+    (environ env)                               ;restore environment variables
+    (match (select (cons (current-input-port) (current-clients))
+             '() '())
+      (((port _ ...) _ _)
+       (read-line port))))
+
+  (setenv "PATH" "/run/current-system/profile/bin")
+
+  (when locale
+    (let ((supported? (false-if-exception
+                       (setlocale LC_ALL locale))))
+      ;; If LOCALE is not supported, then set LANGUAGE, which might at
+      ;; least give us translated messages.
+      (if supported?
+          (setenv "LC_ALL" locale)
+          (setenv "LANGUAGE"
+                  (string-take locale
+                               (or (string-index locale #\_)
+                                   (string-length locale)))))))
+
+  (guard (c ((invoke-error? c)
+             (newline)
+             (format (current-error-port)
+                     (G_ "Command failed with exit code ~a.~%")
+                     (invoke-error-exit-status c))
+             (syslog "command ~s failed with exit code ~a"
+                     command (invoke-error-exit-status c))
+             (pause)
+             #f))
+    (syslog "running command ~s~%" command)
+    ;; If there are any connected clients, assume that we are running
+    ;; installation tests. In that case, dump the standard and error outputs
+    ;; to syslog.
+    (let ((testing? (not (null? (current-clients)))))
+      (if testing?
+          (parameterize ((invoke-log-port (syslog-port)))
+            (apply invoke-with-log command))
+          (apply invoke command)))
+    (syslog "command ~s succeeded~%" command)
+    (newline)
+    (pause)
+    #t))
+
+;;; utils.scm ends here
