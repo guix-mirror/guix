@@ -15105,16 +15105,22 @@ window memory map manager.")
 (define-public python-regex
   (package
     (name "python-regex")
-    (version "2019.04.14")
+    (version "2020.6.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "regex" version))
               (sha256
                (base32
-                "1a6hhfs6l6snr1z654ay6wzbmwdkmv282fzfkd5hk2d1n73y8v6m"))))
-    ;; TODO: Fix and enable regex_test.py tests that complain about the
-    ;; test.support module not existing.
+                "1b3k0zi1pd99q5mk7ri7vcx2y1mq5inm9hk8dryqyhrpkmh4xdp9"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "-c"
+                     "from regex.test_regex import test_main; test_main()"))))))
     (home-page "https://bitbucket.org/mrabarnett/mrab-regex")
     (synopsis "Alternative regular expression module")
     (description "This regular expression implementation is backwards-
