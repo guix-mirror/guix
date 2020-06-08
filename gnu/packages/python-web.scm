@@ -796,25 +796,30 @@ ebooks, due to cssutils not receiving updates as of 1.0.2.")
 (define-public python-cssselect
   (package
     (name "python-cssselect")
-    (version "0.9.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "cssselect" version))
-        (sha256
-         (base32
-          "1xg6gbva1yswghiycmgincv6ab4bn7hpm720ndbj40h8xycmnfvi"))))
+    (version "1.1.0")
+    (source (origin
+              ;; The PyPI release does not contain tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/scrapy/cssselect")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xslrnhbrmgakp4xg6k26qffay3kqffp3a2z2sk27c65rwxa79kc"))))
     (build-system python-build-system)
     (arguments
-     ;; tests fail with message
-     ;; AttributeError: 'module' object has no attribute 'tests'
-     `(#:tests? #f))
-    (home-page
-      "https://pythonhosted.org/cssselect/")
-    (synopsis
-      "CSS3 selector parser and translator to XPath 1.0")
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/scrapy/cssselect")
+    (synopsis "CSS3 selector parser and translator to XPath 1.0")
     (description
-      "Cssselect ia a Python module that parses CSS3 Selectors and translates
+     "Cssselect ia a Python module that parses CSS3 Selectors and translates
 them to XPath 1.0 expressions.  Such expressions can be used in lxml or
 another XPath engine to find the matching elements in an XML or HTML document.")
     (license license:bsd-3)))
