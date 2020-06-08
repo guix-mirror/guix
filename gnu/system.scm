@@ -1191,6 +1191,7 @@ a list of <menu-entry>, to populate the \"old entries\" menu."
                 "--device-master-port='${device-port}'"
                 "--exec-server-task='${exec-task}'"
                 "--store-type=typed"
+                "--x-xattr-translator-records"
                 "'${root}'" "'$(task-create)'" "'$(task-resume)'"))
          (target (%current-target-system))
          (libc (if target

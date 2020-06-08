@@ -144,7 +144,7 @@ set."
             (chmod port mode)))))
     (catch 'system-error
       (lambda _
-        (apply invoke "settrans" "--create" file-name command))
+        (setxattr file-name "gnu.translator" (string-join command "\0" 'suffix)))
       (lambda (key . args)
         (let ((errno (system-error-errno (cons key args))))
           (format (current-error-port) "~a: ~a\n"
