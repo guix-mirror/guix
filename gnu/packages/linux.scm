@@ -1149,14 +1149,6 @@ supported under @file{/sys/class/backlight/}.")
                (base32
                 "1qi4l6yam8nrlmc3zwkrz9vph0xsj1cgmkqci4652mbpbzigg7vn"))))
     (build-system linux-module-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (invoke "make"
-                     "--directory=./tests"
-                     (string-append "CC=" ,(cc-for-target))))))))
     (home-page "https://github.com/umlaeute/v4l2loopback")
     (synopsis "Linux kernel module that allows you to create \"virtual video devices\"")
     (description "This module allows you to create \"virtual video devices\"
