@@ -1013,15 +1013,15 @@ and should be used with caution, especially on untested models.")
              #t))))
       (build-system linux-module-build-system)
       (arguments
-       `(#:phases
+       `(#:make-flags
+         (list (string-append "KSRC="
+                              (assoc-ref %build-inputs "linux-module-builder")
+                              "/lib/modules/build"))
+         #:phases
          (modify-phases %standard-phases
            (replace 'build
-             (lambda* (#:key inputs make-flags #:allow-other-keys)
-               (apply invoke "make"
-                      (string-append "KSRC="
-                                     (assoc-ref inputs "linux-module-builder")
-                                     "/lib/modules/build")
-                      (or make-flags '())))))
+             (lambda* (#:key (make-flags '()) #:allow-other-keys)
+               (apply invoke "make" make-flags))))
          #:tests? #f))                  ; no test suite
       (supported-systems '("x86_64-linux" "i686-linux"))
       (home-page "https://github.com/aircrack-ng/rtl8812au")
