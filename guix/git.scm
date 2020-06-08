@@ -416,7 +416,9 @@ Essentially, this computes the set difference between the closure of NEW and
 that of OLD."
   (let loop ((commits (list new))
              (result '())
-             (visited (commit-closure old (list->setq excluded))))
+             (visited (fold commit-closure
+                            (setq)
+                            (cons old excluded))))
     (match commits
       (()
        (reverse result))
