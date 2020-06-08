@@ -1248,12 +1248,12 @@ bytes."
 (define set-thread-name
   (if (string-contains %host-type "linux")
       set-thread-name!/linux
-      (cute const #f)))
+      (const #f)))
 
 (define thread-name
   (if (string-contains %host-type "linux")
       thread-name/linux
-      (cute const "")))
+      (const "")))
 
 
 ;;;
