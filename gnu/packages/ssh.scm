@@ -43,7 +43,6 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libedit)
-  #:use-module (gnu packages hurd)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages m4)
@@ -150,9 +149,7 @@ a server that supports the SSH-2 protocol.")
              ("pam" ,linux-pam)
              ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)
-             ,@(if (hurd-target?)
-                   '()
-                   `(("xauth" ,xauth)))))         ; for 'ssh -X' and 'ssh -Y'
+             ("xauth" ,xauth)))        ; for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
       ;; Otherwise, the test scripts try to use a nonexistent directory and
