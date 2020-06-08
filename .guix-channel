@@ -2,4 +2,5 @@
 
 (channel
   (version 0)
-  (news-file "etc/news.scm"))
+  (news-file "etc/news.scm")
+  (keyring-reference "keyring"))
