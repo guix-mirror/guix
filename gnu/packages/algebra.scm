@@ -504,7 +504,8 @@ fast arithmetic.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05lpy3hkl5f8ik19aw40cqydrb932xaf2n8hbq9ib5dnk7f010p1"))))
+                "05lpy3hkl5f8ik19aw40cqydrb932xaf2n8hbq9ib5dnk7f010p1"))
+              (patches (search-patches "arb-flint-2.6.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("flint" ,flint)))               ; flint.h is included by arf.h
