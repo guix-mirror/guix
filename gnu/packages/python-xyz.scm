@@ -6921,14 +6921,14 @@ some are not yet implemented).")
 (define-public python-netifaces
   (package
     (name "python-netifaces")
-    (version "0.10.7")
+    (version "0.10.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "netifaces" version))
         (sha256
           (base32
-            "1gccklrcplbbqh81g1mdgpa5y8na7kkf29cq2ka3f5a2fp5hyndx"))))
+            "1wxby874kcr3pp4ygzk5aiarbzhg1yi093d56s1qg4k2s7yrzvid"))))
     (build-system python-build-system)
     (home-page "https://github.com/al45tair/netifaces")
     (synopsis
