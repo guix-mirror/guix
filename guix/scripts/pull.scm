@@ -195,20 +195,18 @@ Download and deploy the latest version of Guix.\n"))
 
          %standard-build-options))
 
-(define (warn-about-backward-updates channel start instance relation)
-  "Warn about non-forward updates of CHANNEL from START to INSTANCE, without
+(define (warn-about-backward-updates channel start commit relation)
+  "Warn about non-forward updates of CHANNEL from START to COMMIT, without
 aborting."
   (match relation
     ((or 'ancestor 'self)
      #t)
     ('descendant
      (warning (G_ "rolling back channel '~a' from ~a to ~a~%")
-              (channel-name channel) start
-              (channel-instance-commit instance)))
+              (channel-name channel) start commit))
     ('unrelated
      (warning (G_ "moving channel '~a' from ~a to unrelated commit ~a~%")
-              (channel-name channel) start
-              (channel-instance-commit instance)))))
+              (channel-name channel) start commit))))
 
 (define* (display-profile-news profile #:key concise?
                                current-is-newer?)

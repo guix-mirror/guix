@@ -212,12 +212,12 @@
                                  (commit (oid->string (commit-id commit2)))))
                (old     (channel (inherit spec)
                                  (commit (oid->string (commit-id commit1))))))
-          (define (validate-pull channel current instance relation)
+          (define (validate-pull channel current commit relation)
             (return (and (eq? channel old)
                          (string=? (oid->string (commit-id commit2))
                                    current)
                          (string=? (oid->string (commit-id commit1))
-                                   (channel-instance-commit instance))
+                                   commit)
                          relation)))
 
           (with-store store

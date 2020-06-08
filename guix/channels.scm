@@ -375,9 +375,12 @@ commits ~a to ~a (~h new commits)...~%")
 
 (define* (latest-channel-instance store channel
                                   #:key (patches %patches)
-                                  starting-commit)
-  "Return two values: the latest channel instance for CHANNEL, and its
-relation to STARTING-COMMIT when provided."
+                                  starting-commit
+                                  (validate-pull
+                                   ensure-forward-channel-update))
+  "Return the latest channel instance for CHANNEL.  When STARTING-COMMIT is
+true, call VALIDATE-PULL with CHANNEL, STARTING-COMMIT, the target commit, and
+their relation."
   (define (dot-git? file stat)
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
@@ -386,6 +389,9 @@ relation to STARTING-COMMIT when provided."
                 (update-cached-checkout (channel-url channel)
                                         #:ref (channel-reference channel)
                                         #:starting-commit starting-commit)))
+    (when relation
+      (validate-pull channel starting-commit commit relation))
+
     (if (channel-introduction channel)
         (authenticate-channel channel checkout commit)
         ;; TODO: Warn for all the channels once the authentication interface
@@ -403,12 +409,11 @@ cannot be authenticated~%")
     (let* ((name     (url+commit->name (channel-url channel) commit))
            (checkout (add-to-store store name #t "sha256" checkout
                                    #:select? (negate dot-git?))))
-      (values (channel-instance channel commit checkout)
-              relation))))
+      (channel-instance channel commit checkout))))
 
-(define (ensure-forward-channel-update channel start instance relation)
+(define (ensure-forward-channel-update channel start commit relation)
   "Raise an error if RELATION is not 'ancestor, meaning that START is not an
-ancestor of the commit in INSTANCE, unless CHANNEL specifies a commit.
+ancestor of COMMIT, unless CHANNEL specifies a commit.
 
 This procedure implements a channel update policy meant to be used as a
 #:validate-pull argument."
@@ -422,8 +427,7 @@ This procedure implements a channel update policy meant to be used as a
                          (format #f (G_ "\
 aborting update of channel '~a' to commit ~a, which is not a descendant of ~a")
                                  (channel-name channel)
-                                 (channel-instance-commit instance)
-                                 start))))
+                                 commit start))))
 
              ;; If the user asked for a specific commit, they might want
              ;; that to happen nevertheless, so tell them about the
@@ -482,14 +486,13 @@ depending on the policy it implements."
                              (G_ "Updating channel '~a' from Git repository at '~a'...~%")
                              (channel-name channel)
                              (channel-url channel))
-                     (let*-values (((current)
-                                    (current-commit (channel-name channel)))
-                                   ((instance relation)
-                                    (latest-channel-instance store channel
-                                                             #:starting-commit
-                                                             current)))
-                       (when relation
-                         (validate-pull channel current instance relation))
+                     (let* ((current (current-commit (channel-name channel)))
+                            (instance
+                             (latest-channel-instance store channel
+                                                      #:validate-pull
+                                                      validate-pull
+                                                      #:starting-commit
+                                                      current)))
 
                        (let-values (((new-instances new-channels)
                                      (loop (channel-instance-dependencies instance)
