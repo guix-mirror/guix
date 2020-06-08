@@ -148,17 +148,31 @@
                     "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA")))
    #f))                   ;TODO: Add an intro signature so it can be exported.
 
+(define %default-channel-url
+  ;; URL of the default 'guix' channel.
+  "https://git.savannah.gnu.org/git/guix.git")
+
 (define %default-channels
   ;; Default list of channels.
   (list (channel
          (name 'guix)
          (branch "master")
-         (url "https://git.savannah.gnu.org/git/guix.git")
+         (url %default-channel-url)
          (introduction %guix-channel-introduction))))
 
 (define (guix-channel? channel)
   "Return true if CHANNEL is the 'guix' channel."
   (eq? 'guix (channel-name channel)))
+
+(define (ensure-default-introduction chan)
+  "If CHAN represents the \"official\" 'guix' channel and lacks an
+introduction, add it."
+  (if (and (guix-channel? chan)
+           (not (channel-introduction chan))
+           (string=? (channel-url chan) %default-channel-url))
+      (channel (inherit chan)
+               (introduction %guix-channel-introduction))
+      chan))
 
 (define-record-type <channel-instance>
   (channel-instance channel commit checkout)
@@ -385,7 +399,9 @@ their relation."
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
 
-  (let-values (((checkout commit relation)
+  (let-values (((channel)
+                (ensure-default-introduction channel))
+               ((checkout commit relation)
                 (update-cached-checkout (channel-url channel)
                                         #:ref (channel-reference channel)
                                         #:starting-commit starting-commit)))
