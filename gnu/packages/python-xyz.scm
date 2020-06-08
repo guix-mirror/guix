@@ -12581,27 +12581,26 @@ discovery, monitoring and configuration.")
 (define-public python-odfpy
   (package
     (name "python-odfpy")
-    (version "1.3.3")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "odfpy" version))
               (sha256
                (base32
-                "1a6ms0w9zfhhkqhvrnynwwbxrivw6hgjc0s5k7j06npc7rq0blxw"))))
+                "1v1qqk9p12qla85yscq2g413l3qasn6yr4ncyc934465b5p6lxnv"))))
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (guix build python-build-system)
-                  (guix build utils))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           ;; The test runner invokes python2 and python3 for test*.py.
-           ;; To avoid having both in inputs, we replicate it here.
            (lambda _
-             (for-each (lambda (test-file) (invoke "python" test-file))
-                       (find-files "tests" "^test.*\\.py$"))
-             #t)))))
+             (setenv "PYTHONPATH" (string-append "./build/lib:"
+                                                 (getenv "PYTHONPATH")))
+             (invoke "pytest" "-vv"))))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-defusedxml" ,python-defusedxml)))
     (home-page "https://github.com/eea/odfpy")
     (synopsis "Python API and tools to manipulate OpenDocument files")
     (description "Collection of libraries and utility programs written in
