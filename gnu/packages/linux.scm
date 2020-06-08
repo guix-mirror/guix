@@ -1197,6 +1197,8 @@ supported under @file{/sys/class/backlight/}.")
                (base32
                 "1qi4l6yam8nrlmc3zwkrz9vph0xsj1cgmkqci4652mbpbzigg7vn"))))
     (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no test suite
     (home-page "https://github.com/umlaeute/v4l2loopback")
     (synopsis "Linux kernel module to create virtual V4L2 video devices")
     (description
