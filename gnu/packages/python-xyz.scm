@@ -1669,38 +1669,30 @@ human-friendly syntax.")
 (define-public python2-schedule
   (package-with-python2 python-schedule))
 
-(define-public python2-mechanize
+(define-public python-mechanize
   (package
-    (name "python2-mechanize")
-    (version "0.2.5")
+    (name "python-mechanize")
+    (version "0.4.5")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "mechanize" version))
       (sha256
        (base32
-        "0rj7r166i1dyrq0ihm5rijfmvhs8a04im28lv05c0c3v206v4rrf"))))
+        "1z9kqcwb8gfq2l6i42z624kxpd8692a0c8gw2x5bbm7n848w2mb3"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2 ; apparently incompatible with Python 3
-       #:tests? #f))
-         ;; test fails with message
-         ;; AttributeError: 'module' object has no attribute 'test_pullparser'
-         ;; (python-3.3.2) or
-         ;; AttributeError: 'module' object has no attribute 'test_urllib2_localnet'
-         ;; (python-2.7.5).
-         ;; The source code is from March 2011 and probably not up-to-date
-         ;; with respect to python unit tests.
-    (home-page "http://wwwsearch.sourceforge.net/mechanize/")
+    (propagated-inputs
+     `(("python-html5lib" ,python-html5lib)))
+    (home-page "https://github.com/python-mechanize/mechanize")
     (synopsis
      "Stateful programmatic web browsing in Python")
     (description
      "Mechanize implements stateful programmatic web browsing in Python,
 after Andy Lester’s Perl module WWW::Mechanize.")
-    (license (license:non-copyleft
-              "file://COPYING"
-              "See COPYING in the distribution."))))
+    (license license:bsd-3)))
 
+(define-public python2-mechanize
+  (package-with-python2 python-mechanize))
 
 (define-public python-simplejson
   (package
