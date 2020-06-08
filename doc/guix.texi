@@ -3721,13 +3721,17 @@ this option is primarily useful when the daemon was running with
 @cindex updating Guix
 @cindex @command{guix pull}
 @cindex pull
+@cindex security, @command{guix pull}
+@cindex authenticity, of code obtained with @command{guix pull}
 Packages are installed or upgraded to the latest version available in
 the distribution currently available on your local machine.  To update
 that distribution, along with the Guix tools, you must run @command{guix
 pull}: the command downloads the latest Guix source code and package
 descriptions, and deploys it.  Source code is downloaded from a
 @uref{https://git-scm.com, Git} repository, by default the official
-GNU@tie{}Guix repository, though this can be customized.
+GNU@tie{}Guix repository, though this can be customized.  @command{guix
+pull} ensures that the code it downloads is @emph{authentic} by
+verifying that commits are signed by Guix developers.
 
 Specifically, @command{guix pull} downloads code from the @dfn{channels}
 (@pxref{Channels}) specified by one of the followings, in this order:

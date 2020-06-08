@@ -31,15 +31,28 @@
   #:use-module ((guix build utils) #:select (which))
   #:use-module (git)
   #:use-module (guix git)
+  #:use-module (guix git-authenticate)
+  #:use-module (guix openpgp)
   #:use-module (guix tests git)
+  #:use-module (guix tests gnupg)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 control)
   #:use-module (ice-9 match))
 
+(define (gpg+git-available?)
+  (and (which (git-command))
+       (which (gpg-command)) (which (gpgconf-command))))
+
+(define commit-id-string
+  (compose oid->string commit-id))
+
+
 (test-begin "channels")
 
 (define* (make-instance #:key
@@ -388,5 +401,114 @@
                     (map channel-news-entry-tag
                          (channel-news-for-commit channel commit5 commit1))
                     '(#f "tag-for-first-news-entry")))))))
+
+(unless (gpg+git-available?) (test-skip 1))
+(test-assert "authenticate-channel, wrong first commit signer"
+  (with-fresh-gnupg-setup (list %ed25519-public-key-file
+                                %ed25519-secret-key-file
+                                %ed25519bis-public-key-file
+                                %ed25519bis-secret-key-file)
+    (with-temporary-git-repository directory
+        `((add ".guix-channel"
+               ,(object->string
+                 '(channel (version 0)
+                           (keyring-reference "master"))))
+          (add ".guix-authorizations"
+               ,(object->string
+                 `(authorizations (version 0)
+                                  ((,(key-fingerprint
+                                      %ed25519-public-key-file)
+                                    (name "Charlie"))))))
+          (add "signer.key" ,(call-with-input-file %ed25519-public-key-file
+                               get-string-all))
+          (commit "first commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file))))
+      (with-repository directory repository
+        (let* ((commit1 (find-commit repository "first"))
+               (intro   ((@@ (guix channels) make-channel-introduction)
+                         (commit-id-string commit1)
+                         (openpgp-public-key-fingerprint
+                          (read-openpgp-packet
+                           %ed25519bis-public-key-file)) ;different key
+                         #f))                     ;no signature
+               (channel (channel (name 'example)
+                                 (url (string-append "file://" directory))
+                                 (introduction intro))))
+          (guard (c ((message? c)
+                     (->bool (string-contains (condition-message c)
+                                              "initial commit"))))
+            (authenticate-channel channel directory
+                                  (commit-id-string commit1)
+                                  #:keyring-reference-prefix "")
+            'failed))))))
+
+(unless (gpg+git-available?) (test-skip 1))
+(test-assert "authenticate-channel, .guix-authorizations"
+  (with-fresh-gnupg-setup (list %ed25519-public-key-file
+                                %ed25519-secret-key-file
+                                %ed25519bis-public-key-file
+                                %ed25519bis-secret-key-file)
+    (with-temporary-git-repository directory
+        `((add ".guix-channel"
+               ,(object->string
+                 '(channel (version 0)
+                           (keyring-reference "channel-keyring"))))
+          (add ".guix-authorizations"
+               ,(object->string
+                 `(authorizations (version 0)
+                                  ((,(key-fingerprint
+                                      %ed25519-public-key-file)
+                                    (name "Charlie"))))))
+          (commit "zeroth commit")
+          (add "a.txt" "A")
+          (commit "first commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file)))
+          (add "b.txt" "B")
+          (commit "second commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file)))
+          (add "c.txt" "C")
+          (commit "third commit"
+                  (signer ,(key-fingerprint %ed25519bis-public-key-file)))
+          (branch "channel-keyring")
+          (checkout "channel-keyring")
+          (add "signer.key" ,(call-with-input-file %ed25519-public-key-file
+                               get-string-all))
+          (add "other.key" ,(call-with-input-file %ed25519bis-public-key-file
+                              get-string-all))
+          (commit "keyring commit")
+          (checkout "master"))
+      (with-repository directory repository
+        (let* ((commit1 (find-commit repository "first"))
+               (commit2 (find-commit repository "second"))
+               (commit3 (find-commit repository "third"))
+               (intro   ((@@ (guix channels) make-channel-introduction)
+                         (commit-id-string commit1)
+                         (openpgp-public-key-fingerprint
+                          (read-openpgp-packet
+                           %ed25519-public-key-file))
+                         #f))                     ;no signature
+               (channel (channel (name 'example)
+                                 (url (string-append "file://" directory))
+                                 (introduction intro))))
+          ;; COMMIT1 and COMMIT2 are fine.
+          (and (authenticate-channel channel directory
+                                     (commit-id-string commit2)
+                                     #:keyring-reference-prefix "")
+
+               ;; COMMIT3 is signed by an unauthorized key according to its
+               ;; parent's '.guix-authorizations' file.
+               (guard (c ((unauthorized-commit-error? c)
+                          (and (oid=? (git-authentication-error-commit c)
+                                      (commit-id commit3))
+                               (bytevector=?
+                                (openpgp-public-key-fingerprint
+                                 (unauthorized-commit-error-signing-key c))
+                                (openpgp-public-key-fingerprint
+                                 (read-openpgp-packet
+                                  %ed25519bis-public-key-file))))))
+                 (authenticate-channel channel directory
+                                       (commit-id-string commit3)
+                                       #:keyring-reference-prefix "")
+                 'failed)))))))
 
 (test-end "channels")
