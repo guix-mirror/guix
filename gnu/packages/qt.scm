@@ -2141,6 +2141,25 @@ itself.")
        ("python2-enum34" ,python2-enum34)
        ,@(alist-delete "python" (package-inputs python-pyqt))))))
 
+(define-public python2-pyqtwebengine
+  (package/inherit
+   python-pyqtwebengine
+   (name "python2-pyqtwebengine")
+   (native-inputs
+    `(("python" ,python-2)
+      ("python-sip" ,python2-sip)
+      ;; qtbase is required for qmake
+      ("qtbase" ,qtbase)))
+   (inputs
+    `(("python" ,python-2)
+      ("python-sip" ,python2-sip)
+      ("python-pyqt" ,python2-pyqt)
+      ("qtbase" ,qtbase)
+      ("qtsvg" ,qtsvg)
+      ("qtdeclarative" ,qtdeclarative)
+      ("qtwebchannel" ,qtwebchannel)
+      ("qtwebengine" ,qtwebengine)))))
+
 (define-public python2-pyqt-4
   (package (inherit python-pyqt)
     (name "python2-pyqt")
