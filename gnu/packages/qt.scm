@@ -2130,6 +2130,9 @@ itself.")
 (define-public python2-pyqt
   (package (inherit python-pyqt)
     (name "python2-pyqt")
+    (propagated-inputs
+     `(("python-enum34" ,python2-enum34)
+       ("python-sip" ,python2-sip)))
     (native-inputs
      `(("python-sip" ,python2-sip)
        ("qtbase" ,qtbase)))
