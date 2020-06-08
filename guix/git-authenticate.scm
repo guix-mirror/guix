@@ -271,13 +271,13 @@ an OpenPGP keyring."
                                #:key
                                (default-authorizations '())
                                (keyring-reference "keyring")
+                               (keyring (load-keyring-from-reference
+                                         repository keyring-reference))
                                (report-progress (const #t)))
   "Authenticate COMMITS, a list of commit objects, calling REPORT-PROGRESS for
 each of them.  Return an alist showing the number of occurrences of each key.
-The OpenPGP keyring is loaded from KEYRING-REFERENCE in REPOSITORY."
-  (define keyring
-    (load-keyring-from-reference repository keyring-reference))
-
+If KEYRING is omitted, the OpenPGP keyring is loaded from KEYRING-REFERENCE in
+REPOSITORY."
   (fold (lambda (commit stats)
           (report-progress)
           (let ((signer (authenticate-commit repository commit keyring
