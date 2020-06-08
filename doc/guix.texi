@@ -3929,6 +3929,20 @@ Make sure you understand its security implications before using
 @option{--allow-downgrades}.
 @end quotation
 
+@item --disable-authentication
+Allow pulling channel code without authenticating it.
+
+@cindex authentication, of channel code
+By default, @command{guix pull} authenticates code downloaded from
+channels by verifying that its commits are signed by authorized
+developers, and raises an error if this is not the case.  This option
+instructs it to not perform any such verification.
+
+@quotation Note
+Make sure you understand its security implications before using
+@option{--disable-authentication}.
+@end quotation
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of

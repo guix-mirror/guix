@@ -390,11 +390,12 @@ commits ~a to ~a (~h new commits)...~%")
 (define* (latest-channel-instance store channel
                                   #:key (patches %patches)
                                   starting-commit
+                                  (authenticate? #f)
                                   (validate-pull
                                    ensure-forward-channel-update))
   "Return the latest channel instance for CHANNEL.  When STARTING-COMMIT is
 true, call VALIDATE-PULL with CHANNEL, STARTING-COMMIT, the target commit, and
-their relation."
+their relation.  When AUTHENTICATE? is false, CHANNEL is not authenticated."
   (define (dot-git? file stat)
     (and (string=? (basename file) ".git")
          (eq? 'directory (stat:type stat))))
@@ -408,14 +409,16 @@ their relation."
     (when relation
       (validate-pull channel starting-commit commit relation))
 
-    (if (channel-introduction channel)
-        (authenticate-channel channel checkout commit)
-        ;; TODO: Warn for all the channels once the authentication interface
-        ;; is public.
-        (when (guix-channel? channel)
-          (warning (G_ "channel '~a' lacks an introduction and \
+    (if authenticate?
+        (if (channel-introduction channel)
+            (authenticate-channel channel checkout commit)
+            ;; TODO: Warn for all the channels once the authentication interface
+            ;; is public.
+            (when (guix-channel? channel)
+              (warning (G_ "channel '~a' lacks an introduction and \
 cannot be authenticated~%")
-                   (channel-name channel))))
+                       (channel-name channel))))
+        (warning (G_ "channel authentication disabled~%")))
 
     (when (guix-channel? channel)
       ;; Apply the relevant subset of PATCHES directly in CHECKOUT.  This is
@@ -463,10 +466,14 @@ allow non-forward updates."))))))))))
 (define* (latest-channel-instances store channels
                                    #:key
                                    (current-channels '())
+                                   (authenticate? #t)
                                    (validate-pull
                                     ensure-forward-channel-update))
   "Return a list of channel instances corresponding to the latest checkouts of
 CHANNELS and the channels on which they depend.
+
+When AUTHENTICATE? is true, authenticate the subset of CHANNELS that has a
+\"channel introduction\".
 
 CURRENT-CHANNELS is the list of currently used channels.  It is compared
 against the newly-fetched instances of CHANNELS, and VALIDATE-PULL is called
@@ -505,6 +512,8 @@ depending on the policy it implements."
                      (let* ((current (current-commit (channel-name channel)))
                             (instance
                              (latest-channel-instance store channel
+                                                      #:authenticate?
+                                                      authenticate?
                                                       #:validate-pull
                                                       validate-pull
                                                       #:starting-commit

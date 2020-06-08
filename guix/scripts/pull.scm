@@ -82,6 +82,7 @@
     (graft? . #t)
     (debug . 0)
     (verbosity . 1)
+    (authenticate-channels? . #t)
     (validate-pull . ,ensure-forward-channel-update)))
 
 (define (show-help)
@@ -97,6 +98,9 @@ Download and deploy the latest version of Guix.\n"))
       --branch=BRANCH    download the tip of the specified BRANCH"))
   (display (G_ "
       --allow-downgrades allow downgrades to earlier channel revisions"))
+  (display (G_ "
+      --disable-authentication
+                         disable channel authentication"))
   (display (G_ "
   -N, --news             display news compared to the previous generation"))
   (display (G_ "
@@ -165,6 +169,9 @@ Download and deploy the latest version of Guix.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'validate-pull warn-about-backward-updates
                                result)))
+         (option '("disable-authentication") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'authenticate-channels? #f result)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'profile (canonicalize-profile arg)
@@ -771,7 +778,8 @@ Use '~/.config/guix/channels.scm' instead."))
             (channels     (channel-list opts))
             (profile      (or (assoc-ref opts 'profile) %current-profile))
             (current-channels (profile-channels profile))
-            (validate-pull    (assoc-ref opts 'validate-pull)))
+            (validate-pull    (assoc-ref opts 'validate-pull))
+            (authenticate?    (assoc-ref opts 'authenticate-channels?)))
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
              ((assoc-ref opts 'generation)
@@ -793,7 +801,9 @@ Use '~/.config/guix/channels.scm' instead."))
                                                        #:current-channels
                                                        current-channels
                                                        #:validate-pull
-                                                       validate-pull)))
+                                                       validate-pull
+                                                       #:authenticate?
+                                                       authenticate?)))
                         (format (current-error-port)
                                 (N_ "Building from this channel:~%"
                                     "Building from these channels:~%"
