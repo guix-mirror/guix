@@ -252,7 +252,7 @@
          (filter-map (lambda (id)
                        (false-if-exception
                         (commit-lookup repository (string->oid id))))
-                     (previously-authenticated-commits)))
+                     (previously-authenticated-commits "channels/guix")))
 
        (define commits
          ;; Commits to authenticate, excluding the closure of
@@ -274,7 +274,8 @@
                                               #:default-authorizations
                                               %historical-authorized-signing-keys
                                               #:report-progress report)))))
-         (cache-authenticated-commit (oid->string (commit-id end-commit)))
+         (cache-authenticated-commit "channels/guix"
+                                     (oid->string (commit-id end-commit)))
 
          (unless (null? stats)
            (format #t (G_ "Signing statistics:~%"))
