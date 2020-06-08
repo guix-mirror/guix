@@ -44,6 +44,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -370,26 +371,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.16")
+(define-public linux-libre-5.6-version "5.6.17")
 (define-public linux-libre-5.6-pristine-source
   (let ((version linux-libre-5.6-version)
-        (hash (base32 "1xvwk6yxi5nhiwhskpmr89a31286mw9hpm0y3l3i5ydswx6lnl15")))
+        (hash (base32 "17kzalz8z6svv6nwa3dbmf7nyvpb2wwwyabj19vdwf6v05a28fn3")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.6)))
 
-(define-public linux-libre-5.4-version "5.4.44")
+(define-public linux-libre-5.4-version "5.4.45")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0fc4nsv1zwlknvfv1bzkjlq2vlx28wfl09hg2p7r8cn7a77bphlp")))
+        (hash (base32 "0bpy2lb3bqmkaqxzdmssgmhbjsys7d3lyfv4x919q0596jgh6gqh")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.126")
+(define-public linux-libre-4.19-version "4.19.127")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "129ziwvk3f4xh8jvnq2krajc0bnrl2zxffqsiz63j7p3vc57wakf")))
+        (hash (base32 "0vsq5vjyh6n8acjnldfs0zny63l12fn2pssb8zbwidc8qmmqibw2")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -988,8 +989,8 @@ and should be used with caution, especially on untested models.")
       (license license:gpl3+))))        ; see README.md (no licence headers)
 
 (define-public rtl8812au-aircrack-ng-linux-module
-  (let ((commit "945d6ed6505c32f0993b1dba576388e92e78101b")
-        (revision "0"))
+  (let ((commit "df2b8dfd8cb7d9f6cfeb55abaeab8a5372011fc9")
+        (revision "1"))
     (package
       (name "rtl8812au-aircrack-ng-linux-module")
       (version (git-version "5.6.4.2" revision commit))
@@ -1001,7 +1002,7 @@ and should be used with caution, especially on untested models.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1pjws7qb5l4z9k80vgz4zdxmqhbwxjjrmkpf0hijf821byyddvi7"))
+          (base32 "1qcr0j8yhg8l9l0f5y55zcsk1mgf3qd46yh9xfqgg91szxa3yvca"))
          (modules '((guix build utils)))
          (snippet
           '(begin
@@ -1013,15 +1014,15 @@ and should be used with caution, especially on untested models.")
              #t))))
       (build-system linux-module-build-system)
       (arguments
-       `(#:phases
+       `(#:make-flags
+         (list (string-append "KSRC="
+                              (assoc-ref %build-inputs "linux-module-builder")
+                              "/lib/modules/build"))
+         #:phases
          (modify-phases %standard-phases
            (replace 'build
-             (lambda* (#:key inputs make-flags #:allow-other-keys)
-               (apply invoke "make"
-                      (string-append "KSRC="
-                                     (assoc-ref inputs "linux-module-builder")
-                                     "/lib/modules/build")
-                      (or make-flags '())))))
+             (lambda* (#:key (make-flags '()) #:allow-other-keys)
+               (apply invoke "make" make-flags))))
          #:tests? #f))                  ; no test suite
       (supported-systems '("x86_64-linux" "i686-linux"))
       (home-page "https://github.com/aircrack-ng/rtl8812au")
@@ -1051,16 +1052,17 @@ RTL8812AU, RTL8821AU, and RTL8814AU chips.")
            "17jiw25k74kv5lnvgycvj2g1n06hbrpjz6p4znk4a62g136rhn4s"))))
       (build-system linux-module-build-system)
       (arguments
-       `(#:phases
+       `(#:make-flags
+         (list "CC=gcc"
+               (string-append "KSRC="
+                              (assoc-ref %build-inputs "linux-module-builder")
+                              "/lib/modules/build"))
+         #:phases
          (modify-phases %standard-phases
            (replace 'build
-             (lambda* (#:key (make-flags '()) inputs #:allow-other-keys)
-               (setenv "CC" "gcc")
-               (invoke "make"
-                       (string-append "KSRC="
-                                      (assoc-ref inputs "linux-module-builder")
-                                      "/lib/modules/build")))))
-         #:tests? #f))
+             (lambda* (#:key (make-flags '()) #:allow-other-keys)
+               (apply invoke "make" make-flags))))
+         #:tests? #f))                  ; no test suite
       (home-page "https://github.com/tomaspinho/rtl8821ce")
       (synopsis "Linux driver for Realtek RTL8821CE wireless network adapters")
       (description "This is Realtek's RTL8821CE Linux driver for wireless
@@ -1133,6 +1135,33 @@ interface.  The ddcci module creates a character device for each DDC/CI
 monitors in @file{/dev/bus/ddcci/[I²C busnumber]}.  While the ddcci-backlight
 module allows the control of the backlight level or luminance property when
 supported under @file{/sys/class/backlight/}.")
+    (license license:gpl2+)))
+
+(define-public v4l2loopback-linux-module
+  (package
+    (name "v4l2loopback-linux-module")
+    (version "0.12.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/umlaeute/v4l2loopback.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qi4l6yam8nrlmc3zwkrz9vph0xsj1cgmkqci4652mbpbzigg7vn"))))
+    (build-system linux-module-build-system)
+    (home-page "https://github.com/umlaeute/v4l2loopback")
+    (synopsis "Linux kernel module to create virtual V4L2 video devices")
+    (description
+     "This Linux module creates virtual video devices.  @acronym{V4L2, Video
+for Linux 2} applications will treat these as ordinary video devices but read
+video data generated by another application, instead of a hardware device such
+as a capture card.
+
+This lets you apply nifty effects to your Jitsi video, for example, but also
+allows some more serious things like adding streaming capabilities to an
+application by hooking GStreamer into the loopback device.")
     (license license:gpl2+)))
 
 

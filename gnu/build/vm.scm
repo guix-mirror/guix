@@ -84,8 +84,6 @@
                            linux initrd
                            make-disk-image?
                            single-file-output?
-                           target-arm32?
-                           target-aarch64?
                            (disk-image-size (* 100 (expt 2 20)))
                            (disk-image-format "qcow2")
                            (references-graphs '()))
@@ -101,7 +99,14 @@ access it via /dev/hda.
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
 
-  (define target-arm? (or target-arm32? target-aarch64?))
+  (define target-arm32?
+    (string-prefix? "arm-" %host-type))
+
+  (define target-aarch64?
+    (string-prefix? "aarch64-" %host-type))
+
+  (define target-arm?
+    (or target-arm32? target-aarch64?))
 
   (define arch-specific-flags
     `(;; On ARM, a machine has to be specified. Use "virt" machine to avoid

@@ -32,6 +32,7 @@
   #:use-module ((guix packages) #:select (package-version))
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu installer)
+  #:use-module (gnu system locale)
   #:use-module (gnu services dbus)
   #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
@@ -439,10 +440,12 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; things needed by 'profile-derivation' to minimize the amount of
           ;; download.
           (service gc-root-service-type
-                   (list bare-bones-os
-                         glibc-utf8-locales
-                         texinfo
-                         guile-3.0))
+                   (append
+                    (list bare-bones-os
+                          glibc-utf8-locales
+                          texinfo
+                          guile-3.0)
+                    %default-locale-libcs))
 
           ;; Machines without Kernel Mode Setting (those with many old and
           ;; current AMD GPUs, SiS GPUs, ...) need uvesafb to show the GUI

@@ -3,7 +3,7 @@
 
 (use-modules (gnu))
 (use-service-modules networking ssh)
-(use-package-modules screen)
+(use-package-modules screen ssh)
 
 (operating-system
   (host-name "komputilo")
@@ -46,5 +46,6 @@
   (services (append (list (service dhcp-client-service-type)
                           (service openssh-service-type
                                    (openssh-configuration
+                                    (openssh openssh-sans-x)
                                     (port-number 2222))))
                     %base-services)))

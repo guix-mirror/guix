@@ -3197,6 +3197,17 @@ WebKit browsing engine.")
      `(("alexandria" ,sbcl-alexandria)
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ("trivial-garbage" ,sbcl-trivial-garbage)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dependency
+           ;; lparallel loads a SBCL specific system in its asd file. This is
+           ;; not carried over into the fasl which is generated. In order for
+           ;; it to be carried over, it needs to be listed as a dependency.
+           (lambda _
+             (substitute* "lparallel.asd"
+               ((":depends-on \\(:alexandria" all)
+                (string-append all " #+sbcl :sb-cltl2"))))))))
     (home-page "https://lparallel.org/")
     (synopsis "Parallelism for Common Lisp")
     (description
@@ -11927,3 +11938,51 @@ tables.")
 
 (define-public ecl-cl-ascii-table
   (sbcl-package->ecl-package sbcl-cl-ascii-table))
+
+(define-public sbcl-cl-rdkafka
+  (package
+    (name "sbcl-cl-rdkafka")
+    (version "1.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/SahilKang/cl-rdkafka.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qcgfd4h7syilzmrmd4z2vknbvawda3q3ykw7xm8n381syry4g82"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #f ; Attempts to connect to locally running Kafka
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/low-level/librdkafka-bindings.lisp"
+               (("librdkafka" all)
+                (string-append (assoc-ref inputs "librdkafka") "/lib/"
+                               all)))))
+         (add-before 'cleanup 'move-bundle
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (actual (string-append out "/lib/sbcl/src/cl-rdkafka.fasl"))
+                    (expected (string-append
+                               out "/lib/sbcl/cl-rdkafka--system.fasl")))
+               (copy-file actual expected)
+               #t))))))
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cffi" ,sbcl-cffi)
+       ("cffi-grovel" ,sbcl-cffi-grovel)
+       ("librdkafka" ,librdkafka)
+       ("lparallel" ,sbcl-lparallel)
+       ("trivial-garbage" ,sbcl-trivial-garbage)))
+    (home-page "https://github.com/SahilKang/cl-rdkafka")
+    (synopsis "Common Lisp client library for Apache Kafka")
+    (description "A Common Lisp client library for Apache Kafka.")
+    (license license:gpl3)))
+
+(define-public cl-rdkafka
+  (sbcl-package->cl-source-package sbcl-cl-rdkafka))

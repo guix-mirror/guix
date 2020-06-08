@@ -319,7 +319,9 @@ Services
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
 * PAM Mount Service::           Service to mount volumes when logging in.
+* Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
+* Hurd Services::               Services specific to a Hurd System.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -11484,9 +11486,21 @@ configuration (@pxref{Using the Configuration System}).
 
 @table @asis
 @item @code{kernel} (default: @code{linux-libre})
-The package object of the operating system kernel to use@footnote{Currently
-only the Linux-libre kernel is supported.  In the future, it will be
-possible to use the GNU@tie{}Hurd.}.
+The package object of the operating system kernel to
+use@footnote{Currently only the Linux-libre kernel is fully supported.
+Using GNU@tie{}mach with the GNU@tie{}Hurd is experimental and only
+available when building a virtual machine disk image.}.
+
+@cindex hurd
+@item @code{hurd} (default: @code{#f})
+The package object of the hurd to be started by the kernel.  When this
+field is set, produce a GNU/Hurd operating system.  In that case,
+@code{kernel} must also be set to the @code{gnumach} package---the
+microkernel the Hurd runs on.
+
+@quotation Warning
+This feature is experimental and only supported for disk images.
+@end quotation
 
 @item @code{kernel-loadable-modules} (default: '())
 A list of objects (usually packages) to collect loadable kernel modules
@@ -12587,6 +12601,7 @@ declaration.
 * PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
+* Hurd Services::               Services specific for a Hurd System.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -26025,6 +26040,48 @@ parameters, can be done as follow:
 @end lisp
 @end deffn
 
+@node Hurd Services
+@subsection Hurd Services
+
+@defvr {Scheme Variable} hurd-console-service-type
+This service starts the fancy @code{VGA} console client on the Hurd.
+
+The service's value is a @code{hurd-console-configuration} record.
+@end defvr
+
+@deftp {Data Type} hurd-console-configuration
+This is the data type representing the configuration for the
+hurd-console-service.
+
+@table @asis
+@item @code{hurd} (default: @var{hurd})
+The Hurd package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} hurd-getty-service-type
+This service starts a tty using the Hurd @code{getty} program.
+
+The service's value is a @code{hurd-getty-configuration} record.
+@end defvr
+
+@deftp {Data Type} hurd-getty-configuration
+This is the data type representing the configuration for the
+hurd-getty-service.
+
+@table @asis
+@item @code{hurd} (default: @var{hurd})
+The Hurd package to use.
+
+@item @code{tty}
+The name of the console this Getty runs on---e.g., @code{"tty1"}.
+
+@item @code{baud-rate} (default: @code{38400})
+An integer specifying the baud rate of the tty.
+
+@end table
+@end deftp
+
 @node Miscellaneous Services
 @subsection Miscellaneous Services
 
@@ -26973,7 +27030,7 @@ The type of an entry in the bootloader menu.
 @item @code{label}
 The label to show in the menu---e.g., @code{"GNU"}.
 
-@item @code{linux}
+@item @code{linux} (default: @code{#f})
 The Linux kernel image to boot, for example:
 
 @lisp
@@ -26995,9 +27052,10 @@ field is ignored entirely.
 The list of extra Linux kernel command-line arguments---e.g.,
 @code{("console=ttyS0")}.
 
-@item @code{initrd}
+@item @code{initrd} (default: @code{#f})
 A G-Expression or string denoting the file name of the initial RAM disk
 to use (@pxref{G-Expressions}).
+
 @item @code{device} (default: @code{#f})
 The device where the kernel and initrd are to be found---i.e., for GRUB,
 @dfn{root} for this menu entry (@pxref{root,,, grub, GNU GRUB manual}).
@@ -27007,6 +27065,28 @@ bytevector, @pxref{File Systems}), or @code{#f}, in which case
 the bootloader will search the device containing the file specified by
 the @code{linux} field (@pxref{search,,, grub, GNU GRUB manual}).  It
 must @emph{not} be an OS device name such as @file{/dev/sda1}.
+
+@item @code{multiboot-kernel} (default: @code{#f})
+The kernel to boot in Multiboot-mode (@pxref{multiboot,,, grub, GNU GRUB
+manual}).  When this field is set, a Multiboot menu-entry is generated.
+For example:
+
+@lisp
+(file-append mach "/boot/gnumach")
+@end lisp
+
+@item @code{multiboot-arguments} (default: @code{()})
+The list of extra command-line arguments for the multiboot-kernel.
+
+@item @code{multiboot-modules} (default: @code{()})
+The list of commands for loading Multiboot modules.  For example:
+
+@lisp
+(list (list (file-append hurd "/hurd/ext2fs.static") "ext2fs"
+             @dots{})
+      (list (file-append libc "/lib/ld.so.1") "exec"
+             @dots{}))
+@end lisp
 
 @end table
 @end deftp

@@ -307,7 +307,12 @@ guix system search anonym network | grep "^name: tor"
 
 # Verify that the examples can be built.
 for example in gnu/system/examples/*.tmpl; do
-    guix system -n disk-image "$example"
+    if echo "$example" | grep hurd; then
+        target="--target=i586-pc-gnu"
+    else
+        target=
+    fi
+    guix system -n disk-image $target "$example"
 done
 
 # Verify that the disk image types can be built.

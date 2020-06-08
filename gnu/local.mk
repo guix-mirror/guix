@@ -582,6 +582,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/games.scm			\
   %D%/services/getmail.scm				\
   %D%/services/guix.scm			\
+  %D%/services/hurd.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/linux.scm			\
   %D%/services/lirc.scm				\
@@ -637,6 +638,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/cross-toolchain.scm			\
   %D%/build/image.scm				\
   %D%/build/file-systems.scm			\
+  %D%/build/hurd-boot.scm			\
   %D%/build/install.scm				\
   %D%/build/linux-boot.scm			\
   %D%/build/linux-container.scm			\
@@ -1083,6 +1085,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/http-parser-fix-assertion-on-armhf.patch	\
   %D%/packages/patches/hubbub-sort-entities.patch		\
   %D%/packages/patches/hurd-cross.patch				\
+  %D%/packages/patches/hurd-xattr.patch				\
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
   %D%/packages/patches/icecat-makeicecat.patch			\

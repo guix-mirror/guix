@@ -872,3 +872,31 @@ through its msgpack-rpc API.")
 NeoVim) to enable you to run shell commands in background and read output in the
 quickfix window in realtime.")
     (license license:expat)))
+
+(define-public vim-dispatch
+  (package
+    (name "vim-dispatch")
+    (version "1.8")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/tpope/vim-dispatch")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "1m8b5mn2zqlphzs6xfwykwmghf6p0wabrhpjmh7vav35jgcxc4wl"))))
+    (build-system copy-build-system)
+    (arguments
+     '(#:install-plan
+       '(("autoload" "share/vim/vimfiles/")
+         ("doc" "share/vim/vimfiles/")
+         ("plugin" "share/vim/vimfiles/"))))
+    (home-page "https://github.com/tpope/vim-dispatch")
+    (synopsis "Asynchronous build and test dispatcher")
+    (description "Leverage the power of Vim's compiler plugins without being
+bound by synchronicity.  Kick off builds and test suites using one of several
+asynchronous adapters (including tmux, screen, and a headless mode), and when
+the job completes, errors will be loaded and parsed automatically.")
+    (license license:vim)))

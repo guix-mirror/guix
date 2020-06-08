@@ -282,5 +282,46 @@
                                       merge master3)
                                 #:keyring-reference "master"))))))
 
+(unless (gpg+git-available?) (test-skip 1))
+(test-assert "signed commits, .guix-authorizations removed"
+  (with-fresh-gnupg-setup (list %ed25519-public-key-file
+                                %ed25519-secret-key-file)
+    (with-temporary-git-repository directory
+        `((add "signer.key" ,(call-with-input-file %ed25519-public-key-file
+                               get-string-all))
+          (add ".guix-authorizations"
+               ,(object->string
+                 `(authorizations (version 0)
+                                  ((,(key-fingerprint
+                                      %ed25519-public-key-file)
+                                    (name "Charlie"))))))
+          (commit "zeroth commit")
+          (add "a.txt" "A")
+          (commit "first commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file)))
+          (remove ".guix-authorizations")
+          (commit "second commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file)))
+          (add "b.txt" "B")
+          (commit "third commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file))))
+      (with-repository directory repository
+        (let ((commit1 (find-commit repository "first"))
+              (commit2 (find-commit repository "second"))
+              (commit3 (find-commit repository "third")))
+          ;; COMMIT1 and COMMIT2 are fine.
+          (and (authenticate-commits repository (list commit1 commit2)
+                                     #:keyring-reference "master")
+
+               ;; COMMIT3 is rejected because COMMIT2 removes
+               ;; '.guix-authorizations'.
+               (guard (c ((unauthorized-commit-error? c)
+                          (oid=? (git-authentication-error-commit c)
+                                 (commit-id commit2))))
+                 (authenticate-commits repository
+                                       (list commit1 commit2 commit3)
+                                       #:keyring-reference "master")
+                 'failed)))))))
+
 (test-end "git-authenticate")
 

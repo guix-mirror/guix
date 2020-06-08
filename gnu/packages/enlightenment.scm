@@ -33,6 +33,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bittorrent)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
@@ -598,3 +599,42 @@ directories.
      "This is a process monitor and system monitor using the
 @dfn{Enlightenment Foundation Libraries} (EFL).")
     (license license:bsd-2)))
+
+(define-public epour
+  (package
+    (name "epour")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://download.enlightenment.org/rel/apps/epour"
+                            "/epour-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0g9f9p01hsq6dcf4cs1pwq95g6fpkyjgwqlvdjk1km1i5gj5ygqw"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f      ; no test target
+       #:use-setuptools? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-theme-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "epour/gui/__init__.py"
+                 (("join\\(data_path")
+                  (string-append "join(\"" out "/share/epour\"")))
+               #t))))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("python-distutils-extra" ,python-distutils-extra)))
+    (inputs
+     `(("libtorrent-rasterbar" ,libtorrent-rasterbar)
+       ("python-dbus" ,python-dbus)
+       ("python-efl" ,python-efl)
+       ("python-pyxdg" ,python-pyxdg)))
+    (home-page "https://www.enlightenment.org")
+    (synopsis "EFL Bittorrent client")
+    (description "Epour is a BitTorrent client based on the @dfn{Enlightenment
+Foundation Libraries} (EFL) and rb-libtorrent.")
+    (license license:gpl3+)))

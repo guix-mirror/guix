@@ -1669,38 +1669,30 @@ human-friendly syntax.")
 (define-public python2-schedule
   (package-with-python2 python-schedule))
 
-(define-public python2-mechanize
+(define-public python-mechanize
   (package
-    (name "python2-mechanize")
-    (version "0.2.5")
+    (name "python-mechanize")
+    (version "0.4.5")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "mechanize" version))
       (sha256
        (base32
-        "0rj7r166i1dyrq0ihm5rijfmvhs8a04im28lv05c0c3v206v4rrf"))))
+        "1z9kqcwb8gfq2l6i42z624kxpd8692a0c8gw2x5bbm7n848w2mb3"))))
     (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2 ; apparently incompatible with Python 3
-       #:tests? #f))
-         ;; test fails with message
-         ;; AttributeError: 'module' object has no attribute 'test_pullparser'
-         ;; (python-3.3.2) or
-         ;; AttributeError: 'module' object has no attribute 'test_urllib2_localnet'
-         ;; (python-2.7.5).
-         ;; The source code is from March 2011 and probably not up-to-date
-         ;; with respect to python unit tests.
-    (home-page "http://wwwsearch.sourceforge.net/mechanize/")
+    (propagated-inputs
+     `(("python-html5lib" ,python-html5lib)))
+    (home-page "https://github.com/python-mechanize/mechanize")
     (synopsis
      "Stateful programmatic web browsing in Python")
     (description
      "Mechanize implements stateful programmatic web browsing in Python,
 after Andy Lester’s Perl module WWW::Mechanize.")
-    (license (license:non-copyleft
-              "file://COPYING"
-              "See COPYING in the distribution."))))
+    (license license:bsd-3)))
 
+(define-public python2-mechanize
+  (package-with-python2 python-mechanize))
 
 (define-public python-simplejson
   (package
@@ -6921,14 +6913,14 @@ some are not yet implemented).")
 (define-public python-netifaces
   (package
     (name "python-netifaces")
-    (version "0.10.7")
+    (version "0.10.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "netifaces" version))
         (sha256
           (base32
-            "1gccklrcplbbqh81g1mdgpa5y8na7kkf29cq2ka3f5a2fp5hyndx"))))
+            "1wxby874kcr3pp4ygzk5aiarbzhg1yi093d56s1qg4k2s7yrzvid"))))
     (build-system python-build-system)
     (home-page "https://github.com/al45tair/netifaces")
     (synopsis
@@ -12581,27 +12573,26 @@ discovery, monitoring and configuration.")
 (define-public python-odfpy
   (package
     (name "python-odfpy")
-    (version "1.3.3")
+    (version "1.4.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "odfpy" version))
               (sha256
                (base32
-                "1a6ms0w9zfhhkqhvrnynwwbxrivw6hgjc0s5k7j06npc7rq0blxw"))))
+                "1v1qqk9p12qla85yscq2g413l3qasn6yr4ncyc934465b5p6lxnv"))))
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (guix build python-build-system)
-                  (guix build utils))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           ;; The test runner invokes python2 and python3 for test*.py.
-           ;; To avoid having both in inputs, we replicate it here.
            (lambda _
-             (for-each (lambda (test-file) (invoke "python" test-file))
-                       (find-files "tests" "^test.*\\.py$"))
-             #t)))))
+             (setenv "PYTHONPATH" (string-append "./build/lib:"
+                                                 (getenv "PYTHONPATH")))
+             (invoke "pytest" "-vv"))))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-defusedxml" ,python-defusedxml)))
     (home-page "https://github.com/eea/odfpy")
     (synopsis "Python API and tools to manipulate OpenDocument files")
     (description "Collection of libraries and utility programs written in
@@ -14147,7 +14138,7 @@ exception message with a traceback that points to the culprit.")
 (define-public python-mwclient
   (package
     (name "python-mwclient")
-    (version "0.10.0")
+    (version "0.10.1")
     (source
      (origin
        (method git-fetch)
@@ -14157,8 +14148,7 @@ exception message with a traceback that points to the culprit.")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1c3q6lwmb05yqywc4ya98ca7hsl15niili8rccl4n1yqp77c103v"))))
+        (base32 "120snnsh9n5svfwkyj1w9jrxf99jnqm0jk282yypd3lpyca1l9hj"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests-oauthlib" ,python-requests-oauthlib)
@@ -15107,16 +15097,22 @@ window memory map manager.")
 (define-public python-regex
   (package
     (name "python-regex")
-    (version "2019.04.14")
+    (version "2020.6.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "regex" version))
               (sha256
                (base32
-                "1a6hhfs6l6snr1z654ay6wzbmwdkmv282fzfkd5hk2d1n73y8v6m"))))
-    ;; TODO: Fix and enable regex_test.py tests that complain about the
-    ;; test.support module not existing.
+                "1b3k0zi1pd99q5mk7ri7vcx2y1mq5inm9hk8dryqyhrpkmh4xdp9"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (invoke "python" "-c"
+                     "from regex.test_regex import test_main; test_main()"))))))
     (home-page "https://bitbucket.org/mrabarnett/mrab-regex")
     (synopsis "Alternative regular expression module")
     (description "This regular expression implementation is backwards-

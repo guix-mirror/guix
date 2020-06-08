@@ -1066,14 +1066,14 @@ interractive mode.")
 (define-public burp
   (package
     (name "burp")
-    (version "2.3.26")
+    (version "2.3.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/burp/burp-" version
                                   "/burp-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kwm8wwmzla02cqacgpmac6n5466dqd5czx83lkbp97rmg9017h8"))))
+                "18f8cjsb87skabvz4cl5pdln35qmim7x686js1xzpld6wyl9kv2k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

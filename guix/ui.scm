@@ -69,6 +69,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 regex)
+  #:autoload   (ice-9 popen) (open-pipe* close-pipe)
   #:autoload   (system base compile) (compile-file)
   #:autoload   (system repl repl)  (start-repl)
   #:autoload   (system repl debug) (make-debug stack->vector)
@@ -1557,6 +1558,27 @@ score, the more relevant OBJ is to REGEXPS."
 zero means that PACKAGE does not match any of REGEXPS."
   (relevance package regexps %package-metrics))
 
+(define (call-with-paginated-output-port proc)
+  (if (isatty?* (current-output-port))
+      ;; Set 'LESS' so that 'less' exits if everything fits on the screen (F),
+      ;; lets ANSI escapes through (r), does not send the termcap
+      ;; initialization string (X).
+      (let ((pager (with-environment-variables `(("LESS"
+                                                  ,(or (getenv "LESS") "FrX")))
+                     (open-pipe* OPEN_WRITE
+                                 (or (getenv "GUIX_PAGER") (getenv "PAGER")
+                                     "less")))))
+        (dynamic-wind
+          (const #t)
+          (lambda () (proc pager))
+          (lambda () (close-pipe pager))))
+      (proc (current-output-port))))
+
+(define-syntax-rule (with-paginated-output-port port exp ...)
+  "Evaluate EXP... with PORT bound to a port that talks to the pager if
+standard output is a tty, or with PORT set to the current output port."
+  (call-with-paginated-output-port (lambda (port) exp ...)))
+
 (define* (display-search-results matches port
                                  #:key
                                  (command "guix search")
@@ -1573,30 +1595,17 @@ them.  If PORT is a terminal, print at most a full screen of results."
   (define (line-count str)
     (string-count str #\newline))
 
-  (let loop ((matches matches))
-    (match matches
-      (((package . score) rest ...)
-       (let* ((links? (supports-hyperlinks? port))
-              (text   (call-with-output-string
-                        (lambda (port)
-                          (print package port
-                                 #:hyperlinks? links?
-                                 #:extra-fields
-                                 `((relevance . ,score)))))))
-         (if (and (not (getenv "INSIDE_EMACS"))
-                  max-rows
-                  (> (port-line port) first-line) ;print at least one result
-                  (> (+ 4 (line-count text) (port-line port))
-                     max-rows))
-             (unless (null? rest)
-               (display-hint (format #f (G_ "Run @code{~a ... | less} \
-to view all the results.")
-                                     command)))
-             (begin
-               (display text port)
-               (loop rest)))))
-      (()
-       #t))))
+  (with-paginated-output-port paginated
+    (let loop ((matches matches))
+      (match matches
+        (((package . score) rest ...)
+         (let* ((links? (supports-hyperlinks? port)))
+           (print package paginated
+                  #:hyperlinks? links?
+                  #:extra-fields `((relevance . ,score)))
+           (loop rest)))
+        (()
+         #t)))))
 
 
 (define (string->generations str)

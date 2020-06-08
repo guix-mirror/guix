@@ -47,7 +47,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "19.03.9")
+(define %docker-version "19.03.11")
 
 (define-public python-docker-py
   (package
@@ -314,7 +314,7 @@ built-in registry server of Docker.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1a9hkprkix5d7lqi88r8svvfpzh1qbzw9nrkp11lxrcf9wdan4hg"))
+        (base32 "1pmbggxbazipl24hxiaccbj32379zv79xba76l78v5131ihx922h"))
        (patches
         (search-patches "docker-fix-tests.patch"))))
     (build-system gnu-build-system)
@@ -592,7 +592,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "1599ff7699p3m925rdyfg7gl3cga6gy0lli7qh2ybyiw2kwf4gj9"))))
+       (base32 "1y9ymv70r1hndblr64h19q34arxl2f3dqqi2qcrai5zfimcml6lr"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"

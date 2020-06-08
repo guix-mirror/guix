@@ -984,6 +984,31 @@ different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
       (license license:gpl3+))))                     ;+GFDLv1.3+ for the manual
 
+(define-public emacs-flymake-shellcheck
+  ;; No tag, version grabbed from source .el file.
+  (let ((commit "78956f0e5bb9c4d35989657a55929e8e3f5691e6")
+        (revision "0"))
+    (package
+      (name "emacs-flymake-shellcheck")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/federicotdn/flymake-shellcheck.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "068mx5p4drwgppy4ry1rfq6qi79w6d82b4rnpl2jm37grsg94lix"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/federicotdn/flymake-shellcheck")
+      (synopsis "Flymake backend for Bash/Sh powered by ShellCheck")
+      (description
+       "This package provides a backend for Flymake to use the
+tool ShellCheck for static analyzing @command{bash} and @command{sh}
+scripts.")
+      (license license:gpl3+))))
+
 (define-public emacs-a
   (package
     (name "emacs-a")
@@ -6010,22 +6035,35 @@ after buffer changes.")
      `(#:tests? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-realgud:run-process-void-error
+           ;; See: https://github.com/realgud/realgud/issues/269.
+           (lambda _
+             (substitute* '("realgud/debugger/gdb/gdb.el"
+                            "realgud/debugger/gub/gub.el")
+               (("^\\(require 'load-relative\\).*" anchor)
+                (string-append anchor
+                               "(require-relative-list \
+'(\"../../common/run\") \"realgud:\")\n")))
+             #t))
          (add-after 'unpack 'fix-autogen-script
            (lambda _
              (substitute* "autogen.sh"
-               (("./configure") "sh configure"))))
+               (("./configure") "sh configure"))
+             #t))
          (add-after 'fix-autogen-script 'autogen
            (lambda _
              (setenv "CONFIG_SHELL" "sh")
              (invoke "sh" "autogen.sh")))
          (add-after 'fix-autogen-script 'set-home
            (lambda _
-             (setenv "HOME" (getenv "TMPDIR"))))
+             (setenv "HOME" (getenv "TMPDIR"))
+             #t))
          (add-before 'patch-el-files 'remove-realgud-pkg.el
            (lambda _
              ;; FIXME: `patch-el-files' crashes on this file with error:
              ;; unable to locate "bashdb".
-             (delete-file "./test/test-regexp-bashdb.el"))))
+             (delete-file "./test/test-regexp-bashdb.el")
+             #t)))
        #:include (cons* ".*\\.el$" %default-include)))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -6477,8 +6515,8 @@ S-expression.")
     (license license:gpl3+)))
 
 (define-public emacs-lispyville
-  (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
-        (revision "1"))
+  (let ((commit "1bf38088c981f5ab4ef2e2684952ab6af96378db")
+        (revision "2"))
     (package
       (name "emacs-lispyville")
       (version (git-version "0.1" revision commit))
@@ -6488,31 +6526,12 @@ S-expression.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "0f6srwj1qqkfkbmp5n5pjvi6gm7b7xav05p5hrs2i83rjrakzzqx"))
+                  "07z8qqvaxf963kwn7l2gk47989zb7r3d8ybqjs2cg6hzmzb77wbw"))
                 (file-name (git-file-name name version))))
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
          ("emacs-lispy" ,emacs-lispy)))
       (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         ;; XXX: mysterious whitespace issue with one test
-         (modify-phases %standard-phases
-           (add-before 'check 'make-test-writable
-             (lambda _
-               (make-file-writable "lispyville-test.el")
-               #t))
-           (add-after 'make-test-writable 'remove-test
-             (lambda _
-               (emacs-batch-edit-file "lispyville-test.el"
-                 `(progn (progn (goto-char (point-min))
-                                (re-search-forward
-                                 "ert-deftest lispyville-comment-and-clone-dwim")
-                                (beginning-of-line)
-                                (kill-sexp))
-                         (basic-save-buffer))))))
-         #:tests? #t
-         #:test-command '("make" "test")))
       (synopsis "Minor mode for integrating Evil with lispy")
       (description
        "LispyVille's main purpose is to provide a Lisp editing environment
@@ -8273,11 +8292,11 @@ using package inferred style.")
       (license license:gpl3+))))
 
 (define-public emacs-lua-mode
-  (let ((commit "1f596a93b3f1caadd7bba01030f8c179b029600b")
-        (revision "1"))
+  (let ((commit "35b6e4c20b8b4eaf783ccc8e613d0dd06dbd165c")
+        (revision "0"))
     (package
       (name "emacs-lua-mode")
-      (version (git-version "20191204" revision commit))
+      (version (git-version "20200508" revision commit))
       (home-page "https://github.com/immerrr/lua-mode/")
       (source (origin
                 (method git-fetch)
@@ -8287,14 +8306,14 @@ using package inferred style.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0i4adlaik3qjx1wkb7rwk2clvj7ci2g8pm0siyb3yk90r6z5mspi"))))
+                  "1hai6rqjm5py0bp57nhggmj9qigwdj3a46ngacpnjc1qmy9kkgfk"))))
       (build-system emacs-build-system)
       (arguments
        `(#:tests? #t
-	 #:test-command '("buttercup" "-l" "lua-mode.el")))
+         #:test-command '("buttercup" "-l" "lua-mode.el")))
       (native-inputs
        `(("emacs-buttercup" ,emacs-buttercup)
-	 ("lua" ,lua)))
+         ("lua" ,lua)))
       (synopsis "Major mode for lua")
       (description
        "This Emacs package provides a mode for @uref{https://www.lua.org/,

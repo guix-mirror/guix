@@ -31,6 +31,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu build hurd-boot)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -309,56 +310,6 @@ Hurd-minimal package which are needed for both glibc and GCC.")
      (base32
       "0p2vhnc18cnbmb39vq4m7hzv4mhnm2l0a2s7gx3ar277fwng3hys"))))
 
-(define (hurd-rc-script)
-  "Return a script to be installed as /libexec/rc in the 'hurd' package.  The
-script takes care of installing the relevant passive translators on the first
-boot, since this cannot be done from GNU/Linux."
-  (define translators
-    '(("/servers/crash-dump-core" ("/hurd/crash" "--dump-core"))
-      ("/servers/crash-kill" ("/hurd/crash" "--kill"))
-      ("/servers/crash-suspend" ("/hurd/crash" "--suspend"))
-      ("/servers/password" ("/hurd/password"))
-      ("/servers/socket/1" ("/hurd/pflocal"))
-      ("/servers/socket/2" ("/hurd/pfinet" "--interface" "eth0"
-                            "--address" "10.0.2.15" ;the default QEMU guest IP
-                            "--netmask" "255.255.255.0"
-                            "--gateway" "10.0.2.2"
-                            "--ipv6" "/servers/socket/16"))))
-
-  (define rc
-    (with-imported-modules '((guix build utils))
-      #~(begin
-          (use-modules (guix build utils)
-                       (ice-9 match))
-
-          ;; "@HURD@" is a placeholder.
-          (setenv "PATH" "@HURD@/bin")
-
-          (define (translated? node)
-            ;; Return true if a translator is installed on NODE.
-            (with-output-to-port (%make-void-port "w")
-              (lambda ()
-                (with-error-to-port (%make-void-port "w")
-                  (lambda ()
-                    (zero? (system* "showtrans" "-s" node)))))))
-
-          (for-each (match-lambda
-                      ((node command)
-                       (unless (translated? node)
-                         (mkdir-p (dirname node))
-                         (apply invoke "settrans" "-c" node command))))
-                    '#$translators)
-
-          ;; Start the oh-so-fancy console client.
-          (mkdir-p "/var/run")                    ;for the PID file
-          (invoke "console" "--daemonize" "-c" "/dev/vcs"
-                  "-d" "vga" "-d" "pc_kbd" "-d" "generic_speaker"))))
-
-  ;; FIXME: We want the program to use the cross-compiled Guile when
-  ;; cross-compiling.  But why do we need to be explicit here?
-  (with-parameters ((%current-target-system "i586-pc-gnu"))
-    (program-file "rc" rc)))
-
 (define dde-sources
   ;; This is the current tip of the dde branch
   (let ((commit "ac1c7eb7a8b24b7469bed5365be38a968d59a136"))
@@ -377,7 +328,8 @@ boot, since this cannot be done from GNU/Linux."
     (name "hurd")
     (version (package-version hurd-headers))
     (source (origin (inherit (package-source hurd-headers))
-                    (patches (search-patches "hurd-cross.patch"))))
+                    (patches (search-patches "hurd-cross.patch"
+                                             "hurd-xattr.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -424,6 +376,36 @@ boot, since this cannot be done from GNU/Linux."
              (substitute* '("daemons/Makefile" "utils/Makefile")
                (("-o root -m 4755") ""))
              #t))
+         (add-after 'unpack 'create-runsystem
+           (lambda _
+             ;; XXX Work towards having startup.c invoke the Guile rc
+             (delete-file "daemons/runsystem.sh")
+             (with-output-to-file "daemons/runsystem.sh"
+               (lambda _
+                 (display "#! /bin/bash
+
+# XXX Guile needs pipe support for its finalizer thread, to start.
+# Remove this script when Linux and the Hurd have xattr patches.
+PATH=@PATH@
+
+fsck --yes --force /
+fsysopts / --writable
+
+# Note: this /hurd/ gets substituted
+settrans --create /servers/socket/1 /hurd/pflocal
+
+# parse multiboot arguments
+for i in \"$@\"; do
+    case $i in
+        (--system=*)
+            system=${i#--system=}
+            ;;
+    esac
+done
+
+echo Starting ${system}/rc...
+exec ${system}/rc \"$@\"
+")))))
          (add-before 'build 'set-file-names
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -436,45 +418,39 @@ boot, since this cannot be done from GNU/Linux."
                  (("/bin/login")
                   (string-append out "/bin/login"))
                  (("/bin/bash") (string-append bash "/bin/bash")))
-               (substitute* '("startup/startup.c" "init/init.c" "config/ttys")
+               (substitute* '("startup/startup.c" "config/ttys")
                  (("/libexec/")
                   (string-append out "/libexec/")))
                (substitute* '("utils/uptime.sh")
                  (("/bin/w")
                   (string-append out "/bin/w")))
-               (substitute* "daemons/console-run.c"
+               ;; Upon first boot the /hurd symlink does not exist; it is
+               ;; created during activation: Hard-code the .../hurd store file
+               ;; name.
+               (substitute* '("boot/boot.c"
+                              "daemons/console-run.c"
+                              "startup/startup.c")
                  (("/hurd/")
                   (string-append out "/hurd/")))
-
+               (substitute* '("libdiskfs/boot-start.c"
+                              "libdiskfs/opts-std-startup.c")
+                 (("_HURD_STARTUP")
+                  (string-append "\"" out "/hurd/startup\"")))
                (substitute* '("daemons/runsystem.sh"
-                              "daemons/runsystem.hurd.sh"
-                              "sutils/MAKEDEV.sh")
+                              "utils/fakeroot.sh"
+                              "utils/remap.sh"
+                              "sutils/MAKEDEV.sh"
+                              "sutils/losetup.sh")
                  (("^PATH=.*")
-                  (string-append "PATH=" out "/bin:" out "/sbin:"
-                                 coreutils "/bin:"
-                                 sed "/bin:" grep "/bin:"
-                                 util-linux "/bin\n"))
-                 (("^SHELL=.*")
-                  (string-append "SHELL=" bash "/bin/bash\n"))
+                  (string-append "PATH=" out "/bin"
+                                 ":" out "/sbin"
+                                 ":" coreutils "/bin"
+                                 ":" grep "/bin"
+                                 ":" sed "/bin"
+                                 ":" util-linux "/sbin\n"))
                  (("/sbin/") (string-append out "/sbin/"))
                  (("/libexec/") (string-append out "/libexec/"))
                  (("/hurd/") (string-append out "/hurd/")))
-
-               (substitute* "daemons/runsystem.sh"
-                 (("export PATH")
-                  (string-append "export PATH\n"
-                                 "\
-fsysopts / --writable
-
-# MAKEDEV relies on pipes so this needs to be set up.
-settrans -c /servers/socket/1 /hurd/pflocal
-
-(cd /dev; MAKEDEV -D /dev std vcs tty{1,2,3,4,5,6})\n")))
-
-               (substitute* "daemons/runsystem.hurd.sh"
-                 (("export PATH")
-                  "export PATH
-fsysopts / --writable\n"))
                #t)))
          (add-after 'patch-shebangs 'patch-libexec-shebangs
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -505,16 +481,6 @@ fsysopts / --writable\n"))
                (mkdir-p datadir)
                (copy-file "unifont"
                           (string-append datadir "/vga-system.bdf"))
-               #t)))
-         (add-after 'install 'install-rc-file
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (file (string-append out "/libexec/rc"))
-                    (rc   (assoc-ref inputs "hurd-rc")))
-               (delete-file file)
-               (copy-file rc file)
-               (substitute* file
-                 (("@HURD@") out))
                #t))))
        #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
                                               %output "/lib")
@@ -529,7 +495,6 @@ fsysopts / --writable\n"))
     (build-system gnu-build-system)
     (inputs
      `(("glibc-hurd-headers" ,glibc/hurd-headers)
-       ("hurd-rc" ,(hurd-rc-script))
 
        ("libgcrypt" ,libgcrypt)                  ;for /hurd/random
        ("libdaemon" ,libdaemon)                  ;for /bin/console --daemonize

@@ -1375,6 +1375,7 @@ system administrator.")
                   (delete-file-recursively "lib/zlib")
                   #t))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
@@ -1432,7 +1433,22 @@ system administrator.")
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
                 (string-append match "\ndisabled-" match)))
-             #t)))
+             #t))
+         (add-after 'install 'separate-python-output
+           (lambda* (#:key target outputs #:allow-other-keys)
+             (let ((out        (assoc-ref outputs "out"))
+                   (out:python (assoc-ref outputs "python")))
+               (if target
+                   (mkdir-p (string-append out:python "/empty"))
+                   (for-each
+                    (lambda (file)
+                      (let ((old (string-append out "/" file))
+                            (new (string-append out:python "/" file)))
+                        (mkdir-p (dirname new))
+                        (rename-file old new)))
+                    (list "libexec/sudo/python_plugin.so"
+                          "libexec/sudo/python_plugin.la")))
+               #t))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
@@ -2743,13 +2759,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47.3")
+    (version "4.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0m4npba50sf5s61g5z3xd2r7937zwja941f2h3f081xi24c2hfck"))))
+        (base32 "0crvvfsxh8ryc0j19a2x52i9zacvggm8zi6j3kzygkcwnpz4km8r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -2758,7 +2774,7 @@ a new command using the matched rule, and runs it.")
          (delete 'configure)            ; no configure script
          (add-before 'build 'setup-environment
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              (setenv "prefix" (assoc-ref outputs "out"))
              #t)))
        #:make-flags (list "--environment-overrides")))

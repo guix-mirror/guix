@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
@@ -2067,18 +2067,7 @@ online linear classification written in Common Lisp.")
          ("cl-online-learning" ,sbcl-cl-online-learning)
          ("lparallel" ,sbcl-lparallel)))
       (arguments
-       `(;; The tests download data from the Internet
-         #:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'add-sb-cltl2-dependency
-             (lambda _
-               ;; sb-cltl2 is required by lparallel when using sbcl, but it is
-               ;; not loaded automatically.
-               (substitute* "cl-random-forest.asd"
-                 (("\\(in-package :cl-user\\)")
-                  "(in-package :cl-user) #+sbcl (require :sb-cltl2)"))
-               #t)))))
+       `(#:tests? #f)) ; The tests download data from the Internet
       (synopsis "Random Forest and Global Refinement for Common Lisp")
       (description
        "CL-random-forest is an implementation of Random Forest for multiclass

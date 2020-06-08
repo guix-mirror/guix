@@ -625,6 +625,7 @@ available.")
                     (delete-file-recursively "source/compat/getopt")
                     #t))))
     (build-system cmake-build-system)
+    (native-inputs `(("nasm" ,nasm)))
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
        #:configure-flags
@@ -1611,7 +1612,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.05.29")
+    (version "2020.06.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1619,7 +1620,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "111ganbfi76ipfq5gjgamjbqd7m8l4lim9wwmfnc04bzvwqqzfi3"))))
+                "1qrrr14glv0jv377n61paq55b6k58jpnwbz2sp5xfl4wnxy5hqny"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -2253,14 +2254,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "1.3.1")
+    (version "1.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0cnlg3ra3g6dml4xfy9ysy9b4qwyn458fadd8ac44cfwi3v4gq6y"))))
+          "1s458k8z1lv0w8i82sxs8dys66fwm4yr9j1m7fzp7r0piz8phcpd"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs

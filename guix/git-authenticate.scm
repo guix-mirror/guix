@@ -19,6 +19,7 @@
 (define-module (guix git-authenticate)
   #:use-module (git)
   #:use-module (guix base16)
+  #:use-module ((guix git) #:select (false-if-git-not-found))
   #:use-module (guix i18n)
   #:use-module (guix openpgp)
   #:use-module ((guix utils)
@@ -145,6 +146,27 @@ return a list of authorized fingerprints."
   "Return the list of OpenPGP fingerprints authorized to sign COMMIT, based on
 authorizations listed in its parent commits.  If one of the parent commits
 does not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
+  (define (parents-have-authorizations-file? commit)
+    ;; Return true if at least one of the parents of COMMIT has the
+    ;; '.guix-authorizations' file.
+    (find (lambda (commit)
+            (false-if-git-not-found
+             (tree-entry-bypath (commit-tree commit)
+                                ".guix-authorizations")))
+          (commit-parents commit)))
+
+  (define (assert-parents-lack-authorizations commit)
+    ;; If COMMIT removes the '.guix-authorizations' file found in one of its
+    ;; parents, raise an error.
+    (when (parents-have-authorizations-file? commit)
+      (raise (condition
+              (&unauthorized-commit-error (commit (commit-id commit))
+                                          (signing-key #f))
+              (&message
+               (message (format #f (G_ "commit ~a attempts \
+to remove '.guix-authorizations' file")
+                                (oid->string (commit-id commit)))))))))
+
   (define (commit-authorizations commit)
     (catch 'git-error
       (lambda ()
@@ -155,7 +177,11 @@ does not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
            (open-bytevector-input-port (blob-content blob)))))
       (lambda (key error)
         (if (= (git-error-code error) GIT_ENOTFOUND)
-            default-authorizations
+            (begin
+              ;; Prevent removal of '.guix-authorizations' since it would make
+              ;; it trivial to force a fallback to DEFAULT-AUTHORIZATIONS.
+              (assert-parents-lack-authorizations commit)
+              default-authorizations)
             (throw key error)))))
 
   (apply lset-intersection bytevector=?

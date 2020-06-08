@@ -1,0 +1,31 @@
+;; -*-scheme-*-
+
+;; This is an operating system configuration template
+;; for a "bare bones" setup, with no X11 display server.
+
+;; To build a disk image for a virtual machine, do
+;;
+;;     ./pre-inst-env guix system disk-image --target=i586-pc-gnu --no-grafts \
+;;         gnu/system/examples/bare-hurd.tmpl
+;;
+;; it boots, but needs activation, more setup and services to be useful.
+
+(use-modules (gnu) (gnu system hurd) (guix utils))
+
+(define %hurd-os
+  (operating-system
+    (inherit %hurd-default-operating-system)
+    (bootloader (bootloader-configuration
+                 (bootloader grub-minimal-bootloader)
+                 (target "/dev/sdX")))
+    (file-systems (cons (file-system
+                          (device (file-system-label "my-root"))
+                          (mount-point "/")
+                          (type "ext2"))
+                        %base-file-systems))
+    (host-name "guixygnu")
+    (timezone "Europe/Amsterdam")
+    (packages %base-packages/hurd)
+    (services %base-services/hurd)))
+
+%hurd-os

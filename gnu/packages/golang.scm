@@ -917,29 +917,54 @@ increment versions.")
 Go.")
       (license license:expat))))
 
+(define-public go-github-com-stretchr-objx
+  (package
+    (name "go-github-com-stretchr-objx")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stretchr/objx.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pcdvakxgddaiwcdj73ra4da05a3q4cgwbpm2w75ycq4kzv8ij8k"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/stretchr/objx"))
+    (home-page "https://github.com/stretchr/objx")
+    (synopsis "Go package for dealing with maps, slices, JSON and other data")
+    (description "This package provides a Go library for dealing with maps,
+slices, JSON and other data.")
+    (license license:expat)))
+
 (define-public go-github-com-stretchr-testify
-  (let ((commit
-          "b1f989447a57594c728884458a39abf3a73447f7")
-        (revision "0"))
-    (package
-      (name "go-github-com-stretchr-testify")
-      (version (git-version "1.1.4" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/stretchr/testify.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "0p0gkqzh2p8r5g0rxm885ljl7ghih7h7hx9w562imx5ka0vdgixv"))))
-      (build-system go-build-system)
-      (arguments
-        '(#:import-path "github.com/stretchr/testify"))
-      (home-page "https://github.com/stretchr/testify")
-      (synopsis "Go helper library for tests and invariant checking")
-      (description "This package provide many tools for testifying that your
+  (package
+    (name "go-github-com-stretchr-testify")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stretchr/testify.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "09r89m1wy4cjv2nps1ykp00qjpi0531r07q3s34hr7m6njk4srkl"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/stretchr/testify"))
+    (propagated-inputs
+     `(("github.com/davecgh/go-spew" ,go-github-com-davecgh-go-spew)
+       ("github.com/pmezard/go-difflib" ,go-github-com-pmezard-go-difflib)
+       ("github.com/stretchr/objx" ,go-github-com-stretchr-objx)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/stretchr/testify")
+    (synopsis "Go helper library for tests and invariant checking")
+    (description "This package provide many tools for testifying that your
 code will behave as you intend.
 
 Features include:
@@ -949,7 +974,7 @@ Features include:
 @item HTTP response trapping
 @item Testing suite interfaces and functions.
 @end itemize")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-tevino-abool
   (let ((commit
@@ -1908,28 +1933,26 @@ that's a lot faster (and only does simple bandwidth metrics).")
       (license license:expat))))
 
 (define-public go-github-com-davecgh-go-spew
-  (let ((commit "d8f796af33cc11cb798c1aaeb27a4ebc5099927d")
-        (revision "0"))
-    (package
-      (name "go-github-com-davecgh-go-spew")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/davecgh/go-spew.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "19z27f306fpsrjdvkzd61w1bdazcdbczjyjck177g33iklinhpvx"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:unpack-path "github.com/davecgh/go-spew"
-         #:import-path "github.com/davecgh/go-spew/spew"))
-      (home-page "https://github.com/davecgh/go-spew")
-      (synopsis "Deep pretty printer for Go data structures to aid in debugging")
-      (description "Package @command{spew} implements a deep pretty printer
+  (package
+    (name "go-github-com-davecgh-go-spew")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/davecgh/go-spew.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hka6hmyvp701adzag2g26cxdj47g21x6jz4sc6jjz1mn59d474y"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/davecgh/go-spew"
+       #:import-path "github.com/davecgh/go-spew/spew"))
+    (home-page "https://github.com/davecgh/go-spew")
+    (synopsis "Deep pretty printer for Go data structures to aid in debugging")
+    (description "Package @command{spew} implements a deep pretty printer
 for Go data structures to aid in debugging.
 
 A quick overview of the additional features spew provides over the built-in printing facilities for Go data types are as follows:
@@ -1945,7 +1968,7 @@ pointer receiver are optionally invoked when passing non-pointer variables.
 includes offsets, byte values in hex, and ASCII output (only when using Dump
 style).
 @end itemize\n")
-      (license license:isc))))
+    (license license:isc)))
 
 (define-public go-github-com-btcsuite-btclog
   (let ((commit "84c8d2346e9fc8c7b947e243b9c24e6df9fd206a")
