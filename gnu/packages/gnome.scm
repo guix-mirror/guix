@@ -292,9 +292,9 @@ freedesktop.org desktop notification specification.")
     (version "1.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/mm-common/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "mm-common-" version ".tar.xz"))
               (sha256
                (base32
                 "1m4w33da9f4rx2d6kdj3ix3kl0gn16ml82v2mdn4hljr3q29nzdr"))))
