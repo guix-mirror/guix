@@ -84,6 +84,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
   #:use-module (gnu packages cups)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
@@ -1864,27 +1865,34 @@ Parcellite and adds bugfixes and features.")
   (package
     (name "graphene")
     (version "1.10.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ebassi/graphene/releases/"
-                                  "download/" version
-                                  "/graphene-" version ".tar.xz"))
-              (sha256
-               (base32 "16b4hz73bnrgv5v8n96dczkd6xp9qc06lrl43zln3jnl3psrfva0"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ebassi/graphene.git")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "14a0j1rvjlc7yhfdmhmckdmkzy4ch61qbzywdlw1xv58h23wx29p"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dinstalled_tests=false")))
+     `(#:glib-or-gtk? #t     ; To wrap binaries and/or compile schemas
+       #:configure-flags
+       (list
+        "-Dinstalled_tests=false")))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("git" ,git-minimal)
+       ("gobject-introspection" ,gobject-introspection)
+       ("mutest" ,mutest)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("python" ,python)
-       ("glib" ,glib)))
-    (home-page "https://ebassi.github.io/graphene/")
+     `(("glib" ,glib)
+       ("python" ,python)))
     (synopsis "Thin layer of graphic data types")
-    (description "This library provides graphic types and their relative API;
-it does not deal with windowing system surfaces, drawing, scene graphs, or
-input.")
+    (description "Graphene provides graphic types and their relative API; it
+does not deal with windowing system surfaces, drawing, scene graphs, or input.")
+    (home-page "https://ebassi.github.io/graphene/")
     (license license:expat)))
 
 (define-public spread-sheet-widget
