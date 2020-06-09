@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,9 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
@@ -59,18 +62,22 @@ utilities.")
 (define-public djview
   (package
     (name "djview")
-    (version "4.10.6")
+    (version "4.11")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "mirror://sourceforge/djvu/DjView/"
-                           (version-major+minor version) "/"
-                           "djview-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/djvu/djview-git")
+             (commit (string-append "release." version))))
        (sha256
-        (base32 "08bwv8ppdzhryfcnifgzgdilb12jcnivl4ig6hd44f12d76z6il4"))))
+        (base32 "0qlhd0xlxn8i869m0hwdjvwivi2vigqm88wliyr1h7s84zl3qhsy"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("djvulibre" ,djvulibre)
@@ -86,6 +93,11 @@ utilities.")
            (lambda _
              (substitute* "desktopfiles/djvulibre-djview4.desktop"
                (("Exec=djview4 %f") "Exec=djview %f"))
+             #t))
+         (add-after 'unpack 'make-files-writable
+           (lambda _
+             (for-each make-file-writable
+                       (find-files "."))
              #t)))))
     (home-page "http://djvu.sourceforge.net/djview4.html")
     (synopsis "Viewer for the DjVu image format")
