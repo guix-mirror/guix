@@ -1,4 +1,5 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,8 +40,7 @@
              ".tar.gz"))
        (sha256
         (base32
-         "18v7vvcbcm9s7slh6h43rj9yakkkxwnwgj6kv84i6qzd2j7d80mc"))
-       (patches (search-patches "dhall-remove-network-tests.patch"))))
+         "18v7vvcbcm9s7slh6h43rj9yakkkxwnwgj6kv84i6qzd2j7d80mc"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -99,9 +99,23 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Remove tests that require network
-         (add-after 'unpack 'remove-more-tests
+         (add-after 'unpack 'remove-network-tests
            (lambda _
+             (with-directory-excursion "dhall-lang/tests"
+               (for-each
+                delete-file
+                '("import/failure/referentiallyInsane.dhall"
+                  "import/success/customHeadersA.dhall"
+                  "import/success/noHeaderForwardingA.dhall"
+                  "import/success/unit/RemoteAsTextA.dhall"
+                  "import/success/unit/SimpleRemoteA.dhall"
+                  "import/success/unit/asLocation/RemoteChain1A.dhall"
+                  "import/success/unit/asLocation/RemoteChain2A.dhall"
+                  "import/success/unit/asLocation/RemoteChain3A.dhall"
+                  "import/success/unit/asLocation/RemoteChainEnvA.dhall"
+                  "import/success/unit/asLocation/RemoteChainMissingA.dhall"
+                  "type-inference/success/CacheImportsA.dhall"
+                  "type-inference/success/CacheImportsCanonicalizeA.dhall")))
              (substitute* "src/Dhall/Tutorial.hs"
                (((string-append
                   "-- >>> input auto "
