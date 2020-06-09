@@ -337,6 +337,7 @@ system that is passed to 'populate-root-file-system'."
    (with-extensions gcrypt-sqlite3&co
      (with-imported-modules `(,@(source-module-closure '((gnu build vm)
                                                          (gnu build bootloader)
+                                                         (gnu build hurd-boot)
                                                          (guix store database)
                                                          (guix build utils))
                                                        #:select? not-config?)
