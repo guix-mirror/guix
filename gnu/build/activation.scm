@@ -321,7 +321,7 @@ improvement."
 (define (boot-time-system)
   "Return the '--system' argument passed on the kernel command line."
   (find-long-option "--system" (if (string-contains %host-type "linux-gnu")
-                                   linux-command-line
+                                   (linux-command-line)
                                    (command-line))))
 
 (define* (activate-current-system
