@@ -24594,6 +24594,89 @@ Return true if @var{obj} is a platform object.
 Return the name of @var{platform}---a string such as @code{"arm"}.
 @end deffn
 
+
+@subsubheading The Hurd in a Virtual Machine
+
+@cindex @code{hurd}
+@cindex the Hurd
+
+Service @code{hurd-vm} provides support for running GNU/Hurd in a
+virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
+a Shepherd service that can be controlled with commands such as:
+
+@example
+herd start hurd-vm
+herd stop childhurd
+@end example
+
+The given GNU/Hurd operating system configuration is cross-compiled.
+
+@defvr {Scheme Variable} hurd-vm-service-type
+This is the type of the Hurd in a Virtual Machine service.  Its value
+must be a @code{hurd-vm-configuration} object, which specifies the
+operating system (@pxref{operating-system Reference}) and the disk size
+for the Hurd Virtual Machine, the QEMU package to use as well as the
+options for running it.
+
+For example:
+
+@lisp
+(service hurd-vm-service-type
+         (hurd-vm-configuration
+          (disk-size (* 5000 (expt 2 20))) ;5G
+          (memory-size 1024)))             ;1024MiB
+@end lisp
+
+would create a disk image big enough to build GNU@tie{}Hello, with some
+extra memory.
+@end defvr
+
+@deftp {Data Type} hurd-vm-configuration
+The data type representing the configuration for
+@code{hurd-vm-service-type}.
+
+@table @asis
+@item @code{os} (default: @var{%hurd-vm-operating-system})
+The operating system to instantiate.  This default is bare-bones with a
+permissive OpenSSH secure shell daemon listening on port 2222
+(@pxref{Networking Services, @code{openssh-service-type}}).
+
+@item @code{qemu} (default: @code{qemu-minimal})
+The QEMU package to use.
+
+@item @code{image} (default: @var{hurd-vm-disk-image})
+The procedure used to build the disk-image built from this
+configuration.
+
+@item @code{disk-size} (default: @code{'guess})
+The size of the disk image.
+
+@item @code{memory-size} (default: @code{512})
+The memory size of the Virtual Machine in mebibytes.
+
+@item @code{options} (default: @code{'("--device"} @code{"rtl8139,netdev=net0"} @
+      @code{"--netdev"} @
+      @code{"user,id=net0,hostfwd=tcp:127.0.0.1:20022-:2222,hostfwd=tcp:127.0.0.1:25900-:5900"} @
+      @code{"--snapshot"} @
+      @code{"--hda")})
+The extra options for running QEMU.
+@end table
+@end deftp
+
+Note that by default the VM image is volatile, i.e., once stopped the
+contents are lost.  If you want a stateful image instead, override the
+configuration's @code{image} and @code{options} without
+the @code{--snapshot} flag using something along these lines:
+
+@lisp
+(service hurd-vm-service-type
+         (hurd-vm-configuration
+          (image    (const "/out/of/store/writable/hurd.img"))
+          (options '("--device" "rtl8139,netdev=net0"
+                     "--netdev"
+                     "user,id=net0,hostfwd=tcp:127.0.0.1:20022-:2222"))))
+@end lisp
+
 @node Version Control Services
 @subsection Version Control Services
 

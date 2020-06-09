@@ -266,8 +266,7 @@ stored."
 (define (scm->go file)
   "Compile FILE, which contains code to be loaded by shepherd's config file,
 and return the resulting '.go' file."
-  ;; FIXME: %current-target-system may not be bound <https://bugs.gnu.org/29296>
-  (let ((target (%current-target-system)))
+  (let-system (system target)
     (with-extensions (list shepherd)
       (computed-file (string-append (basename (scheme-file-name file) ".scm")
                                     ".go")
