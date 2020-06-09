@@ -1692,7 +1692,6 @@ productive, customizable lisp based systems.")
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
-       #:tests? #f
        #:builder
        (begin
          (use-modules (guix build utils))
