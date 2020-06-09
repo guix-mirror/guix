@@ -10264,7 +10264,7 @@ this problem.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page "https://hackage.haskell.org/package/regex-pcre")
+    (home-page "https://hackage.haskell.org/package/regex-pcre-builtin")
     (synopsis "Enhancement of the builtin Text.Regex library")
     (description
      "This package is an enhancement of the @code{Text.Regex} library,
