@@ -400,7 +400,7 @@ The object has its kernel-arguments extended in order to make it bootable."
      (device (boot-parameters-store-device conf))
      (device-mount-point (boot-parameters-store-mount-point conf))
      (linux (and (not multiboot?) kernel))
-     (linux-arguments (if (not multiboot?) '
+     (linux-arguments (if (not multiboot?)
                           (boot-parameters-kernel-arguments conf)
                           '()))
      (initrd (boot-parameters-initrd conf))
