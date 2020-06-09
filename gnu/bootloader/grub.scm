@@ -151,7 +151,7 @@ if loadfont ~a; then
   insmod all_video
   insmod gfxterm
 fi~%"
-                  #$font-file
+                  #+font-file
                   #$(string-join
                      (grub-theme-gfxmode (bootloader-theme config))
                      ";"))
