@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -403,14 +404,14 @@ remind you to take a break now and then.")
 (define-public smb4k
   (package
     (name "smb4k")
-    (version "3.0.2")
+    (version "3.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://sourceforge.net/projects/smb4k/files/"
                            version "/smb4k-" version ".tar.xz/download"))
        (sha256
-        (base32 "1daajaj8qhxkzz8dsaracwi49z4i57466h6qnqnh2ir2l54q00ir"))))
+        (base32 "0hz6nfd845bykf78s4g2qs77szl96gy6g8rpg44pqd39a0k0xbh7"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
