@@ -27477,22 +27477,20 @@ to XDG Base Directory specification")
 (define-public rust-yaml-rust-0.4
   (package
     (name "rust-yaml-rust")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "yaml-rust" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0ka3qhqc5lvk3hz14wmsj32jhmh44blcbfrx5hfxli2gg38kv4k5"))))
+        (base32 "038byay0dxsz6isckviz4qshfpyjqmyvda7pq96i6d53y4ickw1r"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-linked-hash-map" ,rust-linked-hash-map-0.5))
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.7))))
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
     (home-page "https://chyh1990.github.io/yaml-rust/")
     (synopsis "The missing YAML 1.2 parser for rust")
     (description
