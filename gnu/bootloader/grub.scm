@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Stefan <stefan-guix@vodafonemail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -135,41 +136,25 @@ file with the resolution provided in CONFIG."
            (_ #f)))))
 
 (define* (eye-candy config store-device store-mount-point
-                    #:key store-directory-prefix system port)
+                    #:key store-directory-prefix port)
   "Return a gexp that writes to PORT (a port-valued gexp) the 'grub.cfg' part
 concerned with graphics mode, background images, colors, and all that.
 STORE-DEVICE designates the device holding the store, and STORE-MOUNT-POINT is
 its mount point; these are used to determine where the background image and
-fonts must be searched for.  SYSTEM must be the target system string---e.g.,
-\"x86_64-linux\".  STORE-DIRECTORY-PREFIX is a directory prefix to prepend to
-any store file name."
-  (define setup-gfxterm-body
-    (let ((gfxmode
-           (or (and-let* ((theme (bootloader-configuration-theme config))
-                          (gfxmode (grub-theme-gfxmode theme)))
-                 (string-join gfxmode ";"))
-               "auto")))
-
-      ;; Intel and EFI systems need to be switched into graphics mode, whereas
-      ;; most other modern architectures have no other mode and therefore
-      ;; don't need to be switched.
-
-      ;; XXX: Do we really need to restrict to x86 systems?  We could imitate
-      ;; what the GRUB default configuration does and decide based on whether
-      ;; a user provided 'gfxterm' in the terminal-outputs field of their
-      ;; bootloader-configuration record.
-      (if (string-match "^(x86_64|i[3-6]86)-" system)
-          (format #f "
-  set gfxmode=~a
-  insmod all_video
-  insmod gfxterm~%" gfxmode)
-          "")))
-
+fonts must be searched for.  STORE-DIRECTORY-PREFIX is a directory prefix to
+prepend to any store file name."
   (define (setup-gfxterm config font-file)
     (if (memq 'gfxterm (bootloader-configuration-terminal-outputs config))
-        #~(format #f "if loadfont ~a; then
-  setup_gfxterm
-fi~%" #+font-file)
+        #~(format #f "
+if loadfont ~a; then
+  set gfxmode=~a
+  insmod all_video
+  insmod gfxterm
+fi~%"
+                  #$font-file
+                  #$(string-join
+                     (grub-theme-gfxmode (bootloader-theme config))
+                     ";"))
         ""))
 
   (define (theme-colors type)
@@ -190,8 +175,6 @@ fi~%" #+font-file)
 
   (and image
        #~(format #$port "
-function setup_gfxterm {~a}
-
 # Set 'root' to the partition that contains /gnu/store.
 ~a
 
@@ -206,7 +189,6 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                 #$setup-gfxterm-body
                  #$(grub-root-search store-device font-file)
                  #$(setup-gfxterm config font-file)
                  #$(grub-setup-io config)
@@ -380,7 +362,6 @@ menuentry ~s {
                  device
                  mount-point
                  #:store-directory-prefix store-directory-prefix
-                 #:system system
                  #:port #~port)))
 
   (define keyboard-layout-config
