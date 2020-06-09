@@ -353,24 +353,6 @@ graph-like environments, e.g. modular synths or finite state machine
 diagrams.")
     (license license:gpl3+)))
 
-(define-public ganv-devel
-  (let ((commit "12f7d6b0438c94dd87f773a92eee3453d971846e")
-        (revision "1"))
-    (package
-      (inherit ganv)
-      (name "ganv")
-      (version (string-append "1.5.4-" revision "."
-                              (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.drobilla.net/ganv.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1cr8w02lr6bk9mkxa12j3imq721b2an2yn4bj5wnwmpm91ddn2gi")))))))
-
 (define-public gtksourceview-2
   (package
     (name "gtksourceview")
