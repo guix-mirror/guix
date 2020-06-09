@@ -847,7 +847,8 @@ fi\n")))
        ,@(if sudoers `(("sudoers" ,sudoers)) '())
        ,@(if hurd
              `(("login" ,(file-append hurd "/etc/login"))
-               ("motd"  ,(file-append hurd "/etc/motd")))
+               ("motd"  ,(file-append hurd "/etc/motd"))
+               ("ttys"  ,(file-append hurd "/etc/ttys")))
              '())))))
 
 (define %root-account
