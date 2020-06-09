@@ -78,8 +78,31 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
+
+(define-public mutest
+  (package
+    (name "mutest")
+    (version "0.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/ebassi/mutest.git")
+         (commit "e6246c9")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gdqwq6fvk06wld4rhnw5752hahrvhd69zrci045x25rwx90x26q"))))
+    (build-system meson-build-system)
+    (synopsis "Small C testing library")
+    (description "Mutest aims to be a small unit testing library for C projects,
+with an API heavily modelled on high level Behavior-Driver Development frameworks
+like Jasmine or Mocha.")
+    (home-page "https://ebassi.github.io/mutest/mutest.md.html")
+    (license license:expat)))
 
 (define-public check
   (package
