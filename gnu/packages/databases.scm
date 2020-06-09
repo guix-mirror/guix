@@ -1753,14 +1753,14 @@ libmysqlclient.  It will fill an aray with long options, ready to be parsed by
 (define-public perl-sql-abstract
   (package
     (name "perl-sql-abstract")
-    (version "1.86")
+    (version "1.87")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/I/IL/ILMARI/"
                            "SQL-Abstract-" version ".tar.gz"))
        (sha256
-        (base32 "1pwcm8hwxcgidyyrak37lx69d85q728jxsb0b14jz93gbvdgg9z7"))))
+        (base32 "0jhw91b23wc9bkfwcgvka4x5ddxk58m9bcp5ay7a3vx77nla09p9"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
