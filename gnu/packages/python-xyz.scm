@@ -23244,3 +23244,21 @@ process.")
     (description "This package implements a backport of Python 3.7
 @code{contextvars} module (see PEP 567) for Python 3.6.")
     (license license:asl2.0)))
+
+(define-public python-aiofiles
+  (package
+    (name "python-aiofiles")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "aiofiles" version))
+        (sha256
+          (base32
+            "1bqmv019x16qa3zah0z915cw6z4va3fjs60fk2s7vyah3gyvrrlq"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Tinche/aiofiles")
+    (synopsis "File support for @code{asyncio}")
+    (description "@code{python-aiofiles} is a library for handling local
+disk files in asyncio applications.")
+    (license license:asl2.0)))
