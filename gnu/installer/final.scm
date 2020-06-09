@@ -127,7 +127,7 @@ USERS."
                    (lambda (port)
                      (match (string-tokenize (read-string port) %not-nul)
                        ((argv0 _ ...)
-                        (unless (member (pk (basename argv0)) spare)
+                        (unless (member (basename argv0) spare)
                           (syslog "Killing process ~a (~a)~%" pid argv0)
                           (kill pid SIGKILL)))
                        (_ #f))))))
