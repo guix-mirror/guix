@@ -23307,3 +23307,24 @@ disk files in asyncio applications.")
       "This is an implementation of PEP 557, Data Classes.  It is a
 backport of the @code{dataclasses} module for Python 3.6.")
     (license license:asl2.0)))
+
+(define-public python-pywatchman
+  (package
+    (name "python-pywatchman")
+    (version "1.4.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pywatchman" version))
+        (sha256
+          (base32
+            "1yf2gm20wc3djpb5larxii3l55xxby0il2ns3q0v1byyfnr7w16h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;there are none
+    (home-page
+      "https://facebook.github.io/watchman/")
+    (synopsis "Watchman client for python")
+    (description "@code{python-pywatchman} is a library to connect and
+query Watchman to discover file changes.")
+    (license license:bsd-3)))
