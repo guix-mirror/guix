@@ -1892,20 +1892,22 @@ export.")
                 "0dz6r6jy0zfs1xy1xspnrxxks8kddi9c7pxz4vpg2ygwv83ghpg5"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no "check" target
-       #:configure-flags
-       (list
-        "--enable-jack"
-        (string-append "--with-wish=" (string-append
-                                       (assoc-ref %build-inputs "tk")
-                                       "/bin/wish8.6")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fix-with-path
-           (lambda _
-             (substitute* "tcl/pd-gui.tcl"
-               (("exec wish ") (string-append "exec " (which "wish8.6") " ")))
-             #t)))))
+     (let ((wish (string-append "wish" (version-major+minor
+                                        (package-version tk)))))
+       `(#:tests? #f                    ; no "check" target
+         #:configure-flags
+         (list
+          "--enable-jack"
+          (string-append "--with-wish=" (string-append
+                                         (assoc-ref %build-inputs "tk")
+                                         "/bin/" ,wish)))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'fix-with-path
+             (lambda _
+               (substitute* "tcl/pd-gui.tcl"
+                 (("exec wish ") (string-append "exec " (which ,wish) " ")))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
