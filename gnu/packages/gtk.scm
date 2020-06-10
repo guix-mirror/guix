@@ -1707,14 +1707,14 @@ glass artworks done by Venicians glass blowers.")
 (define-public gtkspell3
   (package
     (name "gtkspell3")
-    (version "3.0.9")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gtkspell/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09jdicmpipmj4v84gnkqwbmj4lh8v0i6pn967rb9jx4zg2ia9x54"))))
+                "0cjp6xdcnzh6kka42w9g0w2ihqjlq8yl8hjm9wsfnixk6qwgch5h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1725,7 +1725,7 @@ glass artworks done by Venicians glass blowers.")
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
     (propagated-inputs
-     `(("enchant" ,enchant-1.6)))          ;gtkspell3-3.0.pc refers to it
+     `(("enchant" ,enchant)))           ; gtkspell3-3.0.pc refers to it
     (home-page "http://gtkspell.sourceforge.net")
     (synopsis "Spell-checking addon for GTK's TextView widget")
     (description
