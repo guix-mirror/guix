@@ -1567,7 +1567,7 @@ online as well as original implementations of various other algorithms.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.coin-or.org/download/source/Ipopt/Ipopt-"
+                    "https://www.coin-or.org/download/source/Ipopt/Ipopt-"
                     version".tgz"))
               (sha256
                (base32
