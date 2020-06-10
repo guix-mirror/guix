@@ -3947,7 +3947,7 @@ Translation (@dfn{SAT}) are also supported.")
 (define-public nvme-cli
   (package
     (name "nvme-cli")
-    (version "1.10.1")
+    (version "1.11.2")
     (home-page "https://github.com/linux-nvme/nvme-cli")
     (source (origin
               (method git-fetch)
@@ -3955,7 +3955,7 @@ Translation (@dfn{SAT}) are also supported.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "12wp2wxmsw2v8m9bhvwvdbhdgx1md8iilhbl19sfzz2araiwi2x8"))
+               (base32 "0ngh7zffjf6ac8b22hdi4ry7hjlafih172hrbpw8j17r7c0wjy9i"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
