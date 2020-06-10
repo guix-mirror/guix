@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
@@ -47,8 +47,8 @@
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
-  (let ((commit "9559fd18d4b89bf797216fbe187f2b26b0a2d165")
-        (revision "30"))
+  (let ((commit "2280ae18eb25aa7034636c58bf288c9bd5a8fa3b")
+        (revision "31"))
     (package
       (name "cuirass")
       (version (git-version "0.0.1" revision commit))
@@ -60,7 +60,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "026cpcws8mb483mywwx2znpy9i7lw5n3lyqa9k6d87kxmw59060c"))))
+                  "1gbmpwgiwy740d936b052gfivzw52pgrny7j7lbl56wi9wnawkc9"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
