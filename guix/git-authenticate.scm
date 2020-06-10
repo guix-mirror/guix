@@ -85,9 +85,11 @@
   (signature missing-key-error-signature))
 
 
-(define (commit-signing-key repo commit-id keyring)
+(define* (commit-signing-key repo commit-id keyring
+                             #:key (disallowed-hash-algorithms '(sha1)))
   "Return the OpenPGP key that signed COMMIT-ID (an OID).  Raise an exception
-if the commit is unsigned, has an invalid signature, or if its signing key is
+if the commit is unsigned, has an invalid signature, has a signature using one
+of the hash algorithms in DISALLOWED-HASH-ALGORITHMS, or if its signing key is
 not in KEYRING."
   (let-values (((signature signed-data)
                 (catch 'git-error
@@ -103,6 +105,17 @@ not in KEYRING."
                                 (oid->string commit-id)))))))
 
     (let ((signature (string->openpgp-packet signature)))
+      (when (memq (openpgp-signature-hash-algorithm signature)
+                  `(,@disallowed-hash-algorithms md5))
+        (raise (condition
+                (&unsigned-commit-error (commit commit-id))
+                (&message
+                 (message (format #f (G_ "commit ~a has a ~a signature, \
+which is not permitted")
+                                  (oid->string commit-id)
+                                  (openpgp-signature-hash-algorithm
+                                   signature)))))))
+
       (with-fluids ((%default-port-encoding "UTF-8"))
         (let-values (((status data)
                       (verify-openpgp-signature signature keyring
@@ -198,8 +211,18 @@ not specify anything, fall back to DEFAULT-AUTHORIZATIONS."
   (define id
     (commit-id commit))
 
+  (define recent-commit?
+    (false-if-git-not-found
+     (tree-entry-bypath (commit-tree commit) ".guix-authorizations")))
+
   (define signing-key
-    (commit-signing-key repository id keyring))
+    (commit-signing-key repository id keyring
+                        ;; Reject SHA1 signatures unconditionally as suggested
+                        ;; by the authors of "SHA-1 is a Shambles" (2019).
+                        ;; Accept it for "historical" commits (there are such
+                        ;; signatures from April 2020 in the repository).
+                        #:disallowed-hash-algorithms
+                        (if recent-commit? '(sha1) '())))
 
   (unless (member (openpgp-public-key-fingerprint signing-key)
                   (commit-authorized-keys repository commit

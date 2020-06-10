@@ -81,6 +81,35 @@
                                 #:keyring-reference "master")
           'failed)))))
 
+(unless (which (git-command)) (test-skip 1))
+(test-assert "signed commits, SHA1 signature"
+  (with-fresh-gnupg-setup (list %ed25519-public-key-file
+                                %ed25519-secret-key-file)
+    ;; Force use of SHA1 for signatures.
+    (call-with-output-file (string-append (getenv "GNUPGHOME") "/gpg.conf")
+      (lambda (port)
+        (display "digest-algo sha1" port)))
+
+    (with-temporary-git-repository directory
+        `((add "a.txt" "A")
+          (add "signer.key" ,(call-with-input-file %ed25519-public-key-file
+                               get-string-all))
+          (add ".guix-authorizations"
+               ,(object->string
+                 `(authorizations (version 0)
+                                  ((,(key-fingerprint %ed25519-public-key-file)
+                                    (name "Charlie"))))))
+          (commit "first commit"
+                  (signer ,(key-fingerprint %ed25519-public-key-file))))
+      (with-repository directory repository
+        (let ((commit (find-commit repository "first")))
+          (guard (c ((unsigned-commit-error? c)
+                     (oid=? (git-authentication-error-commit c)
+                            (commit-id commit))))
+            (authenticate-commits repository (list commit)
+                                  #:keyring-reference "master")
+            'failed))))))
+
 (unless (gpg+git-available?) (test-skip 1))
 (test-assert "signed commits, default authorizations"
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
