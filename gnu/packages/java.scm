@@ -54,7 +54,6 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages ghostscript) ;lcms
   #:use-module (gnu packages gnome)
@@ -254,11 +253,6 @@ language.")
        ("libffi" ,libffi)
        ("zip" ,zip)
        ("zlib" ,zlib)))
-    ;; When built with a recent GCC and glibc the configure step of icedtea-6
-    ;; fails with an invalid instruction error.
-    (native-inputs
-     `(("gcc" ,gcc-5)
-       ("libc" ,glibc-2.28)))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
@@ -708,6 +702,8 @@ machine.")))
               (sha256
                (base32
                 "1nl0zxz8y5x8gwsrm7n32bry4dx8x70p8z3s9jbdvs8avyb8whkn"))
+              (patches
+               (search-patches "jamvm-2.0.0-disable-branch-patching.patch"))
               (snippet
                '(begin
                   ;; Remove precompiled software.

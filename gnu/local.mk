@@ -1109,6 +1109,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
+  %D%/packages/patches/jamvm-2.0.0-disable-branch-patching.patch	\
   %D%/packages/patches/jamvm-arm.patch				\
   %D%/packages/patches/java-apache-ivy-port-to-latest-bouncycastle.patch	\
   %D%/packages/patches/java-commons-collections-fix-java8.patch \
