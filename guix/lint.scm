@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -669,13 +670,17 @@ patch could not be found."
       (or (and=> (package-source package) origin-patches)
           '()))
 
+    (define (starts-with-package-name? file-name)
+      (and=> (string-contains file-name (package-name package))
+             zero?))
+
     (append
      (if (every (match-lambda        ;patch starts with package name?
                   ((? string? patch)
-                   (and=> (string-contains (basename patch)
-                                           (package-name package))
-                          zero?))
-                  (_  #f))     ;must be an <origin> or something like that.
+                   (starts-with-package-name? (basename patch)))
+                  ((? origin? patch)
+                   (starts-with-package-name? (origin-file-name patch)))
+                  (_  #f))     ;must be some other file-like object
                 patches)
          '()
          (list
