@@ -23262,3 +23262,27 @@ process.")
     (description "@code{python-aiofiles} is a library for handling local
 disk files in asyncio applications.")
     (license license:asl2.0)))
+
+(define-public python-pyre-extensions
+  (package
+    (name "python-pyre-extensions")
+    (version "0.0.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyre-extensions" version))
+        (sha256
+          (base32
+            "0c5cbbqrfyjwakdh3kbwxis6mbrbwky1z1fqslgszgpcj4g43q30"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-typing-extensions"
+         ,python-typing-extensions)
+        ("python-typing-inspect" ,python-typing-inspect)))
+    (home-page "https://pyre-check.org")
+    (synopsis
+     "Type system extensions for use with @code{python-pyre}")
+    (description
+      "@code{python-pyre-extensions} defines extensions to the standard
+@code{typing} module that are supported by the Pyre typechecker.")
+    (license license:expat)))
