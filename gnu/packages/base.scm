@@ -148,6 +148,22 @@ including, for example, recursive directory searching.")
              (base32
               "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))))
    (build-system gnu-build-system)
+   (arguments
+    ;; TODO: When merging this into core-updates, keep the version of
+    ;; this code (with comment!) applied as a snippet.
+    `(,@(if (string-prefix? "powerpc64le" (or (%current-target-system)
+                                              (%current-system)))
+          `(#:phases
+            (modify-phases %standard-phases
+              (add-after 'unpack 'allow-building-on-selinux-systems
+                (lambda _
+                  (substitute* "Makefile.in"
+                    (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
+                     (string-append
+                      previous-line
+                      "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))
+                  #t))))
+          '())))
    (synopsis "Stream editor")
    (native-inputs
     `(("perl" ,perl)))                            ;for tests
