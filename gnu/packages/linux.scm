@@ -2073,15 +2073,17 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.8.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://netfilter.org/iptables/iptables-"
-                   version ".tar.bz2"))
-             (sha256
-              (base32
-               "0z0mgs1ghvn3slc868mgbf2g26njgrzcy5ggyb5w4i55j1a3lflr"))))
+    ;; XXX When updating, remove the ‘install-missing-script’ phase.
+    (version "1.8.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "mirror://netfilter.org/iptables/iptables-"
+                                 version ".tar.bz2")
+                  (string-append "https://www.netfilter.org/projects/iptables/"
+                                 "files/iptables-" version ".tar.bz2")))
+       (sha256
+        (base32 "02a3575ypdpg6a2x752mhk3f7h1381ymkq1n0gss6fp6292xfmyl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2093,7 +2095,19 @@ external rate conversion.")
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-missing-script
+           ;; A typo prevents installation of /sbin/iptables-apply.  It's been
+           ;; fixed upstream (d4ed0c741fc789bb09d977d74d30875fdd50d08b), but
+           ;; a patch would require bootstrapping and more inputs.  Simply copy
+           ;; the file ourselves.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin")))
+               (install-file "iptables/iptables-apply" sbin)
+               #t))))))
     (home-page "https://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Programs to configure Linux IP packet filtering rules")
     (description
