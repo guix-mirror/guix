@@ -103,7 +103,7 @@ file permissions, timestamps, symbolic and hard links, and extended attributes.
 
 Each file in the archive is protected by a checksum.  If part of the archive
 is corrupted you'll lose the affected file(s) but not the whole back-up.")
-    (home-page "http://www.fsarchiver.org/")
+    (home-page "https://www.fsarchiver.org/")
     (license license:gpl2)))
 
 (define-public gphotofs
