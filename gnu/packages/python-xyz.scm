@@ -23286,3 +23286,24 @@ disk files in asyncio applications.")
       "@code{python-pyre-extensions} defines extensions to the standard
 @code{typing} module that are supported by the Pyre typechecker.")
     (license license:expat)))
+
+(define-public python-dataclasses
+  (package
+    (name "python-dataclasses")
+    (version "0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "dataclasses" version))
+        (sha256
+          (base32
+            "1rh8111fbws2vxyf2qy2zw3x6p6cq1jfz8pf904gig5qwg56sjj9"))))
+    (build-system python-build-system)
+    (home-page
+      "https://github.com/ericvsmith/dataclasses")
+    (synopsis
+      "Backport of the @code{dataclasses} module for Python 3.6")
+    (description
+      "This is an implementation of PEP 557, Data Classes.  It is a
+backport of the @code{dataclasses} module for Python 3.6.")
+    (license license:asl2.0)))
