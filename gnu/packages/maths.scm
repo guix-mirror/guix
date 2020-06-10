@@ -1601,7 +1601,7 @@ online as well as original implementations of various other algorithms.")
     (inputs
      ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
      `(("lapack" ,lapack)))                    ;for both libblas and liblapack
-    (home-page "http://www.coin-or.org")
+    (home-page "https://www.coin-or.org")
     (synopsis "Large-scale nonlinear optimizer")
     (description
      "The Interior Point Optimizer (IPOPT) is a software package for
