@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Vitaliy Shatrov <D0dyBo0D0dyBo0@protonmail.com>
+;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,7 +143,19 @@ including, for example, recursive directory searching.")
                                 ".tar.gz"))
             (sha256
              (base32
-              "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))))
+              "0alqagh0nliymz23kfjg6g9w3cr086k0sfni56gi8fhzqwa3xksk"))
+            ;; Remove this snippet once upstream releases a fixed version.
+            ;; This snippet changes Makefile.in, even though the upstream
+            ;; patch changes testsuite/local.mk, since we build sed from a
+            ;; release tarball.  See: https://bugs.gnu.org/36150
+            (snippet
+             '(begin
+                (substitute* "Makefile.in"
+                  (("^  abs_srcdir='\\$\\(abs_srcdir\\)'.*" previous-line)
+                   (string-append
+                    previous-line
+                    "  CONFIG_HEADER='$(CONFIG_HEADER)'\t\t\\\n")))))
+            (modules '((guix build utils)))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (native-inputs
