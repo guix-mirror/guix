@@ -6068,14 +6068,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "1jhyxsfrfqjascrm5lnxlcyzj6n0gc0qc1bp2asb7m61dxlmmsy1"))))
+        (base32 "13zd90bfrr0q3j0l0cbc8kiizccw6n8gp727kqnfljh024zw3nr0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
