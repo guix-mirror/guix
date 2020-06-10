@@ -17260,6 +17260,24 @@ The PostgreSQL daemon loads its runtime configuration from @var{config-file},
 creates a database cluster with @var{locale} as the default
 locale, stored in @var{data-directory}.  It then listens on @var{port}.
 
+If the services fails to start, it may be due to an incompatible
+cluster already present in @var{data-directory}.  Adjust it (or, if you
+don't need the cluster anymore, delete @var{data-directory}), then
+restart the service.
+
+Peer authentication is used by default and the @code{postgres} user
+account has no shell, which prevents the direct execution of @code{psql}
+commands as this user.  To use @code{psql}, you can temporarily log in
+as @code{postgres} using a shell, create a PostgreSQL superuser with the
+same name as one of the system users and then create the associated
+database.
+
+@example
+sudo -u postgres -s /bin/sh
+createuser --interactive
+createdb $MY_USER_LOGIN      # Replace appropriately.
+@end example
+
 @cindex postgresql extension-packages
 Additional extensions are loaded from packages listed in
 @var{extension-packages}.  Extensions are available at runtime.  For instance,
