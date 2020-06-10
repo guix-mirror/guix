@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -6140,6 +6140,11 @@ and Karl Berry.")
                                            (assoc-ref %outputs "out")
                                            ;; Exact name and level is necessary.
                                            "/lyx" ,(version-major+minor version)))
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                            (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
          ;; See ;; https://www.lyx.org/trac/changeset/3a123b90af838b08680471d87170c38e56787df9/lyxgit
@@ -6176,6 +6181,14 @@ and Karl Berry.")
                                       (string-split
                                         ,(version-major+minor version) #\-)) "x")
                      (string-append (getcwd) "/../lyx-" ,version "/lib"))
+             #t))
+         (add-after 'install 'wrap-qt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out")
+                              (string-append "../lyx"
+                                             ,(version-major+minor version)
+                                             "/bin/lyx"
+                                             ,(version-major+minor version)))
              #t))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
