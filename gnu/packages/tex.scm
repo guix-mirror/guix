@@ -6116,15 +6116,15 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.3.3")
+    (version "2.3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.lyx.org/pub/lyx/stable/"
                                   (version-major+minor version) ".x/"
-                                  "lyx-" version ".tar.gz"))
+                                  "lyx-" version ".tar.xz"))
               (sha256
                (base32
-                "0j3xincwmsscfgv13g3z6h4kx1qfzgg8x71fs393akcdxsh2g07c"))
+                "0mv32s26igm0pd8vs7d2mk1240dpr83y0a2wyh3xz6b67ph0w157"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6147,19 +6147,17 @@ and Karl Berry.")
                             (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
-         ;; See ;; https://www.lyx.org/trac/changeset/3a123b90af838b08680471d87170c38e56787df9/lyxgit
-         (add-after 'unpack 'fix-compilation-with-boost-1.69
-           (lambda _
-             (substitute* "src/support/FileName.cpp"
-               (("^template struct boost::detail::crc_table_t.*") ""))
-             #t))
          (add-after 'unpack 'patch-python
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("src/support/os.cpp")
+             (substitute* '("lib/configure.py"
+                            "src/support/ForkedCalls.cpp"
+                            "src/support/Systemcall.cpp"
+                            "src/support/os.cpp"
+                            "src/support/filetools.cpp")
                (("\"python ")
                 (string-append "\""
                                (assoc-ref inputs "python")
-                               "/bin/python ")))
+                               "/bin/python3 ")))
              #t))
          (add-after 'patch-python 'patch-desktop-file
            (lambda* (#:key outputs #:allow-other-keys)
@@ -6169,13 +6167,14 @@ and Karl Berry.")
                                (assoc-ref outputs "out")
                                "/")))
              #t))
-         (add-before 'check 'setenv-check
+         (add-after 'unpack 'add-missing-test-file
            (lambda _
              ;; Create missing file that would cause tests to fail.
-             (with-output-to-file (string-append "../lyx-"
-                                                 ,version
-                                                 "/src/tests/check_layout.cmake")
+             (with-output-to-file "src/tests/check_layout.cmake"
                (const #t))
+             #t))
+         (add-before 'check 'setenv-check
+           (lambda _
              (setenv (string-append "LYX_DIR_"
                                     (string-join
                                       (string-split
