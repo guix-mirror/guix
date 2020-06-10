@@ -5345,7 +5345,8 @@ configuration triplets,, autoconf, Autoconf}).
 @item --compression=@var{tool}
 @itemx -C @var{tool}
 Compress the resulting tarball using @var{tool}---one of @code{gzip},
-@code{bzip2}, @code{xz}, @code{lzip}, or @code{none} for no compression.
+@code{zstd}, @code{bzip2}, @code{xz}, @code{lzip}, or @code{none} for no
+compression.
 
 @item --symlink=@var{spec}
 @itemx -S @var{spec}

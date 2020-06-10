@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Konrad Hinsen <konrad.hinsen@fastmail.net>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,11 @@
                     #~(#+(file-append xz "/bin/xz") "-e"))
         (compressor "bzip2" ".bz2"
                     #~(#+(file-append bzip2 "/bin/bzip2") "-9"))
+        (compressor "zstd" ".zst"
+                    ;; The default level 3 compresses better than gzip in a
+                    ;; fraction of the time, while the highest level 19
+                    ;; (de)compresses more slowly and worse than xz.
+                    #~(#+(file-append zstd "/bin/zstd") "-3"))
         (compressor "none" "" #f)))
 
 ;; This one is only for use in this module, so don't put it in %compressors.
