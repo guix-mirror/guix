@@ -1918,7 +1918,7 @@ export.")
      `(("tk" ,tk)
        ("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)))
-    (home-page "http://puredata.info")
+    (home-page "https://puredata.info")
     (synopsis "Visual programming language for artistic performances")
     (description
      "Pure Data (aka Pd) is a visual programming language.  Pd enables
