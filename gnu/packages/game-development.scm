@@ -191,39 +191,39 @@ DeuTex has functions such as merging wads, etc.")
   (package
     (name "grfcodec")
     (version "6.0.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://binaries.openttd.org/extra/"
-                                  name "/" version "/" name "-" version
-                                  "-source.tar.xz"))
-              (sha256
-               (base32
-                "08admgnpqcsifpicbm56apgv360fxapqpbbsp10qyk8i22w1ivsk"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://binaries.openttd.org/extra/"
+                           name "/" version "/" name "-" version
+                           "-source.tar.xz"))
+       (sha256
+        (base32 "08admgnpqcsifpicbm56apgv360fxapqpbbsp10qyk8i22w1ivsk"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; no check target
+     '(#:tests? #f                      ;no check target
        #:phases
-      (modify-phases %standard-phases
-        (delete 'configure) ; no configure script
-        (replace 'install   ; no install target
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin"))
-                   (doc (string-append out "/share/doc"))
-                   (man (string-append out "/share/man/man1")))
-              (for-each (lambda (file)
-                          (install-file file bin))
-                        '("grfcodec" "grfid" "grfstrip" "nforenum"))
-              (install-file "COPYING" doc)
-              (with-directory-excursion "docs"
-                (for-each (lambda (file)
-                            (install-file (string-append file ".txt") doc))
-                          '("auto_correct" "commands" "grf" "grfcodec" "grftut"
-                            "readme" "readme.rpn"))
-                (for-each (lambda (file)
-                            (install-file file man))
-                          (find-files "." "\\.1"))))
-            #t)))))
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (replace 'install              ;no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc"))
+                    (man (string-append out "/share/man/man1")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         '("grfcodec" "grfid" "grfstrip" "nforenum"))
+               (install-file "COPYING" doc)
+               (with-directory-excursion "docs"
+                 (for-each (lambda (file)
+                             (install-file (string-append file ".txt") doc))
+                           '("auto_correct" "commands" "grf" "grfcodec" "grftut"
+                             "readme" "readme.rpn"))
+                 (for-each (lambda (file)
+                             (install-file file man))
+                           (find-files "." "\\.1"))))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("libpng" ,libpng)
