@@ -240,7 +240,7 @@ with a specific task:
 @item @code{nforenum} checks NFO code for errors, making corrections when
 necessary.
 @end enumerate")
-    (home-page "http://dev.openttdcoop.org/projects/grfcodec")
+    (home-page "https://dev.openttdcoop.org/projects/grfcodec")
     ;; GRFCodec, GRFID, and GRFStrip are exclusively under the GPL2.
     ;; NFORenum is under the GPL2+.
     ;; The MD5 implementation contained in GRFID is under the zlib license.
