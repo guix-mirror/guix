@@ -17,6 +17,7 @@
 ;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1179,6 +1180,103 @@ incoming requests with their respective handler.")
 @code{clockwork.Clock} interface instead.")
       (license license:asl2.0))))
 
+(define-public go-github-com-spf13-afero
+  (package
+    (name "go-github-com-spf13-afero")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/afero")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j9r65qgd58324m85lkl49vk9dgwd62g7dwvkfcm3k6i9dc555a9"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/afero"))
+    (propagated-inputs
+     `(("golang.org/x/text" ,go-golang-org-x-text)))
+    (home-page "https://github.com/spf13/afero")
+    (synopsis "Filesystem abstraction for Go")
+    (description "Filesystem abstraction for Go")
+    (license license:asl2.0)))
+
+(define-public go-github-com-spf13-cast
+  (package
+    (name "go-github-com-spf13-cast")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/cast")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lb84788glr0qzrq2ifi36rgvp96qrgywvxrr3ggq5hrbr38hgn1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/cast"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/spf13/cast")
+    (synopsis "Safe and easy casting from one type to another in Go")
+    (description "Safe and easy casting from one type to another in Go")
+    (license license:expat)))
+
+(define-public go-github-com-spf13-cobra
+  (package
+    (name "go-github-com-spf13-cobra")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/cobra")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vbppqqhby302a5ayn0296jqr71qkcd4c9am7wzsk6z71fwdsa7h"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/cobra"))
+    (propagated-inputs
+     `(("github.com/spf13/pflag" ,go-github-com-spf13-pflag)))
+    (home-page "https://github.com/spf13/cobra")
+    (synopsis "Go library for creating CLI applications")
+    (description "Cobra is both a library for creating powerful modern CLI
+applications as well as a program to generate applications and command files.")
+    (license license:asl2.0)))
+
+(define-public go-github-com-spf13-jwalterweatherman
+  (package
+    (name "go-github-com-spf13-jwalterweatherman")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/jwalterweatherman")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ywmkwci5zyd88ijym6f30fj5c0k2yayxarkmnazf5ybljv50q7b"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/jwalterweatherman"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/spf13/jwalterweatherman")
+    (synopsis "Go logging library")
+    (description "Go logging library")
+    (license license:expat)))
+
 (define-public go-github-com-spf13-pflag
   (package
     (name "go-github-com-spf13-pflag")
@@ -1191,8 +1289,8 @@ incoming requests with their respective handler.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-          (base32
-            "0gpmacngd0gpslnbkzi263f5ishigzgh6pbdv9hp092rnjl4nd31"))))
+         (base32
+          "0gpmacngd0gpslnbkzi263f5ishigzgh6pbdv9hp092rnjl4nd31"))))
     (build-system go-build-system)
     (arguments
       '(#:import-path "github.com/spf13/pflag"))
@@ -1205,6 +1303,143 @@ with the
 @uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
 GNU extensions} to the POSIX recommendations for command-line options.")
     (license license:bsd-3)))
+
+(define-public go-github-com-spf13-viper
+  (package
+    (name "go-github-com-spf13-viper")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/viper.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "099n2g7fg6r8hqyszqw2axr775qyhyvwhsykvgw0f0s16ql48h5c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/spf13/viper"))
+    (propagated-inputs
+     `(("github.com/spf13/afero" ,go-github-com-spf13-afero)
+       ("github.com/spf13/cast" ,go-github-com-spf13-cast)
+       ("github.com/spf13/pflag" ,go-github-com-spf13-pflag)
+       ("github.com/spf13/jwalterweatherman" ,go-github-com-spf13-jwalterweatherman)
+       ("github.com/fsnotify/fsnotify" ,go-github-com-fsnotify-fsnotify)
+       ("github.com/hashicorp/hcl" ,go-github-com-hashicorp-hcl)
+       ("github.com/magiconair/properties" ,go-github-com-magiconair-properties)
+       ("github.com/mitchellh/mapstructure" ,go-github-com-mitchellh-mapstructure)
+       ("github.com/pelletier/go-toml" ,go-github-com-pelletier-go-toml)
+       ("github.com/subosito/gotenv" ,go-github-com-subosito-gotenv)
+
+       ("gopkg.in/ini.v1" ,go-gopkg-in-ini-v1)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/spf13/viper")
+    (synopsis "Go configuration with fangs")
+    (description
+     "Viper is a complete configuration solution for Go applications including
+12-Factor apps.  It is designed to work within an application, and can handle
+all types of configuration needs and formats.")
+    (license license:expat)))
+
+(define-public go-github-com-fsnotify-fsnotify
+  (package
+    (name "go-github-com-fsnotify-fsnotify")
+    (version "1.4.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fsnotify/fsnotify")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1i1r72knpbfwwql9frn9bqc3nhfc2ai5m6qllcyr6wban62lr40x"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/fsnotify/fsnotify"))
+    (propagated-inputs
+     `(("golang.org/x/sys" ,go-golang-org-x-sys)))
+    (home-page "https://github.com/fsnotify/fsnotify")
+    (synopsis "File system notifications for Go")
+    (description "File system notifications for Go")
+    (license license:bsd-3)))
+
+(define-public go-github-com-magiconair-properties
+  (package
+    (name "go-github-com-magiconair-properties")
+    (version "1.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magiconair/properties")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "19zqw1x0w0crh8zc84yy82nkcc5yjz72gviaf2xjgfm5a8np7nyb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/magiconair/properties"))
+    (home-page "https://github.com/magiconair/properties")
+    (synopsis "Java properties scanner for Go")
+    (description "Java properties scanner for Go")
+    (license license:bsd-2)))
+
+(define-public go-github-com-pelletier-go-toml
+  (package
+    (name "go-github-com-pelletier-go-toml")
+    (version "1.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pelletier/go-toml")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fxmjm85c9h43lvqz71wr93fcc63bhj82nwby80222xx8ja63g7y"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/pelletier/go-toml"))
+    (native-inputs
+     `(("github.com/BurntSushi/toml" ,go-github-com-burntsushi-toml)
+       ("github.com/davecgh/go-spew" ,go-github-com-davecgh-go-spew)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/pelletier/go-toml")
+    (synopsis "Go library for the TOML configuration language")
+    (description "Go library for the TOML configuration language")
+    (license license:expat)))
+
+(define-public go-github-com-subosito-gotenv
+  (package
+    (name "go-github-com-subosito-gotenv")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/subosito/gotenv")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mav91j7r4arjkpq5zcf9j74f6pww8ic53x43wy7kg3ibw31yjs5"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/subosito/gotenv"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/subosito/gotenv")
+    (synopsis "Go library for loading environment variables from files")
+    (description "Go library for loading environment variables from files")
+    (license license:expat)))
 
 (define-public go-github-com-sirupsen-logrus
   (package
@@ -1473,6 +1708,30 @@ which satisfies the cron expression.")
       (synopsis "Test framework for the Go language")
       (description "This package provides a test library for the Go language.")
       (license license:asl2.0))))
+
+(define-public go-gopkg-in-ini-v1
+  (package
+    (name "go-gopkg-in-ini-v1")
+    (version "1.56.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-ini/ini")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j5z0cngg6mq2f9id083jcdi7k6r2h35714pashv6sdv2q7bmfc5"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/ini.v1"
+       ;; Requires large unpackaged test framework
+       #:tests? #f))
+    (home-page "https://gopkg.in/ini.v1")
+    (synopsis "Go library for ini files")
+    (description "Go library for ini files")
+    (license license:asl2.0)))
 
 (define-public go-gopkg-in-yaml-v2
   (package
@@ -2403,6 +2662,28 @@ package cannot cross compile.  But 99% of the time the use for
 the current user without cgo.  This library does that, enabling
 cross-compilation.")
       (license license:expat))))
+
+(define-public go-github-com-mitchellh-mapstructure
+  (package
+    (name "go-github-com-mitchellh-mapstructure")
+    (version "1.1.2") ;; NOTE: Updating to 1.3.1 breaks tests on viper-1.7.0
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitchellh/mapstructure")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03bpv28jz9zhn4947saqwi328ydj7f6g6pf1m2d4m5zdh5jlfkrr"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mitchellh/mapstructure"))
+    (home-page "https://github.com/mitchellh/mapstructure")
+    (synopsis "Go library for decoding generic map values")
+    (description "Go library for decoding generic map values")
+    (license license:expat)))
 
 (define-public go-github-com-multiformats-go-multiaddr
   (let ((commit "fe1c46f8be5af4aff4db286e08839295bd922efb")

@@ -1031,7 +1031,7 @@ quickly by using all your CPU cores and hardware acceleration.")
 (define-public minisign
   (package
     (name "minisign")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
@@ -1039,8 +1039,7 @@ quickly by using all your CPU cores and hardware acceleration.")
         (string-append "https://github.com/jedisct1/minisign/releases/download/"
                        version "/minisign-" version ".tar.gz"))
        (sha256
-        (base32
-         "10hhgwxf9rcdlr00shrkcyxndrc22dh5lj8k5z27xg3nc0jba3hk"))))
+        (base32 "1h9cfvvm6lqq33b2wdar1x3w4k7zyrscavllyb0l5dmcdabq60r2"))))
     (build-system cmake-build-system)
     (arguments
      ; No test suite

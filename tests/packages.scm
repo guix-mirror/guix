@@ -900,6 +900,30 @@
                                                          (replacement #f))))
                     (replacement (package-derivation %store new)))))))
 
+(test-assert "package-grafts, dependency on several outputs"
+  ;; Make sure we get one graft per output; see <https://bugs.gnu.org/41796>.
+  (letrec* ((p0  (dummy-package "p0"
+                   (version "1.0")
+                   (replacement p0*)
+                   (arguments '(#:implicit-inputs? #f))
+                   (outputs '("out" "lib"))))
+            (p0* (package (inherit p0) (version "1.1")))
+            (p1  (dummy-package "p1"
+                   (arguments '(#:implicit-inputs? #f))
+                   (inputs `(("p0" ,p0)
+                             ("p0:lib" ,p0 "lib"))))))
+    (lset= equal? (pk (package-grafts %store p1))
+           (list (graft
+                   (origin (package-derivation %store p0))
+                   (origin-output "out")
+                   (replacement (package-derivation %store p0*))
+                   (replacement-output "out"))
+                 (graft
+                   (origin (package-derivation %store p0))
+                   (origin-output "lib")
+                   (replacement (package-derivation %store p0*))
+                   (replacement-output "lib"))))))
+
 (test-assert "replacement also grafted"
   ;; We build a DAG as below, where dotted arrows represent replacements and
   ;; solid arrows represent dependencies:

@@ -119,8 +119,7 @@
                     (list commit3 commit4))
              (lset= eq? (commit-difference commit4 commit1 (list commit3))
                     (list commit4))
-             (lset= eq? (commit-difference commit4 commit1 (list commit5))
-                    (list commit2 commit3 commit4)))))))
+             (null? (commit-difference commit4 commit1 (list commit5))))))))
 
 (unless (which (git-command)) (test-skip 1))
 (test-equal "commit-relation"

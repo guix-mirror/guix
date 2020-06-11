@@ -599,7 +599,7 @@ Microsoft Publisher documents of all versions.")
 (define-public libnumbertext
   (package
     (name "libnumbertext")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
@@ -607,7 +607,7 @@ Microsoft Publisher documents of all versions.")
                            "releases/download/" version
                            "/libnumbertext-" version ".tar.xz"))
        (sha256
-        (base32 "1xzlwhwwhvr76kfdsw5gvfjfdayz803z65h331gv5dpc9imhijg1"))))
+        (base32 "0mxf22gpbr818ib4av17zmyx6i6nf4br5qlxq0qvfz5z6h5j57vk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))

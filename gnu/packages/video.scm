@@ -625,7 +625,11 @@ available.")
                     (delete-file-recursively "source/compat/getopt")
                     #t))))
     (build-system cmake-build-system)
-    (native-inputs `(("nasm" ,nasm)))
+    (native-inputs
+     ;; XXX: ASM optimization fails on i686-linux, see <https://bugs.gnu.org/41768>.
+     (if (string-prefix? "i686" (%current-system))
+         '()
+         `(("nasm" ,nasm))))
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
        #:configure-flags

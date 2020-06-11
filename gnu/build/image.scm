@@ -161,8 +161,7 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
                                     references-graphs
                                     (register-closures? #t)
                                     system-directory
-                                    (make-device-nodes
-                                     make-essential-device-nodes)
+                                    make-device-nodes
                                     #:allow-other-keys)
   "Initialize the given ROOT directory. Use BOOTCFG and BOOTCFG-LOCATION to
 install the bootloader configuration.
@@ -175,7 +174,8 @@ of the directory of the 'system' derivation."
   (populate-store references-graphs root)
 
   ;; Populate /dev.
-  (make-device-nodes root)
+  (when make-device-nodes
+    (make-device-nodes root))
 
   (when register-closures?
     (for-each (lambda (closure)

@@ -1,4 +1,5 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,18 +30,14 @@
 (define-public dhall
   (package
     (name "dhall")
-    (version "1.31.1")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/dhall/dhall-"
-             version
-             ".tar.gz"))
+       (uri (string-append "https://hackage.haskell.org/package/dhall/dhall-"
+                           version ".tar.gz"))
        (sha256
-        (base32
-         "18v7vvcbcm9s7slh6h43rj9yakkkxwnwgj6kv84i6qzd2j7d80mc"))
-       (patches (search-patches "dhall-remove-network-tests.patch"))))
+        (base32 "1imj0bh5365pdizvjbw2wqz0g9hakigf1zm4fr6379qdchxpp90p"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -56,6 +53,7 @@
        ("ghc-dotgen" ,ghc-dotgen)
        ("ghc-either" ,ghc-either)
        ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-half" ,ghc-half)
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-lens-family-core" ,ghc-lens-family-core)
        ("ghc-megaparsec" ,ghc-megaparsec)
@@ -99,9 +97,23 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Remove tests that require network
-         (add-after 'unpack 'remove-more-tests
+         (add-after 'unpack 'remove-network-tests
            (lambda _
+             (with-directory-excursion "dhall-lang/tests"
+               (for-each
+                delete-file
+                '("import/failure/referentiallyInsane.dhall"
+                  "import/success/customHeadersA.dhall"
+                  "import/success/noHeaderForwardingA.dhall"
+                  "import/success/unit/RemoteAsTextA.dhall"
+                  "import/success/unit/SimpleRemoteA.dhall"
+                  "import/success/unit/asLocation/RemoteChain1A.dhall"
+                  "import/success/unit/asLocation/RemoteChain2A.dhall"
+                  "import/success/unit/asLocation/RemoteChain3A.dhall"
+                  "import/success/unit/asLocation/RemoteChainEnvA.dhall"
+                  "import/success/unit/asLocation/RemoteChainMissingA.dhall"
+                  "type-inference/success/CacheImportsA.dhall"
+                  "type-inference/success/CacheImportsCanonicalizeA.dhall")))
              (substitute* "src/Dhall/Tutorial.hs"
                (((string-append
                   "-- >>> input auto "
@@ -117,10 +129,8 @@
                   "examples/True\" :: IO Bool"))
                 ""))
              #t)))))
-    (home-page
-     "https://dhall-lang.org/")
-    (synopsis
-     "Configuration language guaranteed to terminate")
+    (home-page "https://dhall-lang.org/")
+    (synopsis "Configuration language guaranteed to terminate")
     (description
      "Dhall is an explicitly typed configuration language that is not Turing
 complete.  Despite being Turing incomplete, Dhall is a real programming

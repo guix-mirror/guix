@@ -1889,7 +1889,7 @@ statements in the module it tests.")
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.5.2")
+    (version "2.5.3")
     (source
      (origin
        (method git-fetch)
@@ -1898,8 +1898,7 @@ statements in the module it tests.")
              (commit (string-append "pylint-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "150x679mrlgm1s4ym7irf9mnsjilqyaakss4spc4pbrzkl11agnh"))))
+        (base32 "04cgbh2z1mygar63plzziyz34yg6bdr4i0g63jp256fgnqwb1bi3"))))
     (build-system python-build-system)
     ;; FIXME: Tests are failing since version 2.4.3, see:
     ;; https://github.com/PyCQA/pylint/issues/3198.

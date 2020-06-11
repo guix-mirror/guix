@@ -581,7 +581,7 @@ key URIs using the standard otpauth:// scheme.")
 (define-public qtpass
   (package
     (name "qtpass")
-    (version "1.2.3")
+    (version "1.3.2")
     (source
      (origin
        (method git-fetch)
@@ -591,10 +591,15 @@ key URIs using the standard otpauth:// scheme.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1vfhfyccrxq9snyvayqfzm5rqik8ny2gysyv7nipc91kvhq3bhky"))))
+         "0748hjvhjrybi33ci3c8hcr74k9pdrf5jv8npf9hrsrmdyy1kr9x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                            (guix build qt-utils))
+       #:phases
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -630,6 +635,10 @@ key URIs using the standard otpauth:// scheme.")
                             (string-append icons "/qtpass-icon.svg"))
                (install-file "qtpass.1" man)
                #t)))
+         (add-after 'install 'wrap-qt
+           (lambda* (#:key outputs #:allow-other-keys)
+             (wrap-qt-program (assoc-ref outputs "out") "qtpass")
+             #t))
          (add-before 'check 'check-setup
            ;; Make Qt render "offscreen", required for tests.
            (lambda _

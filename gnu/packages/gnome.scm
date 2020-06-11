@@ -289,15 +289,15 @@ freedesktop.org desktop notification specification.")
 (define-public mm-common
   (package
     (name "mm-common")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/mm-common/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "mm-common-" version ".tar.xz"))
               (sha256
                (base32
-                "1m4w33da9f4rx2d6kdj3ix3kl0gn16ml82v2mdn4hljr3q29nzdr"))))
+                "1jasx9a9g7nqf7jcv3mrg4qh5cp9sq724jxjaz4wa1dzmxsxg8i8"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -5411,7 +5411,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.36.2.1")
+    (version "3.36.3")
     (source
      (origin
        (method url-fetch)
@@ -5419,7 +5419,7 @@ USB transfers with your high-level application or system daemon.")
                            (version-major+minor version) "/"
                            "simple-scan-" version ".tar.xz"))
        (sha256
-        (base32 "0aq1pf0wk536b91as54684xgmhl7lps0k2xcwha5wh6h1isyb35v"))))
+        (base32 "0gsz7jqk0fdj0mama3cnss9i1adw18cpdnlcjcjh4r5qijmvx0vh"))))
     (build-system meson-build-system)
     ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
     (arguments

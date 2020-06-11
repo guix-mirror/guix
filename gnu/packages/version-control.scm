@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -1569,18 +1569,14 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.10.6")
+    (version "1.14.0")
     (source (origin
              (method url-fetch)
-             (uri
-               (list
-                 (string-append "https://archive.apache.org/dist/subversion/"
-                                "subversion-" version ".tar.bz2")
-                 (string-append "https://www-eu.apache.org/dist/subversion/"
-                                "subversion-" version ".tar.bz2")))
+             (uri (string-append "mirror://apache/subversion/"
+                                 "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "19zc215mhpnm92mlyl5jbv57r5zqp6cavr3s2g9yglp6j4kfgj0q"))))
+               "00i1f88snlpcnsycpn6r315h6792l5nkr2p5k6kq6yprz4cf5a3b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f             ; TODO Seems to cause test failures on

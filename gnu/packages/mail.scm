@@ -711,7 +711,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.9")
+    (version "1.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
@@ -719,7 +719,7 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0dgmwdaszh5m7v1py3f9n9f6avb30vrl93g58a1k225iwdsv01d5"))))
+                "0vbyrmv3d2bja4vx86za93gq46vxg18j12g0lca3x1dl8d5g2xa6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1209,14 +1209,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.10")
+    (version "1.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "041g921rdjiv8bapp61gp4rylq8cckfkcwzyh8bs7xwxs4wpzfna"))))
+        (base32 "0q0fg235qk448l1xjcwyxr7vcpzk6w57jzhjbkb0m7nffyhhypzj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -2159,14 +2159,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.9")
+    (version "1.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "0hinmyd4lipy9wi3grwm72vv6xrpf4m08i9g9nlxzxnwfanw885q"))))
+        (base32 "1243hazpiwgvz2m3p48cdh0yw1019i6xjxgc7qyhmxcdy0inb6wy"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
@@ -2322,6 +2322,13 @@ transfer protocols.")
              "--with-table-db")
        #:phases
        (modify-phases %standard-phases
+         ;; See: https://github.com/OpenSMTPD/OpenSMTPD/issues/1069.
+         (add-after 'unpack 'fix-smtpctl-encrypt-bug
+           (lambda _
+             (substitute* "smtpd/smtpctl.c"
+               (("\"encrypt\", \"--\",")
+                "\"encrypt\","))
+             #t))
          ;; Fix some incorrectly hard-coded external tool file names.
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _

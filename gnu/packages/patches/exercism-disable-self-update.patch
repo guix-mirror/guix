@@ -1,0 +1,79 @@
+From bc22f7d43c12c5f79c71b0319666e71f29d61322 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jakub=20K=C4=85dzio=C5=82ka?= <kuba@kadziolka.net>
+Date: Mon, 25 May 2020 18:53:04 +0200
+Subject: [PATCH] Disable self-update.
+
+Based on a Fedora patch by Elliott Sales de Andrade.
+---
+ cli/cli.go | 44 +-------------------------------------------
+ 1 file changed, 1 insertion(+), 43 deletions(-)
+
+diff --git a/cli/cli.go b/cli/cli.go
+index 4312eb0..5f62297 100644
+--- a/cli/cli.go
++++ b/cli/cli.go
+@@ -10,13 +10,10 @@ import (
+ 	"io"
+ 	"io/ioutil"
+ 	"net/http"
+-	"runtime"
+ 	"strings"
+ 	"time"
+ 
+ 	"github.com/blang/semver"
+-	"github.com/exercism/cli/debug"
+-	update "github.com/inconshreveable/go-update"
+ )
+ 
+ var (
+@@ -95,46 +92,7 @@ func (c *CLI) IsUpToDate() (bool, error) {
+ 
+ // Upgrade allows the user to upgrade to the latest version of the CLI.
+ func (c *CLI) Upgrade() error {
+-	var (
+-		OS   = osMap[runtime.GOOS]
+-		ARCH = archMap[runtime.GOARCH]
+-	)
+-
+-	if OS == "" || ARCH == "" {
+-		return fmt.Errorf("unable to upgrade: OS %s ARCH %s", OS, ARCH)
+-	}
+-
+-	buildName := fmt.Sprintf("%s-%s", OS, ARCH)
+-	if BuildARCH == "arm" {
+-		if BuildARM == "" {
+-			return fmt.Errorf("unable to upgrade: arm version not found")
+-		}
+-		buildName = fmt.Sprintf("%s-v%s", buildName, BuildARM)
+-	}
+-
+-	var downloadRC *bytes.Reader
+-	for _, a := range c.LatestRelease.Assets {
+-		if strings.Contains(a.Name, buildName) {
+-			debug.Printf("Downloading %s\n", a.Name)
+-			var err error
+-			downloadRC, err = a.download()
+-			if err != nil {
+-				return fmt.Errorf("error downloading executable: %s", err)
+-			}
+-			break
+-		}
+-	}
+-	if downloadRC == nil {
+-		return fmt.Errorf("no executable found for %s/%s%s", BuildOS, BuildARCH, BuildARM)
+-	}
+-
+-	bin, err := extractBinary(downloadRC, OS)
+-	if err != nil {
+-		return err
+-	}
+-	defer bin.Close()
+-
+-	return update.Apply(bin, update.Options{})
++	return fmt.Errorf("Please use Guix to update Exercism")
+ }
+ 
+ func (c *CLI) fetchLatestRelease() error {
+-- 
+2.26.2
+

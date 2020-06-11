@@ -184,8 +184,11 @@ to remove '.guix-authorizations' file")
               default-authorizations)
             (throw key error)))))
 
-  (apply lset-intersection bytevector=?
-         (map commit-authorizations (commit-parents commit))))
+  (match (commit-parents commit)
+    (() default-authorizations)
+    (parents
+     (apply lset-intersection bytevector=?
+            (map commit-authorizations parents)))))
 
 (define* (authenticate-commit repository commit keyring
                               #:key (default-authorizations '()))

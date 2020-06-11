@@ -127,7 +127,7 @@ USERS."
                    (lambda (port)
                      (match (string-tokenize (read-string port) %not-nul)
                        ((argv0 _ ...)
-                        (unless (member (pk (basename argv0)) spare)
+                        (unless (member (basename argv0) spare)
                           (syslog "Killing process ~a (~a)~%" pid argv0)
                           (kill pid SIGKILL)))
                        (_ #f))))))
@@ -205,7 +205,18 @@ or #f.  Return #t on success and #f on failure."
       (lambda ()
         (start-service 'cow-store (list (%installer-target-dir))))
       (lambda ()
-        (run-command install-command #:locale locale))
+        ;; If there are any connected clients, assume that we are running
+        ;; installation tests. In that case, dump the standard and error
+        ;; outputs to syslog.
+        (if (not (null? (current-clients)))
+            (with-output-to-file "/dev/console"
+              (lambda ()
+                (with-error-to-file "/dev/console"
+                  (lambda ()
+                    (setvbuf (current-output-port) 'none)
+                    (setvbuf (current-error-port) 'none)
+                    (run-command install-command #:locale locale)))))
+            (run-command install-command #:locale locale)))
       (lambda ()
         (stop-service 'cow-store)
         ;; Remove the store overlay created at cow-store service start.

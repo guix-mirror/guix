@@ -151,15 +151,14 @@ the leaves of a full binary tree.")
 (define-public herbstluftwm
   (package
     (name "herbstluftwm")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://herbstluftwm.org/tarballs/herbstluftwm-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0wbl1s1gwdc61ll6qmkwb56swjxv99by1dhi080bdqn0w8p75804"))
+        (base32 "1qmb4pjf2f6g0dvcg11cw9njwmxblhqzd70ai8qnlgqw1iz3nkm1"))
        (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (inputs
@@ -1660,11 +1659,11 @@ productive, customizable lisp based systems.")
            (delete 'cleanup)
            (delete 'create-symlinks)))))))
 
-(define-public stumpish
-  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
+(define stumpwm-contrib
+  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d63")
         (revision "2"))
     (package
-      (name "stumpish")
+      (name "stumpwm-contrib")
       (version (git-version "0.0.1" revision commit)) ;no upstream release
       (source
        (origin
@@ -1672,154 +1671,189 @@ productive, customizable lisp based systems.")
          (uri (git-reference
                (url "https://github.com/stumpwm/stumpwm-contrib.git")
                (commit commit)))
-         (file-name (git-file-name name version))
          (sha256
           (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
+      (build-system asdf-build-system/sbcl)
       (inputs
-       `(("bash" ,bash)
-         ("rlwrap" ,rlwrap)))
-      (build-system trivial-build-system)
-      (arguments
-       '(#:modules ((guix build utils))
-         #:builder
-         (begin
-           (use-modules (guix build utils))
-           (copy-recursively (assoc-ref %build-inputs "source") ".")
-           (chdir "util/stumpish")
-           (substitute* "stumpish"
-             (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
-                                        "/bin/rlwrap"))
-             (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
-                                         "/bin/bash")))
-           (install-file "stumpish" (string-append %output "/bin")))))
+       `(("stumpwm" ,stumpwm "lib")))
       (home-page "https://github.com/stumpwm/stumpwm-contrib")
       (synopsis "StumpWM interactive shell")
       (description "This package provides a StumpWM interactive shell.")
       (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
 
+(define-public stumpish
+  (package
+    (inherit stumpwm-contrib)
+    (name "stumpish")
+    (inputs
+     `(("bash" ,bash)
+       ("rlwrap" ,rlwrap)))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (copy-recursively (assoc-ref %build-inputs "source") ".")
+         (chdir "util/stumpish")
+         (substitute* "stumpish"
+           (("rlwrap") (string-append (assoc-ref %build-inputs "rlwrap")
+                                      "/bin/rlwrap"))
+           (("/bin/sh") (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash")))
+         (install-file "stumpish" (string-append %output "/bin")))))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "StumpWM interactive shell")
+    (description "This package provides a StumpWM interactive shell.")
+    (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
+
 (define-public sbcl-stumpwm+slynk
   (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
 
 (define-public sbcl-stumpwm-ttf-fonts
-  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
-        (revision "2"))
-    (package
-      (name "sbcl-ttf-fonts")
-      (version (git-version "0.0.1" revision commit)) ;no upstream release
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/stumpwm/stumpwm-contrib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
-      (inputs
-       `(("stumpwm" ,stumpwm "lib")
-         ("clx-truetype" ,sbcl-clx-truetype)))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _
-               (chdir "util/ttf-fonts"))))))
-      (home-page "https://github.com/stumpwm/stumpwm-contrib")
-      (synopsis "Implementation of TTF font rendering for Lisp")
-      (description "This package provides a Lisp implementation of TTF font
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-ttf-fonts")
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("clx-truetype" ,sbcl-clx-truetype)))
+    (arguments
+     '(#:asd-system-name "ttf-fonts"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "util/ttf-fonts") #t)))))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "Implementation of TTF font rendering for Lisp")
+    (description "This package provides a Lisp implementation of TTF font
 rendering.")
-      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+    (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
 
 (define-public sbcl-stumpwm-pass
-  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
-        (revision "2"))
-    (package
-      (name "sbcl-pass")
-      (version (git-version "0.0.1" revision commit)) ;no upstream release
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/stumpwm/stumpwm-contrib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
-      (inputs
-       `(("stumpwm" ,stumpwm "lib")))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _
-               (chdir "util/pass"))))))
-      (home-page "https://github.com/stumpwm/stumpwm-contrib")
-      (synopsis "Integrate @code{pass} wih StumpWM")
-      (description "This package provides an interface which integrates
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-pass")
+    (arguments
+     '(#:asd-system-name "pass"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "util/pass") #t)))))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "Integrate @code{pass} wih StumpWM")
+    (description "This package provides an interface which integrates
 password-store into StumpWM.")
-      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+    (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
 
 (define-public sbcl-stumpwm-globalwindows
-    (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
-        (revision "2"))
-    (package
-      (name "sbcl-globalwindows")
-      (version (git-version "0.0.1" revision commit)) ;no upstream release
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/stumpwm/stumpwm-contrib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
-      (inputs
-       `(("stumpwm" ,stumpwm "lib")))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _
-               (chdir "util/globalwindows"))))))
-      (home-page "https://github.com/stumpwm/stumpwm-contrib")
-      (synopsis "Manipulate all windows in the current X session")
-      (description "This package provides a StumpWM module to manipulate all
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-globalwindows")
+    (arguments
+     '(#:asd-system-name "globalwindows"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "util/globalwindows") #t)))))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "Manipulate all windows in the current X session")
+    (description "This package provides a StumpWM module to manipulate all
 windows in the current X session.")
-      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+    (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
 
 (define-public sbcl-stumpwm-swm-gaps
-  (let ((commit "920f8fc1488f7953f205e1dda4c2ecbbbda56d6")
-        (revision "2"))
-    (package
-      (name "sbcl-swm-gaps")
-      (version (git-version "0.0.1" revision commit)) ;no upstream release
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/stumpwm/stumpwm-contrib.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0giac390bq95ag41xkxqp8jjrhfx1wpgglz7jg5rkm0wjhcwmyml"))))
-      (inputs
-       `(("stumpwm" ,stumpwm "lib")))
-      (build-system asdf-build-system/sbcl)
-      (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'chdir
-             (lambda _
-               (chdir "util/swm-gaps"))))))
-      (home-page "https://github.com/stumpwm/stumpwm-contrib")
-      (synopsis "Gaps between windows for StumpWM")
-      (description "This package provides a StumpWM module which adds gaps
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-swm-gaps")
+    (arguments
+     '(#:asd-system-name "swm-gaps"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "util/swm-gaps") #t)))))
+    (home-page "https://github.com/stumpwm/stumpwm-contrib")
+    (synopsis "Gaps between windows for StumpWM")
+    (description "This package provides a StumpWM module which adds gaps
 between windows.")
-      (license (list license:gpl2+ license:gpl3+ license:bsd-2)))))
+    (license (list license:gpl2+ license:gpl3+ license:bsd-2))))
+
+(define-public sbcl-stumpwm-net
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-net")
+    (arguments
+     '(#:asd-system-name "net"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "modeline/net") #t)))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/net")
+    (synopsis "Modeline support for network connectivity")
+    (description "Modeline support for network connectivity.")
+    (supported-systems
+     (filter (lambda (a) (string-contains a "linux")) %supported-systems))
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-wifi
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-wifi")
+    (arguments
+     '(#:asd-system-name "wifi"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "modeline/wifi") #t)))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/wifi")
+    (synopsis "Modeline support for wifi connectivity")
+    (description "Modeline support for wifi connectivity.")
+    (supported-systems
+     (filter (lambda (a) (string-contains a "linux")) %supported-systems))
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-stumptray
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-stumptray")
+    (arguments
+     '(#:asd-system-name "stumptray"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "modeline/stumptray") #t)))))
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("xembed" ,sbcl-clx-xembed)
+       ("alexandria" ,sbcl-alexandria)))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/modeline/stumptray")
+    (synopsis "Modeline support for stumptray connectivity")
+    (description "Modeline support for stumptray connectivity.")
+    (supported-systems
+     (filter (lambda (a) (string-contains a "linux")) %supported-systems))
+    (license license:gpl3+)))
+
+(define-public sbcl-stumpwm-kbd-layouts
+  (package
+    (inherit stumpwm-contrib)
+    (name "sbcl-stumpwm-kbd-layouts")
+    (arguments
+     '(#:asd-system-name "kbd-layouts"
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir (lambda _ (chdir "util/kbd-layouts") #t)))))
+    (home-page
+     "https://github.com/stumpwm/stumpwm-contrib/tree/master/util/kbd-layouts")
+    (synopsis "Keyboard layout switcher for StumpWM")
+    (description "Keyboard layout switcher for StumpWM")
+    (license license:gpl3+)))
 
 (define-public lemonbar
   (let ((commit "35183ab81d2128dbb7b6d8e119cc57846bcefdb4")

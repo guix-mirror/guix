@@ -413,6 +413,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/pcre.scm				\
   %D%/packages/pdf.scm				\
   %D%/packages/pem.scm				\
+  %D%/packages/pep.scm				\
   %D%/packages/perl.scm				\
   %D%/packages/perl-check.scm			\
   %D%/packages/perl-compression.scm		\
@@ -863,7 +864,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/desmume-gcc6-fixes.patch			\
   %D%/packages/patches/desmume-gcc7-fixes.patch			\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
-  %D%/packages/patches/dhall-remove-network-tests.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
@@ -901,6 +901,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/evolution-data-server-locales.patch	\
   %D%/packages/patches/evolution-data-server-libical-compat.patch	\
+  %D%/packages/patches/exercism-disable-self-update.patch	\
   %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
   %D%/packages/patches/extempore-unbundle-external-dependencies.patch	\

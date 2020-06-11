@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -715,14 +715,14 @@ than 8 bits, and at the end only some significant 8 bits are kept.")
 (define-public dlib
   (package
     (name "dlib")
-    (version "19.7")
+    (version "19.20")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://dlib.net/files/dlib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mljz02kwkrbggyncxv5fpnyjdybw2qihaacb3js8yfkw12vwpc2"))
+                "139jyi19qz37wwmmy48gil9d1kkh2r3w3bwdzabha6ayxmba96nz"))
               (modules '((guix build utils)))
               (snippet
                '(begin

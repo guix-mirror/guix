@@ -194,11 +194,11 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "deblob-check"))
           (sha256 deblob-check-hash))))
 
-(define deblob-scripts-5.6
+(define deblob-scripts-5.7
   (linux-libre-deblob-scripts
-   "5.6.7"
-   (base32 "196fdbfy1f8zbmnv0ik720snig2bacsh7hfyvgbmlsfk3cil2zgv")
-   (base32 "1g0bi3c8xzy1vz6w1xbpkb3a26bqn9d1yphcqz2ki4aikra81wid")))
+   "5.7.1"
+   (base32 "1c0n39wg6xij4x63ppg0m80kfcffkn3iilm3chyiix09n9g7vb78")
+   (base32 "02is246xaql1br3kizqicrkp982nw4gdwpn7nlzjazvsmyd1hcv2")))
 
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
@@ -371,50 +371,50 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.6-version "5.6.17")
-(define-public linux-libre-5.6-pristine-source
-  (let ((version linux-libre-5.6-version)
-        (hash (base32 "17kzalz8z6svv6nwa3dbmf7nyvpb2wwwyabj19vdwf6v05a28fn3")))
+(define-public linux-libre-5.7-version "5.7.2")
+(define-public linux-libre-5.7-pristine-source
+  (let ((version linux-libre-5.7-version)
+        (hash (base32 "02brxm78n0kg4mh48acvjsr7mpvaqd279ycyaixaflid1s1awrb0")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
-                            deblob-scripts-5.6)))
+                            deblob-scripts-5.7)))
 
-(define-public linux-libre-5.4-version "5.4.45")
+(define-public linux-libre-5.4-version "5.4.46")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
-        (hash (base32 "0bpy2lb3bqmkaqxzdmssgmhbjsys7d3lyfv4x919q0596jgh6gqh")))
+        (hash (base32 "13hvnfdcbcb9a21zizq8d90mc8maxz03zmzsj6iqsjd2y7r4y1rh")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.4)))
 
-(define-public linux-libre-4.19-version "4.19.127")
+(define-public linux-libre-4.19-version "4.19.128")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0vsq5vjyh6n8acjnldfs0zny63l12fn2pssb8zbwidc8qmmqibw2")))
+        (hash (base32 "0g31ad3wziy4xqna0yvwjcnza3jhd93syjpfvmwh0b4pkj2adar9")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.183")
+(define-public linux-libre-4.14-version "4.14.184")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "11c0vd2pwplm8wafich4zg2mnp10vvnap987c5jh96w1avpsyra2")))
+        (hash (base32 "0h6r06c1d7amkfglsr66ic89p0zxpmk7jkq1ylcbknmkiwkixx9g")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.226")
+(define-public linux-libre-4.9-version "4.9.227")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1jj5ydz5cy87z7hrv54bkyl9739lpzja8580ngjhrip5iwb8q2j6")))
+        (hash (base32 "0pqc0wld4s4zjas95xm54mrkk00l9zkc59b6i9gq4km126s8bi1q")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.226")
+(define-public linux-libre-4.4-version "4.4.227")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1dwvm81i62b06jsl38spfn719zrsbwq5z8viwckrpw4ma4w9k0j1")))
+        (hash (base32 "196x57w740firg8zchypq4vq6a83ymmwn9amqrscym9zr0pcgm40")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -447,14 +447,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
-(define-public linux-libre-5.6-source
-  (source-with-patches linux-libre-5.6-pristine-source
+(define-public linux-libre-5.7-source
+  (source-with-patches linux-libre-5.7-pristine-source
                        (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             ;; Pinebook Pro patch from linux-next,
-                             ;; can be dropped for linux-libre 5.7
-                             (search-patch
-                              "linux-libre-support-for-Pinebook-Pro.patch"))))
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
@@ -555,9 +551,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define-public linux-libre-headers-5.6
-  (make-linux-libre-headers* linux-libre-5.6-version
-                             linux-libre-5.6-source))
+(define-public linux-libre-headers-5.7
+  (make-linux-libre-headers* linux-libre-5.7-version
+                             linux-libre-5.7-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -860,9 +856,9 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_RTC_DRV_RK808" . #t))
                       %default-extra-linux-options)))
 
-(define-public linux-libre-arm-generic-5.6
-  (make-linux-libre* linux-libre-5.6-version
-                     linux-libre-5.6-source
+(define-public linux-libre-arm-generic-5.7
+  (make-linux-libre* linux-libre-5.7-version
+                     linux-libre-5.7-source
                      '("armhf-linux")
                      #:defconfig "multi_v7_defconfig"
                      #:extra-version "arm-generic"
@@ -922,9 +918,9 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_RTC_DRV_RK808" . #t))
                       %default-extra-linux-options)))
 
-(define-public linux-libre-arm64-generic-5.6
-  (make-linux-libre* linux-libre-5.6-version
-                     linux-libre-5.6-source
+(define-public linux-libre-arm64-generic-5.7
+  (make-linux-libre* linux-libre-5.7-version
+                     linux-libre-5.7-source
                      '("aarch64-linux")
                      #:defconfig "defconfig"
                      #:extra-version "arm64-generic"
@@ -1151,6 +1147,8 @@ supported under @file{/sys/class/backlight/}.")
                (base32
                 "1qi4l6yam8nrlmc3zwkrz9vph0xsj1cgmkqci4652mbpbzigg7vn"))))
     (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f))                    ; no test suite
     (home-page "https://github.com/umlaeute/v4l2loopback")
     (synopsis "Linux kernel module to create virtual V4L2 video devices")
     (description
@@ -2025,15 +2023,17 @@ external rate conversion.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.8.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://netfilter.org/iptables/iptables-"
-                   version ".tar.bz2"))
-             (sha256
-              (base32
-               "0z0mgs1ghvn3slc868mgbf2g26njgrzcy5ggyb5w4i55j1a3lflr"))))
+    ;; XXX When updating, remove the ‘install-missing-script’ phase.
+    (version "1.8.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list (string-append "mirror://netfilter.org/iptables/iptables-"
+                                 version ".tar.bz2")
+                  (string-append "https://www.netfilter.org/projects/iptables/"
+                                 "files/iptables-" version ".tar.bz2")))
+       (sha256
+        (base32 "02a3575ypdpg6a2x752mhk3f7h1381ymkq1n0gss6fp6292xfmyl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -2045,7 +2045,19 @@ external rate conversion.")
     (arguments
      '(#:tests? #f       ; no test suite
        #:configure-flags ; add $libdir to the RUNPATH of executables
-       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))))
+       (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-missing-script
+           ;; A typo prevents installation of /sbin/iptables-apply.  It's been
+           ;; fixed upstream (d4ed0c741fc789bb09d977d74d30875fdd50d08b), but
+           ;; a patch would require bootstrapping and more inputs.  Simply copy
+           ;; the file ourselves.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (sbin (string-append out "/sbin")))
+               (install-file "iptables/iptables-apply" sbin)
+               #t))))))
     (home-page "https://www.netfilter.org/projects/iptables/index.html")
     (synopsis "Programs to configure Linux IP packet filtering rules")
     (description
@@ -3893,7 +3905,7 @@ Translation (@dfn{SAT}) are also supported.")
 (define-public nvme-cli
   (package
     (name "nvme-cli")
-    (version "1.10.1")
+    (version "1.11.2")
     (home-page "https://github.com/linux-nvme/nvme-cli")
     (source (origin
               (method git-fetch)
@@ -3901,7 +3913,7 @@ Translation (@dfn{SAT}) are also supported.")
                     (url home-page)
                     (commit (string-append "v" version))))
               (sha256
-               (base32 "12wp2wxmsw2v8m9bhvwvdbhdgx1md8iilhbl19sfzz2araiwi2x8"))
+               (base32 "0ngh7zffjf6ac8b22hdi4ry7hjlafih172hrbpw8j17r7c0wjy9i"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -4933,7 +4945,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
 (define-public thinkfan
   (package
     (name "thinkfan")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -4942,7 +4954,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1fxd1w3z65glw6y04myn7ihgswkx6sqnkky159mik4n96pfrsvr5"))))
+        (base32 "0vmkpj575a1w52zx1jn6kdrk8rc9vp0f1bldi1bajicpgbs6rjd3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((guix build cmake-build-system)
@@ -4978,7 +4990,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
     (inputs
      `(("libatasmart" ,libatasmart)
        ("yaml-cpp" ,yaml-cpp)))
-    (home-page "http://thinkfan.sourceforge.net/")
+    (home-page "https://github.com/vmatare/thinkfan")
     (synopsis "Simple fan control program")
     (description
      "Thinkfan is a simple fan control program.  It reads temperatures,
@@ -6027,14 +6039,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.6")
+    (version "1.1.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "1jhyxsfrfqjascrm5lnxlcyzj6n0gc0qc1bp2asb7m61dxlmmsy1"))))
+        (base32 "13zd90bfrr0q3j0l0cbc8kiizccw6n8gp727kqnfljh024zw3nr0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -6051,7 +6063,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.3")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
@@ -6060,7 +6072,7 @@ used by nftables.")
                   (string-append "https://www.nftables.org/projects/nftables"
                                  "/files/nftables-" version ".tar.bz2")))
        (sha256
-        (base32 "0y6vbqp6x8w165q65h4n9sba1406gaz0d4744gqszbm7w9f92swm"))))
+        (base32 "05kyri19q776mymkbcxq3786l6nrf4xg7f3n8my0aw63mdz9bhgj"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.

@@ -1567,7 +1567,7 @@ online as well as original implementations of various other algorithms.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.coin-or.org/download/source/Ipopt/Ipopt-"
+                    "https://www.coin-or.org/download/source/Ipopt/Ipopt-"
                     version".tgz"))
               (sha256
                (base32
@@ -1601,7 +1601,7 @@ online as well as original implementations of various other algorithms.")
     (inputs
      ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
      `(("lapack" ,lapack)))                    ;for both libblas and liblapack
-    (home-page "http://www.coin-or.org")
+    (home-page "https://www.coin-or.org")
     (synopsis "Large-scale nonlinear optimizer")
     (description
      "The Interior Point Optimizer (IPOPT) is a software package for

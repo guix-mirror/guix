@@ -122,7 +122,7 @@ included in the Stackage LTS release."
   (let ((pkgs-info (mlambda () (lts-info-packages (stackage-lts-info-fetch)))))
     (lambda* (package)
       "Return an <upstream-source> for the latest Stackage LTS release of
-PACKAGE or #f it the package is not inlucded in the Stackage LTS release."
+PACKAGE or #f if the package is not included in the Stackage LTS release."
       (let* ((hackage-name (guix-package->hackage-name package))
              (version (lts-package-version (pkgs-info) hackage-name))
              (name-version (hackage-name-version hackage-name version)))

@@ -633,17 +633,17 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 install-data-hook:
 	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
-# Commit corresponding to the 'v1.0.1' tag.
-commit_v1_0_1 = d68de958b60426798ed62797ff7c96c327a672ac
+# Commit corresponding to the 'v1.0.0' tag.
+commit_v1_0_0 = 6298c3ffd9654d3231a6f25390b056483e8f407c
 
 # Authenticate the current Git checkout by checking signatures on every commit
-# starting from $(commit_v1_0_1).
+# starting from $(commit_v1_0_0).
 authenticate: guix/openpgp.go guix/git-authenticate.go guix/git.go
 	$(AM_V_at)echo "Authenticating Git checkout..." ;	\
 	"$(top_builddir)/pre-inst-env" $(GUILE)			\
 	  --no-auto-compile -e git-authenticate			\
 	  "$(top_srcdir)/build-aux/git-authenticate.scm"	\
-	  "$(commit_v1_0_1)"
+	  "$(commit_v1_0_0)"
 
 # Assuming Guix is already installed and the daemon is up and running, this
 # rule builds from $(srcdir), creating and building derivations.

@@ -467,14 +467,14 @@ game development and other performance-critical applications.")
 (define-public python-feather-format
   (package
     (name "python-feather-format")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "feather-format" version))
         (sha256
          (base32
-          "1adivm5w5ji4qv7hq7942vqlk8l2wgw87bdlsia771z14z3zp857"))))
+          "00w9hwz7sj3fkdjc378r066vdy6lpxmn6vfac3qx956k8lvpxxj5"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pandas" ,python-pandas)

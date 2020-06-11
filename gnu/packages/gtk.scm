@@ -353,24 +353,6 @@ graph-like environments, e.g. modular synths or finite state machine
 diagrams.")
     (license license:gpl3+)))
 
-(define-public ganv-devel
-  (let ((commit "12f7d6b0438c94dd87f773a92eee3453d971846e")
-        (revision "1"))
-    (package
-      (inherit ganv)
-      (name "ganv")
-      (version (string-append "1.5.4-" revision "."
-                              (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.drobilla.net/ganv.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1cr8w02lr6bk9mkxa12j3imq721b2an2yn4bj5wnwmpm91ddn2gi")))))))
-
 (define-public gtksourceview-2
   (package
     (name "gtksourceview")
@@ -1725,14 +1707,14 @@ glass artworks done by Venicians glass blowers.")
 (define-public gtkspell3
   (package
     (name "gtkspell3")
-    (version "3.0.9")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gtkspell/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09jdicmpipmj4v84gnkqwbmj4lh8v0i6pn967rb9jx4zg2ia9x54"))))
+                "0cjp6xdcnzh6kka42w9g0w2ihqjlq8yl8hjm9wsfnixk6qwgch5h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1743,7 +1725,7 @@ glass artworks done by Venicians glass blowers.")
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
     (propagated-inputs
-     `(("enchant" ,enchant-1.6)))          ;gtkspell3-3.0.pc refers to it
+     `(("enchant" ,enchant)))           ; gtkspell3-3.0.pc refers to it
     (home-page "http://gtkspell.sourceforge.net")
     (synopsis "Spell-checking addon for GTK's TextView widget")
     (description

@@ -11567,6 +11567,38 @@ accompaniment to the standard ANSI facilities.")
 (define-public cl-osicat
   (sbcl-package->cl-source-package sbcl-osicat))
 
+(define-public sbcl-clx-xembed
+  (let ((commit "a5c4b844d31ee68ffa58c933cc1cdddde6990743")
+        (revision "1"))
+    (package
+      (name "sbcl-clx-xembed")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/laynor/clx-xembed")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/laynor/clx-xembed.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1abx4v36ycmfjdwpjk4hh8058ya8whwia7ds9vd96q2qsrs57f12"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:asd-system-name "xembed"))
+      (inputs
+       `(("sbcl-clx" ,sbcl-clx)))
+      (synopsis "CL(x) xembed protocol implementation ")
+      (description "CL(x) xembed protocol implementation")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-clx-xembed
+  (sbcl-package->cl-source-package sbcl-clx-xembed))
+
+(define-public ecl-clx-xembed
+  (sbcl-package->ecl-package sbcl-clx-xembed))
+
 (define-public sbcl-quantile-estimator
   (package
     (name "sbcl-quantile-estimator")
