@@ -17286,14 +17286,14 @@ data.")
 (define-public r-elasticnet
   (package
     (name "r-elasticnet")
-    (version "1.1.1")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "elasticnet" version))
        (sha256
         (base32
-         "0p9dplnsp28z4s2fl6afbwrgd0aj339fak8mmndicmrh7bb7rpmb"))))
+         "0nxcw06d0cp2mbqzg2fm9yys5xm6xx7bfcfvr0avcs8afkvz29j8"))))
     (properties `((upstream-name . "elasticnet")))
     (build-system r-build-system)
     (propagated-inputs
