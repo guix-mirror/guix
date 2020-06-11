@@ -7193,6 +7193,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
   (package
     (name "nghttp2")
     (version "1.40.0")
+    (replacement nghttp2-1.41)
     (source
      (origin
        (method url-fetch)
@@ -7271,6 +7272,20 @@ compressed JSON header blocks.
 @item @command{inflatehd} converts such compressed headers back to JSON pairs.
 @end itemize\n")
     (license license:expat)))
+
+(define-public nghttp2-1.41                       ;fixes CVE-2020-11080
+  (package
+    (inherit nghttp2)
+    (version "1.41.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nghttp2/nghttp2/"
+                           "releases/download/v" version "/"
+                           "nghttp2-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1hk77vngjmvvzb5y1gi1aqwf6qywrc7yak08zvzb7x81qs6mphmb"))))))
 
 (define-public hpcguix-web
   (let ((commit "9de63562b06b4aef3a3afe5ecb18d3c91e57ee74")
