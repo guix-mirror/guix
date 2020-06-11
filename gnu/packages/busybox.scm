@@ -45,6 +45,10 @@
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'disable-timestamps
+           (lambda _
+             (setenv "KCONFIG_NOTIMESTAMP" "1")
+             #t))
          (add-before 'configure 'disable-taskset
            ;; This feature fails its tests in the build environment,
            ;; was default 'n' until after 1.26.2.
