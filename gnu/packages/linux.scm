@@ -1087,6 +1087,29 @@ network adapters.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
+(define-public bbswitch-module
+  (package
+    (name "bbswitch-module")
+    (version "0.8")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Bumblebee-Project/bbswitch")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1glch4j0x1dzlp2yrb67v2r5jg9609jb6p8m251y78m74advqw0l"))))
+    (build-system linux-module-build-system)
+    (arguments
+     ;; No tests.
+     `(#:tests? #f))
+    (home-page "https://github.com/Bumblebee-Project/bbswitch")
+    (synopsis "Kernel module that disables discrete Nvidia graphics cards")
+    (description "The bbswitch module provides a way to toggle the Nvidia
+graphics card on Optimus laptops.")
+    (license license:gpl2)))
+
 (define-public ddcci-driver-linux
   (package
     (name "ddcci-driver-linux")
