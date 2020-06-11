@@ -2094,21 +2094,24 @@ compare different dendrograms to one another.")
 (define-public r-getoptlong
   (package
     (name "r-getoptlong")
-    (version "0.1.8")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GetoptLong" version))
        (sha256
         (base32
-         "1l8xkvyl152bsyvxazsvx2sm1vkygn75x0lsg3sbg7xp6drdn3kc"))))
+         "1fswgy5j4xaipqs7nk7nzrl66vrchhxrk0w7hcsbyij3sxgn3z9j"))))
     (properties `((upstream-name . "GetoptLong")))
     (build-system r-build-system)
     (inputs
      `(("perl" ,perl)))
     (propagated-inputs
-     `(("r-globaloptions" ,r-globaloptions)
+     `(("r-crayon" ,r-crayon)
+       ("r-globaloptions" ,r-globaloptions)
        ("r-rjson" ,r-rjson)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/jokergoo/GetoptLong")
     (synopsis "Parsing command-line arguments and variable interpolation")
     (description
