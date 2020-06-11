@@ -82,6 +82,7 @@ Copyright @copyright{} 2020 Pierre Langlois@*
 Copyright @copyright{} 2020 pinoaffe@*
 Copyright @copyright{} 2020 André Batista@*
 Copyright @copyright{} 2020 Alexandru-Sergiu Marton@*
+Copyright @copyright{} 2020 raingloom@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -16845,6 +16846,101 @@ is @code{proto:kitename:host:port:secret}.
 Extra configuration file to read, which you are expected to create manually.
 Use this to add additional options and manage shared secrets out-of-band.
 
+@end table
+@end deftp
+
+@defvr {Scheme Variable} yggdrasil-service-type
+The service type for connecting to the @uref{https://yggdrasil-network.github.io/,
+Yggdrasil network}, an early-stage implementation of a fully end-to-end
+encrypted IPv6 network.
+
+@quotation
+Yggdrasil provides name-independent routing with cryptographically generated
+addresses.  Static addressing means you can keep the same address as long as
+you want, even if you move to a new location, or generate a new address (by
+generating new keys) whenever you want.
+@uref{https://yggdrasil-network.github.io/2018/07/28/addressing.html}
+@end quotation
+
+Pass it a value of @code{yggdrasil-configuration} to connect it to public
+peers and/or local peers.
+
+Here is an example using public peers and a static address.  The static
+signing and encryption keys are defined in @file{/etc/yggdrasil-private.conf}
+(the default value for @code{config-file}).
+
+@lisp
+;; part of the operating-system declaration
+(service yggdrasil-service-type
+              (yggdrasil-configuration
+               (autoconf? #f) ;; use only the public peers
+               (json-config
+               ;; choose one from
+               ;; https://github.com/yggdrasil-network/public-peers
+                '((peers . #("tcp://1.2.3.4:1337"))))
+               ;; /etc/yggdrasil-private.conf is the default value for config-file
+               ))
+@end lisp
+@example
+# sample content for /etc/yggdrasil-private.conf
+@{
+  # Your public encryption key. Your peers may ask you for this to put
+  # into their AllowedEncryptionPublicKeys configuration.
+  EncryptionPublicKey: 378dc5...
+
+  # Your private encryption key. DO NOT share this with anyone!
+  EncryptionPrivateKey: 0777...
+
+  # Your public signing key. You should not ordinarily need to share
+  # this with anyone.
+  SigningPublicKey: e1664...
+
+  # Your private signing key. DO NOT share this with anyone!
+  SigningPrivateKey: 0589d...
+@}
+@end example
+@end defvr
+
+@deftp {Data Type} yggdrasil-configuration
+Data type representing the configuration of Yggdrasil.
+
+@table @asis
+@item @code{package} (default: @code{yggdrasil})
+Package object of Yggdrasil.
+
+@item @code{json-config} (default: @code{'()})
+Contents of @file{/etc/yggdrasil.conf}.  Will be merged with
+@file{/etc/yggdrasil-private.conf}.  Note that these settings are stored in
+the Guix store, which is readable to all users. @strong{Do not store your
+private keys in it}.  See the output of @code{yggdrasil -genconf} for a
+quick overview of valid keys and their default values.
+
+@item @code{autoconf?} (default: @code{#f})
+Whether to use automatic mode.  Enabling it makes Yggdrasil use adynamic IP
+and peer with IPv6 neighbors.
+
+@item @code{log-level} (default: @code{'info})
+How much detail to include in logs.  Use @code{'debug} for more detail.
+
+@item @code{log-to} (default: @code{'stdout})
+Where to send logs.  By default, the service logs standard output to
+@file{/var/log/yggdrasil.log}.  The alternative is @code{'syslog}, which
+sends output to the running syslog service.
+
+@item @code{config-file} (default: @code{"/etc/yggdrasil-private.conf"})
+What HJSON file to load sensitive data from.  This is where private keys
+should be stored, which are necessary to specify if you don't want a
+randomized address after each restart.  Use @code{#f} to disable.  Options
+defined in this file take precedence over @code{json-config}.  Use the output
+of @code{yggdrasil -genconf} as a starting point.  To configure a static
+address, delete everything except these options:
+
+@itemize
+@item @code{EncryptionPublicKey}
+@item @code{EncryptionPrivateKey}
+@item @code{SigningPublicKey}
+@item @code{SigningPrivateKey}
+@end itemize
 @end table
 @end deftp
 
