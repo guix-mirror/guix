@@ -1575,7 +1575,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://archive.apache.org/dist/serf/serf-"
+       (uri (string-append "mirror://apache/dist/serf/serf-"
                            version ".tar.bz2"))
        (sha256
         (base32 "1k47gbgpp52049andr28y28nbwh9m36bbb0g8p0aka3pqlhjv72l"))))
