@@ -10928,7 +10928,7 @@ inside a Zip archive.")
     (version "2.0.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/jakarta/oro/"
+              (uri (string-append "mirror://apache/dist/jakarta/oro/"
                                   "jakarta-oro-" version ".tar.gz"))
               (sha256
                (base32
