@@ -380,7 +380,7 @@ replacement with improvements.")
     (version "3.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/maven/"
+              (uri (string-append "mirror://apache/dist/maven/"
                                   "plugin-tools/maven-plugin-tools-" version
                                   "-source-release.zip"))
               (sha256 (base32 "1ryqhs62j5pas93brhf5dsnvp99hxbvssf681yj5rk3r9h24hqm2"))))
