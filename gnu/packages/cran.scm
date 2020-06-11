@@ -1967,15 +1967,17 @@ ellipses, circles, cylinders, arrows, ...")
 (define-public r-globaloptions
   (package
     (name "r-globaloptions")
-    (version "0.1.1")
+    (version "0.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GlobalOptions" version))
        (sha256
-        (base32 "0x89hfz80avq4zcskxl71i4zi0mgniqqxfrvz050aa2189wfyja2"))))
+        (base32 "0gkm77w6db9ajyncy1xdcivplap06a51zi99m009kylccschd2a7"))))
     (properties `((upstream-name . "GlobalOptions")))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/jokergoo/GlobalOptions")
     (synopsis "Generate functions to get or set global options")
     (description
