@@ -231,8 +231,14 @@ usual file attributes can be checked for inconsistencies.")
      `(("ncurses" ,ncurses)))
     (arguments
      `(#:tests? #f                      ; no test suite
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PKG_CONFIG="
+                              (if target
+                                  (string-append target "-pkg-config")
+                                  "pkg-config"))
+               (string-append "PREFIX=" (assoc-ref %outputs "out"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
