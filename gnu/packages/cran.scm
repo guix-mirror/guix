@@ -21779,14 +21779,14 @@ included in this package as well.")
 (define-public r-brms
   (package
     (name "r-brms")
-    (version "2.12.0")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "brms" version))
        (sha256
         (base32
-         "1699lwkklfhjz7fddawlig552g2zvrc34mqwrzqjgl35r9fm08gs"))))
+         "0vdncdawxawi16f326qrgy9jjjipmqdjxh741y9p7xdzd4fwaxx3"))))
     (properties `((upstream-name . "brms")))
     (build-system r-build-system)
     (propagated-inputs
