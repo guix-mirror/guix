@@ -14304,20 +14304,22 @@ the XKCD web comic.")
 (define-public r-msigdbr
   (package
     (name "r-msigdbr")
-    (version "7.0.1")
+    (version "7.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "msigdbr" version))
        (sha256
         (base32
-         "19p8z617m3my8la7n1qgb1s2msf940r372im3q30qkbcx3qxg3sd"))))
+         "0jvi49qa7616s58p0rx66pcw7h12rc8kgcg9225jk7pc3934hnzh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-magrittr" ,r-magrittr)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/igordot/msigdbr")
     (synopsis "MSigDB gene sets for multiple organisms")
     (description
