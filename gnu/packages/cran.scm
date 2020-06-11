@@ -10707,14 +10707,14 @@ the combination of non-negative and non-positive constraints.")
 (define-public r-iso
   (package
     (name "r-iso")
-    (version "0.0-18")
+    (version "0.0-18.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Iso" version))
        (sha256
         (base32
-         "014mm5b1f7i6nwlz3kyg1biph0y542kcx5bd13p68cv5a928qzid"))))
+         "0vy6jdyvp751430sf2f690yhasjr70cpk3p3lnaaxjq3fs5gg99g"))))
     (properties `((upstream-name . "Iso")))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
