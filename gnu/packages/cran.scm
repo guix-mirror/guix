@@ -18309,14 +18309,14 @@ allowed.")
 (define-public r-gdina
   (package
     (name "r-gdina")
-    (version "2.7.9")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GDINA" version))
        (sha256
         (base32
-         "13pmj069r04h38hg61ibyn1ab15zdy9m0qv60vi25ahgsmg6ccvx"))))
+         "0chxnhp37xfd78gafkgwqrmc0jf3pvpdyrkc438kl0l53fb7dld7"))))
     (properties `((upstream-name . "GDINA")))
     (build-system r-build-system)
     (propagated-inputs
