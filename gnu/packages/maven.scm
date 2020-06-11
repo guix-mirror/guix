@@ -404,7 +404,7 @@ replacement with improvements.")
     (version "3.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/maven/wagon/"
+              (uri (string-append "mirror://apache/dist/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
               (sha256 (base32 "0r07j6xdzdnrvqnv8ida7dx1m05pznh5qgmcfcfpyvg9nxbj3l1n"))))
     (build-system ant-build-system)
