@@ -29,17 +29,21 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -51,10 +55,12 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
@@ -66,6 +72,51 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
+
+(define-public esound
+  (package
+    (name "esound")
+    (version "0.2.41")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.gnome.org/Archive/esound.git")
+         (commit "ESOUND_0_2_41")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "141jg70fim276i8k2kyypm84gy89i1k9mm4yf68mfwnybvjw1d6n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("gnome-common" ,gnome-common)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("tcsh" ,tcsh)                      ; for the tests
+       ("which" ,which)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pcaudiolib" ,pcaudiolib)
+       ("tcp-wrappers" ,tcp-wrappers)))
+    (propagated-inputs
+     `(("audiofile" ,audiofile)))
+    (synopsis "Enlightened Sound Daemon")
+    (description "The Enlightened Sound Daemon mixes several audio streams for
+playback by a single audio device.  You can also pre-load samples, and play them
+back without having to send all the data for the sound.  Network transparency is
+also built in, so you can play sounds on one machine, and listen to them on
+another.")
+    (home-page "https://web.archive.org/web/20160528230227/
+http://www.tux.org/~ricdude/overview.html")
+    (license
+     (list
+      ;; Libraries.
+      license:lgpl2.0+
+      ;; Others.
+      license:gpl2+))))
 
 (define-public orc
   (package
