@@ -6136,10 +6136,9 @@ and Karl Berry.")
                            "-DLYX_EXTERNAL_BOOST=1"
                            "-DLYX_INSTALL=1"
                            "-DLYX_RELEASE=1"
+                           "-DLYX_PROGRAM_SUFFIX=OFF"
                            ,(string-append "-DLYX_INSTALL_PREFIX="
-                                           (assoc-ref %outputs "out")
-                                           ;; Exact name and level is necessary.
-                                           "/lyx" ,(version-major+minor version)))
+                                           (assoc-ref %outputs "out")))
        #:modules ((guix build cmake-build-system)
                   (guix build qt-utils)
                   (guix build utils))
@@ -6159,44 +6158,16 @@ and Karl Berry.")
                                (assoc-ref inputs "python")
                                "/bin/python3 ")))
              #t))
-         (add-after 'patch-python 'patch-desktop-file
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "lib/lyx.desktop.in"
-               (("Exec=")
-                (string-append "Exec="
-                               (assoc-ref outputs "out")
-                               "/")))
-             #t))
          (add-after 'unpack 'add-missing-test-file
            (lambda _
              ;; Create missing file that would cause tests to fail.
              (with-output-to-file "src/tests/check_layout.cmake"
                (const #t))
              #t))
-         (add-before 'check 'setenv-check
-           (lambda _
-             (setenv (string-append "LYX_DIR_"
-                                    (string-join
-                                      (string-split
-                                        ,(version-major+minor version) #\-)) "x")
-                     (string-append (getcwd) "/../lyx-" ,version "/lib"))
-             #t))
          (add-after 'install 'wrap-qt
            (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out")
-                              (string-append "../lyx"
-                                             ,(version-major+minor version)
-                                             "/bin/lyx"
-                                             ,(version-major+minor version)))
-             #t))
-         (add-after 'install 'install-symlinks
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p (string-append out "/bin"))
-               (symlink (string-append "../lyx" ,(version-major+minor version)
-                                       "/bin/lyx" ,(version-major+minor version))
-                        (string-append out "/bin/lyx" ,(version-major+minor version)))
-               #t))))))
+             (wrap-qt-program (assoc-ref outputs "out") "lyx")
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
