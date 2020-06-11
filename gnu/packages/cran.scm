@@ -1536,17 +1536,19 @@ including functions for geolocation and routing.")
 (define-public r-haven
   (package
     (name "r-haven")
-    (version "2.2.0")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "haven" version))
        (sha256
         (base32
-         "0g9d6mxqmrw2zdms78jpx2sx73pczlyy771v1h5hmxqz9sqyk7hr"))))
+         "03cypgqhdkrfbfpl1yx2wb7flczrbak1w654wkicmd5ajwr9zvkf"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-forcats" ,r-forcats)
        ("r-hms" ,r-hms)
@@ -1554,7 +1556,8 @@ including functions for geolocation and routing.")
        ("r-rlang" ,r-rlang)
        ("r-readr" ,r-readr)
        ("r-tibble" ,r-tibble)
-       ("r-tidyselect" ,r-tidyselect)))
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://haven.tidyverse.org")
     (synopsis "Import and Export 'SPSS', 'Stata' and 'SAS' Files")
     (description
