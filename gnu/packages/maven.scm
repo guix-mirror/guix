@@ -2,6 +2,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -339,7 +340,7 @@ Maven Wagon, for use in Maven.")))
     (version "3.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/maven/shared/"
+              (uri (string-append "mirror://apache/dist/maven/shared/"
                                   "maven-shared-utils-" version "-source-release.zip"))
               (sha256
                (base32
