@@ -14546,14 +14546,14 @@ that fills this gap.")
 (define-public r-europepmc
   (package
     (name "r-europepmc")
-    (version "0.3")
+    (version "0.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "europepmc" version))
        (sha256
         (base32
-         "1ngqs1sqzkbwv98dd5z4cxj8bnz41wyd0g060a2vpqi3s99s4i2h"))))
+         "174nnyc2mbgqxb5kgqabn1vf71c2mps7ig2bclq4is0f7nb64pym"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -14562,8 +14562,13 @@ that fills this gap.")
        ("r-plyr" ,r-plyr)
        ("r-progress" ,r-progress)
        ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
        ("r-urltools" ,r-urltools)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ropensci/europepmc/")
     (synopsis "R Interface to the Europe PubMed Central RESTful Web Service")
     (description
