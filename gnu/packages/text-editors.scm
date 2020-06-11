@@ -256,7 +256,7 @@ bindings and many of the powerful features of GNU Emacs.")
        ("ctags" ,universal-ctags)
        ("gtkmm" ,gtkmm)
        ("gtksourceviewmm" ,gtksourceviewmm)
-       ("libclang" ,clang)
+       ("libclang" ,clang-10)     ;XXX: must be the same version as Mesas LLVM
        ("libgit2" ,libgit2)))
     (synopsis "Lightweight C++ IDE")
     (description
