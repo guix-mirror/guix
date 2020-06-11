@@ -20220,17 +20220,20 @@ perform @dfn{exploratory mediation} (XMed).")
 (define-public r-stanheaders
   (package
     (name "r-stanheaders")
-    (version "2.19.2")
+    (version "2.21.0-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "StanHeaders" version))
        (sha256
         (base32
-         "0cmk0fzczx7dcywcw1dhm6gfq84qlsx77qrsk4z3bf3dhr4bznam"))))
+         "1zyph2x47x9a5baj5d79a1lzj7gajirisajvkrcngrjvw8bq7810"))))
     (properties `((upstream-name . "StanHeaders")))
     (build-system r-build-system)
     (inputs `(("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("r-rcppeigen" ,r-rcppeigen)
+       ("r-rcppparallel" ,r-rcppparallel)))
     (native-inputs
      `(("gfortran" ,gfortran)
        ("r-knitr" ,r-knitr))) ; for vignettes
