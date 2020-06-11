@@ -20144,14 +20144,14 @@ actuarial models such as pension mathematics.")
 (define-public r-sem
   (package
     (name "r-sem")
-    (version "3.1-9")
+    (version "3.1-11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sem" version))
        (sha256
         (base32
-         "1f9c6g6pfx66gd2pappcsqh484ah6a0x4z47hpd46rah0817hcsa"))))
+         "03j3ig6fy34pi6nwfq9w8f5m555lilw5skr1vn6ay4yvjmvavc9k"))))
     (properties `((upstream-name . "sem")))
     (build-system r-build-system)
     (propagated-inputs
