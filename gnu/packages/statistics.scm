@@ -5321,15 +5321,17 @@ normals.")
 (define-public r-mnormt
   (package
     (name "r-mnormt")
-    (version "1.5-7")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
         (uri (cran-uri "mnormt" version))
         (sha256
           (base32
-           "1y0vlvh02wza2wvfd29wxjlw3jg9rnwnx3kph5qz4179kz87fgfg"))))
+           "1gxhma0zqsx5pkc0871vszq1y7akwdmpm8rhws5b3gr6w9mx4agf"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-tmvnsim" ,r-tmvnsim)))
     (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "http://azzalini.stat.unipd.it/SW/Pkg-mnormt")
