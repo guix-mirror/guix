@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -556,20 +557,17 @@ image, depending on IMAGE format."
         #:grub-mkrescue-environment
         '(("MKRESCUE_SED_MODE" . "mbr_only")))))))
 
-(define (find-image file-system-type)
-  "Find and return an image that could match the given FILE-SYSTEM-TYPE.  This
-is useful to adapt to interfaces written before the addition of the <image>
-record."
-  (mlet %store-monad ((target (current-target-system)))
-    (mbegin %store-monad
-      (return
-       (match file-system-type
-         ("iso9660" iso9660-image)
-         (_ (cond
-             ((and target
-                   (hurd-triplet? target))
-              hurd-disk-image)
-             (else
-              efi-disk-image))))))))
+(define (find-image file-system-type target)
+  "Find and return an image built that could match the given FILE-SYSTEM-TYPE,
+built for TARGET.  This is useful to adapt to interfaces written before the
+addition of the <image> record."
+  (match file-system-type
+    ("iso9660" iso9660-image)
+    (_ (cond
+        ((and target
+              (hurd-triplet? target))
+         hurd-disk-image)
+        (else
+         efi-disk-image)))))
 
 ;;; image.scm ends here

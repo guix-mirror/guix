@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -227,15 +228,17 @@ packages defined in installation-os."
 
   (mlet* %store-monad ((_      (set-grafting #f))
                        (system (current-system))
-                       (target (operating-system-derivation target-os))
-                       (base-image (find-image
-                                    installation-disk-image-file-system-type))
+                       (target (current-target-system))
+                       (base-image -> (find-image
+                                       installation-disk-image-file-system-type
+                                       target))
 
                        ;; Since the installation system has no network access,
                        ;; we cheat a little bit by adding TARGET to its GC
                        ;; roots.  This way, we know 'guix system init' will
                        ;; succeed.  Also add guile-final, which is pulled in
                        ;; through provenance.drv and may not always be present.
+                       (target (operating-system-derivation target-os))
                        (image ->
                         (system-image
                          (image

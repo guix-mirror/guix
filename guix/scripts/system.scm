@@ -5,6 +5,7 @@
 ;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -801,7 +802,8 @@ static checks."
       (check-initrd-modules os)))
 
   (mlet* %store-monad
-      ((image     (find-image file-system-type))
+      ((target    (current-target-system))
+       (image ->  (find-image file-system-type target))
        (sys       (system-derivation-for-action os image action
                                                 #:file-system-type file-system-type
                                                 #:image-size image-size
