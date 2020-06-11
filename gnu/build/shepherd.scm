@@ -105,7 +105,8 @@ separate mount and PID name space.  Return the \"outer\" PID. "
              (read-pid-file pid-file
                             #:max-delay max-delay)))
     (#f
-     (catch-system-error (kill pid SIGTERM))
+     ;; Send SIGTERM to the whole process group.
+     (catch-system-error (kill (- pid) SIGTERM))
      #f)
     ((? integer? container-pid)
      ;; XXX: When COMMAND is started in a separate PID namespace, its
