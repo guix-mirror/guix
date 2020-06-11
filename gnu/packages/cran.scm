@@ -21241,15 +21241,17 @@ and an overall emphasis on typography.")
 (define-public r-crochet
   (package
     (name "r-crochet")
-    (version "2.2.0")
+    (version "2.3.0")
     (source
      (origin
       (method url-fetch)
       (uri (cran-uri "crochet" version))
       (sha256
        (base32
-        "1cbv79nyycxk6f8ldcsnn2pvgxqlnrj0qs19nhafnq2clxy863k6"))))
+        "0zvjaf6cv0nrjb4l4llkr0mmgha7ig31p4ri2rlnqyjlxi5l8hyq"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/agrueneberg/crochet")
     (synopsis "Implementation Helper for Matrix-Like Types")
     (description
