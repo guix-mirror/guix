@@ -1809,17 +1809,19 @@ is configured appropriately so R can use them.")
 (define-public r-pkgload
   (package
     (name "r-pkgload")
-    (version "1.0.2")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgload" version))
        (sha256
         (base32
-         "0z7jvharafahi2gv5547mk1n499isjzw06kfwymmxc0gd575d1ii"))))
+         "03bv8xq4s6s7m34y1kjs99jzlb95vwrfi76mbnhmzcx2pc6ld78q"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-desc" ,r-desc)
+     `(("r-cli" ,r-cli)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
        ("r-pkgbuild" ,r-pkgbuild)
        ("r-rlang" ,r-rlang)
        ("r-rprojroot" ,r-rprojroot)
