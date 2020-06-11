@@ -10832,7 +10832,7 @@ graphs, and pie charts.")
     (version "3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/httpcomponents/"
+              (uri (string-append "mirror://apache/dist/httpcomponents/"
                                   "commons-httpclient/source/commons-httpclient-"
                                   version "-src.tar.gz"))
               (sha256
