@@ -2683,13 +2683,13 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "2.1")
+    (version "2.2")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32 "0pa5xs0vzwn9vsgysjqbks9v5lbqphxh5agciskllibc40hhwigg"))))
+          (base32 "196r3hq1gcr6iamxllq4k40cb109b16ng24ky0q68bwrll80q1mh"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2704,6 +2704,8 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
        ("ghc-pandoc" ,ghc-pandoc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://rmarkdown.rstudio.com")
     (synopsis "Convert R Markdown documents into a variety of formats")
     (description
