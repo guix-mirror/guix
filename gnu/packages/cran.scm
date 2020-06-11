@@ -1182,14 +1182,14 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
 (define-public r-d3r
   (package
     (name "r-d3r")
-    (version "0.8.7")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "d3r" version))
        (sha256
         (base32
-         "0xl3im76lp7pd5lhp8jfyqdm4j4zvjrx5a5fl81xv2cf7x3n4f2a"))))
+         "0vd1qk8yr18xdfkv5ybhqvf0mmccpi721wqa7c881nzm9nnlzc4y"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1224,6 +1224,7 @@ Bootstrap themes, which are packaged for use with Shiny applications.")
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
        ("r-htmltools" ,r-htmltools)
+       ("r-rlang" ,r-rlang)
        ("r-tidyr" ,r-tidyr)))
     (native-inputs
      `(("uglify-js" ,uglify-js)
