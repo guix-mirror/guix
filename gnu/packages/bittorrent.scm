@@ -65,16 +65,15 @@
 (define-public transmission
   (package
     (name "transmission")
-    (version "2.94")
+    (version "3.00")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/transmission/transmission-releases/raw/"
-                    "master/transmission-" version ".tar.xz"))
-              (patches (search-patches "transmission-CVE-2018-10756.patch"))
+              (uri (string-append "https://github.com/transmission/transmission"
+                                  "/releases/download/" version "/transmission-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0zbbj7rlm6m7vb64x68a64cwmijhsrwx9l63hbwqs7zr9742qi1m"))))
+                "1wjmn96zrvmk8j1yz2ysmqd7a2x6ilvnwwapcvfzgxs2wwpnai4i"))))
     (build-system glib-or-gtk-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface
@@ -90,8 +89,7 @@
                    (gui (assoc-ref outputs "gui")))
                (mkdir-p (string-append gui "/bin"))
                (rename-file (string-append out "/bin/transmission-gtk")
-                            (string-append gui
-                                           "/bin/transmission-gtk"))
+                            (string-append gui "/bin/transmission-gtk"))
 
                ;; Move the '.desktop' and icon files as well.
                (mkdir (string-append gui "/share"))
