@@ -13672,20 +13672,23 @@ lspec, polyclass, and polymars.")
 (define-public r-rms
   (package
     (name "r-rms")
-    (version "5.1-4")
+    (version "6.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rms" version))
        (sha256
-        (base32 "19knh1sw0icw6jh9wfb2hq5jf49i2qfvp9myvqm5paa495689x9q"))))
+        (base32 "0m88m63d19qz03x8v56h4rrblln3d2943spi1v4wxxnbcdk22np9"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-ggplot2" ,r-ggplot2)
+     `(("r-cluster" ,r-cluster)
+       ("r-digest" ,r-digest)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-hmisc" ,r-hmisc)
        ("r-htmltable" ,r-htmltable)
        ("r-htmltools" ,r-htmltools)
        ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
        ("r-multcomp" ,r-multcomp)
        ("r-nlme" ,r-nlme)
        ("r-polspline" ,r-polspline)
