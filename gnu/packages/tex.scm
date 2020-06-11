@@ -33,9 +33,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system texlive)
   #:use-module (guix utils)
@@ -6130,7 +6130,7 @@ and Karl Berry.")
                '(begin
                   (delete-file-recursively "3rdparty")
                   #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags `("-DLYX_USE_QT=QT5"
                            "-DLYX_EXTERNAL_BOOST=1"
@@ -6139,11 +6139,6 @@ and Karl Berry.")
                            "-DLYX_PROGRAM_SUFFIX=OFF"
                            ,(string-append "-DLYX_INSTALL_PREFIX="
                                            (assoc-ref %outputs "out")))
-       #:modules ((guix build cmake-build-system)
-                  (guix build qt-utils)
-                  (guix build utils))
-       #:imported-modules (,@%cmake-build-system-modules
-                            (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-python
@@ -6163,10 +6158,6 @@ and Karl Berry.")
              ;; Create missing file that would cause tests to fail.
              (with-output-to-file "src/tests/check_layout.cmake"
                (const #t))
-             #t))
-         (add-after 'install 'wrap-qt
-           (lambda* (#:key outputs #:allow-other-keys)
-             (wrap-qt-program (assoc-ref outputs "out") "lyx")
              #t)))))
     (inputs
      `(("boost" ,boost)
