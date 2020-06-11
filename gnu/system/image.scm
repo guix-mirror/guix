@@ -538,14 +538,23 @@ image, depending on IMAGE format."
                           #:inputs `(("system" ,os)
                                      ("bootcfg" ,bootcfg))))
       ((iso9660)
-       (system-iso9660-image image*
-                             #:bootcfg bootcfg
-                             #:bootloader bootloader
-                             #:register-closures? register-closures?
-                             #:inputs `(("system" ,os)
-                                        ("bootcfg" ,bootcfg))
-                             #:grub-mkrescue-environment
-                             '(("MKRESCUE_SED_MODE" . "mbr_hfs")))))))
+       (system-iso9660-image
+        image*
+        #:bootcfg bootcfg
+        #:bootloader bootloader
+        #:register-closures? register-closures?
+        #:inputs `(("system" ,os)
+                   ("bootcfg" ,bootcfg))
+        ;; Make sure to use a mode that does no imply
+        ;; HFS+ tree creation that may fail with:
+        ;;
+        ;; "libisofs: FAILURE : Too much files to mangle,
+        ;; cannot guarantee unique file names"
+        ;;
+        ;; This happens if some limits are exceeded, see:
+        ;; https://lists.gnu.org/archive/html/grub-devel/2020-06/msg00048.html
+        #:grub-mkrescue-environment
+        '(("MKRESCUE_SED_MODE" . "mbr_only")))))))
 
 (define (find-image file-system-type)
   "Find and return an image that could match the given FILE-SYSTEM-TYPE.  This
