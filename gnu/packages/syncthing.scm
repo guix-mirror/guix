@@ -3,6 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2020 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,13 +22,23 @@
 
 (define-module (gnu packages syncthing)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
-  #:use-module (gnu packages golang))
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages time))
 
 (define-public syncthing
   (package
@@ -176,6 +187,69 @@ supports a wide variety of computing platforms.  It uses the Block Exchange
 Protocol.")
     (home-page "https://github.com/syncthing/syncthing")
     (license mpl2.0)))
+
+(define-public syncthing-gtk
+  (package
+    (name "syncthing-gtk")
+    (version "0.9.4.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/syncthing/syncthing-gtk.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nc0wd7qvyri7841c3dd9in5d7367hys0isyw8znv5fj4c0a6v1f"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'hardcode-dependencies
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((psmisc (assoc-ref inputs "psmisc"))
+                   (syncthing (assoc-ref inputs "syncthing")))
+               ;; Hardcode dependencies paths to avoid propagation.
+               (substitute* "syncthing_gtk/tools.py"
+                 (("killall") (string-append psmisc "/bin/killall")))
+               (substitute* "syncthing_gtk/configuration.py"
+                 (("/usr/bin/syncthing") (string-append syncthing
+                                                        "/bin/syncthing"))))
+             #t))
+         (add-after 'wrap 'wrap-libs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/syncthing-gtk")
+                 `("GI_TYPELIB_PATH" ":" prefix
+                   (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libappindicator" ,libappindicator)
+       ("libnotify" ,libnotify)
+       ("python2-bcrypt" ,python2-bcrypt)
+       ("python2-dateutil" ,python2-dateutil)
+       ("python2-pycairo" ,python2-pycairo)
+       ("python2-pygobject" ,python2-pygobject)
+       ("python-nautilus" ,python-nautilus)
+       ("psmisc" ,psmisc)
+       ("syncthing" ,syncthing)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/syncthing/syncthing-gtk")
+    (synopsis "GTK3 based GUI and notification area icon for Syncthing")
+    (description "@code{syncthing-gtk} is a GTK3 Python based GUI and
+notification area icon for Syncthing.  Supported Syncthing features:
+
+@itemize
+@item Everything that WebUI can display
+@item Adding, editing and deleting nodes
+@item Adding, editing and deleting repositories
+@item Restart, shutdown server
+@item Editing daemon settings
+@end itemize\n")
+    (license gpl2)))
 
 (define-public go-github-com-jackpal-go-nat-pmp
   (package
