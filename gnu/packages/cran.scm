@@ -602,24 +602,24 @@ the embedded @code{RapidXML} C++ library.")
 (define-public r-modelr
   (package
     (name "r-modelr")
-    (version "0.1.7")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "modelr" version))
        (sha256
         (base32
-         "1nln33ajad0c917hmal4v6fbw8rncsch9xz5sifqfw6wgqjx9yy6"))))
+         "1i31nff7bqibk6r4hhd4j1vzwbyaf8493v0bjaagn36njmysfnw2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-broom" ,r-broom)
-       ("r-dplyr" ,r-dplyr)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
-       ("r-tidyselect" ,r-tidyselect)))
+       ("r-tidyselect" ,r-tidyselect)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/tidyverse/modelr")
     (synopsis "Helper functions for modelling in pipelines")
     (description
