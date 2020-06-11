@@ -276,7 +276,7 @@ JNI.")
     (version "1.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.apache.org/dist/"
+              (uri (string-append "mirror://apache/dist/"
                                   "ant/source/apache-ant-"
                                   version "-src.tar.bz2"))
               (sha256
