@@ -16935,14 +16935,14 @@ into R, in order to support other packages.")
 (define-public r-showtextdb
   (package
     (name "r-showtextdb")
-    (version "2.0")
+    (version "3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "showtextdb" version))
        (sha256
         (base32
-         "1qwwj9x2jvadvwn60h75k99c9xi7yhqjsgaakahz5paxgj583bsh"))))
+         "0hlnc3fhgrdkd46n7hb6id0gg1v0bf8s4679nrr7rchyp455szq2"))))
     (properties `((upstream-name . "showtextdb")))
     (build-system r-build-system)
     (propagated-inputs
