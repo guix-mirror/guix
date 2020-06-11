@@ -1703,21 +1703,23 @@ database.")
 (define-public r-dbplyr
   (package
     (name "r-dbplyr")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dbplyr" version))
        (sha256
         (base32
-         "1si8sahr1kwq1xgjzi9klkahad07pyrsngy75y1f74f64907pb39"))))
+         "1v0p0557n6bz84nq9jc4182k00mdd1hvz7h4w3bbg81z0fmpj0d8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
+       ("r-blob" ,r-blob)
        ("r-dbi" ,r-dbi)
        ("r-dplyr" ,r-dplyr)
        ("r-glue" ,r-glue)
        ("r-lifecycle" ,r-lifecycle)
+       ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-r6" ,r-r6)
        ("r-rlang" ,r-rlang)
