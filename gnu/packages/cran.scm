@@ -5718,14 +5718,14 @@ simple method for converting between file types.")
 (define-public r-maptools
   (package
     (name "r-maptools")
-    (version "0.9-9")
+    (version "1.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "maptools" version))
        (sha256
         (base32
-         "0v4llkxk8qs61vq4ykvaim4k23aagdaz0p62ns7zfq02sln3pfk9"))))
+         "0fs1y3cbymcq4f76wd27h5a7ihdmxii3ca8x29x32xgxhmasni4l"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
