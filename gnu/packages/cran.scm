@@ -6673,14 +6673,14 @@ information are missing.")
 (define-public r-sjlabelled
   (package
     (name "r-sjlabelled")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjlabelled" version))
        (sha256
         (base32
-         "00dnrvwf7zbaq07hkh4rx24pvi5bwkl4npf6ycg101s63633dq5m"))))
+         "0grskmd7wrw31lkf85z6xz0bv246m6grvqkijvqi4q8zkl6p5vb3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-insight" ,r-insight)))
