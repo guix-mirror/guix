@@ -1097,13 +1097,13 @@ using just two functions: melt and dcast (or acast).")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.3.0")
+    (version "3.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0j21am605kqqzlwhm45kaj0m2irnmy2vz0j7kzi9f0qdzrv3q3ij"))))
+        (base32 "04wvswadlry2n9gnfqlpdqsav1wllnlzb5c9w9ydynllv4vkwfm0"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -1117,6 +1117,8 @@ using just two functions: melt and dcast (or acast).")
        ("r-scales" ,r-scales)
        ("r-svglite" ,r-svglite) ; Needed for 'ggsave'
        ("r-withr" ,r-withr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://ggplot2.tidyverse.org")
     (synopsis "An implementation of the grammar of graphics")
     (description
