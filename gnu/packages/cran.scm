@@ -2672,19 +2672,20 @@ functions from LINPACK.")
 (define-public r-fitdistrplus
   (package
     (name "r-fitdistrplus")
-    (version "1.0-14")
+    (version "1.1-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fitdistrplus" version))
        (sha256
         (base32
-         "10q08wsv8v3w7797jdvvv60bgrf1bi6438wf0jcqv81ays82a245"))))
+         "1rnfnwmxa495fql7q0h9018cnwygwhj8gfh6ryz1vbf474570vjl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)
-       ("r-npsurv" ,r-npsurv)
        ("r-survival" ,r-survival)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://riskassessment.r-forge.r-project.org")
     (synopsis "Fitting a parametric distribution from data")
     (description
