@@ -199,12 +199,6 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
    (base32 "1c0n39wg6xij4x63ppg0m80kfcffkn3iilm3chyiix09n9g7vb78")
    (base32 "02is246xaql1br3kizqicrkp982nw4gdwpn7nlzjazvsmyd1hcv2")))
 
-(define deblob-scripts-5.6
-  (linux-libre-deblob-scripts
-   "5.6.7"
-   (base32 "196fdbfy1f8zbmnv0ik720snig2bacsh7hfyvgbmlsfk3cil2zgv")
-   (base32 "1g0bi3c8xzy1vz6w1xbpkb3a26bqn9d1yphcqz2ki4aikra81wid")))
-
 (define deblob-scripts-5.4
   (linux-libre-deblob-scripts
    "5.4.37"
@@ -384,14 +378,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
 
-(define-public linux-libre-5.6-version "5.6.17")
-(define-public linux-libre-5.6-pristine-source
-  (let ((version linux-libre-5.6-version)
-        (hash (base32 "17kzalz8z6svv6nwa3dbmf7nyvpb2wwwyabj19vdwf6v05a28fn3")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.6)))
-
 (define-public linux-libre-5.4-version "5.4.45")
 (define-public linux-libre-5.4-pristine-source
   (let ((version linux-libre-5.4-version)
@@ -464,15 +450,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
   (source-with-patches linux-libre-5.7-pristine-source
                        (list %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.6-source
-  (source-with-patches linux-libre-5.6-pristine-source
-                       (list %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch
-                             ;; Pinebook Pro patch from linux-next,
-                             ;; can be dropped for linux-libre 5.7
-                             (search-patch
-                              "linux-libre-support-for-Pinebook-Pro.patch"))))
 
 (define-public linux-libre-5.4-source
   (source-with-patches linux-libre-5.4-pristine-source
@@ -576,10 +553,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.7
   (make-linux-libre-headers* linux-libre-5.7-version
                              linux-libre-5.7-source))
-
-(define-public linux-libre-headers-5.6
-  (make-linux-libre-headers* linux-libre-5.6-version
-                             linux-libre-5.6-source))
 
 (define-public linux-libre-headers-5.4
   (make-linux-libre-headers* linux-libre-5.4-version
@@ -882,18 +855,6 @@ It has been modified to remove all non-free binary blobs.")
                         ("CONFIG_RTC_DRV_RK808" . #t))
                       %default-extra-linux-options)))
 
-(define-public linux-libre-arm-generic-5.6
-  (make-linux-libre* linux-libre-5.6-version
-                     linux-libre-5.6-source
-                     '("armhf-linux")
-                     #:defconfig "multi_v7_defconfig"
-                     #:extra-version "arm-generic"
-                     #:extra-options
-                     (append
-                      `(;; needed to fix the RTC on rockchip platforms
-                        ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
-
 (define-public linux-libre-arm-generic-5.7
   (make-linux-libre* linux-libre-5.7-version
                      linux-libre-5.7-source
@@ -951,18 +912,6 @@ It has been modified to remove all non-free binary blobs.")
                      #:defconfig "defconfig"
                      #:extra-version "arm64-generic"
 		     #:extra-options
-                     (append
-                      `(;; needed to fix the RTC on rockchip platforms
-                        ("CONFIG_RTC_DRV_RK808" . #t))
-                      %default-extra-linux-options)))
-
-(define-public linux-libre-arm64-generic-5.6
-  (make-linux-libre* linux-libre-5.6-version
-                     linux-libre-5.6-source
-                     '("aarch64-linux")
-                     #:defconfig "defconfig"
-                     #:extra-version "arm64-generic"
-                     #:extra-options
                      (append
                       `(;; needed to fix the RTC on rockchip platforms
                         ("CONFIG_RTC_DRV_RK808" . #t))
