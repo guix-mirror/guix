@@ -691,7 +691,7 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
     (version "3.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/maven/"
+              (uri (string-append "mirror://apache/dist/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
               (sha256 (base32 "0grw9zp166ci53rd7qkyy2qmwmik37xhiz1z84jpm0msyvzj2n82"))
