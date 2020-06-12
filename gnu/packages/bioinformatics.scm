@@ -8410,13 +8410,13 @@ reference point and sorted by a user defined feature.")
 (define-public r-genomation
   (package
     (name "r-genomation")
-    (version "1.18.0")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "genomation" version))
               (sha256
                (base32
-                "1sba928h23b67gr3i4yj1bg655g24l3bcgsf5gvymzrv5idrss1l"))))
+                "1cy8kqwddiha5jy6nda1al956i4wncbgjkrxwijdb08cmka2sfwh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
@@ -8440,6 +8440,8 @@ reference point and sorted by a user defined feature.")
        ("r-runit" ,r-runit)
        ("r-s4vectors" ,r-s4vectors)
        ("r-seqpattern" ,r-seqpattern)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
     (synopsis "Summary, annotation and visualization of genomic data")
     (description
