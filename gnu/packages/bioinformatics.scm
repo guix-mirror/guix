@@ -7560,13 +7560,13 @@ also known as views, in a controlled vocabulary.")
 (define-public r-biocstyle
   (package
     (name "r-biocstyle")
-    (version "2.14.4")
+    (version "2.16.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocStyle" version))
               (sha256
                (base32
-                "1x71in059zql40f4c87bd1gf96r945kdvwbq61jmch9d3d8nwxbb"))))
+                "07rjl2n4sazdg581zh7w3yykzphgr2gpz41ba4ryqs7347vh9nbf"))))
     (properties
      `((upstream-name . "BiocStyle")))
     (build-system r-build-system)
@@ -7576,6 +7576,8 @@ also known as views, in a controlled vocabulary.")
        ("r-knitr" ,r-knitr)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-yaml" ,r-yaml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/BiocStyle")
     (synopsis "Bioconductor formatting styles")
     (description "This package provides standard formatting styles for
