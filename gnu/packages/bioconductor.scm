@@ -6673,14 +6673,14 @@ metrics, with methods for objects produced by the @code{methylumi} and
 (define-public r-gdsfmt
   (package
     (name "r-gdsfmt")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gdsfmt" version))
        (sha256
         (base32
-         "0zc9v62imd0ykz4h30pxa64q0y45qijmkwdk2pd4ncsg8fc2jlz9"))
+         "00hggma0i15w03xi9jr02v2593jbqkcxyfcvpp7mdzrshn99m9p6"))
        (modules '((guix build utils)))
        ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
        ;; them and link with system libraries instead.
@@ -6710,6 +6710,8 @@ metrics, with methods for objects produced by the @code{methylumi} and
      `(("lz4" ,lz4)
        ("xz" ,xz)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://corearray.sourceforge.net/")
     (synopsis
      "R Interface to CoreArray Genomic Data Structure (GDS) Files")
