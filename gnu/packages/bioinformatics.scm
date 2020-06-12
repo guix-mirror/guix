@@ -10173,14 +10173,14 @@ analysis using other methods.")
 (define-public r-genomicfiles
   (package
     (name "r-genomicfiles")
-    (version "1.22.0")
+    (version "1.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicFiles" version))
        (sha256
         (base32
-         "1x6q827ms2l5lwzha1vsgfrshh35n9f19jq57xagrqlafxgpz86s"))))
+         "1k3824pzf9fdqvcv6cz2742q3mabpmncrc72hwa21ac8wy1b04n4"))))
     (properties `((upstream-name . "GenomicFiles")))
     (build-system r-build-system)
     (propagated-inputs
