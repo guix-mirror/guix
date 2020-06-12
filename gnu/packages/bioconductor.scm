@@ -5632,14 +5632,14 @@ Markov-Chain-Monte-Carlo is applied to sample the activity states.")
 (define-public r-multidataset
   (package
     (name "r-multidataset")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MultiDataSet" version))
        (sha256
         (base32
-         "0iw99ymrv3ls023mpmgyagmb5simgsgadpj0k4bnssfaqnklywlj"))))
+         "0hjnj32m9wwlh2krdpdyl5jk1cakvlgki80z51mabhc62pajzf39"))))
     (properties `((upstream-name . "MultiDataSet")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5653,6 +5653,8 @@ Markov-Chain-Monte-Carlo is applied to sample the activity states.")
        ("r-qqman" ,r-qqman)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/MultiDataSet/")
     (synopsis "Implementation of MultiDataSet and ResultSet")
     (description
