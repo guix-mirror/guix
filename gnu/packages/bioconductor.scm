@@ -1279,14 +1279,14 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
 (define-public r-affycoretools
   (package
     (name "r-affycoretools")
-    (version "1.58.4")
+    (version "1.60.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "affycoretools" version))
        (sha256
         (base32
-         "1p283ysib04qzaayxmrpsmk5bq0jdq2rlky180jrlskpyg6risfw"))))
+         "0cnb54b3kmg9rnycvaz949bdali9n98qzrw7gwka6abmg1lv232s"))))
     (properties `((upstream-name . "affycoretools")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1309,6 +1309,8 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
        ("r-rsqlite" ,r-rsqlite)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xtable" ,r-xtable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/affycoretools/")
     (synopsis "Functions for analyses with Affymetrix GeneChips")
     (description
