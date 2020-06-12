@@ -1774,6 +1774,118 @@ can be explored and changed freely.")
                    license:gpl3+
                    license:silofl1.1))))
 
+(define-public seahorse-adventures
+  (package
+    (name "seahorse-adventures")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dulsi/seahorse-adventures.git")
+             (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rnvk06npaqcpjz5z6xcmssz61i32s422lydp49vrnf3j2g4yimd"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1)))
+       ;; Remove non-free (non-commercial) font.
+       (snippet
+        `(begin
+           (for-each delete-file (find-files "data/fonts" "."))
+           #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build)                ;pure Python
+         (replace 'install              ;no install script
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share"))
+                    (applications (string-append share "/applications"))
+                    (data (string-append share "/seahorse-adventures")))
+               ;; Install data.
+               (for-each (lambda (f)
+                           (chmod f #o555)
+                           (install-file f data))
+                         '("leveledit.py" "run_game.py" "tileedit.py"))
+               (for-each (lambda (dir)
+                           (let ((target (string-append data "/" dir)))
+                             (mkdir-p target)
+                             (copy-recursively dir target)))
+                         '("data" "lib"))
+               ;; Create executable.
+               (mkdir-p bin)
+               (let ((executable (string-append bin "/seahorse-adventures")))
+                 (call-with-output-file executable
+                   (lambda (p)
+                     (format p
+                             "#!~a~@
+                              export PYTHONPATH=~a:~a~@
+                              exec -a \"~a\" ~a \"$@\"~%"
+                             (which "bash") data (getenv "PYTHONPATH")
+                             (which "python3")
+                             (string-append data "/run_game.py"))))
+                 (chmod executable #o555))
+               ;; Add desktop file.
+               (mkdir-p applications)
+               (make-desktop-entry-file
+                (string-append applications "/seahorse-adventures.desktop")
+                #:name "Seahorse Adventures"
+                #:comment
+                '((#f "Help Barbie the seahorse float on bubbles to the moon"))
+                #:exec ,name
+                #:icon ,name
+                #:categories '("Game" "ActionGame")
+                #:keywords '("game" "retro" "platform"))
+               ;; Add icons.
+               (for-each
+                (lambda (size)
+                  (let ((dir (string-append share "/icons/hicolor/"
+                                            size "x" size "/apps")))
+                    (mkdir-p dir)
+                    (copy-file
+                     (string-append "icon" size ".png")
+                     (string-append dir "/searhorse-adventures.png"))))
+                '("32" "64" "128")))
+             #t))
+         (add-after 'install 'unbundle-fonts
+           ;; Unbundle Bitstream Vera font and replace deleted one.
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (data (string-append out "/share/seahorse-adventures"))
+                    (vera (string-append (assoc-ref inputs "font-bitstream-vera")
+                                         "/share/fonts/truetype/Vera.ttf")))
+               (let ((themes-dir (string-append data "/data/themes/")))
+                 (for-each
+                  (lambda (theme)
+                    (let ((target (string-append themes-dir theme "/Vera.ttf")))
+                      (delete-file target)
+                      (symlink vera target)))
+                  '("default" "gray")))
+               (symlink vera (string-append data "/data/fonts/04B_20__.TTF"))
+               (substitute* (string-append data "/lib/main.py")
+                 (("f_scale = 0.35") "f_scale = 0.47")))
+             #t)))))
+    (inputs
+     `(("font-bitstream-vera" ,font-bitstream-vera)
+       ("python-pygame" ,python-pygame)))
+    (home-page "http://www.imitationpickles.org/barbie/")
+    (synopsis "Help Barbie the seahorse float on bubbles to the moon")
+    (description
+     "Barbie Seahorse Adventures is a retro style platform arcade game.
+You are Barbie the seahorse who travels through the jungle, up to the
+volcano until you float on bubbles to the moon.  On the way to your
+final destination you will encounter various enemies, servants of the
+evil overlord who has stolen the galaxy crystal.  Avoid getting hit
+and defeat them with your bubbles!")
+    ;; GPL2+ is for code, CC0 is for art.
+    (license (list license:gpl2+ license:cc0))))
+
 (define-public superstarfighter
   (package
     (name "superstarfighter")
