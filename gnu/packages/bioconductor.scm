@@ -5807,14 +5807,14 @@ and to both short and long sequence reads.")
 (define-public r-flowutils
   (package
     (name "r-flowutils")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowUtils" version))
        (sha256
         (base32
-         "1xcs19j9p3izvksyy5wzsbicwby0dsa9g2w7gjzwynzgj5dpfr81"))))
+         "03jj4zyffm9kwzrg4vbsk6clc2v2m95wgalgqwzi31n9a2zyaza4"))))
     (properties `((upstream-name . "flowUtils")))
     (build-system r-build-system)
     (propagated-inputs
