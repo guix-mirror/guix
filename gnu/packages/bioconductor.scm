@@ -2801,14 +2801,14 @@ independent of the p-value under the null hypothesis.")
 (define-public r-icobra
   (package
     (name "r-icobra")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "iCOBRA" version))
        (sha256
         (base32
-         "1l0yr2grpwmr3pc5h50p1j4nxyb1ddmc55l7rhxpp4igh4fq1avz"))))
+         "0cvklagby3i221dlhyb51cciv0b3ch4a8z0wpm67q5n6n3k0cil1"))))
     (properties `((upstream-name . "iCOBRA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2823,6 +2823,8 @@ independent of the p-value under the null hypothesis.")
        ("r-shinybs" ,r-shinybs)
        ("r-shinydashboard" ,r-shinydashboard)
        ("r-upsetr" ,r-upsetr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/iCOBRA")
     (synopsis "Comparison and visualization of ranking and assignment methods")
     (description
