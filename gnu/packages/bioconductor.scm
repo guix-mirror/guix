@@ -6087,14 +6087,14 @@ model with Box-Cox transformation.")
 (define-public r-rprotobuflib
   (package
     (name "r-rprotobuflib")
-    (version "1.8.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RProtoBufLib" version))
        (sha256
         (base32
-         "0dlgki21a37bxqh3cf83vl5zqxm86472g8a9plvhrjzzsn3mwnrm"))))
+         "0kfinf9vzc1i5qxmaw832id557gr1vqdi1m8yiaxz83g37wh8vps"))))
     (properties `((upstream-name . "RProtoBufLib")))
     (build-system r-build-system)
     (arguments
@@ -6103,8 +6103,10 @@ model with Box-Cox transformation.")
          (add-after 'unpack 'unpack-bundled-sources
            (lambda _
              (with-directory-excursion "src"
-               (invoke "tar" "xf" "protobuf-2.6.0.tgz"))
+               (invoke "tar" "xf" "protobuf-3.10.0.tar.gz"))
              #t)))))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/RProtoBufLib/")
     (synopsis "C++ headers and static libraries of Protocol buffers")
     (description
