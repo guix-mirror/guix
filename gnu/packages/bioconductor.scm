@@ -4925,14 +4925,14 @@ groups.")
 (define-public r-yarn
   (package
     (name "r-yarn")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "yarn" version))
        (sha256
         (base32
-         "0891a10adkhm1zpm7fpcxc2xfxjf9yrpckaz87b2wdjdiwivc4cp"))))
+         "1xdjwy1gkfg8lhgq4iwwmbi01903qljjs7yd96cvacmvgn8z6qvx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -4946,6 +4946,8 @@ groups.")
        ("r-quantro" ,r-quantro)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-readr" ,r-readr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/yarn/")
     (synopsis "Robust multi-condition RNA-Seq preprocessing and normalization")
     (description
