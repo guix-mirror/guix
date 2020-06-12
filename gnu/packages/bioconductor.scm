@@ -2409,14 +2409,14 @@ achieved for all methods using the BiocParallel framework.")
 (define-public r-biocsingular
   (package
     (name "r-biocsingular")
-    (version "1.2.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSingular" version))
        (sha256
         (base32
-         "1282fdwxrpga87y8xflr0sl8ajwawgn2i9i65my8mbg5vrixs407"))))
+         "0368a9xj4cvicqkxmhh12ln46q9gnxla70s1dqrxxfn3b6k525ih"))))
     (properties `((upstream-name . "BiocSingular")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2429,6 +2429,8 @@ achieved for all methods using the BiocParallel framework.")
        ("r-rcpp" ,r-rcpp)
        ("r-rsvd" ,r-rsvd)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/LTLA/BiocSingular")
     (synopsis "Singular value decomposition for Bioconductor packages")
     (description
