@@ -4484,14 +4484,14 @@ the brain using an ontology, both provided by the Allen Brain Atlas project.")
 (define-public r-annotationfuncs
   (package
     (name "r-annotationfuncs")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationFuncs" version))
        (sha256
         (base32
-         "0ws14b1ibqml7w8kj0gi7wdp6wd8dcdpnrmcxldjzsyawf17q0yq"))))
+         "1yfsxzn7s1nlc3xz2yj39j6hmdfapc9qj9h0cd71gkaxj53ial7d"))))
     (properties
      `((upstream-name . "AnnotationFuncs")))
     (build-system r-build-system)
