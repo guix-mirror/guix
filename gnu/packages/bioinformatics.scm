@@ -10453,14 +10453,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gqtlbase
   (package
     (name "r-gqtlbase")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLBase" version))
        (sha256
         (base32
-         "1qr8dqjbmj1mdjbzbnxwzfrm8f02wqfsgic8ws5kv7pmsby63y4x"))))
+         "06xvzp4fn3qfa46ggg8kxi267gbyd821vvx4040173xkqxpr0g5j"))))
     (properties `((upstream-name . "gQTLBase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10477,6 +10477,8 @@ interval to data view, mismatch pileup, and several splicing summaries.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/gQTLBase")
     (synopsis "Infrastructure for eQTL, mQTL and similar studies")
     (description
