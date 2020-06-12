@@ -3348,14 +3348,14 @@ especially Illumina Infinium methylation microarrays.")
 (define-public r-linnorm
   (package
     (name "r-linnorm")
-    (version "2.10.0")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Linnorm" version))
        (sha256
         (base32
-         "15mhwiqmp9m65zvrdbr2hhy3x81lf4jbwgjsf75g41if2v2g8x67"))))
+         "143hdfswp5sda5al1igrm5gyn7a6mp1j7hjm5jsc300335lm3kgp"))))
     (properties `((upstream-name . "Linnorm")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3377,6 +3377,8 @@ especially Illumina Infinium methylation microarrays.")
        ("r-statmod" ,r-statmod)
        ("r-vegan" ,r-vegan)
        ("r-zoo" ,r-zoo)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://www.jjwanglab.org/Linnorm/")
     (synopsis "Linear model and normality based transformation method")
     (description
