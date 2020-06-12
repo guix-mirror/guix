@@ -8952,19 +8952,21 @@ the available RAM.")
 (define-public r-annotationfilter
   (package
     (name "r-annotationfilter")
-    (version "1.10.0")
+    (version "1.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationFilter" version))
               (sha256
                (base32
-                "1l9sxhlvnwn6327vgg02h11ppmqr2zr07ff8wmcng0i1jbqwa8q5"))))
+                "18kh1xrhpwb48s1qj4f1v8af3jmw49pnbp5afi2myn9894hxg0cs"))))
     (properties
      `((upstream-name . "AnnotationFilter")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genomicranges" ,r-genomicranges)
        ("r-lazyeval" ,r-lazyeval)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/Bioconductor/AnnotationFilter")
     (synopsis "Facilities for filtering Bioconductor annotation resources")
     (description
