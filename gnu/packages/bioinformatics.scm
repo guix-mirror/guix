@@ -7532,13 +7532,13 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
 (define-public r-biocviews
   (package
     (name "r-biocviews")
-    (version "1.54.0")
+    (version "1.56.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biocViews" version))
               (sha256
                (base32
-                "0yn8jys1900d31haayz0ppqk5y79mwjajwp4alz6pln3dbs70f3g"))))
+                "1h4cmfbff79v9xrh271dp3rv0877ris06lmkvc39kqzj7yjsh7c2"))))
     (properties
      `((upstream-name . "biocViews")))
     (build-system r-build-system)
