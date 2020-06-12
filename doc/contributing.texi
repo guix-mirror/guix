@@ -991,16 +991,16 @@ rebuilding induced, commits go to different branches, along these lines:
 @item 300 dependent packages or less
 @code{master} branch (non-disruptive changes).
 
-@item between 300 and 1,200 dependent packages
+@item between 300 and 1,800 dependent packages
 @code{staging} branch (non-disruptive changes).  This branch is intended
-to be merged in @code{master} every 3 weeks or so.  Topical changes
+to be merged in @code{master} every 6 weeks or so.  Topical changes
 (e.g., an update of the GNOME stack) can instead go to a specific branch
 (say, @code{gnome-updates}).
 
-@item more than 1,200 dependent packages
+@item more than 1,800 dependent packages
 @code{core-updates} branch (may include major and potentially disruptive
 changes).  This branch is intended to be merged in @code{master} every
-2.5 months or so.
+6 months or so.
 @end table
 
 All these branches are @uref{@value{SUBSTITUTE-SERVER},
