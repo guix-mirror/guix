@@ -10314,14 +10314,14 @@ chromosome region or transcript models of lincRNA genes.")
 (define-public r-organismdbi
   (package
     (name "r-organismdbi")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "OrganismDbi" version))
        (sha256
         (base32
-         "1bvfyh733mhka9zd00hrzpalgjs255c2blnxyf60ipzk5jg7yllb"))))
+         "194h5576inq44qr666snzq0ygnc77rk5ljkn9bn8zs6x6gb3cwaw"))))
     (properties `((upstream-name . "OrganismDbi")))
     (build-system r-build-system)
     (propagated-inputs
