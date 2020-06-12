@@ -10589,14 +10589,14 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "0xpigfidmylfawy6vzshqnsw1lzjs4qms8q7zffij6bkvkv7920x"))))
+         "0plw00n2zfgh029ab41dnydzgv2yxrapjp770147rx9pff4dngrv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -10609,6 +10609,8 @@ by Ernst and Kellis.")
        ("r-rsamtools" ,r-rsamtools)
        ("r-snpstats" ,r-snpstats)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ldblock")
     (synopsis "Data structures for linkage disequilibrium measures in populations")
     (description
