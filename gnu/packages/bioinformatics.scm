@@ -7899,13 +7899,13 @@ manipulating genomic intervals and variables defined along a genome.")
 (define-public r-biobase
   (package
     (name "r-biobase")
-    (version "2.46.0")
+    (version "2.48.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Biobase" version))
               (sha256
                (base32
-                "1gx41083dqlm59vwqdxvc4ny31x91j48mda9n3scg0f2zwasvqgl"))))
+                "13p3kgnxm7hbn8cy289kbhaiyfa6rxx7l1pbvajwqzbay3cxznqp"))))
     (properties
      `((upstream-name . "Biobase")))
     (build-system r-build-system)
