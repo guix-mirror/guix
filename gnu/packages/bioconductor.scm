@@ -6565,17 +6565,19 @@ cisTopics and explore the nature and regulatory proteins driving them.")
 (define-public r-genie3
   (package
     (name "r-genie3")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GENIE3" version))
        (sha256
         (base32
-         "0p67lhgy3lb4nc958s51hx7rvgwhzwfic9xhpsrask40k43spv7l"))))
+         "1bsm0gxracsyg1wnaw3whvskghfpbgbm9navr8wdmxj2hjp3dqs7"))))
     (properties `((upstream-name . "GENIE3")))
     (build-system r-build-system)
     (propagated-inputs `(("r-reshape2" ,r-reshape2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/GENIE3")
     (synopsis "Gene network inference with ensemble of trees")
     (description
