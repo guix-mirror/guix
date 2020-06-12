@@ -105,6 +105,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages openkinect)
   #:use-module (gnu packages xorg))
 
 (define-public librecad
@@ -2619,3 +2620,60 @@ accessible through a simple API")
 model files.  Its main goal is to simplify the creation of 3DS import and
 export filters.")
     (license license:lgpl2.1+)))
+
+(define-public meshlab
+  (package
+    (name "meshlab")
+    (version "2020.05")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cnr-isti-vclab/meshlab")
+                    (commit (string-append "Meshlab-" version))
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "00sim20ka9vjwljixdj4cqd285j21mpaq05ari7nqq2w8yyglp5m"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("glew" ,glew)
+       ("muparser" ,muparser)
+       ("gmp" ,gmp)
+       ("eigen" ,eigen)
+       ("libfreenect" ,libfreenect)
+       ("lib3ds" ,lib3ds)
+       ("openctm" ,openctm)
+       ;; FIXME: Compilation fails with system qhull:
+       ;; https://github.com/cnr-isti-vclab/meshlab/issues/678
+       ;; ("qhull" ,qhull)
+       ))
+    (arguments
+     `(#:tests? #f                                ; Has no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'go-to-source-dir
+           (lambda _ (chdir "src") #t))
+         (add-after 'install 'move-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out")
+                                       "/lib")))
+               (rename-file
+                (string-append lib "/meshlab/libmeshlab-common.so")
+                (string-append lib "/libmeshlab-common.so"))
+               #t))))))
+    (synopsis "3D triangular mesh processing and editing software")
+    (home-page "https://www.meshlab.net/")
+    (description "MeshLab is a system for the processing and
+editing of unstructured large 3D triangular meshes.  It is aimed to help the
+processing of the typical not-so-small unstructured models arising in 3D
+scanning, providing a set of tools for editing, cleaning, healing, inspecting,
+rendering and converting this kind of meshes.  These tools include MeshLab
+proper, a versatile program with a graphical user interface, and meshlabserver,
+a program that can perform mesh processing tasks in batch mode, without a
+GUI.")
+    (license license:gpl3+)))
