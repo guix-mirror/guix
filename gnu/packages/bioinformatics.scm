@@ -10490,14 +10490,14 @@ and more.")
 (define-public r-snpstats
   (package
     (name "r-snpstats")
-    (version "1.36.0")
+    (version "1.38.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "snpStats" version))
        (sha256
         (base32
-         "1xq1rjljg70h5mshdza56dis0iv1a20sivs6dav3w5jbdd1l5qkh"))))
+         "1qv3nqqr30d3n66mawqd9dbl95dl89r4bcjvkc5iassy1yrwr8wq"))))
     (properties `((upstream-name . "snpStats")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
