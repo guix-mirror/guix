@@ -4718,14 +4718,14 @@ genomic categories and to add self-defined graphics in the plot.")
 (define-public r-somaticsignatures
   (package
     (name "r-somaticsignatures")
-    (version "2.22.0")
+    (version "2.24.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "SomaticSignatures" version))
        (sha256
         (base32
-         "1gvrkahllwz38g3hn9pjlikhfqz19a4qglcqmyrxk7h9ybx5zy5z"))))
+         "0d34mss73w1jdnmilk060a1fywlfmqbnlir089q9m3q1p3x0j4c1"))))
     (properties
      `((upstream-name . "SomaticSignatures")))
     (build-system r-build-system)
@@ -4743,6 +4743,8 @@ genomic categories and to add self-defined graphics in the plot.")
        ("r-reshape2" ,r-reshape2)
        ("r-s4vectors" ,r-s4vectors)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/juliangehring/SomaticSignatures")
     (synopsis "Somatic signatures")
     (description
