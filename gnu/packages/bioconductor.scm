@@ -4177,14 +4177,14 @@ genomic sequence data.")
 (define-public r-motiv
   (package
     (name "r-motiv")
-    (version "1.42.0")
+    (version "1.43.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MotIV" version))
        (sha256
         (base32
-         "07k4rw4nhcn4sg43psv1h7qr064gws22m2yyr7x8sy3f1i1c954k"))))
+         "1yqqymcrnwlpv6h3w80yliv19922g32xqlqszaqjk6zp853qilh6"))))
     (properties `((upstream-name . "MotIV")))
     (build-system r-build-system)
     (inputs
