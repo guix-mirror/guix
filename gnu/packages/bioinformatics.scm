@@ -8923,18 +8923,20 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.30.1")
+    (version "2.32.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "18pv74jj4wr1981r92ss10qkgf5g1b09dsbz3im3j70a4l5l0df0"))))
+                "097znwl95y2vd6asyqxs62m7binwxqmna7ss0302yl3b0s72skcy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rhdf5lib" ,r-rhdf5lib)))
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/rhdf5")
     (synopsis "HDF5 interface to R")
     (description
