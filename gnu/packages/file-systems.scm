@@ -860,7 +860,7 @@ A simple @command{eatmydata} script is included that does this for you.")
 (define-public libnfs
   (package
     (name "libnfs")
-    (version "3.0.0")
+    (version "4.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -869,7 +869,7 @@ A simple @command{eatmydata} script is included that does this for you.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "115p55y2cbs92z5lmcnjx1v29lwinpgq4sha9v1kq1vd8674h404"))))
+                "0i27wd4zvhjz7620q043p4d4mkx8zv2yz9adm1byin47dynahyda"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/sahlberg/libnfs")
     (native-inputs
