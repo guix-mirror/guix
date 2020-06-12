@@ -4757,33 +4757,42 @@ decomposition algorithms.")
 (define-public r-yapsa
   (package
     (name "r-yapsa")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "YAPSA" version))
        (sha256
         (base32
-         "132x51f8k8zyx6j8jk05x4lr9q1hlblgvr69wkhn0q3f8mhaj926"))))
+         "06lkf01vl4fyhj82srx8k870fhw76a1han0kp4jglh43b1c19c1k"))))
     (properties `((upstream-name . "YAPSA")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-circlize" ,r-circlize)
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome-hsapiens-ucsc-hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-circlize" ,r-circlize)
        ("r-complexheatmap" ,r-complexheatmap)
        ("r-corrplot" ,r-corrplot)
        ("r-dendextend" ,r-dendextend)
+       ("r-doparallel" ,r-doparallel)
+       ("r-dplyr" ,r-dplyr)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-getoptlong" ,r-getoptlong)
+       ("r-ggbeeswarm" ,r-ggbeeswarm)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
        ("r-gtrellis" ,r-gtrellis)
        ("r-keggrest" ,r-keggrest)
        ("r-lsei" ,r-lsei)
+       ("r-magrittr" ,r-magrittr)
        ("r-pmcmr" ,r-pmcmr)
+       ("r-pracma" ,r-pracma)
        ("r-reshape2" ,r-reshape2)
        ("r-somaticsignatures" ,r-somaticsignatures)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/YAPSA/")
     (synopsis "Yet another package for signature analysis")
     (description
