@@ -10679,14 +10679,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.30.3")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "0c9i26h5czm60n1bxzmdxxpywcj0sig6wcj913pb41mr83bbgra3"))))
+         "0cgkp0ciyy2qykqgh3vzp5mx9b4vsvacjh2jnsj3wldiapzlz08a"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10698,6 +10698,7 @@ family of feature/genome hypotheses.")
        ("r-biovizbase" ,r-biovizbase)
        ("r-bsgenome" ,r-bsgenome)
        ("r-digest" ,r-digest)
+       ("r-ensembldb" ,r-ensembldb)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicalignments" ,r-genomicalignments)
        ("r-genomicfeatures" ,r-genomicfeatures)
@@ -10711,6 +10712,8 @@ family of feature/genome hypotheses.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/Gviz")
     (synopsis "Plotting data and annotation information along genomic coordinates")
     (description
