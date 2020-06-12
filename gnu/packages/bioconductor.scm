@@ -7370,14 +7370,14 @@ validating output, provides an S4 SBML DOM, converts SBML to R graph objects.")
 (define-public r-hypergraph
   (package
     (name "r-hypergraph")
-    (version "1.58.0")
+    (version "1.60.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "hypergraph" version))
        (sha256
         (base32
-         "1bixmslxy7r987zw1vf4dg72hfi04lf4vj03n7ygym2g8nfhbh7m"))))
+         "1iq9b9rzy3ikx8xszsjiv3p8l702n2h2s9w33797wcmkg4apslb7"))))
     (properties `((upstream-name . "hypergraph")))
     (build-system r-build-system)
     (propagated-inputs
