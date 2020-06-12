@@ -2769,14 +2769,14 @@ to install interface to SYMPHONY.")
 (define-public r-ihw
   (package
     (name "r-ihw")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "IHW" version))
        (sha256
         (base32
-         "0rnw7r9pylpj3a5graavcpiqv2v67rv2a4dlcynkf4ihpxs4bg8x"))))
+         "169ir0k1gygdh1wybwa0drdxnhrdrlyzzy0rkygi7jsirn69m74j"))))
     (properties `((upstream-name . "IHW")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2784,6 +2784,8 @@ to install interface to SYMPHONY.")
        ("r-fdrtool" ,r-fdrtool)
        ("r-lpsymphony" ,r-lpsymphony)
        ("r-slam" ,r-slam)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/IHW")
     (synopsis "Independent hypothesis weighting")
     (description
