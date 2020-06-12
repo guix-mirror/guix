@@ -1072,13 +1072,13 @@ package @code{affy}.")
 (define-public r-coverageview
   (package
     (name "r-coverageview")
-    (version "1.24.0")
+    (version "1.26.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "CoverageView" version))
               (sha256
                (base32
-                "0s47svs7xnr9jkylq0dxidqrigihdddiprcl0951vjr4w7kmb5nf"))))
+                "1fcz7pkffz5l3jdxb9glji2zdmr6nx67h6vfpr2yi8n3slg2hrrj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-s4vectors" ,r-s4vectors)
