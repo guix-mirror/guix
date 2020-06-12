@@ -9571,14 +9571,14 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.20.0")
+    (version "2.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "1cwd7phlc5jbx6r6cznyfbdpvcin5fvsaasbbi65zn0s92a80r13"))
+         "1r8j8yiz5lcan7j4h37sza2kwczl48dxvld3da3ghjjq67cdc2cm"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9600,7 +9600,7 @@ proteomics packages.")
              #t)))))
     (inputs
      `(;; Our default boost package won't work here, unfortunately, even with
-       ;; mzR version 2.20.0.
+       ;; mzR version 2.22.0.
        ("boost" ,boost-for-mysql) ; use this instead of the bundled boost sources
        ("zlib" ,zlib)))
     (propagated-inputs
@@ -9611,6 +9611,8 @@ proteomics packages.")
        ("r-rcpp" ,r-rcpp)
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/sneumann/mzR/")
     (synopsis "Parser for mass spectrometry data files")
     (description
