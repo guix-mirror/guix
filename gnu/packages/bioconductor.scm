@@ -5833,14 +5833,14 @@ and to both short and long sequence reads.")
 (define-public r-consensusclusterplus
   (package
     (name "r-consensusclusterplus")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ConsensusClusterPlus" version))
        (sha256
         (base32
-         "0pnh5zy6d3c364xxjdn5zp3kf5afhsxv6yzkdn1qspny0pmqlrp4"))))
+         "06gq3a95h0km1hzbx1za8q0l7kla3jdzvn6cnfz43ijx4n3dzzcq"))))
     (properties
      `((upstream-name . "ConsensusClusterPlus")))
     (build-system r-build-system)
