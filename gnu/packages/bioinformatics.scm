@@ -8899,13 +8899,13 @@ factors bound at the specific regions.")
 (define-public r-tximport
   (package
     (name "r-tximport")
-    (version "1.14.2")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "tximport" version))
               (sha256
                (base32
-                "1avy0zhgnszmg0dr9w74yq9ml10kwdrrgcni2wysrd48zzskc1n0"))))
+                "1x9959lkjl2h869rgd1b30q1idxzjkr1fyqbpndqk3kbi4q2gr40"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr)))
