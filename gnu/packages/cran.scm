@@ -150,6 +150,30 @@ degree elevation and curve fitting.")
 WebAssembly engine.")
     (license license:expat)))
 
+(define-public r-dot
+  (package
+    (name "r-dot")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "DOT" version))
+       (sha256
+        (base32
+         "0qh5n57cp9c2n5yn59q4wggz82943pwfanp3kx869aba2x3sj30i"))))
+    (properties `((upstream-name . "DOT")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-v8" ,r-v8)))
+    (home-page "http://haghish.com/dot")
+    (synopsis "Render and Export DOT Graphs in R")
+    (description
+     "This package provides tools to render DOT diagram markup language in R
+and also provides the possibility to export the graphs in PostScript and
+SVG (Scalable Vector Graphics) formats.  In addition, it supports literate
+programming packages such as @code{knitr} and @code{rmarkdown}.")
+    (license license:expat)))
+
 (define-public r-clipr
   (package
     (name "r-clipr")
