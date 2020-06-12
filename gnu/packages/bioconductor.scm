@@ -3018,14 +3018,14 @@ assumptions.")
 (define-public r-scdd
   (package
     (name "r-scdd")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scDD" version))
        (sha256
         (base32
-         "0nk0qq664zs7dnlcamdkrrhvll01p7f96jj3igbxxlzj3dvr58w4"))))
+         "19q01jksxpv4p26wp2c6faa4fffkjnqlbcds2x955pk35jkqknxx"))))
     (properties `((upstream-name . "scDD")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3040,6 +3040,8 @@ assumptions.")
        ("r-scran" ,r-scran)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/kdkorthauer/scDD")
     (synopsis "Mixture modeling of single-cell RNA-seq data")
     (description
