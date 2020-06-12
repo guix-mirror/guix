@@ -5740,14 +5740,14 @@ datasets.")
 (define-public r-annotatr
   (package
     (name "r-annotatr")
-    (version "1.12.1")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "annotatr" version))
        (sha256
         (base32
-         "1bibk3p1q4cavqy11xs6rqqhqdjsq2dd7lf7blwcr27s5ajcd6dj"))))
+         "0z3ydcybd81w543fw8fiblghndx5m28w8qsphh5vqj726i0nj8cl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -5763,6 +5763,8 @@ datasets.")
        ("r-reshape2" ,r-reshape2)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/annotatr/")
     (synopsis "Annotation of genomic regions to genomic annotations")
     (description
