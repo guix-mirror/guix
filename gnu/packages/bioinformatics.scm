@@ -8086,19 +8086,18 @@ tab-delimited (tabix) files.")
 (define-public r-delayedarray
   (package
     (name "r-delayedarray")
-    (version "0.12.3")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DelayedArray" version))
               (sha256
                (base32
-                "02i88ll2d7r83nk0wdj28akvsz3jq19g6ixpaahfy3jy5av4byv6"))))
+                "1lz7a0rrlfv3w44n073mk8pw39z7lfs0njdxp5vpp0rdsmvdf1qk"))))
     (properties
      `((upstream-name . "DelayedArray")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-biocparallel" ,r-biocparallel)
        ("r-s4vectors" ,r-s4vectors)
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
