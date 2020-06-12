@@ -6760,14 +6760,14 @@ with multiple R processes supported by the package @code{parallel}.")
 (define-public r-seqbias
   (package
     (name "r-seqbias")
-    (version "1.34.0")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "seqbias" version))
        (sha256
         (base32
-         "19vbdyjblij2533ibmrw1n0rkqfrbflma6cg5b79ghks0mg7z8hq"))))
+         "0sy2fv98x4qfz9llns28jh1n4bi991jj856y8a5fbzpx7y990lai"))))
     (properties `((upstream-name . "seqbias")))
     (build-system r-build-system)
     (propagated-inputs
