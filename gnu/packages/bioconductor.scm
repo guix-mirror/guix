@@ -6248,14 +6248,14 @@ sequential way to mimic the manual gating strategy.")
 (define-public r-cytoml
   (package
     (name "r-cytoml")
-    (version "1.12.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "CytoML" version))
        (sha256
         (base32
-         "0wgi8rwb4spxzd5xvs5amfr5g82ny2nad57j3nmhnhnj1cpirjxz"))))
+         "0zpq2j4y9i5lls1kj2w4spl8qjp3076idsr2a2rjvy1fykzlp01q"))))
     (properties `((upstream-name . "CytoML")))
     (build-system r-build-system)
     (inputs
@@ -6274,15 +6274,17 @@ sequential way to mimic the manual gating strategy.")
        ("r-graph" ,r-graph)
        ("r-jsonlite" ,r-jsonlite)
        ("r-lattice" ,r-lattice)
-       ("r-ncdfflow" ,r-ncdfflow)
        ("r-opencyto" ,r-opencyto)
        ("r-plyr" ,r-plyr)
        ("r-rbgl" ,r-rbgl)
        ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rcppparallel" ,r-rcppparallel)
        ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-rprotobuflib" ,r-rprotobuflib)
        ("r-runit" ,r-runit)
+       ("r-tibble" ,r-tibble)
        ("r-xml" ,r-xml)
        ("r-yaml" ,r-yaml)))
     (native-inputs
