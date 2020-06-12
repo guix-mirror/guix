@@ -7830,14 +7830,14 @@ rownames.")
 (define-public r-bioconcotk
   (package
     (name "r-bioconcotk")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocOncoTK" version))
        (sha256
         (base32
-         "0rnah6c01a33yb9663jim9iclan61rpcwprb56mykgn1pf5hywbj"))))
+         "021qzygfwdnd3naz1iqq01zr3zxv3k7wm1lklik24vc7axshxbmk"))))
     (properties `((upstream-name . "BiocOncoTK")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7863,6 +7863,8 @@ rownames.")
        ("r-scales" ,r-scales)
        ("r-shiny" ,r-shiny)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/BiocOncoTK")
     (synopsis "Bioconductor components for general cancer genomics")
     (description
