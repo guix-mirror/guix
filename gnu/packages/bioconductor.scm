@@ -5054,14 +5054,14 @@ based on @dfn{Continuous Wavelet Transform} (CWT).")
 (define-public r-xcms
   (package
     (name "r-xcms")
-    (version "3.8.2")
+    (version "3.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "xcms" version))
        (sha256
         (base32
-         "0bfl56v3l6k31i11l09nx1yqfjy6z5yragm6k83z4w0mpgk18y7g"))))
+         "1aa11gy1v7kkamv3hsnvdx715q8f1saw9p664j6wifyjj0hx13kn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -5071,14 +5071,16 @@ based on @dfn{Continuous Wavelet Transform} (CWT).")
        ("r-lattice" ,r-lattice)
        ("r-massspecwavelet" ,r-massspecwavelet)
        ("r-msnbase" ,r-msnbase)
-       ("r-multtest" ,r-multtest)
        ("r-mzr" ,r-mzr)
        ("r-plyr" ,r-plyr)
        ("r-protgenerics" ,r-protgenerics)
        ("r-rann" ,r-rann)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-robustbase" ,r-robustbase)
-       ("r-s4vectors" ,r-s4vectors)))
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/xcms/")
     (synopsis "LC/MS and GC/MS mass spectrometry data analysis")
     (description
