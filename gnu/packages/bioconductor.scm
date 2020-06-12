@@ -2073,14 +2073,14 @@ parsing of genetic sequencing data from ribosome profiling experiments.")
 (define-public r-interactionset
   (package
     (name "r-interactionset")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "InteractionSet" version))
        (sha256
         (base32
-         "0n2l95h56x5g68p10cap8p4x3a6vaph2hjlk09vmi3j48lrzb2kh"))))
+         "1nsivm9j0mzkfhwqsa2y9gxxdbaplg4z8vn5dfvls3nrihnqpk4v"))))
     (properties
      `((upstream-name . "InteractionSet")))
     (build-system r-build-system)
@@ -2093,6 +2093,8 @@ parsing of genetic sequencing data from ribosome profiling experiments.")
        ("r-rcpp" ,r-rcpp)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/InteractionSet")
     (synopsis "Base classes for storing genomic interaction data")
     (description
