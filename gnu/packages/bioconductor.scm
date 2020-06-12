@@ -4689,20 +4689,22 @@ analysis.")
 (define-public r-gtrellis
   (package
     (name "r-gtrellis")
-    (version "1.18.0")
+    (version "1.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gtrellis" version))
        (sha256
         (base32
-         "0mgspmv6p1a2k98jyy2dfl0wpa2vh7bhnjfm2xaqmcsxzmbjhh9z"))))
+         "1v2l7r945xx4cf9s8m19csj7716n2ayxy05adkl8zqgxk0gxzqm1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circlize" ,r-circlize)
        ("r-genomicranges" ,r-genomicranges)
        ("r-getoptlong" ,r-getoptlong)
        ("r-iranges" ,r-iranges)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/jokergoo/gtrellis")
     (synopsis "Genome level Trellis layout")
     (description
