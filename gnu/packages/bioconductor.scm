@@ -1537,14 +1537,14 @@ packages.")
 (define-public r-oligo
   (package
     (name "r-oligo")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "oligo" version))
        (sha256
         (base32
-         "01icfyy82f9k0m7ngrppz1ckq3wpq7zp6kgf8ppc55j6582c5jh3"))))
+         "102szyiicws4c6l3k282236ml1m1vl9zmars4q1kdjfnvsyclfc4"))))
     (properties `((upstream-name . "oligo")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -1560,6 +1560,8 @@ packages.")
        ("r-preprocesscore" ,r-preprocesscore)
        ("r-rsqlite" ,r-rsqlite)
        ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/oligo/")
     (synopsis "Preprocessing tools for oligonucleotide arrays")
     (description
