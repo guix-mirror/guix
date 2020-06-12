@@ -9775,14 +9775,14 @@ structure (pcaRes) to provide a common interface to the PCA results.")
 (define-public r-msnbase
   (package
     (name "r-msnbase")
-    (version "2.12.0")
+    (version "2.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnbase" version))
        (sha256
         (base32
-         "1z889xkfphqqmv31i8hh5xqyclv660ic26rfck5bjpgk3s2zzwi6"))))
+         "17vlv9gh41s1hp043b7j1jfqiw52alh1misjzy1kxl0g90rld00l"))))
     (properties `((upstream-name . "MSnbase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9808,6 +9808,8 @@ structure (pcaRes) to provide a common interface to the PCA results.")
        ("r-scales" ,r-scales)
        ("r-vsn" ,r-vsn)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/lgatto/MSnbase")
     (synopsis "Base functions and classes for MS-based proteomics")
     (description
