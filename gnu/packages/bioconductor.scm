@@ -5444,14 +5444,14 @@ interpretation.")
 (define-public r-rhisat2
   (package
     (name "r-rhisat2")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhisat2" version))
        (sha256
         (base32
-         "02fn5cm8sj2s9x00505y3iyipn1r3lpvpwpjy2pdxdbpmhb5hy49"))))
+         "0hhmcdnixkaqx9x9cl2vjaba3ri8m6wkbnbhxjmy51jwqzy2223a"))))
     (properties `((upstream-name . "Rhisat2")))
     (build-system r-build-system)
     (arguments
@@ -5470,6 +5470,8 @@ interpretation.")
      `(("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
        ("r-sgseq" ,r-sgseq)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/fmicompbio/Rhisat2")
     (synopsis "R Wrapper for HISAT2 sequence aligner")
     (description
