@@ -10269,14 +10269,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.10.2")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "02lnpyp85zchmz404hr5381zmihvq4x9zgxdrbn2afi352vg0vab"))))
+         "1vvchc04nshxc768fp31rxb603aj3hmq8xlh5qabcwf2c3z9719g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10295,6 +10295,8 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
        ("r-rsqlite" ,r-rsqlite)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/jotsetung/ensembldb")
     (synopsis "Utilities to create and use Ensembl-based annotation databases")
     (description
