@@ -11011,13 +11011,13 @@ libraries.")
 (define-public r-scater
   (package
     (name "r-scater")
-    (version "1.14.6")
+    (version "1.16.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "scater" version))
               (sha256
                (base32
-                "0sxd1s8wdlj9926bagq4crjrk1nnmh3j3bhgrw160zfgc3y8pzck"))))
+                "0pi4mpc3lvskj5biyhc9cskcnz9q2wjmfrz7xdnx8qqd8vpy84g3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -11031,10 +11031,13 @@ libraries.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
        ("r-s4vectors" ,r-s4vectors)
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/davismcc/scater")
     (synopsis "Single-cell analysis toolkit for gene expression data in R")
     (description "This package provides a collection of tools for doing
