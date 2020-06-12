@@ -8119,13 +8119,13 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.16.1")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "1z9bdk49dajafkfvv99nv6zyn6v70iyyy2jgdp5w5z8174a2bnn1"))))
+                "07rc79k5dp0dnf4dvsxif995aa9cgfkf13yf84qnwl64k9pf3c2c"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
@@ -8138,6 +8138,8 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
        ("r-iranges" ,r-iranges)
        ("r-matrix" ,r-matrix)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/SummarizedExperiment")
     (synopsis "Container for representing genomic ranges by sample")
     (description
