@@ -5153,14 +5153,14 @@ visualization of exonic read coverage.")
 (define-public r-widgettools
   (package
     (name "r-widgettools")
-    (version "1.64.0")
+    (version "1.66.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "widgetTools" version))
        (sha256
         (base32
-         "1nqy3icayacv5mlv5s5xgfli0dqzancs6zpffrl5p237c994nyr5"))))
+         "0lrdpsgm9r7yfyyj5crvb7px4hrghxhmiic4iissz40slbfyvilx"))))
     (properties `((upstream-name . "widgetTools")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/widgetTools/")
