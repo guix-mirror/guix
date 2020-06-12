@@ -182,6 +182,53 @@ gene identifier conversion and mapping homologous genes across related
 organisms via the @code{g:Profiler} toolkit.")
     (license license:gpl2+)))
 
+(define-public r-gprofiler2
+  (package
+    (name "r-gprofiler2")
+    (version "0.1.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gprofiler2" version))
+       (sha256
+        (base32
+         "112hmmvdwg8xz90w1bsbzc55y4xi9jj4dqy0q4bsgp49x58r92rb"))))
+    (properties `((upstream-name . "gprofiler2")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-crosstalk" ,r-crosstalk)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-plotly" ,r-plotly)
+       ("r-rcurl" ,r-rcurl)
+       ("r-tidyr" ,r-tidyr)
+       ("r-viridislite" ,r-viridislite)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/gprofiler2/")
+    (synopsis "Interface to the g:Profiler toolset")
+    (description
+     "This package provides a toolset for functional enrichment analysis and
+visualization, gene/protein/SNP identifier conversion and mapping orthologous
+genes across species via @url{https://biit.cs.ut.ee/gprofiler,g:Profiler}.
+The main tools are:
+
+@enumerate
+@item @code{g:GOSt}, functional enrichment analysis and visualization of gene
+  lists;
+@item @code{g:Convert}, gene/protein/transcript identifier conversion across
+  various namespaces;
+@item @code{g:Orth}, orthology search across species;
+@item @code{g:SNPense}, mapping SNP rs identifiers to chromosome positions,
+  genes and variant effects.
+@end enumerate
+
+This package is an R interface corresponding to the 2019 update of
+@code{g:Profiler} and provides access to versions @code{e94_eg41_p11} and
+higher.")
+    (license license:gpl2+)))
+
 (define-public r-oenb
   (package
     (name "r-oenb")
