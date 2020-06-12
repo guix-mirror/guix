@@ -5093,20 +5093,22 @@ data for high-throughput, untargeted analyte profiling.")
 (define-public r-wrench
   (package
     (name "r-wrench")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Wrench" version))
        (sha256
         (base32
-         "1s8d7jn0dk5zk2fhvsd4sgicypz4c41nzf19nqzcwb9bd6asgrwm"))))
+         "05dyk3yvbqrzvinv3ig8ad9wffwr14z715cicsbxwxpv5lq84wx6"))))
     (properties `((upstream-name . "Wrench")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-limma" ,r-limma)
        ("r-locfit" ,r-locfit)
        ("r-matrixstats" ,r-matrixstats)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/HCBravoLab/Wrench")
     (synopsis "Wrench normalization for sparse count data")
     (description
