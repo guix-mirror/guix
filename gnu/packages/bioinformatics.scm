@@ -9920,14 +9920,14 @@ discovery of differentially expressed genes and markers.")
 (define-public r-aroma-light
   (package
     (name "r-aroma-light")
-    (version "3.16.0")
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "aroma.light" version))
        (sha256
         (base32
-         "0cgdg650j4dl0b45pwaw49ib97dwjazrv9sqzkygrjmcnnfxry8x"))))
+         "19y5f2minx2pp73zdh43v1qkwpkaxygkl8cwlnwja15i46s0bcyc"))))
     (properties `((upstream-name . "aroma.light")))
     (build-system r-build-system)
     (propagated-inputs
