@@ -10728,14 +10728,14 @@ with your data.")
 (define-public r-gwascat
   (package
     (name "r-gwascat")
-    (version "2.18.0")
+    (version "2.20.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gwascat" version))
        (sha256
         (base32
-         "038vhfsk2vs7inn5di093cmjbb81k7j0af385sg7l01jj70bdqq1"))))
+         "1cq5cmdrf0a0arr841yvkh6d8drc15p7mif1afr215l1s3y2dwd4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10744,11 +10744,13 @@ with your data.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
-       ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-iranges" ,r-iranges)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/gwascat")
     (synopsis "Tools for data in the EMBL-EBI GWAS catalog")
     (description
