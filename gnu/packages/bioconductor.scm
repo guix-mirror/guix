@@ -4076,14 +4076,14 @@ Affymetrix arrays.")
 (define-public r-abseqr
   (package
     (name "r-abseqr")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "abseqR" version))
        (sha256
         (base32
-         "1n9h5qkj4njr1f8fvhg9sj9wxcd7hljnnk8m80zwswzs2n9ivppa"))))
+         "0pzyfn0jv41rja6l4jbgwgsqy0q1d3kz23m9m6pc67p2a231i9c5"))))
     (properties `((upstream-name . "abseqR")))
     (build-system r-build-system)
     (inputs
@@ -4107,6 +4107,8 @@ Affymetrix arrays.")
        ("r-stringr" ,r-stringr)
        ("r-vegan" ,r-vegan)
        ("r-venndiagram" ,r-venndiagram)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/malhamdoosh/abseqR")
     (synopsis "Reporting and data analysis for Rep-Seq datasets of antibody libraries")
     (description
