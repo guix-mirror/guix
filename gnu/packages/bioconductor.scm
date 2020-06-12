@@ -5946,14 +5946,14 @@ change point detection.")
 (define-public r-ncdfflow
   (package
     (name "r-ncdfflow")
-    (version "2.32.0")
+    (version "2.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ncdfFlow" version))
        (sha256
         (base32
-         "06lscx6h4rg80ifi90rj7z2497b8w1fjipm3l8s3230rkizhh02i"))))
+         "0avxn2abh4fk1gkncrxz7jwzgvd90m3m0ly318q0z38cjhsw3j9f"))))
     (properties `((upstream-name . "ncdfFlow")))
     (build-system r-build-system)
     (inputs
@@ -5967,6 +5967,8 @@ change point detection.")
        ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-zlibbioc" ,r-zlibbioc)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ncdfFlow/")
     (synopsis "HDF5 based storage for flow cytometry data")
     (description
