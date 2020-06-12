@@ -72,6 +72,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -102,6 +103,52 @@
 The package provides functions for point generation, arc length estimation,
 degree elevation and curve fitting.")
     (license license:gpl2+)))
+
+(define-public r-v8
+  (package
+    (name "r-v8")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "V8" version))
+       (sha256
+        (base32
+         "0xdljralgwyivdhx2a7kqf3yv4ijl4rdrz2p7p59lj2x5d2qyanf"))))
+    (properties `((upstream-name . "V8")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-v8
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+               (("^PKG_LIBS=.*")
+                (string-append "PKG_LIBS="
+                               (assoc-ref inputs "node")
+                               "/lib/libnode.so.64\n")))
+             (setenv "INCLUDE_DIR"
+                     (string-append
+                      (assoc-ref inputs "node")
+                      "/include/node"))
+             (setenv "LIB_DIR"
+                     (string-append
+                      (assoc-ref inputs "node") "/lib"))
+             #t)))))
+    (inputs
+     `(("node" ,node)))
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://jeroen.cran.dev/V8")
+    (synopsis "Embedded JavaScript and WebAssembly engine for R")
+    (description
+     "This package provides an R interface to V8: Google's JavaScript and
+WebAssembly engine.")
+    (license license:expat)))
 
 (define-public r-clipr
   (package
