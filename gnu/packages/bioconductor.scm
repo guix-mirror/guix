@@ -7761,14 +7761,14 @@ different graph related packages produced by Bioconductor.")
 (define-public r-experimenthub
   (package
     (name "r-experimenthub")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ExperimentHub" version))
        (sha256
         (base32
-         "054w2lkyirbmhgia0rp4nk9zzw3zphz6jxg6fc9zlarp90g64z24"))))
+         "18d6kjfavy5b769gpkblihdkz2nz2hsgyjki8mp1sywi0ik08ncd"))))
     (properties `((upstream-name . "ExperimentHub")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7779,6 +7779,8 @@ different graph related packages produced by Bioconductor.")
        ("r-curl" ,r-curl)
        ("r-rappdirs" ,r-rappdirs)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ExperimentHub/")
     (synopsis "Client to access ExperimentHub resources")
     (description
