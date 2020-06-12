@@ -3711,11 +3711,6 @@ in a digital read-out.")
              #t)))
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out"))
-                          ;; Make sure the kernel headers are treated as system
-                          ;; headers to suppress warnings from those.
-                          (string-append "C_INCLUDE_PATH="
-                                         (assoc-ref %build-inputs "kernel-headers")
-                                         "/include")
                           "WERROR=0"
 
                           ;; By default, 'config/Makefile' uses lib64 on
