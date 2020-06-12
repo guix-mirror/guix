@@ -3533,14 +3533,14 @@ published results; and a routine for graphical display.")
 (define-public r-triform
   (package
     (name "r-triform")
-    (version "1.28.0")
+    (version "1.29.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "triform" version))
        (sha256
         (base32
-         "12qdyrcw2mcawqdw65v0hjaghzlwa10xl6j8458izcrm5k6dlvz9"))))
+         "089b7f6dwpi9abj0ncswbi4s30k45996zb99sh43avw6jcb6qj60"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
