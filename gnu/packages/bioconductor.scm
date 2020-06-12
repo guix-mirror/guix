@@ -5484,14 +5484,14 @@ index.")
 (define-public r-quasr
   (package
     (name "r-quasr")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "QuasR" version))
        (sha256
         (base32
-         "07m5q7wasapj2984kwy897510flbhvz7x0fgs7q2vm5wjhfzdrgv"))))
+         "0d87ajaaq8a7xgzl820qx5bvxw86ppab8clqk77sj02rfijnvjn8"))))
     (properties `((upstream-name . "QuasR")))
     (build-system r-build-system)
     (inputs
@@ -5517,6 +5517,8 @@ index.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-shortread" ,r-shortread)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/QuasR/")
     (synopsis "Quantify and annotate short reads in R")
     (description
