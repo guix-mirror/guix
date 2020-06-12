@@ -2348,14 +2348,14 @@ demultiplexed, i.e. assigned to their original reference barcode.")
 (define-public r-ruvseq
   (package
     (name "r-ruvseq")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RUVSeq" version))
        (sha256
         (base32
-         "1ipbbzpngx988lsmwqv7vbmqm65m43xvsmipayfppkrr6jipzxrj"))))
+         "0yqs9xgyzw3cwb4l7zjl1cjgbsjp05qrqnwyvh7q81wdp7x5p55x"))))
     (properties `((upstream-name . "RUVSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2363,6 +2363,8 @@ demultiplexed, i.e. assigned to their original reference barcode.")
        ("r-edaseq" ,r-edaseq)
        ("r-edger" ,r-edger)
        ("r-mass" ,r-mass)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/drisso/RUVSeq")
     (synopsis "Remove unwanted variation from RNA-Seq data")
     (description
