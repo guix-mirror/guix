@@ -2514,14 +2514,14 @@ Viewer (SAV) files, access data, and generate QC plots.")
 (define-public r-chipexoqual
   (package
     (name "r-chipexoqual")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPexoQual" version))
        (sha256
         (base32
-         "044n6kn16qczpdhp0w0z5x8xpr0rfs9s8q70rafgnvj7a2q1xdd0"))))
+         "02rsf1rvm0p6dn18zq2a4hpvpd9m2i5rziyi4zm8j43qvs8xhafp"))))
     (properties `((upstream-name . "ChIPexoQual")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2542,6 +2542,8 @@ Viewer (SAV) files, access data, and generate QC plots.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-scales" ,r-scales)
        ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/keleslab/ChIPexoQual")
     (synopsis "Quality control pipeline for ChIP-exo/nexus data")
     (description
