@@ -2872,14 +2872,14 @@ single cell assay data.")
 (define-public r-monocle
   (package
     (name "r-monocle")
-    (version "2.14.0")
+    (version "2.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "monocle" version))
        (sha256
         (base32
-         "18b9y592q48mbcp5w095qs1kaklq64v6dcnlpqhv3rwxvywygsz2"))))
+         "1vziidavlyhixmx6j7lf29qx8xcjwrc9q3x2f63gcff41q3jf9xd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -2912,6 +2912,8 @@ single cell assay data.")
        ("r-tibble" ,r-tibble)
        ("r-vgam" ,r-vgam)
        ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/monocle")
     (synopsis "Clustering, differential expression, and trajectory analysis for single-cell RNA-Seq")
     (description
