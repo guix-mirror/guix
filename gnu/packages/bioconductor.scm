@@ -5119,14 +5119,14 @@ that arising from 16s metagenomic surveys.")
 (define-public r-wiggleplotr
   (package
     (name "r-wiggleplotr")
-    (version "1.10.1")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "wiggleplotr" version))
        (sha256
         (base32
-         "1pj2bsn5azs18mp5hr4g7c6rnds2y2rjjnak2785kaj7xi8jly4m"))))
+         "15l8f7ls2mwhsw68sr1k4r19hmdzjriibr5hpnfbanzj5x6yhdjq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -5139,6 +5139,8 @@ that arising from 16s metagenomic surveys.")
        ("r-purrr" ,r-purrr)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/wiggleplotr/")
     (synopsis "Make read coverage plots from BigWig files")
     (description
