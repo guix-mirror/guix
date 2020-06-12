@@ -4452,14 +4452,14 @@ annotations and ontologies.")
 (define-public r-abaenrichment
   (package
     (name "r-abaenrichment")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ABAEnrichment" version))
        (sha256
         (base32
-         "128ik28j8kmdkycffhxajv5h174zdq9sfn2gz6ai90wgkdadbzwp"))))
+         "09ihbgxrhpcz2q7svldhm710a0yrhiqk9p0q0myv11c2w50ymwkw"))))
     (properties `((upstream-name . "ABAEnrichment")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4469,6 +4469,8 @@ annotations and ontologies.")
        ("r-gplots" ,r-gplots)
        ("r-gtools" ,r-gtools)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ABAEnrichment/")
     (synopsis "Gene expression enrichment in human brain regions")
     (description
