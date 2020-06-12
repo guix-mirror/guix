@@ -6826,14 +6826,14 @@ injected in that sequence).")
 (define-public r-reqon
   (package
     (name "r-reqon")
-    (version "1.32.0")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ReQON" version))
        (sha256
         (base32
-         "10p6l2zxijqyypdm970jyfqyrnfhaq3nf7cg2q6mgd1srggfa0cx"))))
+         "06m0hd4aqsxjyzhs8b1zys7lz8289qgwn7jp2dpln1j7cf02q4bz"))))
     (properties `((upstream-name . "ReQON")))
     (build-system r-build-system)
     (propagated-inputs
