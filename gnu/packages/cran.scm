@@ -21924,3 +21924,31 @@ with posterior predictive checks and leave-one-out cross-validation.")
 and prediction with Aalen-Johansen or simulation in competing risks and
 multi-state models.")
     (license license:gpl2+)))
+
+(define-public r-scatterpie
+  (package
+    (name "r-scatterpie")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "scatterpie" version))
+       (sha256
+        (base32
+         "0g5sn0iv6c1q7y51j4gbbbnil5089dgk1w4q94c7h5y3x7wfrzqb"))))
+    (properties `((upstream-name . "scatterpie")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggforce" ,r-ggforce)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-rlang" ,r-rlang)
+       ("r-rvcheck" ,r-rvcheck)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "https://cran.r-project.org/web/packages/scatterpie/")
+    (synopsis "Scatter pie plot")
+    (description
+     "This package creates scatterpie plots, especially useful for plotting
+pies on a map.")
+    (license license:artistic2.0)))
