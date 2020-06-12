@@ -158,6 +158,30 @@ the system clipboards.")
 respecting the grammar of its graphics paradigm.")
     (license license:gpl2+)))
 
+(define-public r-gprofiler
+  (package
+    (name "r-gprofiler")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gProfileR" version))
+       (sha256
+        (base32
+         "1h1v0kgpsn04ald2izznh7fr2riwisj5hcgz4k7h3qc931rf0r4k"))))
+    (properties `((upstream-name . "gProfileR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-plyr" ,r-plyr)
+       ("r-rcurl" ,r-rcurl)))
+    (home-page "https://cran.r-project.org/web/packages/gProfileR/")
+    (synopsis "Interface to the g:Profiler toolkit")
+    (description
+     "This package provides tools for functional enrichment analysis,
+gene identifier conversion and mapping homologous genes across related
+organisms via the @code{g:Profiler} toolkit.")
+    (license license:gpl2+)))
+
 (define-public r-oenb
   (package
     (name "r-oenb")
