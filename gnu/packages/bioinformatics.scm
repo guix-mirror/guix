@@ -11048,14 +11048,14 @@ quality control.")
 (define-public r-scran
   (package
     (name "r-scran")
-    (version "1.14.6")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "scran" version))
        (sha256
         (base32
-         "1y8wlgk5zbv7c7gcp0ahfpbh9lifab7y3zwf0093fzaw7vr1y6cr"))))
+         "1gm4ys4aq8h1pn45k1rxk384wjyf55izivw8kgxbrflj6j4xvvsv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beachmat" ,r-beachmat)
@@ -11069,6 +11069,7 @@ quality control.")
        ("r-dqrng" ,r-dqrng)
        ("r-edger" ,r-edger)
        ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
        ("r-limma" ,r-limma)
        ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)
@@ -11077,6 +11078,8 @@ quality control.")
        ("r-singlecellexperiment" ,r-singlecellexperiment)
        ("r-statmod" ,r-statmod)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/scran")
     (synopsis "Methods for single-cell RNA-Seq data analysis")
     (description "This package implements a variety of low-level analyses of
