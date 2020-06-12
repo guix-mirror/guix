@@ -3810,22 +3810,23 @@ All the visualization methods are developed based on ggplot2 graphics.")
 (define-public r-clusterprofiler
   (package
     (name "r-clusterprofiler")
-    (version "3.14.3")
+    (version "3.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "clusterProfiler" version))
        (sha256
         (base32
-         "08pd7bmqmyxncj09ilz8yb9sf1pv9ni98y8b93pz2giy7pl407hg"))))
+         "0m7919gzrd2fddb4kcznwpshhab1ha2yppnkxg11zmh40wcdawyi"))))
     (properties
      `((upstream-name . "clusterProfiler")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
        ("r-dose" ,r-dose)
+       ("r-downloader" ,r-downloader)
+       ("r-dplyr" ,r-dplyr)
        ("r-enrichplot" ,r-enrichplot)
-       ("r-ggplot2" ,r-ggplot2)
        ("r-go-db" ,r-go-db)
        ("r-gosemsim" ,r-gosemsim)
        ("r-magrittr" ,r-magrittr)
@@ -3833,6 +3834,8 @@ All the visualization methods are developed based on ggplot2 graphics.")
        ("r-qvalue" ,r-qvalue)
        ("r-rvcheck" ,r-rvcheck)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/clusterProfiler/")
     (synopsis "Analysis and visualization of functional profiles for gene clusters")
     (description
