@@ -1791,14 +1791,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.20.1")
+    (version "3.22.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "0kmfha4vprbi0z6n7v9w28xfrqcx5qad7yfr0b316j5aj8v9f4hc"))))
+         "199mlg0gwjy39afyk0ah6lzcm759bzxla4hgcajj0ay9jiibjqpa"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1831,6 +1831,8 @@ determining dependencies between variables, code improvement suggestions.")
        ("r-seqinr" ,r-seqinr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-venndiagram" ,r-venndiagram)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ChIPpeakAnno")
     (synopsis "Peaks annotation from ChIP-seq and ChIP-chip experiments")
     (description
