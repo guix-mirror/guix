@@ -7658,14 +7658,14 @@ symbols).")
 (define-public r-reactomepa
   (package
     (name "r-reactomepa")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ReactomePA" version))
        (sha256
         (base32
-         "1vwc9kj1l4yi7c4f4lnq0i3wl2nrmmhcxyakz8qak122fi92z3j1"))))
+         "1ngilyn1mihwxs4sh5gk9y829xghdmh277cfw3vfgflz9sgwy21x"))))
     (properties `((upstream-name . "ReactomePA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7677,6 +7677,8 @@ symbols).")
        ("r-graphite" ,r-graphite)
        ("r-igraph" ,r-igraph)
        ("r-reactome-db" ,r-reactome-db)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://guangchuangyu.github.io/software/ReactomePA")
     (synopsis "Reactome pathway analysis")
     (description
