@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +59,7 @@ release corresponding to NAME and VERSION."
                          "/src/contrib/"
                          name "_" version ".tar.gz")
           ;; TODO: use %bioconductor-version from (guix import cran)
-          (string-append "https://bioconductor.org/packages/3.10"
+          (string-append "https://bioconductor.org/packages/3.11"
                          type-url-part
                          "/src/contrib/Archive/"
                          name "_" version ".tar.gz"))))
