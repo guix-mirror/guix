@@ -7446,19 +7446,21 @@ networks and estimated fluxes can be visualized with hypergraphs.")
 (define-public r-bigmemoryextras
   (package
     (name "r-bigmemoryextras")
-    (version "1.34.0")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigmemoryExtras" version))
        (sha256
         (base32
-         "17dk7c44ikphcrpi8hnxyvlmj30qmj098kc0ihfi69bp9rw1cibq"))))
+         "053bqcd3p4i7agj43ccjxfz40a1sxrymd49vdpfq8ypslkwk7g0g"))))
     (properties
      `((upstream-name . "bigmemoryExtras")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bigmemory" ,r-bigmemory)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/phaverty/bigmemoryExtras")
     (synopsis "Extension of the bigmemory package")
     (description
