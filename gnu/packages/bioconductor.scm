@@ -4577,14 +4577,14 @@ investigation using RNA-seq data.")
 (define-public r-aucell
   (package
     (name "r-aucell")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AUCell" version))
        (sha256
         (base32
-         "1g4mdq8z29fjxrfjng0fb3cvbph49mwds4ijsa2bn2k6f75dnzky"))))
+         "0fgqkgjhf92vkljkwn44lm8cjvzq1lvk80nk6xhsp5q6s5isbmns"))))
     (properties `((upstream-name . "AUCell")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4596,6 +4596,8 @@ investigation using RNA-seq data.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-shiny" ,r-shiny)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/AUCell/")
     (synopsis "Analysis of gene set activity in single-cell RNA-seq data")
     (description
