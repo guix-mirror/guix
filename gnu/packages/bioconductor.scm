@@ -6636,14 +6636,14 @@ data.")
 (define-public r-watermelon
   (package
     (name "r-watermelon")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "wateRmelon" version))
        (sha256
         (base32
-         "0a66fq04yph9dis91lzjk9kh134zy6fj98yklrwf24r1080qngx0"))))
+         "1c3a6bq3ggmv8kmdfrgiar6nwgircgzjrbgd9z9dqiin7j13gxwn"))))
     (properties `((upstream-name . "wateRmelon")))
     (build-system r-build-system)
     (propagated-inputs
