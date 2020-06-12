@@ -4287,14 +4287,14 @@ Bioconductor.")
 (define-public r-motifstack
   (package
     (name "r-motifstack")
-    (version "1.30.0")
+    (version "1.32.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "motifStack" version))
        (sha256
         (base32
-         "00rafqs1gqlcxlbsdn9qnq9xb7wjphiksb3hsx76viqjbjzi14wg"))))
+         "008f2mjcyyiz84ilrsldpqwvxy2lp93hjggrq4nrqwi78nyx3ls5"))))
     (properties `((upstream-name . "motifStack")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4306,6 +4306,8 @@ Bioconductor.")
        ("r-motiv" ,r-motiv)
        ("r-scales" ,r-scales)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/motifStack/")
     (synopsis "Plot stacked logos for DNA, RNA and amino acid sequences")
     (description
