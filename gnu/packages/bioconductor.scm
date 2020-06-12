@@ -5207,14 +5207,14 @@ Currently only Affymetrix oligonucleotide analysis is supported.")
 (define-public r-zfpkm
   (package
     (name "r-zfpkm")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "zFPKM" version))
        (sha256
         (base32
-         "1hg0vc0ns8d4jpddn1v5a5m13a033b0wf1al01pb1lvmx5mzzr2n"))))
+         "0scszhfqrgzhglz1a6kxfydq9dx8fqx28j3dypp91y5ah2w6mdys"))))
     (properties `((upstream-name . "zFPKM")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5223,6 +5223,8 @@ Currently only Affymetrix oligonucleotide analysis is supported.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ronammar/zFPKM/")
     (synopsis "Functions to facilitate zFPKM transformations")
     (description
