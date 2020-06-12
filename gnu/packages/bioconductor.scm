@@ -6117,14 +6117,14 @@ for other R packages to compile and link against.")
 (define-public r-flowworkspace
   (package
     (name "r-flowworkspace")
-    (version "3.34.1")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowWorkspace" version))
        (sha256
         (base32
-         "1ijbc6z9ljhrw3cqr02smgplhrfg44gzrb1dq4gbrpq3nj4khhpn"))))
+         "1fi76m6r5x4w390996989rignffdzl11k3prpimpwjd3566c276w"))))
     (properties `((upstream-name . "flowWorkspace")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6136,21 +6136,24 @@ for other R packages to compile and link against.")
        ("r-digest" ,r-digest)
        ("r-dplyr" ,r-dplyr)
        ("r-flowcore" ,r-flowcore)
-       ("r-flowviz" ,r-flowviz)
+       ("r-ggplot2" ,r-ggplot2)
        ("r-graph" ,r-graph)
-       ("r-gridextra" ,r-gridextra)
        ("r-lattice" ,r-lattice)
        ("r-latticeextra" ,r-latticeextra)
        ("r-matrixstats" ,r-matrixstats)
        ("r-ncdfflow" ,r-ncdfflow)
        ("r-rbgl" ,r-rbgl)
-       ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
        ("r-rcppparallel" ,r-rcppparallel)
        ("r-rgraphviz" ,r-rgraphviz)
+       ("r-rhdf5lib" ,r-rhdf5lib)
        ("r-rprotobuflib" ,r-rprotobuflib)
        ("r-scales" ,r-scales)
-       ("r-stringr" ,r-stringr)))
+       ("r-stringr" ,r-stringr)
+       ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/flowWorkspace/")
     (synopsis "Infrastructure for working with cytometry data")
     (description
