@@ -8332,13 +8332,13 @@ dependencies between GO terms can be implemented and applied.")
 (define-public r-bsgenome
   (package
     (name "r-bsgenome")
-    (version "1.54.0")
+    (version "1.56.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BSgenome" version))
               (sha256
                (base32
-                "0nn1b3h4hmnx5whf2cmzmyxdrcf4myj8c38rwr0sw4rc07xfzndy"))))
+                "1jw8r1qm9fpg2s1cw2y4np243jjxm65j2xdy2785h8fc1b02msf6"))))
     (properties
      `((upstream-name . "BSgenome")))
     (build-system r-build-system)
@@ -8348,6 +8348,7 @@ dependencies between GO terms can be implemented and applied.")
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
        ("r-iranges" ,r-iranges)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-rsamtools" ,r-rsamtools)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
