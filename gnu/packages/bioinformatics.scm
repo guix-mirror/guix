@@ -10206,14 +10206,14 @@ provide added flexibility for data combination and manipulation.")
 (define-public r-complexheatmap
   (package
     (name "r-complexheatmap")
-    (version "2.2.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ComplexHeatmap" version))
        (sha256
         (base32
-         "1pj6a6rmqckk033pkklk6hr4066rzavamy6w194rfdhind90rk0p"))))
+         "01jxxwxhf9n8baxgja4rb592p5210s4ppd7a5b4xby5aalhzkr0l"))))
     (properties
      `((upstream-name . "ComplexHeatmap")))
     (build-system r-build-system)
@@ -10225,6 +10225,8 @@ provide added flexibility for data combination and manipulation.")
        ("r-globaloptions" ,r-globaloptions)
        ("r-png" ,r-png)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page
      "https://github.com/jokergoo/ComplexHeatmap")
     (synopsis "Making Complex Heatmaps")
