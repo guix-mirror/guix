@@ -7312,19 +7312,21 @@ results.")
 (define-public r-bifet
   (package
     (name "r-bifet")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiFET" version))
        (sha256
         (base32
-         "0ck1d6hxd4f40hfz8p2z5xmjbz79yhrf6fisjka2xzk5v9fm4p4k"))))
+         "1v2dshs09iy2glzq0vwxmr83x867j844i1ixsfcamvfq33fwbbr5"))))
     (properties `((upstream-name . "BiFET")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genomicranges" ,r-genomicranges)
        ("r-poibin" ,r-poibin)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/BiFET")
     (synopsis "Bias-free footprint enrichment test")
     (description
