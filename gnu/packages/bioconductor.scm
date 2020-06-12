@@ -5261,16 +5261,24 @@ rapid adapter trimming, identification, and read merging.")
 (define-public r-progeny
   (package
     (name "r-progeny")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "progeny" version))
        (sha256
         (base32
-         "0j3kxjj7xmmwb29p87n3bw7bl38gcb94jrpw32126a578rf1pfrq"))))
+         "09rq3nf9zm7w9djmx8xc8j3win3597p2v36zqgkhgkjwq5rkjgsh"))))
     (build-system r-build-system)
-    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-gridextra" ,r-gridextra)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/saezlab/progeny")
     (synopsis "Pathway responsive gene activity inference")
     (description
