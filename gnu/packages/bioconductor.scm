@@ -5979,14 +5979,14 @@ manipulation of flow cytometry data.")
 (define-public r-ggcyto
   (package
     (name "r-ggcyto")
-    (version "1.14.1")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggcyto" version))
        (sha256
         (base32
-         "16jwdslhmj1nsa28wmaircy15cq7qn8nsyiawinjv711qiqhgw50"))))
+         "1ih6ggay7jjxnx8blc2sk95g8d40gkim145jllkk8sqwl02g44p0"))))
     (properties `((upstream-name . "ggcyto")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5995,6 +5995,7 @@ manipulation of flow cytometry data.")
        ("r-flowworkspace" ,r-flowworkspace)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
+       ("r-hexbin" ,r-hexbin)
        ("r-ncdfflow" ,r-ncdfflow)
        ("r-plyr" ,r-plyr)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
