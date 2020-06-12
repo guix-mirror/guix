@@ -2443,14 +2443,14 @@ possible, parallelization is achieved using the BiocParallel framework.")
 (define-public r-destiny
   (package
     (name "r-destiny")
-    (version "3.0.1")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "destiny" version))
        (sha256
         (base32
-         "1hzg53p1cz21bvnfyyz40bpvjhg89zi3rahlqf0c4w85iwc1i4vi"))))
+         "0ik5vwxz9cci3glwgb5ff03sfyr4sjcp8ckfymlgmlm6fz8cp21n"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
@@ -2461,6 +2461,7 @@ possible, parallelization is achieved using the BiocParallel framework.")
        ("r-irlba" ,r-irlba)
        ("r-knn-covertree" ,r-knn-covertree)
        ("r-matrix" ,r-matrix)
+       ("r-nbconvertr" ,r-nbconvertr)
        ("r-pcamethods" ,r-pcamethods)
        ("r-proxy" ,r-proxy)
        ("r-rcpp" ,r-rcpp)
