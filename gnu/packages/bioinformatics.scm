@@ -6947,17 +6947,18 @@ information as possible.")
 (define-public r-genefilter
   (package
     (name "r-genefilter")
-    (version "1.68.0")
+    (version "1.70.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "genefilter" version))
        (sha256
         (base32
-         "1xjr02qhldspjwd6y374wgik18fgywb6408wsz471i8b4ik98ckc"))))
+         "1sbbrnq6p90fri0ik6aq2zw26kasw63nyiy7xkzrj6vgyq7x258g"))))
     (build-system r-build-system)
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)))
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
        ("r-annotationdbi" ,r-annotationdbi)
