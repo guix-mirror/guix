@@ -10982,14 +10982,14 @@ matrices.")
 (define-public r-singlecellexperiment
   (package
     (name "r-singlecellexperiment")
-    (version "1.8.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "SingleCellExperiment" version))
        (sha256
         (base32
-         "11pqb3cigi9xbhxq2k3n7z23v1ibd03ws1lcrh5c5ffgb33nlyw5"))))
+         "092wvk11n7pa234vlwhxm3gdi4k3sbnz1splhxalbdhz3jf02zfp"))))
     (properties
      `((upstream-name . "SingleCellExperiment")))
     (build-system r-build-system)
@@ -10997,6 +10997,8 @@ matrices.")
      `(("r-biocgenerics" ,r-biocgenerics)
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/SingleCellExperiment")
     (synopsis "S4 classes for single cell data")
     (description "This package defines an S4 class for storing data from
