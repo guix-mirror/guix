@@ -9947,14 +9947,14 @@ classes.")
 (define-public r-deseq
   (package
     (name "r-deseq")
-    (version "1.38.0")
+    (version "1.39.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DESeq" version))
        (sha256
         (base32
-         "14pys93gsl50xmq5pc7pp1g20v3ywlg0yzkkhwb3kiy8573xn9nc"))))
+         "047hph5aqmjnz1aqprziw0smdn5lf96hmwpnvqrxv1j2yfvcf3h1"))))
     (properties `((upstream-name . "DESeq")))
     (build-system r-build-system)
     (propagated-inputs
