@@ -1573,18 +1573,20 @@ Affymetrix (CEL files) and NimbleGen arrays (XYS files).")
 (define-public r-qvalue
   (package
     (name "r-qvalue")
-    (version "2.18.0")
+    (version "2.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "qvalue" version))
        (sha256
         (base32
-         "0njnidyncm3g3712mnp77cs4kghn596ss1pz6fhp1cr0wxcayp6j"))))
+         "1hndmdr9niagbr4ry0vbhffvjzjg9im27kdbn0sa774k6r5b4z3f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-reshape2" ,r-reshape2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://github.com/jdstorey/qvalue")
     (synopsis "Q-value estimation for false discovery rate control")
     (description
