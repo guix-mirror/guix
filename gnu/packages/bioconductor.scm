@@ -2004,14 +2004,14 @@ datasets.")
 (define-public r-riboprofiling
   (package
     (name "r-riboprofiling")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RiboProfiling" version))
        (sha256
         (base32
-         "0nfzyiq7cd6fs5agzl1zyfg8s631wi7kjngiyvd3vxlhi8wsjicx"))))
+         "0s30m96dbbrzbywz3wai5ar0nsshb16lq101nyl20w1bk7sk2bha"))))
     (properties `((upstream-name . "RiboProfiling")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2031,6 +2031,8 @@ datasets.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-sqldf" ,r-sqldf)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/RiboProfiling/")
     (synopsis "Ribosome profiling data analysis")
     (description "Starting with a BAM file, this package provides the
