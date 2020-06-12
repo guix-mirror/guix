@@ -5889,14 +5889,14 @@ interact with gated cytometry data.")
 (define-public r-flowcore
   (package
     (name "r-flowcore")
-    (version "1.52.1")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowCore" version))
        (sha256
         (base32
-         "08kvxc187iwlixibx1860jcp5g9bsw8abkv06x2qv1w83fas4pp2"))))
+         "1xalndmfidfzqwlppdanx7cnm4ysznq21ingmykhxni86s42kd8p"))))
     (properties `((upstream-name . "flowCore")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5905,7 +5905,11 @@ interact with gated cytometry data.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-cytolib" ,r-cytolib)
        ("r-matrixstats" ,r-matrixstats)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rprotobuflib" ,r-rprotobuflib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/flowCore")
     (synopsis "Basic structures for flow cytometry data")
     (description
