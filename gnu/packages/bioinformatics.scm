@@ -10549,14 +10549,14 @@ several related annotation packages.")
 (define-public r-erma
   (package
     (name "r-erma")
-    (version "1.2.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "erma" version))
        (sha256
         (base32
-         "085qsr73p8nyp435f15l4l1jkfd64bfd9gl4z496nfxdnqn95srz"))))
+         "1ccfbq0r48sr3h8050w8zv8402h7nx09adr0xdyqlg7kwp9vd2l3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10573,6 +10573,8 @@ several related annotation packages.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-shiny" ,r-shiny)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/erma")
     (synopsis "Epigenomic road map adventures")
     (description
