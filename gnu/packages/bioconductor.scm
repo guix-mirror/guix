@@ -7599,14 +7599,14 @@ available bioactivity data.")
 (define-public r-biobroom
   (package
     (name "r-biobroom")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "biobroom" version))
        (sha256
         (base32
-         "1480ycdsh9xdhbpr47vdw5g6m8arqsnp8hc19wwhzm8npxh4qqlb"))))
+         "06qcrprn58kbrr5kyw1jl6z88b9w9g8xs6rkhrbnz8k7rv373fhf"))))
     (properties `((upstream-name . "biobroom")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7614,6 +7614,8 @@ available bioactivity data.")
        ("r-broom" ,r-broom)
        ("r-dplyr" ,r-dplyr)
        ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/StoreyLab/biobroom")
     (synopsis "Turn Bioconductor objects into tidy data frames")
     (description
