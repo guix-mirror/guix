@@ -1376,15 +1376,17 @@ microarrays.")
 (define-public r-hpar
   (package
     (name "r-hpar")
-    (version "1.28.0")
+    (version "1.30.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "hpar" version))
        (sha256
         (base32
-         "1yhay1ryrgj9cqa1x136cw40ca93afyvg0sarm30jsbj8nc1rm5m"))))
+         "1jq0qw7wq3426cp004divywjm3ryixkykcmwlhrri13agz6rx3r9"))))
     (build-system r-build-system)
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/hpar/")
     (synopsis "Human Protein Atlas in R")
     (description "This package provides a simple interface to and data from
