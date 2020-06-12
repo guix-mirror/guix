@@ -7954,14 +7954,14 @@ analytics on packages.")
 (define-public r-biocset
   (package
     (name "r-biocset")
-    (version "1.0.1")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocSet" version))
        (sha256
         (base32
-         "1xcksnvjflrdarn8xqmgf0n6wbsjkq9jazqwp35i52vqcq4ic1j9"))))
+         "14dmkc878lskbm001kgjyqmrwnn6s032z4h64f617f1xd9zx9wrj"))))
     (properties `((upstream-name . "BiocSet")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7972,6 +7972,8 @@ analytics on packages.")
        ("r-rlang" ,r-rlang)
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-tibble" ,r-tibble)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page
      "https://bioconductor.org/packages/BiocSet")
     (synopsis
