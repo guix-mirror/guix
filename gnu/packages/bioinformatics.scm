@@ -7013,14 +7013,14 @@ distribution.")
 (define-public r-dexseq
   (package
     (name "r-dexseq")
-    (version "1.32.0")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DEXSeq" version))
        (sha256
         (base32
-         "0sqqb65ckliif2nmvlvc7w49id59z0nvqcdz5gry8l2mn6azrf6a"))))
+         "1inyxb89hd5bn0sl7a9qbv9d1g40z4v1s9qwxkcsx5c79fl04n1h"))))
     (properties `((upstream-name . "DEXSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7041,6 +7041,8 @@ distribution.")
        ("r-statmod" ,r-statmod)
        ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/DEXSeq")
     (synopsis "Inference of differential exon usage in RNA-Seq")
     (description
