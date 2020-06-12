@@ -10868,19 +10868,22 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "17lhwnm9rqsvbqkvwp0m07vjrk63a4389p2y39zffv8fgznxqzd7"))
+         "09ylwyk6a8sdrmi1mx7vpycpykqlqylmwa973g6jrcmk0h0qfa4w"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Delete bundled binaries
-           (delete-file-recursively "src/winlib/")
+           (delete-file-recursively "src/wininclude/")
+           (delete-file-recursively "src/winlib-4.9.3/")
+           (delete-file-recursively "src/winlib-8.3.0/")
+           (delete-file "src/hdf5small_cxx_hl_1.10.6.tar.gz")
            #t))))
     (properties `((upstream-name . "Rhdf5lib")))
     (build-system r-build-system)
@@ -10916,6 +10919,8 @@ block processing.")
                   "C Compiler: GCC\n"))
                (rename-file "Makevars.in" "Makevars")
                (substitute* "Makevars"
+                 (("@ZLIB_LIB@") "-lz")
+                 (("@ZLIB_INCLUDE@") "")
                  (("HDF5_CXX_LIB=.*")
                   (string-append "HDF5_CXX_LIB="
                                  (assoc-ref inputs "hdf5") "/lib/libhdf5_cpp.a\n"))
@@ -10941,7 +10946,8 @@ block processing.")
     (propagated-inputs
      `(("hdf5" ,hdf5-1.10)))
     (native-inputs
-     `(("hdf5-source" ,(package-source hdf5-1.10))))
+     `(("hdf5-source" ,(package-source hdf5-1.10))
+       ("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/Rhdf5lib")
     (synopsis "HDF5 library as an R package")
     (description "This package provides C and C++ HDF5 libraries for use in R
