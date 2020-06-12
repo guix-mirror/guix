@@ -5781,17 +5781,19 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "2.0.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "0pdkx9mhvzw3a4ff725qvda9bxvs9vh2ppb29cc5jrivgjndv5cy"))))
+         "1wgilpaw70dwg0zilx5i1pmi4j8wri6wi2ha1d3bapfhlwc6igml"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)))
     (home-page "https://bioconductor.org/packages/Rsubread/")
     (synopsis "Subread sequence alignment and counting for R")
     (description
