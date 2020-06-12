@@ -74,7 +74,8 @@
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--shared-cares"
+     `(#:configure-flags '("--shared"
+                           "--shared-cares"
                            "--shared-http-parser"
                            "--shared-libuv"
                            "--shared-nghttp2"
