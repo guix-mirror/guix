@@ -340,7 +340,7 @@ Maven Wagon, for use in Maven.")))
     (version "3.2.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://apache/dist/maven/shared/"
+              (uri (string-append "mirror://apache/maven/shared/"
                                   "maven-shared-utils-" version "-source-release.zip"))
               (sha256
                (base32
@@ -380,7 +380,7 @@ replacement with improvements.")
     (version "3.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://apache/dist/maven/"
+              (uri (string-append "mirror://apache/maven/"
                                   "plugin-tools/maven-plugin-tools-" version
                                   "-source-release.zip"))
               (sha256 (base32 "1ryqhs62j5pas93brhf5dsnvp99hxbvssf681yj5rk3r9h24hqm2"))))
@@ -404,7 +404,7 @@ replacement with improvements.")
     (version "3.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://apache/dist/maven/wagon/"
+              (uri (string-append "mirror://apache/maven/wagon/"
                                   "wagon-" version "-source-release.zip"))
               (sha256 (base32 "0r07j6xdzdnrvqnv8ida7dx1m05pznh5qgmcfcfpyvg9nxbj3l1n"))))
     (build-system ant-build-system)
@@ -691,7 +691,7 @@ gets and puts artifacts through HTTP(S) using Apache HttpClient-4.x.")))
     (version "3.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://apache/dist/maven/"
+              (uri (string-append "mirror://apache/maven/"
                                   "maven-3/" version "/source/"
                                   "apache-maven-" version "-src.tar.gz"))
               (sha256 (base32 "0grw9zp166ci53rd7qkyy2qmwmik37xhiz1z84jpm0msyvzj2n82"))
