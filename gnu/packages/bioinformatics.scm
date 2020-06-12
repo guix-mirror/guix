@@ -8662,14 +8662,14 @@ of other R packages who wish to make use of HTSlib.")
 (define-public r-bamsignals
   (package
     (name "r-bamsignals")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bamsignals" version))
        (sha256
         (base32
-         "0699b0pqbs0dvs91yjibcjc90lxj9mg8rcml4a6wchfr9md7n74w"))))
+         "0p858xxfv79yc8b3lq58zl9f00irvbn3czsd8wdi5040xg42m402"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -8680,6 +8680,8 @@ of other R packages who wish to make use of HTSlib.")
        ("r-zlibbioc" ,r-zlibbioc)))
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/bamsignals")
     (synopsis "Extract read count signals from bam files")
     (description
