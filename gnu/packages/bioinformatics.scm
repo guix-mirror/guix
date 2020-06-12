@@ -8588,13 +8588,13 @@ R/qtl, to better handle high-dimensional data and complex cross designs.")
 (define-public r-zlibbioc
   (package
     (name "r-zlibbioc")
-    (version "1.32.0")
+    (version "1.34.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "zlibbioc" version))
               (sha256
                (base32
-                "1xh7qan0w62mzsmanbx9vcj6ygdfhzw1abaxijkq7f4nh5w87idj"))))
+                "0j1l052jb2cwc1nifxzwknc9csagf4f2d092zs0i95dz0rma89l0"))))
     (properties
      `((upstream-name . "zlibbioc")))
     (build-system r-build-system)
