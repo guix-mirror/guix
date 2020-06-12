@@ -3212,14 +3212,14 @@ studies.")
 (define-public r-minfi
   (package
     (name "r-minfi")
-    (version "1.32.0")
+    (version "1.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "minfi" version))
        (sha256
         (base32
-         "177isdvcq2476xybvfbh7x11qsj5nzckgh3b6p156wlx9ap9dvl3"))))
+         "0bl1sk9syy770d5wqa0k1y0wrs5x8sbj13px1v03v3693pdj081w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-beanplot" ,r-beanplot)
@@ -3251,6 +3251,8 @@ studies.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-siggenes" ,r-siggenes)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hansenlab/minfi")
     (synopsis "Analyze Illumina Infinium DNA methylation arrays")
     (description
