@@ -7950,13 +7950,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.42.1")
+    (version "2.44.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0676s8aq9xj2pdrfk28kf5j69fmssn900k4vxrp11ghwjr8z24h7"))))
+                "0ag26q9283p9mfz4zx8qnx1w7b7ilmsb8wyx737z9cqy9a0i57wj"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
