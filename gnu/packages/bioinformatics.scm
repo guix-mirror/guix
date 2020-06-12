@@ -7246,22 +7246,23 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "17r25v9wcglyma2v1c8fka80dm7fx86saxlsb2aprmwi4h3dhb0j"))))
+         "01ilhlrvy28jfdyxjria4024yryj5zgympgqznw17g3y3az78kk2"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
+       ("r-assertthat" ,r-assertthat)
        ("r-batchtools" ,r-batchtools)
-       ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
        ("r-deseq2" ,r-deseq2)
+       ("r-dot" ,r-dot)
        ("r-edger" ,r-edger)
        ("r-genomicfeatures" ,r-genomicfeatures)
        ("r-genomicranges" ,r-genomicranges)
@@ -7269,13 +7270,18 @@ ungapped alignment formats.")
        ("r-go-db" ,r-go-db)
        ("r-gostats" ,r-gostats)
        ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
        ("r-pheatmap" ,r-pheatmap)
        ("r-rjson" ,r-rjson)
        ("r-rsamtools" ,r-rsamtools)
+       ("r-rsvg" ,r-rsvg)
        ("r-shortread" ,r-shortread)
+       ("r-stringr" ,r-stringr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-yaml" ,r-yaml)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/tgirke/systemPipeR")
     (synopsis "Next generation sequencing workflow and reporting environment")
     (description
