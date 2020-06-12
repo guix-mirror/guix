@@ -4655,14 +4655,14 @@ visualization with image data.")
 (define-public r-yamss
   (package
     (name "r-yamss")
-    (version "1.12.1")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "yamss" version))
        (sha256
         (base32
-         "12jr7hbrwhb1gfjadj1024hv80ra22miy46dn40nmsrbklkfn3rw"))))
+         "00x2lnssgzbmhy5bb2m0f8rq2nsz3lb5xlp2vhkcagza39h3xb0c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -4675,6 +4675,8 @@ visualization with image data.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-summarizedexperiment"
         ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/hansenlab/yamss")
     (synopsis "Tools for high-throughput metabolomics")
     (description
