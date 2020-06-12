@@ -6899,14 +6899,14 @@ procedures that induce nucleotide substitutions (e.g. BisSeq).")
 (define-public r-timeseriesexperiment
   (package
     (name "r-timeseriesexperiment")
-    (version "1.4.0")
+    (version "1.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "TimeSeriesExperiment" version))
        (sha256
         (base32
-         "0xqa6hzknnci20zx2f6mw5cpqx8pq0v6fzf053hh51p1l2ikvgqm"))))
+         "1k0djvcsyjj1ayncvmi8nlqi3jdn5qp41y3fwsqg1cp0qsvx7zv3"))))
     (properties
      `((upstream-name . "TimeSeriesExperiment")))
     (build-system r-build-system)
@@ -6926,6 +6926,8 @@ procedures that induce nucleotide substitutions (e.g. BisSeq).")
        ("r-tidyr" ,r-tidyr)
        ("r-vegan" ,r-vegan)
        ("r-viridis" ,r-viridis)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/nlhuong/TimeSeriesExperiment/")
     (synopsis "Analysis for short time-series data")
     (description
