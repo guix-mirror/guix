@@ -462,8 +462,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                 "0v0bfh3ay07s6msxmklvwfaif0q02kq2yhy65fdhys49vw8c1w3c"))))))
 
 (define-public mesa-opencl
-  (package
-    (inherit mesa)
+  (package/inherit mesa
     (name "mesa-opencl")
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
@@ -477,8 +476,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
        ,@(package-native-inputs mesa)))))
 
 (define-public mesa-opencl-icd
-  (package
-    (inherit mesa-opencl)
+  (package/inherit mesa-opencl
     (name "mesa-opencl-icd")
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
@@ -487,8 +485,7 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                ,(delete "-Dgallium-opencl=standalone" flags)))))))
 
 (define-public mesa-headers
-  (package
-    (inherit mesa)
+  (package/inherit mesa
     (name "mesa-headers")
     (propagated-inputs '())
     (inputs '())
