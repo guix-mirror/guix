@@ -234,6 +234,13 @@ also known as DXTn or DXTC) for Mesa.")
   (package
     (name "mesa")
     (version "20.0.7")
+
+    ;; Mesa 20.0.5 through 20.0.7 has problems with some graphic drivers, so
+    ;; we need this newer version.
+    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/2882
+    ;; https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4861
+    (replacement mesa-20.0.8)
+
     (source
       (origin
         (method url-fetch)
@@ -438,6 +445,21 @@ specifications - systems for rendering interactive 3D graphics.  A variety of
 device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
+
+;; Replacement package to fix <https://gitlab.freedesktop.org/mesa/mesa/-/issues/2863>.
+(define mesa-20.0.8
+  (package
+    (inherit mesa)
+    (version "20.0.8")
+    (source (origin
+              (inherit (package-source mesa))
+              (uri (list (string-append "https://mesa.freedesktop.org/archive/"
+                                        "mesa-" version ".tar.xz")
+                         (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                        "mesa-" version ".tar.xz")))
+              (sha256
+               (base32
+                "0v0bfh3ay07s6msxmklvwfaif0q02kq2yhy65fdhys49vw8c1w3c"))))))
 
 (define-public mesa-opencl
   (package
