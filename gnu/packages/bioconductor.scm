@@ -4991,14 +4991,14 @@ sites and alignments obtained from standard RNA-seq experiments.")
 (define-public r-xbseq
   (package
     (name "r-xbseq")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "XBSeq" version))
        (sha256
         (base32
-         "1qr5gvf8jcx6r0ac7d2wmnikswmp3k71lirnw7dyr6fndzrdz9lp"))))
+         "13br7x1q6dg8daxahskwq24f09wbxr8kyszl1z7dhc26bid2pvy0"))))
     (properties `((upstream-name . "XBSeq")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5011,6 +5011,8 @@ sites and alignments obtained from standard RNA-seq experiments.")
        ("r-matrixstats" ,r-matrixstats)
        ("r-pracma" ,r-pracma)
        ("r-roar" ,r-roar)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/Liuy12/XBSeq")
     (synopsis "Test for differential expression for RNA-seq data")
     (description
