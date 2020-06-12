@@ -3409,14 +3409,14 @@ evaluation of DEG analysis methods.")
 (define-public r-ioniser
   (package
     (name "r-ioniser")
-    (version "2.10.0")
+    (version "2.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "IONiseR" version))
        (sha256
         (base32
-         "1c265bzh923i9mw83mjpj0bzbkixbs6sg1h1z51y9xjkakdgg90f"))))
+         "05fndlblczabva60gn6h0dijqxyn0wknrv8a925fgc4bn415g31w"))))
     (properties `((upstream-name . "IONiseR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3433,6 +3433,8 @@ evaluation of DEG analysis methods.")
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
        ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/IONiseR/")
     (synopsis "Quality assessment tools for Oxford Nanopore MinION data")
     (description
