@@ -3098,14 +3098,14 @@ high-throughput analyses.")
 (define-public r-geoquery
   (package
     (name "r-geoquery")
-    (version "2.54.1")
+    (version "2.56.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GEOquery" version))
        (sha256
         (base32
-         "0j8mlldy7dc38fx5zwj6z6l4b9bhvrn8sil3z8asnd4ic7w9ifx5"))))
+         "0sap1dsa3k3qpv5z5y3cimxyhbm8qai87gqn3g1w3hwlcqsss92m"))))
     (properties `((upstream-name . "GEOquery")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3117,6 +3117,8 @@ high-throughput analyses.")
        ("r-readr" ,r-readr)
        ("r-tidyr" ,r-tidyr)
        ("r-xml2" ,r-xml2)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/seandavi/GEOquery/")
     (synopsis "Get data from NCBI Gene Expression Omnibus (GEO)")
     (description
