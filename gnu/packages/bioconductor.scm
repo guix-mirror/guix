@@ -7875,20 +7875,22 @@ tools for genome-scale analysis of cancer studies.")
 (define-public r-biocor
   (package
     (name "r-biocor")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BioCor" version))
        (sha256
         (base32
-         "1bjw02rwmz2d715sgpfp08njb15200ch7cmipsf9hd5835ppg1jl"))))
+         "1xghclfqv8d23g72g8914br5zjx4sz9zihzczwwmpl15lghpnqwy"))))
     (properties `((upstream-name . "BioCor")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocparallel" ,r-biocparallel)
        ("r-gseabase" ,r-gseabase)
        ("r-matrix" ,r-matrix)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://llrs.github.io/BioCor/")
     (synopsis "Functional similarities")
     (description
