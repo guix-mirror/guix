@@ -11091,14 +11091,14 @@ variable and significantly correlated genes.")
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
-    (version "1.8.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DelayedMatrixStats" version))
        (sha256
         (base32
-         "0mv2rl6a6l404piabcazxz1s6ars016pxhjf5v40hhr6y1r0wbqy"))))
+         "0i6gw8058gw9yajya3w9qq6l3p634fq9sv8dh8ifigxz0k9b98r6"))))
     (properties
      `((upstream-name . "DelayedMatrixStats")))
     (build-system r-build-system)
@@ -11110,6 +11110,8 @@ variable and significantly correlated genes.")
        ("r-matrix" ,r-matrix)
        ("r-matrixstats" ,r-matrixstats)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/PeteHaitch/DelayedMatrixStats")
     (synopsis "Functions that apply to rows and columns of DelayedMatrix objects")
     (description
