@@ -5531,14 +5531,14 @@ quantification of genomic regions of interest.")
 (define-public r-rqc
   (package
     (name "r-rqc")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rqc" version))
        (sha256
         (base32
-         "1nxkrb9kx41g050yz935yrl9pjkakhr8v6whxcvr72gg4r9m2x3m"))))
+         "1qsm9r6xfsplk8zpf7p0k7fi86l8a74nx963sna8gzig5qgrvnm3"))))
     (properties `((upstream-name . "Rqc")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5560,6 +5560,8 @@ quantification of genomic regions of interest.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-shiny" ,r-shiny)
        ("r-shortread" ,r-shortread)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/labbcb/Rqc")
     (synopsis "Quality control tool for high-throughput sequencing data")
     (description
