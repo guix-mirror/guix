@@ -1427,14 +1427,14 @@ region sets and other genomic features.")
 (define-public r-reportingtools
   (package
     (name "r-reportingtools")
-    (version "2.26.0")
+    (version "2.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ReportingTools" version))
        (sha256
         (base32
-         "0wmi2219wydyzc07rz3azsrksa7wiacfh9pr5x2fsmj9f0w3n15w"))))
+         "1ig1h224silbdbdr0j9j9sysp9l9dzpcsjzn8jp57h3gh4pdqbfx"))))
     (properties
      `((upstream-name . "ReportingTools")))
     (build-system r-build-system)
@@ -1458,6 +1458,8 @@ region sets and other genomic features.")
        ("r-pfam-db" ,r-pfam-db)
        ("r-r-utils" ,r-r-utils)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/ReportingTools/")
     (synopsis "Tools for making reports in various formats")
     (description
