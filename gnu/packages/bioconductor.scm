@@ -7714,14 +7714,14 @@ microarray data.")
 (define-public r-bioccasestudies
   (package
     (name "r-bioccasestudies")
-    (version "1.48.0")
+    (version "1.50.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocCaseStudies" version))
        (sha256
         (base32
-         "1sg9vxs24zfz3dg9y0qlrdsq43y0pbahbvcfxzlxjzjw80xzxpbd"))))
+         "0fadck1dk1zavpn9yrcwx6zgfi18fw5xfs8svgzipns6bq41j8ix"))))
     (properties
      `((upstream-name . "BiocCaseStudies")))
     (build-system r-build-system)
