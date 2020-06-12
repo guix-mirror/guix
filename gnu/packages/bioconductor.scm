@@ -1165,14 +1165,14 @@ across the entire multi-'omics experiment.")
 (define-public r-biocversion
   (package
     (name "r-biocversion")
-    (version "3.10.1")
+    (version "3.11.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "BiocVersion" version))
        (sha256
         (base32
-         "0mfqjqfvrwwglldq3g7nbic5hf3nwzv02nbfxnl2cfvf9gznlh5f"))))
+         "1rrzx3dqds0jlj1bmjc744wiamb2hssbh3jfxz1s9jp4cvnwrpmz"))))
     (properties `((upstream-name . "BiocVersion")))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/BiocVersion/")
