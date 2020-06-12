@@ -745,13 +745,13 @@ annotations.")
 (define-public r-ideoviz
   (package
     (name "r-ideoviz")
-    (version "1.22.0")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IdeoViz" version))
               (sha256
                (base32
-                "0rsz6dawrx5qdrypxs2hgihmx3kbpdg1y73h876yxccgdlabvzil"))))
+                "1ndj14qhpgidjb4qsga80ghqzz1x8kvy2gy1bvvgwlkfxa62rn50"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
