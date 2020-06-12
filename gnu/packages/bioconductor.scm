@@ -4534,14 +4534,14 @@ text files).")
 (define-public r-allelicimbalance
   (package
     (name "r-allelicimbalance")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AllelicImbalance" version))
        (sha256
         (base32
-         "0vy8w7ii2qljsmq8lr21lygkcrsshc7syyqhadlbxyj3scgi7kyc"))))
+         "0irn4xdlvazdkv0055f45693y6zvqaz7j3vml5xscnh45ls6vmqr"))))
     (properties
      `((upstream-name . "AllelicImbalance")))
     (build-system r-build-system)
@@ -4565,6 +4565,8 @@ text files).")
        ("r-seqinr" ,r-seqinr)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/pappewaio/AllelicImbalance")
     (synopsis "Investigate allele-specific expression")
     (description
