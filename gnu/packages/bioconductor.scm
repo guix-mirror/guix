@@ -6851,14 +6851,14 @@ format.")
 (define-public r-wavcluster
   (package
     (name "r-wavcluster")
-    (version "2.20.0")
+    (version "2.22.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "wavClusteR" version))
        (sha256
         (base32
-         "0vq3xxsvwq86rlya7xc92sc4i6b48sib0pcina3xivg3ky2j3z7y"))))
+         "0204czqjmkwhd6gznwxzb0vj3dg3aif628g8c30085aa2jljn9bk"))))
     (properties `((upstream-name . "wavClusteR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6877,6 +6877,8 @@ format.")
        ("r-seqinr" ,r-seqinr)
        ("r-stringr" ,r-stringr)
        ("r-wmtsa" ,r-wmtsa)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/wavClusteR/")
     (synopsis "Identification of RNA-protein interaction sites in PAR-CLIP data")
     (description
