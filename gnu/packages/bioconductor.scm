@@ -5376,18 +5376,20 @@ Gaussian distributions.")
 (define-public r-rbowtie
   (package
     (name "r-rbowtie")
-    (version "1.26.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rbowtie" version))
        (sha256
         (base32
-         "0yy31xhdmf6xb21wlhmxxwfqpm0nil39pb2cs3pq5ia758lb88z4"))))
+         "06y1qp915dlwjdi2fs3344sgya55pcv07f3i61y0cxb0bhbcgvrz"))))
     (properties `((upstream-name . "Rbowtie")))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/Rbowtie/")
     (synopsis "R bowtie wrapper")
     (description
