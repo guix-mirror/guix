@@ -5858,16 +5858,27 @@ cluster count and membership by stability evidence in unsupervised analysis.")
 (define-public r-cytolib
   (package
     (name "r-cytolib")
-    (version "1.8.0")
+    (version "2.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "cytolib" version))
        (sha256
         (base32
-         "1zk5i09k782lw6297gl3rh0g4fxswr2ang8dgqj7p0814l7h15k9"))))
+         "123d1wlymq8r8d83as380h1dgw6v4s317acyvp1lsg2cpfp3gslj"))))
     (properties `((upstream-name . "cytolib")))
     (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rhdf5lib" ,r-rhdf5lib)
+       ("r-rprotobuflib" ,r-rprotobuflib)))
     (home-page "https://bioconductor.org/packages/cytolib/")
     (synopsis "C++ infrastructure for working with gated cytometry")
     (description
