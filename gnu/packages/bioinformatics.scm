@@ -10117,20 +10117,22 @@ microarrays or GRanges for sequencing data.")
 (define-public r-keggrest
   (package
     (name "r-keggrest")
-    (version "1.26.1")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "KEGGREST" version))
        (sha256
         (base32
-         "1cgjvv9n88y3ah21356mh8z2l08vjn42hjy8hcljsibknzc4v247"))))
+         "0q76w17fya2x0z7mvyhkk5kqh07flldgih13ma44vhcy1bdlm6j1"))))
     (properties `((upstream-name . "KEGGREST")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biostrings" ,r-biostrings)
        ("r-httr" ,r-httr)
        ("r-png" ,r-png)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/KEGGREST")
     (synopsis "Client-side REST access to KEGG")
     (description
