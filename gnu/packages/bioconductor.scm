@@ -2739,20 +2739,20 @@ coordinates.")
 (define-public r-lpsymphony
   (package
     (name "r-lpsymphony")
-    (version "1.14.0")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "lpsymphony" version))
        (sha256
         (base32
-         "0j5j9kggh3l61vp6hpnqf45d5kzifksaj0sqhvs1zahmx2c1gfdv"))))
+         "072ikmd267n18hrj7dip4dp1vb5dinj82p3h95n2jaf04h9hwfn4"))))
     (build-system r-build-system)
     (inputs
-     `(("gfortran" ,gfortran)
-       ("zlib" ,zlib)))
+     `(("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://r-forge.r-project.org/projects/rsymphony")
     (synopsis "Symphony integer linear programming solver in R")
     (description
