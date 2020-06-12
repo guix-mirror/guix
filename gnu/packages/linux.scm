@@ -3711,6 +3711,7 @@ in a digital read-out.")
              #t)))
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out"))
+                          "CC=gcc"
                           "WERROR=0"
 
                           ;; By default, 'config/Makefile' uses lib64 on
