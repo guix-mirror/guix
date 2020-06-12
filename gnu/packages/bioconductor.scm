@@ -3771,14 +3771,14 @@ data.")
 (define-public r-enrichplot
   (package
     (name "r-enrichplot")
-    (version "1.6.1")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "enrichplot" version))
        (sha256
         (base32
-         "0707f5ll58psh7pr001cmmk5di7dprnbry1cy2mw20vn8p24nf3x"))))
+         "01m3cp717ldfbz5w3yfywvjg6sfjzz7s3vlk7w268lmmcg6g6bz7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -3792,9 +3792,13 @@ data.")
        ("r-gosemsim" ,r-gosemsim)
        ("r-gridextra" ,r-gridextra)
        ("r-igraph" ,r-igraph)
+       ("r-plyr" ,r-plyr)
        ("r-purrr" ,r-purrr)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-reshape2" ,r-reshape2)))
+       ("r-reshape2" ,r-reshape2)
+       ("r-scatterpie" ,r-scatterpie)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/GuangchuangYu/enrichplot")
     (synopsis "Visualization of functional enrichment result")
     (description
