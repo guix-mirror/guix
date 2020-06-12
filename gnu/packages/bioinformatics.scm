@@ -8232,13 +8232,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.38.2")
+    (version "1.40.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "0dd226kgks50jdx5w35f3wmg95hy8aibi4kcn8p5kmqp5i8j580b"))))
+                "09ffsflk2yhhj9ivm028y3qdkvv8idgxpm4il3y9rym7shc8b3f8"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8257,6 +8257,8 @@ as well as query and modify the browser state, such as the current viewport.")
        ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xvector" ,r-xvector)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/GenomicFeatures")
     (synopsis "Tools for working with transcript centric annotations")
     (description
