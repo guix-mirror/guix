@@ -7113,14 +7113,14 @@ the graph algorithms contained in the Boost library.")
 (define-public r-gseabase
   (package
     (name "r-gseabase")
-    (version "1.48.0")
+    (version "1.50.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GSEABase" version))
        (sha256
         (base32
-         "0kcb90sxlf19d5dxhdbqk9x62svky4262cccl0wxarbq6gf3bd57"))))
+         "1k4faj53cwvqijad8cf7fcghzxcv9shlbpl8n73bsncc8k192y2j"))))
     (properties `((upstream-name . "GSEABase")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7130,6 +7130,8 @@ the graph algorithms contained in the Boost library.")
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-graph" ,r-graph)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/GSEABase")
     (synopsis "Gene set enrichment data structures and methods")
     (description
