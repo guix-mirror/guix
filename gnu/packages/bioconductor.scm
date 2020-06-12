@@ -3263,14 +3263,14 @@ methylation arrays.")
 (define-public r-methylumi
   (package
     (name "r-methylumi")
-    (version "2.32.0")
+    (version "2.34.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "methylumi" version))
        (sha256
         (base32
-         "0zd4h6n37v3z0mas69z2xsf5s0naih828987m8v0g9hhq4f6hf5w"))))
+         "0phb2dyndnk9rv79nx246cn1sc9wbzdqqbgl6402knc7dgh799wr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotate" ,r-annotate)
@@ -3291,6 +3291,8 @@ methylation arrays.")
        ("r-s4vectors" ,r-s4vectors)
        ("r-scales" ,r-scales)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/methylumi")
     (synopsis "Handle Illumina methylation data")
     (description
