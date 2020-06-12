@@ -6418,14 +6418,14 @@ data, to only emphasize the data that actually matters.")
 (define-public r-rcistarget
   (package
     (name "r-rcistarget")
-    (version "1.6.0")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "RcisTarget" version))
        (sha256
         (base32
-         "1nnah7s0jd24fpfyxsf76jas8dm23c3266aps124wdlqsp9q5qjw"))))
+         "1lvi873dv0vhw53s1pmcilw8qwlywm9p2ybphcl168nzh6w31r4i"))))
     (properties `((upstream-name . "RcisTarget")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6436,6 +6436,8 @@ data, to only emphasize the data that actually matters.")
        ("r-gseabase" ,r-gseabase)
        ("r-r-utils" ,r-r-utils)
        ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://aertslab.org/#scenic")
     (synopsis "Identify transcription factor binding motifs enriched on a gene list")
     (description
