@@ -6016,14 +6016,14 @@ statistics to the plot.")
 (define-public r-flowviz
   (package
     (name "r-flowviz")
-    (version "1.50.0")
+    (version "1.52.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowViz" version))
        (sha256
         (base32
-         "0ik16bxcfcg3q26ra3055718kskid64aaazcbqsxalca9ppdm4k7"))))
+         "0f3jfwdmaq9wrgl737blk5gmpc29l9kb6nadqhxpvbjwqsnzx0yq"))))
     (properties `((upstream-name . "flowViz")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6036,6 +6036,8 @@ statistics to the plot.")
        ("r-latticeextra" ,r-latticeextra)
        ("r-mass" ,r-mass)
        ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/flowViz/")
     (synopsis "Visualization for flow cytometry")
     (description
