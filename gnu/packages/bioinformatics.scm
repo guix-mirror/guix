@@ -10388,14 +10388,14 @@ effort and encourages consistency.")
 (define-public r-ggbio
   (package
     (name "r-ggbio")
-    (version "1.34.0")
+    (version "1.36.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ggbio" version))
        (sha256
         (base32
-         "13wzwh40anh8l53yp19bg4w5cpxykcaf228dc8cxvjndyib711qb"))))
+         "11ggnqjq42fi2hm9xlvrrlr2xhy4kglvl1a0mycp1s4v67lxw5h5"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -10435,6 +10435,8 @@ effort and encourages consistency.")
        ("r-scales" ,r-scales)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://www.tengfei.name/ggbio/")
     (synopsis "Visualization tools for genomic data")
     (description
