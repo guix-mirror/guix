@@ -7480,18 +7480,19 @@ a file-backed matrix with factor properties.")
 (define-public r-bigpint
   (package
     (name "r-bigpint")
-    (version "1.2.2")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "bigPint" version))
        (sha256
         (base32
-         "1zkakxi1iqavzmjxnkkd02qm5jk28ldcvcdcxaafz748dz6s67fs"))))
+         "1m92ngkzimcc37byf0ziphrby8wmjd5hfa53gvfphgaakyj9bjg8"))))
     (properties `((upstream-name . "bigPint")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
+     `(("r-delayedarray" ,r-delayedarray)
+       ("r-dplyr" ,r-dplyr)
        ("r-ggally" ,r-ggally)
        ("r-ggplot2" ,r-ggplot2)
        ("r-gridextra" ,r-gridextra)
@@ -7506,6 +7507,7 @@ a file-backed matrix with factor properties.")
        ("r-shinycssloaders" ,r-shinycssloaders)
        ("r-shinydashboard" ,r-shinydashboard)
        ("r-stringr" ,r-stringr)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-tidyr" ,r-tidyr)))
     (native-inputs
      `(("r-knitr" ,r-knitr)))
