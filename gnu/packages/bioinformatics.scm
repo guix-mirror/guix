@@ -7921,13 +7921,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.48.0")
+    (version "1.50.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "09piz1f0xpbb4amskx4ilby6lfrn27hhwk75il2c4lq6m3hr4w8s"))))
+                "10gplxal0qphcn29azv0i6hiim9q45lmhzvhhhsnwfhwpgja7p05"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
@@ -7938,6 +7938,8 @@ on Bioconductor or which replace R functions.")
        ("r-iranges" ,r-iranges)
        ("r-rsqlite" ,r-rsqlite)
        ("r-s4vectors" ,r-s4vectors)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/AnnotationDbi")
     (synopsis "Annotation database interface")
     (description
