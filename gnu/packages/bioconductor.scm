@@ -2272,14 +2272,14 @@ genes or proteins in these datasets.")
 (define-public r-inspect
   (package
     (name "r-inspect")
-    (version "1.16.3")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "INSPEcT" version))
        (sha256
         (base32
-         "0y4gpvrbmcipdnyz9lz9ywn0317xnpcriiisqvxygin05vgcpilp"))))
+         "1yyglkdc3ww2jzswhcxk9g1imydfm39krl87as5l9fbm7mv3vd4z"))))
     (properties `((upstream-name . "INSPEcT")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2299,11 +2299,14 @@ genes or proteins in these datasets.")
        ("r-proc" ,r-proc)
        ("r-rootsolve" ,r-rootsolve)
        ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
        ("r-s4vectors" ,r-s4vectors)
        ("r-shiny" ,r-shiny)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-txdb-mmusculus-ucsc-mm9-knowngene"
         ,r-txdb-mmusculus-ucsc-mm9-knowngene)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/INSPEcT")
     (synopsis "Analysis of 4sU-seq and RNA-seq time-course data")
     (description
