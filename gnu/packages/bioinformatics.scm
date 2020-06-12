@@ -10783,19 +10783,21 @@ visualizations for publication-quality multi-panel figures.")
 (define-public r-fithic
   (package
     (name "r-fithic")
-    (version "1.12.0")
+    (version "1.14.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "FitHiC" version))
               (sha256
                (base32
-                "1irwkwi4afdj395134k31mvx7c2vpdd0rv8zrblnldascdsb04kc"))))
+                "1dffkdxm08wq4kjd9j2v2625x3p6vbrk33a2zx94pwpgkghr72yp"))))
     (properties `((upstream-name . "FitHiC")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)
        ("r-fdrtool" ,r-fdrtool)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/FitHiC")
     (synopsis "Confidence estimation for intra-chromosomal contact maps")
     (description
