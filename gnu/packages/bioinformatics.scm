@@ -7716,13 +7716,13 @@ ID and species.  It is used by functions in the GenomeInfoDb package.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.22.1")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "0phadr67yb4l25x41a9wg4pjy1wbxlk14jhidhz6g5n4z6x45qbm"))))
+                "0ab92nq7lvhvhgp512qhiiphpby0b17c666qska6p8a636zzmqiv"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
