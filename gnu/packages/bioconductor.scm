@@ -4321,14 +4321,14 @@ type and symbol colors.")
 (define-public r-genomicscores
   (package
     (name "r-genomicscores")
-    (version "1.10.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicScores" version))
        (sha256
         (base32
-         "175iaqv7npa11yw48vmqpgx0qqs3g44c3dsya7ccwd1lg97fznkj"))))
+         "0si2lgc37mkah4w990q1q2bf8xmshxj7cbx92bcrp0zaipjr96bb"))))
     (properties `((upstream-name . "GenomicScores")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4336,12 +4336,16 @@ type and symbol colors.")
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-biostrings" ,r-biostrings)
-       ("r-bsgenome" ,r-bsgenome)
+       ("r-delayedarray" ,r-delayedarray)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicranges" ,r-genomicranges)
+       ("r-hdf5array" ,r-hdf5array)
        ("r-iranges" ,r-iranges)
+       ("r-rhdf5" ,r-rhdf5)
        ("r-s4vectors" ,r-s4vectors)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/rcastelo/GenomicScores/")
     (synopsis "Work with genome-wide position-specific scores")
     (description
