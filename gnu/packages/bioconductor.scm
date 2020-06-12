@@ -6204,14 +6204,14 @@ package.")
 (define-public r-opencyto
   (package
     (name "r-opencyto")
-    (version "1.24.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "openCyto" version))
        (sha256
         (base32
-         "0h25nhvq1zq624wsgb55wjcgri9rcd2fnqkb31h9jdakr01dw2sb"))))
+         "10dyd6dddskv70vhpwfbsqdb8pb9i3ka0fgvl1h51wqlckbsj89m"))))
     (properties `((upstream-name . "openCyto")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6236,6 +6236,8 @@ package.")
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
        ("r-rrcov" ,r-rrcov)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/openCyto")
     (synopsis "Hierarchical gating pipeline for flow cytometry data")
     (description
