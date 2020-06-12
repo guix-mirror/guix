@@ -10623,14 +10623,14 @@ defining LD blocks.")
 (define-public r-gqtlstats
   (package
     (name "r-gqtlstats")
-    (version "1.18.0")
+    (version "1.20.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gQTLstats" version))
        (sha256
         (base32
-         "1dly4p9r4231hf31xg1nzqiyvjbcfjljfmhb88ic1jxwnvniyv2f"))))
+         "1jjqfpjp93nmxjn757j5mzcax96bzcqdd1gr3rsdxg7ap008l2w7"))))
     (properties `((upstream-name . "gQTLstats")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10664,6 +10664,8 @@ defining LD blocks.")
        ("r-snpstats" ,r-snpstats)
        ("r-summarizedexperiment" ,r-summarizedexperiment)
        ("r-variantannotation" ,r-variantannotation)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/gQTLstats")
     (synopsis "Computationally efficient analysis for eQTL and allied studies")
     (description
