@@ -3704,14 +3704,14 @@ phenotype of interest.")
 (define-public r-fgsea
   (package
     (name "r-fgsea")
-    (version "1.12.0")
+    (version "1.14.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fgsea" version))
        (sha256
         (base32
-         "0pbq3g515kcbi4wvfx8m09p01h2f8vwsi1qqsyahxz4r1fasz4c1"))))
+         "0zbjj8al1ps7immxixsn5g8lvbmpmxvqwqbpdgsicxp00gb9bybc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -3722,6 +3722,8 @@ phenotype of interest.")
        ("r-gridextra" ,r-gridextra)
        ("r-matrix" ,r-matrix)
        ("r-rcpp" ,r-rcpp)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://github.com/ctlab/fgsea/")
     (synopsis "Fast gene set enrichment analysis")
     (description
