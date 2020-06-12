@@ -6047,14 +6047,14 @@ statistics to the plot.")
 (define-public r-flowclust
   (package
     (name "r-flowclust")
-    (version "3.24.0")
+    (version "3.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "flowClust" version))
        (sha256
         (base32
-         "0k4bgc4mf512njfdfg5ld9l7slgfxyfh766jab87j96zrrgcnj8s"))))
+         "06mkq9y41jax07x4knhvhzgrkgqdvpvcw604bxdk6bv9wx3ipq5b"))))
     (properties `((upstream-name . "flowClust")))
     (build-system r-build-system)
     (arguments
@@ -6073,7 +6073,8 @@ statistics to the plot.")
     (inputs
      `(("gsl" ,gsl)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/flowClust")
     (synopsis "Clustering for flow cytometry")
     (description
