@@ -7046,14 +7046,14 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.16.1")
+    (version "1.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "02pzsff14j4am2d949mh8xgi0c7k44g09q4lr6nqm08vf92brb6g"))))
+         "1rn655qq7dshbk1dd41n7y2hfz8498jxd2j4rk7p8hrikd3s32dm"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)
@@ -7074,6 +7074,8 @@ arrays based on fast wavelet-based functional models.")
        ("r-progress" ,r-progress)
        ("r-reshape2" ,r-reshape2)
        ("r-scales" ,r-scales)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/variancePartition/")
     (synopsis "Analyze variation in gene expression experiments")
     (description
