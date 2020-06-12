@@ -9713,14 +9713,14 @@ and specific in detecting differential transcription.")
 (define-public r-mzid
   (package
     (name "r-mzid")
-    (version "1.24.0")
+    (version "1.26.0")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzID" version))
        (sha256
         (base32
-         "1glcv096bn6pxlw89dlij1nzpwnjvrbxysvw2gm6qgm7rhxlaxrw"))))
+         "0y50lzkdamkpz67f6r5whp246qsxpbammjil7g8vjprx0c4jk5n5"))))
     (properties `((upstream-name . "mzID")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9731,6 +9731,8 @@ and specific in detecting differential transcription.")
        ("r-protgenerics" ,r-protgenerics)
        ("r-rcpp" ,r-rcpp)
        ("r-xml" ,r-xml)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "https://bioconductor.org/packages/mzID")
     (synopsis "Parser for mzIdentML files")
     (description
