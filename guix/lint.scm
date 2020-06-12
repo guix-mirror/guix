@@ -679,7 +679,7 @@ patch could not be found."
                   ((? string? patch)
                    (starts-with-package-name? (basename patch)))
                   ((? origin? patch)
-                   (starts-with-package-name? (origin-file-name patch)))
+                   (starts-with-package-name? (origin-actual-file-name patch)))
                   (_  #f))     ;must be some other file-like object
                 patches)
          '()
