@@ -8041,3 +8041,49 @@ Rmarkdown and LaTeX documents when authoring a Bioconductor Workflow.")
      "This package provides a collection of software tools for calculating
 distance measures.")
     (license license:artistic2.0)))
+
+(define-public r-pcatools
+  (package
+    (name "r-pcatools")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "PCAtools" version))
+       (sha256
+        (base32
+         "0mnwqrhm1hmhzwrpidf6z207w1ycpm572snvpp5swlg6hnxq6bnc"))))
+    (properties `((upstream-name . "PCAtools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-beachmat" ,r-beachmat)
+       ("r-bh" ,r-bh)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biocsingular" ,r-biocsingular)
+       ("r-cowplot" ,r-cowplot)
+       ("r-delayedarray" ,r-delayedarray)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dqrng" ,r-dqrng)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-lattice" ,r-lattice)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-reshape2" ,r-reshape2)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/kevinblighe/PCAtools")
+    (synopsis "PCAtools: everything Principal Components Analysis")
+    (description
+     "@dfn{Principal Component Analysis} (PCA) extracts the fundamental
+structure of the data without the need to build any model to represent it.
+This \"summary\" of the data is arrived at through a process of reduction that
+can transform the large number of variables into a lesser number that are
+uncorrelated (i.e. the 'principal components'), while at the same time being
+capable of easy interpretation on the original data.  PCAtools provides
+functions for data exploration via PCA, and allows the user to generate
+publication-ready figures.  PCA is performed via @code{BiocSingular}; users
+can also identify an optimal number of principal components via different
+metrics, such as the elbow method and Horn's parallel analysis, which has
+relevance for data reduction in single-cell RNA-seq (scRNA-seq) and high
+dimensional mass cytometry data.")
+    (license license:gpl3)))
