@@ -104,6 +104,7 @@
 (define hurd-disk-image
   (image
    (format 'disk-image)
+   (target "i586-pc-gnu")
    (partitions
     (list (partition
            (size 'guess)
@@ -519,6 +520,14 @@ it can be used for bootloading."
                             (type root-file-system-type))
                           file-systems-to-keep)))))
 
+(define-syntax-rule (maybe-with-target image exp ...)
+  (let ((target (image-target image)))
+    (if target
+        (with-parameters ((%current-target-system target))
+          exp ...)
+        (begin
+          exp ...))))
+
 (define* (system-image image)
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
@@ -530,32 +539,33 @@ image, depending on IMAGE format."
          (bootcfg (operating-system-bootcfg os))
          (bootloader (bootloader-configuration-bootloader
                       (operating-system-bootloader os))))
-    (case (image-format image)
-      ((disk-image)
-       (system-disk-image image*
-                          #:bootcfg bootcfg
-                          #:bootloader bootloader
-                          #:register-closures? register-closures?
-                          #:inputs `(("system" ,os)
-                                     ("bootcfg" ,bootcfg))))
-      ((iso9660)
-       (system-iso9660-image
-        image*
-        #:bootcfg bootcfg
-        #:bootloader bootloader
-        #:register-closures? register-closures?
-        #:inputs `(("system" ,os)
-                   ("bootcfg" ,bootcfg))
-        ;; Make sure to use a mode that does no imply
-        ;; HFS+ tree creation that may fail with:
-        ;;
-        ;; "libisofs: FAILURE : Too much files to mangle,
-        ;; cannot guarantee unique file names"
-        ;;
-        ;; This happens if some limits are exceeded, see:
-        ;; https://lists.gnu.org/archive/html/grub-devel/2020-06/msg00048.html
-        #:grub-mkrescue-environment
-        '(("MKRESCUE_SED_MODE" . "mbr_only")))))))
+    (maybe-with-target image
+      (case (image-format image)
+        ((disk-image)
+         (system-disk-image image*
+                            #:bootcfg bootcfg
+                            #:bootloader bootloader
+                            #:register-closures? register-closures?
+                            #:inputs `(("system" ,os)
+                                       ("bootcfg" ,bootcfg))))
+        ((iso9660)
+         (system-iso9660-image
+          image*
+          #:bootcfg bootcfg
+          #:bootloader bootloader
+          #:register-closures? register-closures?
+          #:inputs `(("system" ,os)
+                     ("bootcfg" ,bootcfg))
+          ;; Make sure to use a mode that does no imply
+          ;; HFS+ tree creation that may fail with:
+          ;;
+          ;; "libisofs: FAILURE : Too much files to mangle,
+          ;; cannot guarantee unique file names"
+          ;;
+          ;; This happens if some limits are exceeded, see:
+          ;; https://lists.gnu.org/archive/html/grub-devel/2020-06/msg00048.html
+          #:grub-mkrescue-environment
+          '(("MKRESCUE_SED_MODE" . "mbr_only"))))))))
 
 (define (find-image file-system-type target)
   "Find and return an image built that could match the given FILE-SYSTEM-TYPE,
@@ -569,5 +579,9 @@ addition of the <image> record."
          hurd-disk-image)
         (else
          efi-disk-image)))))
+
+;;; Local Variables:
+;;; eval: (put 'maybe-with-target 'scheme-indent-function 1)
+;;; End:
 
 ;;; image.scm ends here

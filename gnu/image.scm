@@ -33,6 +33,7 @@
             image
             image-name
             image-format
+            image-target
             image-size
             image-operating-system
             image-partitions
@@ -67,6 +68,8 @@
   image make-image
   image?
   (format             image-format) ;symbol
+  (target             image-target
+                      (default #f))
   (size               image-size  ;size in bytes as integer
                       (default 'guess))
   (operating-system   image-operating-system  ;<operating-system>
