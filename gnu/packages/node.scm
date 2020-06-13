@@ -206,4 +206,7 @@ devices.")
     (arguments
      (substitute-keyword-arguments (package-arguments node)
        ((#:configure-flags flags ''())
-        `(cons* "--shared" "--without-npm" ,flags))))))
+        `(cons* "--shared" "--without-npm" ,flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (delete 'patch-npm-shebang)))))))
