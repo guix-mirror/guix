@@ -1161,9 +1161,9 @@ destroying an ancient book using a special wand.")
     (version "3.36.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gnome-chess/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "gnome-chess-" version ".tar.xz"))
               (sha256
                (base32
                 "1a9fgi749gy1f60vbcyrqqkab9vqs42hji70q73k1xx8rv0agmg0"))))
