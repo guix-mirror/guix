@@ -1896,7 +1896,7 @@ that beneath its ruins lay buried an ancient evil.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://rephial.org/downloads/"
+       (uri (string-append "https://rephial.org/downloads/"
                            (version-major+minor version)
                            "/angband-" version ".tar.gz"))
        (sha256
@@ -1933,7 +1933,7 @@ that beneath its ruins lay buried an ancient evil.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (inputs `(("ncurses" ,ncurses)))
-    (home-page "http://rephial.org/")
+    (home-page "https://rephial.org/")
     (synopsis "Dungeon exploration roguelike")
     (description "Angband is a Classic dungeon exploration roguelike.  Explore
 the depths below Angband, seeking riches, fighting monsters, and preparing to
