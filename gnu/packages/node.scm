@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages adns)
@@ -198,3 +199,12 @@ devices.")
     (license expat)
     (properties '((max-silent-time . 7200)     ;2h, needed on ARM
                   (timeout . 21600)))))        ;6h
+
+(define-public libnode
+  (package
+    (inherit node)
+    (name "libnode")
+    (arguments
+     (substitute-keyword-arguments (package-arguments node)
+       ((#:configure-flags flags ''())
+        `(cons* "--shared" "--without-npm" ,flags))))))
