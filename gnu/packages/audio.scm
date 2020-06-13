@@ -175,7 +175,9 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
                                   "/" version "/ams-" version ".tar.bz2"))
               (sha256
                (base32
-                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))))
+                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))
+              (patches
+               (search-patches "alsa-modular-synth-fix-vocoder.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
