@@ -263,7 +263,7 @@ environment.")))
 (define-public s6-portable-utils
   (package
    (name "s6-portable-utils")
-   (version "2.2.2.3")
+   (version "2.2.2.4")
    (source
     (origin
      (method url-fetch)
@@ -271,7 +271,7 @@ environment.")))
            "https://skarnet.org/software/s6-portable-utils/s6-portable-utils-"
            version ".tar.gz"))
      (sha256
-      (base32 "0dniniw8y9das12ic7bd34ra817qzfrql18rczs49sfnkf67c98n"))))
+      (base32 "0494saavpqfa4v5kib69p186858yjy87hm5qm804a4xvq51wqbwm"))))
     (build-system gnu-build-system)
     (inputs `(("skalibs" ,skalibs)))
     (arguments
