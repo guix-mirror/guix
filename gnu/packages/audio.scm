@@ -185,6 +185,17 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
          "CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-default-gcc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
+               ;; conflicts with the GCC 5 input.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          ;; Insert an extra space between linker flags.
          (add-before 'configure 'add-missing-space
            (lambda _
@@ -205,7 +216,7 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)
-       ("gcc" ,gcc-5)))
+       ("gcc@5" ,gcc-5)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description
