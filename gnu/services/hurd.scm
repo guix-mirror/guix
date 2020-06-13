@@ -115,9 +115,4 @@
    (description
     "Provide console login using the Hurd @command{getty} program.")))
 
-(define* (hurd-getty-service config)
-  "Return a service to run the Hurd getty according to @var{config}, which
-specifies the tty to run, among other things."
-  (service hurd-getty-service-type config))
-
 ;;; hurd.scm ends here
