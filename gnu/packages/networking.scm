@@ -297,6 +297,34 @@ specification, which provides IPv6 Internet connectivity to IPv6 enabled hosts
 residing in IPv4-only networks, even when they are behind a NAT device.")
     (license license:gpl2+)))
 
+(define-public ndisc6
+  (package
+    (name "ndisc6")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.remlab.net/files/ndisc6/ndisc6-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "07swyar1hl83zxmd7fqwb2q0c0slvrswkcfp3nz5lknrk15dmcdb"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.remlab.net/ndisc6/")
+    (synopsis "IPv6 diagnostic tools")
+    (description
+     "NDisc6 is a collection of tools for IPv6 networking diagnostics.
+It includes the following programs:
+
+@itemize
+@item @command{ndisc6}: ICMPv6 Neighbor Discovery tool.
+@item @command{rdisc6}: ICMPv6 Router Discovery tool.
+@item @command{tcptraceroute6}: IPv6 traceroute over TCP.
+@item @command{traceroute6}: IPv6 traceroute over UDP.
+@item @command{rdnssd}: Recursive DNS Servers discovery daemon.
+@end itemize")
+    ;; The user can choose version 2 or 3 of the GPL, not later versions.
+    (license (list license:gpl2 license:gpl3))))
+
 (define-public socat
   (package
     (name "socat")
