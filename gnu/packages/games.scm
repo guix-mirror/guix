@@ -1158,7 +1158,7 @@ destroying an ancient book using a special wand.")
 (define-public gnome-chess
   (package
     (name "gnome-chess")
-    (version "3.36.0")
+    (version "3.36.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnome-chess/"
@@ -1166,7 +1166,7 @@ destroying an ancient book using a special wand.")
                                   "gnome-chess-" version ".tar.xz"))
               (sha256
                (base32
-                "1a9fgi749gy1f60vbcyrqqkab9vqs42hji70q73k1xx8rv0agmg0"))))
+                "165bk8s3nngyqbikggspj4rff5nxxfkfcmgzjb4grmsrgbqwk5di"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
