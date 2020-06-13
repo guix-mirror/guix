@@ -43,6 +43,7 @@
 ;;; Copyright © 2020 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -2980,7 +2981,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "26")
+    (version "27")
     (source (origin
               (method url-fetch)
               (uri
@@ -2988,7 +2989,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "17dvrls70nr3b3x1wm8pwbqy4r8a5c20m0dhys8mjhsnpg425fsp"))
+                "035wzfzjx4nwidk747p8n085mgkvy531ppn16krrajx2dkqzply1"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2997,10 +2998,18 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
      `(("xz" ,xz)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f                      ; FIXME: Investigate test failures
-       #:configure-flags '("--with-xz" "--with-zlib")
+     `(#:configure-flags '("--with-xz" "--with-zlib"
+                           "--disable-test-modules")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-tests
+           (lambda _
+             ;; XXX: These tests need '--sysconfdir=/etc' to pass.
+             (substitute* "Makefile.in"
+               (("testsuite/test-modprobe") "")
+               (("testsuite/test-depmod") "")
+               (("testsuite/test-blacklist") ""))
+             #t))
          (add-after 'install 'install-modprobe&co
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -4300,7 +4309,7 @@ arrays when needed.")
        ;; For tests.
        ("cmocka" ,cmocka)))
     (inputs
-     `(("json-c" ,json-c)
+     `(("json-c" ,json-c-0.13)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)
@@ -4423,16 +4432,15 @@ Bluetooth audio output devices like headphones or loudspeakers.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.53")
+    (version "5.54")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kernel.org/linux/bluetooth/bluez-"
                     version ".tar.xz"))
-              (patches (search-patches "bluez-CVE-2020-0556.patch"))
               (sha256
                (base32
-                "1g1qg6dz6hl3csrmz75ixr12lwv836hq3ckb259svvrg62l2vaiq"))))
+                "1p2ncvjz6alr9n3l5wvq2arqgc7xjs6dqyar1l9jp0z8cfgapkb8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

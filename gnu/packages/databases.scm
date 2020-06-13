@@ -684,7 +684,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.44")
+    (version "10.1.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.com/MariaDB"
@@ -692,7 +692,7 @@ Language.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fah6d50hldq0farxwr8mj3jnniwdz0d1wsha07nx37fc79h7wi1"))
+                "1mfs0x4c0z7d306n128dxdawk3llk25vxif5zwl20fv1z5qhz3wx"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -963,14 +963,14 @@ developed in C/C++ to MariaDB and MySQL databases.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.12")
+    (version "10.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1rsab4zf4rx7pvvhlwhb04kb95aiad9cwazc4ksbvg2gij47z3rq"))
+                "1qal0yp7a90yzya7hl56gsmw5fvacplrdhpn7h9gnbyr1i2iyw2d"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments

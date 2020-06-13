@@ -27443,7 +27443,14 @@ to XDG Base Directory specification")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "12ndxyhzxw2zdr76ql8nfdwb2vwhvdkrxwk4pbjafqfglmjv0zdh"))))
+         "12ndxyhzxw2zdr76ql8nfdwb2vwhvdkrxwk4pbjafqfglmjv0zdh"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; 'doctest' isn't stable until rust-1.40
+           (substitute* "src/lib.rs"
+             (("\\(doctest") "(test"))
+           #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs

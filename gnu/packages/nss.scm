@@ -72,8 +72,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.50")
-    (replacement nss/fixed)
+    (version "3.52.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -84,7 +83,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "19rv0vp9nmvn6dy29qsv8f4v7wn5kizrpm59vbszahsjfwcz6p8q"))
+                "0y4jb9095f7bbgw7d7kvzm4c3g4p5i6y68fwhb8wlkpb7b1imj5w"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-increase-test-timeout.patch"))
@@ -192,11 +191,3 @@ applications.  Applications built with NSS can support SSL v2 and v3, TLS,
 PKCS #5, PKCS #7, PKCS #11, PKCS #12, S/MIME, X.509 v3 certificates, and other
 security standards.")
     (license license:mpl2.0)))
-
-(define nss/fixed
-  (package
-    (inherit nss)
-    (source (origin
-              (inherit (package-source nss))
-              (patches (append (search-patches "nss-CVE-2020-12399.patch")
-                               (origin-patches (package-source nss))))))))

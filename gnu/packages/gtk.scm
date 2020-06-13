@@ -761,7 +761,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.14")
+   (version "3.24.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -769,7 +769,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "120yz5gxqbv7sgdbcy4i0b6ixm8jpjzialdrqs0gv15q7bwnjk8w"))
+              "1wqxkd3xnqwihcawncp9mkf9bv5a5fg5i4ahm6klpl782vvnkb1d"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (propagated-inputs
@@ -1290,7 +1290,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.19.0")
+    (version "1.19.1")
     (source
      (origin
       (method url-fetch)
@@ -1298,7 +1298,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "176i283glkpycka8wwyndwld0zp1yn9xj9rpvllqgja698vsjnsg"))))
+        "111fav9m1iagw3nh2ws2vzkjh34r97yl7rdlpvsngsqg521k251c"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

@@ -804,11 +804,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/bitcoin-core-python-compat.patch		\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
-  %D%/packages/patches/bluez-CVE-2020-0556.patch		\
   %D%/packages/patches/byobu-writable-status.patch		\
-  %D%/packages/patches/calibre-msgpack-compat.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
-  %D%/packages/patches/calibre-remove-test-bs4.patch		\
   %D%/packages/patches/calibre-remove-test-sqlite.patch		\
   %D%/packages/patches/calibre-remove-test-unrar.patch		\
   %D%/packages/patches/casync-renameat2-declaration.patch	\
@@ -1126,7 +1123,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
-  %D%/packages/patches/kdepim-runtime-Fix-missing-link-libraries.patch \
   %D%/packages/patches/kdiagram-Fix-missing-link-libraries.patch \
   %D%/packages/patches/kiki-level-selection-crash.patch		\
   %D%/packages/patches/kiki-makefile.patch			\
@@ -1172,7 +1168,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
-  %D%/packages/patches/libdrm-symbol-check.patch		\
+  %D%/packages/patches/libdrm-realpath-virtio.patch		\
   %D%/packages/patches/libextractor-exiv2.patch			\
   %D%/packages/patches/libgeotiff-adapt-test-script-for-proj-6.2.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
@@ -1299,7 +1295,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/network-manager-plugin-path.patch	\
   %D%/packages/patches/nsis-env-passthru.patch			\
-  %D%/packages/patches/nss-CVE-2020-12399.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
@@ -1401,7 +1396,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/pygpgme-disable-problematic-tests.patch  \
   %D%/packages/patches/pyqt-configure.patch			\
   %D%/packages/patches/pyqt-public-sip.patch			\
-  %D%/packages/patches/pyqt-unbundled-qt.patch			\
   %D%/packages/patches/python-2-deterministic-build-info.patch	\
   %D%/packages/patches/python-2.7-adjust-tests.patch		\
   %D%/packages/patches/python-2.7-search-paths.patch		\
@@ -1451,7 +1445,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-moc-ignore-gcc-macro.patch	\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
-  %D%/packages/patches/qtbase-QTBUG-81715.patch			\
   %D%/packages/patches/qtscript-disable-tests.patch		\
   %D%/packages/patches/quagga-reproducible-build.patch          \
   %D%/packages/patches/quickswitch-fix-dmenu-check.patch	\

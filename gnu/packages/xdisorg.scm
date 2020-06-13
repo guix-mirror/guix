@@ -495,18 +495,16 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.100")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://dri.freedesktop.org/libdrm/libdrm-"
-               version
-               ".tar.bz2"))
-        (sha256
-         (base32
-          "0p8a1l3a3s40i81mawm8nhrbk7p97ss05qkawp1yx73c30lchz67"))
-        (patches (search-patches "libdrm-symbol-check.patch"))))
+    (version "2.4.101")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://dri.freedesktop.org/libdrm/libdrm-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "19vqbhqljhln0lrpnv3s7y3lkhsdcp76dl8bhqj3cis9ism1pwyx"))
+              (patches (search-patches "libdrm-realpath-virtio.patch"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags

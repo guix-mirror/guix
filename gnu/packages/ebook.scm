@@ -46,6 +46,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -82,7 +83,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "3.42.0")
+    (version "4.18.0")
     (source
       (origin
         (method url-fetch)
@@ -91,13 +92,18 @@
                             version ".tar.xz"))
         (sha256
          (base32
-          "0ymdhws3cb44p3fb24vln1wx6s7qnb8rr241jvm6qbj5rnp984dm"))
-        ;; Unbundle python2-odfpy. 
-        ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
+          "0w9pcfvskjh4v00vjw3i6hzrafy863pgsmmqdx4lffip3p856brw"))
         (modules '((guix build utils)))
         (snippet
           '(begin
+             ;; Unbundle python2-odfpy.
              (delete-file-recursively "src/odf")
+             ;; Disable test that attempts to load it.
+             (substitute* "setup/test.py"
+               ((".*SRC, 'odf'.*")
+                ""))
+
+             ;; Remove unneeded resources.
              (delete-file "resources/viewer.js")
              (delete-file "resources/viewer.html")
              (delete-file "resources/mozilla-ca-certs.pem")
@@ -105,8 +111,6 @@
              (delete-file "resources/calibre-portable.sh")
              #t))
         (patches (search-patches "calibre-no-updates-dialog.patch"
-                                 "calibre-msgpack-compat.patch"
-                                 "calibre-remove-test-bs4.patch" ; TODO: fix test.
                                  "calibre-remove-test-sqlite.patch" ; TODO: fix test.
                                  "calibre-remove-test-unrar.patch"))))
     (build-system python-build-system)
@@ -115,12 +119,13 @@
        ("qtbase" ,qtbase) ; for qmake
        ("python2-flake8" ,python2-flake8)
        ("xdg-utils" ,xdg-utils)))
-    ;; Beautifulsoup3 is bundled but obsolete and not packaged, so just leave it bundled.
     (inputs
      `(("chmlib" ,chmlib)
        ("fontconfig" ,fontconfig)
        ("font-liberation" ,font-liberation)
        ("glib" ,glib)
+       ("hunspell" ,hunspell)
+       ("hyphen" ,hyphen)
        ("icu4c" ,icu4c)
        ("js-mathjax" ,js-mathjax)
        ("libmtp" ,libmtp)
@@ -132,6 +137,7 @@
        ("poppler" ,poppler)
        ("python" ,python-2)
        ("python2-apsw" ,python2-apsw)
+       ("python2-beautifulsoup4" ,python2-beautifulsoup4)
        ("python2-chardet" ,python2-chardet)
        ("python2-cssselect" ,python2-cssselect)
        ("python2-css-parser" ,python2-css-parser)
@@ -153,9 +159,11 @@
        ("python2-pillow" ,python2-pillow)
        ("python2-psutil" ,python2-psutil)
        ("python2-pygments" ,python2-pygments)
+       ("python2-pyqtwebengine" ,python2-pyqtwebengine)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
        ("python2-regex" ,python2-regex)
+       ("qtwebengine" ,qtwebengine)
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2
@@ -170,6 +178,18 @@
                ;; We can't use the uninstaller in Guix. Don't build it.
                (("self\\.create_uninstaller()") ""))
              #t))
+         (add-after 'patch-source-shebangs 'patch-more-shebangs
+           (lambda _
+             ;; Patch various inline shebangs.
+             (substitute* '("src/calibre/gui2/preferences/tweaks.py"
+                            "src/calibre/gui2/dialogs/custom_recipes.py"
+                            "setup/install.py"
+                            "setup/linux-installer.sh")
+               (("#!/usr/bin/env python")
+                (string-append "#!" (which "python")))
+               (("#!/bin/sh")
+                (string-append "#!" (which "sh"))))
+             #t))
          (add-after 'unpack 'dont-load-remote-icons
            (lambda _
              (substitute* "setup/plugins_mirror.py"
@@ -180,9 +200,12 @@
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((podofo (assoc-ref inputs "podofo"))
                   (pyqt (assoc-ref inputs "python2-pyqt"))
+                  (python-sip (assoc-ref inputs "python2-sip"))
                   (out (assoc-ref outputs "out")))
               (substitute* "setup/build_environment.py"
-                (("sys.prefix") (string-append "'" pyqt "'")))
+                (("= get_sip_dir\\(\\)")
+                 (string-append "= '" pyqt "/share/sip'")))
+
               (substitute* "src/calibre/ebooks/pdf/pdftohtml.py"
                 (("PDFTOHTML = 'pdftohtml'")
                  (string-append "PDFTOHTML = \"" (assoc-ref inputs "poppler")
@@ -195,6 +218,18 @@
               (substitute* "src/calibre/linux.py"
                 (("'~/.local/share'") "''"))
 
+              ;; 'python setup.py rapydscript' uses QtWebEngine, which
+              ;; needs to create temporary files in $HOME.
+              (setenv "HOME" "/tmp")
+
+              ;; XXX: QtWebEngine will fail if no fonts are available.  This
+              ;; can likely be removed when fontconfig has been patched to
+              ;; include TrueType fonts by default.
+              (symlink (string-append (assoc-ref inputs "font-liberation")
+                                      "/share/fonts")
+                       "/tmp/.fonts")
+
+              (setenv "SIP_BIN" (string-append python-sip "/bin/sip"))
               (setenv "PODOFO_INC_DIR" (string-append podofo "/include/podofo"))
               (setenv "PODOFO_LIB_DIR" (string-append podofo "/lib"))
               ;; This informs the tests we are a continuous integration

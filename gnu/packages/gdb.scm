@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,7 +94,6 @@
        ("ncurses" ,ncurses)
        ("guile" ,guile-2.0)
        ("python-wrapper" ,python-wrapper)
-       ("dejagnu" ,dejagnu)
        ("source-highlight" ,source-highlight)
 
        ;; Allow use of XML-formatted syscall information.  This enables 'catch
@@ -101,6 +101,7 @@
        ("libxml2" ,libxml2)))
     (native-inputs
       `(("texinfo" ,texinfo)
+        ("dejagnu" ,dejagnu)
         ("pkg-config" ,pkg-config)))
     (home-page "https://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")

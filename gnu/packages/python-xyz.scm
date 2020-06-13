@@ -3021,14 +3021,14 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.11.1")
+    (version "2.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "0l72c11n959yzb8d3ankckb6yhjhm6x729zm7rkpk040qzxpy64k"))))
+         "1c1v3djnr0ymp5xpy1h3h60abcaqxdlm4wsqmls9rxby88av5al9"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -3997,14 +3997,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.16")
+    (version "0.29.17")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "01gs10myw0rw4jsikvqs0859fg7gficxhv508cxvnb4l9wl5a9r3"))))
+         "1wnaz40hdw4mg5acz5gqb6bhjhn4cvfxg0xdzfy7aa6qn665hqb3"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -5318,14 +5318,14 @@ a general image processing tool.")
 (define-public python-pycparser
   (package
     (name "python-pycparser")
-    (version "2.19")
+    (version "2.20")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycparser" version))
       (sha256
        (base32
-        "1cr5dcj9628lkz1qlwq3fv97c25363qppkmcayqvd05dpy573259"))))
+        "1w0m3xvlrzq4lkbvd1ngfm8mdw64r1yxy6n7djlw6qj5d0km6ird"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
@@ -8465,14 +8465,14 @@ versions of Python.")
 (define-public python-idna
   (package
     (name "python-idna")
-    (version "2.8")
+    (version "2.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "idna" version))
        (sha256
         (base32
-         "01rlkigdxg17sf9yar1jl8n18ls59367wqh59hnawlyg53vb6my3"))))
+         "1jxp2pdi8y4asi7ka1zhx3yx09kv8kzj533f0ds7viz49b0x323m"))))
     (build-system python-build-system)
     (home-page "https://github.com/kjd/idna")
     (synopsis "Internationalized domain names in applications")
@@ -10132,14 +10132,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "193mds7lv91pphnvn6c1n55rhjkgq94asdzgrsb2fiqx7rrsd119"))))
+         "17bd6r9ynp4hyfckkia0bb8gpd98f42jfl5rmzdpbld59bbcaf9i"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

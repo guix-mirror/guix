@@ -104,6 +104,17 @@ arrays of data.")
     ;; under the 3-clause BSD license, the rest is under 2-clause BSD license.
     (license (list license:bsd-2 license:bsd-3))))
 
+;; Increase the test timeouts to accommodate slow or busy machines.
+(define %common-gstreamer-phases
+  '((add-after 'unpack 'increase-test-timeout
+      (lambda _
+        (substitute* "tests/check/meson.build"
+          (("'CK_DEFAULT_TIMEOUT', '20'")
+           "'CK_DEFAULT_TIMEOUT', '60'")
+          (("timeout ?: 3 \\* 60")
+           "timeout: 9 * 60"))
+        #t))))
+
 (define-public gstreamer
   (package
     (name "gstreamer")
@@ -122,6 +133,7 @@ arrays of data.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ,@%common-gstreamer-phases
          ;; FIXME: Since switching to the meson-build-system, two tests
          ;; started failing on i686.  See
          ;; <https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/499>.
@@ -220,12 +232,13 @@ This package provides the core library and elements.")
         ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     '(#:configure-flags '("-Dgl=disabled"
+     `(#:configure-flags '("-Dgl=disabled"
                            ;; FIXME: Documentation fails to build without
                            ;; enabling GL above, which causes other problems.
                            "-Ddoc=false")
        #:phases
        (modify-phases %standard-phases
+         ,@%common-gstreamer-phases
          (add-before 'configure 'patch
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
@@ -284,6 +297,7 @@ for the GStreamer multimedia library.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ,@%common-gstreamer-phases
          ,@(if (string-prefix? "arm" (or (%current-target-system)
                                          (%current-system)))
                ;; FIXME: These tests started failing on armhf after switching to Meson.
@@ -332,6 +346,7 @@ developers consider to have good quality code and correct functionality.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ,@%common-gstreamer-phases
          ,@(if (string-prefix? "arm" (or (%current-target-system)
                                          (%current-system)))
                ;; Disable test that fails on ARMv7.
@@ -421,6 +436,9 @@ par compared to the rest.")
         (base32
          "1jpvc32x6q01zjkfgh6gmq6aaikiyfwwnhj7bmvn52syhrdl202m"))))
     (build-system meson-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ,@%common-gstreamer-phases)))
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("liba52" ,liba52)
@@ -492,7 +510,9 @@ compression formats through the use of the libav library.")
     (build-system meson-build-system)
     (arguments
      ;; FIXME: 16/22 failing tests.
-     `(#:tests? #f))
+     `(#:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ,@%common-gstreamer-phases)))
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("libxml2" ,libxml2)))

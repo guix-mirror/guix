@@ -4606,6 +4606,17 @@ throughout GNOME for API documentation).")
                                               "/lib/libGL.so"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-mesa-20
+           (lambda _
+             ;; Work around a problem with Mesa 20 where some macros used by
+             ;; Cogl went missing from eglext.h.  This can likely be removed
+             ;; for newer versions of Cogl or Mesa.
+             ;; https://gitlab.gnome.org/GNOME/cogl/-/merge_requests/19
+             (substitute* '("configure"
+                            "cogl/winsys/cogl-winsys-egl-kms.c")
+               (("#include <EGL/eglext.h>" all)
+                (string-append all "\n#include <EGL/eglmesaext.h>\n")))
+             #t))
          (add-before 'check 'start-xorg-server
                      (lambda* (#:key tests? inputs #:allow-other-keys)
                        (if tests?
@@ -6192,7 +6203,21 @@ to display dialog boxes from the commandline and shell scripts.")
              ;; the remaining flags are needed for the bundled cogl
              (string-append "-Dopengl_libname="
                             (assoc-ref %build-inputs "mesa")
-                            "/lib/libGL.so"))))
+                            "/lib/libGL.so"))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-build-with-mesa-20
+                    (lambda _
+                      ;; Mimic upstream commit a444a4c5f58ea516ad for
+                      ;; compatibility with Mesa 20.  Remove for 3.36.
+                      (substitute* '("src/backends/meta-egl-ext.h"
+                                     "src/backends/meta-egl.c"
+                                     "src/backends/meta-egl.h")
+                        (("#include <EGL/eglext\\.h>" all)
+                         (string-append all "\n#include <EGL/eglmesaext.h>")))
+                      (substitute* "cogl/cogl/meson.build"
+                        (("#include <EGL/eglext\\.h>" all)
+                         (string-append all "\\n#include <EGL/eglmesaext.h>")))
+                      #t)))))
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.

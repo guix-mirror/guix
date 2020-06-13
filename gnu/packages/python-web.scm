@@ -577,13 +577,13 @@ and written in Python.")
 (define-public python-html5-parser
   (package
     (name "python-html5-parser")
-    (version "0.4.5")
+    (version "0.4.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "html5-parser" version))
               (sha256
                (base32
-                "01mx33sx4dhl4kj6wc48nj6jz7ry60rkhjv0s6k8h5xmjf5yy0x9"))))
+                "13yl3vnf3sxl05m0nhpngnrz3g1jvyahd33lys3m3hfb91l8zzi5"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1463,13 +1463,13 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.22.0")
+    (version "2.23.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1d5ybh11jr5sm7xp6mz8fyc7vrp4syifds91m7sj60xalal0gq0i"))))
+               "1rhpg0jb08v0gd7f19jjiwlcdnxpmqi1fhvw7r4s9avddi4kvx5k"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -1676,14 +1676,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.25.3")
+    (version "1.25.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "0cij8qcvvpj62g1q8n785qjkdymfh4b7vf45si4sw64l41rr3rfv"))))
+          "09rmjqm5syhhc8fx3v06h3yv6cqy0b1081jg8wm5grpwpr72j61h"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs

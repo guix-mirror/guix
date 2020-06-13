@@ -448,14 +448,15 @@ risk.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2019.3.9")
+    (version "2020.4.5.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1bnpw7hrf9i1l9gfxjnzi45hkrvzz0pyn9ia8m4mw7sxhgb08qdj"))))
+                "06b5gfs7wmmipln8f3z928d2mmx2j4b3x7pnqmj6cvmyfh8v7z2i"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
     (description
@@ -469,14 +470,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.7")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1g38zw90510azyfrj6mxbslx2gp9yrnv5dac0w2819k9ssdznbgi"))))
+         "1d4iykcv7cn9j399hczlxm5pzxmqy6d80h3j16dkjwlmv3293b4r"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -491,14 +492,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.7")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1inlnr36kl36551c9rcad99jmhk81v33by3glkadwdcgmi17fd76"))))
+         "0af25w5mkd6vwns3r6ai1w5ip9xp0ms9s261zzssbpadzdr05hx0"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -540,14 +541,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "19.0.0")
+    (version "19.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "007j40y7x3k8xj54dy2qnij9lldfp71k9mkflhd9vqbdiwrndjmf"))))
+         "01wmsq6w0frzbr3zps4ga9kmqjidp2h317jwpq1g9ah24r5lj94s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

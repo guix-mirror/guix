@@ -233,7 +233,14 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.3.4")
+    (version "20.0.7")
+
+    ;; Mesa 20.0.5 through 20.0.7 has problems with some graphic drivers, so
+    ;; we need this newer version.
+    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/2882
+    ;; https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4861
+    (replacement mesa-20.0.8)
+
     (source
       (origin
         (method url-fetch)
@@ -245,7 +252,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1r4giqq7q7zqbn23lbw7v5vswagxx8qj6ij2w8bsb697mvk6g90x"))
+          "0y517qpdg6v6dsdgzb365p03m30511sbyh8pq0mcvhvjwy7javpy"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -270,10 +277,9 @@ also known as DXTn or DXTC) for Mesa.")
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
              ;; Note: update the 'clang' input of mesa-opencl when bumping this.
-             `(("llvm" ,llvm-9)))
+             `(("llvm" ,llvm-10)))
             (_
              `()))
-        ("makedepend" ,makedepend)
         ("wayland" ,wayland)
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
@@ -289,6 +295,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("python" ,python-wrapper)
         ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
+    (outputs '("out" "bin"))
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
@@ -347,32 +354,26 @@ also known as DXTn or DXTC) for Mesa.")
                   (guix build meson-build-system))
        #:phases
        (modify-phases %standard-phases
-         (add-after
-           'unpack 'patch-create_test_cases
-           (lambda _
-             (substitute* "src/intel/genxml/gen_pack_header.py"
-               (("/usr/bin/env python2") (which "python")))
-             #t))
          ,@(if (string-prefix? "i686" (or (%current-target-system)
                                           (%current-system)))
                ;; Disable new test from Mesa 19 that fails on i686.  Upstream
                ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
                `((add-after 'unpack 'disable-failing-test
                    (lambda _
-                     (substitute* "src/gallium/tests/unit/meson.build"
+                     (substitute* "src/util/tests/format/meson.build"
                        (("'u_format_test',") ""))
                      #t)))
                '())
-         (add-before
-           'configure 'fix-dlopen-libnames
+         (add-before 'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing
                ;; the substitutions so we're future-safe.
-               (substitute* "src/glx/dri_common.c"
-                 (("dlopen\\(\"libGL\\.so")
-                  (string-append "dlopen(\"" out "/lib/libGL.so")))
-               (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+               (substitute* "src/glx/meson.build"
+                 (("-DGL_LIB_NAME=\"lib@0@\\.so\\.@1@\"")
+                  (string-append "-DGL_LIB_NAME=\"" out
+                                 "/lib/lib@0@.so.@1@\"")))
+               (substitute* "src/gbm/backends/dri/gbm_dri.c"
                  (("\"libglapi\\.so")
                   (string-append "\"" out "/lib/libglapi.so")))
                (substitute* "src/gbm/main/backend.c"
@@ -381,6 +382,26 @@ also known as DXTn or DXTC) for Mesa.")
                  ;; egl_gallium support.
                  (("\"gbm_dri\\.so")
                   (string-append "\"" out "/lib/dri/gbm_dri.so")))
+               #t)))
+         (add-after 'install 'split-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "bin")))
+               ,@(match (%current-system)
+                   ((or "i686-linux" "x86_64-linux")
+                    ;; Install the Vulkan overlay control script to a separate
+                    ;; output to prevent a reference on Python, saving ~70 MiB
+                    ;; on the closure size.
+                    '((copy-recursively (string-append out "/bin")
+                                        (string-append bin "/bin"))
+                      (delete-file-recursively (string-append out "/bin"))))
+                   (_
+                    ;; XXX: On architectures without the Vulkan overlay layer
+                    ;; just create an empty file because outputs can not be
+                    ;; added conditionally.
+                    '((mkdir-p (string-append bin "/bin"))
+                      (call-with-output-file (string-append bin "/bin/.empty")
+                        (const #t)))))
                #t)))
          (add-after 'install 'symlinks-instead-of-hard-links
            (lambda* (#:key outputs #:allow-other-keys)
@@ -425,9 +446,23 @@ device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
-(define-public mesa-opencl
+;; Replacement package to fix <https://gitlab.freedesktop.org/mesa/mesa/-/issues/2863>.
+(define mesa-20.0.8
   (package
     (inherit mesa)
+    (version "20.0.8")
+    (source (origin
+              (inherit (package-source mesa))
+              (uri (list (string-append "https://mesa.freedesktop.org/archive/"
+                                        "mesa-" version ".tar.xz")
+                         (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                        "mesa-" version ".tar.xz")))
+              (sha256
+               (base32
+                "0v0bfh3ay07s6msxmklvwfaif0q02kq2yhy65fdhys49vw8c1w3c"))))))
+
+(define-public mesa-opencl
+  (package/inherit mesa
     (name "mesa-opencl")
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
@@ -437,12 +472,11 @@ from software emulation to complete hardware acceleration for modern GPUs.")
      `(("libclc" ,libclc)
        ,@(package-inputs mesa)))
     (native-inputs
-     `(("clang" ,clang-9)
+     `(("clang" ,clang-10)
        ,@(package-native-inputs mesa)))))
 
 (define-public mesa-opencl-icd
-  (package
-    (inherit mesa-opencl)
+  (package/inherit mesa-opencl
     (name "mesa-opencl-icd")
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
@@ -451,12 +485,12 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                ,(delete "-Dgallium-opencl=standalone" flags)))))))
 
 (define-public mesa-headers
-  (package
-    (inherit mesa)
+  (package/inherit mesa
     (name "mesa-headers")
     (propagated-inputs '())
     (inputs '())
     (native-inputs '())
+    (outputs '("out"))
     (arguments
      '(#:phases
        (modify-phases %standard-phases

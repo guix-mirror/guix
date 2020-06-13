@@ -65,7 +65,7 @@
        ("asciidoc" ,asciidoc)))
     (inputs
      `(("curl" ,curl)
-       ("json-c" ,json-c)
+       ("json-c" ,json-c-0.13)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("stfl" ,stfl)
