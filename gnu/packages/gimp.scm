@@ -51,7 +51,7 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.76")
+    (version "0.1.78")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -65,7 +65,7 @@
                                         "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "183kj2yq08vvldp8307vq61y2ravcqkyarrhak9w2l30gygp9100"))))
+                "0fjjfb0pbgimlqi7rk8cqz8pq595b7gw8nrpkxfmixdz6cv4km8p"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
