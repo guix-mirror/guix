@@ -1315,15 +1315,14 @@ Chess).  It is similar to standard chess but this variant is far more complicate
 (define-public ltris
   (package
     (name "ltris")
-    (version "1.0.19")
+    (version "1.0.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
                            "ltris-" version ".tar.gz"))
        (sha256
-        (base32
-         "1895wv1fqklrj4apkz47rnkcfhfav7zjknskw6p0886j35vrwslg"))))
+        (base32 "16zbqsc4amx9g3yjv6054nh4ia09dgfp8k6q4qxpjicl3dw3z0in"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The code in LTris uses traditional GNU semantics for inline functions
