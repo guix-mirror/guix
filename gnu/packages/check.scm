@@ -105,8 +105,8 @@ source code editors and IDEs.")
 
 ;; Some packages require this older version.  Removed once no longer needed.
 (define-public check-0.12
-  (package/inherit
-   check
+  (package
+   (inherit check)
    (version "0.12.0")
    (source (origin
              (method url-fetch)
