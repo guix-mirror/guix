@@ -632,6 +632,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
+  %D%/system/images/hurd.scm			\
+						\
   %D%/machine.scm				\
   %D%/machine/digital-ocean.scm			\
   %D%/machine/ssh.scm				\
