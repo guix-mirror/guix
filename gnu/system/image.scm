@@ -520,14 +520,6 @@ it can be used for bootloading."
                             (type root-file-system-type))
                           file-systems-to-keep)))))
 
-(define-syntax-rule (maybe-with-target image exp ...)
-  (let ((target (image-target image)))
-    (if target
-        (with-parameters ((%current-target-system target))
-          exp ...)
-        (begin
-          exp ...))))
-
 (define* (system-image image)
   "Return the derivation of IMAGE.  It can be a raw disk-image or an ISO9660
 image, depending on IMAGE format."
@@ -535,11 +527,12 @@ image, depending on IMAGE format."
 
   (let* ((os (operating-system-for-image image))
          (image* (image-with-os image os))
+         (target (image-target image))
          (register-closures? (has-guix-service-type? os))
          (bootcfg (operating-system-bootcfg os))
          (bootloader (bootloader-configuration-bootloader
                       (operating-system-bootloader os))))
-    (maybe-with-target image
+    (with-parameters ((%current-target-system target))
       (case (image-format image)
         ((disk-image)
          (system-disk-image image*
