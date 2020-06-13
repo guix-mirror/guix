@@ -136,7 +136,7 @@ degree elevation and curve fitting.")
                       (assoc-ref inputs "node") "/lib"))
              #t)))))
     (inputs
-     `(("node" ,node)))
+     `(("node" ,libnode)))
     (propagated-inputs
      `(("r-curl" ,r-curl)
        ("r-jsonlite" ,r-jsonlite)
