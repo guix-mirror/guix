@@ -2121,32 +2121,27 @@ interface and a programmable text output for scripting.")
 (define-public libnet
   (package
     (name "libnet")
-    (version "1.2-rc3")
+    (version "1.2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/sam-github/libnet")
-             (commit (string-append "libnet-" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/libnet/libnet/releases/download"
+                           "/v" version "/libnet-" version ".tar.gz"))
        (sha256
         (base32
-         "0cy8w4g5rv963v4p6iq3333kxgdddx2lywp70xf62553a25xhhs4"))))
+         "19ys9vxk6fg70yzzdxsphfr0rwzgxxhr9b3ykhpg7rfray0qd96a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "libnet") #t))
          (add-before 'build 'build-doc
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "-C" "doc" "doc"
                     make-flags))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("doxygen" ,doxygen)))
+     `(;; To build the documentation, Doxygen and Perl is required.
+       ("doxygen" ,doxygen)
+       ("perl" ,perl)))
     (home-page "https://sourceforge.net/projects/libnet-dev/")
     (synopsis "Framework for low-level network packet construction")
     (description
