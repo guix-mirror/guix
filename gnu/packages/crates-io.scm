@@ -23745,14 +23745,14 @@ in Rust.")
 (define-public rust-tokio-0.2
   (package
     (name "rust-tokio")
-    (version "0.2.18")
+    (version "0.2.21")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tokio" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "04v7rfkrlr8cx30ygy0n45skf6pdbif0zisn9a5xrdnjfb81dvrl"))))
+        (base32 "0n1dxsjv9fxv3kmr3nh4n8v8pqckwgdlls942msysavhp4kzm6fh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
