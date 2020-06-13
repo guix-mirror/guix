@@ -20380,7 +20380,7 @@ proven statistical guarantees.")
 (define-public rust-serde-bytes-0.11
   (package
     (name "rust-serde-bytes")
-    (version "0.11.3")
+    (version "0.11.5")
     (source
      (origin
        (method url-fetch)
@@ -20388,8 +20388,7 @@ proven statistical guarantees.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1bl45kf3c71xclv7wzk5525nswm4bgsnjd3s1s15f4k2a8whfnij"))))
+        (base32 "1fcb6sw8wkrj4ylm118wkb31hw124nkjnqyhbgqnd8w85zfhgbhn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
