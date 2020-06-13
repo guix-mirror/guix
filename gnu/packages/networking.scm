@@ -2142,7 +2142,7 @@ interface and a programmable text output for scripting.")
      `(;; To build the documentation, Doxygen and Perl is required.
        ("doxygen" ,doxygen)
        ("perl" ,perl)))
-    (home-page "https://sourceforge.net/projects/libnet-dev/")
+    (home-page "https://github.com/libnet/libnet")
     (synopsis "Framework for low-level network packet construction")
     (description
      "Libnet provides a fairly portable framework for network packet
