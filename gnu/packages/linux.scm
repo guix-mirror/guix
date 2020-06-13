@@ -45,6 +45,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -7139,3 +7140,50 @@ cache data store that is used by network file systems such as @code{AFS} and
 @code{NFS} to cache data locally on disk.  The content of the cache is
 persistent over reboots.")
     (license license:gpl2+)))
+
+(define-public libbpf
+  (package
+    (name "libbpf")
+    (version "0.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libbpf/libbpf")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "18l0gff7nm841mwhr7bc7x863xcyvwh58zl7mc0amnsjqlbrvqg7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libelf" ,libelf)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags
+       (list
+        (string-append "PREFIX=''")
+        (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+        (string-append "LIBDIR=/lib")
+        (string-append
+         "CC=" (assoc-ref %build-inputs "gcc") "/bin/gcc"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "scripts/check-reallocarray.sh"
+               (("/bin/rm" rm)
+                (string-append (assoc-ref inputs "coreutils") rm)))
+             (chdir "src")
+             #t)))))
+    (home-page "https://github.com/libbpf/libbpf")
+    (synopsis "BPF CO-RE (Compile Once – Run Everywhere)")
+    (description
+     "Libbpf supports building BPF CO-RE-enabled applications, which, in
+contrast to BCC, do not require the Clang/LLVM runtime or linux kernel
+headers.")
+    (license `(,license:lgpl2.1 ,license:bsd-2))))
