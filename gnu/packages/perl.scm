@@ -9813,6 +9813,27 @@ template engine, for when you need speed rather than complex features,
 yet need more features than simple variable substitution.")
     (license (package-license perl))))
 
+(define-public perl-text-patch
+  (package
+    (name "perl-text-patch")
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CADE/"
+                           "Text-Patch-" version ".tar.gz"))
+       (sha256
+        (base32 "1k1xbhxwn9fymqqwnam9pm7hr2p5ikq6dk578qw18gkap9hqxwga"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-text-diff" ,perl-text-diff)))
+    (home-page "https://metacpan.org/release/Text-Patch")
+    (synopsis "Patches text with given patch")
+    (description "Text::Patch combines source text with given
+diff (difference) data.  Diff data is produced by Text::Diff module or
+by the standard @code{diff} utility.")
+    (license gpl2+)))
+
 (define-public perl-text-roman
   (package
     (name "perl-text-roman")
