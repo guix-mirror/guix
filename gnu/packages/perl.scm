@@ -5723,6 +5723,28 @@ that aims to be compatible with the Uniforum message translations system as
 implemented for example in GNU gettext.")
     (license gpl3+)))
 
+(define-public perl-lingua-en-sentence
+  (package
+    (name "perl-lingua-en-sentence")
+    (version "0.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/K/KI/KIMRYAN/"
+                           "Lingua-EN-Sentence-" version ".tar.gz"))
+       (sha256
+        (base32 "11hlg92khd2azbxndnffsj9lggbxb3lqfdbwc6asr1c9lxlqddms"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page "https://metacpan.org/release/Lingua-EN-Sentence")
+    (synopsis "Split text into sentences")
+    (description
+     "The Lingua::EN::Sentence module contains the function get_sentences,
+which splits text into its constituent sentences, based on a regular
+expression and a list of abbreviations (built in and given).")
+    (license perl-license)))
+
 (define-public perl-lingua-translit
   (package
     (name "perl-lingua-translit")
