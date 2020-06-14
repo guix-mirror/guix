@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -1123,12 +1123,13 @@ instant messenger with audio and video chat capabilities.")
     (name "qtox")
     (version "1.17.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/qTox/qTox/archive/v"
-                                  version ".tar.gz"))
+              (method url-fetch/tarbomb)
+              (uri (string-append "https://github.com/qTox/qTox/releases"
+                                  "/download/v" version
+                                  "/v" version ".tar.gz"))
               (sha256
                (base32
-                "1b3a6d0k4780fwimi8l7mdbk280nilhhdmls17klapnfsp30zdi3"))
+                "0fmr3a0apil3rl32247qv2pqslp3knpbj5vhprdq0ixsvifrlhmh"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
