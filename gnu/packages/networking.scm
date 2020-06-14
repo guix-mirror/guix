@@ -2932,7 +2932,7 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.5.0.200327")
+    (version "1.5.2.200603")
     (source
      (origin
        (method git-fetch)
@@ -2941,7 +2941,7 @@ module @code{batman-adv}, for Layer 2.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vw7kjwxqd3qvm7kpxgjzl6797y0i1f16yfkfad84qpx2ij0gvdm"))))
+        (base32 "08rcyr54dssnpand6y26f8x9cjmd91hr44my08kxw70s5iqiwizv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
