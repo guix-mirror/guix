@@ -133,15 +133,17 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 (define-public docbook-xsl
   (package
     (name "docbook-xsl")
-    (version "1.79.1")
+    (version "1.79.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/docbook/docbook-xsl/"
-                                  version "/docbook-xsl-" version ".tar.bz2"))
-              (patches (search-patches "docbook-xsl-nonrecursive-string-subst.patch"))
+              (uri (string-append "https://github.com/docbook/xslt10-stylesheets"
+                                  "/releases/download/release%2F" version
+                                  "/docbook-xsl-" version ".tar.bz2"))
+              (patches (search-patches "docbook-xsl-support-old-url.patch"
+                                       "docbook-xsl-nonrecursive-string-subst.patch"))
               (sha256
                (base32
-                "0s59lihif2fr7rznckxr2kfyrvkirv76r1zvidp9b5mj28p4apvj"))
+                "0wd33z41kdsybyx3ay21w6bdlmgpd9kyn3mr5y520lsf8km28r9i"))
               (modules '((guix build utils)))
               (snippet
                '(begin
