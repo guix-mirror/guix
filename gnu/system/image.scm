@@ -573,8 +573,4 @@ addition of the <image> record."
         (else
          efi-disk-image)))))
 
-;;; Local Variables:
-;;; eval: (put 'maybe-with-target 'scheme-indent-function 1)
-;;; End:
-
 ;;; image.scm ends here
