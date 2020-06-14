@@ -52,13 +52,27 @@
 ;;;
 ;;; Code:
 
+(define-json-mapping <build-product> make-build-product
+  build-product?
+  json->build-product
+  (type        build-product-type)
+  (file-size   build-product-file-size)
+  (path        build-product-path))
+
 (define-json-mapping <build> make-build build?
   json->build
   (id          build-id "id")                     ;integer
   (derivation  build-derivation)                  ;string | #f
   (system      build-system)                      ;string
   (status      build-status "buildstatus" )       ;integer
-  (timestamp   build-timestamp))                  ;integer
+  (timestamp   build-timestamp)                   ;integer
+  (products    build-products "buildproducts"     ;<build-product>*
+               (lambda (products)
+                 (map json->build-product
+                      ;; Before Cuirass 3db603c1, #f is always returned.
+                      (if products
+                          (vector->list products)
+                          '())))))
 
 (define-json-mapping <checkout> make-checkout checkout?
   json->checkout
