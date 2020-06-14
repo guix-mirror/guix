@@ -9685,6 +9685,30 @@ used to match against text, rather than fetching names from a file system.  If
 you want to do full file globbing use the File::Glob module instead.")
     (license (package-license perl))))
 
+(define-public perl-text-haml
+  (package
+    (name "perl-text-haml")
+    (version "0.990118")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/V/VT/VTI/"
+                           "Text-Haml-" version ".tar.gz"))
+       (sha256
+        (base32 "1siq8hgj7s8gwpf3n3h1is5v50rwi6av8lfb19khiyyqz0rp7a57"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build-tiny" ,perl-module-build-tiny)))
+    (propagated-inputs
+     `(("perl-data-section-simple" ,perl-data-section-simple)
+       ("perl-uri" ,perl-uri)))
+    (home-page "https://metacpan.org/release/Text-Haml")
+    (synopsis "Haml Perl implementation")
+    (description
+     "Text::Haml implements Haml
+@url{http://haml.info/docs/yardoc/file.REFERENCE.html} specification.")
+    (license artistic2.0)))
+
 (define-public perl-text-neattemplate
   (package
     (name "perl-text-neattemplate")
