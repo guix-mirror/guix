@@ -1562,9 +1562,9 @@ zero means that PACKAGE does not match any of REGEXPS."
   (if (isatty?* (current-output-port))
       ;; Set 'LESS' so that 'less' exits if everything fits on the screen (F),
       ;; lets ANSI escapes through (r), does not send the termcap
-      ;; initialization string (X).
-      (let ((pager (with-environment-variables `(("LESS"
-                                                  ,(or (getenv "LESS") "FrX")))
+      ;; initialization string (X).  Set it unconditionally because some
+      ;; distros set it to something that doesn't work here.
+      (let ((pager (with-environment-variables `(("LESS" "FrX"))
                      (open-pipe* OPEN_WRITE
                                  (or (getenv "GUIX_PAGER") (getenv "PAGER")
                                      "less")))))
