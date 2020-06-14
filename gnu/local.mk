@@ -805,6 +805,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bitcoin-core-python-compat.patch		\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
+  %D%/packages/patches/busybox-1.31.1-fix-build-with-glibc-2.31.patch \
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-sqlite.patch		\
