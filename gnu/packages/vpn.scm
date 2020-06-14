@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
+;;; Copyright © 2020 Ivan Kozlov <kanichos@yandex.ru>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
@@ -643,9 +645,20 @@ public keys and can roam across IP addresses.")
      `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))  ; no configure script
+                  (delete 'configure) ;no configure script
+                  (add-before 'build 'setup-environment
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CFLAGS"
+                              (string-append "-DPPD=\""
+                                             (assoc-ref inputs "ppp")
+                                             "/sbin/pppd\""))
+                      (setenv "KERNELSRC"
+                              (assoc-ref inputs "linux-libre-headers"))
+                      #t)))
        #:tests? #f))                    ; no tests provided
-    (inputs `(("libpcap" ,libpcap)))
+    (inputs `(("libpcap" ,libpcap)
+              ("linux-libre-headers" ,linux-libre-headers)
+              ("ppp" ,ppp)))
     (home-page "https://www.xelerance.com/software/xl2tpd/")
     (synopsis "Layer 2 Tunnelling Protocol Daemon (RFC 2661)")
     (description
