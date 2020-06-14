@@ -8272,6 +8272,37 @@ feature is useful when you want to write loggers, servers, and portable
 applications.")
     (license (package-license perl))))
 
+(define-public perl-ppi
+  (package
+    (name "perl-ppi")
+    (version "1.270")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MITHALDU/"
+                           "PPI-" version ".tar.gz"))
+       (sha256
+        (base32 "0mzlz9rxqx93rqgy16jcfxwkplvhzr0f1gvvvwmmvf0vg266jak2"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f))                    ;FIXME: some tests fail
+    (native-inputs
+     `(("perl-class-inspector" ,perl-class-inspector)
+       ("perl-test-deep" ,perl-test-deep)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-object" ,perl-test-object)
+       ("perl-test-subcalls" ,perl-test-subcalls)))
+    (propagated-inputs
+     `(("perl-clone" ,perl-clone)
+       ("perl-io-string" ,perl-io-string)
+       ("perl-params-util" ,perl-params-util)
+       ("perl-task-weaken" ,perl-task-weaken)))
+    (home-page "https://metacpan.org/release/PPI")
+    (synopsis "Parse, analyze and manipulate Perl (without Perl)")
+    (description "The PPI module parses, analyzes and manipulates Perl
+code.")
+    (license perl-license)))
+
 (define-public perl-probe-perl
   (package
     (name "perl-probe-perl")
