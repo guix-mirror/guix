@@ -3301,17 +3301,18 @@ IRC bouncer with ERC.")
          (uri (git-reference
                (url "https://github.com/drewbarbs/erc-status-sidebar.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1hwlhzgx03z8891sblz56zdp8zj0izh72kxykgcnz5rrkyc3vfi3"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-seq" ,emacs-seq)))
       (home-page "https://github.com/drewbarbs/erc-status-sidebar")
-      (synopsis "A hexchat-like activity overview for ERC channels")
+      (synopsis "Hexchat-like activity overview for ERC channels")
       (description
-       "This package is provides a hexchat-like status bar for joined
-channels in ERC.  It relies on the `erc-track' module, and displays
-all the same information erc-track does in the mode line, but in an
-alternative format.")
+       "This package provides a Hexchat-like status bar for joined channels in
+ERC, an Emacs client for IRC (Internet Relay Chat).  It relies on the
+@code{erc-track} module, and displays all the same information
+@code{erc-track} does in the mode line, but in an alternative format.")
       (license license:expat))))
 
 (define-public emacs-shut-up
