@@ -9947,6 +9947,31 @@ operations can also be performed on the IxHash.")
 by modifying the @code{seek()} and @code{tell()} calls.")
     (license asl2.0)))
 
+(define-public perl-tie-simple
+  (package
+    (name "perl-tie-simple")
+    (version "1.04")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HANENKAMP/"
+                           "Tie-Simple-" version ".tar.gz"))
+       (sha256
+        (base32 "04lbh07nlxhpp03gl20f9w8hxjb2vzlb7w85y9w6q12i749y5s99"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Tie-Simple")
+    (synopsis "Variable ties made much easier")
+    (description
+     "This module adds the ability to quickly create new types of tie objects
+without creating a complete class.  It does so in such a way as to try and
+make the programmers life easier when it comes to single-use ties that I find
+myself wanting to use from time-to-time.
+
+The Tie::Simple package is actually a front-end to other classes which really
+do all the work once tied, but this package does the dwimming to automatically
+figure out what you're trying to do.")
+    (license perl-license)))
+
 (define-public perl-tie-toobject
   (package
     (name "perl-tie-toobject")
