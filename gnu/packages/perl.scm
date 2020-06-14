@@ -2673,6 +2673,27 @@ like split on newlines unless newlines are embedded in quotes.")
 of data out of your DATA section.")
     (license (package-license perl))))
 
+(define-public perl-data-section-simple
+  (package
+    (name "perl-data-section-simple")
+    (version "0.07")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
+                           "Data-Section-Simple-" version ".tar.gz"))
+       (sha256
+        (base32 "1jx9g5sxcw0i2zkm2z895k422i49kpx0idnnvvvs36lhvgzkac0b"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-requires" ,perl-test-requires)))
+    (home-page "https://metacpan.org/release/Data-Section-Simple")
+    (synopsis "Read data from __DATA__")
+    (description
+     "Data::Section::Simple is a simple module to extract data from __DATA__
+section of the file.")
+    (license perl-license)))
+
 (define-public perl-data-stag
   (package
     (name "perl-data-stag")
