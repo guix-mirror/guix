@@ -1011,6 +1011,45 @@ does not include game data.")
     (license (list license:agpl3
                    license:zlib))))     ; ext/tinyfiledialogs
 
+(define-public augustus
+  (package
+    (inherit julius)
+    (name "augustus")
+    (version (package-version julius))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Keriew/augustus")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ii0w0iwa9zv5bbqfcps5mxifd796m6fw4gvjf09pkm3yjgqc0ag"))
+       ;; Remove unused bundled libraries.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (with-directory-excursion "ext"
+             (for-each delete-file-recursively '("dirent" "png" "SDL2" "zlib")))
+           #t))))
+    (arguments
+     ;; No tests.  See https://github.com/Keriew/augustus/issues/82.
+     `(#:tests? #f))
+    (home-page "https://github.com/Keriew/augustus")
+    (synopsis "Re-implementation of Caesar III game engine with gameplay changes")
+    (description
+     "Fork of Julius, an engine for the a city-building real-time strategy
+game Caesar III.  Gameplay enhancements include:
+
+@itemize
+@item roadblocks;
+@item market special orders;
+@item global labour pool;
+@item partial warehouse storage;
+@item increased game limits;
+@item zoom controls.
+@end itemize\n")))
+
 (define-public meandmyshadow
   (package
     (name "meandmyshadow")
