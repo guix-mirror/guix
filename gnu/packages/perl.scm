@@ -5567,6 +5567,32 @@ versa.")
      "Lexical::SealRequireHints prevents leakage of lexical hints")
     (license (package-license perl))))
 
+(define-public perl-locale-maketext-lexicon
+  (package
+    (name "perl-locale-maketext-lexicon")
+    (version "1.00")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DR/DRTECH/"
+                           "Locale-Maketext-Lexicon-" version ".tar.gz"))
+       (sha256
+        (base32 "0z6w3m6f3r29ljicdigsyvpa9w9j2m65l4gjxcw0wgwdll26ngxp"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)
+       ("perl-lingua-en-sentence" ,perl-lingua-en-sentence)
+       ("perl-ppi" ,perl-ppi)
+       ("perl-template-toolkit" ,perl-template-toolkit)
+       ("perl-text-haml" ,perl-text-haml)
+       ("perl-yaml" ,perl-yaml)))
+    (home-page "https://metacpan.org/release/Locale-Maketext-Lexicon")
+    (synopsis "Use other catalog formats in Maketext")
+    (description
+     "This module provides lexicon-handling modules to read from other
+localization formats, such as Gettext, Msgcat, and so on.")
+    (license x11)))
+
 (define-public perl-log-any
   (package
     (name "perl-log-any")
