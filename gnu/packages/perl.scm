@@ -57,8 +57,10 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages less)
   #:use-module (gnu packages ncurses)
@@ -67,6 +69,7 @@
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages web))
 
@@ -320,6 +323,63 @@ into your namespace a subroutine that returns the class name.  You can
 explicitly alias the class to another name or, if you prefer, you can do so
 implicitly.")
     (license (package-license perl))))
+
+(define-public perl-alien-sdl
+  (package
+    (name "perl-alien-sdl")
+    (version "1.446")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FROGGS/"
+                           "Alien-SDL-" version ".tar.gz"))
+       (sha256
+        (base32 "0ajipk43syhlmw0zinbj1i6r46vdlkr06wkx7ivqjgf6qffjran9"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:module-build-flags
+       ;; XXX: For some reason, `sdl-config' reports stand-alone SDL
+       ;; directory, not SDL-union provided as an input to the
+       ;; package.  We force the latter with "--prefix=" option.
+       (list (let ((sdl (assoc-ref %build-inputs "sdl")))
+               (string-append "--with-sdl-config=" sdl "/bin/sdl-config"
+                              " --prefix=" sdl)))
+       #:phases
+       (modify-phases %standard-phases
+         ;; Fix "unrecognized option: --with-sdl-config" during build.
+         ;; Reported upstream as
+         ;; <https://github.com/PerlGameDev/SDL/issues/261>.  See also
+         ;; <https://github.com/PerlGameDev/SDL/issues/272>.
+         (add-after 'unpack 'fix-build.pl
+           (lambda _
+             (substitute* "Build.PL"
+               (("use Getopt::Long;") "")
+               (("GetOptions\\( \"travis\" => \\\\\\$travis \\);") ""))
+             #t)))))
+    (native-inputs
+     `(("perl-archive-extract" ,perl-archive-extract)
+       ("perl-archive-zip" ,perl-archive-zip)
+       ("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-text-patch" ,perl-text-patch)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("fontconfig" ,fontconfig)
+       ("pango" ,pango)
+       ("sdl" ,(sdl-union
+                (list sdl sdl-gfx sdl-image sdl-mixer sdl-net sdl-ttf
+                      sdl-pango)))
+       ("zlib" ,zlib)))
+    (home-page "https://metacpan.org/release/Alien-SDL")
+    (synopsis "Get, build and use SDL libraries")
+    (description
+     "Alien::SDL can be used to detect and get configuration settings from an
+installed SDL and related libraries.  Based on your platform it offers the
+possibility to download and install prebuilt binaries or to build SDL & co.@:
+from source codes.")
+    (license license:perl-license)))
 
 (define-public perl-any-moose
   (package
