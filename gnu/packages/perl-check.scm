@@ -1316,6 +1316,33 @@ makes fork(2) safe to use in test cases.")
     (home-page "https://metacpan.org/release/Test-Simple")
     (license perl-license)))
 
+(define-public perl-test-subcalls
+  (package
+    (name "perl-test-subcalls")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Test-SubCalls-" version ".tar.gz"))
+       (sha256
+        (base32 "1hmnv9nkdzyrr6yis0dnkf4lk0hwld3zapiyq7mizrq5barykhfb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-hook-lexwrap" ,perl-hook-lexwrap)))
+    (home-page "https://metacpan.org/release/Test-SubCalls")
+    (synopsis "Track the number of times subs are called")
+    (description
+     "There are a number of different situations (like testing caching
+code) where you want to want to do a number of tests, and then verify
+that some underlying subroutine deep within the code was called
+a specific number of times.
+
+Test::SubCalls module provides a number of functions for doing testing
+in this way in association with your normal Test::More (or similar)
+test scripts.")
+    (license perl-license)))
+
 (define-public perl-test-taint
   (package
     (name "perl-test-taint")
