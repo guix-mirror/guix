@@ -7,6 +7,7 @@
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2020 shtwzrd <shtwzrd@protonmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -925,7 +926,7 @@ the GNOME desktop environment.")
     (inherit (unix-pam-service "gdm-autologin"
                                #:login-uid? #t))
     (auth (list (pam-entry
-                 (control "[success=ok default=1]")
+                 (control "optional")
                  (module (file-append (gdm-configuration-gdm config)
                                       "/lib/security/pam_gdm.so")))
                 (pam-entry
