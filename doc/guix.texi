@@ -239,7 +239,7 @@ Programming Interface
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Fiddling with Guix interactively.
+* Invoking guix repl::          Programming Guix in Guile
 
 Defining Packages
 
@@ -5474,7 +5474,7 @@ package definitions.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
 * G-Expressions::               Manipulating build expressions.
-* Invoking guix repl::          Fiddling with Guix interactively.
+* Invoking guix repl::          Programming Guix in Guile
 @end menu
 
 @node Package Modules
@@ -8248,12 +8248,47 @@ has an associated gexp compiler, such as a @code{<package>}.
 @node Invoking guix repl
 @section Invoking @command{guix repl}
 
-@cindex REPL, read-eval-print loop
-The @command{guix repl} command spawns a Guile @dfn{read-eval-print loop}
-(REPL) for interactive programming (@pxref{Using Guile Interactively,,, guile,
-GNU Guile Reference Manual}).  Compared to just launching the @command{guile}
+@cindex REPL, read-eval-print loop, script
+The @command{guix repl} command makes it easier to program Guix in Guile
+by launching a Guile @dfn{read-eval-print loop} (REPL) for interactive
+programming (@pxref{Using Guile Interactively,,, guile,
+GNU Guile Reference Manual}), or by running Guile scripts
+(@pxref{Running Guile Scripts,,, guile,
+GNU Guile Reference Manual}).
+Compared to just launching the @command{guile}
 command, @command{guix repl} guarantees that all the Guix modules and all its
-dependencies are available in the search path.  You can use it this way:
+dependencies are available in the search path.
+
+The general syntax is:
+
+@example
+guix repl @var{options} [@var{file} @var{args}]
+@end example
+
+When a @var{file} argument is provided, @var{file} is
+executed as a Guile scripts:
+
+@example
+guix repl my-script.scm
+@end example
+
+To pass arguments to the script, use @code{--} to prevent them from
+being interpreted as arguments to @command{guix repl} itself:
+
+@example
+guix repl -- my-script.scm --input=foo.txt
+@end example
+
+To make a script executable directly from the shell, using the guix
+executable that is on the user's search path, add the following two
+lines at the top of the script:
+
+@example
+@code{#!/usr/bin/env -S guix repl --}
+@code{!#}
+@end example
+
+Without a file name argument, a Guile REPL is started:
 
 @example
 $ guix repl
@@ -8302,7 +8337,7 @@ Add @var{directory} to the front of the package module search path
 (@pxref{Package Modules}).
 
 This allows users to define their own packages and make them visible to
-the command-line tool.
+the script or REPL.
 
 @item -q
 Inhibit loading of the @file{~/.guile} file.  By default, that

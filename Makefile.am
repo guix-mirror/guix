@@ -477,6 +477,7 @@ SH_TESTS =					\
   tests/guix-environment-container.sh		\
   tests/guix-graph.sh				\
   tests/guix-describe.sh			\
+  tests/guix-repl.sh     			\
   tests/guix-lint.sh
 
 TESTS = $(SCM_TESTS) $(SH_TESTS)
