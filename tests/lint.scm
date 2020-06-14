@@ -353,6 +353,36 @@
     (((and (? lint-warning?) first-warning) others ...)
      (lint-warning-message first-warning))))
 
+(test-equal "profile-collisions: no warnings"
+  '()
+  (check-profile-collisions (dummy-package "x")))
+
+(test-equal "profile-collisions: propagated inputs collide"
+  "propagated inputs p0@1 and p0@2 collide"
+  (let* ((p0  (dummy-package "p0" (version "1")))
+         (p0* (dummy-package "p0" (version "2")))
+         (p1  (dummy-package "p1" (propagated-inputs `(("p0" ,p0)))))
+         (p2  (dummy-package "p2" (propagated-inputs `(("p1" ,p1)))))
+         (p3  (dummy-package "p3" (propagated-inputs `(("p0" ,p0*)))))
+         (p4  (dummy-package "p4" (propagated-inputs
+                                   `(("p2" ,p2) ("p3", p3))))))
+    (single-lint-warning-message
+     (check-profile-collisions p4))))
+
+(test-assert "profile-collisions: propagated inputs collide, store items"
+  (string-match-or-error
+   "propagated inputs /[[:graph:]]+-p0-1 and /[[:graph:]]+-p0-1 collide"
+   (let* ((p0  (dummy-package "p0" (version "1")))
+          (p0* (dummy-package "p0" (version "1")
+                              (inputs `(("x" ,(dummy-package "x"))))))
+          (p1  (dummy-package "p1" (propagated-inputs `(("p0" ,p0)))))
+          (p2  (dummy-package "p2" (propagated-inputs `(("p1" ,p1)))))
+          (p3  (dummy-package "p3" (propagated-inputs `(("p0" ,p0*)))))
+          (p4  (dummy-package "p4" (propagated-inputs
+                                    `(("p2" ,p2) ("p3", p3))))))
+     (single-lint-warning-message
+      (check-profile-collisions p4)))))
+
 (test-equal "license: invalid license"
   "invalid license field"
   (single-lint-warning-message

@@ -41,6 +41,8 @@
   #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (guix memoization)
+  #:use-module (guix profiles)
+  #:use-module (guix monads)
   #:use-module (guix scripts)
   #:use-module ((guix ui) #:select (texi->plain-text fill-paragraph))
   #:use-module (guix gnu-maintenance)
@@ -84,6 +86,7 @@
             check-for-updates
             check-formatting
             check-archival
+            check-profile-collisions
 
             lint-warning
             lint-warning?
@@ -970,6 +973,38 @@ descriptions maintained upstream."
       (with-store store
         (check-with-store store))))
 
+(define* (check-profile-collisions package #:key store)
+  "Check for collisions that would occur when installing PACKAGE as a result
+of the propagated inputs it pulls in."
+  (define (do-check store)
+    (guard (c ((profile-collision-error? c)
+               (let ((first  (profile-collision-error-entry c))
+                     (second (profile-collision-error-conflict c)))
+                 (define format
+                   (if (string=? (manifest-entry-version first)
+                                 (manifest-entry-version second))
+                       manifest-entry-item
+                       (lambda (entry)
+                         (string-append (manifest-entry-name entry) "@"
+                                        (manifest-entry-version entry)))))
+
+                 (list (make-warning package
+                                     (G_ "propagated inputs ~a and ~a collide")
+                                     (list (format first)
+                                           (format second)))))))
+      ;; Disable grafts to avoid building PACKAGE and its dependencies.
+      (parameterize ((%graft? #f))
+        (run-with-store store
+          (mbegin %store-monad
+            (check-for-collisions (packages->manifest (list package))
+                                  (%current-system))
+            (return '()))))))
+
+  (if store
+      (do-check store)
+      (with-store store
+        (do-check store))))
+
 (define (check-license package)
   "Warn about type errors of the 'license' field of PACKAGE."
   (match (package-license package)
@@ -1348,6 +1383,11 @@ or a list thereof")
      (name            'derivation)
      (description     "Report failure to compile a package to a derivation")
      (check           check-derivation)
+     (requires-store? #t))
+   (lint-checker
+     (name            'profile-collisions)
+     (description     "Report collisions that would occur due to propagated inputs")
+     (check           check-profile-collisions)
      (requires-store? #t))
    (lint-checker
     (name        'patch-file-names)

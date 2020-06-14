@@ -104,6 +104,7 @@
             manifest-installed?
             manifest-matching-entries
             manifest-search-paths
+            check-for-collisions
 
             manifest-transaction
             manifest-transaction?
