@@ -315,7 +315,7 @@
                               `(("python-setuptools" ,python-setuptools))))))
      (check-inputs-should-not-be-an-input-at-all pkg))))
 
-(test-equal "patches: file names"
+(test-equal "file patches: different file name -> warning"
   "file names of patches should start with the package name"
   (single-lint-warning-message
    (let ((pkg (dummy-package "x"
@@ -323,6 +323,37 @@
                               (dummy-origin
                                (patches (list "/path/to/y.patch")))))))
      (check-patch-file-names pkg))))
+
+(test-equal "file patches: same file name -> no warnings"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (dummy-origin
+                              (patches (list "/path/to/x.patch")))))))
+    (check-patch-file-names pkg)))
+
+(test-equal "<origin> patches: different file name -> warning"
+  "file names of patches should start with the package name"
+  (single-lint-warning-message
+   (let ((pkg (dummy-package "x"
+                             (source
+                              (dummy-origin
+                               (patches
+                                (list
+                                 (dummy-origin
+                                  (file-name "y.patch")))))))))
+     (check-patch-file-names pkg))))
+
+(test-equal "<origin> patches: same file name -> no warnings"
+  '()
+  (let ((pkg (dummy-package "x"
+                            (source
+                             (dummy-origin
+                              (patches
+                               (list
+                                (dummy-origin
+                                 (file-name "x.patch")))))))))
+    (check-patch-file-names pkg)))
 
 (test-equal "patches: file name too long"
   (string-append "x-"
