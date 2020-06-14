@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1064,6 +1065,34 @@ absolute value of the difference of the numbers is within a desired tolerance,
 usually called epsilon.  This module provides such a function for use with
 @code{Test::More}.")
     (license asl2.0)))
+
+(define-public perl-test-object
+  (package
+    (name "perl-test-object")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Test-Object-" version ".tar.gz"))
+       (sha256
+        (base32 "1fyhn558kvla37fb60fzdr6kd2kfcxcmpr8884zk2dvq2ij8j9v5"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Test-Object")
+    (synopsis "Thoroughly testing objects via registered handlers")
+    (description
+     "In situations where you have deep trees of classes,
+there is a common situation in which you test a module 4 or 5 subclasses down,
+which should follow the correct behaviour of not just the subclass, but of all
+the parent classes.
+
+This should be done to ensure that the implementation of a subclass has not
+somehow ``broken'' the object's behaviour in a more general sense.
+
+Test::Object is a testing package designed to allow you to easily test what
+you believe is a valid object against the expected behaviour of all of the
+classes in its inheritance tree in one single call.")
+    (license perl-license)))
 
 (define-public perl-test-output
   (package
