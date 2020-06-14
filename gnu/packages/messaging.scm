@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1031,7 +1032,7 @@ and prevent message loss.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.9")
+    (version "0.2.12")
     (source
      (origin
        (method git-fetch)
@@ -1041,7 +1042,7 @@ and prevent message loss.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0aljr9hqybla6p61af6fdkv0x8gph7c2wacqqa9hq2z9w0p4fs5j"))))
+         "0a6sqpm00d2rn0nviqfz4gh9ck1wzci6rxgmqmcyryl5ca19ffvp"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.
