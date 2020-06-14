@@ -146,6 +146,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages perl-compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
@@ -176,14 +177,15 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
   #:use-module (guix build-system copy)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system meson)
-  #:use-module (guix build-system scons)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26))
@@ -6890,6 +6892,104 @@ libraries.  AIFF sound effects and music in MOD and OGG formats are supported
 when packaged in Blorb container files or optionally from individual files.")
       (home-page "http://frotz.sourceforge.net")
       (license license:gpl2+))))
+
+(define-public frozen-bubble
+  ;; Last official release is very outdated (2010).  Use latest commit (2017).
+  (let ((commit "d6a029110ad6ab9e4960052e175addc98807fb7e")
+        (revision "1"))
+    (package
+      (name "frozen-bubble")
+      (version (git-version "2.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kthakore/frozen-bubble.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1rfrcym5lf4qac2qdklikb1ywijyxypq298azzxahy461dadl6cx"))))
+      (build-system perl-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Build process needs to create files in the "server"
+           ;; directory.
+           (add-after 'unpack 'fix-permissions
+             (lambda _
+               (for-each make-file-writable
+                         (find-files "server" "." #:directories? #t))))
+           ;; By default, build stops at warnings.
+           (add-after 'unpack 'prevent-build-error
+             (lambda _
+               (substitute* "inc/My/Builder.pm"
+                 (("-Werror") ""))
+               #t))
+           (add-after 'install 'install-desktop-file-and-icons
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                      (hicolor (string-append share "/icons/hicolor")))
+                 ;; Create desktop entry.
+                 (make-desktop-entry-file
+                  (string-append share "/applications/" ,name ".desktop")
+                  #:name "Frozen Bubble"
+                  #:comment "Frozen Bubble arcade game"
+                  #:exec ,name
+                  #:icon ,name
+                  #:categories '("Game" "ArcadeGame"))
+                 ;; Add icons.
+                 (with-directory-excursion "share/icons"
+                   (for-each
+                    (lambda (size)
+                      (let* ((dim (string-append size "x" size))
+                             (dir (string-append hicolor "/" dim "/apps")))
+                        (mkdir-p dir)
+                        (copy-file
+                         (string-append "frozen-bubble-icon-" dim ".png")
+                         (string-append dir "/frozen-bubble.png"))))
+                    '("16" "32" "48" "64"))))
+               #t))
+           (add-after 'install 'wrap-perl-libs
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (perl5lib (getenv "PERL5LIB")))
+                 (for-each (lambda (prog)
+                             (wrap-program (string-append out "/" prog)
+                               `("PERL5LIB" ":" prefix
+                                 (,(string-append perl5lib ":" out
+                                                  "/lib/perl5/site_perl")))))
+                           (find-files "bin" ".")))
+               #t)))))
+      (native-inputs
+       `(("perl-alien-sdl" ,perl-alien-sdl)
+         ("perl-capture-tiny" ,perl-capture-tiny)
+         ("perl-locale-maketext-lexicon" ,perl-locale-maketext-lexicon)
+         ("perl-module-build" ,perl-module-build)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("glib" ,glib)
+         ("perl-compress-bzip2" ,perl-compress-bzip2)
+         ("perl-file-sharedir" ,perl-file-sharedir)
+         ("perl-file-slurp" ,perl-file-slurp)
+         ("perl-file-which" ,perl-file-which)
+         ("perl-ipc-system-simple" ,perl-ipc-system-simple)
+         ("perl-sdl" ,perl-sdl)
+         ("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+      (home-page "http://frozen-bubble.org/")
+      (synopsis "Puzzle with bubbles")
+      (description
+       "Frozen-Bubble is a clone of the popular Puzzle Bobble game, in which
+you attempt to shoot bubbles into groups of the same color to cause them to
+pop.
+
+Players compete as penguins and must use the arrow keys to aim a colored
+bubble at groups of bubbles.  The objective is to clear all the bubbles off
+the screen before a bubble passes below a line at the bottom.
+
+It features 100 single-player levels, a two-player mode, music and striking
+graphics.  A level editor is also included to allow players to create and play
+their own levels.")
+      (license license:gpl2))))
 
 (define-public libmanette
   (package
