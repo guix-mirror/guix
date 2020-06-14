@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Stephen J. Scheck <sscheck@cpan.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4979,6 +4980,29 @@ merged.")
     (description "Hash::MultiValue is an object (and a plain hash reference)
 that may contain multiple values per key, inspired by MultiDict of WebOb.")
     (license (package-license perl))))
+
+(define-public perl-hook-lexwrap
+  (package
+    (name "perl-hook-lexwrap")
+    (version "0.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Hook-LexWrap-" version ".tar.gz"))
+       (sha256
+        (base32 "0bgc6w8zs45n6ksgk0zisn9a2vcr3lmzipkan2a94kzrk1gxq2xn"))))
+    (build-system perl-build-system)
+    (home-page
+     "https://metacpan.org/release/Hook-LexWrap")
+    (synopsis "Lexically scoped subroutine wrappers")
+    (description
+     "Hook::LexWrap allows you to install a pre- or post-wrapper (or
+both) around an existing subroutine.  Unlike other modules that
+provide this capacity (e.g., Hook::PreAndPost and Hook::WrapSub),
+Hook::LexWrap implements wrappers in such a way that the standard
+caller function works correctly within the wrapped subroutine.")
+    (license perl-license)))
 
 (define-public perl-importer
   (package
