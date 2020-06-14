@@ -101,6 +101,8 @@
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
@@ -7312,3 +7314,85 @@ persistent over reboots.")
 contrast to BCC, do not require the Clang/LLVM runtime or linux kernel
 headers.")
     (license `(,license:lgpl2.1 ,license:bsd-2))))
+
+(define-public bcc
+  (package
+    (name "bcc")
+    (version "0.15.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/iovisor/bcc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d5j9zanffa1c7lpi5fcrdlx1n7hy86xl82fam2xqr0s41q4ipxw"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("clang-toolchain" ,clang-toolchain)
+       ("libbpf" ,(package-source libbpf))
+       ;; LibElf required but libelf does not contain
+       ;; archives, only object files.
+       ;; https://github.com/iovisor/bcc/issues/504
+       ("elfutils" ,elfutils)
+       ("linux-libre-headers" ,linux-libre-headers)
+       ("luajit" ,luajit)
+       ("python-wrapper" ,python-wrapper)))
+    (arguments
+     `(;; Tests all require root permissions and a "standard" file hierarchy.
+       #:tests? #f
+       #:configure-flags
+       (let ((revision ,version))
+         `(,(string-append "-DREVISION=" revision)))
+       #:phases
+       (modify-phases %standard-phases
+         ;; FIXME: Use "-DCMAKE_USE_LIBBPF_PACKAGE=ON".
+         (add-after 'unpack 'copy-libbpf
+           (lambda* (#:key inputs #:allow-other-keys)
+             (delete-file-recursively "src/cc/libbpf")
+             (copy-recursively
+              (assoc-ref inputs "libbpf") "src/cc/libbpf")))
+         (add-after 'copy-libbpf 'substitute-libbc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/python/bcc/libbcc.py"
+               (("(libbcc\\.so.*)\\b" _ libbcc)
+                (string-append
+                 (assoc-ref outputs "out") "/lib/" libbcc)))))
+         (add-after 'install 'wrap-tools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (use-modules (ice-9 textual-ports))
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (tools (string-append out "/share/bcc/tools"))
+                    (python-executable?
+                     (lambda (filename _)
+                       (call-with-input-file filename
+                         (lambda (port)
+                           (string-contains (get-line port)
+                                            "/bin/python"))))))
+               (for-each
+                (lambda (python-executable)
+                  (format #t "Wrapping: ~A.~%" python-executable)
+                  (wrap-program python-executable
+                    `("PYTHONPATH" ":" prefix
+                      (,(string-append lib
+                                       "/python"
+                                       ,(version-major+minor
+                                         (package-version python))
+                                       "/site-packages")))))
+                (find-files tools python-executable?))
+               #t))))))
+    (home-page "https://github.com/iovisor/bcc")
+    (synopsis "Tools for BPF on Linux")
+    (description
+     "BCC is a toolkit for creating efficient kernel tracing and manipulation
+programs, and includes several useful tools and examples.  It makes use of
+extended BPF (Berkeley Packet Filters), formally known as eBPF, a new feature
+that was first added to Linux 3.15.  Much of what BCC uses requires Linux 4.1
+and above.")
+    (license license:asl2.0)))
