@@ -60,8 +60,10 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages less)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl-check)
@@ -71,6 +73,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web))
 
 ;;;
@@ -11015,6 +11018,46 @@ have expressed would be nice to have in the perl core, but the usage would not
 really be high enough to warrant the use of a keyword, and the size so small
 such that being individual extensions would be wasteful.")
     (license (package-license perl))))
+
+(define-public perl-sdl
+  (package
+    (name "perl-sdl")
+    (version "2.548")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/F/FR/FROGGS/"
+                           "SDL-" version ".tar.gz"))
+       (sha256
+        (base32 "1dagpmcpjnwvd4g6mmnc312rqpd4qcwx21rpi2j7084wz8mijai5"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-alien-sdl" ,perl-alien-sdl)
+       ("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-module-build" ,perl-module-build)
+       ("perl-test-most" ,perl-test-most)
+       ("perl-tie-simple" ,perl-tie-simple)))
+    (inputs
+     `(("freeglut" ,freeglut)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libsmpeg" ,libsmpeg)
+       ("libtiff" ,libtiff)
+       ("mesa" ,mesa)
+       ("sdl" ,(sdl-union
+                (list sdl sdl-gfx sdl-image sdl-mixer sdl-pango sdl-ttf)))))
+    (propagated-inputs
+     `(("perl-file-sharedir" ,perl-file-sharedir)
+       ("perl-tie-simple" ,perl-tie-simple)))
+    (home-page "https://metacpan.org/release/SDL")
+    (synopsis "SDL bindings to Perl")
+    (description
+     "SDL Perl is a package of Perl modules that provide both functional and
+object oriented interfaces to the Simple DirectMedia Layer for Perl5.  This
+package takes some liberties with the SDL API, and attempts to adhere to the
+spirit of both the SDL and Perl.")
+    (license license:lgpl2.1)))
 
 (define-public perl-shell-command
   (package
