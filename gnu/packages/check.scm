@@ -105,8 +105,8 @@ source code editors and IDEs.")
 
 ;; Some packages require this older version.  Removed once no longer needed.
 (define-public check-0.12
-  (package/inherit
-   check
+  (package
+   (inherit check)
    (version "0.12.0")
    (source (origin
              (method url-fetch)
@@ -396,7 +396,7 @@ and it supports a very flexible form of test discovery.")
 (define-public doctest
   (package
     (name "doctest")
-    (version "2.3.7")
+    (version "2.3.8")
     (home-page "https://github.com/onqtam/doctest")
     (source (origin
               (method git-fetch)
@@ -404,7 +404,7 @@ and it supports a very flexible form of test discovery.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "134lx7pjnglrl4wdmyr9dz3rjb6d4ir6rvapg00gp52n44dbhnrq"))))
+                "16w907750jnp98vdzkn72lzwy1zyryaqvfi80lbdp398pj23rq65"))))
     (build-system cmake-build-system)
     (synopsis "C++ test framework")
     (description
@@ -584,14 +584,13 @@ but it works for any C/C++ project.")
 (define-public python-parameterized
   (package
     (name "python-parameterized")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parameterized" version))
        (sha256
-        (base32
-         "0g1q6n7fkanjv7i1djzw62f46xf573jvza7afabh3baqjqxy7rpd"))))
+        (base32 "1444fdz5bj0k10nmhxv0bv2gfrfisi7hfzqdndb0pvhf4g3qq3qr"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1703,14 +1702,13 @@ normally the case.")
 (define-public python-pytest-sugar
   (package
     (name "python-pytest-sugar")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-sugar" version))
        (sha256
-        (base32
-         "1asq7yc4g8bx2sn7yy974mhc9ywvaihasjab4inkirdwn9s7mn7w"))))
+        (base32 "1i0hv3h49zvl62jbiyjag84carbrp3zprqzxffdr291nxavvac0n"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-packaging" ,python-packaging)
@@ -1888,12 +1886,10 @@ unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
 
-;; Further releases, up to 2.4.3, have failing unit tests. See:
-;; https://github.com/PyCQA/pylint/issues/3198.
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "2.3.1")
+    (version "2.5.3")
     (source
      (origin
        (method git-fetch)
@@ -1902,9 +1898,11 @@ statements in the module it tests.")
              (commit (string-append "pylint-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17vvzbcqmkhr4icq5p3737nbiiyj1y3g1pa08n9mb1bsnvxmqq0z"))))
+        (base32 "04cgbh2z1mygar63plzziyz34yg6bdr4i0g63jp256fgnqwb1bi3"))))
     (build-system python-build-system)
+    ;; FIXME: Tests are failing since version 2.4.3, see:
+    ;; https://github.com/PyCQA/pylint/issues/3198.
+    (arguments '(#:tests? #f))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)
@@ -1913,7 +1911,8 @@ statements in the module it tests.")
      `(("python-astroid" ,python-astroid)
        ("python-isort" ,python-isort)
        ("python-mccabe" ,python-mccabe)
-       ("python-six" ,python-six)))
+       ("python-six" ,python-six)
+       ("python-toml" ,python-toml)))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
 errors")
@@ -1946,7 +1945,7 @@ possible to write plugins to add your own checks.")
                  (base32
                   "02a89d8a47s7nfiv1ady3j0sg2sbyja3np145brarfp5x9qxz9x2"))))
              (arguments
-              `(,@(package-arguments pylint)
+              `(,@(strip-keyword-arguments '(#:tests?) (package-arguments pylint))
                 #:phases
                 (modify-phases %standard-phases
                   (replace 'check
@@ -2519,7 +2518,7 @@ provides a simple way to achieve this.")
 (define-public umockdev
   (package
     (name "umockdev")
-    (version "0.13.2")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martinpitt/umockdev/"
@@ -2527,7 +2526,7 @@ provides a simple way to achieve this.")
                                   "umockdev-" version ".tar.xz"))
               (sha256
                (base32
-                "095v3abc321s584sga04y16lcmdzsdi88h24wcrm78v7vq484g74"))))
+                "1g78jcrvb7yyh0q5kv5409wjqf8nlfqnw1rknm3a247mcx317dpz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2539,6 +2538,7 @@ provides a simple way to achieve this.")
              #t)))))
     (native-inputs
      `(("vala" ,vala)
+       ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)
 

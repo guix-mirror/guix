@@ -158,7 +158,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
 (define-public wmbattery
   (package
     (name "wmbattery")
-    (version "2.51")
+    (version "2.54")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -166,7 +166,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "084a3irxbmgms4bqaga80mlx9wgvlkx6d2w0ns939yrpfzg87laj"))))
+                "1r4n58mwkm69y1pjs7l64hg8r1lpndrzyrfl2rdgd4zi6v0jhyyw"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f)) ; no "check" target
     (inputs
@@ -176,9 +176,7 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
        ("libxpm" ,libxpm)
        ("upower" ,upower)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://www.dockapps.net/wmbattery")
     (synopsis "Display laptop battery info")
     (description

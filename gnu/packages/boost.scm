@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -241,12 +242,40 @@ across a broad spectrum of applications.")
     (arguments (substitute-keyword-arguments (package-arguments boost)
       ((#:phases phases)
        `(modify-phases ,phases
-          ;; This was removed after boost-1.67.
-          (add-before 'configure 'more-bin-sh-patching
-            (lambda _
-              (substitute* "tools/build/doc/bjam.qbk"
-                (("/bin/sh") (which "sh")))))
-          (delete 'provide-libboost_python)))))
+          (replace 'configure
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((icu (assoc-ref inputs "icu4c"))
+                    (out (assoc-ref outputs "out")))
+                (substitute* (append
+                               (find-files "tools/build/src/engine/" "execunix\\.c.*")
+                               '("libs/config/configure"
+                                 "libs/spirit/classic/phoenix/test/runtest.sh"
+                                 "tools/build/doc/bjam.qbk"
+                                 "tools/build/src/engine/Jambase"))
+                  (("/bin/sh") (which "sh")))
+
+                (setenv "SHELL" (which "sh"))
+                (setenv "CONFIG_SHELL" (which "sh"))
+
+                ,@(if (%current-target-system)
+                    `((call-with-output-file "user-config.jam"
+                        (lambda (port)
+                          (format port
+                                  "using gcc : cross : ~a-c++ ;"
+                                  ,(%current-target-system)))))
+                    '())
+
+                (invoke "./bootstrap.sh"
+                        (string-append "--prefix=" out)
+                        ;; Auto-detection looks for ICU only in traditional
+                        ;; install locations.
+                        (string-append "--with-icu=" icu)
+                        "--with-toolset=gcc"))))
+          (delete 'provide-libboost_python)))
+      ((#:make-flags make-flags)
+       `(cons* "--without-python" ,make-flags))))
+    (native-inputs
+     (alist-delete "python" (package-native-inputs boost)))
     (properties '((hidden? . #t)))))
 
 (define-public boost-sync
@@ -293,7 +322,7 @@ Boost.Thread.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nayaqshhzr1n6jj43bpvvay36d5gn075h0b95psii5x8ingszdk"))))
+                "13i5j43nggb46i6qpaf7gk53i7zp7pimphl7sydyfqz2m9yx5cdy"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

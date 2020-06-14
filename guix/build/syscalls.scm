@@ -1218,7 +1218,7 @@ handler if the lock is already held by another process."
   ;; zero.
   16)
 
-(define (set-thread-name name)
+(define (set-thread-name!/linux name)
   "Set the name of the calling thread to NAME.  NAME is truncated to 15
 bytes."
   (let ((ptr (string->pointer name)))
@@ -1231,7 +1231,7 @@ bytes."
                (list (strerror err))
                (list err))))))
 
-(define (thread-name)
+(define (thread-name/linux)
   "Return the name of the calling thread as a string."
   (let ((buf (make-bytevector %max-thread-name-length)))
     (let-values (((ret err)
@@ -1244,6 +1244,16 @@ bytes."
                  "process-name: ~A"
                  (list (strerror err))
                  (list err))))))
+
+(define set-thread-name
+  (if (string-contains %host-type "linux")
+      set-thread-name!/linux
+      (const #f)))
+
+(define thread-name
+  (if (string-contains %host-type "linux")
+      thread-name/linux
+      (const "")))
 
 
 ;;;
@@ -1404,7 +1414,7 @@ bytevector BV at INDEX."
            (error "unsupported socket address" sockaddr)))))
 
 (define write-socket-address!
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       write-socket-address!/linux
       write-socket-address!/hurd))
 
@@ -1436,7 +1446,7 @@ bytevector BV at INDEX."
            (vector family)))))
 
 (define read-socket-address
-  (if (string-suffix? "linux-gnu" %host-type)
+  (if (string-contains %host-type "linux-gnu")
       read-socket-address/linux
       read-socket-address/hurd))
 
@@ -2052,8 +2062,8 @@ correspond to a terminal, return the value returned by FALL-BACK."
         ;; would return EINVAL instead in some cases:
         ;; <https://bugs.ruby-lang.org/issues/10494>.
         ;; Furthermore, some FUSE file systems like unionfs return ENOSYS for
-        ;; that ioctl.
-        (if (memv errno (list ENOTTY EINVAL ENOSYS))
+        ;; that ioctl, and bcachefs returns EPERM.
+        (if (memv errno (list ENOTTY EINVAL ENOSYS EPERM))
             (fall-back)
             (apply throw args))))))
 

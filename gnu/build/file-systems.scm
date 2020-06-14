@@ -661,8 +661,10 @@ were found."
 
   (match spec
     ((? string?)
-     ;; Nothing to do, but wait until SPEC shows up.
-     (resolve identity spec identity))
+     (if (string-contains spec ":/")
+         spec                  ; do not resolve NFS devices
+         ;; Nothing to do, but wait until SPEC shows up.
+         (resolve identity spec identity)))
     ((? file-system-label?)
      ;; Resolve the label.
      (resolve find-partition-by-label

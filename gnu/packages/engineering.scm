@@ -61,6 +61,7 @@
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages digest)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -82,6 +83,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
@@ -103,6 +105,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages openkinect)
   #:use-module (gnu packages xorg))
 
 (define-public librecad
@@ -535,7 +538,7 @@ featuring various improvements and bug fixes.")))
                (copy-recursively "doc" doc)
                (copy-recursively "examples" examples)
                #t))))))
-    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (home-page "https://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated capacitance extraction program")
     (description
      "Fastcap is a capacitance extraction program based on a
@@ -583,7 +586,7 @@ multipole-accelerated algorithm.")
                       (copy-recursively "doc" doc)
                       (copy-recursively "examples" examples)
                       #t))))))
-    (home-page "http://www.rle.mit.edu/cpg/research_codes.htm")
+    (home-page "https://www.rle.mit.edu/cpg/research_codes.htm")
     (synopsis "Multipole-accelerated inductance analysis program")
     (description
      "Fasthenry is an inductance extraction program based on a
@@ -1334,7 +1337,7 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "4.2.1")
+    (version "4.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1342,39 +1345,37 @@ bindings for Python, Java, OCaml and more.")
                     (commit version)))
               (sha256
                (base32
-                "14b9433cgc2nabhz836zfgvgh2dwailcmvy05krsa0inmzbvx9fg"))
-              (file-name (git-file-name name version))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  (substitute* "libr/asm/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  (substitute* "libr/parse/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  (substitute* "libr/bin/p/Makefile"
-                    (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
-                  #t))))
+                "0gwdnrnk7wdgkajp2qwg4fyplh7nsbmf01bzx07px6xmiscd9z2s"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; tests require git and network access
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'mklibdir
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/lib"))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib"))
              #t)))
        #:configure-flags
-       (list "--with-sysmagic" "--with-syszip" "--with-openssl"
-             "--without-nonpic" "--with-rpath" "--with-syscapstone")
+       (list "--with-openssl"
+             "--with-rpath"
+             "--with-syscapstone"
+             "--with-sysmagic"
+             "--with-syszip"
+             "--with-sysxxhash")
        #:make-flags
        (list "CC=gcc")))
+    ;; TODO: Add gmp and libzip and make the build system actually find them.
     (inputs
-     `(("openssl" ,openssl)
-       ("zip" ,zip)
-       ("gmp" ,gmp)
-       ("capstone" ,capstone)))
+     `(("capstone" ,capstone)
+       ("libuv" ,libuv)
+       ("openssl" ,openssl)
+       ("zip" ,zip)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; In the Libs: section of r_hash.pc.
+     `(("xxhash" ,xxhash)))
     (home-page "https://radare.org/")
     (synopsis "Reverse engineering framework")
     (description
@@ -2047,17 +2048,18 @@ simulator backends @code{Qucsator}, @code{ngspice} and @code{Xyce}.")
 (define-public librepcb
   (package
     (name "librepcb")
-    (version "0.1.3")
+    (version "0.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.librepcb.org/releases/"
                            version "/librepcb-" version "-source.zip"))
        (sha256
-        (base32 "1ich849dsx2hmcwlwbry4mkg374n940l3hy6srh4qms2rm7vd7x0"))))
+        (base32 "1b5dkanz3q0y5ag80w0l85hn7axrachb5m9zvyv4zvzrfy09wa88"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (native-inputs
      `(("qttools" ,qttools)             ; for lrelease
@@ -2174,7 +2176,7 @@ simulation.")
 (define-public cutter
   (package
     (name "cutter")
-    (version "1.10.1")
+    (version "1.10.3")
     (source
      (origin
        (method git-fetch)
@@ -2183,8 +2185,7 @@ simulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1gvsrcskcdd1hxrjpkpc657anmfs25f174vxk4wzvn385rnmrxd3"))))
+        (base32 "0qj8jyij02nif4jpirl09ygwnv8a9zi3vkb5sf5s8mg7qwlpnvyk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2193,8 +2194,8 @@ simulation.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
                    (radare2 (assoc-ref inputs "radare2")))
-               ;; fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
-               ;; override `qmake PREFIX=`
+               ;; Fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
+               ;; override `qmake PREFIX=`.
                (substitute* "./src/lib_radare2.pri"
                  (("PREFIX") "R2PREFIX")
                  (("R2PREFIX=/usr") (string-append "R2PREFIX=" radare2)))
@@ -2263,7 +2264,9 @@ specification can be downloaded at @url{http://3mf.io/specification/}.")
                            ".src.tar.gz"))
        (sha256
         (base32
-         "0nbgk5q5pgnw53la0kccdcpz2f4xf6d6076rkn0q08z57hkc85ha"))))
+         "0nbgk5q5pgnw53la0kccdcpz2f4xf6d6076rkn0q08z57hkc85ha"))
+       (patches (search-patches
+                 "openscad-parser-boost-1.72.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost)
@@ -2617,3 +2620,60 @@ accessible through a simple API")
 model files.  Its main goal is to simplify the creation of 3DS import and
 export filters.")
     (license license:lgpl2.1+)))
+
+(define-public meshlab
+  (package
+    (name "meshlab")
+    (version "2020.05")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/cnr-isti-vclab/meshlab")
+                    (commit (string-append "Meshlab-" version))
+                    (recursive? #t)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "00sim20ka9vjwljixdj4cqd285j21mpaq05ari7nqq2w8yyglp5m"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ("mesa" ,mesa)
+       ("glu" ,glu)
+       ("glew" ,glew)
+       ("muparser" ,muparser)
+       ("gmp" ,gmp)
+       ("eigen" ,eigen)
+       ("libfreenect" ,libfreenect)
+       ("lib3ds" ,lib3ds)
+       ("openctm" ,openctm)
+       ;; FIXME: Compilation fails with system qhull:
+       ;; https://github.com/cnr-isti-vclab/meshlab/issues/678
+       ;; ("qhull" ,qhull)
+       ))
+    (arguments
+     `(#:tests? #f                                ; Has no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'go-to-source-dir
+           (lambda _ (chdir "src") #t))
+         (add-after 'install 'move-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out")
+                                       "/lib")))
+               (rename-file
+                (string-append lib "/meshlab/libmeshlab-common.so")
+                (string-append lib "/libmeshlab-common.so"))
+               #t))))))
+    (synopsis "3D triangular mesh processing and editing software")
+    (home-page "https://www.meshlab.net/")
+    (description "MeshLab is a system for the processing and
+editing of unstructured large 3D triangular meshes.  It is aimed to help the
+processing of the typical not-so-small unstructured models arising in 3D
+scanning, providing a set of tools for editing, cleaning, healing, inspecting,
+rendering and converting this kind of meshes.  These tools include MeshLab
+proper, a versatile program with a graphical user interface, and meshlabserver,
+a program that can perform mesh processing tasks in batch mode, without a
+GUI.")
+    (license license:gpl3+)))

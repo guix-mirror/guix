@@ -17,7 +17,7 @@
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2018, 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
@@ -347,7 +347,7 @@ to run without any changes.")
 (define-public fetchmail
   (package
     (name "fetchmail")
-    (version "6.4.1")
+    (version "6.4.6")
     (source
      (origin
        (method url-fetch)
@@ -355,21 +355,14 @@ to run without any changes.")
                            (version-major+minor version) "/"
                            "fetchmail-" version ".tar.xz"))
        (sha256
-        (base32 "1859wvfc9fq72mwp4njdiy0x89hnddlfr3nix71qqglcs0fz2crz"))))
+        (base32 "04b0sq1xad6gs1bfhkbmhsn1kq6y4gsx9l9ywjvd5d0rc15yrvqn"))))
     (build-system gnu-build-system)
     (inputs
      `(("openssl" ,openssl)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ssl="
-                            (assoc-ref %build-inputs "openssl")))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'check 'create-test-environment
-           (lambda _
-             ;; Fix ‘Cannot find absolute path for user's home directory’.
-             (setenv "HOME" "/tmp")
-             #t)))))
+                            (assoc-ref %build-inputs "openssl")))))
     (home-page "https://www.fetchmail.info/")
     (synopsis "Remote-mail retrieval and forwarding utility")
     (description
@@ -389,7 +382,7 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.13.5")
+    (version "1.14.2")
     (source (origin
              (method url-fetch)
              (uri (list
@@ -399,7 +392,7 @@ aliasing facilities to work just as they would on normal mail.")
                                    version ".tar.gz")))
              (sha256
               (base32
-               "0lx65a44b03rbvcrz0y9syrik67fx3hvblxyyvz5l9bb7rdipmvc"))
+               "0cdcls0x6f2w99hkjz48hxhnx86w3bnyxzibchdc9yspih770bz2"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -423,8 +416,8 @@ aliasing facilities to work just as they would on normal mail.")
                            "--with-sasl"
                            "--with-sqlite3" ; required for Autocrypt
                            "--with-idn2" ; recommended for Autocrypt
-                           ;; so that mutt does not check whether the path
-                           ;; exists, which it does not in the chroot
+                           ;; So that mutt does not check whether the path
+                           ;; exists, which it does not in the chroot.
                            "--with-mailpath=/var/mail")))
     (home-page "http://www.mutt.org/")
     (synopsis "Mail client")
@@ -718,15 +711,15 @@ security functionality including PGP, S/MIME, SSH, and SSL.")
 (define-public mu
   (package
     (name "mu")
-    (version "1.4.4")
+    (version "1.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/releases/"
-                                  "download/"  version "/"
+                                  "download/" version "/"
                                   "mu-" version ".tar.xz"))
               (sha256
                (base32
-                "0pmx8zh5fsfhkdl0cr7ydcv6cywhxbgavnjrfr5p2ibz9gx3q3vf"))))
+                "0vbyrmv3d2bja4vx86za93gq46vxg18j12g0lca3x1dl8d5g2xa6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1216,14 +1209,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.10")
+    (version "1.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "041g921rdjiv8bapp61gp4rylq8cckfkcwzyh8bs7xwxs4wpzfna"))))
+        (base32 "0q0fg235qk448l1xjcwyxr7vcpzk6w57jzhjbkb0m7nffyhhypzj"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1266,7 +1259,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.93.0.4")
+    (version "4.94")
     (source
      (origin
        (method url-fetch)
@@ -1280,7 +1273,7 @@ delivery.")
                     (string-append "https://ftp.exim.org/pub/exim/exim4/old/"
                                    file-name))))
        (sha256
-        (base32 "01g4sfycv13glnmfrapwhjbdw6z1z7w5bwjldxjmglwfw5p3czak"))))
+        (base32 "1nsb2i5mqxfz1sl1bmbxmpb2qiaf3wffhfiw4j9vfpagy3xfhzpp"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -1372,7 +1365,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.10")
+    (version "2.3.10.1")
     (source
      (origin
        (method url-fetch)
@@ -1380,7 +1373,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1ibiz3k2flablkcqbkvfzsjnq5b5kxximhcrplflsjl57mr88ca7"))))
+        (base32 "035idr2j81s5mngnhd58rih79dhwwak7q01mqbx3rcmi4cpychk6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2166,14 +2159,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.7")
+    (version "1.4.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "0c6n5afn9pr4p7gxkv462lysrw52w9fhvavzm99c78dcp9dj5xnk"))))
+        (base32 "1243hazpiwgvz2m3p48cdh0yw1019i6xjxgc7qyhmxcdy0inb6wy"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)))
@@ -2298,14 +2291,14 @@ transfer protocols.")
 (define-public opensmtpd
   (package
     (name "opensmtpd")
-    (version "6.6.4p1")
+    (version "6.7.1p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1kyph9ycq0j21dl9n1sq5fns9p4gckdi0fmnf8awrcwrdcm9dyg2"))))
+        (base32 "1jh8vxfajm1mvp1v5yh6llrhjzv0n9fgab88mlwllwqynhcfjy3l"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -2329,6 +2322,13 @@ transfer protocols.")
              "--with-table-db")
        #:phases
        (modify-phases %standard-phases
+         ;; See: https://github.com/OpenSMTPD/OpenSMTPD/issues/1069.
+         (add-after 'unpack 'fix-smtpctl-encrypt-bug
+           (lambda _
+             (substitute* "smtpd/smtpctl.c"
+               (("\"encrypt\", \"--\",")
+                "\"encrypt\","))
+             #t))
          ;; Fix some incorrectly hard-coded external tool file names.
          (add-after 'unpack 'patch-FHS-file-names
            (lambda _
@@ -2629,7 +2629,7 @@ on the fly.  Both programs are written in C and are very fast.")
 (define-public swaks
   (package
     (name "swaks")
-    (version "20181104.0")
+    (version "20190914.0")
     (source
      (origin
        (method url-fetch)
@@ -2638,7 +2638,7 @@ on the fly.  Both programs are written in C and are very fast.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0n1yd27xcyb1ylp5gln3yv5gzi9r377hjy1j32367kgb3247ygq2"))))
+         "12awq5z4sdd54cxprj834zajxhkpy4jwhzf1fhigcx1zbhdaacsp"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-net-dns" ,perl-net-dns)
@@ -2704,10 +2704,7 @@ operators and scripters.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))))
+       (list (string-append "CC=" ,(cc-for-target)))
        #:configure-flags (list (string-append "--with-ssl-include-dir="
                                               (assoc-ref %build-inputs "openssl")
                                               "/include/openssl")
@@ -2762,14 +2759,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.6.0")
+    (version "2.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
-                           name "-" version ".tar.bz2"))
+                           "balsa-" version ".tar.bz2"))
        (sha256
-        (base32 "0ycidvgy9npd6avxk88sf2ca609m7zb0hzrk1yajrgwb1rfqx68a"))))
+        (base32 "1xkxx801p7sbfkn0bh3cz85wra4xf1z1zhjqqc80z1z1nln7fhb4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

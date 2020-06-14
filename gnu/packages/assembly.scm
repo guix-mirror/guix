@@ -149,14 +149,14 @@ to the clients.")
 (define-public fasm
   (package
     (name "fasm")
-    (version "1.73.22")
+    (version "1.73.24")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://flatassembler.net/fasm-"
                            version ".tgz"))
        (sha256
-        (base32 "1pb0rcfdsb0h89khjjrbikz5wjdllavj3ajim0rcyh7x12xr1hw5"))))
+        (base32 "142vxhs8mh8isvlzq7ir0asmqda410phzxmk9gk9b43dldskkj7k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests exist
@@ -347,14 +347,14 @@ Supported architectures are:
 (define-public xa
   (package
     (name "xa")
-    (version "2.3.10")
+    (version "2.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.floodgap.com/retrotech/xa"
                                   "/dists/xa-" version ".tar.gz"))
               (sha256
                (base32
-                "0y5sd247g11jfk5msxy91hz2nhpy7smj125dzfyfhjsjnqk5nyw6"))))
+                "0b81r7mvzqxgnbbmhixcnrf9nc72v1nqaw19k67221g3k561dwij"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f   ; TODO: custom test harness, not sure how it works

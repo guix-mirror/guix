@@ -1,34 +1,29 @@
 diff --git a/src/bin/e_auth.c b/src/bin/e_auth.c
-index 00b0e5d84..98ab4518f 100644
+index 8b0aa6641..3dff0ad84 100644
 --- a/src/bin/e_auth.c
 +++ b/src/bin/e_auth.c
-@@ -9,8 +9,7 @@ e_auth_begin(char *passwd)
+@@ -12,8 +12,7 @@ e_auth_begin(char *passwd)
+    if (pwlen == 0) goto out;
  
-    if (strlen(passwd) == 0) goto out;
- 
--   snprintf(buf, sizeof(buf), "%s/enlightenment/utils/enlightenment_ckpasswd",
--            e_prefix_lib_get());
-+   snprintf(buf, sizeof(buf), "/run/setuid-programs/enlightenment_ckpasswd");
- 
-    exe = ecore_exe_pipe_run(buf, ECORE_EXE_PIPE_WRITE, NULL);
-    if (ecore_exe_send(exe, passwd, strlen(passwd)) != EINA_TRUE) goto out;
-diff --git a/src/bin/e_backlight.c b/src/bin/e_backlight.c
-index 2bced6766..208e583ba 100644
---- a/src/bin/e_backlight.c
-+++ b/src/bin/e_backlight.c
-@@ -521,8 +521,8 @@ _bl_sys_level_set(double val)
-      }
- //   fprintf(stderr, "SET: %1.3f\n", val);
     snprintf(buf, sizeof(buf),
--            "%s/enlightenment/utils/enlightenment_backlight %i %s",
--            e_prefix_lib_get(), (int)(val * 1000.0), bl_sysval);
-+            "/run/setuid-programs/enlightenment_backlight %i %s",
-+            (int)(val * 1000.0), bl_sysval);
-    bl_sys_set_exe = ecore_exe_run(buf, NULL);
- }
- #endif  // HAVE_EEZE || __FreeBSD_kernel__
+-            "%s/enlightenment/utils/enlightenment_ckpasswd pw",
+-            e_prefix_lib_get());
++            "/run/setuid-programs/enlightenment_ckpasswd pw");
+    exe = ecore_exe_pipe_run(buf, ECORE_EXE_PIPE_WRITE, NULL);
+    if (!exe) goto out;
+    if (ecore_exe_send(exe, passwd, pwlen) != EINA_TRUE) goto out;
+@@ -47,8 +46,7 @@ e_auth_polkit_begin(char *passwd, const char *cookie, unsigned int uid)
+    if (pwlen == 0) goto out;
+ 
+    snprintf(buf, sizeof(buf),
+-            "%s/enlightenment/utils/enlightenment_ckpasswd pk",
+-            e_prefix_lib_get());
++            "/run/setuid-programs/enlightenment_ckpasswd pk");
+    exe = ecore_exe_pipe_run(buf, ECORE_EXE_PIPE_WRITE, NULL);
+    if (!exe) goto out;
+    snprintf(buf, sizeof(buf), "%s %u %s", cookie, uid, passwd);
 diff --git a/src/bin/e_fm/e_fm_main_eeze.c b/src/bin/e_fm/e_fm_main_eeze.c
-index 0fcffa249..c1921121d 100644
+index 9b10b3117..74e6b72ad 100644
 --- a/src/bin/e_fm/e_fm_main_eeze.c
 +++ b/src/bin/e_fm/e_fm_main_eeze.c
 @@ -318,7 +318,7 @@ _e_fm_main_eeze_volume_eject(E_Volume *v)
@@ -58,163 +53,29 @@ index 0fcffa249..c1921121d 100644
          eeze_disk_mount_wrapper_set(v->disk, buf2);
       }
     v->guard = ecore_timer_loop_add(E_FM_MOUNT_TIMEOUT, (Ecore_Task_Cb)_e_fm_main_eeze_vol_mount_timeout, v);
-diff --git a/src/bin/e_sys.c b/src/bin/e_sys.c
-index 671fbcd9a..90ee04cf1 100644
---- a/src/bin/e_sys.c
-+++ b/src/bin/e_sys.c
-@@ -702,20 +702,16 @@ _e_sys_cb_timer(void *data EINA_UNUSED)
+diff --git a/src/bin/e_start_main.c b/src/bin/e_start_main.c
+index b2c439455..cb16c7bd4 100644
+--- a/src/bin/e_start_main.c
++++ b/src/bin/e_start_main.c
+@@ -710,7 +710,7 @@ main(int argc, char **argv)
+             "E_ALERT_FONT_DIR=%s/data/fonts", eina_prefix_data_get(pfx));
+    putenv(buf2);
+    snprintf(buf3, sizeof(buf3),
+-            "E_ALERT_SYSTEM_BIN=%s/enlightenment/utils/enlightenment_system", eina_prefix_lib_get(pfx));
++            "E_ALERT_SYSTEM_BIN=/run/setuid-programs/enlightenment_system");
+    putenv(buf3);
  
-    e_init_status_set(_("Checking System Permissions"));
+    if ((valgrind_mode || valgrind_tool) &&
+diff --git a/src/bin/e_system.c b/src/bin/e_system.c
+index 1e7aabb64..dc0173219 100644
+--- a/src/bin/e_system.c
++++ b/src/bin/e_system.c
+@@ -132,7 +132,7 @@ _system_spawn(void)
+    else _respawn_count = 0;
+    if (_respawn_count > 5) return;
     snprintf(buf, sizeof(buf),
--            "%s/enlightenment/utils/enlightenment_sys -t halt",
--            e_prefix_lib_get());
-+            "/run/setuid-programs/enlightenment_sys -t halt");
-    _e_sys_halt_check_exe = ecore_exe_run(buf, NULL);
-    snprintf(buf, sizeof(buf),
--            "%s/enlightenment/utils/enlightenment_sys -t reboot",
--            e_prefix_lib_get());
-+            "/run/setuid-programs/enlightenment_sys -t reboot");
-    _e_sys_reboot_check_exe = ecore_exe_run(buf, NULL);
-    snprintf(buf, sizeof(buf),
--            "%s/enlightenment/utils/enlightenment_sys -t suspend",
--            e_prefix_lib_get());
-+            "/run/setuid-programs/enlightenment_sys -t suspend");
-    _e_sys_suspend_check_exe = ecore_exe_run(buf, NULL);
-    snprintf(buf, sizeof(buf),
--            "%s/enlightenment/utils/enlightenment_sys -t hibernate",
--            e_prefix_lib_get());
-+            "/run/setuid-programs/enlightenment_sys -t hibernate");
-    _e_sys_hibernate_check_exe = ecore_exe_run(buf, NULL);
-    return ECORE_CALLBACK_CANCEL;
- }
-@@ -1134,8 +1130,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
-         if (e_util_immortal_check()) return 0;
-         e_fm2_die();
-         snprintf(buf, sizeof(buf),
--                 "%s/enlightenment/utils/enlightenment_sys halt",
--                 e_prefix_lib_get());
-+                 "/run/setuid-programs/enlightenment_sys halt");
-         if (_e_sys_exe)
-           {
-              if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-@@ -1170,8 +1165,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
-         if (e_util_immortal_check()) return 0;
-         e_fm2_die();
-         snprintf(buf, sizeof(buf),
--                 "%s/enlightenment/utils/enlightenment_sys reboot",
--                 e_prefix_lib_get());
-+                 "/run/setuid-programs/enlightenment_sys reboot");
-         if (_e_sys_exe)
-           {
-              if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-@@ -1204,8 +1198,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
-       case E_SYS_SUSPEND:
-         /* /etc/acpi/sleep.sh force */
-         snprintf(buf, sizeof(buf),
--                 "%s/enlightenment/utils/enlightenment_sys suspend",
--                 e_prefix_lib_get());
-+                 "/run/setuid-programs/enlightenment_sys suspend");
-         if (_e_sys_exe)
-           {
-              if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-@@ -1265,8 +1258,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
-       case E_SYS_HIBERNATE:
-         /* /etc/acpi/hibernate.sh force */
-         snprintf(buf, sizeof(buf),
--                 "%s/enlightenment/utils/enlightenment_sys hibernate",
--                 e_prefix_lib_get());
-+                 "/run/setuid-programs/enlightenment_sys hibernate");
-         if (_e_sys_exe)
-           {
-              if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-diff --git a/src/modules/bluez4/e_mod_main.c b/src/modules/bluez4/e_mod_main.c
-index 4b5148634..47d34b07f 100644
---- a/src/modules/bluez4/e_mod_main.c
-+++ b/src/modules/bluez4/e_mod_main.c
-@@ -49,8 +49,8 @@ _ebluez_l2ping_poller(void *data EINA_UNUSED)
- 
-    if (tmp)
-      {
--        eina_strbuf_append_printf(buf, "%s/enlightenment/utils/enlightenment_sys l2ping %s",
--				  e_prefix_lib_get(), tmp);
-+        eina_strbuf_append_printf(buf, "/run/setuid-programs/enlightenment_sys l2ping %s",
-+				  tmp);
- 	autolock_exe = ecore_exe_run(eina_strbuf_string_get(buf), NULL);
-      }
- 
-@@ -692,8 +692,7 @@ e_modapi_init(E_Module *m)
-    autolock_desklock = ecore_event_handler_add(E_EVENT_DESKLOCK, _ebluez_desklock, NULL);
- 
-    buf = eina_strbuf_new();
--   eina_strbuf_append_printf(buf, "%s/enlightenment/utils/enlightenment_sys -t l2ping",
--			     e_prefix_lib_get());
-+   eina_strbuf_append_printf(buf, "/run/setuid-programs/enlightenment_sys -t l2ping");
-    autolock_exe = ecore_exe_run(eina_strbuf_string_get(buf), NULL);
-    eina_strbuf_free(buf);
- 
-diff --git a/src/modules/bluez5/e_mod_main.c b/src/modules/bluez5/e_mod_main.c
-index a581c466c..095d8f360 100644
---- a/src/modules/bluez5/e_mod_main.c
-+++ b/src/modules/bluez5/e_mod_main.c
-@@ -321,8 +321,8 @@ ebluez5_rfkill_unblock(const char *name)
-    if (buf)
-      {
-         eina_strbuf_append_printf
--          (buf, "%s/enlightenment/utils/enlightenment_sys rfkill-unblock %s",
--           e_prefix_lib_get(), name);
-+          (buf, "/run/setuid-programs/enlightenment_sys rfkill-unblock %s",
-+           name);
-         _rfkill_exe = ecore_exe_run(eina_strbuf_string_get(buf), NULL);
-         eina_strbuf_free(buf);
-      }
-diff --git a/src/modules/cpufreq/e_mod_main.c b/src/modules/cpufreq/e_mod_main.c
-index b66b365d8..bab0802cc 100644
---- a/src/modules/cpufreq/e_mod_main.c
-+++ b/src/modules/cpufreq/e_mod_main.c
-@@ -1452,8 +1452,7 @@ e_modapi_init(E_Module *m)
-      }
-    E_CONFIG_LIMIT(cpufreq_config->poll_interval, 1, 1024);
- 
--   snprintf(buf, sizeof(buf), "%s/%s/freqset",
--            e_module_dir_get(m), MODULE_ARCH);
-+   snprintf(buf, sizeof(buf), "/run/setuid-programs/freqset");
-    cpufreq_config->set_exe_path = strdup(buf);
-    
-    if (stat(buf, &st) < 0)
-diff --git a/src/modules/sysinfo/cpuclock/cpuclock.c b/src/modules/sysinfo/cpuclock/cpuclock.c
-index 938916e53..00d5067d0 100644
---- a/src/modules/sysinfo/cpuclock/cpuclock.c
-+++ b/src/modules/sysinfo/cpuclock/cpuclock.c
-@@ -80,8 +80,7 @@ _cpuclock_set_governor(const char *governor)
-    char buf[4096 + 100], exe[4096];
-    struct stat st;
- 
--   snprintf(exe, 4096, "%s/%s/cpuclock_sysfs",
--            e_module_dir_get(sysinfo_config->module), MODULE_ARCH);
-+   snprintf(exe, 4096, "/run/setuid-programs/cpuclock_sysfs");
-    if (stat(exe, &st) < 0) return;
- 
-    snprintf(buf, sizeof(buf),
-@@ -108,8 +107,7 @@ _cpuclock_set_frequency(int frequency)
-    if (system(buf) != 0)
-      ERR("Error code from trying to run \"%s\"", buf);
- #else
--   snprintf(exe, 4096, "%s/%s/cpuclock_sysfs",
--            e_module_dir_get(sysinfo_config->module), MODULE_ARCH);
-+   snprintf(exe, 4096, "/run/setuid-programs/cpuclock_sysfs");
-    if (stat(exe, &st) < 0) return;
-    snprintf(buf, sizeof(buf),
-             "%s %s %i", exe, "frequency", frequency);
-@@ -127,8 +125,7 @@ _cpuclock_set_pstate(int min, int max, int turbo)
-    char buf[4096 + 100], exe[4096];
-    struct stat st;
- 
--   snprintf(exe, 4096, "%s/%s/cpuclock_sysfs",
--            e_module_dir_get(sysinfo_config->module), MODULE_ARCH);
-+   snprintf(exe, 4096, "/run/setuid-programs/cpuclock_sysfs");
-    if (stat(exe, &st) < 0) return;
-    snprintf(buf, sizeof(buf),
-             "%s %s %i %i %i", exe, "pstate", min, max, turbo);
--- 
-2.23.0
-
+-            "%s/enlightenment/utils/enlightenment_system", e_prefix_lib_get());
++            "/run/setuid-programs/enlightenment_system");
+    _system_exe = ecore_exe_pipe_run
+      (buf, ECORE_EXE_NOT_LEADER | ECORE_EXE_TERM_WITH_PARENT |
+       ECORE_EXE_PIPE_READ | ECORE_EXE_PIPE_WRITE, NULL);

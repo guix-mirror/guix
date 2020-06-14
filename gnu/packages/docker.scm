@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
@@ -47,7 +47,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages virtualization))
 
-(define %docker-version "19.03.7")
+(define %docker-version "19.03.11")
 
 (define-public python-docker-py
   (package
@@ -314,7 +314,7 @@ built-in registry server of Docker.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1sik109lxmiwgrsnvfip1nnal1xkh8z1mlvys6aknjyh29ll1iq8"))
+        (base32 "1pmbggxbazipl24hxiaccbj32379zv79xba76l78v5131ihx922h"))
        (patches
         (search-patches "docker-fix-tests.patch"))))
     (build-system gnu-build-system)
@@ -544,7 +544,9 @@ built-in registry server of Docker.")
                (install-file (string-append "bundles/dynbinary-daemon/dockerd-"
                                             (getenv "VERSION"))
                              out-bin)
-               #t))))))
+               #t)))
+         (add-after 'install 'remove-go-references
+           (assoc-ref go:%standard-phases 'remove-go-references)))))
     (inputs
      `(("btrfs-progs" ,btrfs-progs)
        ("containerd" ,containerd)       ; for containerd-shim
@@ -590,7 +592,7 @@ provisioning etc.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32 "164l33npy8acdbbrz8vcyiwx18vi55wwwikkasg0w43b5bdhz8sx"))))
+       (base32 "1y9ymv70r1hndblr64h19q34arxl2f3dqqi2qcrai5zfimcml6lr"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/docker/cli"

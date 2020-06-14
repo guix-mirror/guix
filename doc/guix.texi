@@ -35,8 +35,8 @@ Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
 Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Efraim Flashner@*
 Copyright @copyright{} 2016 John Darrington@*
 Copyright @copyright{} 2016, 2017 Nikita Gillmann@*
-Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*
-Copyright @copyright{} 2016 Julien Lepiller@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Jan Nieuwenhuizen@*
+Copyright @copyright{} 2016, 2017, 2018, 2019, 2020 Julien Lepiller@*
 Copyright @copyright{} 2016 Alex ter Weele@*
 Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*
 Copyright @copyright{} 2017, 2018, 2019 Clément Lassieur@*
@@ -319,7 +319,9 @@ Services
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
 * PAM Mount Service::           Service to mount volumes when logging in.
+* Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
+* Hurd Services::               Services specific to a Hurd System.
 * Miscellaneous Services::      Other services.
 
 Defining Services
@@ -464,11 +466,12 @@ and Linux-Libre kernel.
 @item aarch64-linux
 little-endian 64-bit ARMv8-A processors, Linux-Libre kernel.
 
-@item mips64el-linux
+@item mips64el-linux (deprecated)
 little-endian 64-bit MIPS processors, specifically the Loongson series,
 n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully
-supported; in particular, the project's build farms no longer provide
-substitutes for this architecture.
+supported; in particular, there is no ongoing work to ensure that this
+architecture still works. Should someone decide they wish to revive this
+architecture then the code is still available.
 
 @end table
 
@@ -567,17 +570,18 @@ Installing goes along these lines:
 @item
 @cindex downloading Guix binary
 Download the binary tarball from
-@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz},
-where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
-already running the kernel Linux, and so on.
+@indicateurl{@value{BASE-URL}/guix-binary-@value{VERSION}.x86_64-linux.tar.xz},
+where @code{x86_64-linux} can be replaced with @code{i686-linux} for an
+@code{i686} (32-bits) machine already running the kernel Linux, and so on
+(@pxref{GNU Distribution}).
 
 @c The following is somewhat duplicated in ``System Installation''.
 Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
-$ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ wget @value{BASE-URL}/guix-binary-@value{VERSION}.x86_64-linux.tar.xz.sig
+$ gpg --verify guix-binary-@value{VERSION}.x86_64-linux.tar.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -603,13 +607,13 @@ you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 @example
 # cd /tmp
 # tar --warning=no-timestamp -xf \
-     /path/to/guix-binary-@value{VERSION}.@var{system}.tar.xz
+     /path/to/guix-binary-@value{VERSION}.x86_64-linux.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
 This creates @file{/gnu/store} (@pxref{The Store}) and @file{/var/guix}.
 The latter contains a ready-to-use profile for @code{root} (see next
-step.)
+step).
 
 Do @emph{not} unpack the tarball on a working Guix system since that
 would overwrite its own essential files.
@@ -617,10 +621,10 @@ would overwrite its own essential files.
 The @option{--warning=no-timestamp} option makes sure GNU@tie{}tar does
 not emit warnings about ``implausibly old time stamps'' (such
 warnings were triggered by GNU@tie{}tar 1.26 and older; recent
-versions are fine.)
+versions are fine).
 They stem from the fact that all the
 files in the archive have their modification time set to zero (which
-means January 1st, 1970.)  This is done on purpose to make sure the
+means January 1st, 1970).  This is done on purpose to make sure the
 archive content is independent of its creation time, thus making it
 reproducible.
 
@@ -705,7 +709,7 @@ there:
 That way, assuming @file{/usr/local/share/info} is in the search path,
 running @command{info guix} will open this manual (@pxref{Other Info
 Directories,,, texinfo, GNU Texinfo}, for more details on changing the
-Info search path.)
+Info search path).
 
 @item
 @cindex substitutes, authorization thereof
@@ -1059,8 +1063,8 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
         (speed 2.))     ;incredibly fast!
 
       (build-machine
-        (name "meeps.example.org")
-        (system "mips64el-linux")
+        (name "armeight.example.org")
+        (system "aarch64-linux")
         (host-key "ssh-rsa AAAAB3Nza@dots{}")
         (user "alice")
         (private-key
@@ -1070,7 +1074,7 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @noindent
 In the example above we specify a list of two build machines, one for
-the @code{x86_64} architecture and one for the @code{mips64el}
+the @code{x86_64} architecture and one for the @code{aarch64}
 architecture.
 
 In fact, this file is---not surprisingly!---a Scheme file that is
@@ -1363,7 +1367,7 @@ build failed and the client specified @option{--keep-failed}
 (@pxref{Invoking guix build, @option{--keep-failed}}).
 
 The daemon listens for connections and spawns one sub-process for each session
-started by a client (one of the @command{guix} sub-commands.)  The
+started by a client (one of the @command{guix} sub-commands).  The
 @command{guix processes} command allows you to get an overview of the activity
 on your system by viewing each of the active sessions and clients.
 @xref{Invoking guix processes}, for more information.
@@ -1831,7 +1835,7 @@ how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
 link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
 Info}.  Hit @kbd{l} afterwards to come back here.
 
-Alternately, run @command{info info} in another tty to keep the manual
+Alternatively, run @command{info info} in another tty to keep the manual
 available.
 @end quotation
 @end ifinfo
@@ -1917,8 +1921,8 @@ about their support in GNU/Linux.
 
 An ISO-9660 installation image that can be written to a USB stick or
 burnt to a DVD can be downloaded from
-@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz},
-where @var{system} is one of:
+@indicateurl{@value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz},
+where you can replace @code{x86_64-linux} with one of:
 
 @table @code
 @item x86_64-linux
@@ -1933,8 +1937,8 @@ Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the image against it, along these lines:
 
 @example
-$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
-$ gpg --verify guix-system-install-@value{VERSION}.@var{system}.iso.xz.sig
+$ wget @value{BASE-URL}/guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
+$ gpg --verify guix-system-install-@value{VERSION}.x86_64-linux.iso.xz.sig
 @end example
 
 If that command fails because you do not have the required public key,
@@ -1965,7 +1969,7 @@ To copy the image to a USB stick, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
 @end example
 
 @item
@@ -1974,7 +1978,7 @@ its device name.  Assuming that the USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=guix-system-install-@value{VERSION}.@var{system}.iso of=/dev/sdX
+dd if=guix-system-install-@value{VERSION}.x86_64-linux.iso of=/dev/sdX
 sync
 @end example
 
@@ -1990,7 +1994,7 @@ To copy the image to a DVD, follow these steps:
 Decompress the image using the @command{xz} command:
 
 @example
-xz -d guix-system-install-@value{VERSION}.@var{system}.iso.xz
+xz -d guix-system-install-@value{VERSION}.x86_64-linux.iso.xz
 @end example
 
 @item
@@ -1999,7 +2003,7 @@ its device name.  Assuming that the DVD drive is known as @file{/dev/srX},
 copy the image with:
 
 @example
-growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.@var{system}.iso
+growisofs -dvd-compat -Z /dev/srX=guix-system-install-@value{VERSION}.x86_64-linux.iso
 @end example
 
 Access to @file{/dev/srX} usually requires root privileges.
@@ -2021,7 +2025,7 @@ Guix System in a virtual machine (VM).
 @section Preparing for Installation
 
 Once you have booted, you can use the guided graphical installer, which makes
-it easy to get started (@pxref{Guided Graphical Installation}).  Alternately,
+it easy to get started (@pxref{Guided Graphical Installation}).  Alternatively,
 if you are already familiar with GNU/Linux and if you want more control than
 what the graphical installer provides, you can choose the ``manual''
 installation process (@pxref{Manual Installation}).
@@ -2277,6 +2281,12 @@ types.}.  For the ESP, if you have one and assuming it is
 mkfs.fat -F32 /dev/sda1
 @end example
 
+For the root file system, ext4 is the most widely used format.  Other
+file systems, such as Btrfs, support compression, which is reported to
+nicely complement file deduplication that the daemon performs
+independently of the file system (@pxref{Invoking guix-daemon,
+deduplication}).
+
 Preferably, assign file systems a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
 Systems}).  This is typically done using the @code{-L} option of
@@ -2292,7 +2302,7 @@ mkfs.ext4 -L my-root /dev/sda2
 If you are instead planning to encrypt the root partition, you can use
 the Cryptsetup/LUKS utilities to do that (see @inlinefmtifelse{html,
 @uref{https://linux.die.net/man/8/cryptsetup, @code{man cryptsetup}},
-@code{man cryptsetup}} for more information.)  Assuming you want to
+@code{man cryptsetup}} for more information).  Assuming you want to
 store the root partition on @file{/dev/sda2}, the command sequence would
 be along these lines:
 
@@ -2764,7 +2774,7 @@ Install the specified @var{package}s.
 Each @var{package} may specify either a simple package name, such as
 @code{guile}, or a package name followed by an at-sign and version number,
 such as @code{guile@@1.8.8} or simply @code{guile@@1.8} (in the latter
-case, the newest version prefixed by @code{1.8} is selected.)
+case, the newest version prefixed by @code{1.8} is selected).
 
 If no version number is specified, the
 newest available version will be selected.  In addition, @var{package}
@@ -3368,7 +3378,7 @@ When using HTTPS, the server's X.509 certificate is @emph{not} validated
 HTTPS clients such as Web browsers usually do.  This is because Guix
 authenticates substitute information itself, as explained above, which
 is what we care about (whereas X.509 certificates are about
-authenticating bindings between domain names and public keys.)
+authenticating bindings between domain names and public keys).
 
 @node Proxy Settings
 @subsection Proxy Settings
@@ -3899,6 +3909,21 @@ Use @var{profile} instead of @file{~/.config/guix/current}.
 @itemx -n
 Show which channel commit(s) would be used and what would be built or
 substituted but do not actually do it.
+
+@item --allow-downgrades
+Allow pulling older or unrelated revisions of channels than those
+currently in use.
+
+@cindex downgrade attacks, protection against
+By default, @command{guix pull} protects against so-called ``downgrade
+attacks'' whereby the Git repository of a channel would be reset to an
+earlier or unrelated revision of itself, potentially leading you to
+install older, known-vulnerable versions of software packages.
+
+@quotation Note
+Make sure you understand its security implications before using
+@option{--allow-downgrades}.
+@end quotation
 
 @item --system=@var{system}
 @itemx -s @var{system}
@@ -4471,6 +4496,9 @@ produce a list of channel specifications in JSON format;
 produce a list of channel specifications in Recutils format.
 @end table
 
+@item --list-formats
+Display available formats for @option{--format} option.
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Display information about @var{profile}.
@@ -4560,7 +4588,7 @@ The main options are:
 
 @table @code
 @item --export
-Export the specified store files or packages (see below.)  Write the
+Export the specified store files or packages (see below).  Write the
 resulting archive to the standard output.
 
 Dependencies are @emph{not} included in the output, unless
@@ -4577,7 +4605,7 @@ exported store items.
 Read an archive from the standard input, and import the files listed
 therein into the store.  Abort if the archive has an invalid digital
 signature, or if it is signed by a public key not among the authorized
-keys (see @option{--authorize} below.)
+keys (see @option{--authorize} below).
 
 @item --missing
 Read a list of store file names from the standard input, one per line,
@@ -4593,7 +4621,7 @@ to generate the key pair.
 
 The generated key pair is typically stored under @file{/etc/guix}, in
 @file{signing-key.pub} (public key) and @file{signing-key.sec} (private
-key, which must be kept secret.)  When @var{parameters} is omitted,
+key, which must be kept secret).  When @var{parameters} is omitted,
 an ECDSA key using the Ed25519 curve is generated, or, for Libgcrypt
 versions before 1.6.0, it is a 4096-bit RSA key.
 Alternatively, @var{parameters} can specify
@@ -4909,7 +4937,7 @@ interpreted as packages that will be added to the environment directly.
 
 @item --pure
 Unset existing environment variables when building the new environment, except
-those specified with @option{--preserve} (see below.)  This has the effect of
+those specified with @option{--preserve} (see below).  This has the effect of
 creating an environment in which search paths only contain package inputs.
 
 @item --preserve=@var{regexp}
@@ -4927,7 +4955,7 @@ guix environment --pure --preserve=^SLURM --ad-hoc openmpi @dots{} \
 This example runs @command{mpirun} in a context where the only environment
 variables defined are @env{PATH}, environment variables whose name starts
 with @samp{SLURM}, as well as the usual ``precious'' variables (@env{HOME},
-@env{USER}, etc.)
+@env{USER}, etc.).
 
 @item --search-paths
 Display the environment variable definitions that make up the
@@ -4948,7 +4976,7 @@ directory is created that matches the current user's home directory, and
 
 The spawned process runs as the current user outside the container.  Inside
 the container, it has the same UID and GID as the current user, unless
-@option{--user} is passed (see below.)
+@option{--user} is passed (see below).
 
 @item --network
 @itemx -N
@@ -5311,7 +5339,7 @@ the system type of the build host.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying target triplets, GNU
+as @code{"aarch64-linux-gnu"} (@pxref{Specifying target triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @item --compression=@var{tool}
@@ -5700,7 +5728,7 @@ Return the @code{<derivation>} object of @var{package} cross-built from
 @var{system} to @var{target}.
 
 @var{target} must be a valid GNU triplet denoting the target hardware
-and operating system, such as @code{"mips64el-linux-gnu"}
+and operating system, such as @code{"aarch64-linux-gnu"}
 (@pxref{Specifying Target Triplets,,, autoconf, Autoconf}).
 @end deffn
 
@@ -5849,7 +5877,7 @@ Lastly, @code{propagated-inputs} is similar to @code{inputs}, but the
 specified packages will be automatically installed alongside the package
 they belong to (@pxref{package-cmd-propagated-inputs, @command{guix
 package}}, for information on how @command{guix package} deals with
-propagated inputs.)
+propagated inputs).
 
 For example this is necessary when a C/C++ library needs headers of
 another library to compile, or when a pkg-config file refers to another
@@ -5963,9 +5991,13 @@ specified in the @code{uri} field as a @code{git-reference} object; a
 @end table
 
 @item @code{sha256}
-A bytevector containing the SHA-256 hash of the source.  Typically the
-@code{base32} form is used here to generate the bytevector from a
-base-32 string.
+A bytevector containing the SHA-256 hash of the source.  This is
+equivalent to providing a @code{content-hash} SHA256 object in the
+@code{hash} field described below.
+
+@item @code{hash}
+The @code{content-hash} object of the source---see below for how to use
+@code{content-hash}.
 
 You can obtain this information using @code{guix download}
 (@pxref{Invoking guix download}) or @code{guix hash} (@pxref{Invoking
@@ -6010,6 +6042,30 @@ this is @code{#f}, a sensible default is used.
 @end table
 @end deftp
 
+@deftp {Data Type} content-hash @var{value} [@var{algorithm}]
+Construct a content hash object for the given @var{algorithm}, and with
+@var{value} as its hash value.  When @var{algorithm} is omitted, assume
+it is @code{sha256}.
+
+@var{value} can be a literal string, in which case it is base32-decoded,
+or it can be a bytevector.
+
+The following forms are all equivalent:
+
+@lisp
+(content-hash "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj")
+(content-hash "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"
+              sha256)
+(content-hash (base32
+               "05zxkyz9bv3j9h0xyid1rhvh3klhsmrpkf3bcs6frvlgyr2gwilj"))
+(content-hash (base64 "kkb+RPaP7uyMZmu4eXPVkM4BN8yhRd8BTHLslb6f/Rc=")
+              sha256)
+@end lisp
+
+Technically, @code{content-hash} is currently implemented as a macro.
+It performs sanity checks at macro-expansion time, when possible, such
+as ensuring that @var{value} has the right size for @var{algorithm}.
+@end deftp
 
 @node Build Systems
 @section Build Systems
@@ -7024,7 +7080,7 @@ argument.
 Return @code{#t} when @var{path} designates a valid store item and
 @code{#f} otherwise (an invalid item may exist on disk but still be
 invalid, for instance because it is the result of an aborted or failed
-build.)
+build).
 
 A @code{&store-protocol-error} condition is raised if @var{path} is not
 prefixed by the store directory (@file{/gnu/store}).
@@ -7069,7 +7125,7 @@ directory in the store, but may produce more.
 @cindex dependencies, build-time
 The inputs of the derivations---i.e., its build-time dependencies---which may
 be other derivations or plain files in the store (patches, build scripts,
-etc.)
+etc.).
 
 @item
 The system type targeted by the derivation---e.g., @code{x86_64-linux}.
@@ -7491,7 +7547,7 @@ The store monad---an alias for @code{%state-monad}.
 
 Values in the store monad encapsulate accesses to the store.  When its
 effect is needed, a value of the store monad must be ``evaluated'' by
-passing it to the @code{run-with-store} procedure (see below.)
+passing it to the @code{run-with-store} procedure (see below).
 @end defvr
 
 @deffn {Scheme Procedure} run-with-store @var{store} @var{mval} [#:guile-for-build] [#:system (%current-system)]
@@ -7629,7 +7685,7 @@ into gexps.  For example, a useful type of high-level objects that can be
 inserted in a gexp is ``file-like objects'', which make it easy to
 add files to the store and to refer to them in
 derivations and such (see @code{local-file} and @code{plain-file}
-below.)
+below).
 
 To illustrate the idea, here is an example of a gexp:
 
@@ -7673,7 +7729,7 @@ native package build:
                 "-s"
                 (string-append #$emacs "/bin/emacs")
                 (string-append #$output "/bin/vi")))
-   #:target "mips64el-linux-gnu")
+   #:target "aarch64-linux-gnu")
 @end lisp
 
 @noindent
@@ -7800,7 +7856,7 @@ Like the above, but refers to native builds of the objects listed in
 @end table
 
 G-expressions created by @code{gexp} or @code{#~} are run-time objects
-of the @code{gexp?} type (see below.)
+of the @code{gexp?} type (see below).
 @end deffn
 
 @deffn {Scheme Syntax} with-imported-modules @var{modules} @var{body}@dots{}
@@ -7846,7 +7902,7 @@ Return @code{#t} if @var{obj} is a G-expression.
 G-expressions are meant to be written to disk, either as code building
 some derivation, or as plain files in the store.  The monadic procedures
 below allow you to do that (@pxref{The Store Monad}, for more
-information about monads.)
+information about monads).
 
 @deffn {Monadic Procedure} gexp->derivation @var{name} @var{exp} @
        [#:system (%current-system)] [#:target #f] [#:graft? #t] @
@@ -8793,7 +8849,7 @@ also be offloaded to a remote machine of the right architecture.
 @item --target=@var{triplet}
 @cindex cross-compilation
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
-as @code{"mips64el-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
+as @code{"aarch64-linux-gnu"} (@pxref{Specifying Target Triplets, GNU
 configuration triplets,, autoconf, Autoconf}).
 
 @anchor{build-check}
@@ -8857,13 +8913,13 @@ guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
 
 If a log is unavailable locally, and unless @option{--no-substitutes} is
 passed, the command looks for a corresponding log on one of the
-substitute servers (as specified with @option{--substitute-urls}.)
+substitute servers (as specified with @option{--substitute-urls}).
 
 So for instance, imagine you want to see the build log of GDB on MIPS,
 but you are actually on an @code{x86_64} machine:
 
 @example
-$ guix build --log-file gdb -s mips64el-linux
+$ guix build --log-file gdb -s aarch64-linux
 https://@value{SUBSTITUTE-SERVER}/log/@dots{}-gdb-7.10
 @end example
 
@@ -9015,6 +9071,11 @@ Certificates}), unless @option{--no-check-certificate} is used.
 The following options are available:
 
 @table @code
+@item --hash=@var{algorithm}
+@itemx -H @var{algorithm}
+Compute a hash using the specified @var{algorithm}.  @xref{Invoking guix
+hash}, for more information.
+
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
 Write the hash in the format specified by @var{fmt}.  For more
@@ -9054,11 +9115,21 @@ following options:
 
 @table @code
 
+@item --hash=@var{algorithm}
+@itemx -H @var{algorithm}
+Compute a hash using the specified @var{algorithm}, @code{sha256} by
+default.
+
+@var{algorithm} must the name of a cryptographic hash algorithm
+supported by Libgcrypt @i{via} Guile-Gcrypt---e.g., @code{sha512} or
+@code{sha3-256} (@pxref{Hash Functions,,, guile-gcrypt, Guile-Gcrypt
+Reference Manual}).
+
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
 Write the hash in the format specified by @var{fmt}.
 
-Supported formats: @code{nix-base32}, @code{base32}, @code{base16}
+Supported formats: @code{base64}, @code{nix-base32}, @code{base32}, @code{base16}
 (@code{hex} and @code{hexadecimal} can be used as well).
 
 If the @option{--format} option is not specified, @command{guix hash}
@@ -9081,7 +9152,7 @@ hash (@pxref{Invoking guix archive}).
 @item --exclude-vcs
 @itemx -x
 When combined with @option{--recursive}, exclude version control system
-directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.)
+directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.).
 
 @vindex git-fetch
 As an example, here is how you would compute the hash of a Git checkout,
@@ -9539,7 +9610,7 @@ gnu/packages/gettext.scm:29:13: gettext would be upgraded from 0.18.1.1 to 0.18.
 gnu/packages/glib.scm:77:12: glib would be upgraded from 2.34.3 to 2.37.0
 @end example
 
-Alternately, one can specify packages to consider, in which case a
+Alternatively, one can specify packages to consider, in which case a
 warning is emitted for packages that lack an updater:
 
 @example
@@ -9614,7 +9685,7 @@ guix refresh -l -e '(@@@@ (gnu packages commencement) glibc-final)'
 @end example
 
 This command lists the dependents of the ``final'' libc (essentially all
-the packages.)
+the packages).
 
 @item --update
 @itemx -u
@@ -9721,7 +9792,7 @@ be used when passing @command{guix refresh} one or more package names:
 
 @item --list-updaters
 @itemx -L
-List available updaters and exit (see @option{--type} above.)
+List available updaters and exit (see @option{--type} above).
 
 For each updater, display the fraction of packages it covers; at the
 end, display the fraction of packages covered by all these updaters.
@@ -9785,7 +9856,7 @@ When this option is omitted, @command{guix refresh} uses
 @file{~/.config/guix/upstream/trustedkeys.kbx} as the keyring for upstream
 signing keys.  OpenPGP signatures are checked against keys from this keyring;
 missing keys are downloaded to this keyring as well (see
-@option{--key-download} below.)
+@option{--key-download} below).
 
 You can export keys from your default GPG keyring into a keybox file using
 commands like this one:
@@ -9881,6 +9952,17 @@ version number or ``git-checkout'', without a declared @code{file-name}
 Parse the @code{source} URL to determine if a tarball from GitHub is
 autogenerated or if it is a release tarball.  Unfortunately GitHub's
 autogenerated tarballs are sometimes regenerated.
+
+@item derivation
+Check that the derivation of the given packages can be successfully
+computed for all the supported systems (@pxref{Derivations}).
+
+@item profile-collisions
+Check whether installing the given packages in a profile would lead to
+collisions.  Collisions occur when several packages with the same name
+but a different version or a different store file name are propagated.
+@xref{package Reference, @code{propagated-inputs}}, for more information
+on propagated inputs.
 
 @item archival
 @cindex Software Heritage, source code archive
@@ -10049,6 +10131,13 @@ libraries.  (That libc and GCC's libraries represent a large fraction of
 the closure is not a problem @i{per se} because they are always available
 on the system anyway.)
 
+Since the command also accepts store file names, assessing the size of
+a build result is straightforward:
+
+@example
+guix size $(guix system build config.scm)
+@end example
+
 When the package(s) passed to @command{guix size} are available in the
 store@footnote{More precisely, @command{guix size} looks for the
 @emph{ungrafted} variant of the given package(s), as returned by
@@ -10197,7 +10286,7 @@ guix graph --type=reverse-package ocaml
 
 ...@: yields the graph of packages that @emph{explicitly} depend on OCaml (if
 you are also interested in cases where OCaml is an implicit dependency, see
-@code{reverse-bag} below.)
+@code{reverse-bag} below).
 
 Note that for core packages this can yield huge graphs.  If all you want
 is to know the number of packages that depend on a given package, use
@@ -10724,7 +10813,7 @@ guix challenge git \
 This automatically invokes @command{diffoscope}, which displays detailed
 information about files that differ.
 
-Alternately, we can do something along these lines (@pxref{Invoking guix
+Alternatively, we can do something along these lines (@pxref{Invoking guix
 archive}):
 
 @example
@@ -10771,7 +10860,7 @@ When a difference is found between the hash of a locally-built item and
 that of a server-provided substitute, or among substitutes provided by
 different servers, the command displays it as in the example above and
 its exit code is 2 (other non-zero exit codes denote other kinds of
-errors.)
+errors).
 
 The one option that matters is:
 
@@ -11097,7 +11186,7 @@ integration tool; their process identifier (PID) is given by the
 The @code{LockHeld} fields show which store items are currently locked by this
 session, which corresponds to store items being built or substituted (the
 @code{LockHeld} field is not displayed when @command{guix processes} is not
-running as root.)  Last, by looking at the @code{ChildProcess} field, we
+running as root).  Last, by looking at the @code{ChildProcess} field, we
 understand that these three builds are being offloaded (@pxref{Daemon Offload
 Setup}).
 
@@ -11408,9 +11497,21 @@ configuration (@pxref{Using the Configuration System}).
 
 @table @asis
 @item @code{kernel} (default: @code{linux-libre})
-The package object of the operating system kernel to use@footnote{Currently
-only the Linux-libre kernel is supported.  In the future, it will be
-possible to use the GNU@tie{}Hurd.}.
+The package object of the operating system kernel to
+use@footnote{Currently only the Linux-libre kernel is fully supported.
+Using GNU@tie{}mach with the GNU@tie{}Hurd is experimental and only
+available when building a virtual machine disk image.}.
+
+@cindex hurd
+@item @code{hurd} (default: @code{#f})
+The package object of the hurd to be started by the kernel.  When this
+field is set, produce a GNU/Hurd operating system.  In that case,
+@code{kernel} must also be set to the @code{gnumach} package---the
+microkernel the Hurd runs on.
+
+@quotation Warning
+This feature is experimental and only supported for disk images.
+@end quotation
 
 @item @code{kernel-loadable-modules} (default: '())
 A list of objects (usually packages) to collect loadable kernel modules
@@ -11691,10 +11792,14 @@ update time on the in-memory version of the file inode), and
 Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
-This is either @code{#f}, or a string denoting mount options passed to the
-file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C Library
-Reference Manual}, for details and run @command{man 8 mount} for options for
-various file systems.
+This is either @code{#f}, or a string denoting mount options passed to
+the file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C
+Library Reference Manual}, for details and run @command{man 8 mount} for
+options for various file systems.  Note that the
+@code{file-system-options->alist} and @code{alist->file-system-options}
+procedures from @code{(gnu system file-systems)} can be used to convert
+file system options given as an association list to the string
+representation, and vice-versa.
 
 @item @code{mount?} (default: @code{#t})
 This value indicates whether to automatically mount the file system when
@@ -11735,7 +11840,7 @@ variables.
 @defvr {Scheme Variable} %base-file-systems
 These are essential file systems that are required on normal systems,
 such as @code{%pseudo-terminal-file-system} and @code{%immutable-store} (see
-below.)  Operating system declarations should always contain at least
+below).  Operating system declarations should always contain at least
 these.
 @end defvr
 
@@ -11774,6 +11879,110 @@ The @code{fusectl} file system, which allows unprivileged users to mount
 and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
 @end defvr
+
+@node Btrfs file system
+@subsection Btrfs file system
+
+The Btrfs has special features, such as subvolumes, that merit being
+explained in more details.  The following section attempts to cover
+basic as well as complex uses of a Btrfs file system with the Guix
+System.
+
+In its simplest usage, a Btrfs file system can be described, for
+example, by:
+
+@lisp
+(file-system
+  (mount-point "/home")
+  (type "btrfs")
+  (device (file-system-label "my-home")))
+@end lisp
+
+The example below is more complex, as it makes use of a Btrfs
+subvolume, named @code{rootfs}.  The parent Btrfs file system is labeled
+@code{my-btrfs-pool}, and is located on an encrypted device (hence the
+dependency on @code{mapped-devices}):
+
+@lisp
+(file-system
+  (device (file-system-label "my-btrfs-pool"))
+  (mount-point "/")
+  (type "btrfs")
+  (options "subvol=rootfs")
+  (dependencies mapped-devices))
+@end lisp
+
+Some bootloaders, for example GRUB, only mount a Btrfs partition at its
+top level during the early boot, and rely on their configuration to
+refer to the correct subvolume path within that top level.  The
+bootloaders operating in this way typically produce their configuration
+on a running system where the Btrfs partitions are already mounted and
+where the subvolume information is readily available.  As an example,
+@command{grub-mkconfig}, the configuration generator command shipped
+with GRUB, reads @file{/proc/self/mountinfo} to determine the top-level
+path of a subvolume.
+
+The Guix System produces a bootloader configuration using the operating
+system configuration as its sole input; it is therefore necessary to
+extract the subvolume name on which @file{/gnu/store} lives (if any)
+from that operating system configuration.  To better illustrate,
+consider a subvolume named 'rootfs' which contains the root file system
+data.  In such situation, the GRUB bootloader would only see the top
+level of the root Btrfs partition, e.g.:
+
+@example
+/                   (top level)
+├── rootfs          (subvolume directory)
+    ├── gnu         (normal directory)
+        ├── store   (normal directory)
+[...]
+@end example
+
+Thus, the subvolume name must be prepended to the @file{/gnu/store} path
+of the kernel, initrd binaries and any other files referred to in the
+GRUB configuration that must be found during the early boot.
+
+The next example shows a nested hierarchy of subvolumes and
+directories:
+
+@example
+/                   (top level)
+├── rootfs          (subvolume)
+    ├── gnu         (normal directory)
+        ├── store   (subvolume)
+[...]
+@end example
+
+This scenario would work without mounting the 'store' subvolume.
+Mounting 'rootfs' is sufficient, since the subvolume name matches its
+intended mount point in the file system hierarchy.  Alternatively, the
+'store' subvolume could be referred to by setting the @code{subvol}
+option to either @code{/rootfs/gnu/store} or @code{rootfs/gnu/store}.
+
+Finally, a more contrived example of nested subvolumes:
+
+@example
+/                           (top level)
+├── root-snapshots          (subvolume)
+    ├── root-current        (subvolume)
+        ├── guix-store      (subvolume)
+[...]
+@end example
+
+Here, the 'guix-store' subvolume doesn't match its intended mount point,
+so it is necessary to mount it.  The subvolume must be fully specified,
+by passing its file name to the @code{subvol} option.  To illustrate,
+the 'guix-store' subvolume could be mounted on @file{/gnu/store} by using
+a file system declaration such as:
+
+@lisp
+(file-system
+  (device (file-system-label "btrfs-pool-1"))
+  (mount-point "/gnu/store")
+  (type "btrfs")
+  (options "subvol=root-snapshots/root-current/guix-store,\
+compress-force=zstd,space_cache=v2"))
+@end lisp
 
 @node Mapped Devices
 @section Mapped Devices
@@ -12403,6 +12612,7 @@ declaration.
 * PAM Mount Service::           Service to mount volumes when logging in.
 * Guix Services::               Services relating specifically to Guix.
 * Linux Services::              Services tied to the Linux kernel.
+* Hurd Services::               Services specific for a Hurd System.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -12460,7 +12670,7 @@ Since this is part of @code{%base-services}, you can use
 @code{modify-services} to customize the set of special files
 (@pxref{Service Reference, @code{modify-services}}).  But the simple way
 to add a special file is @i{via} the @code{extra-special-file} procedure
-(see below.)
+(see below).
 @end defvr
 
 @deffn {Scheme Procedure} extra-special-file @var{file} @var{target}
@@ -14408,7 +14618,7 @@ subsystem name and a command (with optional arguments) to execute upon
 subsystem request.
 
 The command @command{internal-sftp} implements an in-process SFTP
-server.  Alternately, one can specify the @command{sftp-server} command:
+server.  Alternatively, one can specify the @command{sftp-server} command:
 @lisp
 (service openssh-service-type
          (openssh-configuration
@@ -14771,7 +14981,7 @@ definition (@pxref{operating-system Reference, system-wide packages}).
 This is the type for the @uref{https://wiki.gnome.org/Projects/GDM/, GNOME
 Desktop Manager} (GDM), a program that manages graphical display servers and
 handles graphical user logins.  Its value must be a @code{gdm-configuration}
-(see below.)
+(see below).
 
 @cindex session types (X11)
 @cindex X11 session types
@@ -16042,7 +16252,7 @@ gnome-session``.  Currently only GNOME has support for Wayland.
 @defvr {Scheme Variable} gnome-desktop-service-type
 This is the type of the service that adds the @uref{https://www.gnome.org,
 GNOME} desktop environment.  Its value is a @code{gnome-desktop-configuration}
-object (see below.)
+object (see below).
 
 This service adds the @code{gnome} package to the system profile, and extends
 polkit with the actions from @code{gnome-settings-daemon}.
@@ -16060,7 +16270,7 @@ The GNOME package to use.
 @defvr {Scheme Variable} xfce-desktop-service-type
 This is the type of a service to run the @uref{Xfce, https://xfce.org/}
 desktop environment.  Its value is an @code{xfce-desktop-configuration} object
-(see below.)
+(see below).
 
 This service adds the @code{xfce} package to the system profile, and
 extends polkit with the ability for @code{thunar} to manipulate the file
@@ -16080,7 +16290,7 @@ The Xfce package to use.
 @deffn {Scheme Variable} mate-desktop-service-type
 This is the type of the service that runs the @uref{https://mate-desktop.org/,
 MATE desktop environment}.  Its value is a @code{mate-desktop-configuration}
-object (see below.)
+object (see below).
 
 This service adds the @code{mate} package to the system
 profile, and extends polkit with the actions from
@@ -16324,9 +16534,14 @@ Possible values are:
 
 @deffn {Scheme Procedure} udisks-service [#:udisks @var{udisks}]
 Return a service for @uref{https://udisks.freedesktop.org/docs/latest/,
-UDisks}, a @dfn{disk management} daemon that provides user interfaces with
-notifications and ways to mount/unmount disks.  Programs that talk to UDisks
-include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
+UDisks}, a @dfn{disk management} daemon that provides user interfaces
+with notifications and ways to mount/unmount disks.  Programs that talk
+to UDisks include the @command{udisksctl} command, part of UDisks, and
+GNOME Disks.  Note that Udisks relies on the @command{mount} command, so
+it will only be able to use the file-system utilities installed in the
+system profile.  For example if you want to be able to mount NTFS
+file-systems in read and write fashion, you'll need to have
+@code{ntfs-3g} installed system-wide.
 @end deffn
 
 @deffn {Scheme Variable} colord-service-type
@@ -16394,7 +16609,7 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 @defvr {Scheme Variable} gnome-keyring-service-type
 This is the type of the service that adds the
 @uref{https://wiki.gnome.org/Projects/GnomeKeyring, GNOME Keyring}.  Its
-value is a @code{gnome-keyring-configuration} object (see below.)
+value is a @code{gnome-keyring-configuration} object (see below).
 
 This service adds the @code{gnome-keyring} package to the system profile
 and extends PAM with entries using @code{pam_gnome_keyring.so}, unlocking
@@ -22141,10 +22356,10 @@ configuration:
 
 Note that ddclient needs to access credentials that are stored in a
 @dfn{secret file}, by default @file{/etc/ddclient/secrets} (see
-@code{secret-file} below.)  You are expected to create this file manually, in
+@code{secret-file} below).  You are expected to create this file manually, in
 an ``out-of-band'' fashion (you @emph{could} make this file part of the
 service configuration, for instance by using @code{plain-file}, but it will be
-world-readable @i{via} @file{/gnu/store}.)  See the examples in the
+world-readable @i{via} @file{/gnu/store}).  See the examples in the
 @file{share/ddclient} directory of the @code{ddclient} package.
 
 @c %start of fragment
@@ -22679,6 +22894,12 @@ The network port that the @command{nfsd} daemon should use.
 
 @item @code{nfsd-threads} (default: @code{8})
 The number of threads used by the @command{nfsd} daemon.
+
+@item @code{nfsd-tcp?} (default: @code{#t})
+Whether the @command{nfsd} daemon should listen on a TCP socket.
+
+@item @code{nfsd-udp?} (default: @code{#f})
+Whether the @command{nfsd} daemon should listen on a UDP socket.
 
 @item @code{pipefs-directory} (default: @code{"/var/lib/nfs/rpc_pipefs"})
 The directory where the pipefs file system is mounted.
@@ -24307,7 +24528,7 @@ emulated:
 @lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
-           (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
+           (platforms (lookup-qemu-platforms "arm" "aarch64"))))
 @end lisp
 
 In this example, we enable transparent emulation for the ARM and aarch64
@@ -25835,6 +26056,48 @@ parameters, can be done as follow:
 @end lisp
 @end deffn
 
+@node Hurd Services
+@subsection Hurd Services
+
+@defvr {Scheme Variable} hurd-console-service-type
+This service starts the fancy @code{VGA} console client on the Hurd.
+
+The service's value is a @code{hurd-console-configuration} record.
+@end defvr
+
+@deftp {Data Type} hurd-console-configuration
+This is the data type representing the configuration for the
+hurd-console-service.
+
+@table @asis
+@item @code{hurd} (default: @var{hurd})
+The Hurd package to use.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} hurd-getty-service-type
+This service starts a tty using the Hurd @code{getty} program.
+
+The service's value is a @code{hurd-getty-configuration} record.
+@end defvr
+
+@deftp {Data Type} hurd-getty-configuration
+This is the data type representing the configuration for the
+hurd-getty-service.
+
+@table @asis
+@item @code{hurd} (default: @var{hurd})
+The Hurd package to use.
+
+@item @code{tty}
+The name of the console this Getty runs on---e.g., @code{"tty1"}.
+
+@item @code{baud-rate} (default: @code{38400})
+An integer specifying the baud rate of the tty.
+
+@end table
+@end deftp
+
 @node Miscellaneous Services
 @subsection Miscellaneous Services
 
@@ -26103,6 +26366,15 @@ The Docker package to use.
 @item @code{containerd} (default: @var{containerd})
 The Containerd package to use.
 
+@item @code{proxy} (default @var{docker-libnetwork-cmd-proxy})
+The Docker user-land networking proxy package to use.
+
+@item @code{enable-proxy?} (default @code{#f})
+Enable or disable the use of the Docker user-land networking proxy.
+
+@item @code{debug?} (default @code{#f})
+Enable or disable debug output.
+
 @end table
 @end deftp
 
@@ -26219,7 +26491,7 @@ password, and which needs to access the @file{/etc/passwd} and
 obvious security reasons.  To address that, these executables are
 @dfn{setuid-root}, meaning that they always run with root privileges
 (@pxref{How Change Persona,,, libc, The GNU C Library Reference Manual},
-for more info about the setuid mechanism.)
+for more info about the setuid mechanism).
 
 The store itself @emph{cannot} contain setuid programs: that would be a
 security issue since any user on the system can write derivations that
@@ -26531,9 +26803,10 @@ service activation programs and then spawns the GNU@tie{}Shepherd, the
 initialization system.
 
 @item --root=@var{root}
-Mount @var{root} as the root file system.  @var{root} can be a
-device name like @code{/dev/sda1}, a file system label, or a file system
-UUID.
+Mount @var{root} as the root file system.  @var{root} can be a device
+name like @code{/dev/sda1}, a file system label, or a file system UUID.
+When unspecified, the device name from the root file system of the
+operating system declaration is used.
 
 @item --system=@var{system}
 Have @file{/run/booted-system} and @file{/run/current-system} point to
@@ -26773,7 +27046,7 @@ The type of an entry in the bootloader menu.
 @item @code{label}
 The label to show in the menu---e.g., @code{"GNU"}.
 
-@item @code{linux}
+@item @code{linux} (default: @code{#f})
 The Linux kernel image to boot, for example:
 
 @lisp
@@ -26795,9 +27068,10 @@ field is ignored entirely.
 The list of extra Linux kernel command-line arguments---e.g.,
 @code{("console=ttyS0")}.
 
-@item @code{initrd}
+@item @code{initrd} (default: @code{#f})
 A G-Expression or string denoting the file name of the initial RAM disk
 to use (@pxref{G-Expressions}).
+
 @item @code{device} (default: @code{#f})
 The device where the kernel and initrd are to be found---i.e., for GRUB,
 @dfn{root} for this menu entry (@pxref{root,,, grub, GNU GRUB manual}).
@@ -26807,6 +27081,28 @@ bytevector, @pxref{File Systems}), or @code{#f}, in which case
 the bootloader will search the device containing the file specified by
 the @code{linux} field (@pxref{search,,, grub, GNU GRUB manual}).  It
 must @emph{not} be an OS device name such as @file{/dev/sda1}.
+
+@item @code{multiboot-kernel} (default: @code{#f})
+The kernel to boot in Multiboot-mode (@pxref{multiboot,,, grub, GNU GRUB
+manual}).  When this field is set, a Multiboot menu-entry is generated.
+For example:
+
+@lisp
+(file-append mach "/boot/gnumach")
+@end lisp
+
+@item @code{multiboot-arguments} (default: @code{()})
+The list of extra command-line arguments for the multiboot-kernel.
+
+@item @code{multiboot-modules} (default: @code{()})
+The list of commands for loading Multiboot modules.  For example:
+
+@lisp
+(list (list (file-append hurd "/hurd/ext2fs.static") "ext2fs"
+             @dots{})
+      (list (file-append libc "/lib/ld.so.1") "exec"
+             @dots{}))
+@end lisp
 
 @end table
 @end deftp
@@ -26828,14 +27124,14 @@ The GRUB @code{gfxmode} to set (a list of screen resolution strings, see
 @end table
 @end deftp
 
-@defvr {Scheme Variable} %default-theme
-This is the default GRUB theme used by the operating system if no
+@deffn {Scheme Procedure} grub-theme
+Return the default GRUB theme used by the operating system if no
 @code{theme} field is specified in @code{bootloader-configuration}
 record.
 
 It comes with a fancy background image displaying the GNU and Guix
 logos.
-@end defvr
+@end deffn
 
 For example, to override the default resolution, you may use something
 like
@@ -26845,7 +27141,7 @@ like
  (bootloader-configuration
  ;; @dots{}
  (theme (grub-theme
-         (inherit %default-theme)
+         (inherit (grub-theme))
          (gfxmode '("1024x786x32" "auto"))))))
 @end lisp
 
@@ -27355,7 +27651,7 @@ each other:
 Emit in Dot/Graphviz format to standard output the @dfn{service
 extension graph} of the operating system defined in @var{file}
 (@pxref{Service Composition}, for more information on service
-extensions.)
+extensions).
 
 The command:
 
@@ -27916,7 +28212,7 @@ services and service types.  This interface is provided by the
 
 @deffn {Scheme Procedure} service @var{type} [@var{value}]
 Return a new service of @var{type}, a @code{<service-type>} object (see
-below.)  @var{value} can be any object; it represents the parameters of
+below).  @var{value} can be any object; it represents the parameters of
 this particular service instance.
 
 When @var{value} is omitted, the default value specified by @var{type}
@@ -28472,7 +28768,7 @@ Occasionally, important security vulnerabilities are discovered in software
 packages and must be patched.  Guix developers try hard to keep track of
 known vulnerabilities and to apply fixes as soon as possible in the
 @code{master} branch of Guix (we do not yet provide a ``stable'' branch
-containing only security updates.)  The @command{guix lint} tool helps
+containing only security updates).  The @command{guix lint} tool helps
 developers find out about vulnerable versions of software packages in the
 distribution:
 
@@ -28606,10 +28902,8 @@ Binutils, libc, and the other packages mentioned above---the
 @dfn{bootstrap binaries}.
 
 These bootstrap binaries are ``taken for granted'', though we can also
-re-create them if needed (more on that later).
-
-For @code{i686-linux} and @code{x86_64-linux} the Guix bootstrap process is
-more elaborate, @pxref{Reduced Binary Seed Bootstrap}.
+re-create them if needed (@pxref{Preparing to Use the Bootstrap
+Binaries}).
 
 @menu
 * Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
@@ -28625,60 +28919,71 @@ Coreutils, Awk, Findutils, `sed', and `grep' and Guile, GCC, Binutils, and the
 GNU C Library (@pxref{Bootstrapping}).  Usually, these bootstrap binaries are
 ``taken for granted.''
 
-Taking these binaries for granted means that we consider them to be a correct
-and trustworthy `seed' for building the complete system.  Therein lies a
-problem: the current combined size of these bootstrap binaries is about 250MB
-(@pxref{Bootstrappable Builds,,, mes, GNU Mes}).  Auditing or even inspecting
-these is next to impossible.
+Taking the bootstrap binaries for granted means that we consider them to
+be a correct and trustworthy ``seed'' for building the complete system.
+Therein lies a problem: the combined size of these bootstrap binaries is
+about 250MB (@pxref{Bootstrappable Builds,,, mes, GNU Mes}).  Auditing
+or even inspecting these is next to impossible.
 
-For @code{i686-linux} and @code{x86_64-linux}, Guix now features a ``Reduced
-Binary Seed'' bootstrap @footnote{We would like to say: ``Full Source
-Bootstrap'' and while we are working towards that goal it would be hyperbole
-to use that term for what we do now.}.
+For @code{i686-linux} and @code{x86_64-linux}, Guix now features a
+``Reduced Binary Seed'' bootstrap @footnote{We would like to say: ``Full
+Source Bootstrap'' and while we are working towards that goal it would
+be hyperbole to use that term for what we do now.}.
 
 The Reduced Binary Seed bootstrap removes the most critical tools---from a
 trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
 Library are replaced by: @code{bootstrap-mescc-tools} (a tiny assembler and
 linker) and @code{bootstrap-mes} (a small Scheme Interpreter and a C compiler
-written in Scheme and the Mes C Library, built for TinyCC and for GCC).  Using
-these new binary seeds and a new set of
-@c
-packages@footnote{@c
-nyacc-boot,
-mes-boot,
-tcc-boot0,
-tcc-boot,
-make-mesboot0,
-diffutils-mesboot,
-binutils-mesboot0,
-gcc-core-mesboot,
-mesboot-headers,
-glibc-mesboot0,
-gcc-mesboot0,
-binutils-mesboot,
-make-mesboot,
-gcc-mesboot1,
-gcc-mesboot1-wrapper,
-glibc-headers-mesboot,
-glibc-mesboot,
-gcc-mesboot,
-and
-gcc-mesboot-wrapper.
-}
-@c
-the ``missing'' Binutils, GCC, and the GNU C Library are built from source.
-From here on the more traditional bootstrap process resumes.  This approach
-has reduced the bootstrap binaries in size to about 130MB.  Work is ongoing to
-reduce this further.  If you are interested, join us on @code{#bootstrappable}
-on the Freenode IRC network.
+written in Scheme and the Mes C Library, built for TinyCC and for GCC).
 
-@c ./pre-inst-env guix graph --type=bag -e '(begin (use-modules (guix packages)) (%current-system "i686-linux") (@@ (gnu packages commencement) gcc-mesboot))' > doc/images/gcc-mesboot-bag-graph.dot
-@c dot -T png doc/images/gcc-mesboot-bag-graph.dot > doc/images/gcc-mesboot-bag-graph.png
+Using these new binary seeds the ``missing'' Binutils, GCC, and the GNU
+C Library are built from source.  From here on the more traditional
+bootstrap process resumes.  This approach has reduced the bootstrap
+binaries in size to about 145MB in Guix v1.1.
 
-Below is the generated dependency graph for @code{gcc-mesboot}, the bootstrap
-compiler used to build the rest of GuixSD.
+The next step that Guix has taken is to replace the shell and all its
+utilities with implementations in Guile Scheme, the @emph{Scheme-only
+bootstrap}.  Gash (@pxref{Gash,,, gash, The Gash manual}) is a
+POSIX-compatible shell that replaces Bash, and it comes with Gash Utils
+which has minimalist replacements for Awk, the GNU Core Utilities, Grep,
+Gzip, Sed, and Tar.  The rest of the bootstrap binary seeds that were
+removed are now built from source.
 
-@image{images/gcc-mesboot-bag-graph,6in,,Dependency graph of the gcc-mesboot}
+Building the GNU System from source is currently only possibly by adding
+some historical GNU packages as intermediate steps@footnote{Packages
+such as @code{gcc-2.95.3}, @code{binutils-2.14}, @code{glibc-2.2.5},
+@code{gzip-1.2.4}, @code{tar-1.22}, and some others.  For details, see
+@file{gnu/packages/commencement.scm}.}.  As Gash and Gash Utils mature,
+and GNU packages become more bootstrappable again (e.g., new releases of
+GNU Sed will also ship as gzipped tarballs again, as alternative to the
+hard to bootstrap @code{xz}-compression), this set of added packages can
+hopefully be reduced again.
+
+The graph below shows the resulting dependency graph for
+@code{gcc-core-mesboot0}, the bootstrap compiler used for the
+traditional bootstrap of the rest of the Guix System.
+
+@c ./pre-inst-env guix graph -e '(@@ (gnu packages commencement) gcc-core-mesboot0)' | sed -re 's,((bootstrap-mescc-tools|bootstrap-mes|guile-bootstrap).*shape =) box,\1 ellipse,' > doc/images/gcc-core-mesboot0-graph.dot
+@image{images/gcc-core-mesboot0-graph,6in,,Dependency graph of gcc-core-mesboot0}
+
+The only significant binary bootstrap seeds that remain@footnote{
+Ignoring the 68KB @code{mescc-tools}; that will be removed later,
+together with @code{mes}.} are a Scheme intepreter and a Scheme
+compiler: GNU Mes and GNU Guile@footnote{Not shown in this graph are the
+static binaries for @file{bash}, @code{tar}, and @code{xz} that are used
+to get Guile running.}.
+
+This further reduction has brought down the size of the binary seed to
+about 60MB for @code{i686-linux} and @code{x86_64-linux}.
+
+Work is ongoing to remove all binary blobs from our free software
+bootstrap stack, working towards a Full Source Bootstrap.  Also ongoing
+is work to bring these bootstraps to the @code{arm-linux} and
+@code{aarch64-linux} architectures and to the Hurd.
+
+If you are interested, join us on @samp{#bootstrappable} on the Freenode
+IRC network or discuss on @email{bug-mes@@gnu.org} or
+@email{gash-devel@@nongnu.org}.
 
 @node Preparing to Use the Bootstrap Binaries
 @section Preparing to Use the Bootstrap Binaries
@@ -28698,7 +29003,7 @@ guix graph -t derivation \
   | dot -Tps > gcc.ps
 @end example
 
-or, for the Reduced Binary Seed bootstrap
+or, for the further Reduced Binary Seed bootstrap
 
 @example
 guix graph -t derivation \
@@ -28910,7 +29215,7 @@ reason.
 Guix is based on the @uref{https://nixos.org/nix/, Nix package manager},
 which was designed and
 implemented by Eelco Dolstra, with contributions from other people (see
-the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
+the @file{nix/AUTHORS} file in Guix).  Nix pioneered functional package
 management, and promoted unprecedented features, such as transactional
 package upgrades and rollbacks, per-user profiles, and referentially
 transparent build processes.  Without this work, Guix would not exist.

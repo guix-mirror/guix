@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -821,8 +822,8 @@ encoding conversion errors."
                             (locale (false-if-exception (setlocale LC_ALL))))
   ;; Must be called after `open-connection'.
 
-  (define socket
-    (store-connection-socket server))
+  (define buffered
+    (store-connection-output-port server))
 
   (unless (unspecified? use-build-hook?)
     (warn-about-deprecation #:use-build-hook? #f
@@ -831,9 +832,9 @@ encoding conversion errors."
   (let-syntax ((send (syntax-rules ()
                        ((_ (type option) ...)
                         (begin
-                          (write-arg type option socket)
+                          (write-arg type option buffered)
                           ...)))))
-    (write-int (operation-id set-options) socket)
+    (write-int (operation-id set-options) buffered)
     (send (boolean keep-failed?) (boolean keep-going?)
           (boolean fallback?) (integer verbosity))
     (when (< (store-connection-minor-version server) #x61)
@@ -896,6 +897,7 @@ encoding conversion errors."
                            `(("locale" . ,locale))
                            '()))))
         (send (string-pairs pairs))))
+    (write-buffered-output server)
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
@@ -1108,13 +1110,14 @@ path."
            ;; We don't use the 'operation' macro so we can pass SELECT? to
            ;; 'write-file'.
            (record-operation 'add-to-store)
-           (let ((port (store-connection-socket server)))
-             (write-int (operation-id add-to-store) port)
-             (write-string basename port)
-             (write-int 1 port)                   ;obsolete, must be #t
-             (write-int (if recursive? 1 0) port)
-             (write-string hash-algo port)
-             (write-file file-name port #:select? select?)
+           (let ((port (store-connection-socket server))
+                 (buffered (store-connection-output-port server)))
+             (write-int (operation-id add-to-store) buffered)
+             (write-string basename buffered)
+             (write-int 1 buffered)                   ;obsolete, must be #t
+             (write-int (if recursive? 1 0) buffered)
+             (write-string hash-algo buffered)
+             (write-file file-name buffered #:select? select?)
              (write-buffered-output server)
              (let loop ((done? (process-stderr server)))
                (or done? (loop (process-stderr server))))
@@ -1220,13 +1223,14 @@ an arbitrary directory layout in the store without creating a derivation."
         ;; We don't use the 'operation' macro so we can use 'write-file-tree'
         ;; instead of 'write-file'.
         (record-operation 'add-to-store/tree)
-        (let ((port (store-connection-socket server)))
-          (write-int (operation-id add-to-store) port)
-          (write-string basename port)
-          (write-int 1 port)                      ;obsolete, must be #t
-          (write-int (if recursive? 1 0) port)
-          (write-string hash-algo port)
-          (write-file-tree basename port
+        (let ((port (store-connection-socket server))
+              (buffered (store-connection-output-port server)))
+          (write-int (operation-id add-to-store) buffered)
+          (write-string basename buffered)
+          (write-int 1 buffered)                      ;obsolete, must be #t
+          (write-int (if recursive? 1 0) buffered)
+          (write-string hash-algo buffered)
+          (write-file-tree basename buffered
                            #:file-type+size file-type+size
                            #:file-port file-port
                            #:symlink-target symlink-target
@@ -1644,17 +1648,19 @@ the list of store paths to delete.  IGNORE-LIVENESS? should always be
 #f.  MIN-FREED is the minimum amount of disk space to be freed, in
 bytes, before the GC can stop.  Return the list of store paths delete,
 and the number of bytes freed."
-  (let ((s (store-connection-socket server)))
-    (write-int (operation-id collect-garbage) s)
-    (write-int action s)
-    (write-store-path-list to-delete s)
-    (write-arg boolean #f s)                      ; ignore-liveness?
-    (write-long-long min-freed s)
-    (write-int 0 s)                               ; obsolete
+  (let ((s (store-connection-socket server))
+        (buffered (store-connection-output-port server)))
+    (write-int (operation-id collect-garbage) buffered)
+    (write-int action buffered)
+    (write-store-path-list to-delete buffered)
+    (write-arg boolean #f buffered)                      ; ignore-liveness?
+    (write-long-long min-freed buffered)
+    (write-int 0 buffered)                               ; obsolete
     (when (>= (store-connection-minor-version server) 5)
       ;; Obsolete `use-atime' and `max-atime' parameters.
-      (write-int 0 s)
-      (write-int 0 s))
+      (write-int 0 buffered)
+      (write-int 0 buffered))
+    (write-buffered-output server)
 
     ;; Loop until the server is done sending error output.
     (let loop ((done? (process-stderr server)))
@@ -1711,10 +1717,12 @@ is raised if the set of paths read from PORT is not signed (as per
 
 (define* (export-path server path port #:key (sign? #t))
   "Export PATH to PORT.  When SIGN? is true, sign it."
-  (let ((s (store-connection-socket server)))
-    (write-int (operation-id export-path) s)
-    (write-store-path path s)
-    (write-arg boolean sign? s)
+  (let ((s (store-connection-socket server))
+        (buffered (store-connection-output-port server)))
+    (write-int (operation-id export-path) buffered)
+    (write-store-path path buffered)
+    (write-arg boolean sign? buffered)
+    (write-buffered-output server)
     (let loop ((done? (process-stderr server port)))
       (or done? (loop (process-stderr server port))))
     (= 1 (read-int s))))

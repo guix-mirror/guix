@@ -297,7 +297,7 @@ tools (containers, algorithms) used by other QuantStack packages.")
 (define-public ccls
   (package
     (name "ccls")
-    (version "0.20190823.5")
+    (version "0.20190823.6")
     (source
      (origin
        (method git-fetch)
@@ -305,11 +305,11 @@ tools (containers, algorithms) used by other QuantStack packages.")
              (url "https://github.com/MaskRay/ccls")
              (commit version)))
        (sha256
-        (base32 "0b2pkpzn576b92zcxpwchpkyw2fww6s69818rx4g9z34kzm35zy5"))
+        (base32 "11h5nwk4qqshf3i8yr4bxpnvmidrhkzd0zxhf1xqv8cv6r08k47f"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no check target.
+     '(#:tests? #f))                    ; no check target
     (inputs
      `(("rapidjson" ,rapidjson)))
     (native-inputs
@@ -458,7 +458,7 @@ point and then, after each tween step, plugging back the result.")
 (define-public abseil-cpp
   (package
     (name "abseil-cpp")
-    (version "20200225.1")
+    (version "20200225.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -467,7 +467,7 @@ point and then, after each tween step, plugging back the result.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "035bffayslawc19q2gmlkr6n6r7k7mvriaq7352rv6gyzaplr98w"))))
+                "0dwxg54pv6ihphbia0iw65r64whd7v8nm4wwhcz219642cgpv54y"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON"

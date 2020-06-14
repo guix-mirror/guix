@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -318,14 +319,14 @@ functions which were removed.")
 (define-public ganv
   (package
     (name "ganv")
-    (version "1.4.2")
+    (version "1.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/ganv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0g7s5mp14qgbfjdql0k1s8464r21g47ssn5dws6jazsnw6njhl0l"))))
+                "0pik2d3995z0rjcjhb4hsj5fsph3m8khg6j10k6mx4j2j727aq6l"))))
     (build-system waf-build-system)
     (arguments
      `(#:phases
@@ -337,7 +338,6 @@ functions which were removed.")
                      (string-append "-Wl,-rpath="
                                     (assoc-ref outputs "out") "/lib"))
              #t)))
-       #:python ,python-2 ;XXX: The bundled waf fails with Python 3.7.0.
        #:tests? #f)) ; no check target
     (inputs
      `(("gtk" ,gtk+-2)
@@ -352,24 +352,6 @@ functions which were removed.")
 graph-like environments, e.g. modular synths or finite state machine
 diagrams.")
     (license license:gpl3+)))
-
-(define-public ganv-devel
-  (let ((commit "12f7d6b0438c94dd87f773a92eee3453d971846e")
-        (revision "1"))
-    (package
-      (inherit ganv)
-      (name "ganv")
-      (version (string-append "1.5.4-" revision "."
-                              (string-take commit 9)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://git.drobilla.net/ganv.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1cr8w02lr6bk9mkxa12j3imq721b2an2yn4bj5wnwmpm91ddn2gi")))))))
 
 (define-public gtksourceview-2
   (package
@@ -650,6 +632,24 @@ is part of the GNOME accessibility project.")
    (license license:lgpl2.0+)
    (home-page "https://projects.gnome.org/accessibility/")))
 
+;;; A minimal variant used to prevent a cycle with Inkscape.
+(define at-spi2-core-minimal
+  (package
+    (inherit at-spi2-core)
+    (name "at-spi2-core-minimal")
+    (outputs (delete "doc" (package-outputs at-spi2-core)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments at-spi2-core)
+       ((#:configure-flags configure-flags)
+        `(delete "-Ddocs=true" ,configure-flags))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'set-documentation-path)
+           (delete 'prepare-doc-directory)
+           (delete 'move-documentation)))))
+    (native-inputs
+     (alist-delete "gtk-doc" (package-native-inputs at-spi2-core)))))
+
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
@@ -672,6 +672,8 @@ is part of the GNOME accessibility project.")
                    (setenv "DBUS_FATAL_WARNINGS" "0")
                    (invoke "dbus-launch" "meson" "test"))))))
    (propagated-inputs
+    ;; TODO: Replace by at-spi2-core-minimal in the next staging window, or
+    ;; when Inkscape 0.92 is upgraded to 1.0 to avoid a cycle.
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
    (inputs
     `(("atk" ,atk)))
@@ -759,7 +761,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.24.14")
+   (version "3.24.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -767,7 +769,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "120yz5gxqbv7sgdbcy4i0b6ixm8jpjzialdrqs0gv15q7bwnjk8w"))
+              "1wqxkd3xnqwihcawncp9mkf9bv5a5fg5i4ahm6klpl782vvnkb1d"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (propagated-inputs
@@ -923,13 +925,13 @@ exceptions, macros, and a dynamic programming environment.")
       (version (string-append "2.18.1-" revision "."
                               (string-take commit 7)))
       (source (origin
-                (method url-fetch)
-                (uri (string-append "https://gitlab.com/wingo/guile-rsvg/"
-                                    "repository/archive.tar.gz?ref="
-                                    commit))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/wingo/guile-rsvg/")
+                      (commit commit)))
                 (sha256
                  (base32
-                  "0vdzjx8l5nc4y2xjqs0g1rqn1zrwfsm30brh5gz00r1x41a2pvv2"))
+                  "0cnbl40df2sbhpc32cma6j6w312rfvcgbxxqaixgf0ymim3fb248"))
                 (patches (search-patches "guile-rsvg-pkgconfig.patch"))
                 (modules '((guix build utils)))
                 (snippet
@@ -1288,7 +1290,7 @@ printing and other features typical of a source code editor.")
 (define-public python-pycairo
   (package
     (name "python-pycairo")
-    (version "1.19.0")
+    (version "1.19.1")
     (source
      (origin
       (method url-fetch)
@@ -1296,7 +1298,7 @@ printing and other features typical of a source code editor.")
                           version "/pycairo-" version ".tar.gz"))
       (sha256
        (base32
-        "176i283glkpycka8wwyndwld0zp1yn9xj9rpvllqgja698vsjnsg"))))
+        "111fav9m1iagw3nh2ws2vzkjh34r97yl7rdlpvsngsqg521k251c"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1705,14 +1707,14 @@ glass artworks done by Venicians glass blowers.")
 (define-public gtkspell3
   (package
     (name "gtkspell3")
-    (version "3.0.9")
+    (version "3.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gtkspell/"
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09jdicmpipmj4v84gnkqwbmj4lh8v0i6pn967rb9jx4zg2ia9x54"))))
+                "0cjp6xdcnzh6kka42w9g0w2ihqjlq8yl8hjm9wsfnixk6qwgch5h"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1723,7 +1725,7 @@ glass artworks done by Venicians glass blowers.")
        ("gtk+" ,gtk+)
        ("pango" ,pango)))
     (propagated-inputs
-     `(("enchant" ,enchant-1.6)))          ;gtkspell3-3.0.pc refers to it
+     `(("enchant" ,enchant)))           ; gtkspell3-3.0.pc refers to it
     (home-page "http://gtkspell.sourceforge.net")
     (synopsis "Spell-checking addon for GTK's TextView widget")
     (description

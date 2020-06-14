@@ -2,9 +2,10 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Stefan <stefan-guix@vodafonemail.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,19 +38,13 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
-  #:export (grub-image
-            grub-image?
-            grub-image-aspect-ratio
-            grub-image-file
-
-            grub-theme
+  #:export (grub-theme
             grub-theme?
-            grub-theme-images
+            grub-theme-image
+            grub-theme-resolution
             grub-theme-color-normal
             grub-theme-color-highlight
-
-            %background-image
-            %default-theme
+            grub-theme-gfxmode
 
             grub-bootloader
             grub-efi-bootloader
@@ -64,50 +59,45 @@
 ;;;
 ;;; Code:
 
-(define (strip-mount-point mount-point file)
-  "Strip MOUNT-POINT from FILE, which is a gexp or other lowerable object
-denoting a file name."
-  (match mount-point
-    ((? string? mount-point)
-     (if (string=? mount-point "/")
-         file
-         #~(let ((file #$file))
-             (if (string-prefix? #$mount-point file)
-                 (substring #$file #$(string-length mount-point))
-                 file))))
-    (#f file)))
+(define* (normalize-file file mount-point store-directory-prefix)
+  "Strip MOUNT-POINT and prepend STORE-DIRECTORY-PREFIX, if any, to FILE, a
+G-expression or other lowerable object denoting a file name."
 
-(define-record-type* <grub-image>
-  grub-image make-grub-image
-  grub-image?
-  (aspect-ratio    grub-image-aspect-ratio        ;rational number
-                   (default 4/3))
-  (file            grub-image-file))              ;file-valued gexp (SVG)
+  (define (strip-mount-point mount-point file)
+    (if mount-point
+        (if (string=? mount-point "/")
+            file
+            #~(let ((file #$file))
+                (if (string-prefix? #$mount-point file)
+                    (substring #$file #$(string-length mount-point))
+                    file)))
+        file))
+
+  (define (prepend-store-directory-prefix store-directory-prefix file)
+    (if store-directory-prefix
+        #~(string-append #$store-directory-prefix #$file)
+        file))
+
+  (prepend-store-directory-prefix store-directory-prefix
+                                  (strip-mount-point mount-point file)))
+
+
 
 (define-record-type* <grub-theme>
+  ;; Default theme contributed by Felipe López.
   grub-theme make-grub-theme
   grub-theme?
-  (images          grub-theme-images
-                   (default '()))                 ;list of <grub-image>
+  (image           grub-theme-image
+                   (default (file-append %artwork-repository
+                                         "/grub/GuixSD-fully-black-4-3.svg")))
+  (resolution      grub-theme-resolution
+                   (default '(1024 . 768)))
   (color-normal    grub-theme-color-normal
-                   (default '((fg . cyan) (bg . blue))))
+                   (default '((fg . light-gray) (bg . black))))
   (color-highlight grub-theme-color-highlight
-                   (default '((fg . white) (bg . blue))))
-  (gfxmode         grub-gfxmode
+                   (default '((fg . yellow) (bg . black))))
+  (gfxmode         grub-theme-gfxmode
                    (default '("auto"))))          ;list of string
-
-(define %background-image
-  (grub-image
-   (aspect-ratio 4/3)
-   (file (file-append %artwork-repository
-                      "/grub/GuixSD-fully-black-4-3.svg"))))
-
-(define %default-theme
-  ;; Default theme contributed by Felipe López.
-  (grub-theme
-   (images (list %background-image))
-   (color-highlight '((fg . yellow) (bg . black)))
-   (color-normal    '((fg . light-gray) (bg . black))))) ;XXX: #x303030
 
 
 ;;;
@@ -115,68 +105,56 @@ denoting a file name."
 ;;;
 
 (define (bootloader-theme config)
-  "Return user defined theme in CONFIG if defined or %default-theme
+  "Return user defined theme in CONFIG if defined or a default theme
 otherwise."
-  (or (bootloader-configuration-theme config) %default-theme))
+  (or (bootloader-configuration-theme config) (grub-theme)))
 
-(define* (svg->png svg #:key width height)
-  "Build a PNG of HEIGHT x WIDTH from SVG."
+(define* (image->png image #:key width height)
+  "Build a PNG of HEIGHT x WIDTH from IMAGE if its file suffix is \".svg\".
+Otherwise the picture in IMAGE is just copied."
   (computed-file "grub-image.png"
                  (with-imported-modules '((gnu build svg))
                    (with-extensions (list guile-rsvg guile-cairo)
-                     #~(begin
-                         (use-modules (gnu build svg))
-                         (svg->png #+svg #$output
-                                   #:width #$width
-                                   #:height #$height))))))
+                     #~(if (string-suffix? ".svg" #+image)
+                           (begin
+                             (use-modules (gnu build svg))
+                             (svg->png #+image #$output
+                                       #:width #$width
+                                       #:height #$height))
+                           (copy-file #+image #$output))))))
 
-(define* (grub-background-image config #:key (width 1024) (height 768))
-  "Return the GRUB background image defined in CONFIG with a ratio of
-WIDTH/HEIGHT, or #f if none was found."
-  (let* ((ratio (/ width height))
-         (image (find (lambda (image)
-                        (= (grub-image-aspect-ratio image) ratio))
-                      (grub-theme-images
-                       (bootloader-theme config)))))
+(define* (grub-background-image config)
+  "Return the GRUB background image defined in CONFIG or #f if none was found.
+If the suffix of the image file is \".svg\", then it is converted into a PNG
+file with the resolution provided in CONFIG."
+  (let* ((theme (bootloader-theme config))
+         (image (grub-theme-image theme)))
     (and image
-         (svg->png (grub-image-file image)
-                   #:width width #:height height))))
+         (match (grub-theme-resolution theme)
+           (((? number? width) . (? number? height))
+            (image->png image #:width width #:height height))
+           (_ #f)))))
 
 (define* (eye-candy config store-device store-mount-point
-                    #:key system port)
-  "Return a gexp that writes to PORT (a port-valued gexp) the
-'grub.cfg' part concerned with graphics mode, background images, colors, and
-all that.  STORE-DEVICE designates the device holding the store, and
-STORE-MOUNT-POINT is its mount point; these are used to determine where the
-background image and fonts must be searched for.  SYSTEM must be the target
-system string---e.g., \"x86_64-linux\"."
-  (define setup-gfxterm-body
-    (let ((gfxmode
-           (or (and-let* ((theme (bootloader-configuration-theme config))
-                          (gfxmode (grub-gfxmode theme)))
-                 (string-join gfxmode ";"))
-               "auto")))
-
-      ;; Intel and EFI systems need to be switched into graphics mode, whereas
-      ;; most other modern architectures have no other mode and therefore
-      ;; don't need to be switched.
-
-      ;; XXX: Do we really need to restrict to x86 systems?  We could imitate
-      ;; what the GRUB default configuration does and decide based on whether
-      ;; a user provided 'gfxterm' in the terminal-outputs field of their
-      ;; bootloader-configuration record.
-      (if (string-match "^(x86_64|i[3-6]86)-" system)
-          (format #f "
-  set gfxmode=~a
-  insmod all_video
-  insmod gfxterm~%" gfxmode)
-          "")))
-
+                    #:key store-directory-prefix port)
+  "Return a gexp that writes to PORT (a port-valued gexp) the 'grub.cfg' part
+concerned with graphics mode, background images, colors, and all that.
+STORE-DEVICE designates the device holding the store, and STORE-MOUNT-POINT is
+its mount point; these are used to determine where the background image and
+fonts must be searched for.  STORE-DIRECTORY-PREFIX is a directory prefix to
+prepend to any store file name."
   (define (setup-gfxterm config font-file)
     (if (memq 'gfxterm (bootloader-configuration-terminal-outputs config))
-        #~(format #f "if loadfont ~a; then
-  setup_gfxterm
-fi~%" #+font-file)
+        #~(format #f "
+if loadfont ~a; then
+  set gfxmode=~a
+  insmod all_video
+  insmod gfxterm
+fi~%"
+                  #+font-file
+                  #$(string-join
+                     (grub-theme-gfxmode (bootloader-theme config))
+                     ";"))
         ""))
 
   (define (theme-colors type)
@@ -186,16 +164,17 @@ fi~%" #+font-file)
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    (strip-mount-point store-mount-point
-                       (file-append grub "/share/grub/unicode.pf2")))
+    (normalize-file (file-append grub "/share/grub/unicode.pf2")
+                    store-mount-point
+                    store-directory-prefix))
 
   (define image
-    (grub-background-image config))
+    (normalize-file (grub-background-image config)
+                    store-mount-point
+                    store-directory-prefix))
 
   (and image
        #~(format #$port "
-function setup_gfxterm {~a}
-
 # Set 'root' to the partition that contains /gnu/store.
 ~a
 
@@ -210,12 +189,11 @@ else
   set menu_color_normal=cyan/blue
   set menu_color_highlight=white/blue
 fi~%"
-                 #$setup-gfxterm-body
                  #$(grub-root-search store-device font-file)
                  #$(setup-gfxterm config font-file)
                  #$(grub-setup-io config)
 
-                 #$(strip-mount-point store-mount-point image)
+                 #$image
                  #$(theme-colors grub-theme-color-normal)
                  #$(theme-colors grub-theme-color-highlight))))
 
@@ -323,52 +301,84 @@ code."
 (define* (grub-configuration-file config entries
                                   #:key
                                   (system (%current-system))
-                                  (old-entries '()))
+                                  (old-entries '())
+                                  store-directory-prefix)
   "Return the GRUB configuration file corresponding to CONFIG, a
 <bootloader-configuration> object, and where the store is available at
 STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
-entries corresponding to old generations of the system."
+entries corresponding to old generations of the system.
+STORE-DIRECTORY-PREFIX may be used to specify a store prefix, as is required
+when booting a root file system on a Btrfs subvolume."
   (define all-entries
     (append entries (bootloader-configuration-menu-entries config)))
   (define (menu-entry->gexp entry)
-    (let ((device (menu-entry-device entry))
-          (device-mount-point (menu-entry-device-mount-point entry))
-          (label (menu-entry-label entry))
-          (kernel (menu-entry-linux entry))
-          (arguments (menu-entry-linux-arguments entry))
-          (initrd (menu-entry-initrd entry)))
-      ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
-      ;; Use the right file names for KERNEL and INITRD in case
-      ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
-      ;; separate partition.
-      (let ((kernel  (strip-mount-point device-mount-point kernel))
-            (initrd  (strip-mount-point device-mount-point initrd)))
-        #~(format port "menuentry ~s {
+    (let ((label (menu-entry-label entry))
+          (linux (menu-entry-linux entry))
+          (device (menu-entry-device entry))
+          (device-mount-point (menu-entry-device-mount-point entry)))
+      (if linux
+          (let ((arguments (menu-entry-linux-arguments entry))
+                (linux (normalize-file linux
+                                       device-mount-point
+                                       store-directory-prefix))
+                (initrd (normalize-file (menu-entry-initrd entry)
+                                        device-mount-point
+                                        store-directory-prefix)))
+         ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
+         ;; Use the right file names for LINUX and INITRD in case
+         ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
+         ;; separate partition.
+
+         ;; When BTRFS-SUBVOLUME-FILE-NAME is defined, prepend it the linux and
+         ;; initrd paths, to allow booting from a Btrfs subvolume.
+         #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
   initrd ~a
 }~%"
+                   #$label
+                   #$(grub-root-search device linux)
+                   #$linux (string-join (list #$@arguments))
+                   #$initrd))
+          (let ((kernel (menu-entry-multiboot-kernel entry))
+                (arguments (menu-entry-multiboot-arguments entry))
+                (modules (menu-entry-multiboot-modules entry))
+                (root-index 1))            ; XXX EFI will need root-index 2
+        #~(format port "
+menuentry ~s {
+  multiboot ~a root=device:hd0s~a~a~a
+}~%"
                   #$label
-                  #$(grub-root-search device kernel)
-                  #$kernel (string-join (list #$@arguments))
-                  #$initrd))))
-  (define sugar
-    (eye-candy config
-               (menu-entry-device (first all-entries))
-               (menu-entry-device-mount-point (first all-entries))
-               #:system system
-               #:port #~port))
+                  #$kernel
+                  #$root-index (string-join (list #$@arguments) " " 'prefix)
+                  (string-join (map string-join '#$modules)
+                               "\n  module " 'prefix))))))
+
+  (define (sugar)
+    (let* ((entry (first all-entries))
+           (device (menu-entry-device entry))
+           (mount-point (menu-entry-device-mount-point entry)))
+      (eye-candy config
+                 device
+                 mount-point
+                 #:store-directory-prefix store-directory-prefix
+                 #:port #~port)))
 
   (define keyboard-layout-config
-    (let ((layout (bootloader-configuration-keyboard-layout config))
-          (grub   (bootloader-package
-                   (bootloader-configuration-bootloader config))))
-      #~(let ((keymap #$(and layout
-                             (keyboard-layout-file layout #:grub grub))))
-          (when keymap
-            (format port "\
+    (let* ((layout (bootloader-configuration-keyboard-layout config))
+           (grub   (bootloader-package
+                    (bootloader-configuration-bootloader config)))
+           (keymap* (and layout
+                         (keyboard-layout-file layout #:grub grub)))
+           (keymap (and keymap*
+                        (if store-directory-prefix
+                            #~(string-append #$store-directory-prefix
+                                             #$keymap*)
+                            keymap*))))
+      #~(when #$keymap
+          (format port "\
 insmod keylayouts
-keymap ~a~%" keymap)))))
+keymap ~a~%" #$keymap))))
 
   (define builder
     #~(call-with-output-file #$output
@@ -377,7 +387,7 @@ keymap ~a~%" keymap)))))
                   "# This file was generated from your Guix configuration.  Any changes
 # will be lost upon reconfiguration.
 ")
-          #$sugar
+          #$(sugar)
           #$keyboard-layout-config
           (format port "
 set default=~a
@@ -413,18 +423,65 @@ fi~%"))))
 
 (define install-grub
   #~(lambda (bootloader device mount-point)
-      ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT.
       (let ((grub (string-append bootloader "/sbin/grub-install"))
             (install-dir (string-append mount-point "/boot")))
-        ;; Tell 'grub-install' that there might be a LUKS-encrypted /boot or
-        ;; root partition.
-        (setenv "GRUB_ENABLE_CRYPTODISK" "y")
+        ;; Install GRUB on DEVICE which is mounted at MOUNT-POINT. If DEVICE
+        ;; is #f, then we populate the disk-image rooted at MOUNT-POINT.
+        (if device
+            (begin
+              ;; Tell 'grub-install' that there might be a LUKS-encrypted
+              ;; /boot or root partition.
+              (setenv "GRUB_ENABLE_CRYPTODISK" "y")
 
-        ;; Hide potentially confusing messages from the user, such as
-        ;; "Installing for i386-pc platform."
-        (invoke/quiet grub "--no-floppy" "--target=i386-pc"
-                      "--boot-directory" install-dir
-                      device))))
+              ;; Hide potentially confusing messages from the user, such as
+              ;; "Installing for i386-pc platform."
+              (invoke/quiet grub "--no-floppy" "--target=i386-pc"
+                            "--boot-directory" install-dir
+                            device))
+            ;; When creating a disk-image, only install GRUB modules.
+            (copy-recursively (string-append bootloader "/lib/")
+                              install-dir)))))
+
+(define install-grub-disk-image
+  #~(lambda (bootloader root-index image)
+      ;; Install GRUB on the given IMAGE. The root partition index is
+      ;; ROOT-INDEX.
+      (let ((grub-mkimage
+             (string-append bootloader "/bin/grub-mkimage"))
+            (modules '("biosdisk" "part_msdos" "fat" "ext2"))
+            (grub-bios-setup
+             (string-append bootloader "/sbin/grub-bios-setup"))
+            (root-device (format #f "hd0,msdos~a" root-index))
+            (boot-img (string-append bootloader "/lib/grub/i386-pc/boot.img"))
+            (device-map "device.map"))
+
+        ;; Create a minimal, standalone GRUB image that will be written
+        ;; directly in the MBR-GAP (space between the end of the MBR and the
+        ;; first partition).
+        (apply invoke grub-mkimage
+               "-O" "i386-pc"
+               "-o" "core.img"
+               "-p" (format #f "(~a)/boot/grub" root-device)
+               modules)
+
+        ;; Create a device mapping file.
+        (call-with-output-file device-map
+          (lambda (port)
+            (format port "(hd0) ~a~%" image)))
+
+        ;; Copy the default boot.img, that will be written on the MBR sector
+        ;; by GRUB-BIOS-SETUP.
+        (copy-file boot-img "boot.img")
+
+        ;; Install both the "boot.img" and the "core.img" files on the given
+        ;; IMAGE. On boot, the MBR sector will execute the minimal GRUB
+        ;; written in the MBR-GAP. GRUB configuration and missing modules will
+        ;; be read from ROOT-DEVICE.
+        (invoke grub-bios-setup
+                "-m" device-map
+                "-r" root-device
+                "-d" "."
+                image))))
 
 (define install-grub-efi
   #~(lambda (bootloader efi-dir mount-point)
@@ -455,21 +512,20 @@ fi~%"))))
    (name 'grub)
    (package grub)
    (installer install-grub)
+   (disk-image-installer install-grub-disk-image)
    (configuration-file "/boot/grub/grub.cfg")
    (configuration-file-generator grub-configuration-file)))
 
-(define grub-minimal-bootloader
+(define* grub-minimal-bootloader
   (bootloader
-   (name 'grub)
-   (package grub-minimal)
-   (installer install-grub)
-   (configuration-file "/boot/grub/grub.cfg")
-   (configuration-file-generator grub-configuration-file)))
+   (inherit grub-bootloader)
+   (package grub-minimal)))
 
 (define* grub-efi-bootloader
   (bootloader
    (inherit grub-bootloader)
    (installer install-grub-efi)
+   (disk-image-installer #f)
    (name 'grub-efi)
    (package grub-efi)))
 

@@ -13,7 +13,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -448,14 +448,15 @@ risk.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "2019.3.9")
+    (version "2020.4.5.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "1bnpw7hrf9i1l9gfxjnzi45hkrvzz0pyn9ia8m4mw7sxhgb08qdj"))))
+                "06b5gfs7wmmipln8f3z928d2mmx2j4b3x7pnqmj6cvmyfh8v7z2i"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f))          ;no tests
     (home-page "https://certifi.io/")
     (synopsis "Python CA certificate bundle")
     (description
@@ -469,14 +470,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "2.7")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography_vectors" version))
        (sha256
         (base32
-         "1g38zw90510azyfrj6mxbslx2gp9yrnv5dac0w2819k9ssdznbgi"))))
+         "1d4iykcv7cn9j399hczlxm5pzxmqy6d80h3j16dkjwlmv3293b4r"))))
     (build-system python-build-system)
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Test vectors for the cryptography package")
@@ -491,14 +492,14 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "2.7")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1inlnr36kl36551c9rcad99jmhk81v33by3glkadwdcgmi17fd76"))))
+         "0af25w5mkd6vwns3r6ai1w5ip9xp0ms9s261zzssbpadzdr05hx0"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -540,14 +541,14 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "19.0.0")
+    (version "19.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyOpenSSL" version))
        (sha256
         (base32
-         "007j40y7x3k8xj54dy2qnij9lldfp71k9mkflhd9vqbdiwrndjmf"))))
+         "01wmsq6w0frzbr3zps4ga9kmqjidp2h317jwpq1g9ah24r5lj94s"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -611,22 +612,15 @@ library.")
 (define-public python-axolotl-curve25519
   (package
     (name "python-axolotl-curve25519")
-    (version "0.1")
+    (version "0.4.1.post2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tgalal/python-axolotl-curve25519")
-             (commit "e4a9c4de0eae27223200579c58d1f8f6d20637e2")))
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (pypi-uri "python-axolotl-curve25519" version))
        (sha256
         (base32
-         "0agap5q0hmvf6cwzjqc05kw53pjgf6942pcivpazksmg1vk400ra"))))
+         "18v3rfyv7xi26fb97nw1xc0l6x8wi0i4xj8dlq4gblpbjxiac187"))))
     (build-system python-build-system)
-    (arguments
-     `(;; Prevent creation of the egg. This works around
-       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765
-       #:configure-flags '("--root=/")))
     (home-page "https://github.com/tgalal/python-axolotl-curve25519")
     (synopsis "Python wrapper for curve25519 library")
     (description "This is a python wrapper for the curve25519 library
@@ -642,17 +636,14 @@ python-axolotl.")
 (define-public python-axolotl
   (package
     (name "python-axolotl")
-    (version "0.1.39")
+    (version "0.2.3")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://github.com/tgalal/python-axolotl")
-              (commit version)))
-       (file-name (git-file-name name version))
-       (patches (search-patches "python-axolotl-AES-fix.patch"))
+       (method url-fetch)
+       (uri (pypi-uri "python-axolotl" version))
        (sha256
-        (base32 "0xm9qgcwf6fq7rhzfcviwhbzcbj4i7wkxkab2z55fy1x82lya9g6"))))
+        (base32
+         "1bwdp24fmriffwx91aigs9k162albb51iskp23nc939z893q23py"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -665,9 +656,8 @@ python-axolotl.")
              #t)))))
     (propagated-inputs
      `(("python-axolotl-curve25519" ,python-axolotl-curve25519)
-       ("python-dateutil" ,python-dateutil)
-       ("python-protobuf" ,python-protobuf)
-       ("python-pycrypto" ,python-pycrypto)))
+       ("python-cryptography" ,python-cryptography)
+       ("python-protobuf" ,python-protobuf)))
     (home-page "https://github.com/tgalal/python-axolotl")
     (synopsis "Python port of libaxolotl-android")
     (description "This is a python port of libaxolotl-android.  This
@@ -1365,14 +1355,14 @@ I/O-free core, and integration modules for different event loops.")
 (define-public python-argon2-cffi
   (package
     (name "python-argon2-cffi")
-    (version "19.2.0")
+    (version "20.1.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "argon2-cffi" version))
         (sha256
          (base32
-          "18xxfw30gi3lwaz4vwb05iavzlrk3fa1x9fippzrgd3px8z65apz"))
+          "0zgr4mnnm0p4i99023safb0qb8cgvl202nly1rvylk2b7qnrn0nq"))
         (modules '((guix build utils)))
         (snippet '(begin (delete-file-recursively "extras") #t))))
     (build-system python-build-system)

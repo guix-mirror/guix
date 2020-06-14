@@ -1,0 +1,42 @@
+Only check for for relative path on virtio devices.  Otherwise it could
+break driver loading in some circumstances, notably the IceCat sandbox.
+
+https://gitlab.freedesktop.org/mesa/drm/-/issues/39
+
+Taken from upstream:
+https://gitlab.freedesktop.org/mesa/drm/-/commit/57df07572ce45a1b60bae6fb89770388d3abd6dd
+
+diff --git a/xf86drm.c b/xf86drm.c
+--- a/xf86drm.c
++++ b/xf86drm.c
+@@ -3103,15 +3103,18 @@ static int drmParseSubsystemType(int maj, int min)
+     int subsystem_type;
+ 
+     snprintf(path, sizeof(path), "/sys/dev/char/%d:%d/device", maj, min);
+-    if (!realpath(path, real_path))
+-        return -errno;
+-    snprintf(path, sizeof(path), "%s", real_path);
+ 
+     subsystem_type = get_subsystem_type(path);
++    /* Try to get the parent (underlying) device type */
+     if (subsystem_type == DRM_BUS_VIRTIO) {
++        /* Assume virtio-pci on error */
++        if (!realpath(path, real_path))
++            return DRM_BUS_VIRTIO;
+         strncat(path, "/..", PATH_MAX);
+         subsystem_type = get_subsystem_type(path);
+-    }
++        if (subsystem_type < 0)
++            return DRM_BUS_VIRTIO;
++     }
+     return subsystem_type;
+ #elif defined(__OpenBSD__) || defined(__DragonFly__) || defined(__FreeBSD__)
+     return DRM_BUS_PCI;
+@@ -3920,6 +3923,7 @@ process_device(drmDevicePtr *device, const char *d_name,
+ 
+     switch (subsystem_type) {
+     case DRM_BUS_PCI:
++    case DRM_BUS_VIRTIO:
+         return drmProcessPciDevice(device, node, node_type, maj, min,
+                                    fetch_deviceinfo, flags);
+     case DRM_BUS_USB:

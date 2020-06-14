@@ -89,6 +89,10 @@
 
    (eval . (put 'with-database 'scheme-indent-function 2))
    (eval . (put 'call-with-transaction 'scheme-indent-function 2))
+   (eval . (put 'with-statement 'scheme-indent-function 3))
+   (eval . (put 'call-with-retrying-transaction 'scheme-indent-function 2))
+   (eval . (put 'call-with-savepoint 'scheme-indent-function 1))
+   (eval . (put 'call-with-retrying-savepoint 'scheme-indent-function 1))
 
    (eval . (put 'call-with-container 'scheme-indent-function 1))
    (eval . (put 'container-excursion 'scheme-indent-function 1))
@@ -96,6 +100,10 @@
 
    (eval . (put 'call-with-progress-reporter 'scheme-indent-function 1))
    (eval . (put 'with-temporary-git-repository 'scheme-indent-function 2))
+   (eval . (put 'with-environment-variables 'scheme-indent-function 1))
+   (eval . (put 'with-fresh-gnupg-setup 'scheme-indent-function 1))
+
+   (eval . (put 'with-paginated-output-port 'scheme-indent-function 1))
 
    ;; This notably allows '(' in Paredit to not insert a space when the
    ;; preceding symbol is one of these.

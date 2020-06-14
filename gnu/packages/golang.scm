@@ -15,8 +15,9 @@
 ;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
 ;;; Copyright @ 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -623,8 +624,8 @@ Go programming language.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-crypto
-  (let ((commit "9756ffdc24725223350eb3266ffb92590d28f278")
-        (revision "4"))
+  (let ((commit "2aa609cf4a9d7d1126360de73b55b6002f9e052a")
+        (revision "5"))
     (package
       (name "go-golang-org-x-crypto")
       (version (git-version "0.0.0" revision commit))
@@ -637,7 +638,7 @@ Go programming language.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "0q7hxaaq6lp0v8qqzifvysl47z5rfdlrxkh3d29vsl3wyby3dxl8"))))
+                  "1yvis6fqbsd7f356aqyi18f76vnwj3bry6mxqnkvshq4cwrf92il"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "golang.org/x/crypto"
@@ -723,8 +724,8 @@ processing.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys
-  (let ((commit "749cb33beabd9aa6d3178e3de05bcc914f70b2bf")
-        (revision "5"))
+  (let ((commit "c709ea063b76879dc9915358f55d4d77c16ab6d5")
+        (revision "6"))
     (package
       (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
@@ -736,7 +737,7 @@ processing.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0dm3257q3rv2kyn5lmqqim2fqg634v6rhrqq4glvbk4wx4l3v337"))))
+                  "15nq53a6kcqchng4j0d1pjw0m6hny6126nhjdwqw5n9dzh6a226d"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys"
@@ -917,29 +918,54 @@ increment versions.")
 Go.")
       (license license:expat))))
 
+(define-public go-github-com-stretchr-objx
+  (package
+    (name "go-github-com-stretchr-objx")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stretchr/objx.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pcdvakxgddaiwcdj73ra4da05a3q4cgwbpm2w75ycq4kzv8ij8k"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/stretchr/objx"))
+    (home-page "https://github.com/stretchr/objx")
+    (synopsis "Go package for dealing with maps, slices, JSON and other data")
+    (description "This package provides a Go library for dealing with maps,
+slices, JSON and other data.")
+    (license license:expat)))
+
 (define-public go-github-com-stretchr-testify
-  (let ((commit
-          "b1f989447a57594c728884458a39abf3a73447f7")
-        (revision "0"))
-    (package
-      (name "go-github-com-stretchr-testify")
-      (version (git-version "1.1.4" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://github.com/stretchr/testify.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "0p0gkqzh2p8r5g0rxm885ljl7ghih7h7hx9w562imx5ka0vdgixv"))))
-      (build-system go-build-system)
-      (arguments
-        '(#:import-path "github.com/stretchr/testify"))
-      (home-page "https://github.com/stretchr/testify")
-      (synopsis "Go helper library for tests and invariant checking")
-      (description "This package provide many tools for testifying that your
+  (package
+    (name "go-github-com-stretchr-testify")
+    (version "1.5.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stretchr/testify.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "09r89m1wy4cjv2nps1ykp00qjpi0531r07q3s34hr7m6njk4srkl"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/stretchr/testify"))
+    (propagated-inputs
+     `(("github.com/davecgh/go-spew" ,go-github-com-davecgh-go-spew)
+       ("github.com/pmezard/go-difflib" ,go-github-com-pmezard-go-difflib)
+       ("github.com/stretchr/objx" ,go-github-com-stretchr-objx)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/stretchr/testify")
+    (synopsis "Go helper library for tests and invariant checking")
+    (description "This package provide many tools for testifying that your
 code will behave as you intend.
 
 Features include:
@@ -949,7 +975,7 @@ Features include:
 @item HTTP response trapping
 @item Testing suite interfaces and functions.
 @end itemize")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-tevino-abool
   (let ((commit
@@ -1154,6 +1180,103 @@ incoming requests with their respective handler.")
 @code{clockwork.Clock} interface instead.")
       (license license:asl2.0))))
 
+(define-public go-github-com-spf13-afero
+  (package
+    (name "go-github-com-spf13-afero")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/afero")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j9r65qgd58324m85lkl49vk9dgwd62g7dwvkfcm3k6i9dc555a9"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/afero"))
+    (propagated-inputs
+     `(("golang.org/x/text" ,go-golang-org-x-text)))
+    (home-page "https://github.com/spf13/afero")
+    (synopsis "Filesystem abstraction for Go")
+    (description "Filesystem abstraction for Go")
+    (license license:asl2.0)))
+
+(define-public go-github-com-spf13-cast
+  (package
+    (name "go-github-com-spf13-cast")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/cast")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lb84788glr0qzrq2ifi36rgvp96qrgywvxrr3ggq5hrbr38hgn1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/cast"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/spf13/cast")
+    (synopsis "Safe and easy casting from one type to another in Go")
+    (description "Safe and easy casting from one type to another in Go")
+    (license license:expat)))
+
+(define-public go-github-com-spf13-cobra
+  (package
+    (name "go-github-com-spf13-cobra")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/cobra")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vbppqqhby302a5ayn0296jqr71qkcd4c9am7wzsk6z71fwdsa7h"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/cobra"))
+    (propagated-inputs
+     `(("github.com/spf13/pflag" ,go-github-com-spf13-pflag)))
+    (home-page "https://github.com/spf13/cobra")
+    (synopsis "Go library for creating CLI applications")
+    (description "Cobra is both a library for creating powerful modern CLI
+applications as well as a program to generate applications and command files.")
+    (license license:asl2.0)))
+
+(define-public go-github-com-spf13-jwalterweatherman
+  (package
+    (name "go-github-com-spf13-jwalterweatherman")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/jwalterweatherman")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ywmkwci5zyd88ijym6f30fj5c0k2yayxarkmnazf5ybljv50q7b"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/spf13/jwalterweatherman"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/spf13/jwalterweatherman")
+    (synopsis "Go logging library")
+    (description "Go logging library")
+    (license license:expat)))
+
 (define-public go-github-com-spf13-pflag
   (package
     (name "go-github-com-spf13-pflag")
@@ -1166,8 +1289,8 @@ incoming requests with their respective handler.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-          (base32
-            "0gpmacngd0gpslnbkzi263f5ishigzgh6pbdv9hp092rnjl4nd31"))))
+         (base32
+          "0gpmacngd0gpslnbkzi263f5ishigzgh6pbdv9hp092rnjl4nd31"))))
     (build-system go-build-system)
     (arguments
       '(#:import-path "github.com/spf13/pflag"))
@@ -1180,6 +1303,143 @@ with the
 @uref{https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html,
 GNU extensions} to the POSIX recommendations for command-line options.")
     (license license:bsd-3)))
+
+(define-public go-github-com-spf13-viper
+  (package
+    (name "go-github-com-spf13-viper")
+    (version "1.7.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/spf13/viper.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "099n2g7fg6r8hqyszqw2axr775qyhyvwhsykvgw0f0s16ql48h5c"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/spf13/viper"))
+    (propagated-inputs
+     `(("github.com/spf13/afero" ,go-github-com-spf13-afero)
+       ("github.com/spf13/cast" ,go-github-com-spf13-cast)
+       ("github.com/spf13/pflag" ,go-github-com-spf13-pflag)
+       ("github.com/spf13/jwalterweatherman" ,go-github-com-spf13-jwalterweatherman)
+       ("github.com/fsnotify/fsnotify" ,go-github-com-fsnotify-fsnotify)
+       ("github.com/hashicorp/hcl" ,go-github-com-hashicorp-hcl)
+       ("github.com/magiconair/properties" ,go-github-com-magiconair-properties)
+       ("github.com/mitchellh/mapstructure" ,go-github-com-mitchellh-mapstructure)
+       ("github.com/pelletier/go-toml" ,go-github-com-pelletier-go-toml)
+       ("github.com/subosito/gotenv" ,go-github-com-subosito-gotenv)
+
+       ("gopkg.in/ini.v1" ,go-gopkg-in-ini-v1)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/spf13/viper")
+    (synopsis "Go configuration with fangs")
+    (description
+     "Viper is a complete configuration solution for Go applications including
+12-Factor apps.  It is designed to work within an application, and can handle
+all types of configuration needs and formats.")
+    (license license:expat)))
+
+(define-public go-github-com-fsnotify-fsnotify
+  (package
+    (name "go-github-com-fsnotify-fsnotify")
+    (version "1.4.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fsnotify/fsnotify")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1i1r72knpbfwwql9frn9bqc3nhfc2ai5m6qllcyr6wban62lr40x"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/fsnotify/fsnotify"))
+    (propagated-inputs
+     `(("golang.org/x/sys" ,go-golang-org-x-sys)))
+    (home-page "https://github.com/fsnotify/fsnotify")
+    (synopsis "File system notifications for Go")
+    (description "File system notifications for Go")
+    (license license:bsd-3)))
+
+(define-public go-github-com-magiconair-properties
+  (package
+    (name "go-github-com-magiconair-properties")
+    (version "1.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/magiconair/properties")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "19zqw1x0w0crh8zc84yy82nkcc5yjz72gviaf2xjgfm5a8np7nyb"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/magiconair/properties"))
+    (home-page "https://github.com/magiconair/properties")
+    (synopsis "Java properties scanner for Go")
+    (description "Java properties scanner for Go")
+    (license license:bsd-2)))
+
+(define-public go-github-com-pelletier-go-toml
+  (package
+    (name "go-github-com-pelletier-go-toml")
+    (version "1.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pelletier/go-toml")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0fxmjm85c9h43lvqz71wr93fcc63bhj82nwby80222xx8ja63g7y"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/pelletier/go-toml"))
+    (native-inputs
+     `(("github.com/BurntSushi/toml" ,go-github-com-burntsushi-toml)
+       ("github.com/davecgh/go-spew" ,go-github-com-davecgh-go-spew)
+       ("gopkg.in/yaml.v2" ,go-gopkg-in-yaml-v2)))
+    (home-page "https://github.com/pelletier/go-toml")
+    (synopsis "Go library for the TOML configuration language")
+    (description "Go library for the TOML configuration language")
+    (license license:expat)))
+
+(define-public go-github-com-subosito-gotenv
+  (package
+    (name "go-github-com-subosito-gotenv")
+    (version "1.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/subosito/gotenv")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0mav91j7r4arjkpq5zcf9j74f6pww8ic53x43wy7kg3ibw31yjs5"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/subosito/gotenv"))
+    (native-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (home-page "https://github.com/subosito/gotenv")
+    (synopsis "Go library for loading environment variables from files")
+    (description "Go library for loading environment variables from files")
+    (license license:expat)))
 
 (define-public go-github-com-sirupsen-logrus
   (package
@@ -1448,6 +1708,30 @@ which satisfies the cron expression.")
       (synopsis "Test framework for the Go language")
       (description "This package provides a test library for the Go language.")
       (license license:asl2.0))))
+
+(define-public go-gopkg-in-ini-v1
+  (package
+    (name "go-gopkg-in-ini-v1")
+    (version "1.56.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/go-ini/ini")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j5z0cngg6mq2f9id083jcdi7k6r2h35714pashv6sdv2q7bmfc5"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/ini.v1"
+       ;; Requires large unpackaged test framework
+       #:tests? #f))
+    (home-page "https://gopkg.in/ini.v1")
+    (synopsis "Go library for ini files")
+    (description "Go library for ini files")
+    (license license:asl2.0)))
 
 (define-public go-gopkg-in-yaml-v2
   (package
@@ -1908,28 +2192,26 @@ that's a lot faster (and only does simple bandwidth metrics).")
       (license license:expat))))
 
 (define-public go-github-com-davecgh-go-spew
-  (let ((commit "d8f796af33cc11cb798c1aaeb27a4ebc5099927d")
-        (revision "0"))
-    (package
-      (name "go-github-com-davecgh-go-spew")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/davecgh/go-spew.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "19z27f306fpsrjdvkzd61w1bdazcdbczjyjck177g33iklinhpvx"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:unpack-path "github.com/davecgh/go-spew"
-         #:import-path "github.com/davecgh/go-spew/spew"))
-      (home-page "https://github.com/davecgh/go-spew")
-      (synopsis "Deep pretty printer for Go data structures to aid in debugging")
-      (description "Package @command{spew} implements a deep pretty printer
+  (package
+    (name "go-github-com-davecgh-go-spew")
+    (version "1.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/davecgh/go-spew.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hka6hmyvp701adzag2g26cxdj47g21x6jz4sc6jjz1mn59d474y"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:unpack-path "github.com/davecgh/go-spew"
+       #:import-path "github.com/davecgh/go-spew/spew"))
+    (home-page "https://github.com/davecgh/go-spew")
+    (synopsis "Deep pretty printer for Go data structures to aid in debugging")
+    (description "Package @command{spew} implements a deep pretty printer
 for Go data structures to aid in debugging.
 
 A quick overview of the additional features spew provides over the built-in printing facilities for Go data types are as follows:
@@ -1945,7 +2227,7 @@ pointer receiver are optionally invoked when passing non-pointer variables.
 includes offsets, byte values in hex, and ASCII output (only when using Dump
 style).
 @end itemize\n")
-      (license license:isc))))
+    (license license:isc)))
 
 (define-public go-github-com-btcsuite-btclog
   (let ((commit "84c8d2346e9fc8c7b947e243b9c24e6df9fd206a")
@@ -2186,33 +2468,31 @@ Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
     (license license:bsd-3)))
 
-(define-public go-github-com-calmh-murmur3
-  (let ((commit "74e9af8f47ac56901c490d45546ca167b60c7066")
-        (revision "0"))
-    (package
-      (name "go-github-com-calmh-murmur3")
-      (version (git-version "1.1.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/calmh/murmur3.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0k8345ivx228qdbkl8bisd2wxwsinkb44ghba6r09538fr3fbr5w"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/calmh/murmur3"))
-      (home-page "https://github.com/calmh/murmur3")
-      (synopsis "Native MurmurHash3 Go implementation")
-      (description "Native Go implementation of Austin Appleby's third
+(define-public go-github-com-twmb-murmur3
+  (package
+    (name "go-github-com-twmb-murmur3")
+    (version "1.1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/twmb/murmur3.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00riapwkyf23l5wyis47mbr8rwr4yrjw491jfc30wpzs111c1gyy"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/twmb/murmur3"))
+    (home-page "https://github.com/twmb/murmur3")
+    (synopsis "Native MurmurHash3 Go implementation")
+    (description "Native Go implementation of Austin Appleby's third
 MurmurHash revision (aka MurmurHash3).
 
 Reference algorithm has been slightly hacked as to support the streaming mode
 required by Go's standard Hash interface.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public go-github-com-multiformats-go-multihash
   (let ((commit "97cdb562a04c6ef66d8ed40cd62f8fbcddd396d6")
@@ -2382,6 +2662,28 @@ package cannot cross compile.  But 99% of the time the use for
 the current user without cgo.  This library does that, enabling
 cross-compilation.")
       (license license:expat))))
+
+(define-public go-github-com-mitchellh-mapstructure
+  (package
+    (name "go-github-com-mitchellh-mapstructure")
+    (version "1.1.2") ;; NOTE: Updating to 1.3.1 breaks tests on viper-1.7.0
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mitchellh/mapstructure")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03bpv28jz9zhn4947saqwi328ydj7f6g6pf1m2d4m5zdh5jlfkrr"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/mitchellh/mapstructure"))
+    (home-page "https://github.com/mitchellh/mapstructure")
+    (synopsis "Go library for decoding generic map values")
+    (description "Go library for decoding generic map values")
+    (license license:expat)))
 
 (define-public go-github-com-multiformats-go-multiaddr
   (let ((commit "fe1c46f8be5af4aff4db286e08839295bd922efb")
@@ -2803,7 +3105,7 @@ format in Go.")
 (define-public go-github-com-kr-pretty
   (package
     (name "go-github-com-kr-pretty")
-    (version "0.1.0")
+    (version "0.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2812,7 +3114,7 @@ format in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18m4pwg2abd0j9cn5v3k2ksk9ig4vlwxmlw9rrglanziv9l967qp"))))
+                "1ywbfzz1h3a3qd8rpkiqwi1dm4w8ls9ijb4x1b7567grns9f0vnp"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-kr-text" ,go-github-com-kr-text)))
@@ -3044,7 +3346,7 @@ mutex, simply ignore the RLock/RUnlock functions.")
 (define-public go-github-com-marten-seemann-qtls
   (package
     (name "go-github-com-marten-seemann-qtls")
-    (version "0.3.2")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3053,7 +3355,7 @@ mutex, simply ignore the RLock/RUnlock functions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1mdymj66qrqy80pfkwy9s9z9ifkg251whngw5lim09zm90wv2q7a"))))
+                "0dz60y98nm7l70hamq0v2vrs2dspyr5yqhnrds2dfh7hchxvq76j"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/marten-seemann/qtls"
@@ -3065,6 +3367,28 @@ mutex, simply ignore the RLock/RUnlock functions.")
     (description "This package provides @code{qtls}, a QUIC-capable variant of
 the Go standard library's TLS 1.3 implementation.")
     (home-page "https://github.com/marten-seemann/qtls")
+    (license license:bsd-3)))
+
+(define-public go-github-com-marten-seemann-chacha20
+  (package
+    (name "go-github-com-marten-seemann-chacha20")
+    (version "0.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/marten-seemann/chacha20")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0x1j4cvbap45zk962qkjalc1h3axhzzdy9cdzhcjmprmm1ql4gjm"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/marten-seemann/chacha20"))
+    (synopsis "ChaCha20 in Go")
+    (description "This package is an external copy of the Go standard library's
+internal ChaCha20 package.")
+    (home-page "https://github.com/marten-seemann/chacha20")
     (license license:bsd-3)))
 
 (define-public go-github-com-cheekybits-genny
@@ -3094,7 +3418,7 @@ implementation of generics.")
 (define-public go-github-com-lucas-clemente-quic-go
   (package
     (name "go-github-com-lucas-clemente-quic-go")
-    (version "0.12.1")
+    (version "0.14.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3103,7 +3427,7 @@ implementation of generics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "156nhq4dvw7mr08j952248v81q7702phbn4mp228319sahnbv65h"))))
+                "04l3gqbc3gh079n8vgnrsf8ypgv8sl63xjf28jqfrb45v2l73vyz"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/lucas-clemente/quic-go"
@@ -3112,12 +3436,38 @@ implementation of generics.")
     (propagated-inputs
      `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-github-com-cheekybits-genny" ,go-github-com-cheekybits-genny)
+       ("go-github-com-marten-seemann-chacha20" ,go-github-com-marten-seemann-chacha20)
        ("go-github-com-marten-seemann-qtls" ,go-github-com-marten-seemann-qtls)
        ("go-github-com-golang-protobuf-proto" ,go-github-com-golang-protobuf-proto)))
     (synopsis "QUIC in Go")
     (description "This package provides a Go language implementation of the QUIC
 network protocol.")
     (home-page "https://github.com/lucas-clemente/quic-go")
+    (license license:expat)))
+
+(define-public go-github-com-francoispqt-gojay
+  (package
+    (name "go-github-com-francoispqt-gojay")
+    (version "1.2.13")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/francoispqt/gojay")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ix95qdyajfmxhf9y52vjrih63f181pjs4v5as8905s4d5vmkd06"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/francoispqt/gojay"))
+    (propagated-inputs
+     `(("go-github-com-stretchr-testify" ,go-github-com-stretchr-testify)))
+    (synopsis "JSON encoder/decoder with powerful stream API for Golang")
+    (description "GoJay is a performant JSON encoder/decoder for Golang.  It has
+a simple API and doesn't use reflection.  It relies on small interfaces to
+decode/encode structures and slices.")
+    (home-page "https://github.com/francoispqt/gojay")
     (license license:expat)))
 
 (define-public go-github-com-pkg-errors
@@ -3168,7 +3518,7 @@ and aid debugging.")
 (define-public go-github-com-robfig-cron
   (package
     (name "go-github-com-robfig-cron")
-    (version "3.0.0")
+    (version "3.0.1")
     (source
      (origin
        (method git-fetch)
@@ -3178,7 +3528,7 @@ and aid debugging.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bvq5gxkhyj21lq32nma23i4dpwp7bswnp2yks6372ilkcyisx2z"))))
+         "1agzbw2dfk2d1mpmddr85s5vh6ygm8kqrvfg87i9d2wqnlsnliqm"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/robfig/cron"))
@@ -3496,14 +3846,14 @@ efficient space usage.")
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-import-path
            (lambda _
-             ;; See 'go.mod' in the source distribution of Syncthing 1.4.1 for
+             ;; See 'go.mod' in the source distribution of Syncthing 1.5.0 for
              ;; more information.
              ;; <https://github.com/spaolacci/murmur3/issues/29>
              (substitute* "src/github.com/willf/bloom/bloom.go"
-               (("spaolacci") "calmh"))
+               (("spaolacci") "twmb"))
              #t)))))
     (propagated-inputs
-     `(("go-github-com-calmh-murmur3" ,go-github-com-calmh-murmur3)
+     `(("go-github-com-twmb-murmur3" ,go-github-com-twmb-murmur3)
        ("go-github-com-willf-bitset" ,go-github-com-willf-bitset)))
     (synopsis "Bloom filters in Go")
     (description "This package provides a Go implementation of bloom filters,

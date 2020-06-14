@@ -85,7 +85,8 @@ valid."
     ;; files before compiling.
     (for-each (lambda (file)
                 (let ((s (lstat file)))
-                  (unless (eq? (stat:type s) 'symlink)
+                  (unless (or (eq? (stat:type s) 'symlink)
+                              (not (access? file W_OK)))
                     (utime file 0 0 0 0))))
               (find-files source #:directories? #t))
     (copy-recursively source target #:keep-mtime? #t)
@@ -97,12 +98,53 @@ valid."
      (find-files target "\\.asd$"))
     #t))
 
-(define* (install #:key outputs #:allow-other-keys)
-  "Copy and symlink all the source files."
+(define* (install #:key inputs outputs #:allow-other-keys)
+  "Copy and symlink all the source files.
+The source files are taken from the corresponding compile package (e.g. SBCL)
+if it's present in the native-inputs."
   (define output (assoc-ref outputs "out"))
-  (copy-files-to-output output
-                        (package-name->name+version
-                         (strip-store-file-name output))))
+  (define package-name
+    (package-name->name+version
+     (strip-store-file-name output)))
+  (define (no-prefix pkgname)
+    (if (string-index pkgname #\-)
+        (string-drop pkgname (1+ (string-index pkgname #\-)))
+        pkgname))
+  (define parent
+    (match (assoc package-name inputs
+                  (lambda (key alist-car)
+                    (let* ((alt-key (no-prefix key))
+                           (alist-car (no-prefix alist-car)))
+                      (or (string=? alist-car key)
+                          (string=? alist-car alt-key)))))
+      (#f #f)
+      (p (cdr p))))
+  (define parent-name
+    (and parent
+         (package-name->name+version (strip-store-file-name parent))))
+  (define parent-source
+    (and parent
+         (string-append parent "/share/common-lisp/"
+                        (string-take parent-name
+                                     (string-index parent-name #\-))
+                        "-source")))
+
+  (define (first-subdirectory directory) ; From gnu-build-system.
+    "Return the file name of the first sub-directory of DIRECTORY."
+    (match (scandir directory
+                    (lambda (file)
+                      (and (not (member file '("." "..")))
+                           (file-is-directory? (string-append directory "/"
+                                                              file)))))
+      ((first . _) first)))
+  (define source-directory
+    (if (and parent-source
+             (file-exists? parent-source))
+        (string-append parent-source "/" (first-subdirectory parent-source))
+        "."))
+
+  (with-directory-excursion source-directory
+    (copy-files-to-output output package-name)))
 
 (define* (copy-source #:key outputs asd-system-name #:allow-other-keys)
   "Copy the source to the library output."

@@ -32,7 +32,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.4.2")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -40,7 +40,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "16dqpbn4saxmmmqd5ya8zdkwvxzz4nim1p4w954zkkdz3cyg86h6"))
+                "1394b8y4nllihnjngc0kjpdy7pvyh6v1h09hkn8rdmwxpsdkqkjb"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -77,7 +77,7 @@
        ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
        ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
        ("go-golang-org-x-time" ,go-golang-org-x-time)
-       ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
+       ("go-github-com-go-ldap-ldap" ,go-github-com-go-ldap-ldap)
        ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
        ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)
        ("go-github-com-prometheus-client-golang"
@@ -394,7 +394,7 @@ compression format.")
 (define-public go-github-com-jackpal-gateway
   (package
     (name "go-github-com-jackpal-gateway")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -403,7 +403,7 @@ compression format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ird5xmizj632l3dq24s2xgb8w1dn6v8xznlqz252gvngyr2gjl1"))))
+                "1yms2dw4dnz4cvj9vhwh6193d50jhvn5awsp2g3a4lcc3sjrgd6m"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/jackpal/gateway"))
@@ -942,60 +942,51 @@ server tools for Prometheus metrics.")
       (home-page "https://github.com/prometheus/client_golang")
       (license asl2.0)))
 
-(define-public go-gopkg.in-asn1-ber.v1
+(define-public go-github-com-go-asn1-ber-asn1-ber
   (package
-    (name "go-gopkg.in-asn1-ber.v1")
-    (version "1.3")
+    (name "go-github-com-go-asn1-ber-asn1-ber")
+    (version "1.3.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://gopkg.in/asn1-ber.v1")
+                     (url "https://github.com/go-asn1-ber/asn1-ber")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "00ixms8x3lrhywbvq5v2sagcqsxa1pcnlk17dp5lnwckv3xg4psb"))))
+                "0dxfmgk84fn0p6pz3i0cspynh6rly5pfk9wghm1q07mx99npln02"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/asn1-ber.v1"
-       ;; Tests don't pass "vet" on Go since 1.11.  See
-       ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key import-path #:allow-other-keys)
-             (invoke "go" "test"
-                     "-vet=off"
-                     import-path))))))
+     '(#:import-path "github.com/go-asn1-ber/asn1-ber"))
     (synopsis "ASN.1 BER encoding and decoding in Go")
     (description "This package provides ASN.1 BER encoding and decoding in the
 Go language.")
-    (home-page "https://gopkg.in/asn1-ber.v1")
+    (home-page "https://github.com/go-asn1-ber/asn1-ber")
     (license expat)))
 
-(define-public go-gopkg.in-ldap.v2
+(define-public go-github-com-go-ldap-ldap
   (package
-    (name "go-gopkg.in-ldap.v2")
-    (version "2.5.1")
+    (name "go-github-com-go-ldap-ldap")
+    (version "3.1.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://gopkg.in/ldap.v2")
+                     (url "https://github.com/go-ldap/ldap")
                      (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wf81wy04nhkqs0dg5zkivr4sh37r83bxrfwjz9vr4jq6vmljr3h"))))
+                "1z6wxia7a1jkmasa9mm6g4n8f0qqbp5rw6vk0zyh4vzk7azklnj2"))))
     (build-system go-build-system)
     (arguments
-     '(#:import-path "gopkg.in/ldap.v2"
-       #:tests? #f)) ; the test suite requires network access
+     '(#:import-path "github.com/go-ldap/ldap/v3"
+       #:tests? #f)) ; test suite requires internet access
     (propagated-inputs
-     `(("go-gopkg.in-asn1-ber.v1" ,go-gopkg.in-asn1-ber.v1)))
+     `(("go-github-com-go-asn1-ber-asn1-ber" ,go-github-com-go-asn1-ber-asn1-ber)))
+    (home-page "https://github.com/go-ldap/ldap")
     (synopsis "LDAP v3 functionality for Go")
     (description "This package provides basic LDAP v3 functionality in the Go
 language.")
-    (home-page "https://gopkg.in/ldap.v2")
     (license expat)))
 
 (define-public go-github-com-flynn-archive-go-shlex

@@ -201,7 +201,11 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define* (clang-from-llvm llvm clang-runtime hash
-                          #:key (patches '()))
+                          #:key (patches '()) tools-extra)
+  "Produce Clang with dependencies on LLVM and CLANG-RUNTIME, and applying the
+given PATCHES.  When TOOLS-EXTRA is given, it must point to the
+'clang-tools-extra' tarball, which contains code for 'clang-tidy', 'pp-trace',
+'modularize', and other tools."
   (package
     (name "clang")
     (version (package-version llvm))
@@ -218,11 +222,15 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     ;; doesn't seem to be any way to do this with clang's autotools-based
     ;; build system.
     (build-system cmake-build-system)
+    (outputs (if tools-extra '("out" "extra") '("out")))
     (native-inputs (package-native-inputs llvm))
     (inputs
      `(("libxml2" ,libxml2)
        ("gcc-lib" ,gcc "lib")
-       ,@(package-inputs llvm)))
+       ,@(package-inputs llvm)
+       ,@(if tools-extra
+             `(("clang-tools-extra" ,tools-extra))
+             '())))
     (propagated-inputs
      `(("llvm" ,llvm)
        ("clang-runtime" ,clang-runtime)))
@@ -243,6 +251,71 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
        #:build-type "Release"
 
        #:phases (modify-phases %standard-phases
+                  ,@(if tools-extra
+                        `((add-after 'unpack 'add-tools-extra
+                            (lambda* (#:key inputs #:allow-other-keys)
+                              ;; Unpack the 'clang-tools-extra' tarball under
+                              ;; tools/.
+                              (let ((extra (assoc-ref inputs
+                                                      "clang-tools-extra")))
+                                (invoke "tar" "xf" extra)
+                                (rename-file ,(string-append
+                                               "clang-tools-extra-"
+                                               (package-version llvm)
+                                               ".src")
+                                             "tools/extra")
+                                #t)))
+                          (add-after 'install 'move-extra-tools
+                            (lambda* (#:key outputs #:allow-other-keys)
+                              ;; Move the extra tools to the "extra" output.
+                              ;; These programs alone weigh in at 296 MiB,
+                              ;; because they statically-link a whole bunch of
+                              ;; Clang libraries.
+                              (let* ((out   (assoc-ref outputs "out"))
+                                     (extra (assoc-ref outputs "extra"))
+                                     (bin   (string-append out "/bin"))
+                                     (bin*  (string-append extra "/bin"))
+                                     (lib   (string-append out "/lib")))
+                                (define (move program)
+                                  (rename-file (string-append bin "/" program)
+                                               (string-append bin* "/"
+                                                              program)))
+
+                                (mkdir-p bin*)
+                                (for-each move
+                                          '("clang-apply-replacements"
+                                            "clang-change-namespace"
+                                            "clangd"
+                                            "clang-doc"
+                                            "clang-include-fixer"
+                                            "clang-move"
+                                            "clang-query"
+                                            "clang-reorder-fields"
+                                            "clang-tidy"
+                                            "find-all-symbols"
+                                            "modularize"
+                                            "pp-trace"))
+
+                                ;; Remove MiBs of .a files coming from
+                                ;; 'clang-tools-extra'.
+                                (for-each (lambda (component)
+                                            (delete-file
+                                             (string-append lib "/libclang"
+                                                            component ".a")))
+                                          '("ApplyReplacements"
+                                            "ChangeNamespace"
+                                            "Daemon"
+                                            "DaemonTweaks"
+                                            "Doc"
+                                            "IncludeFixer"
+                                            "IncludeFixerPlugin"
+                                            "Move"))
+                                (for-each delete-file
+                                          (find-files
+                                           lib
+                                           "^(libfindAllSymbols|libclangTidy)"))
+                                #t))))
+                        '())
                   (add-after 'unpack 'add-missing-triplets
                     (lambda _
                       ;; Clang iterates through known triplets to search for
@@ -414,7 +487,15 @@ output), and Binutils.")
 (define-public clang-10
   (clang-from-llvm llvm-10 clang-runtime-10
                    "08fbxa2a0kr3ni35ckppj0kyvlcyaywrhpqwcdrdy0z900mhcnw8"
-                   #:patches '("clang-10.0-libc-search-path.patch")))
+                   #:patches '("clang-10.0-libc-search-path.patch")
+                   #:tools-extra
+                   (origin
+                     (method url-fetch)
+                     (uri (llvm-download-uri "clang-tools-extra"
+                                             (package-version llvm-10)))
+                     (sha256
+                      (base32
+                       "074ija5s2jsdn0k035r2dzmryjmqxdnyg4xwvaqych2bazv8rpxc")))))
 
 (define-public clang-toolchain-10
   (make-clang-toolchain clang-10))
@@ -865,35 +946,6 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (description
      "This package provides a Python binding to LLVM for use in Numba.")
     (license license:bsd-3)))
-
-(define (package-elisp-from-package source-package package-name
-                                    source-files)
-  "Return a package definition named PACKAGE-NAME that packages the Emacs Lisp
-SOURCE-FILES found in SOURCE-PACKAGE."
-  (let ((orig (package-source source-package)))
-    (package
-      (inherit source-package)
-      (name package-name)
-      (build-system emacs-build-system)
-      (source (origin
-                (method (origin-method orig))
-                (uri (origin-uri orig))
-                (sha256 (origin-sha256 orig))
-                (file-name (string-append package-name "-"
-                                          (package-version source-package)))
-                (modules '((guix build utils)
-                           (srfi srfi-1)
-                           (ice-9 ftw)))
-                (snippet
-                 `(let* ((source-files (quote ,source-files))
-                         (basenames (map basename source-files)))
-                    (map copy-file
-                         source-files basenames)
-                    (map delete-file-recursively
-                         (fold delete
-                               (scandir ".")
-                               (append '("." "..") basenames)))
-                    #t)))))))
 
 (define-public emacs-clang-format
   (package

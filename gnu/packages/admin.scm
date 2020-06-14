@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Morgan Smith <Morgan.J.Smith@outlook.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system ruby)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -121,6 +123,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages terminals)
@@ -210,7 +213,7 @@ usual file attributes can be checked for inconsistencies.")
 (define-public progress
   (package
     (name "progress")
-    (version "0.14")
+    (version "0.15")
     (source
      (origin
        (method git-fetch)
@@ -218,7 +221,7 @@ usual file attributes can be checked for inconsistencies.")
              (url "https://github.com/Xfennec/progress.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "1lk2v4b767klib93an4g3f7z5qrv9kdk9jf7545vw1immc4kamrl"))
+        (base32 "1cnb4ixlhshn139mj5sr42k5m6gjjbyqvkn1324c47niwrgp7dqm"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
@@ -228,8 +231,14 @@ usual file attributes can be checked for inconsistencies.")
      `(("ncurses" ,ncurses)))
     (arguments
      `(#:tests? #f                      ; no test suite
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (let ((target ,(%current-target-system)))
+         (list ,(string-append "CC=" (cc-for-target))
+               (string-append "PKG_CONFIG="
+                              (if target
+                                  (string-append target "-pkg-config")
+                                  "pkg-config"))
+               (string-append "PREFIX=" (assoc-ref %outputs "out"))))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))         ; no configure script
@@ -244,14 +253,14 @@ and provides a \"top-like\" mode (monitoring).")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/shepherd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02lbc8z5gd8v8wfi4yh1zww8mk03w0zcwnmk4l4p3vpjlvlb63ll"))))
+                "0x9zr0x3xvk4qkb6jnda451d5iyrl06cz1bjzjsm0lxvjj3fabyk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -428,6 +437,71 @@ services.")
     "dfc (df color) is a modern version of df.  It uses colors, draws pretty
 graphs and can export its output to different formats.")
    (license license:bsd-3)))
+
+(define-public facter
+  (package
+    (name "facter")
+    (version "4.0.26")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/puppetlabs/facter-ng")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0bab3by926gavbhkvp0in82vim575ybj8z6av3b12jdvla1s9rmz"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'delete-facter-ng-gemspec
+                    (lambda _
+                      ;; XXX: ruby-build-system incorrectly finds
+                      ;; facter-ng.gemspec from this directory and tries to
+                      ;; build that instead of the proper facter.gemspec.
+                      ;; Just delete it as a workaround, as it appears to
+                      ;; only exist for backwards-compatibility after the
+                      ;; facter-ng->facter rename.
+                      (delete-file "agent/facter-ng.gemspec")
+                      #t))
+                  (add-after 'unpack 'embed-iproute-reference
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((iproute (assoc-ref inputs "iproute")))
+                        ;; Provide an absolute reference to the 'ip' executable
+                        ;; to avoid propagating it.
+                        (substitute* "lib/resolvers/networking_linux_resolver.rb"
+                          (("execute\\('ip")
+                           (string-append "execute('" iproute "/sbin/ip")))
+                        #t)))
+                  (delete 'check)
+                  (add-after 'wrap 'check
+                    (lambda* (#:key tests? outputs #:allow-other-keys)
+                      ;; XXX: The test suite wants to run Bundler and
+                      ;; complains that the gemspec is invalid.  For now
+                      ;; just make sure that we can run the wrapped
+                      ;; executable directly.
+                      (if tests?
+                          (invoke (string-append (assoc-ref outputs "out")
+                                                 "/bin/facter")
+                                  ;; Many facts depend on /sys, /etc/os-release,
+                                  ;; etc, so we only run a small sample.
+                                  "facterversion" "architecture"
+                                  "kernel" "kernelversion")
+                          (format #t "tests disabled~%"))
+                      #t)))))
+    (inputs
+     `(("iproute" ,iproute)
+       ("ruby-hocon" ,ruby-hocon)
+       ("ruby-sys-filesystem" ,ruby-sys-filesystem)
+       ("ruby-thor" ,ruby-thor)))
+    (synopsis "Collect and display system facts")
+    (description
+     "Facter is a tool that gathers basic facts about nodes (systems) such
+as hardware details, network settings, OS type and version, and more.  These
+facts can be collected on the command line with the @command{facter} command
+or via the @code{facter} Ruby library.")
+    (home-page "https://github.com/puppetlabs/facter-ng")
+    (license license:expat)))
 
 (define-public htop
   (package
@@ -718,7 +792,7 @@ would need and has several interesting built-in capabilities.")
 (define-public netcat-openbsd
   (package
     (name "netcat-openbsd")
-    (version "1.206-1")
+    (version "1.217-1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -727,14 +801,12 @@ would need and has several interesting built-in capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08r3mmck3s5pbvwyq19wp5g8jqcxza3cm8nkc6jm7rqn4jdydc4z"))))
+                "0kcvi3pav2fdx5c22psjv5dggk4cmrqiaq2cklhqngsk4a7vrjan"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no test suite
+     `(#:tests? #f                      ; no test suite
        #:make-flags
-       (list "CC=gcc"
-             (string-append "CFLAGS=-I" (assoc-ref %build-inputs "libbsd") "/include")
-             "LDFLAGS=-lbsd")
+       (list "CC=gcc")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -1309,6 +1381,7 @@ system administrator.")
                   (delete-file-recursively "lib/zlib")
                   #t))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
      `(#:configure-flags
        (list (string-append "--docdir=" (assoc-ref %outputs "out")
@@ -1366,7 +1439,22 @@ system administrator.")
              (substitute* "plugins/sudoers/Makefile.in"
                (("^pre-install:" match)
                 (string-append match "\ndisabled-" match)))
-             #t)))
+             #t))
+         (add-after 'install 'separate-python-output
+           (lambda* (#:key target outputs #:allow-other-keys)
+             (let ((out        (assoc-ref outputs "out"))
+                   (out:python (assoc-ref outputs "python")))
+               (if target
+                   (mkdir-p (string-append out:python "/empty"))
+                   (for-each
+                    (lambda (file)
+                      (let ((old (string-append out "/" file))
+                            (new (string-append out:python "/" file)))
+                        (mkdir-p (dirname new))
+                        (rename-file old new)))
+                    (list "libexec/sudo/python_plugin.so"
+                          "libexec/sudo/python_plugin.la")))
+               #t))))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
        ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
@@ -1390,6 +1478,54 @@ commands and their arguments.")
 
     ;; See <http://www.sudo.ws/sudo/license.html>.
     (license license:x11)))
+
+(define-public opendoas
+  (package
+    (name "opendoas")
+    (version "6.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Duncaen/OpenDoas.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07kkc5729p654jrgfsc8zyhiwicgmq38yacmwfvay2b3gmy728zn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; The configure script doesn't accept most of the default flags.
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             ;; The configure script can only be told which compiler to use
+             ;; through environment variables.
+             (setenv "CC" ,(cc-for-target))
+             (apply invoke "./configure" configure-flags)))
+         (add-before 'install 'fix-makefile
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "bsd.prog.mk"
+               (("^\tchown.*$") ""))
+             #t)))
+       #:configure-flags
+       (list (string-append "--prefix=" (assoc-ref %outputs "out"))
+             ;; Nothing is done with this value (yet?) but it's supported.
+             ;; (string-append "--target=" (or ,(%current-target-system) ""))
+             "--with-timestamp")
+       ;; Compiler choice is not carried over from the configure script.
+       #:make-flags
+       (list (string-append "CC=" ,(cc-for-target)))
+       #:tests? #f))                 ; no test suite
+    (native-inputs
+     `(("bison" ,bison)))
+    (home-page "https://github.com/Duncaen/OpenDoas")
+    (synopsis "Portable version of OpenBSD's doas command")
+    (description "Doas is a minimal replacement for the venerable sudo.  It was
+initially written by Ted Unangst of the OpenBSD project to provide 95% of the
+features of sudo with a fraction of the codebase.")
+    (license (list license:bsd-3        ; libbsd/*
+                   license:isc))))      ; everything else
 
 (define-public wpa-supplicant-minimal
   (package
@@ -1691,7 +1827,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20200430")
+    (version "20200528")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1699,7 +1835,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1hiaz9lrmjzdbi5zl0ajfflja41cixzx2j76iyx02qbjlmy9cfjc"))))
+                "01ajxnz9dpnvdbib7yv20dw21a1yyfgwiw3whg0xi57cf4app2md"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -2027,13 +2163,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.9.6")
+    (version "2.9.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "1jfbp1i3nl4yvqwd5ssy43dz3pq2x03mn875vb8r56gqh43kmksr"))))
+        (base32 "1l99vwkl48iwr8ffd1ihqia995mz8h8hwk4akm4w0cgiifp88gg8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2629,13 +2765,13 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47.3")
+    (version "4.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0m4npba50sf5s61g5z3xd2r7937zwja941f2h3f081xi24c2hfck"))))
+        (base32 "0crvvfsxh8ryc0j19a2x52i9zacvggm8zi6j3kzygkcwnpz4km8r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; obscure test failures
@@ -2644,7 +2780,7 @@ a new command using the matched rule, and runs it.")
          (delete 'configure)            ; no configure script
          (add-before 'build 'setup-environment
            (lambda* (#:key outputs #:allow-other-keys)
-             (setenv "CC" "gcc")
+             (setenv "CC" ,(cc-for-target))
              (setenv "prefix" (assoc-ref outputs "out"))
              #t)))
        #:make-flags (list "--environment-overrides")))
@@ -3118,14 +3254,14 @@ everyone's screenshots nowadays.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "2.8.1")
+    (version "3.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1g47bndxld875d0xb3pgmlw223mz47p1xcvwym861y6l4zkgiyp0"))))
+        (base32 "1zflz7yj5wzdnl0728g8qrld2z6dqn7sblbmkjvyqlv1fwjd1fsf"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -3336,7 +3472,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.38-1")
+      (version "3.1.01-1")
       (source
        (origin
          (method git-fetch)
@@ -3345,7 +3481,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "1qw3sxgd3ly916bzzl3873s3flngwd3vh57slw0shsj7ivz8bfnm"))))
+          (base32 "0r204w0r06ibdr4dck7yw2nmvj7xq68bjr7xwwiy7liqdml0n0yc"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

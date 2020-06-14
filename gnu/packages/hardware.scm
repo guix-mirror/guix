@@ -43,7 +43,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 ;; This is a module for packages related to physical hardware that don't (yet)
 ;; have a more specific home like gps.scm, security-token.scm, &c.
@@ -203,7 +204,7 @@ Memtest86+ cannot currently be used on computers booted with UEFI.")
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc")
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
@@ -387,7 +388,7 @@ applications.")
 (define-public usbguard
   (package
     (name "usbguard")
-    (version "0.7.6")
+    (version "0.7.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -395,7 +396,7 @@ applications.")
                     version "/usbguard-" version ".tar.gz"))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "0gzhs8s4aka86mkcjib36z54si939ki4bmk46p6v8kln1fixad3j"))))
+               (base32 "1il5immqfxh2cj8wn1bfk7l42inflzgjf07yqprpz7r3lalbxc25"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

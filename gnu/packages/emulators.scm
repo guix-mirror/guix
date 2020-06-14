@@ -470,7 +470,7 @@ and Game Boy Color games.")
 (define-public sameboy
   (package
     (name "sameboy")
-    (version "0.12.3")
+    (version "0.13.2")
     (source
      (origin
        (method git-fetch)
@@ -479,7 +479,7 @@ and Game Boy Color games.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0m5rv2x8qck1kr43xq186pp4kaiay7gd1x775n9qrljcd7z4x6fs"))))
+        (base32 "19qb1ib9sk5bjdv4arbwkv8l2afpll5axrif3wi7p2yhvpba10c0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("rgbds" ,rgbds)
@@ -489,7 +489,7 @@ and Game Boy Color games.")
      `(("sdl2" ,sdl2)))
     (arguments
      `(#:tests? #f                      ; There are no tests
-       #:make-flags `("CC=gcc" "CONF=release"
+       #:make-flags `("CC=gcc" "NATIVE_CC=gcc" "CONF=release"
                       ,(string-append "DATA_DIR="
                                       (assoc-ref %outputs "out")
                                       "/share/sameboy/"))
@@ -1274,7 +1274,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.220")
+    (version "0.221")
     (source
      (origin
        (method git-fetch)
@@ -1283,7 +1283,7 @@ play them on systems for which they were never designed!")
              (commit (apply string-append "mame" (string-split version #\.)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0x3yr195zi7xjr21p1c2l8c0vhg0a0af0mpz4i1w7q7r9krvcvz4"))
+        (base32 "07fl7alj9zlyb93i8lnn4706ndy3qiv0pjvwnwysk5rqa0r3463y"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

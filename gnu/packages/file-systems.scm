@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system linux-module)
   #:use-module (guix build-system trivial)
@@ -53,7 +54,9 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -100,7 +103,7 @@ file permissions, timestamps, symbolic and hard links, and extended attributes.
 
 Each file in the archive is protected by a checksum.  If part of the archive
 is corrupted you'll lose the affected file(s) but not the whole back-up.")
-    (home-page "http://www.fsarchiver.org/")
+    (home-page "https://www.fsarchiver.org/")
     (license license:gpl2)))
 
 (define-public gphotofs
@@ -186,6 +189,38 @@ In addition, bcachefs provides all the functionality of bcache, a block-layer
 caching system, and lets you assign different roles to each device based on its
 performance and other characteristics.")
       (license license:gpl2+))))
+
+(define-public exfatprogs
+  (package
+    (name "exfatprogs")
+    (version "1.0.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/exfatprogs/exfatprogs")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1s47qvhr702z5c19wfqz8cwl9ammmincs7a8vjc6p974wnnjg77y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-static")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/exfatprogs/exfatprogs")
+    (synopsis "Tools to create, check, and repair exFAT file systems")
+    (description
+     "These are command-line user space tools for the @acronym{exFAT,
+Extensible File Allocation Table} file systems.  Included are
+@command{mkfs.exfat} to create (format) new exFAT file systems, and
+@command{fsck.exfat} to check their consistency and repair them.")
+    (license license:gpl2+)))
 
 (define-public httpfs2
   (package
@@ -323,7 +358,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
 (define-public disorderfs
   (package
     (name "disorderfs")
-    (version "0.5.9")
+    (version "0.5.10")
     (source
      (origin
        (method git-fetch)
@@ -333,7 +368,7 @@ from the jfsutils package.  It is meant to be used in initrds.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0irgr9hkm9icx1s44m9382484yx8hddzjxbsz621ip9c946pif0g"))))
+         "0lsisx5118k0qk0b5klbxl03rvhycnznyfx05yxmjawh85bfhmlh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -491,8 +526,9 @@ network.  LIBNFS offers three different APIs, for different use :
                    ))))
 
 (define-public apfs-fuse
-  (let ((commit "c7036a3030d128bcecefc1eabc47c039ccfdcec9")
-        (revision "0"))
+  ;; Later versions require FUSE 3.
+  (let ((commit "7b89418e8dc27103d3c4f8fa348086ffcd634c17")
+        (revision "1"))
     (package
       (name "apfs-fuse")
       (version (git-version "0.0.0" revision commit))
@@ -504,11 +540,13 @@ network.  LIBNFS offers three different APIs, for different use :
                        (commit commit)))
          (sha256
           (base32
-           "1akd4cx1f9cyq6sfk9ybv4chhjwjlnqi8ic4z5ajnd5x0g76nz3r"))
+           "0x2siy3cmnm9wsdfazg3xc8r3kbg73gijmnn1vjw33pp71ckylxr"))
          (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f ; No test suite
+         #:configure-flags
+         '("-DUSE_FUSE3=OFF") ; FUSE 3 is not packaged yet.
          #:phases
          (modify-phases %standard-phases
            ;; No 'install' target in CMakeLists.txt
@@ -523,6 +561,7 @@ network.  LIBNFS offers three different APIs, for different use :
                  (install-file "apfs-dump-quick" bin)
                  (install-file "apfs-fuse" bin)
                  (install-file "libapfs.a" lib)
+                 (install-file "../source/README.md" doc)
                  #t))))))
       (inputs
        `(("bzip2" ,bzip2)
@@ -646,3 +685,100 @@ APFS.")
 originally developed for Solaris and is now maintained by the OpenZFS
 community.")
     (license license:cddl1.0)))
+
+(define-public mergerfs
+  (package
+    (name "mergerfs")
+    (version "2.29.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/trapexit/mergerfs/releases/download/"
+                           version "/mergerfs-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17gizw4vgbqqjd2ykkfpp276942jb5qclp0lkiwkmq1yjgyjqfmk"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; No tests exist.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             ;; These were copied from the package libfuse.
+             (substitute* '("libfuse/lib/mount_util.c" "libfuse/util/mount_util.c")
+               (("/bin/(u?)mount" _ maybe-u)
+                (string-append (assoc-ref inputs "util-linux")
+                               "/bin/" maybe-u "mount")))
+             (substitute* '("libfuse/util/mount.mergerfs.c")
+               (("/bin/sh")
+                (which "sh")))
+             ;; The Makefile does not allow overriding PREFIX via make variables.
+             (substitute* '("Makefile" "libfuse/Makefile")
+               (("= /usr/local") (string-append "= " (assoc-ref outputs "out")))
+               ;; cannot chown as build user
+               (("chown root:root") "true"))
+             #t)))))
+    ;; mergerfs bundles a heavily modified copy of libfuse.
+    (inputs `(("util-linux" ,util-linux)))
+    (home-page "https://github.com/trapexit/mergerfs")
+    (synopsis "Featureful union filesystem")
+    (description "mergerfs is a union filesystem geared towards simplifying
+storage and management of files across numerous commodity storage devices.  It
+is similar to mhddfs, unionfs, and aufs.")
+    (license (list
+              license:isc                   ; mergerfs
+              license:gpl2 license:lgpl2.0  ; Imported libfuse code.
+              ))))
+
+(define-public mergerfs-tools
+  (let ((commit "c926779d87458d103f3b674603bf97801ae2486d")
+        (revision "1"))
+    (package
+      (name "mergerfs-tools")
+      ;; No released version exists.
+      (version (git-version "0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/trapexit/mergerfs-tools.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "04hhwcib0xv4cf1mkj8zrp2aqpxkncml9iqg4m1mz6a5zhzsk0vm"))))
+      (build-system copy-build-system)
+      (inputs
+       `(("python" ,python)
+         ("python-xattr" ,python-xattr)
+         ("rsync" ,rsync)))
+      (arguments
+       '(#:install-plan
+         '(("src/" "bin/"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'patch-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* (find-files "src" "^mergerfs\\.")
+                 (("'rsync'")
+                  (string-append "'" (assoc-ref inputs "rsync") "/bin/rsync'"))
+                 (("'rm'")
+                  (string-append "'" (assoc-ref inputs "coreutils") "/bin/rm'")))
+               (substitute* "src/mergerfs.mktrash"
+                 (("xattr")
+                  (string-append (assoc-ref inputs "python-xattr") "/bin/xattr"))
+                 (("mkdir")
+                  (string-append (assoc-ref inputs "coreutils") "/bin/mkdir")))
+               #t)))))
+      (synopsis "Tools to help manage data in a mergerfs pool")
+      (description "mergerfs-tools is a suite of programs that can audit
+permissions and ownership of files and directories on a mergerfs volume,
+duplicates files and directories across branches in its pool, find and remove
+duplicate files, balance pool drives, consolidate files in a single mergerfs
+directory onto a single drive and create FreeDesktop.org Trash specification
+compatible directories.")
+      (home-page "https://github.com/trapexit/mergerfs-tools")
+      (license license:isc))))

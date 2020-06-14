@@ -41,6 +41,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
+;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -283,7 +284,7 @@ television and DVD.  It is also known as AC-3.")
 (define-public libaom
   (package
     (name "libaom")
-    (version "1.0.0-errata1-avif")
+    (version "2.0.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -292,7 +293,7 @@ television and DVD.  It is also known as AC-3.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "169yfgh7zigc21h71qclfyr7s4wwp2i9vbr4z6pkabypvass4v7m"))))
+                "1616xjhj6770ykn82ml741h8hx44v507iky3s9h7a5lnk9d4cxzy"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("perl" ,perl)
@@ -624,6 +625,11 @@ available.")
                     (delete-file-recursively "source/compat/getopt")
                     #t))))
     (build-system cmake-build-system)
+    (native-inputs
+     ;; XXX: ASM optimization fails on i686-linux, see <https://bugs.gnu.org/41768>.
+     (if (string-prefix? "i686" (%current-system))
+         '()
+         `(("nasm" ,nasm))))
     (arguments
      `(#:tests? #f ; tests are skipped if cpu-optimized code isn't built
        #:configure-flags
@@ -839,7 +845,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.6.1")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -851,7 +857,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "19df3r02k1p4cbyvifkdjyc8q7hi23f5b3x3390z52l25mjfnmvc"))))
+        (base32 "014av7ayyc624xfmr63xhbgg7nw8fynsswj1g2wmk4lnkyfz23x0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -929,7 +935,7 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2.2")
+    (version "4.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
@@ -938,7 +944,7 @@ operate properly.")
              (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
-               "176jn1lcdf0gk7sa5l2mv0faqp5dsqdhx1gqcrgymqhfmdal4xfb"))))
+               "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -1529,7 +1535,7 @@ projects while introducing many more.")
 (define-public mpv-mpris
   (package
     (name "mpv-mpris")
-    (version "0.4")
+    (version "0.5")
     (source
       (origin
         (method git-fetch)
@@ -1539,7 +1545,7 @@ projects while introducing many more.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1fr3jvja8s2gdpx8qyk9r17977flms3qpm8zci62nd9r5wjdvr5i"))))
+          "07p6li5z38pkfd40029ag2jqx917vyl3ng5p2i4v5a0af14slcnk"))))
     (build-system copy-build-system)
     (arguments
      '(#:install-plan
@@ -1610,7 +1616,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.05.08")
+    (version "2020.06.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1618,7 +1624,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "16zxa8ss2rka7cvkqyi67s8i1h9f4nxx88w9vjbxchbga6w0scc6"))))
+                "1qrrr14glv0jv377n61paq55b6k58jpnwbz2sp5xfl4wnxy5hqny"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1797,7 +1803,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
 (define-public youtube-viewer
   (package
     (name "youtube-viewer")
-    (version "3.7.5")
+    (version "3.7.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1806,7 +1812,7 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1caz56sxy554avz2vdv9gm7gyqcq0gyixzrh5v9ixmg6vxif5d4f"))))
+                "1c7wynx0fzs8awb1s4rdrl8xavqlj64z95yckhl1m1gnhahhq291"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -2252,14 +2258,14 @@ and custom quantization matrices.")
 (define-public streamlink
   (package
     (name "streamlink")
-    (version "1.3.1")
+    (version "1.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "streamlink" version))
         (sha256
          (base32
-          "0cnlg3ra3g6dml4xfy9ysy9b4qwyn458fadd8ac44cfwi3v4gq6y"))))
+          "1s458k8z1lv0w8i82sxs8dys66fwm4yr9j1m7fzp7r0piz8phcpd"))))
     (build-system python-build-system)
     (home-page "https://github.com/streamlink/streamlink")
     (native-inputs
@@ -2422,7 +2428,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "25.0.7")
+    (version "25.0.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2431,10 +2437,12 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02ppkp1j5yxnxv663nz5wv4vbcg3k53l43xq94d1p1b3j4wxwq8b"))))
+                "0j2k65q3wfyfxhvkl6icz4qy0s3kfqhksizy2i3ah7yml266axbj"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no tests
+     `(#:tests? #f ; no test suite
+       #:configure-flags
+       (list (string-append "-DOBS_VERSION_OVERRIDE=" ,version))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -2448,6 +2456,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("jansson" ,jansson)
        ("libx264" ,libx264)
        ("libxcomposite" ,libxcomposite)
+       ("mbedtls" ,mbedtls-apache)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
@@ -2762,14 +2771,15 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.handbrake.fr/releases/"
-                                  version "/HandBrake-" version "-source.tar.bz2"))
+              (uri (string-append "https://github.com/HandBrake/HandBrake/"
+                                  "releases/download/" version "/"
+                                  "HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "09rcrq0kjs1lc1as7w3glbpbfvzldwpx3xv0pfmkn4pl7acxw1f0"))
+                "0w7jxjrccvxp7g15dv0spildg5apmqp4gwbcqmg58va2gylynvzc"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -2883,18 +2893,22 @@ of modern, widely supported codecs.")
 (define-public intel-vaapi-driver
   (package
     (name "intel-vaapi-driver")
-    (version "2.4.0")
+    (version "2.4.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/intel/intel-vaapi-driver/"
-                           "releases/download/" version "/intel-vaapi-driver-"
-                           version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/intel/intel-vaapi-driver")
+             (commit version)))
        (sha256
-        (base32 "12fhydgwpvyh97gxqlgv77wsf9yax321h46vi49j4sxghpcxvqki"))))
+        (base32 "1cidki3av9wnkgwi7fklxbg3bh6kysf8w3fk2qadjr05a92mx3zp"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("libdrm" ,libdrm)
        ("libva" ,libva)
@@ -2928,7 +2942,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2937,7 +2951,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wba260n1932vafd5ni2jqv9kzc7lj6a1asm1cqk8jv690m6zvpi"))))
+                "0ffav46pz3sbj92nipd62z03fibyqgclfq9w8lgr80s6za6zdk5s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)
@@ -3018,15 +3032,15 @@ practically any type of media.")
 (define-public libmediainfo
   (package
     (name "libmediainfo")
-    (version "0.7.95")
+    (version "20.03")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mediaarea.net/download/source/"
-                                  name "/" version"/"
-                                  name "_" version ".tar.bz2"))
+                                  name "/" version "/"
+                                  name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1kchh6285b07z5nixv619hc9gml2ysdayicdiv30frrlqiyxqw4b"))))
+                "0wkzj5s34m8dvy7hif4h8f90q8ncrzd930gij1zzw3h5nw732j38"))))
     ;; TODO add a Big Buck Bunny webm for tests.
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -3076,7 +3090,7 @@ MPEG-2, MPEG-4, DVD (VOB)...
 (define-public mediainfo
   (package
     (name "mediainfo")
-    (version "18.12")
+    (version "20.03")
     (source (origin
               (method url-fetch)
               ;; Warning: This source has proved unreliable 1 time at least.
@@ -3084,10 +3098,10 @@ MPEG-2, MPEG-4, DVD (VOB)...
               ;; happens again.
               (uri (string-append "https://mediaarea.net/download/source/"
                                   name "/" version "/"
-                                  name "_" version ".tar.bz2"))
+                                  name "_" version ".tar.xz"))
               (sha256
                (base32
-                "1ix95ilcjlawcq6phh25cgplm3riqa2ii7ql82g8yagqs4ldqp6a"))))
+                "1f1shnycf0f1fwka9k9s250l228xjkg0k4k73h8bpld8msighgnw"))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -3692,7 +3706,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
       (origin
         (method url-fetch)
@@ -3700,7 +3714,7 @@ transitions, and effects and then export your film to many common formats.")
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
         (sha256
          (base32
-          "0w5k572jzxp7zwdbsa0jgjzri6hsrkydawzzilrw46nxpcak37q9"))))
+          "0xcykraf42gkymzqx1k1lcdclgk9y5yf7rr56vslrgmr0r849qnk"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")
@@ -3873,7 +3887,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
 (define-public svt-av1
   (package
     (name "svt-av1")
-    (version "0.8.2")
+    (version "0.8.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3882,7 +3896,7 @@ transcode or reformat the videos in any way, producing perfect backups.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0273fxgf4r832y9s0p8hqdj1j1nj8nlz4hylya0b4nsif89yfrhp"))))
+                "1rh4sz1bmrsxyxfxajsffw5jd17djcrymhwsi877v02fgln027qr"))))
     (build-system cmake-build-system)
     ;; SVT-AV1 only supports Intel-compatible CPUs.
     (supported-systems '("x86_64-linux" "i686-linux"))

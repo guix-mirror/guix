@@ -175,7 +175,9 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
                                   "/" version "/ams-" version ".tar.bz2"))
               (sha256
                (base32
-                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))))
+                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))
+              (patches
+               (search-patches "alsa-modular-synth-fix-vocoder.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -183,6 +185,17 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
          "CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'set-paths 'hide-default-gcc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gcc (assoc-ref inputs "gcc")))
+               ;; Remove the default GCC from CPLUS_INCLUDE_PATH to prevent
+               ;; conflicts with the GCC 5 input.
+               (setenv "CPLUS_INCLUDE_PATH"
+                       (string-join
+                        (delete (string-append gcc "/include/c++")
+                                (string-split (getenv "CPLUS_INCLUDE_PATH") #\:))
+                        ":"))
+               #t)))
          ;; Insert an extra space between linker flags.
          (add-before 'configure 'add-missing-space
            (lambda _
@@ -203,7 +216,7 @@ implementation of Adaptive Multi Rate Narrowband and Wideband
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)
-       ("gcc" ,gcc-5)))
+       ("gcc@5" ,gcc-5)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description
@@ -851,30 +864,30 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.13.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/csound/csound.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "14822ybqyp31z18gky2y9zadr9dkbhabg97y139py73w7v3af1bh"))))
+    (version "6.14.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/csound/csound.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1sr9knfhbm2m0wpkjq2l5n471vnl51wy4p6j4m95zqybimzb4s2j"))))
     (build-system cmake-build-system)
-    (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("pulseaudio" ,pulseaudio)
-       ("libsndfile" ,libsndfile)
-       ("liblo" ,liblo)
-       ("ladspa" ,ladspa)
-       ("jack" ,jack-1)
-       ("gettext" ,gettext-minimal)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
        ("zlib" ,zlib)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("liblo" ,liblo)
+       ("libsndfile" ,libsndfile)
+       ("pulseaudio" ,pulseaudio)))
     (home-page "https://csound.com/")
     (synopsis "Sound and music computing system")
     (description
@@ -1242,7 +1255,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.1.2")
+    (version "2.1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1251,7 +1264,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pf8hjn15isf772nz8qcqja700aay8nhdwmr24djkj42c7chf96j"))))
+                "0dv6jprz2bzasvk91x2rv2pqyyvxkc72s4r6vsqw723a3kqa5bhc"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1961,14 +1974,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.6")
+    (version "0.24.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1p3hafsxgs5d4za7n66lf5nz74qssfqpmk520cm7iq2njvvlqm2z"))))
+               "0063i5zgf3d3accwmyx651hw0wh5ik7kji2hvfkcdbl1qia3dp6a"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
@@ -2191,7 +2204,7 @@ buffers, and audio capture.")
 (define-public patchage
   (package
     (name "patchage")
-    (version "1.0.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/patchage-"
@@ -2199,10 +2212,10 @@ buffers, and audio capture.")
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1agdpwwi42176l4mxj0c4fsvdiv1ig56bfnnx0msckxmy57df8bb"))))
+                "0dk3fiac10m83mwss3026yz7ygc47c2iw924cwwnh2fyydc9bsy6"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:python ,python-2))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -3373,17 +3386,18 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.6.7")
+    (version "0.7.0")
+    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32 "13hsbqj1dkpz1gbclnjxv50kr7b4gcjai6c1l38g01433h217qjc"))
+        (base32 "0a2dcaxvxy5m3a5sb1lhplsymvz3ypaiidc5xn9qy01h53zvyvkp"))
        (modules '((guix build utils)))
        (snippet
-        '(begin
+        `(begin
            ;; XXX
            (substitute* (find-files "." "\\.[ch]$")
              (("^ \\* N..o.*") ""))
@@ -3395,12 +3409,11 @@ with support for HD extensions.")
                               "configure.ac"
                               "configure")
              (("https?://bs1770gain[^/]*/")
-              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html"))
+              ,home-page))
            #t))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
-    (home-page "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html")
     (synopsis "Tool to adjust loudness of media files")
     (description
      "BS1770GAIN is a loudness scanner compliant with ITU-R BS.1770 and its
@@ -3573,14 +3586,14 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "19.9")
+    (version "20.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "13s8fahpsjygjdrcwmprcrz23ny3klaj2rh2xzdv3bfs69gxvhys"))))
+                "0irdizlng2s3akmxdbfxcbd93bbjz9543nh7fisszim6v0ks59d9"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -3930,15 +3943,15 @@ other Gnaural instances, allowing synchronous sessions between many users.")
 (define-public darkice
   (package
     (name "darkice")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/darkice/darkice/"
-                                  version "/darkice-" version ".tar.gz"))
+              (uri (string-append "https://github.com/rafael2k/darkice/releases/"
+                                  "download/v" version "/darkice-"
+                                  version ".tar.gz"))
               (sha256
-               (base32 "1rlxds7ssq7nk2in4s46xws7xy9ylxsqgcz85hxjgh17lsm0y39c"))
-              (patches
-               (search-patches "darkice-workaround-fpermissive-error.patch"))))
+               (base32
+                "05yq7lggxygrkd76yiqby3msrgdn082p0qlvmzzv9xbw8hmyra76"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("lame" ,lame)
@@ -3988,7 +4001,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
 (define-public redkite
   (package
     (name "redkite")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -3997,8 +4010,7 @@ stream to one or more IceCast and/or ShoutCast servers.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1747w1kg8y9jbl11xi018d85dm38xk7843pz26sh0k5fdv87a10q"))))
+        (base32 "17kv2jc4jvn3sdicz3sf8dnf25wbvv7ijzkr0mm0sbrrjz6vrwz0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included

@@ -129,6 +129,7 @@
                              (phases '(@ (guix build linux-module-build-system)
                                          %standard-phases))
                              (outputs '("out"))
+                             (make-flags ''())
                              (system (%current-system))
                              (guile #f)
                              (substitutable? #t)
@@ -156,6 +157,7 @@
                      #:arch ,(system->arch (or target system))
                      #:tests? ,tests?
                      #:outputs %outputs
+                     #:make-flags ,make-flags
                      #:inputs %build-inputs)))
 
   (define guile-for-build
@@ -181,6 +183,7 @@
           target native-drvs target-drvs
           (guile #f)
           (outputs '("out"))
+          (make-flags ''())
           (search-paths '())
           (native-search-paths '())
           (tests? #f)
@@ -228,6 +231,7 @@
                              #:target ,target
                              #:arch ,(system->arch (or target system))
                              #:outputs %outputs
+                             #:make-flags ,make-flags
                              #:inputs %build-target-inputs
                              #:native-inputs %build-host-inputs
                              #:search-paths

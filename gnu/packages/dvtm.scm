@@ -47,8 +47,7 @@
 popularized by X11-window managers like dwm, to the console.  As a console
 window manager it tries to make it easy to work with multiple console based
 programs.")
-   (home-page "http://www.brain-dump.org/projects/dvtm/")
-
+   (home-page "https://www.brain-dump.org/projects/dvtm/")
    ;; "dvtm reuses some code of dwm and is released under the same MIT/X11
    ;; license. The terminal emulation part is licensed under the ISC license."
    ;; source: http://www.brain-dump.org/projects/dvtm/#license

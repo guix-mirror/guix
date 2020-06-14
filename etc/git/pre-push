@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # This hook script prevents the user from pushing to Savannah if any of the new
-# commits' OpenPGP signatures cannot be verified.
+# commits' OpenPGP signatures cannot be verified, or if a commit is signed
+# with an unauthorized key.
 
 # Called by "git push" after it has checked the remote status, but before
 # anything has been pushed.  If this script exits with a non-zero status nothing
@@ -19,51 +20,13 @@
 #
 #   <local ref> <local sha1> <remote ref> <remote sha1>
 
-z40=0000000000000000000000000000000000000000
-
 # Only use the hook when pushing to Savannah.
 case "$2" in
-*git.sv.gnu.org*)
-	break
+    *.gnu.org*)
+	exec make authenticate check-channel-news
+	exit 127
 	;;
-*)
+    *)
 	exit 0
 	;;
 esac
-
-while read local_ref local_sha remote_ref remote_sha
-do
-	if [ "$local_sha" = $z40 ]
-	then
-		# Handle delete
-		:
-	else
-		if [ "$remote_sha" = $z40 ]
-		then
-			# We are pushing a new branch. To prevent wasting too
-			# much time for this relatively rare case, we examine
-			# all commits since the first signed commit, rather than
-			# the full history. This check *will* fail, and the user
-			# will need to temporarily disable the hook to push the
-			# new branch.
-			range="e3d0fcbf7e55e8cbe8d0a1c5a24d73f341d7243b..$local_sha"
-		else
-			# Update to existing branch, examine new commits
-			range="$remote_sha..$local_sha"
-		fi
-
-		# Verify the signatures of all commits being pushed.
-		ret=0
-		for commit in $(git rev-list $range)
-		do
-			if ! git verify-commit $commit >/dev/null 2>&1
-			then
-				printf "%s failed signature check\n" $commit
-				ret=1
-			fi
-		done
-		exit $ret
-	fi
-done
-
-exit 0

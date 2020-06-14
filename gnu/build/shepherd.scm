@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (gnu build linux-container)
   #:use-module (guix build utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (make-forkexec-constructor/container))
 
@@ -91,7 +92,10 @@
 
 ;; XXX: Lazy-bind the Shepherd to avoid a compile-time dependency.
 (module-autoload! (current-module)
-                  '(shepherd service) '(read-pid-file exec-command))
+                  '(shepherd service)
+                  '(read-pid-file exec-command %precious-signals))
+(module-autoload! (current-module)
+                  '(shepherd system) '(unblock-signals))
 
 (define* (read-pid-file/container pid pid-file #:key (max-delay 5))
   "Read PID-FILE in the container namespaces of PID, which exists in a
@@ -101,7 +105,8 @@ separate mount and PID name space.  Return the \"outer\" PID. "
              (read-pid-file pid-file
                             #:max-delay max-delay)))
     (#f
-     (catch-system-error (kill pid SIGTERM))
+     ;; Send SIGTERM to the whole process group.
+     (catch-system-error (kill (- pid) SIGTERM))
      #f)
     ((? integer? container-pid)
      ;; XXX: When COMMAND is started in a separate PID namespace, its
@@ -158,6 +163,14 @@ namespace, in addition to essential bind-mounts such /proc."
     (let ((pid (run-container container-directory
                               mounts namespaces 1
                               (lambda ()
+                                ;; First restore the default handlers.
+                                (for-each (cut sigaction <> SIG_DFL)
+                                          %precious-signals)
+
+                                ;; Unblock any signals that have been blocked
+                                ;; by the parent process.
+                                (unblock-signals %precious-signals)
+
                                 (mkdir-p "/var/run")
                                 (clean-up pid-file)
 

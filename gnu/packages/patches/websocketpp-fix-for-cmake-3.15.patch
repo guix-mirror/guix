@@ -1,0 +1,17 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Fri, 05 Jun 2020 18:37:51 +0200
+Subject: [PATCH] gnu: websocketpp: Fix build with CMake >= 3.15.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 57ed01e78..43c772d78 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -215,7 +215,7 @@
+     set (Boost_USE_MULTITHREADED TRUE)
+     set (Boost_ADDITIONAL_VERSIONS "1.39.0" "1.40.0" "1.41.0" "1.42.0" "1.43.0" "1.44.0" "1.46.1") # todo: someone who knows better spesify these!
+ 
+-    find_package (Boost 1.39.0 COMPONENTS "${WEBSOCKETPP_BOOST_LIBS}")
++    find_package (Boost 1.39.0 COMPONENTS ${WEBSOCKETPP_BOOST_LIBS})
+ 
+     if (Boost_FOUND)
+         # Boost is a project wide global dependency.

@@ -14,6 +14,8 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -455,6 +457,40 @@ files, as well as to verify that there are no missing or unknown files.")
     (description
      "@code{Test::DistManifest} provides a simple method of testing that a
 @file{MANIFEST} file matches its distribution.")
+    (license perl-license)))
+
+(define-public perl-test-distribution
+  (package
+    (name "perl-test-distribution")
+    (version "2.00")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "mirror://cpan/authors/id/S/SR/SRSHAH/Test-Distribution-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "0s1bj459qaw2x1fckklv9irpf3mr8gp2cm9vlyrb5dyanrzx1v2h"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+     `(("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-pod-coverage" ,perl-pod-coverage)
+       ("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "https://metacpan.org/release/Test-Distribution")
+    (synopsis "Perform tests on all modules of a distribution")
+    (description "When used in a test script @code{Test::Distribution}
+goes through all the modules in your distribution, checks their POD,
+checks that they compile successfully and checks that they all define
+a $VERSION.  In addition, this module performs a number of tests on
+the distribution itself.  It checks that the distributed files match
+the SIGNATURE file, if that file exists.  It checks that the
+distribution is not missing any core description files.  It also
+checks that the complete set of pre-requisite packages are listed in
+the Makefile.PL file.")
     (license perl-license)))
 
 (define-public perl-test-eol
@@ -1030,6 +1066,34 @@ usually called epsilon.  This module provides such a function for use with
 @code{Test::More}.")
     (license asl2.0)))
 
+(define-public perl-test-object
+  (package
+    (name "perl-test-object")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Test-Object-" version ".tar.gz"))
+       (sha256
+        (base32 "1fyhn558kvla37fb60fzdr6kd2kfcxcmpr8884zk2dvq2ij8j9v5"))))
+    (build-system perl-build-system)
+    (home-page "https://metacpan.org/release/Test-Object")
+    (synopsis "Thoroughly testing objects via registered handlers")
+    (description
+     "In situations where you have deep trees of classes,
+there is a common situation in which you test a module 4 or 5 subclasses down,
+which should follow the correct behaviour of not just the subclass, but of all
+the parent classes.
+
+This should be done to ensure that the implementation of a subclass has not
+somehow ``broken'' the object's behaviour in a more general sense.
+
+Test::Object is a testing package designed to allow you to easily test what
+you believe is a valid object against the expected behaviour of all of the
+classes in its inheritance tree in one single call.")
+    (license perl-license)))
+
 (define-public perl-test-output
   (package
     (name "perl-test-output")
@@ -1250,6 +1314,33 @@ makes fork(2) safe to use in test cases.")
     (description
      "Test::Simple contains basic utilities for writing tests.")
     (home-page "https://metacpan.org/release/Test-Simple")
+    (license perl-license)))
+
+(define-public perl-test-subcalls
+  (package
+    (name "perl-test-subcalls")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+                           "Test-SubCalls-" version ".tar.gz"))
+       (sha256
+        (base32 "1hmnv9nkdzyrr6yis0dnkf4lk0hwld3zapiyq7mizrq5barykhfb"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-hook-lexwrap" ,perl-hook-lexwrap)))
+    (home-page "https://metacpan.org/release/Test-SubCalls")
+    (synopsis "Track the number of times subs are called")
+    (description
+     "There are a number of different situations (like testing caching
+code) where you want to want to do a number of tests, and then verify
+that some underlying subroutine deep within the code was called
+a specific number of times.
+
+Test::SubCalls module provides a number of functions for doing testing
+in this way in association with your normal Test::More (or similar)
+test scripts.")
     (license perl-license)))
 
 (define-public perl-test-taint

@@ -1,50 +1,13 @@
-Use upstream utf8proc package, as suggested in
-http://source.netsurf-browser.org/libutf8proc.git/commit/?id=770e329cceaf0620c7b482589a9b17ed1d19c16d
+Fix include directory for system utf8proc.
 
-Work around upstream's lack of a pkg-config file and update API.
-
---- netsurf-3.6/Makefile
-+++ netsurf-3.6/Makefile
-@@ -527,10 +527,9 @@
- $(eval $(call pkg_config_find_and_add,libcss,CSS))
- $(eval $(call pkg_config_find_and_add,libdom,DOM))
- $(eval $(call pkg_config_find_and_add,libnsutils,nsutils))
--$(eval $(call pkg_config_find_and_add,libutf8proc,utf8proc))
+--- netsurf-3.10/utils/idna.c
++++ netsurf-3.10/utils/idna.c
+@@ -167,7 +167,7 @@
  
- # Common libraries without pkg-config support
--LDFLAGS += -lz
-+LDFLAGS += -lz -lutf8proc
+ #ifdef WITH_UTF8PROC
  
- # Optional libraries with pkgconfig
- 
---- netsurf-3.8/utils/idna.c
-+++ netsurf-3.8/utils/idna.c
-@@ -27,7 +27,7 @@
- #include <stdlib.h>
- #include <string.h>
- #include <sys/types.h>
 -#include <libutf8proc/utf8proc.h>
 +#include <utf8proc.h>
  
- #include "netsurf/inttypes.h"
- 
---- netsurf-3.8/test/Makefile
-+++ netsurf-3.8/test/Makefile
-@@ -142,14 +142,15 @@
- 	-Itest -Iinclude -Icontent/handlers -Ifrontends -I. -I.. \
- 	-Dnsgtk \
- 	$(SAN_FLAGS) \
--	$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc) \
-+	$(shell pkg-config --cflags libcurl libparserutils libwapcaplet libdom libnsutils) \
- 	$(LIB_CFLAGS)
- TESTCFLAGS := $(BASE_TESTCFLAGS) \
- 	$(COV_CFLAGS) \
- 	$(COV_CPPFLAGS)
- 
- TESTLDFLAGS := -L$(TESTROOT) \
--	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils libutf8proc) -lz \
-+	$(shell pkg-config --libs libcurl libparserutils libwapcaplet libdom libnsutils) \
-+	$(LDFLAGS) \
- 	$(SAN_FLAGS) \
- 	$(LIB_LDFLAGS)\
- 	$(COV_LDFLAGS)
+ int32_t idna_contexto[] = {
+ 	/* CONTEXTO codepoints which have a rule defined */

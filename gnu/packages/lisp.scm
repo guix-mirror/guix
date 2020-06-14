@@ -372,14 +372,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "2.0.4")
+    (version "2.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1lc2i4qq1kfdybmxnj2zq2hn3hfx0vvlqim4gvlgvs3bfr0lcaqj"))))
+        (base32 "1jz26w1i3riv032aa35vww4cv7cjk2ww7dp70c7wk4r8s66zhl00"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (native-inputs
@@ -592,25 +592,24 @@ statistical profiler, a code coverage tool, and many other extensions.")
            (uri (string-append
                  "https://github.com/Clozure/ccl/releases/download/v" version "/"
                  (match (%current-system)
-                   ((or "i686-linux" "x86_64-linux") "linuxx86")
                    ("armhf-linux" "linuxarm")
-                   ;; Prevent errors when querying this package on unsupported
-                   ;; platforms, e.g. when running "guix package --search="
-                   (_ "UNSUPPORTED"))
+                   ;; XXX: This source only works on x86, but provide it as a
+                   ;; catch-all to prevent errors when querying this package
+                   ;; on unsupported platforms.
+                   (_ "linuxx86"))
                  ".tar.gz"))
            (sha256
             (base32
              (match (%current-system)
-               ((or "i686-linux" "x86_64-linux")
-                "15l7cfa4a7jkfwdzsfm4q3n22jnb57imxahpql3h77xin57v1gbz")
                ("armhf-linux"
                 "0x4bjx6cxsjvxyagijhlvmc7jkyxifdvz5q5zvz37028va65243c")
-               (_ ""))))))))
+               (_ "15l7cfa4a7jkfwdzsfm4q3n22jnb57imxahpql3h77xin57v1gbz"))))))))
     (native-inputs
      `(("m4" ,m4)))
     (arguments
      `(#:tests? #f                      ;no 'check' target
-       #:modules ((srfi srfi-26)
+       #:modules ((ice-9 match)
+                  (srfi srfi-26)
                   (guix build utils)
                   (guix build gnu-build-system))
        #:phases
@@ -622,19 +621,16 @@ statistical profiler, a code coverage tool, and many other extensions.")
          (add-before 'build 'pre-build
            ;; Enter the source directory for the current platform's lisp
            ;; kernel, and run 'make clean' to remove the precompiled one.
-           (lambda _
+           (lambda* (#:key system #:allow-other-keys)
              (substitute* "lisp-kernel/m4macros.m4"
                (("/bin/pwd") (which "pwd")))
              (chdir (string-append
                      "lisp-kernel/"
-                     ,(match (or (%current-target-system) (%current-system))
-                        ("i686-linux" "linuxx8632")
-                        ("x86_64-linux" "linuxx8664")
-                        ("armhf-linux" "linuxarm")
-                        ;; Prevent errors when querying this package
-                        ;; on unsupported platforms, e.g. when running
-                        ;; "guix package --search="
-                        (_ "UNSUPPORTED"))))
+                     (match system
+                       ("i686-linux" "linuxx8632")
+                       ("x86_64-linux" "linuxx8664")
+                       ("armhf-linux" "linuxarm")
+                       (_ (string-append "unknown system: " system)))))
              (substitute* '("Makefile")
                (("/bin/rm") "rm"))
              (setenv "CC" "gcc")
@@ -642,7 +638,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
          ;; XXX Do we need to recompile the heap image as well for Guix?
          ;; For now just use the one we already got in the tarball.
          (replace 'install
-           (lambda* (#:key outputs inputs #:allow-other-keys)
+           (lambda* (#:key outputs inputs system #:allow-other-keys)
              ;; The lisp kernel built by running 'make' in lisp-kernel/$system
              ;; is put back into the original directory, so go back.  The heap
              ;; image is there as well.
@@ -653,20 +649,18 @@ statistical profiler, a code coverage tool, and many other extensions.")
                     (wrapper (string-append bindir "ccl"))
                     (bash (assoc-ref inputs "bash"))
                     (kernel
-                     ,(match (or (%current-target-system) (%current-system))
-                        ("i686-linux" "lx86cl")
-                        ("x86_64-linux" "lx86cl64")
-                        ("armhf-linux" "armcl")
-                        ;; Prevent errors when querying this package
-                        ;; on unsupported platforms, e.g. when running
-                        ;; "guix package --search="
-                        (_ "UNSUPPORTED")))
+                     (match system
+                       ("i686-linux" "lx86cl")
+                       ("x86_64-linux" "lx86cl64")
+                       ("armhf-linux" "armcl")
+                       ;; Unlikely to work, but try it anyway...
+                       (_ system)))
                     (heap (string-append kernel ".image")))
                (install-file kernel libdir)
                (install-file heap libdir)
 
-               (let ((dirs '("lib" "library" "examples" "tools" "objc-bridge"
-                             ,@(match (%current-system)
+               (let ((dirs `("lib" "library" "examples" "tools" "objc-bridge"
+                             ,@(match system
                                  ("x86_64-linux"
                                   '("x86-headers64"))
                                  ("i686-linux"
@@ -806,7 +800,7 @@ enough to play the original mainframe Zork all the way through.")
 (define-public txr
   (package
     (name "txr")
-    (version "235")
+    (version "239")
     (source
      (origin
        (method git-fetch)
@@ -815,11 +809,11 @@ enough to play the original mainframe Zork all the way through.")
              (commit (string-append "txr-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0kpqk2x0sz7sqxsrhasq0xnljjlnxwhh4xjx2nii0zy2jkv4vsbn"))))
+        (base32 "1jldpkd5f855m3z4zjpd1ha64f405pcdwwrnr8jnk66v22dsvdwx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
-       (list "cc=gcc"
+     `(#:configure-flags
+       (list ,(string-append "cc=" (cc-for-target))
              (string-append "--prefix=" (assoc-ref %outputs "out")))
        #:test-target "tests"
        #:phases

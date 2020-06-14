@@ -4,13 +4,14 @@
 ;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,7 +67,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system asdf))
+  #:use-module (guix build-system asdf)
+  #:use-module (guix build-system go))
 
 (define-public midori
   (package
@@ -338,7 +340,7 @@ access.")
 (define-public qutebrowser
   (package
     (name "qutebrowser")
-    (version "1.11.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
@@ -346,8 +348,7 @@ access.")
                            "qutebrowser/releases/download/v" version "/"
                            "qutebrowser-" version ".tar.gz"))
        (sha256
-        (base32
-         "0b0qlki9bp9mm41lrh6rc6qqvm4nsz8da63sby3a1f2xm9b9vvg2"))))
+        (base32 "0pywyhi4v6ymxpn85grrdr1agmcxsnm5jfqf3rlxqx5swbnxbfs1"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-attrs" ,python-attrs))) ; for tests
@@ -692,3 +693,46 @@ key-bindings and is fully configurable and extensible in Common Lisp.")
 
 (define-public sbcl-next
   (deprecated-package "sbcl-next" next))
+
+(define-public bombadillo
+  (package
+    (name "bombadillo")
+    (version "2.2.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://tildegit.org/sloum/bombadillo")
+                    (commit version)))
+              (sha256
+               (base32
+                "1m52b1wk48gkqmjy8l0x3jaksrx2v8w6w59lhr7zaw2i0n4f5k0z"))
+              (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "tildegit.org/sloum/bombadillo"
+       #:install-source? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'install-data
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((builddir "src/tildegit.org/sloum/bombadillo")
+                             (out (assoc-ref outputs "out"))
+                             (pkg (strip-store-file-name out))
+                             (sharedir (string-append out "/share"))
+                             (appdir (string-append sharedir "/applications"))
+                             (docdir (string-append sharedir "/doc/" pkg))
+                             (mandir (string-append sharedir "/man/man1"))
+                             (pixdir (string-append sharedir "/pixmaps")))
+                        (with-directory-excursion builddir
+                          (install-file "bombadillo.desktop" appdir)
+                          (install-file "LICENSE" docdir)
+                          (install-file "bombadillo.1" mandir)
+                          (install-file "bombadillo-icon.png" pixdir)
+                          #t)))))))
+    (home-page "http://bombadillo.colorfield.space")
+    (synopsis "Terminal browser for the gopher, gemini, and finger protocols")
+    (description "Bombadillo is a non-web browser for the terminal with
+vim-like key bindings, a document pager, configurable settings, and robust
+command selection.  The following protocols are supported as first-class
+citizens: gopher, gemini, finger, and local.  There is also support for telnet,
+http, and https via third-party applications.")
+    (license license:gpl3+)))

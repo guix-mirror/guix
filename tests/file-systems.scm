@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,5 +64,68 @@
           (('gnu 'packages _ ..1) #t)
           (_ #f))
         (source-module-closure '((gnu system file-systems)))))
+
+(test-equal "file-system-options->alist"
+  '("autodefrag" ("subvol" . "home") ("compress" . "lzo"))
+  (file-system-options->alist "autodefrag,subvol=home,compress=lzo"))
+
+(test-equal "file-system-options->alist (#f)"
+  '()
+  (file-system-options->alist #f))
+
+(test-equal "alist->file-system-options"
+  "autodefrag,subvol=root,compress=lzo"
+  (alist->file-system-options '("autodefrag"
+                                ("subvol" . "root")
+                                ("compress" . "lzo"))))
+
+(test-equal "alist->file-system-options (null)"
+  #f
+  (alist->file-system-options '()))
+
+
+;;;
+;;; Btrfs related.
+;;;
+
+(define %btrfs-root-subvolume
+  (file-system
+    (device (file-system-label "btrfs-pool"))
+    (mount-point "/")
+    (type "btrfs")
+    (options "subvol=rootfs,compress=zstd")))
+
+(define %btrfs-store-subvolid
+  (file-system
+    (device (file-system-label "btrfs-pool"))
+    (mount-point "/gnu/store")
+    (type "btrfs")
+    (options "subvolid=10,compress=zstd")
+    (dependencies (list %btrfs-root-subvolume))))
+
+(define %btrfs-store-subvolume
+  (file-system
+    (device (file-system-label "btrfs-pool"))
+    (mount-point "/gnu/store")
+    (type "btrfs")
+    (options "subvol=/some/nested/file/name")
+    (dependencies (list %btrfs-root-subvolume))))
+
+(test-assert "btrfs-subvolume? (subvol)"
+  (btrfs-subvolume? %btrfs-root-subvolume))
+
+(test-assert "btrfs-subvolume? (subvolid)"
+  (btrfs-subvolume? %btrfs-store-subvolid))
+
+(test-equal "btrfs-store-subvolume-file-name"
+  "/some/nested/file/name"
+  (parameterize ((%store-prefix "/gnu/store"))
+    (btrfs-store-subvolume-file-name (list %btrfs-root-subvolume
+                                           %btrfs-store-subvolume))))
+
+(test-error "btrfs-store-subvolume-file-name (subvolid)"
+            (parameterize ((%store-prefix "/gnu/store"))
+              (btrfs-store-subvolume-file-name (list %btrfs-root-subvolume
+                                                     %btrfs-store-subvolid))))
 
 (test-end)

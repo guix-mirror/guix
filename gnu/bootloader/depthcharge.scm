@@ -82,7 +82,8 @@
 (define* (depthcharge-configuration-file config entries
                                          #:key
                                          (system (%current-system))
-                                         (old-entries '()))
+                                         (old-entries '())
+                                         #:allow-other-keys)
   (match entries
     ((entry)
      (let ((kernel (menu-entry-linux entry))

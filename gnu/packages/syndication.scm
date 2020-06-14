@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -28,6 +30,10 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -36,6 +42,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
 
 (define-public newsboat
@@ -58,7 +65,7 @@
        ("asciidoc" ,asciidoc)))
     (inputs
      `(("curl" ,curl)
-       ("json-c" ,json-c)
+       ("json-c" ,json-c-0.13)
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("stfl" ,stfl)
@@ -88,6 +95,63 @@ Newsboat supports OPML import/exports, HTML rendering, podcasts (with
 file system, and many more features.")
     (license (list license:gpl2+        ; filter/*
                    license:expat))))    ; everything else
+
+(define-public liferea
+  (package
+    (name "liferea")
+    (version "1.12.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/lwindolf/liferea/"
+                           "releases/download/v" version "/liferea-"
+                           version "b.tar.bz2"))
+       (sha256
+        (base32 "03pr1gmiv5y0i92bkhcxr8s311ll91chz19wb96jkixx32xav91d"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'prepare-build-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Workaround for https://github.com/lwindolf/liferea/issues/767.
+             (setenv "WEBKIT_DISABLE_COMPOSITING_MODE" "1")))
+         (add-after 'install 'wrap-gi-python
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (python-path       (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/liferea")
+                             `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                             `("PYTHONPATH" ":" prefix (,python-path))))
+            #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("gnome-keyring" ,gnome-keyring)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("json-glib" ,json-glib)
+       ("libnotify" ,libnotify)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("python" ,python)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("webkitgtk" ,webkitgtk)))
+    (home-page "https://lzone.de/liferea/")
+    (synopsis "News reader for GTK/GNOME")
+    (description "Liferea is a desktop feed reader/news aggregator that
+brings together all of the content from your favorite subscriptions into
+a simple interface that makes it easy to organize and browse feeds.")
+    (license license:gpl2+)))
 
 (define-public rtv
   (package
@@ -135,14 +199,14 @@ file system, and many more features.")
 (define-public tuir
   (package
     (name "tuir")
-    (version "1.28.3")
+    (version "1.29.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "tuir" version))
         (sha256
          (base32
-          "1gpyjrl7jdfjq30m32nzh59ajv91gq19l93jjri2wsv5yrf90hdr"))))
+          "06xb030ibphbrz4nsxm8mh3g60ld8xfp6kc3j6vi1k4ls5s4h79i"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

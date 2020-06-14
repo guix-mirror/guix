@@ -73,6 +73,7 @@
               (uri (string-append
                     "https://github.com/transmission/transmission-releases/raw/"
                     "master/transmission-" version ".tar.xz"))
+              (patches (search-patches "transmission-CVE-2018-10756.patch"))
               (sha256
                (base32
                 "0zbbj7rlm6m7vb64x68a64cwmijhsrwx9l63hbwqs7zr9742qi1m"))))
@@ -314,15 +315,15 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
 (define-public uget
   (package
     (name "uget")
-    (version "2.0.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/urlget/"
-                                  "uget%20%28stable%29/" version "/uget-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0919cf7lfk1djdl003cahqjvafdliv7v2l8r5wg95n4isqggdk75"))))
+    (version "2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/urlget/"
+                           "uget%20%28stable%29/" version "/uget-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0rg2mr2cndxvnjib8zm5dp7y2hgbvnqkz2j2jmg0xlzfh9d34b2m"))))
     (build-system gnu-build-system)
     (inputs
      `(("curl" ,curl)
@@ -336,7 +337,7 @@ Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://ugetdm.com/")
+    (home-page "https://ugetdm.com/")
     (synopsis "Universal download manager with GTK+ interface")
     (description
      "uGet is portable download manager with GTK+ interface supporting

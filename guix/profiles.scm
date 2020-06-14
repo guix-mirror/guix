@@ -41,7 +41,6 @@
   #:use-module (guix modules)
   #:use-module (guix monads)
   #:use-module (guix store)
-  #:use-module (guix sets)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -105,6 +104,7 @@
             manifest-installed?
             manifest-matching-entries
             manifest-search-paths
+            check-for-collisions
 
             manifest-transaction
             manifest-transaction?
@@ -260,17 +260,17 @@ field."
 recursively."
   (let loop ((entries (manifest-entries manifest))
              (result  '())
-             (visited (set)))                     ;compare with 'equal?'
+             (visited vlist-null))            ;compare with 'manifest-entry=?'
     (match entries
       (()
        (reverse result))
       ((head . tail)
-       (if (set-contains? visited head)
+       (if (vhash-assoc head visited manifest-entry=?)
            (loop tail result visited)
            (loop (append (manifest-entry-dependencies head)
                          tail)
                  (cons head result)
-                 (set-insert head visited)))))))
+                 (vhash-cons head #t visited)))))))
 
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."

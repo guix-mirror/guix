@@ -58,7 +58,7 @@
     `(("pkg-config" ,pkg-config)))
    (inputs
     `(("argon2" ,argon2)
-      ("json-c" ,json-c)
+      ("json-c" ,json-c-0.13)   ;XXX update this for cryptsetup >= 2.3
       ("libgcrypt" ,libgcrypt)
       ("lvm2" ,lvm2)                    ; device-mapper
       ("popt" ,popt)
@@ -138,7 +138,7 @@ files).  This assumes LIBRARY uses Libtool."
               (inherit (static-library libgcrypt))
               (propagated-inputs
                `(("libgpg-error-host" ,(static-library libgpg-error)))))))
-       `(("json-c" ,json-c)
+       `(("json-c" ,json-c-0.13)
          ("libgcrypt" ,libgcrypt-static)
          ("lvm2" ,lvm2-static)
          ("util-linux" ,util-linux "static")

@@ -2556,7 +2556,7 @@ including most mice, keyboards, tablets and touchscreens.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libinput" ,libinput)
+     `(("libinput" ,libinput-minimal)
        ("xorg-server" ,xorg-server)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Input driver for X server based on libinput")

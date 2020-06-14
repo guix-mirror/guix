@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -214,18 +215,18 @@ unpacking."
                 (_ #f))
               inputs))))
 
-(define* (build #:key import-path #:allow-other-keys)
+(define* (build #:key import-path build-flags #:allow-other-keys)
   "Build the package named by IMPORT-PATH."
   (with-throw-handler
     #t
     (lambda _
-      (invoke "go" "install"
+      (apply invoke "go" "install"
               "-v" ; print the name of packages as they are compiled
               "-x" ; print each command as it is invoked
               ;; Respectively, strip the symbol table and debug
               ;; information, and the DWARF symbol table.
               "-ldflags=-s -w"
-              import-path))
+              `(,@build-flags ,import-path)))
     (lambda (key . args)
       (display (string-append "Building '" import-path "' failed.\n"
                               "Here are the results of `go env`:\n"))

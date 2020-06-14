@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 David Craven <david@craven.ch>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,9 @@
             menu-entry-linux-arguments
             menu-entry-initrd
             menu-entry-device-mount-point
+            menu-entry-multiboot-kernel
+            menu-entry-multiboot-arguments
+            menu-entry-multiboot-modules
 
             menu-entry->sexp
             sexp->menu-entry
@@ -42,6 +46,7 @@
             bootloader-name
             bootloader-package
             bootloader-installer
+            bootloader-disk-image-installer
             bootloader-configuration-file
             bootloader-configuration-file-generator
 
@@ -76,22 +81,41 @@
                    (default #f))
   (device-mount-point menu-entry-device-mount-point
                    (default #f))
-  (linux           menu-entry-linux)
+  (linux           menu-entry-linux
+                   (default #f))
   (linux-arguments menu-entry-linux-arguments
                    (default '()))          ; list of string-valued gexps
-  (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
+  (initrd          menu-entry-initrd       ; file name of the initrd as a gexp
+                   (default #f))
+  (multiboot-kernel menu-entry-multiboot-kernel
+                    (default #f))
+  (multiboot-arguments menu-entry-multiboot-arguments
+                       (default '()))      ; list of string-valued gexps
+  (multiboot-modules menu-entry-multiboot-modules
+                     (default '())))       ; list of multiboot commands, where
+                                           ; a command is a list of <string>
 
 (define (menu-entry->sexp entry)
   "Return ENTRY serialized as an sexp."
   (match entry
-    (($ <menu-entry> label device mount-point linux linux-arguments initrd)
+    (($ <menu-entry> label device mount-point linux linux-arguments initrd #f
+                     ())
      `(menu-entry (version 0)
                   (label ,label)
                   (device ,device)
                   (device-mount-point ,mount-point)
                   (linux ,linux)
                   (linux-arguments ,linux-arguments)
-                  (initrd ,initrd)))))
+                  (initrd ,initrd)))
+    (($ <menu-entry> label device mount-point #f () #f
+                     multiboot-kernel multiboot-arguments multiboot-modules)
+     `(menu-entry (version 0)
+                  (label ,label)
+                  (device ,device)
+                  (device-mount-point ,mount-point)
+                  (multiboot-kernel ,multiboot-kernel)
+                  (multiboot-arguments ,multiboot-arguments)
+                  (multiboot-modules ,multiboot-modules)))))
 
 (define (sexp->menu-entry sexp)
   "Turn SEXP, an sexp as returned by 'menu-entry->sexp', into a <menu-entry>
@@ -108,7 +132,20 @@ record."
       (device-mount-point mount-point)
       (linux linux)
       (linux-arguments linux-arguments)
-      (initrd initrd)))))
+      (initrd initrd)))
+    (('menu-entry ('version 0)
+                  ('label label) ('device device)
+                  ('device-mount-point mount-point)
+                  ('multiboot-kernel multiboot-kernel)
+                  ('multiboot-arguments multiboot-arguments)
+                  ('multiboot-modules multiboot-modules) _ ...)
+     (menu-entry
+      (label label)
+      (device device)
+      (device-mount-point mount-point)
+      (multiboot-kernel multiboot-kernel)
+      (multiboot-arguments multiboot-arguments)
+      (multiboot-modules multiboot-modules)))))
 
 
 ;;;
@@ -125,6 +162,8 @@ record."
   (name                            bootloader-name)
   (package                         bootloader-package)
   (installer                       bootloader-installer)
+  (disk-image-installer            bootloader-disk-image-installer
+                                   (default #f))
   (configuration-file              bootloader-configuration-file)
   (configuration-file-generator    bootloader-configuration-file-generator))
 

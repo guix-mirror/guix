@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
+  #:use-module (gnu packages kde-pim)
   #:use-module (gnu packages kde-plasma)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -70,14 +72,14 @@
 (define-public baloo-widgets
   (package
     (name "baloo-widgets")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/baloo-widgets-" version ".tar.xz"))
        (sha256
-        (base32 "0bba8dgxd7rcjji809kwnw78hl1nb5ssh2ir4k4b0wvx395jifgd"))))
+        (base32 "1x4v79vhvc5ixkbsf3jyjz5ig1lf78rfw3r7g3llpb4j1kcp3wh0"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -103,14 +105,14 @@ This package contains GUI widgets for baloo.")
 (define-public grantleetheme
   (package
     (name "grantleetheme")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/grantleetheme-" version ".tar.xz"))
        (sha256
-        (base32 "0j77q1yyfmggzgkqgcw2xr0v9xg3h5cdhh8jry8h2llw75ahy6xb"))
+        (base32 "0gabc5cb0sf00s7m5v2jnq55qsrdbrq6nqd15y1i15p788zifsjx"))
        (patches (search-patches "grantlee-merge-theme-dirs.patch"))))
     (build-system qt-build-system)
     (native-inputs
@@ -118,6 +120,7 @@ This package contains GUI widgets for baloo.")
        ("libxml2" ,libxml2))) ;; xmllint required for tests
     (inputs
      `(("grantlee" ,grantlee)
+       ("kguiaddons" ,kguiaddons)
        ("ki18n" ,ki18n)
        ("kiconthemes" ,kiconthemes)
        ("knewstuff" ,knewstuff)
@@ -126,7 +129,7 @@ This package contains GUI widgets for baloo.")
     (synopsis "Library providing Grantlee theme support")
     (description "This library provides Grantlee theme support.")
     (license ;; LGPL for libraries, FDL for documentation
-     (list license:lgpl2.0+ license:fdl1.2+))))
+     (list license:lgpl2.1+ license:fdl1.2+))))
 
 (define-public kdenlive
   (let ((version "18.08.1"))
@@ -209,7 +212,7 @@ projects.")
 (define-public kdevelop
   (package
     (name "kdevelop")
-    (version "5.5.1")
+    (version "5.5.2")
     (source
       (origin
         (method url-fetch)
@@ -217,7 +220,7 @@ projects.")
                             "/" version "/src/kdevelop-"
                             version ".tar.xz"))
         (sha256
-         (base32 "18hxwkdbfw0qs3p19jv6d8wwwdzb9m087891i8w2bzkn21fd5pmy"))))
+         (base32 "1nkl3z1n1l7ly2zvmbx2sdhx5q72wcvpwhzsz3qgw1474qd9i3i2"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -329,14 +332,14 @@ for some KDevelop language plugins (Ruby, PHP, CSS...).")
 (define-public kdiagram
   (package
     (name "kdiagram")
-    (version "2.6.1")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/kdiagram/" version
                            "/kdiagram-" version ".tar.xz"))
        (sha256
-        (base32 "1c6dbp9gssjrx59z8yxzq1ay56pnw7h28symjrv0gcvhxyjirrxx"))
+        (base32 "1pgvf2q8b59hw0jg5ajmj5nrn4q8cgnifpvdd0fynk2ml6zym8k3"))
        (patches (search-patches
                  "kdiagram-Fix-missing-link-libraries.patch"))))
     (build-system qt-build-system)
@@ -360,7 +363,7 @@ illustrate project schedules.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.2.7.1")
+    (version "4.2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -368,14 +371,14 @@ illustrate project schedules.")
                     "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "0gcwq1w09gmx53i2fir73l222p41299wagvhbvsxwrz0v3crzliy"))))
+                "1a3djmjhnvlp8dpiz68s0lwg71nv3ypq592jfgsnm5zlxa0vp1cz"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
        #:configure-flags
        (list "-DBUILD_TESTING=OFF"
              (string-append "-DCMAKE_CXX_FLAGS=-I"
-                            (assoc-ref %build-inputs "ilmbase")
+                            (assoc-ref %build-inputs "openexr")
                             "/include/OpenEXR"))
        #:phases
        (modify-phases %standard-phases
@@ -449,14 +452,14 @@ features include brush stabilizers, brush engines and wrap-around mode.")
 (define-public libkomparediff2
   (package
     (name "libkomparediff2")
-    (version "19.08.2")
+    (version "20.04.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kde/stable/applications/" version
+        (uri (string-append "mirror://kde/stable/release-service/" version
                             "/src/libkomparediff2-" version ".tar.xz"))
         (sha256
-         (base32 "1mvihd0xpkl8kryf5dvsfgpbgs9af8c9bzq8mmr74gfsvfb8ywy5"))))
+         (base32 "0m8m7sgpf2f4nxpaaymyvihlk0pcyblyd99mcbibrnyr5kzkzzdc"))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
@@ -481,7 +484,7 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public qca
   (package
     (name "qca")
-    (version "2.2.1")
+    (version "2.3.0")
     (source
       (origin
         (method url-fetch)
@@ -489,7 +492,7 @@ used in KDE development tools Kompare and KDevelop.")
                             "/qca-" version ".tar.xz"))
         (sha256
          (base32
-          "00kv1vsrc8fp556hm8s6yw3240vx3l4067q6vfxrb3gdwgcd45np"))))
+          "1mrj748yz1grgzmfbmffgjkpcqiaj1l3m4pbddwcj7dnl50yys0x"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -507,7 +510,7 @@ cards.")
 (define-public kpmcore
   (package
     (name "kpmcore")
-    (version "4.0.1")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -516,9 +519,7 @@ cards.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sslkwcj2cyrn7bpjdjdwikp1q8wrsxpsg2sxxd8hsairgy7ygh3"))
-              (patches (search-patches "kpmcore-fix-tests.patch"
-                                       "kpmcore-remove-broken-test.patch"))))
+                "0jsig7algmab9h0fb09my0axjqzw83zgscamhzl8931lribs6idm"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -566,20 +567,31 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "1.3.5")
+    (version "20.04.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kde/stable/kdeconnect/"
-                            version "/kdeconnect-kde-"
+        (uri (string-append "mirror://kde/stable/release-service/"
+                            version "/src/kdeconnect-kde-"
                             version ".tar.xz"))
         (sha256
          (base32
-          "02lr3xx5s2mgddac4n3lkgr7ppf1z5m6ajs90rjix0vs8a271kp5"))))
+          "1knhpjdbffw858dfd9kml91a02fkc0rcjydfavcyr79j9x8mv3bq"))))
     (build-system qt-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
-                           "-DLIBEXEC_INSTALL_DIR=libexec")
+                           "-DKDE_INSTALL_LIBEXECDIR=libexec")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'set-paths 'extend-CPLUS_INCLUDE_PATH
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; FIXME: <kcmutils_version.h> is not found during one
+                      ;; of the compilation steps without this hack.
+                      (setenv "CPLUS_INCLUDE_PATH"
+                              (string-append (assoc-ref inputs "kcmutils")
+                                             "/include/KF5:"
+                                             (or (getenv "CPLUS_INCLUDE_PATH")
+                                                 "")))
+                      #t)))
        #:tests? #f)) ; tests fail hard in our build environment
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -594,12 +606,17 @@ different notification systems.")
        ("ki18n" ,ki18n)
        ("kiconthemes" ,kiconthemes)
        ("kio" ,kio)
+       ("kirigami" ,kirigami)
        ("knotifications" ,knotifications)
+       ("kpeople" ,kpeople)
+       ("kpeoplevcard" ,kpeoplevcard)
        ("kwayland" ,kwayland)
        ("libfakekey" ,libfakekey)
+       ("pulseaudio-qt" ,pulseaudio-qt)
        ("qca" ,qca)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtx11extras" ,qtx11extras)))
     (home-page "https://community.kde.org/KDEConnect")
     (synopsis "Enable your devices to communicate with each other")
@@ -622,15 +639,15 @@ communicate with each other.  Here's a few things KDE Connect can do:
 (define-public kqtquickcharts
   (package
     (name "kqtquickcharts")
-    (version "19.08.2")
+    (version "20.04.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kde/stable/applications/"
+        (uri (string-append "mirror://kde/stable/release-service/"
                             version "/src/kqtquickcharts-" version ".tar.xz"))
         (sha256
          (base32
-          "1yy9fyd8y4g25ljdsbil19qdf4j3mzmzl489sx7rqpm3lfdzjh9k"))))
+          "1wxp35mf9zlpgzi4msdl86b2krdq2ipqw371gyx23r7j84vdyxi3"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -647,14 +664,14 @@ charts.")
 (define-public kcachegrind
   (package
     (name "kcachegrind")
-    (version "19.04.1")
+    (version "20.04.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://kde/stable/applications/" version
+              (uri (string-append "mirror://kde/stable/release-service/" version
                                   "/src/kcachegrind-" version ".tar.xz"))
               (sha256
                (base32
-                "1hhsk64yp6q2xh8j269j4wp9y24ggmii861r6gf02mj1mbn2p1jb"))))
+                "0fx17s6fj1pxl1mgfrqhchk8sihkbji1x8y3nhb1r0971wzd1nsc"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -689,14 +706,14 @@ Python, PHP, and Perl.")
 (define-public libkdegames
   (package
     (name "libkdegames")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://kde/stable/applications/" version
+      (uri (string-append "mirror://kde/stable/release-service/" version
                           "/src/libkdegames-" version ".tar.xz"))
       (sha256
-       (base32 "12dvkmjgbi8dp9y55zmx1pw3zr2i374c4vn3mfn9r31bf06dr701"))))
+       (base32 "1xsrrvhwjwi5aajcaxydmzc69i4yx6shs8ly8vr85njc188ycg13"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))
@@ -735,14 +752,14 @@ Python, PHP, and Perl.")
 (define-public zeroconf-ioslave
   (package
     (name "zeroconf-ioslave")
-    (version "19.08.3")
+    (version "20.04.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://kde/stable/applications/" version
+       (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/zeroconf-ioslave-" version ".tar.xz"))
        (sha256
-        (base32 "1vbi4kpyrk530q2dj8ql2i0gxjybdbmkqpl8vkhrihl7r7f0xc5p"))))
+        (base32 "1qck5jyc4psslpibhki8sz8aj0hsnx8z791vzyn10lmdzn71vx8c"))))
     (build-system qt-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)))

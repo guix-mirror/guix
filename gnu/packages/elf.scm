@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -38,7 +38,9 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26))
 
 (define-public elfutils
   (package
@@ -67,10 +69,11 @@
                                               (assoc-ref %outputs "out")
                                               "/lib"))
 
-       ;; Disable tests on MIPS (without changing
+       ;; Disable tests on MIPS and PowerPC (without changing
        ;; the arguments list on other systems).
-       ,@(if (string-prefix? "mips" (or (%current-target-system)
-                                        (%current-system)))
+       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                              (%current-system)))
+                  '("mips" "powerpc"))
              '(#:tests? #f)
              '())
 
@@ -109,14 +112,14 @@ object or archive file), @command{eu-strip} (for discarding symbols),
   (package
     (name "libabigail")
     (home-page "https://sourceware.org/libabigail/")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceware.org/pub/libabigail/"
                                   "libabigail-" version ".tar.gz"))
               (sha256
                (base32
-                "04j07lhvwbp6qp8pdwbf7iqnr7kgpabmqylsw4invpmzwnyp6g6g"))))
+                "0bf8w01l6wm7mm4clfg5rqi30m1ws11qqa4bp2vxghfwgi9ai8i7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static"

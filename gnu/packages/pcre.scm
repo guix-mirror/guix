@@ -89,14 +89,14 @@ POSIX regular expression API.")
 (define-public pcre2
   (package
     (name "pcre2")
-    (version "10.34")
+    (version "10.35")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcre/pcre2/"
                                   version "/pcre2-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jlqnzcz2yi70dm40wyfa9w8is9z2kh4dl8zjnv3vqd9mgzp7i3l"))))
+                "04s6kmk9qdd4rjz477h547j4bx7hfz0yalpvrm381rqc5ghaijww"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)

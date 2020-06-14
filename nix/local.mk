@@ -175,6 +175,7 @@ etc/guix-%.service: etc/guix-%.service.in	\
 	       "$<" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
+# The service script for sysvinit.
 sysvinitservicedir = $(sysconfdir)/init.d
 nodist_sysvinitservice_DATA = etc/init.d/guix-daemon
 

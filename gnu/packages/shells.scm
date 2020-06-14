@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,15 +64,14 @@
 (define-public dash
   (package
     (name "dash")
-    (version "0.5.10.2")
+    (version "0.5.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://gondor.apana.org.au/~herbert/dash/files/"
                            "dash-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wb0bwmqc661hylqcfdp7l7x12myw3vpqk513ncyqrjwvhckjriw"))
+        (base32 "1jwilfsy249d3q7fagg1ga4bgc2bg1fzw63r2nan0m77bznsdnad"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -441,8 +441,16 @@ history mechanism, job control and a C-like syntax.")
                (base32
                 "09yyaadq738zlrnlh1hd3ycj1mv3q5hh4xl1ank70mjnqm6bbi6w"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre"
-                                     "--enable-maildir-support")
+    (arguments `(#:configure-flags
+                 `("--with-tcsetpgrp"
+                  "--enable-pcre"
+                  "--enable-maildir-support"
+                  ;; share/zsh/site-functions isn't populated
+                  "--disable-site-fndir"
+                  ,(string-append
+                    "--enable-additional-fpath="
+                    "/usr/local/share/zsh/site-functions," ; for foreign OS
+                    "/run/current-system/profile/share/zsh/site-functions"))
                  #:phases
                  (modify-phases %standard-phases
                    (add-before 'configure 'fix-sh
@@ -493,21 +501,31 @@ ksh, and tcsh.")
 (define-public xonsh
   (package
     (name "xonsh")
-    (version "0.6.2")
+    (version "0.9.18")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "xonsh" version))
         (sha256
           (base32
-            "0c2bbmdg0n10q54vq9k1z5n53l0mh1hb1q5xprfhilvrbr6hlcwr"))
+            "1h4rrwzwiwkyi9p49sjn97rl39fqq2r23hchzsw0s3fcwa7m8fkj"))
         (modules '((guix build utils)))
         (snippet
          `(begin
-            ;; Delete bundled ply.
+            ;; Delete bundled PLY.
             (delete-file-recursively "xonsh/ply")
-            (substitute* '("setup.py")
-              (("'xonsh\\.ply\\.ply',") ""))
+            (substitute* "setup.py"
+              (("\"xonsh\\.ply\\.ply\",") ""))
+            ;; Use our properly packaged PLY instead.
+            (substitute* (list "setup.py"
+                               "tests/test_lexer.py"
+                               "xonsh/__amalgam__.py"
+                               "xonsh/lexer.py"
+                               "xonsh/parsers/base.py"
+                               "xonsh/xonfig.py")
+              (("from xonsh\\.ply\\.(.*) import" _ module)
+               (format #f "from ~a import" module))
+              (("from xonsh\\.ply import") "import"))
             #t))))
     (build-system python-build-system)
     (arguments
@@ -590,8 +608,9 @@ operating system.")
            "1z16qwix8z6a40fskdgxsibkqgdrp4q6ncp4n6hnv4r9iihy2d8r"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ;No tests are included
-         #:make-flags (list "CC=gcc")
+       `(#:tests? #f                    ; no tests are included
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target)))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
@@ -783,47 +802,44 @@ Shell (pdksh).")
 (define-public oil
   (package
     (name "oil")
-    (version "0.7.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.oilshell.org/download/oil-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "12c9s462879adb6mwd3fqafk0dnqsm16s18rhym6cmzfzy8v8zm3"))))
+    ;; https://www.oilshell.org/blog/2020/04/release-0.8.pre4.html#comment-on-version-numbering
+    (version "0.8.pre5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.oilshell.org/download/oil-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "02llxx10izxpv1y32qn8k6r0y7al01rzxjirc8h6x8nd9kiaqknl"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ; the tests are not distributed in the tarballs
-       #:strip-binaries? #f ; the binaries cannot be stripped
+     `(#:strip-binaries? #f             ; strip breaks the binary
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-compiler-invocation
-           (lambda _
-             (substitute* "configure"
-               ((" cc ") " gcc "))
-             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (setenv "CC" "gcc")
-               ;; The configure script doesn't recognize CONFIG_SHELL.
-               (setenv "CONFIG_SHELL" (which "sh"))
+               (substitute* "configure"
+                 ((" cc ") " $CC "))
                (invoke "./configure" (string-append "--prefix=" out)
                        "--with-readline"))))
-         (add-before 'install 'make-destination
+         (replace 'check
+           ;; The tests are not distributed in the tarballs but upstream
+           ;; recommends running this smoke test.
+           ;; https://github.com/oilshell/oil/blob/release/0.8.pre5/INSTALL.txt#L38-L48
            (lambda _
-             ;; The build scripts don't create the destination directory.
-             (mkdir-p (string-append (assoc-ref %outputs "out") "/bin")))))))
+             (let* ((oil "_bin/oil.ovm"))
+               (invoke/quiet oil "osh" "-c" "echo hi")
+               (invoke/quiet oil "osh" "-n" "configure")))))))
     (inputs
      `(("readline" ,readline)))
-    (synopsis "Bash-compatible Unix shell")
-    (description "Oil is a Unix / POSIX shell, compatible with Bash.  It
-implements the Oil language, which is a new shell language to which Bash can be
-automatically translated.  The Oil language is a superset of Bash.  It also
-implements the OSH language, a statically-parseable language based on Bash as it
-is commonly written.")
-    (home-page "https://www.oilshell.org/")
-    (license (list psfl ; The Oil sources include a patched Python 2 source tree
+    (home-page "https://www.oilshell.org")
+    (synopsis "Programming language and Bash-compatible Unix shell")
+    (description "Oil is a programming language with automatic translation for
+Bash.  It includes osh, a Unix/POSIX shell that runs unmodified Bash
+scripts.")
+    (license (list psfl                 ; tarball includes python2.7
                    asl2.0))))
 
 (define-public oil-shell

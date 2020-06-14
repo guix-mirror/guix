@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
+;;; Copyright © 2019 Léo Le Bouter <lle-bout@zaclys.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,14 +152,14 @@ built for SYSTEM."
                    (format #f (G_ "could not find bootstrap binary '~a' \
 for system '~a'")
                            program system))))))
-        ((sha256)
+        ((bv)
          (origin
            (method url-fetch/executable)
            (uri (map (cute string-append <>
                            (bootstrap-executable-file-name system program))
                      %bootstrap-executable-base-urls))
            (file-name program)
-           (sha256 sha256)))))))
+           (hash (content-hash bv sha256))))))))
 
 
 ;;;
@@ -285,6 +286,7 @@ or false to signal an error."
         ((string=? system "i686-gnu") "/lib/ld.so.1")
         ((string=? system "aarch64-linux") "/lib/ld-linux-aarch64.so.1")
         ((string=? system "powerpc-linux") "/lib/ld.so.1")
+        ((string=? system "powerpc64-linux") "/lib/ld64.so.1")
         ((string=? system "powerpc64le-linux") "/lib/ld64.so.2")
         ((string=? system "alpha-linux") "/lib/ld-linux.so.2")
         ((string=? system "s390x-linux") "/lib/ld64.so.1")

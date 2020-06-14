@@ -111,7 +111,7 @@ release/xsl/current")
               ("docbook-xsl" ,docbook-xsl)
               ("libxml2" ,libxml2)
               ("libxslt" ,libxslt)))
-    (home-page "http://asciidoc.org/")
+    (home-page "https://asciidoc.org/")
     (synopsis "Text-based document generation system")
     (description
      "AsciiDoc is a text document format for writing notes, documentation,

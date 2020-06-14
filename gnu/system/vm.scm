@@ -141,7 +141,7 @@
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
-                                             (system (%current-system)) target
+                                             (system (%current-system))
                                              (linux linux-libre)
                                              initrd
                                              (qemu qemu-minimal)
@@ -226,10 +226,11 @@ substitutable."
 
               (let* ((native-inputs
                       '#+(list qemu (canonical-package coreutils)))
-                     (linux   (string-append #$linux "/"
-                                             #$(system-linux-image-file-name)))
-                     (initrd  #$initrd)
-                     (loader  #$loader)
+                     (linux   (string-append
+                               #+linux "/"
+                               #+(system-linux-image-file-name system)))
+                     (initrd  #+initrd)
+                     (loader  #+loader)
                      (graphs  '#$(match references-graphs
                                    (((graph-files . _) ...) graph-files)
                                    (_ #f)))
@@ -249,8 +250,6 @@ substitutable."
                                   #:memory-size #$memory-size
                                   #:make-disk-image? #$make-disk-image?
                                   #:single-file-output? #$single-file-output?
-                                  #:target-arm32? #$(check target-arm32?)
-                                  #:target-aarch64? #$(check target-aarch64?)
                                   #:disk-image-format #$disk-image-format
                                   #:disk-image-size size
                                   #:references-graphs graphs))))))
@@ -258,7 +257,7 @@ substitutable."
     (gexp->derivation name builder
                       ;; TODO: Require the "kvm" feature.
                       #:system system
-                      #:target target
+                      #:target #f             ;EXP is always executed natively
                       #:env-vars env-vars
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs
@@ -318,11 +317,27 @@ system that is passed to 'populate-root-file-system'."
          (local-file (search-path %load-path
                                   "guix/store/schema.sql"))))
 
+  (define preserve-target
+    (if target
+        (lambda (obj)
+          (with-parameters ((%current-target-system target))
+            obj))
+        identity))
+
+  (define inputs*
+    (map (match-lambda
+           ((name thing)
+            `(,name ,(preserve-target thing)))
+           ((name thing output)
+            `(,name ,(preserve-target thing) ,output)))
+         inputs))
+
   (expression->derivation-in-linux-vm
    name
    (with-extensions gcrypt-sqlite3&co
      (with-imported-modules `(,@(source-module-closure '((gnu build vm)
                                                          (gnu build bootloader)
+                                                         (gnu build hurd-boot)
                                                          (guix store database)
                                                          (guix build utils))
                                                        #:select? not-config?)
@@ -330,9 +345,10 @@ system that is passed to 'populate-root-file-system'."
        #~(begin
            (use-modules (gnu build bootloader)
                         (gnu build vm)
+                        ((gnu build hurd-boot)
+                         #:select (make-hurd-device-nodes))
                         ((gnu build linux-boot)
-                         #:select (make-essential-device-nodes
-                                   make-hurd-device-nodes))
+                         #:select (make-essential-device-nodes))
                         (guix store database)
                         (guix build utils)
                         (srfi srfi-26)
@@ -346,7 +362,7 @@ system that is passed to 'populate-root-file-system'."
            (setlocale LC_ALL "en_US.utf8")
 
            (let ((inputs
-                  '#$(append (list parted e2fsprogs dosfstools)
+                  '#+(append (list parted e2fsprogs dosfstools)
                              (map canonical-package
                                   (list sed grep coreutils findutils gawk))))
 
@@ -356,7 +372,7 @@ system that is passed to 'populate-root-file-system'."
                   '#$(map (match-lambda
                             ((name thing) thing)
                             ((name thing output) `(,thing ,output)))
-                          inputs)))
+                          inputs*)))
 
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
@@ -368,7 +384,7 @@ system that is passed to 'populate-root-file-system'."
                                  #:closures graphs
                                  #:copy-closures? #$copy-inputs?
                                  #:register-closures? #$register-closures?
-                                 #:system-directory #$os
+                                 #:system-directory #$(preserve-target os)
 
                                  #:make-device-nodes
                                  #$(match device-nodes
@@ -423,18 +439,17 @@ system that is passed to 'populate-root-file-system'."
                                      #:partitions partitions
                                      #:grub-efi grub-efi
                                      #:bootloader-package
-                                     #$(bootloader-package bootloader)
-                                     #:bootcfg #$bootcfg-drv
+                                     #+(bootloader-package bootloader)
+                                     #:bootcfg #$(preserve-target bootcfg-drv)
                                      #:bootcfg-location
                                      #$(bootloader-configuration-file bootloader)
                                      #:bootloader-installer
-                                     #$(bootloader-installer bootloader)))))))
+                                     #+(bootloader-installer bootloader)))))))
    #:system system
-   #:target target
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
    #:disk-image-format disk-image-format
-   #:references-graphs inputs
+   #:references-graphs inputs*
    #:substitutable? substitutable?))
 
 (define* (system-docker-image os
@@ -751,6 +766,8 @@ environment with the store shared with the host.  MAPPINGS is a list of
 (define* (system-qemu-image/shared-store
           os
           #:key
+          (system (%current-system))
+          (target (%current-target-system))
           full-boot?
           (disk-image-size (* (if full-boot? 500 30) (expt 2 20))))
   "Return a derivation that builds a QEMU image of OS that shares its store
@@ -771,6 +788,8 @@ bootloader refers to: OS kernel, initrd, bootloader data, etc."
   ;; This is more than needed (we only need the kernel, initrd, GRUB for its
   ;; font, and the background image), but it's hard to filter that.
   (qemu-image #:os os
+              #:system system
+              #:target target
               #:bootcfg-drv bootcfg
               #:bootloader (bootloader-configuration-bootloader
                             (operating-system-bootloader os))
@@ -811,6 +830,8 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
 
 (define* (system-qemu-image/shared-store-script os
                                                 #:key
+                                                (system (%current-system))
+                                                (target (%current-target-system))
                                                 (qemu qemu)
                                                 (graphic? #t)
                                                 (memory-size 256)
@@ -834,6 +855,8 @@ it is mostly useful when FULL-BOOT?  is true."
   (mlet* %store-monad ((os ->  (virtualized-operating-system os mappings full-boot?))
                        (image  (system-qemu-image/shared-store
                                 os
+                                #:system system
+                                #:target target
                                 #:full-boot? full-boot?
                                 #:disk-image-size disk-image-size)))
     (define kernel-arguments
@@ -841,7 +864,8 @@ it is mostly useful when FULL-BOOT?  is true."
               #+@(operating-system-kernel-arguments os "/dev/vda1")))
 
     (define qemu-exec
-      #~(list (string-append #$qemu "/bin/" #$(qemu-command (%current-system)))
+      #~(list #+(file-append qemu "/bin/"
+                             (qemu-command (or target system)))
               #$@(if full-boot?
                      #~()
                      #~("-kernel" #$(operating-system-kernel-file os)
@@ -858,7 +882,7 @@ it is mostly useful when FULL-BOOT?  is true."
       #~(call-with-output-file #$output
           (lambda (port)
             (format port "#!~a~% exec ~a \"$@\"~%"
-                    #$(file-append bash "/bin/sh")
+                    #+(file-append bash "/bin/sh")
                     (string-join #$qemu-exec " "))
             (chmod port #o555))))
 
@@ -907,10 +931,11 @@ FORWARDINGS is a list of host-port/guest-port pairs."
 
 (define-gexp-compiler (virtual-machine-compiler (vm <virtual-machine>)
                                                 system target)
-  ;; XXX: SYSTEM and TARGET are ignored.
   (match vm
     (($ <virtual-machine> os qemu graphic? memory-size disk-image-size ())
      (system-qemu-image/shared-store-script os
+                                            #:system system
+                                            #:target target
                                             #:qemu qemu
                                             #:graphic? graphic?
                                             #:memory-size memory-size
@@ -923,6 +948,8 @@ FORWARDINGS is a list of host-port/guest-port pairs."
                        "user,model=virtio-net-pci,"
                        (port-forwardings->qemu-options forwardings)))))
        (system-qemu-image/shared-store-script os
+                                              #:system system
+                                              #:target target
                                               #:qemu qemu
                                               #:graphic? graphic?
                                               #:memory-size memory-size

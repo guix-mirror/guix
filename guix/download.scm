@@ -141,8 +141,12 @@
        "http://www.eu.apache.org/dist/"
        "http://www.us.apache.org/dist/"
        "http://apache.belnet.be/"
+       "http://apache.mirror.iweb.ca/"
        "http://mirrors.ircam.fr/pub/apache/"
+       "http://apache.mirrors.ovh.net/ftp.apache.org/dist/"
        "http://apache-mirror.rbc.ru/pub/apache/"
+       "ftp://ftp.osuosl.org/pub/apache/"
+       "http://mirrors.ibiblio.org/apache/"
 
        ;; As a last resort, try the archive.
        "http://archive.apache.org/dist/")

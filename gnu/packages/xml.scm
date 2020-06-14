@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -817,16 +818,17 @@ server, collect the answer, and finally decoding the XML to Perl.")
                (base32
                 "1z1a88bpy64j42bbyl8acbfl3dn9iaz47gx6clkgy5sbn4kr0kgk"))))
     (build-system perl-build-system)
-    (arguments
-     `(#:tests? #f))                    ; tests require internet connection
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
        ("perl-uri" ,perl-uri)
        ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
-    (inputs
+    (propagated-inputs
      `(("perl-class-errorhandler" ,perl-class-errorhandler)
        ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-flexible" ,perl-datetime-format-flexible)
+       ("perl-datetime-format-iso8601" ,perl-datetime-format-iso8601)
        ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-natural" ,perl-datetime-format-natural)
        ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
        ("perl-feed-find" ,perl-feed-find)
        ("perl-html-parser" ,perl-html-parser)
@@ -1284,14 +1286,14 @@ spreadsheet.")
 (define-public xerces-c
   (package
     (name "xerces-c")
-    (version "3.1.4")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://apache/xerces/c/3/sources/"
                                   "xerces-c-" version ".tar.xz"))
               (sha256
                (base32
-                "0hb29c0smqlpxj0zdm09s983z5jx37szlliccnvgh0qq91wwqwwr"))))
+                "0jf1khvlssg31vkxbc25dxjxcxm56xb8nywj1sypj6hxzjlrkz0j"))))
     (build-system gnu-build-system)
     (arguments
      (let ((system (or (%current-target-system)

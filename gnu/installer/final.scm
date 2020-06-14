@@ -127,8 +127,8 @@ USERS."
                    (lambda (port)
                      (match (string-tokenize (read-string port) %not-nul)
                        ((argv0 _ ...)
-                        (unless (member (pk (basename argv0)) spare)
-                          (syslog "Killing process ~a~%" pid)
+                        (unless (member (basename argv0) spare)
+                          (syslog "Killing process ~a (~a)~%" pid argv0)
                           (kill pid SIGKILL)))
                        (_ #f))))))
               pids)))
@@ -146,12 +146,16 @@ be much appreciated."
   (catch #t
     (lambda ()
       (let ((tmp-dir "/remove"))
+        (syslog "Unmounting cow-store.~%")
+
         (mkdir-p tmp-dir)
         (mount (%store-directory) tmp-dir "" MS_MOVE)
 
         ;; The guix-daemon has possibly opened files from the cow-store,
         ;; restart it.
         (restart-service 'guix-daemon)
+
+        (syslog "Killing cow users.")
 
         ;; Kill all processes started while the cow-store was active (logins
         ;; on other TTYs for instance).
@@ -160,6 +164,7 @@ be much appreciated."
         ;; Try to umount the store overlay. Some process such as udevd
         ;; workers might still be active, so do some retries.
         (let loop ((try 5))
+          (syslog "Umount try ~a~%" (- 5 try))
           (sleep 1)
           (let ((umounted? (false-if-exception (umount tmp-dir))))
             (if (and (not umounted?) (> try 0))
@@ -203,7 +208,18 @@ or #f.  Return #t on success and #f on failure."
       (lambda ()
         (start-service 'cow-store (list (%installer-target-dir))))
       (lambda ()
-        (run-command install-command #:locale locale))
+        ;; If there are any connected clients, assume that we are running
+        ;; installation tests. In that case, dump the standard and error
+        ;; outputs to syslog.
+        (if (not (null? (current-clients)))
+            (with-output-to-file "/dev/console"
+              (lambda ()
+                (with-error-to-file "/dev/console"
+                  (lambda ()
+                    (setvbuf (current-output-port) 'none)
+                    (setvbuf (current-error-port) 'none)
+                    (run-command install-command #:locale locale)))))
+            (run-command install-command #:locale locale)))
       (lambda ()
         (stop-service 'cow-store)
         ;; Remove the store overlay created at cow-store service start.

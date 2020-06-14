@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016, 2017, 2018, 2019 Clément Lassieur <clement@lassieur.org>
@@ -21,6 +21,7 @@
 ;;; Copyright © 2020 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -440,7 +441,16 @@ authentication.")
                            version "/pidgin-" version ".tar.bz2"))
        (sha256
         (base32 "13vdqj70315p9rzgnbxjp9c51mdzf1l4jg1kvnylc4bidw61air7"))
-       (patches (search-patches "pidgin-add-search-path.patch"))))
+       (patches (search-patches "pidgin-add-search-path.patch"
+                                ;; Remove the snippet and bootstrapping
+                                ;; native-inputs together with this patch.
+                                "pidgin-libnm.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove stale generated file after applying pidgin-libnm.patch.
+           (delete-file "configure")
+           #t))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -448,7 +458,12 @@ authentication.")
        ("intltool" ,intltool)
        ("gconf" ,gconf)
        ("python" ,python-2)
-       ("doxygen" ,doxygen)))
+       ("doxygen" ,doxygen)
+
+       ;; For bootstrapping after applying pidgin-libnm.patch.
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (inputs
      `(("gtk+" ,gtk+-2)
        ("libgcrypt" ,libgcrypt)
@@ -551,14 +566,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0m5xf60r40pgbg9lyk56dafxj2hj149pn2wf8vzsp8xgq4kv5zcl"))))
+                "0hb1v167aa6gv5bcwz352l6b8gnd74ymjw92y4x882l099hzg59i"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -741,7 +756,7 @@ end-to-end encryption support; XML console.")
 (define-public gajim-omemo
   (package
     (name "gajim-omemo")
-    (version "2.6.29")
+    (version "2.7.4")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
@@ -749,7 +764,7 @@ end-to-end encryption support; XML console.")
                     version ".zip"))
               (sha256
                (base32
-                "1mif5qkrvxclqbqmq6njini4laznbs5nn82w2f1hkl8c1284dvgi"))))
+                "00zrj57n86c2m99n0swmmaws4f8zccbgbi8fknv6f9b1vif9jc8p"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -765,7 +780,7 @@ end-to-end encryption support; XML console.")
     (propagated-inputs
      `(("python-axolotl" ,python-axolotl)))
     (home-page
-     "https://dev.gajim.org/gajim/gajim-plugins/wikis/OmemoGajimPlugin")
+     "https://dev.gajim.org/gajim/gajim-plugins/-/wikis/OmemoGajimPlugin")
     (synopsis "Gajim OMEMO plugin")
     (description
      "This package provides the Gajim OMEMO plugin.  OMEMO is an XMPP
@@ -1017,7 +1032,7 @@ and prevent message loss.")
 (define-public c-toxcore
   (package
     (name "c-toxcore")
-    (version "0.2.9")
+    (version "0.2.12")
     (source
      (origin
        (method git-fetch)
@@ -1027,7 +1042,7 @@ and prevent message loss.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0aljr9hqybla6p61af6fdkv0x8gph7c2wacqqa9hq2z9w0p4fs5j"))))
+         "0a6sqpm00d2rn0nviqfz4gh9ck1wzci6rxgmqmcyryl5ca19ffvp"))))
     (arguments
      `(#:tests? #f)) ; FIXME: Testsuite seems to stay stuck on test 3. Disable
                      ; for now.
@@ -1106,14 +1121,15 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.16.3")
+    (version "1.17.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/qTox/qTox/archive/v"
-                                  version ".tar.gz"))
+              (method url-fetch/tarbomb)
+              (uri (string-append "https://github.com/qTox/qTox/releases"
+                                  "/download/v" version
+                                  "/v" version ".tar.gz"))
               (sha256
                (base32
-                "10n3cgw9xaqin9la8wpd8v83bkjmimicgbyp5ninsdgsrgky4hmq"))
+                "0fmr3a0apil3rl32247qv2pqslp3knpbj5vhprdq0ixsvifrlhmh"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -1125,6 +1141,13 @@ instant messenger with audio and video chat capabilities.")
                (("__DATE__") "\"\"")
                (("__TIME__") "\"\"")
                (("TIMESTAMP") "\"\""))
+             #t))
+         (add-after 'unpack 'disable-network-tests
+           (lambda _
+             ;; These tests require network access.
+             (substitute* "cmake/Testing.cmake"
+               (("auto_test\\(core core\\)") "# auto_test(core core)")
+               (("auto_test\\(net bsu\\)") "# auto_test(net bsu)"))
              #t))
          ;; Ensure that icons are found at runtime.
          (add-after 'install 'wrap-executable
@@ -1831,7 +1854,7 @@ QMatrixClient project.")
 (define-public mtxclient
   (package
     (name "mtxclient")
-    (version "0.2.1")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -1840,7 +1863,7 @@ QMatrixClient project.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0pycznrvj57ff6gbwfn1xj943d2dr4vadl79hii1z16gn0nzxpmj"))))
+        (base32 "0vf5xmn6yfi5lvskfgrdmnalvclzrapcrml92bj9qaa8vq8mfsf2"))))
     (arguments
      `(#:configure-flags
        (list
@@ -1851,7 +1874,7 @@ QMatrixClient project.")
          (add-before 'configure 'disable-network-tests
            (lambda _
              (substitute* "CMakeLists.txt"
-               (("add_test\\((BasicConnectivity|ClientAPI|MediaAPI|Encryption)")
+               (("add_test\\((BasicConnectivity|ClientAPI|MediaAPI|Encryption|Pushrules)")
                 "# add_test"))
              #t))
          (add-before 'configure 'set-home
@@ -1881,7 +1904,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
 (define-public nheko
   (package
     (name "nheko")
-    (version "0.6.4")
+    (version "0.7.1")
     (source
      (origin
        (method git-fetch)
@@ -1890,7 +1913,7 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "19dkc98l1q4070v6mli4ybqn0ip0za607w39hjf0x8rqdxq45iwm"))))
+        (base32 "12sxibbrn79sxkf9jrm7jrlj7l5vz15claxrrll7pkv9mv44wady"))))
     (arguments
      `(#:tests? #f                      ;no test target
        #:configure-flags
@@ -1920,8 +1943,11 @@ for the Matrix protocol.  It is built on to of @code{Boost.Asio}.")
        ("mtxclient" ,mtxclient)
        ("openssl" ,openssl)
        ("qtbase" ,qtbase)
-       ("qtsvg" ,qtsvg)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
        ("qtmultimedia" ,qtmultimedia)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
        ("spdlog" ,spdlog)
        ("tweeny" ,tweeny)
        ("zlib" ,zlib)))

@@ -554,11 +554,24 @@ specification.  These are the main features:
                      ("guile" ,guile-3.0)))
     (inputs `(("guile" ,guile-3.0)))))
 
-(define-public guile2.2-json
-  (package-for-guile-2.2 guile-json-3))
-
 (define-public guile3.0-json
   (deprecated-package "guile3.0-json" guile-json-3))
+
+(define-public guile-json-4
+  (package
+    (inherit guile-json-3)
+    (name "guile-json")
+    (version "4.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0f25qak4i57c3x0q9hlrll911l57bb8nz57rjkd02mn2fc2h3730"))))))
+
+(define-public guile2.2-json
+  (package-for-guile-2.2 guile-json-4))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -620,7 +633,7 @@ Guile's foreign function interface.")
 (define-public guile-sqlite3
   (package
     (name "guile-sqlite3")
-    (version "0.1.0")
+    (version "0.1.2")
     (home-page "https://notabug.org/guile-sqlite3/guile-sqlite3.git")
     (source (origin
               (method git-fetch)
@@ -629,18 +642,8 @@ Guile's foreign function interface.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
-              (file-name (string-append name "-" version "-checkout"))
-              (patches
-               (search-patches "guile-sqlite3-fix-cross-compilation.patch"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Allow builds with Guile 3.0.
-                  (substitute* "configure.ac"
-                    (("^GUILE_PKG.*")
-                     "GUILE_PKG([3.0 2.2 2.0])\n"))
-                  #t))))
+                "1nryy9j3bk34i0alkmc9bmqsm0ayz92k1cdf752mvhyjjn8nr928"))
+              (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

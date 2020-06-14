@@ -26,7 +26,7 @@
   #:use-module (guix monads)
   #:use-module ((guix utils) #:select (substitute-keyword-arguments))
   #:use-module ((guix build utils) #:select (mkdir-p))
-  #:use-module (gcrypt hash)
+  #:use-module ((gcrypt hash) #:hide (sha256))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)

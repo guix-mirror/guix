@@ -6,7 +6,7 @@
 ;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
-;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2018, 2019, 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
@@ -19,6 +19,7 @@
 ;;; Copyright © 2020 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2020 Tom Zander <tomz@freedommail.ch>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,23 +173,22 @@ line client and a client based on Qt.")
 (define-public homebank
   (package
     (name "homebank")
-    (version "5.2.8")
+    (version "5.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://homebank.free.fr/public/homebank-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13ampiv68y30kc0p2560g3yz8whqpwnidfcnb9lndv93b9ca767y"))))
+                "0bkjvd819kw9cwmr3macggbg8yil3yc8v2za8pjrl6g746s89kn6"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("libofx" ,libofx)
        ("libsoup" ,libsoup)))
-    (arguments
-     `(#:configure-flags (list "-without-ofx"))) ; libofx is not available yet
     (home-page "http://homebank.free.fr/")
     (synopsis "Graphical personal accounting application")
     (description "HomeBank allows you to manage your personal accounts at
@@ -475,7 +475,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
 (define-public electron-cash
   (package
     (name "electron-cash")
-    (version "4.0.14")
+    (version "4.0.15")
     (source
      (origin
        (method git-fetch)
@@ -484,7 +484,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dp7cj1185h6xfz6jzh0iq58zvg3wq9hl96bkgxkf5h4ygni2vm6"))))
+        (base32 "0bvj64fdxpi0dbivhgv509kqq503zjp7r7xckl8q5c48j5h1zik2"))))
     (build-system python-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -547,7 +547,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.15.0.5")
+    (version "0.16.0.0")
     (source
      (origin
        (method git-fetch)
@@ -568,7 +568,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "06zzwa0y8ic6x3y2fy501788r51p4klanyvmm76ywrwf087njlkv"))))
+         "0x74h5z0nxxxip97ibc854pqmrgd8r4d6w62m424f66i8gbzfskh"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -666,7 +666,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.15.0.4")
+    (version "0.16.0.0")
     (source
      (origin
        (method git-fetch)
@@ -676,14 +676,16 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "12m5fgnxkr11q2arx1m5ccpxqm5ljcvm6l547dwqn297zs5jim4z"))))
+         "06vdrsj5y9k0zn32hspyxc7sw1kkyrvi3chzkdbnxk9jvyj8k4ld"))))
     (build-system qt-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("monero-source" ,(package-source monero))
+       ("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("hidapi" ,hidapi)
+       ("libgcrypt" ,libgcrypt)
        ("libsodium" ,libsodium)
        ("libunwind" ,libunwind)
        ("libusb" ,libusb)
@@ -705,7 +707,16 @@ the Monero command line client and daemon.")
      `(#:tests? #f ; No tests
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-makefile-vars
+         (add-after 'unpack 'get-monero-extra-files
+           ;; Some headers and GnuPG public keys of the monero package source
+           ;; code are required to build the GUI.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "tar" "-xv" "--wildcards" "--strip-components=1"
+                     "-C" "monero"
+                     "-f" (assoc-ref inputs "monero-source")
+                     "*.asc" "*.h")
+             #t))
+         (add-after 'get-monero-extra-files 'fix-makefile-vars
            (lambda _
              (substitute* "src/zxcvbn-c/makefile"
                (("\\?=") "="))
@@ -1510,14 +1521,14 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
 (define-public flowee
   (package
     (name "flowee")
-    (version "2020.03.3")
+    (version "2020.04.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.com/FloweeTheHub/thehub/-/archive/"
                             version "/thehub-" version ".tar.gz"))
        (sha256
-         (base32 "0ksyh7ll3v9p8f5y15vcb2vkrpzb4h0ricag9j90ad4b4rfsnpjw"))))
+         (base32 "1vwvaxm3b71pfx8l4rrv06wqks6xdf2333w856b36s1bzvj53rhc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-Dbuild_tests=ON" "-Denable_gui=OFF")
@@ -1535,6 +1546,8 @@ like Flowee the Hub, which Fulcrum connects to over RPC.")
             (lambda _
               (substitute* "testing/CMakeLists.txt"
                 (("test_api") ""))
+              (substitute* "testing/CMakeLists.txt"
+                (("add_subdirectory\\(api\\)") ""))
               #t))
           (add-after 'configure 'set-build-info
             ;; Their genbuild.sh to generate a build.h fails in guix (no .git dir) .

@@ -34,6 +34,7 @@
 ;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -196,7 +197,7 @@ itself."))))
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.111")
+    (version "0.201")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -204,11 +205,10 @@ itself."))))
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "05hpnhihwm9sxlq1qn993g03pwkmpjbn0dvnba71r1gfjv0jp2w5"))))
+                "0qwqmkczqy09fdj8l11nr841ks0dwsydqg55qyms12m4yvjn87xn"))))
     (build-system meson-build-system)
     (native-inputs
-     `(("appstream-glib" ,appstream-glib)
-       ("gettext" ,gettext-minimal))) ;for msgfmt
+     `(("gettext" ,gettext-minimal)))   ; for msgfmt
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
     (description "The Cantarell font family is a contemporary Humanist
@@ -310,14 +310,14 @@ The Lato 2.010 family supports more than 100 Latin-based languages, over
 (define-public font-liberation
   (package
     (name "font-liberation")
-    (version "2.00.5")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/liberationfonts/liberation-fonts/"
-                           "files/2926169/liberation-fonts-ttf-" version ".tar.gz"))
+                           "files/4743886/liberation-fonts-ttf-" version ".tar.gz"))
        (sha256
-        (base32 "0kdjsbf0y716k1kv0i0ixdpvg7b9b8xkcsg6favaxdc7pshg0kzi"))))
+        (base32 "1jkg8j8jx7ffj13z5ilw7dids99dyypljm1pv06ycmghw1pw3qlf"))))
     (build-system font-build-system)
     (home-page "https://github.com/liberationfonts")
     (synopsis "Fonts compatible with Arial, Times New Roman, and Courier New")
@@ -678,7 +678,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "13.0.01")
+    (version "13.0.02")
     (source
      (origin
        (method url-fetch)
@@ -688,7 +688,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "1svzm3xahb2m8r79ha9gb1z3zlckykx9d87cghswj7dxn9868j4b"))))
+        (base32 "1fg908qadh14kfbpzqfj3vgzlxgx68sdlwhl2prz7arq5r45dami"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version
@@ -1068,7 +1068,7 @@ vector graphics.")
 (define-public font-tamzen
   (package
     (name "font-tamzen")
-    (version "1.11.4")
+    (version "1.11.5")
     (source
      (origin
        (method git-fetch)
@@ -1077,8 +1077,7 @@ vector graphics.")
               (commit (string-append "Tamzen-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "17kgmvg6q32mqhx9g44hjvzv0si0mnpprga4z7na930g2zdd8846"))))
+        (base32 "00x5fipzqimglvshhqwycdhaqslbvn3rl06jnswhyxfvz16ymj7s"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -1122,16 +1121,14 @@ later hand-tweaked with the gbdfed(1) editor:
 (define-public font-comic-neue
   (package
     (name "font-comic-neue")
-    ;; The ‘v2.3’ and ‘v2.4’ releases at https://github.com/crozynski/comicneue
-    ;; are equivalent.  The home page hosts 2.3, not 2.4, so we use that here.
-    (version "2.3")
+    (version "2.5")
     (source (origin
               (method url-fetch/zipbomb)
               (uri (string-append
                     "http://www.comicneue.com/comic-neue-" version ".zip"))
               (sha256
                (base32
-                "1695hkpd8kqnr2a88p8xs496slgzxjjkzpa9aa33ml3pnh7519zk"))))
+                "1ng0m0zs7qr91qy5ff0l01l27npr76961c6zfkxnhxf68zpwz5k4"))))
     (build-system font-build-system)
     (arguments
      `(#:phases
@@ -1249,6 +1246,34 @@ programming.  Iosevka is completely generated from its source code.")
            (lambda _
              (for-each make-file-writable (find-files "." ".*"))
              #t)))))))
+
+(define-public font-sarasa-gothic
+  (package
+    (name "font-sarasa-gothic")
+    (version "0.12.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/be5invis/Sarasa-Gothic"
+                           "/releases/download/v" version
+                           "/sarasa-gothic-ttc-" version ".7z"))
+       (sha256
+        (base32 "1g6k9d5lajchbhsh3g12fk5cgilyy6yw09fals9vc1f9wsqvac86"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'unpack
+                    (lambda* (#:key source #:allow-other-keys)
+                      (mkdir "source")
+                      (chdir "source")
+                      (invoke "7z" "x" source))))))
+    (native-inputs `(("p7zip" ,p7zip)))
+    (home-page "https://github.com/be5invis/Sarasa-Gothic")
+    (license license:silofl1.1)
+    (synopsis "Sarasa Gothic / 更纱黑体 / 更紗黑體 / 更紗ゴシック / 사라사 고딕")
+    (description
+     "Sarasa Gothic is a programming font based on Iosevka and Source Han Sans,
+most CJK characters are same height, and double width as ASCII characters.")))
 
 (define-public font-go
   (let ((commit "f03a046406d4d7fbfd4ed29f554da8f6114049fc")

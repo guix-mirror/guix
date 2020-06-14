@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2020 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -996,3 +997,43 @@ values (similar to @code{toEnum} but for any algebraic data type).  This
 can be used for SmallCheck-style systematic testing, QuickCheck-style
 random testing, and hybrids of the two.")
     (license license:bsd-3)))
+
+(define-public ghc-inspection-testing
+  (package
+    (name "ghc-inspection-testing")
+    (version "0.4.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/inspection-testing/"
+             "inspection-testing-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bppz99p6ix6hah8lbr9mapl2zxgmkg9i7h6hk8wq6zf54hwz3yp"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://github.com/nomeata/inspection-testing")
+    (synopsis "GHC plugin to do inspection testing")
+    (description
+     "Some carefully crafted libraries make promises to their users beyond
+functionality and performance.
+
+Examples are: Fusion libraries promise intermediate data structures to be
+eliminated.  Generic programming libraries promise that the generic
+implementation is identical to the hand-written one.  Some libraries may
+promise allocation-free or branch-free code.
+
+Conventionally, the modus operandi in all these cases is that the library
+author manually inspects the (intermediate or final) code produced by the
+compiler.  This is not only tedious, but makes it very likely that some change,
+either in the library itself or the surrounding eco-system, breaks the
+library's promised without anyone noticing.
+
+This package provides a disciplined way of specifying such properties, and
+have them checked by the compiler.  This way, this checking can be part of the
+ususal development cycle and regressions caught early.
+
+See the documentation in \"Test.Inspection\" or the project webpage for more
+examples and more information.")
+    (license license:expat)))

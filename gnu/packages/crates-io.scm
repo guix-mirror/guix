@@ -3,7 +3,7 @@
 ;;; Copyright © 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019, 2020 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019, 2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
@@ -18967,14 +18967,14 @@ rust.")
 (define-public rust-rpassword-4
   (package
     (name "rust-rpassword")
-    (version "4.0.3")
+    (version "4.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "rpassword" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0jnl8wzmdazkpzqs0vsw0n0vm0v4b8chqifd6s84nl9w2ybhx7ym"))))
+        (base32 "17z99xazhhbaczw0ib1vnnq450j0zacdn8b2zcbdir68sdbicdwr"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
@@ -20380,7 +20380,7 @@ proven statistical guarantees.")
 (define-public rust-serde-bytes-0.11
   (package
     (name "rust-serde-bytes")
-    (version "0.11.3")
+    (version "0.11.5")
     (source
      (origin
        (method url-fetch)
@@ -20388,8 +20388,7 @@ proven statistical guarantees.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "1bl45kf3c71xclv7wzk5525nswm4bgsnjd3s1s15f4k2a8whfnij"))))
+        (base32 "1fcb6sw8wkrj4ylm118wkb31hw124nkjnqyhbgqnd8w85zfhgbhn"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -20400,8 +20399,7 @@ proven statistical guarantees.")
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/serde-rs/bytes")
-    (synopsis
-     "Handle of integer arrays and vectors for Serde")
+    (synopsis "Handle integer arrays and vectors for Serde")
     (description
      "Optimized handling of @code{&[u8]} and @code{Vec<u8>} for Serde.")
     (license (list license:expat license:asl2.0))))
@@ -23747,14 +23745,14 @@ in Rust.")
 (define-public rust-tokio-0.2
   (package
     (name "rust-tokio")
-    (version "0.2.18")
+    (version "0.2.21")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "tokio" version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "04v7rfkrlr8cx30ygy0n45skf6pdbif0zisn9a5xrdnjfb81dvrl"))))
+        (base32 "0n1dxsjv9fxv3kmr3nh4n8v8pqckwgdlls942msysavhp4kzm6fh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
@@ -25681,15 +25679,14 @@ designed for reexporting.")
 (define-public rust-version-check-0.9
   (package
     (name "rust-version-check")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "version_check" version))
         (file-name (string-append name "-" version ".crate"))
         (sha256
-         (base32
-          "1kikqlnggii1rvnxrbls55sc46lxvinz5k3giscgncjj4p87b1q7"))))
+         (base32 "1vbaqdf802qinsq8q20w8w0qn2pv0rkq5p73ijcblrwxcvjp5adm"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/SergioBenitez/version_check")
     (synopsis "Check that the installed rustc meets some version requirements")
@@ -27435,7 +27432,7 @@ to XDG Base Directory specification")
 (define-public rust-xml-rs-0.8
   (package
     (name "rust-xml-rs")
-    (version "0.8.1")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -27444,7 +27441,14 @@ to XDG Base Directory specification")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0c905wsmk995xypxljpxzq6vv660r1pzgyrpsfiz13kw3hf0dzcs"))))
+         "12ndxyhzxw2zdr76ql8nfdwb2vwhvdkrxwk4pbjafqfglmjv0zdh"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; 'doctest' isn't stable until rust-1.40
+           (substitute* "src/lib.rs"
+             (("\\(doctest") "(test"))
+           #t))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
@@ -27478,22 +27482,20 @@ to XDG Base Directory specification")
 (define-public rust-yaml-rust-0.4
   (package
     (name "rust-yaml-rust")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "yaml-rust" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0ka3qhqc5lvk3hz14wmsj32jhmh44blcbfrx5hfxli2gg38kv4k5"))))
+        (base32 "038byay0dxsz6isckviz4qshfpyjqmyvda7pq96i6d53y4ickw1r"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
        (("rust-linked-hash-map" ,rust-linked-hash-map-0.5))
        #:cargo-development-inputs
-       (("rust-quickcheck" ,rust-quickcheck-0.7))))
+       (("rust-quickcheck" ,rust-quickcheck-0.9))))
     (home-page "https://chyh1990.github.io/yaml-rust/")
     (synopsis "The missing YAML 1.2 parser for rust")
     (description

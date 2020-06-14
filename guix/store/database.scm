@@ -99,27 +99,76 @@ create it and initialize it as a new database."
 ;; XXX: missing in guile-sqlite3@0.1.0
 (define SQLITE_BUSY 5)
 
-(define (call-with-transaction db proc)
-  "Start a transaction with DB (make as many attempts as necessary) and run
-PROC.  If PROC exits abnormally, abort the transaction, otherwise commit the
-transaction after it finishes."
+(define (call-with-SQLITE_BUSY-retrying thunk)
+  "Call THUNK, retrying as long as it exits abnormally due to SQLITE_BUSY
+errors."
   (catch 'sqlite-error
+    thunk
+    (lambda (key who code errmsg)
+      (if (= code SQLITE_BUSY)
+          (call-with-SQLITE_BUSY-retrying thunk)
+          (throw key who code errmsg)))))
+
+
+
+(define* (call-with-transaction db proc #:key restartable?)
+  "Start a transaction with DB and run PROC.  If PROC exits abnormally, abort
+the transaction, otherwise commit the transaction after it finishes.
+RESTARTABLE? may be set to a non-#f value when it is safe to run PROC multiple
+times.  This may reduce contention for the database somewhat."
+  (define (exec sql)
+    (with-statement db sql stmt
+      (sqlite-fold cons '() stmt)))
+  ;; We might use begin immediate here so that if we need to retry, we figure
+  ;; that out immediately rather than because some SQLITE_BUSY exception gets
+  ;; thrown partway through PROC - in which case the part already executed
+  ;; (which may contain side-effects!) might have to be executed again for
+  ;; every retry.
+  (exec (if restartable? "begin;" "begin immediate;"))
+  (catch #t
     (lambda ()
-      ;; We use begin immediate here so that if we need to retry, we
-      ;; figure that out immediately rather than because some SQLITE_BUSY
-      ;; exception gets thrown partway through PROC - in which case the
-      ;; part already executed (which may contain side-effects!) would be
-      ;; executed again for every retry.
-      (sqlite-exec db "begin immediate;")
-      (let ((result (proc)))
-        (sqlite-exec db "commit;")
-        result))
-    (lambda (key who error description)
-      (if (= error SQLITE_BUSY)
-          (call-with-transaction db proc)
-          (begin
-            (sqlite-exec db "rollback;")
-            (throw 'sqlite-error who error description))))))
+      (let-values ((result (proc)))
+        (exec "commit;")
+        (apply values result)))
+    (lambda args
+      ;; The roll back may or may not have occurred automatically when the
+      ;; error was generated. If it has occurred, this does nothing but signal
+      ;; an error. If it hasn't occurred, this needs to be done.
+      (false-if-exception (exec "rollback;"))
+      (apply throw args))))
+
+(define* (call-with-savepoint db proc
+                              #:optional (savepoint-name "SomeSavepoint"))
+  "Call PROC after creating a savepoint named SAVEPOINT-NAME.  If PROC exits
+abnormally, rollback to that savepoint.  In all cases, remove the savepoint
+prior to returning."
+  (define (exec sql)
+    (with-statement db sql stmt
+      (sqlite-fold cons '() stmt)))
+
+  (dynamic-wind
+    (lambda ()
+      (exec (string-append "SAVEPOINT " savepoint-name ";")))
+    (lambda ()
+      (catch #t
+        proc
+        (lambda args
+          (exec (string-append "ROLLBACK TO " savepoint-name ";"))
+          (apply throw args))))
+    (lambda ()
+      (exec (string-append "RELEASE " savepoint-name ";")))))
+
+(define* (call-with-retrying-transaction db proc #:key restartable?)
+  (call-with-SQLITE_BUSY-retrying
+   (lambda ()
+     (call-with-transaction db proc #:restartable? restartable?))))
+
+(define* (call-with-retrying-savepoint db proc
+                                       #:optional (savepoint-name
+                                                   "SomeSavepoint"))
+  (call-with-SQLITE_BUSY-retrying
+   (lambda ()
+     (call-with-savepoint db proc savepoint-name))))
 
 (define %default-database-file
   ;; Default location of the store database.
@@ -130,14 +179,37 @@ transaction after it finishes."
 If FILE doesn't exist, create it and initialize it as a new database."
   (call-with-database file (lambda (db) exp ...)))
 
+(define (sqlite-finalize stmt)
+  ;; As of guile-sqlite3 0.1.0, cached statements aren't reset when
+  ;; sqlite-finalize is invoked on them (see
+  ;; https://notabug.org/guile-sqlite3/guile-sqlite3/issues/12).  This can
+  ;; cause problems with automatically-started transactions, so we work around
+  ;; it by wrapping sqlite-finalize so that sqlite-reset is always called.
+  ;; This always works, because resetting a statement twice has no adverse
+  ;; effects.  We can remove this once the fixed guile-sqlite3 is widespread.
+  (sqlite-reset stmt)
+  ((@ (sqlite3) sqlite-finalize) stmt))
+
+(define (call-with-statement db sql proc)
+  (let ((stmt (sqlite-prepare db sql #:cache? #t)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (proc stmt))
+      (lambda ()
+        (sqlite-finalize stmt)))))
+
+(define-syntax-rule (with-statement db sql stmt exp ...)
+  "Run EXP... with STMT bound to a prepared statement corresponding to the sql
+string SQL for DB."
+  (call-with-statement db sql
+                       (lambda (stmt) exp ...)))
+
 (define (last-insert-row-id db)
   ;; XXX: (sqlite3) currently lacks bindings for 'sqlite3_last_insert_rowid'.
   ;; Work around that.
-  (let* ((stmt   (sqlite-prepare db "SELECT last_insert_rowid();"
-                                 #:cache? #t))
-         (result (sqlite-fold cons '() stmt)))
-    (sqlite-finalize stmt)
-    (match result
+  (with-statement db "SELECT last_insert_rowid();" stmt
+    (match (sqlite-fold cons '() stmt)
       ((#(id)) id)
       (_ #f))))
 
@@ -147,13 +219,11 @@ If FILE doesn't exist, create it and initialize it as a new database."
 (define* (path-id db path)
   "If PATH exists in the 'ValidPaths' table, return its numerical
 identifier.  Otherwise, return #f."
-  (let ((stmt (sqlite-prepare db path-id-sql #:cache? #t)))
+  (with-statement db path-id-sql stmt
     (sqlite-bind-arguments stmt #:path path)
-    (let ((result (sqlite-fold cons '() stmt)))
-      (sqlite-finalize stmt)
-      (match result
-        ((#(id) . _) id)
-        (_ #f)))))
+    (match (sqlite-fold cons '() stmt)
+      ((#(id) . _) id)
+      (_ #f))))
 
 (define update-sql
   "UPDATE ValidPaths SET hash = :hash, registrationTime = :time, deriver =
@@ -168,22 +238,41 @@ VALUES (:path, :hash, :time, :deriver, :size)")
 doesn't exactly have... they've got something close, but it involves deleting
 and re-inserting instead of updating, which causes problems with foreign keys,
 of course. Returns the row id of the row that was modified or inserted."
-  (let ((id (path-id db path)))
-    (if id
-        (let ((stmt (sqlite-prepare db update-sql #:cache? #t)))
-          (sqlite-bind-arguments stmt #:id id
-                                 #:deriver deriver
-                                 #:hash hash #:size nar-size #:time time)
-          (sqlite-fold cons '() stmt)
-          (sqlite-finalize stmt)
-          (last-insert-row-id db))
-        (let ((stmt (sqlite-prepare db insert-sql #:cache? #t)))
-          (sqlite-bind-arguments stmt
-                                 #:path path #:deriver deriver
-                                 #:hash hash #:size nar-size #:time time)
-          (sqlite-fold cons '() stmt)             ;execute it
-          (sqlite-finalize stmt)
-          (last-insert-row-id db)))))
+
+  ;; It's important that querying the path-id and the insert/update operation
+  ;; take place in the same transaction, as otherwise some other
+  ;; process/thread/fiber could register the same path between when we check
+  ;; whether it's already registered and when we register it, resulting in
+  ;; duplicate paths (which, due to a 'unique' constraint, would cause an
+  ;; exception to be thrown). With the default journaling mode this will
+  ;; prevent writes from occurring during that sensitive time, but with WAL
+  ;; mode it will instead arrange to return SQLITE_BUSY when a write occurs
+  ;; between the start of a read transaction and its upgrading to a write
+  ;; transaction (see https://sqlite.org/rescode.html#busy_snapshot).
+  ;; Experimentally, it seems this SQLITE_BUSY will ignore a busy_timeout and
+  ;; immediately return (makes sense, since waiting won't change anything).
+
+  ;; Note that when that kind of SQLITE_BUSY error is returned, it will keep
+  ;; being returned every time we try to upgrade the same outermost
+  ;; transaction to a write transaction.  So when retrying, we have to restart
+  ;; the *outermost* write transaction.  We can't inherently tell whether
+  ;; we're the outermost write transaction, so we leave the retry-handling to
+  ;; the caller.
+  (call-with-savepoint db
+    (lambda ()
+      (let ((id (path-id db path)))
+        (if id
+            (with-statement db update-sql stmt
+              (sqlite-bind-arguments stmt #:id id
+                                     #:deriver deriver
+                                     #:hash hash #:size nar-size #:time time)
+              (sqlite-fold cons '() stmt))
+            (with-statement db insert-sql stmt
+              (sqlite-bind-arguments stmt
+                                     #:path path #:deriver deriver
+                                     #:hash hash #:size nar-size #:time time)
+              (sqlite-fold cons '() stmt)))
+        (last-insert-row-id db)))))
 
 (define add-reference-sql
   "INSERT OR REPLACE INTO Refs (referrer, reference) VALUES (:referrer, :reference);")
@@ -191,15 +280,13 @@ of course. Returns the row id of the row that was modified or inserted."
 (define (add-references db referrer references)
   "REFERRER is the id of the referring store item, REFERENCES is a list
 ids of items referred to."
-  (let ((stmt (sqlite-prepare db add-reference-sql #:cache? #t)))
+  (with-statement db add-reference-sql stmt
     (for-each (lambda (reference)
                 (sqlite-reset stmt)
                 (sqlite-bind-arguments stmt #:referrer referrer
                                        #:reference reference)
-                (sqlite-fold cons '() stmt)       ;execute it
-                (last-insert-row-id db))
-              references)
-    (sqlite-finalize stmt)))
+                (sqlite-fold cons '() stmt))
+              references)))
 
 (define* (sqlite-register db #:key path (references '())
                           deriver hash nar-size time)
@@ -354,7 +441,7 @@ Write a progress report to LOG-PORT."
   (mkdir-p db-dir)
   (parameterize ((sql-schema schema))
     (with-database (string-append db-dir "/db.sqlite") db
-      (call-with-transaction db
+      (call-with-retrying-transaction db
           (lambda ()
             (let* ((prefix   (format #f "registering ~a items" (length items)))
                    (progress (progress-reporter/bar (length items)

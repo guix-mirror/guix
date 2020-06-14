@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -111,7 +111,7 @@ dictionaries, including personal ones.")
               (uri (string-append "mirror://gnu/aspell/dict/" dict-name
                                   "/" prefix dict-name "-"
                                   version ".tar.bz2"))
-              (sha256 sha256)))
+              (hash (content-hash sha256))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -163,7 +163,7 @@ dictionaries, including personal ones.")
          (method url-fetch)
          (uri (string-append "https://www.softcatala.org/pub/softcatala/aspell/"
                              version "/aspell6-ca-" version ".tar.bz2"))
-         (sha256 sha256)))
+         (hash (content-hash sha256))))
       (home-page "https://www.softcatala.org/pub/softcatala/aspell/"))))
 
 (define-public aspell-dict-de
@@ -264,7 +264,7 @@ dictionaries, including personal ones.")
          (uri (string-append "mirror://sourceforge/linguistico/"
                              "Dizionario%20italiano%20per%20Aspell/" version "/"
                              "aspell6-it-" version ".tar.bz2"))
-         (sha256 sha256)))
+         (hash (content-hash sha256))))
        (home-page
         "http://linguistico.sourceforge.net/pages/dizionario_italiano.html"))))
 

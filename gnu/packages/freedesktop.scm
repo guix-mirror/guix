@@ -185,14 +185,14 @@ freedesktop.org project.")
   ;; Updating this will rebuild over 700 packages through libinput-minimal.
   (package
     (name "libinput")
-    (version "1.15.2")
+    (version "1.15.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   "libinput-" version ".tar.xz"))
               (sha256
                (base32
-                "0ivpb4sghl80cs7jg3xrs53kckif6wy81cny3a8mry94nszky74p"))))
+                "15ww4jl3lcxyi8m8idg8canklbqv729gnwpkz7r98c1w8a7zq3m9"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Ddocumentation=false")
@@ -1084,7 +1084,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.24.4")
+    (version "1.24.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1092,7 +1092,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                     "libqmi-" version ".tar.xz"))
               (sha256
                (base32
-                "12licfsszr6qxpg9b2b04qm2glk8d42fcy32zr8jzwrgr7gbl5h3"))))
+                "0zshxqbm9ldybgrzh7pjmwmfjvvvfd0xh8qhgl8xiqdb9ply73r0"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgudev" ,libgudev)))
@@ -1115,7 +1115,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
 (define-public modem-manager
   (package
     (name "modem-manager")
-    (version "1.10.8")
+    (version "1.12.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1123,15 +1123,11 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
                     "ModemManager-" version ".tar.xz"))
               (sha256
                (base32
-                "16hnl0sdriqgv4v30mfs64mdl9rw7lsh802zlm3ggwxxil3p9qfb"))))
+                "1apq9camys2gaw6y6ic1ld20cncfwpmxnzvh4j5zkbbjpf5hbcxj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev")
-         ;; FIXME: Without this flag the build fails with "error: assignment
-         ;; from incompatible pointer type" whenever the return value of
-         ;; "g_object_ref" is assigned to "ctx->self".
-         "--disable-more-warnings")))
+       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev"))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)

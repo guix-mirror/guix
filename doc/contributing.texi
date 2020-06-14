@@ -501,7 +501,7 @@ It is a good idea to strip commit identifiers in the @code{version}
 field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
 aesthetics have a role to play here) as well as problems related to OS
 limits such as the maximum shebang length (127 bytes for the Linux
-kernel.)  It is best to use the full commit identifiers in
+kernel).  It is best to use the full commit identifiers in
 @code{origin}s, though, to avoid ambiguities.  A typical package
 definition may look like this:
 
@@ -938,7 +938,7 @@ your @code{operating-system} configuration:
 @lisp
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
-   (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))
+   (platforms (lookup-qemu-platforms "arm" "aarch64"))
    (guix-support? #t)))
 @end lisp
 
@@ -951,7 +951,6 @@ commands, respectively:
 @example
 guix build --system=armhf-linux --rounds=2 hello
 guix build --system=aarch64-linux --rounds=2 hello
-guix build --system=mips64el-linux --rounds=2 hello
 @end example
 
 @item
@@ -1277,6 +1276,14 @@ When pushing a commit on behalf of somebody else, please add a
 @code{Signed-off-by} line at the end of the commit log message---e.g.,
 with @command{git am --signoff}.  This improves tracking of who did
 what.
+
+When adding channel news entries (@pxref{Channels, Writing Channel
+News}), make sure they are well-formed by running the following command
+right before pushing:
+
+@example
+make check-channel-news
+@end example
 
 For anything else, please post to @email{guix-patches@@gnu.org} and
 leave time for a review, without committing anything (@pxref{Submitting

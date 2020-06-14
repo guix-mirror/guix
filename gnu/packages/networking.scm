@@ -456,7 +456,7 @@ more.")
                       #t)))))
     (inputs
      `(("zeromq" ,zeromq)))
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "High-level C bindings for ØMQ")
     (description
      "czmq provides bindings for the ØMQ core API that hides the differences
@@ -487,7 +487,7 @@ between different versions of ØMQ.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("zeromq" ,zeromq)))
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "C++ bindings for the ØMQ messaging library")
     (description
      "This package provides header-only C++ bindings for ØMQ.  The header
@@ -532,16 +532,16 @@ written in the C programming language.")
 (define-public librdkafka
   (package
     (name "librdkafka")
-    (version "0.9.1")
+    (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/edenhill/librdkafka/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/edenhill/librdkafka.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "10ldx7g7ymmg17snzx78vy4n8ma1rjx0agzi34g15j2fk867xmas"))))
+                "05mgrdzacn9kdpr68r5j0cvsvl54s52glnsc1ww9rcxx6p7hq1ly"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -589,14 +589,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "5.6")
+    (version "5.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "159r0hwax0qs5diayw2glxshqxrigk0v67hgmbq56ldddm91n3ya"))))
+                "0f9w0pqkvwn540rasmj6c8897g9gj2hmjnbkhpi9yf1s7jyvhkkj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -767,14 +767,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.2.3")
+    (version "3.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "1fpsfjrap7j84sy728yhcr2gad9nq3n5gq03mwrmxnc6ijwf81zh"))))
+        (base32 "1amqgn94g6h6cfnsccm2zb4c73pfv1qmzi1i6h1hnbcyhhg4czfi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1286,7 +1286,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.21")
+  (version "1.24")
   (source
     (origin
       (method url-fetch)
@@ -1297,7 +1297,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "0yknrsh0wqr9s43c0wf3dyzrsi2r7k0v75hay74gqkq850xy3vyx"))))
+       (base32 "0qyy5k4k0llqjjmkkfg96919gqybdc1z5fy9047n9imidjxc59hi"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
@@ -1343,13 +1343,13 @@ definitions and structure manipulators for Perl.")
 (define-public perl-net-dns-resolver-programmable
  (package
   (name "perl-net-dns-resolver-programmable")
-  (version "v0.003")
+  (version "0.003")
   (source
     (origin
       (method url-fetch)
       (uri (string-append
              "mirror://cpan/authors/id/J/JM/JMEHNLE/net-dns-resolver-programmable/"
-             "Net-DNS-Resolver-Programmable-" version ".tar.gz"))
+             "Net-DNS-Resolver-Programmable-v" version ".tar.gz"))
       (sha256
         (base32
           "1v3nl2kaj4fs55n1617n53q8sa3mir06898vpy1rq98zjih24h4d"))
@@ -1605,14 +1605,14 @@ HTTP proxies.")
 (define-public enet
   (package
     (name "enet")
-    (version "1.3.14")
+    (version "1.3.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://enet.bespin.org/download/"
                                   "enet-" version ".tar.gz"))
               (sha256
                (base32
-                "0w780zc6cy8yq4cskpphx0f91lzh51vh9lwyc5ll8hhamdxgbxlq"))))
+                "1yxxf9bkx6dx3j8j70fj17c05likyfibb1419ls74hp58qrzdgas"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1723,25 +1723,29 @@ the bandwidth, loss, and other parameters.")
 (define-public nethogs
   (package
     (name "nethogs")
-    (version "0.8.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/raboof/nethogs/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1k4x8r7s4dgcb6n2rjn28h2yyij92mwm69phncl3597cdxr954va"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (version "0.8.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raboof/nethogs")
+             (commit (string-append "v" version))))
+       (hash
+        (content-hash
+         (base32 "0sn1sdp86akwlm4r1vmkxjjl50c0xaisk91bbz57z7kcsaphxna9")
+         sha256))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
      `(("libpcap" ,libpcap)
        ("ncurses" ,ncurses)))
     (arguments
      `(#:make-flags `("CC=gcc"
-                      ,(string-append "PREFIX=" %output))
+                      ,(string-append "PREFIX=" %output)
+                      ,(string-append "VERSION=" ,version))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)))) ; No ./configure script.
+         (delete 'configure))))         ; no ./configure script.
     (home-page "https://github.com/raboof/nethogs")
     (synopsis "Per-process bandwidth monitor")
     (description "NetHogs is a small 'net top' tool for Linux.  Instead of
@@ -2117,33 +2121,28 @@ interface and a programmable text output for scripting.")
 (define-public libnet
   (package
     (name "libnet")
-    (version "1.2-rc3")
+    (version "1.2")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/sam-github/libnet")
-             (commit (string-append "libnet-" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://github.com/libnet/libnet/releases/download"
+                           "/v" version "/libnet-" version ".tar.gz"))
        (sha256
         (base32
-         "0cy8w4g5rv963v4p6iq3333kxgdddx2lywp70xf62553a25xhhs4"))))
+         "19ys9vxk6fg70yzzdxsphfr0rwzgxxhr9b3ykhpg7rfray0qd96a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'chdir
-           (lambda _ (chdir "libnet") #t))
          (add-before 'build 'build-doc
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "-C" "doc" "doc"
                     make-flags))))))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("doxygen" ,doxygen)))
-    (home-page "https://sourceforge.net/projects/libnet-dev/")
+     `(;; To build the documentation, Doxygen and Perl is required.
+       ("doxygen" ,doxygen)
+       ("perl" ,perl)))
+    (home-page "https://github.com/libnet/libnet")
     (synopsis "Framework for low-level network packet construction")
     (description
      "Libnet provides a fairly portable framework for network packet
@@ -2535,7 +2534,7 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.16")
+    (version "0.9.18")
     (source
      (origin
        (method git-fetch)
@@ -2544,11 +2543,12 @@ SNMP v3 using both IPv4 and IPv6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bind7ylgxs743vfdmpdrpp4iamy461bc3i7nxza91kj7hyyjz6h"))))
+        (base32 "0jg66jhhpv4c9340fsdp64hf9h253i8r81fknxa0gq241ripp3jn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags '("CC=gcc")
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
@@ -2607,7 +2607,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "5.2.0")
+    (version "6.0.6")
     (source
      (origin
        (method git-fetch)
@@ -2615,17 +2615,19 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool.git")
              (commit version)))
        (sha256
-        (base32 "0pg1pvg029gm4rj0fj5kcsjb32hixgn4cxsgiir7spkmacf1qm4q"))
+        (base32 "1b4d543y64ib92w9gcmiyjn5hz2vyjqmxk3f3yr1zk04fhw16gmf"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
-       (list "CC=gcc"
+       (list ,(string-append "CC=" (cc-for-target))
              (string-append "INSTALLDIR=" (assoc-ref %outputs "out") "/bin"))
        #:tests? #f                      ; no test suite
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))
+    (inputs
+     `(("openssl" ,openssl)))
     (home-page "https://github.com/ZerBea/hcxdumptool")
     (synopsis "Small tool to capture packets from wlan devices")
     (description
@@ -2897,14 +2899,14 @@ maximum extent possible.")
 (define-public batctl
   (package
    (name "batctl")
-   (version "2020.0")
+   (version "2020.1")
    (source
     (origin
      (method url-fetch)
      (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
                          version "/batctl-" version ".tar.gz"))
      (sha256
-      (base32 "01414ywhlb2b9ng9d5kd5rr1s7wzvi234j8hj6ra2spn92qykvv0"))))
+      (base32 "0fy252q1my3a57v6pfz8i97h6zv7v03di01dhwjkj47pqnx1rqm3"))))
    (inputs
     `(("libnl" ,libnl)))
    (native-inputs
@@ -2930,7 +2932,7 @@ module @code{batman-adv}, for Layer 2.")
 (define-public pagekite
   (package
     (name "pagekite")
-    (version "1.5.0.200327")
+    (version "1.5.2.200603")
     (source
      (origin
        (method git-fetch)
@@ -2939,7 +2941,7 @@ module @code{batman-adv}, for Layer 2.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vw7kjwxqd3qvm7kpxgjzl6797y0i1f16yfkfad84qpx2ij0gvdm"))))
+        (base32 "08rcyr54dssnpand6y26f8x9cjmd91hr44my08kxw70s5iqiwizv"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -3099,7 +3101,7 @@ cables.")
 (define-public haproxy
   (package
     (name "haproxy")
-    (version "2.1.3")
+    (version "2.1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.haproxy.org/download/"
@@ -3107,7 +3109,7 @@ cables.")
                                   "/src/haproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "0n8bw3d6gikr8c56ycrvksp1sl0b4yfzp19867cxkl3l0daqwrxv"))))
+                "1pyz4gckdn8982vpb1iiw9agwp2s5p8wc0nn1qh1ic0wq3lrnpg6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

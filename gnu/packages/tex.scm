@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
@@ -33,9 +33,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system qt)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system texlive)
   #:use-module (guix utils)
@@ -5916,8 +5916,11 @@ values (strings, macros, or numbers) pasted together.")
 
 (define-public biber
   (package
+    ;; Note: When updating Biber, make sure it matches our BibLaTeX version by
+    ;; checking the Biber/BibLaTeX compatibility matrix in the BibLaTeX manual
+    ;; at <https://ctan.org/pkg/biblatex>.
     (name "biber")
-    (version "2.11")
+    (version "2.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5930,7 +5933,7 @@ values (strings, macros, or numbers) pasted together.")
                                        "biber-sortinithash.patch"))
               (sha256
                (base32
-                "0qgkc1k9n36yfmndwz879pak6mjphld0p85lzn9g2ng0vhxsifzz"))))
+                "1g1hi6zvf2hmrjly1sidjaxy5440gfqm4p7p3n7kayshnjsmlskx"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -6113,75 +6116,49 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.3.3")
+    (version "2.3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.lyx.org/pub/lyx/stable/"
                                   (version-major+minor version) ".x/"
-                                  "lyx-" version ".tar.gz"))
+                                  "lyx-" version ".tar.xz"))
               (sha256
                (base32
-                "0j3xincwmsscfgv13g3z6h4kx1qfzgg8x71fs393akcdxsh2g07c"))
+                "0mv32s26igm0pd8vs7d2mk1240dpr83y0a2wyh3xz6b67ph0w157"))
               (modules '((guix build utils)))
               (snippet
                '(begin
                   (delete-file-recursively "3rdparty")
                   #t))))
-    (build-system cmake-build-system)
+    (build-system qt-build-system)
     (arguments
      `(#:configure-flags `("-DLYX_USE_QT=QT5"
                            "-DLYX_EXTERNAL_BOOST=1"
                            "-DLYX_INSTALL=1"
                            "-DLYX_RELEASE=1"
+                           "-DLYX_PROGRAM_SUFFIX=OFF"
                            ,(string-append "-DLYX_INSTALL_PREFIX="
-                                           (assoc-ref %outputs "out")
-                                           ;; Exact name and level is necessary.
-                                           "/lyx" ,(version-major+minor version)))
+                                           (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         ;; See ;; https://www.lyx.org/trac/changeset/3a123b90af838b08680471d87170c38e56787df9/lyxgit
-         (add-after 'unpack 'fix-compilation-with-boost-1.69
-           (lambda _
-             (substitute* "src/support/FileName.cpp"
-               (("^template struct boost::detail::crc_table_t.*") ""))
-             #t))
          (add-after 'unpack 'patch-python
            (lambda* (#:key inputs #:allow-other-keys)
-             (substitute* '("src/support/os.cpp")
+             (substitute* '("lib/configure.py"
+                            "src/support/ForkedCalls.cpp"
+                            "src/support/Systemcall.cpp"
+                            "src/support/os.cpp"
+                            "src/support/filetools.cpp")
                (("\"python ")
                 (string-append "\""
                                (assoc-ref inputs "python")
-                               "/bin/python ")))
+                               "/bin/python3 ")))
              #t))
-         (add-after 'patch-python 'patch-desktop-file
-           (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "lib/lyx.desktop.in"
-               (("Exec=")
-                (string-append "Exec="
-                               (assoc-ref outputs "out")
-                               "/")))
-             #t))
-         (add-before 'check 'setenv-check
+         (add-after 'unpack 'add-missing-test-file
            (lambda _
              ;; Create missing file that would cause tests to fail.
-             (with-output-to-file (string-append "../lyx-"
-                                                 ,version
-                                                 "/src/tests/check_layout.cmake")
+             (with-output-to-file "src/tests/check_layout.cmake"
                (const #t))
-             (setenv (string-append "LYX_DIR_"
-                                    (string-join
-                                      (string-split
-                                        ,(version-major+minor version) #\-)) "x")
-                     (string-append (getcwd) "/../lyx-" ,version "/lib"))
-             #t))
-         (add-after 'install 'install-symlinks
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p (string-append out "/bin"))
-               (symlink (string-append "../lyx" ,(version-major+minor version)
-                                       "/bin/lyx" ,(version-major+minor version))
-                        (string-append out "/bin/lyx" ,(version-major+minor version)))
-               #t))))))
+             #t)))))
     (inputs
      `(("boost" ,boost)
        ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
@@ -7303,7 +7280,7 @@ to what constitutes a good table in this context.  The package offers
                    (list "/doc/latex/csquotes/"
                          "/tex/latex/csquotes/")
                    (base32
-                    "15hgn37zg433skn7ijqs1kl2z56fhy29cjxn01b5pjrnrkdar4i4")
+                    "088gvi60d7sdl6fgg68fbz30fnpqc3yrpkx80sfw7vwgar3wm3av")
                    #:trivial? #t)))
     (package
       (inherit template)

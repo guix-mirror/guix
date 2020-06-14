@@ -233,7 +233,14 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.3.4")
+    (version "20.0.7")
+
+    ;; Mesa 20.0.5 through 20.0.7 has problems with some graphic drivers, so
+    ;; we need this newer version.
+    ;; https://gitlab.freedesktop.org/mesa/mesa/-/issues/2882
+    ;; https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/4861
+    (replacement mesa-20.0.8)
+
     (source
       (origin
         (method url-fetch)
@@ -245,7 +252,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "1r4giqq7q7zqbn23lbw7v5vswagxx8qj6ij2w8bsb697mvk6g90x"))
+          "0y517qpdg6v6dsdgzb365p03m30511sbyh8pq0mcvhvjwy7javpy"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -270,10 +277,9 @@ also known as DXTn or DXTC) for Mesa.")
         ,@(match (%current-system)
             ((or "x86_64-linux" "i686-linux")
              ;; Note: update the 'clang' input of mesa-opencl when bumping this.
-             `(("llvm" ,llvm-9)))
+             `(("llvm" ,llvm-10)))
             (_
              `()))
-        ("makedepend" ,makedepend)
         ("wayland" ,wayland)
         ("wayland-protocols" ,wayland-protocols)))
     (native-inputs
@@ -289,6 +295,7 @@ also known as DXTn or DXTC) for Mesa.")
         ("python" ,python-wrapper)
         ("python-mako" ,python-mako)
         ("which" ,(@ (gnu packages base) which))))
+    (outputs '("out" "bin"))
     (arguments
      `(#:configure-flags
        '(,@(match (%current-system)
@@ -347,32 +354,26 @@ also known as DXTn or DXTC) for Mesa.")
                   (guix build meson-build-system))
        #:phases
        (modify-phases %standard-phases
-         (add-after
-           'unpack 'patch-create_test_cases
-           (lambda _
-             (substitute* "src/intel/genxml/gen_pack_header.py"
-               (("/usr/bin/env python2") (which "python")))
-             #t))
          ,@(if (string-prefix? "i686" (or (%current-target-system)
                                           (%current-system)))
                ;; Disable new test from Mesa 19 that fails on i686.  Upstream
                ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
                `((add-after 'unpack 'disable-failing-test
                    (lambda _
-                     (substitute* "src/gallium/tests/unit/meson.build"
+                     (substitute* "src/util/tests/format/meson.build"
                        (("'u_format_test',") ""))
                      #t)))
                '())
-         (add-before
-           'configure 'fix-dlopen-libnames
+         (add-before 'configure 'fix-dlopen-libnames
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                ;; Remain agnostic to .so.X.Y.Z versions while doing
                ;; the substitutions so we're future-safe.
-               (substitute* "src/glx/dri_common.c"
-                 (("dlopen\\(\"libGL\\.so")
-                  (string-append "dlopen(\"" out "/lib/libGL.so")))
-               (substitute* "src/egl/drivers/dri2/egl_dri2.c"
+               (substitute* "src/glx/meson.build"
+                 (("-DGL_LIB_NAME=\"lib@0@\\.so\\.@1@\"")
+                  (string-append "-DGL_LIB_NAME=\"" out
+                                 "/lib/lib@0@.so.@1@\"")))
+               (substitute* "src/gbm/backends/dri/gbm_dri.c"
                  (("\"libglapi\\.so")
                   (string-append "\"" out "/lib/libglapi.so")))
                (substitute* "src/gbm/main/backend.c"
@@ -381,6 +382,26 @@ also known as DXTn or DXTC) for Mesa.")
                  ;; egl_gallium support.
                  (("\"gbm_dri\\.so")
                   (string-append "\"" out "/lib/dri/gbm_dri.so")))
+               #t)))
+         (add-after 'install 'split-outputs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "bin")))
+               ,@(match (%current-system)
+                   ((or "i686-linux" "x86_64-linux")
+                    ;; Install the Vulkan overlay control script to a separate
+                    ;; output to prevent a reference on Python, saving ~70 MiB
+                    ;; on the closure size.
+                    '((copy-recursively (string-append out "/bin")
+                                        (string-append bin "/bin"))
+                      (delete-file-recursively (string-append out "/bin"))))
+                   (_
+                    ;; XXX: On architectures without the Vulkan overlay layer
+                    ;; just create an empty file because outputs can not be
+                    ;; added conditionally.
+                    '((mkdir-p (string-append bin "/bin"))
+                      (call-with-output-file (string-append bin "/bin/.empty")
+                        (const #t)))))
                #t)))
          (add-after 'install 'symlinks-instead-of-hard-links
            (lambda* (#:key outputs #:allow-other-keys)
@@ -425,9 +446,23 @@ device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
-(define-public mesa-opencl
+;; Replacement package to fix <https://gitlab.freedesktop.org/mesa/mesa/-/issues/2863>.
+(define mesa-20.0.8
   (package
     (inherit mesa)
+    (version "20.0.8")
+    (source (origin
+              (inherit (package-source mesa))
+              (uri (list (string-append "https://mesa.freedesktop.org/archive/"
+                                        "mesa-" version ".tar.xz")
+                         (string-append "ftp://ftp.freedesktop.org/pub/mesa/"
+                                        "mesa-" version ".tar.xz")))
+              (sha256
+               (base32
+                "0v0bfh3ay07s6msxmklvwfaif0q02kq2yhy65fdhys49vw8c1w3c"))))))
+
+(define-public mesa-opencl
+  (package/inherit mesa
     (name "mesa-opencl")
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
@@ -437,12 +472,11 @@ from software emulation to complete hardware acceleration for modern GPUs.")
      `(("libclc" ,libclc)
        ,@(package-inputs mesa)))
     (native-inputs
-     `(("clang" ,clang-9)
+     `(("clang" ,clang-10)
        ,@(package-native-inputs mesa)))))
 
 (define-public mesa-opencl-icd
-  (package
-    (inherit mesa-opencl)
+  (package/inherit mesa-opencl
     (name "mesa-opencl-icd")
     (arguments
      (substitute-keyword-arguments (package-arguments mesa)
@@ -451,12 +485,12 @@ from software emulation to complete hardware acceleration for modern GPUs.")
                ,(delete "-Dgallium-opencl=standalone" flags)))))))
 
 (define-public mesa-headers
-  (package
-    (inherit mesa)
+  (package/inherit mesa
     (name "mesa-headers")
     (propagated-inputs '())
     (inputs '())
     (native-inputs '())
+    (outputs '("out"))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -664,6 +698,53 @@ OpenGL graphics API.")
      "A library for handling OpenGL function pointer management.")
     (license license:x11)))
 
+(define-public libglvnd
+  (package
+    (name "libglvnd")
+    (version "1.3.1")
+    (home-page "https://gitlab.freedesktop.org/glvnd/libglvnd")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mkzdzdxjxjl794rblq4mq33wmb8ikqmfswbqdbr8gw2kw4wlhdl"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Dx11=enabled")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-glx-tests
+                    (lambda _
+                      ;; This package is meant to be used alongside Mesa.
+                      ;; To avoid a circular dependency, disable tests that
+                      ;; require a running Xorg server.
+                      (substitute* "tests/meson.build"
+                        (("if with_glx")
+                         "if false"))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("xorgproto" ,xorgproto)))
+    (synopsis "Vendor-neutral OpenGL dispatch library")
+    (description
+     "libglvnd is a vendor-neutral dispatch layer for arbitrating OpenGL
+API calls between multiple vendors.  It allows multiple drivers from
+different vendors to coexist on the same filesystem, and determines which
+vendor to dispatch each API call to at runtime.
+
+Both GLX and EGL are supported, in any combination with OpenGL and OpenGL ES.")
+    ;; libglvnd is available under a custom X11-style license, and incorporates
+    ;; code with various other licenses.  See README.md for details.
+    (license (list (license:x11-style "file://README.md")
+                   license:x11
+                   license:expat))))
+
 (define-public soil
   (package
     (name "soil")
@@ -775,7 +856,7 @@ and visualizations.")
 (define-public gl2ps
   (package
     (name "gl2ps")
-    (version "1.4.0")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -783,15 +864,14 @@ and visualizations.")
              "http://geuz.org/gl2ps/src/gl2ps-"
              version ".tgz"))
        (sha256
-        (base32
-         "1qpidkz8x3bxqf69hlhyz1m0jmfi9kq24fxsp7rq6wfqzinmxjq3"))))
+        (base32 "1sgzv547h7hrskb9qd0x5yp45kmhvibjwj2mfswv95lg070h074d"))))
     (build-system cmake-build-system)
     (inputs
      `(("libpng" ,libpng)
        ("mesa" ,mesa)
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f))  ;; no tests
+     `(#:tests? #f))                    ; no tests
     (home-page "http://www.geuz.org/gl2ps/")
     (synopsis "OpenGL to PostScript printing library")
     (description "GL2PS is a C library providing high quality vector

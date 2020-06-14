@@ -90,7 +90,7 @@
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -99,7 +99,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13djibj3s7ig13c57ywy38pxy3qfmqihii2c0g15fy2h9q8xp1gx"))))
+                "0psq0f4s0s92bba6wwcf6b0j7i59b76svqxhvpavwv53yvhmmamn"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -673,15 +673,15 @@ eye-candy, customizable, and reasonably lightweight.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.7.0")
+    (version "3.7.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://launchpad.net/" name "/trunk/"
-                                  version "/+download/" name "-" version
-                                  ".tar.gz"))
+              (uri (string-append "https://launchpad.net/sakura/trunk/"
+                                  version "/+download/sakura-" version
+                                  ".tar.bz2"))
               (sha256
                (base32
-                "15gskj5yv5qs3cj4ps43735kfx2nzjlhq4dk9ghirl8lvhhxsm5m"))))
+                "12wjmckf03qbnm8cb7qma0980anzajn3l92rj2yr8hhafl74x6kj"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check phase
@@ -1036,7 +1036,7 @@ comfortably in a pager or editor.
 (define-public eternalterminal
   (package
     (name "eternalterminal")
-    (version "5.1.10")
+    (version "6.0.7")
     (source
       (origin
         (method git-fetch)
@@ -1045,7 +1045,7 @@ comfortably in a pager or editor.
                (commit (string-append "et-v" version))))
         (file-name (git-file-name name version))
        (sha256
-        (base32 "0jh89229bd9s82h3aj6faaybwr5xvnk8w2kgz47gq263pz021zpl"))))
+        (base32 "03pdspggqxkmz95qb96pig5x0xw18hy9a7ivszydr32ry6kxxx1h"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DBUILD_TEST=ON")
@@ -1055,12 +1055,6 @@ comfortably in a pager or editor.
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((tests (assoc-ref inputs "googletest")))
                (copy-recursively tests "external/googletest"))
-             #t))
-         (add-after 'install 'dont-provide-gtest-libraries
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (delete-file-recursively (string-append out "/include"))
-               (delete-file-recursively (string-append out "/lib")))
              #t)))))
     (inputs
      `(("gflags" ,gflags)

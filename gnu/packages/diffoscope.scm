@@ -70,163 +70,162 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "143"))
-    (package
-      (name "diffoscope")
-      (version version)
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                      (commit version)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0j58dqdk8ln8y0bcnfy37ljs37nkl56lzxqns396300ysln0qiwm"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    ;; setup.py mistakenly requires python-magic from PyPi, even
-                    ;; though the Python bindings of `file` are sufficient.
-                    ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
-                    (add-after 'unpack 'dependency-on-python-magic
-                      (lambda _
-                        (substitute* "setup.py"
-                          (("'python-magic',") ""))))
-                    ;; Patch in support for known tools
-                    (add-after 'unpack 'add-known-tools
-                      (lambda _
-                        (substitute* "diffoscope/external_tools.py"
-                          (("'debian': 'openssl'")
-                           "'debian': 'openssl', 'guix': 'openssl'"))))
-                    ;; This test is broken because our `file` package has a
-                    ;; bug in berkeley-db file type detection.
-                    (add-after 'unpack 'remove-berkeley-test
-                      (lambda _
-                        (delete-file "tests/comparators/test_berkeley_db.py")
-                        #t))
-                    ;; Test is dynamically generated and may have false
-                    ;; negatives with different ocaml versions.  Further
-                    ;; background in: https://bugs.debian.org/939386
-                    (add-after 'unpack 'remove-ocaml-test
-                      (lambda _
-                        (substitute* "tests/comparators/test_ocaml.py"
-                          (("def test_diff.differences.:")
-                           "def skip_test_diff(differences):"))
-                        #t))
-                    (add-after 'unpack 'skip-elf-tests
-                      ;; FIXME: libmix_differences test added in 125, and is
-                      ;; failing, need to explore why...
-                      (lambda _
-                        (substitute* "tests/comparators/test_elf.py"
-                          (("def test_libmix_differences.libmix_differences.:")
-                           "def skip_test_libmix_differences(libmix_differences):"))
-                        #t))
-                    (add-after 'unpack 'embed-tool-references
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "diffoscope/comparators/utils/compare.py"
-                          (("\\['xxd',")
-                           (string-append "['" (which "xxd") "',")))
-                        (substitute* "diffoscope/comparators/elf.py"
-                          (("@tool_required\\('readelf'\\)") "")
-                          (("get_tool_name\\('readelf'\\)")
-                           (string-append "'" (which "readelf") "'")))
-                        (substitute* "diffoscope/comparators/directory.py"
-                          (("@tool_required\\('stat'\\)") "")
-                          (("@tool_required\\('getfacl'\\)") "")
-                          (("\\['stat',")
-                           (string-append "['" (which "stat") "',"))
-                          (("\\['getfacl',")
-                           (string-append "['" (which "getfacl") "',")))
-                        #t))
-                    (add-before 'check 'writable-test-data
-                      (lambda _
-                        ;; tests may need needs write access to tests
-                        ;; directory
-                        (for-each make-file-writable (find-files "tests"))
-                        #t))
-                    (add-before 'check 'delete-failing-test
-                      (lambda _
-                        ;; this requires /sbin to be on the path
-                        (delete-file "tests/test_tools.py")
-                        #t)))))
-      (inputs `(("rpm" ,rpm)                        ;for rpm-python
-                ("python-file" ,python-file)
-                ("python-debian" ,python-debian)
-                ("python-libarchive-c" ,python-libarchive-c)
-                ("python-tlsh" ,python-tlsh)
-                ("acl" ,acl)                        ;for getfacl
-                ("colordiff" ,colordiff)
-                ("xxd" ,xxd)))
-      ;; Below are modules used for tests.
-      (native-inputs `(("python-pytest" ,python-pytest)
-                       ("python-chardet" ,python-chardet)
-                       ("python-binwalk" ,python-binwalk)
-                       ("python-h5py" ,python-h5py)
-                       ("python-pypdf2" ,python-pypdf2)
-                       ("python-progressbar33" ,python-progressbar33)
-                       ;; test suite skips tests when tool is missing
-                       ,@(match (%current-system)
-                                ;; ghc is only available on x86 currently.
-                                ((or "x86_64-linux" "i686-linux")
-                                 `(("ghc" ,ghc)))
-                                (_
-                                 `()))
-                       ,@(match (%current-system)
-                                ;; openjdk and dependent packages are only
-                                ;; available on x86_64 currently.
-                                ((or "x86_64-linux")
-                                 `(("enjarify" ,enjarify)
-                                   ;; no unversioned openjdk available
-                                   ("openjdk:jdk" ,openjdk12 "jdk")
-                                   ))
-                                (_
-                                 `()))
-                       ("abootimg" ,abootimg)
-                       ("bdb" ,bdb)
-                       ("binutils" ,binutils)
-                       ("bzip2" ,bzip2)
-                       ("cdrtools" ,cdrtools)
-                       ("colord" ,colord)
-                       ("cpio" ,cpio)
-                       ("docx2txt" ,docx2txt)
-                       ("dtc" ,dtc)
-                       ("e2fsprogs" ,e2fsprogs)
-                       ("ffmpeg" ,ffmpeg)
-                       ("gettext" ,gettext-minimal)
-                       ("ghostscript" ,ghostscript)
-                       ("giflib:bin" ,giflib "bin")
-                       ("gnumeric" ,gnumeric)
-                       ("gnupg" ,gnupg)
-                       ("hdf5" ,hdf5)
-                       ("imagemagick" ,imagemagick)
-                       ("libarchive" ,libarchive)
-                       ("llvm" ,llvm)
-                       ("lz4" ,lz4)
-                       ("mono" ,mono)
-                       ("ocaml" ,ocaml)
-                       ("odt2txt" ,odt2txt)
-                       ("openssh" ,openssh)
-                       ("openssl" ,openssl)
-                       ("pgpdump" ,pgpdump)
-                       ("poppler" ,poppler)
-                       ("python-jsbeautifier" ,python-jsbeautifier)
-                       ("r-minimal" ,r-minimal)
-                       ("rpm" ,rpm)
-                       ("sng" ,sng)
-                       ("sqlite" ,sqlite)
-                       ("squashfs-tools" ,squashfs-tools)
-                       ("tcpdump" ,tcpdump)
-                       ("unzip" ,unzip)
-                       ("wabt" ,wabt)
-                       ("xxd" ,xxd)
-                       ("xz" ,xz)
-                       ("zip" ,zip)
-                       ("zstd" ,zstd)))
-      (home-page "https://diffoscope.org/")
-      (synopsis "Compare files, archives, and directories in depth")
-      (description
-       "Diffoscope tries to get to the bottom of what makes files or directories
+  (package
+    (name "diffoscope")
+    (version "146")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "07kd3vshf4wlm0mv3mp6ljbxjq80mcg52w5ks6si1gnpzfbfz07p"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  ;; setup.py mistakenly requires python-magic from PyPi, even
+                  ;; though the Python bindings of `file` are sufficient.
+                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
+                  (add-after 'unpack 'dependency-on-python-magic
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("'python-magic',") ""))))
+                  ;; Patch in support for known tools
+                  (add-after 'unpack 'add-known-tools
+                    (lambda _
+                      (substitute* "diffoscope/external_tools.py"
+                        (("'debian': 'openssl'")
+                         "'debian': 'openssl', 'guix': 'openssl'"))))
+                  ;; This test is broken because our `file` package has a
+                  ;; bug in berkeley-db file type detection.
+                  (add-after 'unpack 'remove-berkeley-test
+                    (lambda _
+                      (delete-file "tests/comparators/test_berkeley_db.py")
+                      #t))
+                  ;; Test is dynamically generated and may have false
+                  ;; negatives with different ocaml versions.  Further
+                  ;; background in: https://bugs.debian.org/939386
+                  (add-after 'unpack 'remove-ocaml-test
+                    (lambda _
+                      (substitute* "tests/comparators/test_ocaml.py"
+                        (("def test_diff.differences.:")
+                         "def skip_test_diff(differences):"))
+                      #t))
+                  (add-after 'unpack 'skip-elf-tests
+                    ;; FIXME: libmix_differences test added in 125, and is
+                    ;; failing, need to explore why...
+                    (lambda _
+                      (substitute* "tests/comparators/test_elf.py"
+                        (("def test_libmix_differences.libmix_differences.:")
+                         "def skip_test_libmix_differences(libmix_differences):"))
+                      #t))
+                  (add-after 'unpack 'embed-tool-references
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "diffoscope/comparators/utils/compare.py"
+                        (("\\['xxd',")
+                         (string-append "['" (which "xxd") "',")))
+                      (substitute* "diffoscope/comparators/elf.py"
+                        (("@tool_required\\('readelf'\\)") "")
+                        (("get_tool_name\\('readelf'\\)")
+                         (string-append "'" (which "readelf") "'")))
+                      (substitute* "diffoscope/comparators/directory.py"
+                        (("@tool_required\\('stat'\\)") "")
+                        (("@tool_required\\('getfacl'\\)") "")
+                        (("\\['stat',")
+                         (string-append "['" (which "stat") "',"))
+                        (("\\['getfacl',")
+                         (string-append "['" (which "getfacl") "',")))
+                      #t))
+                  (add-before 'check 'writable-test-data
+                    (lambda _
+                      ;; tests may need needs write access to tests
+                      ;; directory
+                      (for-each make-file-writable (find-files "tests"))
+                      #t))
+                  (add-before 'check 'delete-failing-test
+                    (lambda _
+                      ;; this requires /sbin to be on the path
+                      (delete-file "tests/test_tools.py")
+                      #t)))))
+    (inputs `(("rpm" ,rpm)              ;for rpm-python
+              ("python-file" ,python-file)
+              ("python-debian" ,python-debian)
+              ("python-libarchive-c" ,python-libarchive-c)
+              ("python-tlsh" ,python-tlsh)
+              ("acl" ,acl)              ;for getfacl
+              ("colordiff" ,colordiff)
+              ("xxd" ,xxd)))
+    ;; Below are modules used for tests.
+    (native-inputs `(("python-pytest" ,python-pytest)
+                     ("python-chardet" ,python-chardet)
+                     ("python-binwalk" ,python-binwalk)
+                     ("python-h5py" ,python-h5py)
+                     ("python-pypdf2" ,python-pypdf2)
+                     ("python-progressbar33" ,python-progressbar33)
+                     ;; test suite skips tests when tool is missing
+                     ,@(match (%current-system)
+                         ;; ghc is only available on x86 currently.
+                         ((or "x86_64-linux" "i686-linux")
+                          `(("ghc" ,ghc)))
+                         (_
+                          `()))
+                     ,@(match (%current-system)
+                         ;; openjdk and dependent packages are only
+                         ;; available on x86_64 currently.
+                         ((or "x86_64-linux")
+                          `(("enjarify" ,enjarify)
+                            ;; no unversioned openjdk available
+                            ("openjdk:jdk" ,openjdk12 "jdk")
+                            ))
+                         (_
+                          `()))
+                     ("abootimg" ,abootimg)
+                     ("bdb" ,bdb)
+                     ("binutils" ,binutils)
+                     ("bzip2" ,bzip2)
+                     ("cdrtools" ,cdrtools)
+                     ("colord" ,colord)
+                     ("cpio" ,cpio)
+                     ("docx2txt" ,docx2txt)
+                     ("dtc" ,dtc)
+                     ("e2fsprogs" ,e2fsprogs)
+                     ("ffmpeg" ,ffmpeg)
+                     ("gettext" ,gettext-minimal)
+                     ("ghostscript" ,ghostscript)
+                     ("giflib:bin" ,giflib "bin")
+                     ("gnumeric" ,gnumeric)
+                     ("gnupg" ,gnupg)
+                     ("hdf5" ,hdf5)
+                     ("imagemagick" ,imagemagick)
+                     ("libarchive" ,libarchive)
+                     ("llvm" ,llvm)
+                     ("lz4" ,lz4)
+                     ("mono" ,mono)
+                     ("ocaml" ,ocaml)
+                     ("odt2txt" ,odt2txt)
+                     ("openssh" ,openssh)
+                     ("openssl" ,openssl)
+                     ("pgpdump" ,pgpdump)
+                     ("poppler" ,poppler)
+                     ("python-jsbeautifier" ,python-jsbeautifier)
+                     ("r-minimal" ,r-minimal)
+                     ("rpm" ,rpm)
+                     ("sng" ,sng)
+                     ("sqlite" ,sqlite)
+                     ("squashfs-tools" ,squashfs-tools)
+                     ("tcpdump" ,tcpdump)
+                     ("unzip" ,unzip)
+                     ("wabt" ,wabt)
+                     ("xxd" ,xxd)
+                     ("xz" ,xz)
+                     ("zip" ,zip)
+                     ("zstd" ,zstd)))
+    (home-page "https://diffoscope.org/")
+    (synopsis "Compare files, archives, and directories in depth")
+    (description
+     "Diffoscope tries to get to the bottom of what makes files or directories
 different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.
@@ -234,7 +233,7 @@ compare two tarballs, ISO images, or PDFs just as easily.
 Diffoscope has many optional dependencies; @code{diffoscope
 --list-missing-tools guix} will display optional packages to
 install.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public reprotest
   (package

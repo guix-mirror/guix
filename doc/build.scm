@@ -141,7 +141,7 @@ as well as images, OS examples, and translations."
                             (date->string date "~B ~Y")
                             version version))))))
 
-          (install-file #$(file-append* documentation "/htmlxref.cnf")
+          (install-file #$(file-append documentation "/htmlxref.cnf")
                         #$output)
 
           (for-each (lambda (texi)
@@ -182,30 +182,27 @@ content=\"width=device-width, initial-scale=1\" />"))
   ;; Guile-Lib with a hotfix for (htmlprag).
   (package
     (inherit guile-lib)
-    (source (origin
-              (inherit (package-source guile-lib))
-              (modules '(( guix build utils)))
-              (snippet
-               '(begin
-                  ;; When parsing
-                  ;; "<body><blockquote><p>foo</p>\n</blockquote></body>",
-                  ;; 'html->shtml' would mistakenly close 'blockquote' right
-                  ;; before <p>.  This patch removes 'p' from the
-                  ;; 'parent-constraints' alist to fix that.
-                  (substitute* "src/htmlprag.scm"
-                    (("^[[:blank:]]*\\(p[[:blank:]]+\\. \\(body td th\\)\\).*")
-                     ""))
-                  #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments guile-lib)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
-          (add-before 'check 'skip-known-failure
-            (lambda _
-              ;; XXX: The above change causes one test failure among
-              ;; the htmlprag tests.
-              (setenv "XFAIL_TESTS" "htmlprag.scm")
-              #t))))))))
+           (add-before 'build 'fix-htmlprag
+             (lambda _
+               ;; When parsing
+               ;; "<body><blockquote><p>foo</p>\n</blockquote></body>",
+               ;; 'html->shtml' would mistakenly close 'blockquote' right
+               ;; before <p>.  This patch removes 'p' from the
+               ;; 'parent-constraints' alist to fix that.
+               (substitute* "src/htmlprag.scm"
+                 (("^[[:blank:]]*\\(p[[:blank:]]+\\. \\(body td th\\)\\).*")
+                  ""))
+               #t))
+           (add-before 'check 'skip-known-failure
+             (lambda _
+               ;; XXX: The above change causes one test failure among
+               ;; the htmlprag tests.
+               (setenv "XFAIL_TESTS" "htmlprag.scm")
+               #t))))))))
 
 (define* (syntax-highlighted-html input
                                   #:key

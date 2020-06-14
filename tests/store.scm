@@ -22,7 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix monads)
-  #:use-module (gcrypt hash)
+  #:use-module ((gcrypt hash) #:prefix gcrypt:)
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -114,6 +114,18 @@
   (let ((s (stat (string-append %state-directory "/profiles/per-user/"
                                 (passwd:name (getpwuid (getuid)))))))
     (list (stat:uid s) (stat:perms s))))
+
+(test-equal "add-to-store"
+  '("sha1" "sha256" "sha512")
+  (let* ((file    (search-path %load-path "guix.scm"))
+         (content (call-with-input-file file get-bytevector-all)))
+    (map (lambda (hash-algo)
+           (let ((file (add-to-store %store "guix.scm" #f hash-algo file)))
+             (and (direct-store-path? file)
+                  (bytevector=? (call-with-input-file file get-bytevector-all)
+                                content)
+                  hash-algo)))
+         '("sha1" "sha256" "sha512"))))
 
 (test-equal "add-data-to-store"
   #vu8(1 2 3 4 5)
@@ -309,7 +321,7 @@
                            #:env-vars `(("t2" . ,t2))))
            (o  (derivation->output-path d)))
       (with-derivation-narinfo d
-        (sha256 => (sha256 (string->utf8 t2)))
+        (sha256 => (gcrypt:sha256 (string->utf8 t2)))
         (references => (list t2))
 
         (equal? (references/substitutes s (list o t3 t2 t1))
@@ -928,7 +940,7 @@
         (foldm %store-monad
                (lambda (item result)
                  (define ref-hash
-                   (let-values (((port get) (open-sha256-port)))
+                   (let-values (((port get) (gcrypt:open-sha256-port)))
                      (write-file item port)
                      (close-port port)
                      (get)))
@@ -1132,7 +1144,7 @@
          (info (query-path-info %store item)))
     (and (equal? (path-info-references info) (list ref))
          (equal? (path-info-hash info)
-                 (sha256
+                 (gcrypt:sha256
                   (string->utf8
                    (call-with-output-string (cut write-file item <>))))))))
 

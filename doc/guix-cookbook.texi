@@ -14,6 +14,7 @@ Copyright @copyright{} 2019 Pierre Neidhardt@*
 Copyright @copyright{} 2020 Oleg Pykhalov@*
 Copyright @copyright{} 2020 Matthew Brooks@*
 Copyright @copyright{} 2020 Marcin Karpezo@*
+Copyright @copyright{} 2020 Brice Waegeneire@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -327,7 +328,7 @@ package definitions.
 @item
 Inheritance makes it easy to customize a package by inheriting from it and
 modifying only what is needed.
- 
+
 @item
 Batch processing: the whole package collection can be parsed, filtered and
 processed.  Building a headless server with all graphical interfaces stripped
@@ -1323,8 +1324,10 @@ reference.
 
 @menu
 * Customizing the Kernel::       Creating and using a custom Linux kernel on Guix System.
+* Connecting to Wireguard VPN::  Connecting to a Wireguard VPN.
 * Customizing a Window Manager:: Handle customization of a Window manager on Guix System.
 * Setting up a bind mount:: Setting up a bind mount in the file-systems definition.
+* Getting substitutes from Tor:: Configuring Guix daemon to get substitutes through Tor.
 @end menu
 
 @node Customizing the Kernel
@@ -1567,6 +1570,83 @@ likely that you'll need to modify the initrd on a machine using a custom
 kernel, since certain modules which are expected to be built may not be
 available for inclusion into the initrd.
 
+@node Connecting to Wireguard VPN
+@section Connecting to Wireguard VPN
+
+To connect to a Wireguard VPN server you need the kernel module to be
+loaded in memory and a package providing networking tools that support
+it (e.g.  @code{wireguard-tools} or @code{network-manager}).
+
+Here is a configuration example for Linux-Libre < 5.6, where the module
+is out of tree and need to be loaded manually---following revisions of
+the kernel have it built-in and so don't need such configuration:
+
+@lisp
+(use-modules (gnu))
+(use-service-modules desktop)
+(use-package-modules vpn)
+
+(operating-system
+  ;; …
+  (services (cons (simple-service 'wireguard-module
+                                  kernel-module-loader-service-type
+                                  '("wireguard"))
+                  %desktop-services))
+  (packages (cons wireguard-tools %base-packages))
+  (kernel-loadable-modules (list wireguard-linux-compat)))
+@end lisp
+
+After reconfiguring and restarting your system you can either use
+Wireguard tools or NetworkManager to connect to a VPN server.
+
+@subsection Using Wireguard tools
+
+To test your Wireguard setup it is convenient to use @command{wg-quick}.
+Just give it a configuration file @command{wg-quick up ./wg0.conf}; or
+put that file in @file{/etc/wireguard} and run @command{wg-quick up wg0}
+instead.
+
+@quotation Note
+Be warned that the author described this command as a: “[…] very quick
+and dirty bash script […]”.
+@end quotation
+
+@subsection Using NetworkManager
+
+Thanks to NetworkManager support for Wireguard we can connect to our VPN
+using @command{nmcli} command.  Up to this point this guide assumes that
+you're using Network Manager service provided by
+@code{%desktop-services}.  Ortherwise you need to adjust your services
+list to load @code{network-manager-service-type} and reconfigure your
+Guix system.
+
+To import your VPN configuration execute nmcli import command:
+
+@example shell
+# nmcli connection import type wireguard file wg0.conf
+Connection 'wg0' (edbee261-aa5a-42db-b032-6c7757c60fde) successfully added
+@end example
+
+This will create a configuration file in
+@file{/etc/NetworkManager/wg0.nmconnection}.  Next connect to the
+Wireguard server:
+
+@example shell
+$ nmcli connection up wg0
+Connection successfully activated (D-Bus active path: /org/freedesktop/NetworkManager/ActiveConnection/6)
+@end example
+
+By default NetworkManager will connect automatically on system boot.  To
+change that behaviour you need to edit your config:
+
+@example shell
+# nmcli connection modify wg0 connection.autoconnect no
+@end example
+
+For more specific information about NetworkManager and wireguard
+@uref{https://blogs.gnome.org/thaller/2019/03/15/wireguard-in-networkmanager/,see
+this post by thaller}.
+
 @node Customizing a Window Manager
 @section Customizing a Window Manager
 @cindex wm
@@ -1617,6 +1697,47 @@ Then you need to add the following code to a StumpWM configuration file
 (set-font (make-instance 'xft:font :family "DejaVu Sans Mono" :subfamily "Book" :size 11))
 @end lisp
 
+@node Session lock
+@subsection Session lock
+@cindex sessionlock
+
+Depending on your environment, locking the screen of your session might come built in
+or it might be something you have to set up yourself. If you use a desktop environment
+like GNOME or KDE, it's usually built in. If you use a plain window manager like
+StumpWM or EXWM, you might have to set it up yourself.
+
+@node Xorg
+@subsubsection Xorg
+
+If you use Xorg, you can use the utility
+@uref{https://www.mankier.com/1/xss-lock, xss-lock} to lock the screen of your session.
+xss-lock is triggered by DPMS which since Xorg 1.8 is auto-detected and enabled if
+ACPI is also enabled at kernel runtime.
+
+To use xss-lock, you can simple execute it and put it into the background before
+you start your window manager from e.g. your @file{~/.xsession}:
+
+@example
+xss-lock -- slock &
+exec stumpwm
+@end example
+
+In this example, xss-lock uses @code{slock} to do the actual locking of the screen when
+it determines it's appropriate, like when you suspend your device.
+
+For slock to be allowed to be a screen locker for the graphical session, it needs to
+be made setuid-root so it can authenticate users, and it needs a PAM service. This
+can be achieved by adding the following service to your @file{config.scm}:
+
+@lisp
+(screen-locker-service slock)
+@end lisp
+
+If you manually lock your screen, e.g. by directly calling slock when you want to lock
+your screen but not suspend it, it's a good idea to notify xss-lock about this so no
+confusion occurs. This can be done by executing @code{xset s activate} immediately
+before you execute slock.
+
 @node Setting up a bind mount
 @section Setting up a bind mount
 
@@ -1665,6 +1786,62 @@ mount itself.
 
                 ))
 @end lisp
+
+@node Getting substitutes from Tor
+@section Getting substitutes from Tor
+
+Guix daemon can use a HTTP proxy to get substitutes, here we are
+configuring it to get them via Tor.
+
+@quotation Warning
+@emph{Not all} Guix daemon's traffic will go through Tor!  Only
+HTTP/HTTPS will get proxied; FTP, Git protocol, SSH, etc connections
+will still go through the clearnet.  Again, this configuration isn't
+foolproof some of your traffic won't get routed by Tor at all.  Use it
+at your own risk.
+@end quotation
+
+Guix's substitute server is available as a Onion service, if you want
+to use it to get your substitutes from Tor configure your system as
+follow:
+
+@lisp
+(use-modules (gnu))
+(use-service-module base networking)
+
+(operating-system
+  …
+  (services
+    (cons
+      (service tor-service-type
+              (tor-configuration
+                (config-file (plain-file "tor-config"
+                                         "HTTPTunnelPort 127.0.0.1:9250"))))
+      (modify-services %base-services
+        (guix-service-type
+          config => (guix-configuration
+                      (inherit config)
+                      ;; ci.guix.gnu.org's Onion service
+                      (substitute-urls "https://bp7o7ckwlewr4slm.onion")
+                      (http-proxy "http://localhost:9250")))))))
+@end lisp
+
+This will keep a tor process running that provides a HTTP CONNECT tunnel
+which will be used by @command{guix-daemon}.  The daemon can use other
+protocols than HTTP(S) to get remote resources, request using those
+protocols won't go through Tor since we are only setting a HTTP tunnel
+here.  Note that @code{substitutes-urls} is using HTTPS and not HTTP or
+it won't work, that's a limitation of Tor's tunnel; you may want to use
+@command{privoxy} instead to avoid such limitations.
+
+If you don't want to always get substitutes through Tor but using it just
+some of the times, then skip the @code{guix-configuration}.  When you
+want to get a substitute from the Tor tunnel run:
+
+@example
+sudo herd set-http-proxy guix-daemon http://localhost:9250
+guix build --substitute-urls=https://bp7o7ckwlewr4slm.onion …
+@end example
 
 @c *********************************************************************
 @node Advanced package management

@@ -276,7 +276,7 @@ JNI.")
     (version "1.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://archive.apache.org/dist/"
+              (uri (string-append "mirror://apache/"
                                   "ant/source/apache-ant-"
                                   version "-src.tar.bz2"))
               (sha256
@@ -2486,10 +2486,10 @@ new Date();"))
     (source (origin
               (method hg-fetch)
               (uri (hg-reference
-                     (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
-                     (changeset (string-append
-                                  (string-join (string-split version #\.) "u")
-                                  "-ga"))))
+                    (url "http://hg.openjdk.java.net/openjfx/8u-dev/rt")
+                    (changeset (string-append
+                                (string-join (string-split version #\.) "u")
+                                "-ga"))))
               (file-name (string-append name "-" version "-checkout"))
               (modules '((guix build utils)))
               (snippet
@@ -2499,7 +2499,8 @@ new Date();"))
                   #t))
               (sha256
                (base32
-                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))))
+                "0yg38mwpivswccv9n96k06x3iv82i4px1a9xg9l8dswzwmfj259f"))
+              (patches (search-patches "java-openjfx-build-jdk_version.patch"))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "java-openjfx.jar"
@@ -10523,14 +10524,14 @@ classes prior to Java SE 8.")
 (define-public java-xerces
   (package
     (name "java-xerces")
-    (version "2.11.0")
+    (version "2.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://apache/xerces/j/source/"
                            "Xerces-J-src." version ".tar.gz"))
        (sha256
-        (base32 "1006igwy2lqrmjvdk64v8dg6qbk9c29pm8xxx7r87n0vnpvmx6pm"))
+        (base32 "0494kq36gw3nah19ifb720vwxbpg4ww0k6m3zq6wyanw6a083p6s"))
        (patches (search-patches
                  "java-xerces-xjavac_taskdef.patch"
                  "java-xerces-build_dont_unzip.patch"
@@ -10831,7 +10832,7 @@ graphs, and pie charts.")
     (version "3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/httpcomponents/"
+              (uri (string-append "mirror://apache/httpcomponents/"
                                   "commons-httpclient/source/commons-httpclient-"
                                   version "-src.tar.gz"))
               (sha256
@@ -10927,7 +10928,7 @@ inside a Zip archive.")
     (version "2.0.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://archive.apache.org/dist/jakarta/oro/"
+              (uri (string-append "mirror://apache/jakarta/oro/"
                                   "jakarta-oro-" version ".tar.gz"))
               (sha256
                (base32

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016, 2017, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (gcrypt hash)
   #:use-module (guix base16)
   #:use-module (guix base32)
+  #:autoload   (guix base64) (base64-encode)
   #:use-module ((guix download) #:hide (url-fetch))
   #:use-module ((guix build download)
                 #:select (url-fetch))
@@ -77,18 +78,22 @@
 (define %default-options
   ;; Alist of default option values.
   `((format . ,bytevector->nix-base32-string)
+    (hash-algorithm . ,(hash-algorithm sha256))
     (verify-certificate? . #t)
     (download-proc . ,download-to-store*)))
 
 (define (show-help)
   (display (G_ "Usage: guix download [OPTION] URL
 Download the file at URL to the store or to the given file, and print its
-file name and the hash of its contents.
-
-Supported formats: 'nix-base32' (default), 'base32', and 'base16'
-('hex' and 'hexadecimal' can be used as well).\n"))
+file name and the hash of its contents.\n"))
+  (newline)
+  (display (G_ "\
+Supported formats: 'base64', 'nix-base32' (default), 'base32',
+and 'base16' ('hex' and 'hexadecimal' can be used as well).\n"))
   (format #t (G_ "
   -f, --format=FMT       write the hash in the given format"))
+  (format #t (G_ "
+  -H, --hash=ALGORITHM   use the given hash ALGORITHM"))
   (format #t (G_ "
       --no-check-certificate
                          do not validate the certificate of HTTPS servers "))
@@ -108,6 +113,8 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                 (lambda (opt name arg result)
                   (define fmt-proc
                     (match arg
+                      ("base64"
+                       base64-encode)
                       ("nix-base32"
                        bytevector->nix-base32-string)
                       ("base32"
@@ -119,6 +126,13 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 
                   (alist-cons 'format fmt-proc
                               (alist-delete 'format result))))
+        (option '(#\H "hash") #t #f
+                (lambda (opt name arg result)
+                  (match (lookup-hash-algorithm (string->symbol arg))
+                    (#f
+                     (leave (G_ "~a: unknown hash algorithm~%") arg))
+                    (algo
+                     (alist-cons 'hash-algorithm algo result)))))
         (option '("no-check-certificate") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'verify-certificate? #f result)))
@@ -175,7 +189,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                       (or path
                           (leave (G_ "~a: download failed~%")
                                  arg))
-                    port-sha256))
+                    (cute port-hash (assoc-ref opts 'hash-algorithm) <>)))
            (fmt   (assq-ref opts 'format)))
       (format #t "~a~%~a~%" path (fmt hash))
       #t)))

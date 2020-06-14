@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2017 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
-;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
@@ -141,7 +141,7 @@ windows.")
 (define-public tmux-xpanes
   (package
     (name "tmux-xpanes")
-    (version "4.1.1")
+    (version "4.1.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -150,7 +150,7 @@ windows.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13q02vdk229chgbn547wwv29cj4njvz02lmw840g8qmwh73qb2pi"))))
+                "0vm5mi6dqdbg0b5qh4r8sr1plpc00jryd8a2qxpp3a72cigjvvf0"))))
     (build-system trivial-build-system)
     (inputs
      `(("bash" ,bash)))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,14 +42,26 @@
 ;;;
 ;;; Command-line options.
 ;;;
+(define %available-formats '("human" "channels" "json" "recutils"))
+
+(define (list-formats)
+  (display (G_ "The available formats are:\n"))
+  (newline)
+  (for-each (lambda (f)
+              (format #t "  - ~a~%" f))
+            %available-formats))
 
 (define %options
   ;; Specifications of the command-line options.
   (list (option '(#\f "format") #t #f
                 (lambda (opt name arg result)
-                  (unless (member arg '("human" "channels" "json" "recutils"))
+                  (unless (member arg %available-formats)
                     (leave (G_ "~a: unsupported output format~%") arg))
                   (alist-cons 'format (string->symbol arg) result)))
+        (option '("list-formats") #f #f
+                (lambda (opt name arg result)
+                  (list-formats)
+                  (exit 0)))
         (option '(#\p "profile") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'profile (canonicalize-profile arg)
@@ -70,6 +83,8 @@
 Display information about the channels currently in use.\n"))
   (display (G_ "
   -f, --format=FORMAT    display information in the given FORMAT"))
+  (display (G_ "
+      --list-formats     display available formats"))
   (display (G_ "
   -p, --profile=PROFILE  display information about PROFILE"))
   (newline)

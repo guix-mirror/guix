@@ -455,7 +455,10 @@ void LocalStore::deletePathRecursive(GCState & state, const Path & path)
                 throw SysError(format("unable to rename `%1%' to `%2%'") % path % tmp);
             state.bytesInvalidated += size;
         } catch (SysError & e) {
-            if (e.errNo == ENOSPC) {
+            /* In a Docker container, rename(2) returns EXDEV when the source
+               and destination are not both on the "top layer".  See:
+               https://bugs.gnu.org/41607 */
+            if (e.errNo == ENOSPC || e.errNo == EXDEV) {
                 printMsg(lvlInfo, format("note: can't create move `%1%': %2%") % path % e.msg());
                 deleteGarbage(state, path);
             }

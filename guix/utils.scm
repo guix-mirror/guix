@@ -6,7 +6,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2020 Marius Bakke <marius@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +78,8 @@
             target-aarch64?
             target-arm?
             target-64bit?
+            cc-for-target
+
             version-compare
             version>?
             version>=?
@@ -87,7 +89,6 @@
             guile-version>?
             version-prefix?
             string-replace-substring
-            arguments-from-environment-variable
             file-extension
             file-sans-extension
             tarball-sans-extension
@@ -96,6 +97,9 @@
             call-with-temporary-output-file
             call-with-temporary-directory
             with-atomic-file-output
+
+            with-environment-variables
+            arguments-from-environment-variable
 
             config-directory
             cache-directory
@@ -110,6 +114,38 @@
             compressed-output-port
             call-with-compressed-output-port
             canonical-newline-port))
+
+
+;;;
+;;; Environment variables.
+;;;
+
+(define (call-with-environment-variables variables thunk)
+  "Call THUNK with the environment VARIABLES set."
+  (let ((environment (environ)))
+    (dynamic-wind
+      (lambda ()
+        (for-each (match-lambda
+                    ((variable value)
+                     (setenv variable value)))
+                  variables))
+      thunk
+      (lambda ()
+        (environ environment)))))
+
+(define-syntax-rule (with-environment-variables variables exp ...)
+  "Evaluate EXP with the given environment VARIABLES set."
+  (call-with-environment-variables variables
+                                   (lambda () exp ...)))
+
+(define (arguments-from-environment-variable variable)
+  "Retrieve value of environment variable denoted by string VARIABLE in the
+form of a list of strings (`char-set:graphic' tokens) suitable for consumption
+by `args-fold', if VARIABLE is defined, otherwise return an empty list."
+  (let ((env (getenv variable)))
+    (if env
+        (string-tokenize env char-set:graphic)
+        '())))
 
 
 ;;;
@@ -506,6 +542,11 @@ a character other than '@'."
                                                (%current-system))))
   (any (cut string-prefix? <> system) '("x86_64" "aarch64" "mips64" "ppc64")))
 
+(define* (cc-for-target #:optional (target (%current-target-system)))
+  (if target
+      (string-append target "-gcc")
+      "gcc"))
+
 (define version-compare
   (let ((strverscmp
          (let ((sym (or (dynamic-func "strverscmp" (dynamic-link))
@@ -575,6 +616,11 @@ minor version numbers from version-string."
       (list-prefix? (string-tokenize v1 not-dot)
                     (string-tokenize v2 not-dot)))))
 
+
+;;;
+;;; Files.
+;;;
+
 (define (file-extension file)
   "Return the extension of FILE or #f if there is none."
   (let ((dot (string-rindex file #\.)))
@@ -626,15 +672,6 @@ REPLACEMENT."
                 (cons* replacement
                        (substring str start index)
                        pieces))))))))
-
-(define (arguments-from-environment-variable variable)
-  "Retrieve value of environment variable denoted by string VARIABLE in the
-form of a list of strings (`char-set:graphic' tokens) suitable for consumption
-by `args-fold', if VARIABLE is defined, otherwise return an empty list."
-  (let ((env (getenv variable)))
-    (if env
-        (string-tokenize env char-set:graphic)
-        '())))
 
 (define (call-with-temporary-output-file proc)
   "Call PROC with a name of a temporary file and open output port to that

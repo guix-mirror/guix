@@ -30,24 +30,6 @@
 (define git-command
   (make-parameter "git"))
 
-(define (call-with-environment-variables variables thunk)
-  "Call THUNK with the environment VARIABLES set."
-  (let ((environment (environ)))
-    (dynamic-wind
-      (lambda ()
-        (for-each (match-lambda
-                    ((variable value)
-                     (setenv variable value)))
-                  variables))
-      thunk
-      (lambda ()
-        (environ environment)))))
-
-(define-syntax-rule (with-environment-variables variables exp ...)
-  "Evaluate EXP with the given environment VARIABLES set."
-  (call-with-environment-variables variables
-                                   (lambda () exp ...)))
-
 (define (populate-git-repository directory directives)
   "Initialize a new Git checkout and repository in DIRECTORY and apply
 DIRECTIVES.  Each element of DIRECTIVES is an sexp like:
@@ -94,8 +76,14 @@ Return DIRECTORY on success."
                       port)))
          (git "add" file)
          (loop rest)))
+      ((('remove file) rest ...)
+       (git "rm" "-f" file)
+       (loop rest))
       ((('commit text) rest ...)
        (git "commit" "-m" text)
+       (loop rest))
+      ((('commit text ('signer fingerprint)) rest ...)
+       (git "commit" "-m" text (string-append "--gpg-sign=" fingerprint))
        (loop rest))
       ((('tag name) rest ...)
        (git "tag" name)
@@ -108,6 +96,10 @@ Return DIRECTORY on success."
        (loop rest))
       ((('merge branch message) rest ...)
        (git "merge" branch "-m" message)
+       (loop rest))
+      ((('merge branch message ('signer fingerprint)) rest ...)
+       (git "merge" branch "-m" message
+            (string-append "--gpg-sign=" fingerprint))
        (loop rest)))))
 
 (define (call-with-temporary-git-repository directives proc)

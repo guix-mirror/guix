@@ -1,0 +1,53 @@
+From 75cb948c575fca3962c4cce115d31dd178bc389f Mon Sep 17 00:00:00 2001
+From: "Jan (janneke) Nieuwenhuizen" <janneke@gnu.org>
+Date: Tue, 12 May 2020 07:39:59 +0200
+Subject: [PATCH] ext2fs: Update to upstream Hurd-reserved xattr index for
+ "gnu.*".
+
+See
+    https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3980bd3b406addb327d858aebd19e229ea340b9a
+
+This supports setting (and reading) of passive trasnlators from
+GNU/Linux, e.g.
+
+    dd if=/dev/zero of=file bs=1k count=1000
+    losetup /dev/loop0 file
+    mke2fs -t ext2 -o hurd -O ext_attr /dev/loop0
+    mount -t ext2 -o x-xattr-translator-records /dev/loop0 /mnt
+    mkdir -p /mnt/servers/socket
+    touch /mnt/servers/socket/1
+    setfattr --name=gnu.translator --value='/hurd/pflocal\0' /mnt/servers/socket/1
+    getfattr --name=gnu.translator /mnt/servers/socket/1
+    # file: 1
+    gnu.translator="/hurd/pflocal"
+
+* ext2fs/xattr.c (struct _xattr_prefix): For "gnu.*", use index for
+the Hurd (10).
+---
+ ext2fs/xattr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ext2fs/xattr.c b/ext2fs/xattr.c
+index f6ea0f39..78458214 100644
+--- a/ext2fs/xattr.c
++++ b/ext2fs/xattr.c
+@@ -1,6 +1,6 @@
+  /* Ext2 support for extended attributes
+ 
+-   Copyright (C) 2006, 2016 Free Software Foundation, Inc.
++   Copyright (C) 2006, 2016, 2020 Free Software Foundation, Inc.
+ 
+    Written by Thadeu Lima de Souza Cascardo <cascardo@dcc.ufmg.br>
+    and Shengyu Zhang <lastavengers@outlook.com>
+@@ -39,7 +39,7 @@ xattr_prefixes[] =
+   {
+   1, "user.", sizeof "user." - 1},
+   {
+-  7, "gnu.", sizeof "gnu." - 1},
++  10, "gnu.", sizeof "gnu." - 1},
+   {
+   0, NULL, 0}
+ };
+-- 
+2.26.0
+

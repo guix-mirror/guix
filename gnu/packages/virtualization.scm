@@ -104,14 +104,14 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
 
-(define (qemu-patch commit file-name sha256)
+(define (qemu-patch commit file-name sha256-bv)
   "Return an origin for COMMIT."
   (origin
     (method url-fetch)
     (uri (string-append
           "http://git.qemu.org/?p=qemu.git;a=commitdiff_plain;h="
           commit))
-    (sha256 sha256)
+    (hash (content-hash sha256-bv sha256))
     (file-name file-name)))
 
 (define-public qemu
@@ -655,9 +655,10 @@ virtualization library.")
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f          ; uses custom distutils 'install' command
-       ;; Some of the tests seem to require network access to install virtual
-       ;; machines.
-       #:tests? #f
+       #:test-target "test_ui"
+       #:tests? #f                      ; TODO The tests currently fail
+                                        ; RuntimeError: Loop condition wasn't
+                                        ; met
        #:imported-modules ((guix build glib-or-gtk-build-system)
                            ,@%python-build-system-modules)
        #:modules ((ice-9 match)
@@ -704,6 +705,16 @@ virtualization library.")
                                ,(filter identity paths))))
                          bin-files))
              #t))
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (setenv "HOME" "/tmp")
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               ;; Dogtail requires that Assistive Technology support be enabled
+               (setenv "GTK_MODULES" "gail:atk-bridge")
+               (invoke "dbus-run-session" "--" "python" "setup.py" "test_ui"))
+             #t))
          (add-after 'install 'glib-or-gtk-compile-schemas
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
          (add-after 'install 'glib-or-gtk-wrap
@@ -732,7 +743,14 @@ virtualization library.")
        ("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("perl" ,perl)                   ; pod2man
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ;; The following are required for running the tests
+       ;; ("python-dogtail" ,python-dogtail)
+       ;; ("xvfb" ,xorg-server-for-tests)
+       ;; ("dbus" ,dbus)
+       ;; ("at-spi2-core" ,at-spi2-core)
+       ;; ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ))
     (home-page "https://virt-manager.org/")
     (synopsis "Manage virtual machines")
     (description
@@ -745,14 +763,14 @@ domains, their live performance and resource utilization statistics.")
 (define-public criu
   (package
     (name "criu")
-    (version "3.13")
+    (version "3.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.openvz.org/criu/criu-"
+              (uri (string-append "https://download.openvz.org/criu/criu-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1yn9ix9lqvqvjrs3a3g6g1wqfniyf9n7giy0mr3jvijmrcm7y0pa"))))
+                "1jrr3v99g18gc0hriz0avq6ccdvyya0j6wwz888sdsc4icc30gzn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -1422,7 +1440,7 @@ which is a hypervisor.")
 (define-public osinfo-db-tools
   (package
     (name "osinfo-db-tools")
-    (version "1.7.0")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-tools-"
@@ -1430,7 +1448,7 @@ which is a hypervisor.")
 
               (sha256
                (base32
-                "08x8mrafphyll0d35xdc143rip3ahrz6bmzhc85nwhq7yk2vxpab"))))
+                "038q3gzdbkfkhpicj0755mw1q4gbvn57pslpw8n2dp3lds9im0g9"))))
     (build-system meson-build-system)
     (inputs
      `(("libsoup" ,libsoup)
@@ -1456,14 +1474,14 @@ administrators and developers in managing the database.")
 (define-public osinfo-db
   (package
     (name "osinfo-db")
-    (version "20200203")
+    (version "20200529")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://releases.pagure.org/libosinfo/osinfo-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1zjq1dhlci00j17dij7s3l30hybzmaykpk5b6bd5xbllp745njn5"))))
+                "0mbrf9j5wmjhc6jixvhp4jqyxixh1717lqrmzmipdg99xnzba81n"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

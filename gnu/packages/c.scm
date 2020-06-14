@@ -7,6 +7,8 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2020 Marius Bakke <marius@gnu.org>
+;;; Copyright @ 2020 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +42,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pkg-config)
@@ -235,15 +238,14 @@ whose behaviour is inconsistent across *NIX flavours.")
 (define-public libhx
   (package
     (name "libhx")
-    (version "3.24")
+    (version "3.25")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/libhx/libHX/"
                            "libHX-" version ".tar.xz"))
        (sha256
-        (base32
-         "0i8v2464p830c15myknvvs6bhxaf663lrqgga95l94ygfynkw6x5"))))
+        (base32 "12avn16f8aqb0cq6jplz0sv7rh6f07m85dwc8dasnnwsvijwbpbj"))))
     (build-system gnu-build-system)
     (home-page "http://libhx.sourceforge.net")
     (synopsis "C library with common data structures and functions")
@@ -253,6 +255,57 @@ structures and functions commonly needed, such as maps, deques, linked lists,
 string formatting and autoresizing, option and config file parsing, type
 checking casts and more.")
     (license license:lgpl2.1+)))
+
+(define-public packcc
+  (package
+    (name "packcc")
+    ;; We need a few fixes on top of the latest release to prevent test
+    ;; failures in Universal Ctags.
+    (version "1.2.5-19-g58d1b9d")
+    (home-page "https://github.com/enechaev/packcc")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0biyv835jlk43fvmmd3p8jafs7k2iw9qlaj37hvsl604ai6rd5aj"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:make-flags '("-DUSE_SYSTEM_STRNLEN=1")
+       #:phases (modify-phases %standard-phases
+                  ;; The project consists of a single source file and has
+                  ;; no actual build system, so we need to do it manually.
+                  (delete 'configure)
+                  (replace 'build
+                    (lambda* (#:key make-flags #:allow-other-keys)
+                      (apply invoke "gcc" "-o" "packcc" "packcc.c"
+                                      make-flags)))
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (install-file "packcc" (string-append out "/bin"))
+                        (install-file "README.md"
+                                      (string-append out "/share/doc/packcc"))
+                        #t))))))
+    (synopsis "Packrat parser generator for C")
+    (description
+     "PackCC is a packrat parser generator for the C programming language.
+Its main features are:
+@itemize
+@item Generates a parser in C from a grammar described in a PEG.
+@item Gives your parser great efficiency by packrat parsing.
+@item Supports direct and indirect left-recursive grammar rules.
+@end itemize
+The grammar of your parser can be described in a @acronym{PEG, Parsing
+Expression Grammar}.  The PEG is a top-down parsing language, and is similar
+to the regular-expression grammar.  The PEG does not require tokenization to
+be a separate step, and tokenization rules can be written in the same way as
+any other grammar rules.")
+    (license license:expat)))
 
 (define-public sparse
   (package
@@ -288,3 +341,98 @@ address space pointers point to, or what locks a function acquires or
 releases.")
     (home-page "https://sparse.wiki.kernel.org/index.php/Main_Page")
     (license license:expat)))
+
+(define-public libestr
+  (package
+    (name "libestr")
+    (version "0.1.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/libestr.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ca4rj90c0dn7kqpbcchkflxjw88a7rxcnwbr0gply4a28i01nd8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/rsyslog/libestr")
+    (synopsis "Helper functions for handling strings")
+    (description
+     "This C library contains some essential string manipulation functions and
+more, like escaping special characters.")
+    (license license:lgpl2.1+)))
+
+(define-public libfastjson
+  (package
+    (name "libfastjson")
+    (version "0.99.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/libfastjson.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0qhs0g9slj3p0v2z4s3cnsx44msrlb4k78ljg7714qiziqbrbwyl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/rsyslog/libfastjson")
+    (synopsis "Fast JSON library for C")
+    (description
+     "libfastjson is a fork from json-c aiming to provide: a small library
+with essential JSON handling functions, sufficiently good JSON support (not
+100% standards compliant), and very fast processing.")
+    (license license:expat)))
+
+(define-public liblogging
+  (package
+    (name "liblogging")
+    (version "1.0.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rsyslog/liblogging.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1l32m0y65svf5vxsgw935jnqs6842rcqr56dmzwqvr00yfrjhjkp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; autogen.sh calls configure at the end of the script.
+         (replace 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vfi"))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ;; For rst2man.py
+       ("python-docutils" ,python-docutils)))
+    (home-page "https://github.com/rsyslog/liblogging")
+    (synopsis "Easy to use and lightweight signal-safe logging library")
+    (description
+     "Liblogging is an easy to use library for logging.  It offers an enhanced
+replacement for the syslog() call, but retains its ease of use.")
+    (license license:bsd-2)))

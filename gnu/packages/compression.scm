@@ -7,7 +7,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -875,7 +875,8 @@ extract such file systems.")
                       (symlink "pigz" (string-append bin  "/unpigz"))
                       (install-file "pigz.1" man)
                       #t))))
-       #:make-flags (list "CC=gcc")
+       #:make-flags
+       (list ,(string-append "CC=" (cc-for-target)))
        #:test-target "tests"))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://zlib.net/pigz/")
@@ -1682,7 +1683,7 @@ of archives.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc")))
+       (list ,(string-append "CC=" (cc-for-target)))))
     (home-page "https://www.nongnu.org/lzip/lunzip.html")
     (synopsis "Small, stand-alone lzip decompressor")
     (description
@@ -1709,7 +1710,7 @@ Lunzip is intended to be fully compatible with the regular lzip package.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "CC=gcc")))
+       (list ,(string-append "CC=" (cc-for-target)))))
     (home-page "https://www.nongnu.org/lzip/clzip.html")
     (synopsis "Small, stand-alone lzip compressor and decompressor")
     (description
@@ -1939,7 +1940,7 @@ download times, and other distribution and storage costs.")
 (define-public quazip
   (package
     (name "quazip")
-    (version "0.9")
+    (version "0.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1948,7 +1949,7 @@ download times, and other distribution and storage costs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0psvf3d9akyyx3bckc9325nmbp97xiagf8la4vhca5xn2f430fbn"))))
+                "11icgwv2xyxhd1hm1add51xv54zwkcqkg85d1xqlgiigvbm196iq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
@@ -2098,7 +2099,7 @@ file compression algorithm.")
 (define-public xarchiver
   (package
     (name "xarchiver")
-    (version "0.5.4.14")
+    (version "0.5.4.15")
     (source
      (origin
        (method git-fetch)
@@ -2107,7 +2108,7 @@ file compression algorithm.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1iklwgykgymrwcc5p1cdbh91v0ih1m58s3w9ndl5kyd44bwlb7px"))))
+        (base32 "0a3y54r5zp2c0cqm77r07qrl1vh200wvqmbhm35diy22fvkq5mwc"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -2115,7 +2116,7 @@ file compression algorithm.")
        ("libxslt" ,libxslt)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; Hard-coded theme
+     `(("adwaita-icon-theme" ,adwaita-icon-theme) ; hard-coded theme
        ("gtk+" ,gtk+)))
     (home-page "https://github.com/ib/xarchiver")
     (synopsis "Graphical front-end for archive operations")
@@ -2204,11 +2205,8 @@ computations.")
     (arguments
      `(#:tests? #f                      ; no check target
        #:make-flags
-       (let ((target ,(%current-target-system)))
-         (list (string-append "CC=" (if target
-                                        (string-append target "-gcc")
-                                        "gcc"))
-               (string-append "DESTDIR=" (assoc-ref %outputs "out"))))
+       (list (string-append "CC=" ,(cc-for-target))
+             (string-append "DESTDIR=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

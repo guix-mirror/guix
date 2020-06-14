@@ -28,12 +28,15 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix base32)
+  #:autoload   (guix base64) (base64-decode)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix memoization)
   #:use-module (guix build-system)
   #:use-module (guix search-paths)
   #:use-module (guix sets)
+  #:use-module (guix deprecation)
+  #:use-module (guix i18n)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 regex)
@@ -43,16 +46,23 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (rnrs bytevectors)
   #:use-module (web uri)
   #:re-export (%current-system
                %current-target-system
                search-path-specification)         ;for convenience
-  #:export (origin
+  #:export (content-hash
+            content-hash?
+            content-hash-algorithm
+            content-hash-value
+
+            origin
             origin?
             this-origin
             origin-uri
             origin-method
-            origin-sha256
+            origin-hash
+            origin-sha256                         ;deprecated
             origin-file-name
             origin-actual-file-name
             origin-patches
@@ -62,6 +72,7 @@
             origin-snippet
             origin-modules
             base32
+            base64
 
             package
             package?
@@ -155,15 +166,79 @@
 ;;;
 ;;; Code:
 
+;; Crytographic content hash.
+(define-immutable-record-type <content-hash>
+  (%content-hash algorithm value)
+  content-hash?
+  (algorithm content-hash-algorithm)              ;symbol
+  (value     content-hash-value))                 ;bytevector
+
+(define-syntax-rule (define-content-hash-constructor name
+                      (algorithm size) ...)
+  "Define NAME as a <content-hash> constructor that ensures that (1) its
+second argument is among the listed ALGORITHM, and (2), when possible, that
+its first argument has the right size for the chosen algorithm."
+  (define-syntax name
+    (lambda (s)
+      (syntax-case s (algorithm ...)
+        ((_ bv algorithm)
+         (let ((bv* (syntax->datum #'bv)))
+           (when (and (bytevector? bv*)
+                      (not (= size (bytevector-length bv*))))
+             (syntax-violation 'content-hash "invalid content hash length" s))
+           #'(%content-hash 'algorithm bv)))
+        ...))))
+
+(define-content-hash-constructor build-content-hash
+  (sha256 32)
+  (sha512 64))
+
+(define-syntax content-hash
+  (lambda (s)
+    "Return a content hash with the given parameters.  The default hash
+algorithm is sha256.  If the first argument is a literal string, it is decoded
+as base32.  Otherwise, it must be a bytevector."
+    ;; What we'd really want here is something like C++ 'constexpr'.
+    (syntax-case s ()
+      ((_ str)
+       (string? (syntax->datum #'str))
+       #'(content-hash str sha256))
+      ((_ str algorithm)
+       (string? (syntax->datum #'str))
+       (with-syntax ((bv (base32 (syntax->datum #'str))))
+         #'(content-hash bv algorithm)))
+      ((_ (id str) algorithm)
+       (and (string? (syntax->datum #'str))
+            (free-identifier=? #'id #'base32))
+       (with-syntax ((bv (nix-base32-string->bytevector (syntax->datum #'str))))
+         #'(content-hash bv algorithm)))
+      ((_ (id str) algorithm)
+       (and (string? (syntax->datum #'str))
+            (free-identifier=? #'id #'base64))
+       (with-syntax ((bv (base64-decode (syntax->datum #'str))))
+         #'(content-hash bv algorithm)))
+      ((_ bv)
+       #'(content-hash bv sha256))
+      ((_ bv hash)
+       #'(build-content-hash bv hash)))))
+
+(define (print-content-hash hash port)
+  (format port "#<content-hash ~a:~a>"
+          (content-hash-algorithm hash)
+          (bytevector->nix-base32-string (content-hash-value hash))))
+
+(set-record-type-printer! <content-hash> print-content-hash)
+
+
 ;; The source of a package, such as a tarball URL and fetcher---called
 ;; "origin" to avoid name clash with `package-source', `source', etc.
 (define-record-type* <origin>
-  origin make-origin
+  %origin make-origin
   origin?
   this-origin
   (uri       origin-uri)                          ; string
   (method    origin-method)                       ; procedure
-  (sha256    origin-sha256)                       ; bytevector
+  (hash      origin-hash)                         ; <content-hash>
   (file-name origin-file-name (default #f))       ; optional file name
 
   ;; Patches are delayed so that the 'search-patch' calls are made lazily,
@@ -186,30 +261,60 @@
   (patch-guile origin-patch-guile                 ; package or #f
                (default #f)))
 
+(define-syntax origin-compatibility-helper
+  (syntax-rules (sha256)
+    ((_ () (fields ...))
+     (%origin fields ...))
+    ((_ ((sha256 exp) rest ...) (others ...))
+     (%origin others ...
+              (hash (content-hash exp sha256))
+              rest ...))
+    ((_ (field rest ...) (others ...))
+     (origin-compatibility-helper (rest ...)
+                                  (others ... field)))))
+
+(define-syntax-rule (origin fields ...)
+  "Build an <origin> record, automatically converting 'sha256' field
+specifications to 'hash'."
+  (origin-compatibility-helper (fields ...) ()))
+
+(define-deprecated (origin-sha256 origin)
+  origin-hash
+  (let ((hash (origin-hash origin)))
+    (unless (eq? (content-hash-algorithm hash) 'sha256)
+      (raise (condition (&message
+                         (message (G_ "no SHA256 hash for origin"))))))
+    (content-hash-value hash)))
+
 (define (print-origin origin port)
   "Write a concise representation of ORIGIN to PORT."
   (match origin
-    (($ <origin> uri method sha256 file-name patches)
+    (($ <origin> uri method hash file-name patches)
      (simple-format port "#<origin ~s ~a ~s ~a>"
-                    uri (bytevector->base32-string sha256)
+                    uri hash
                     (force patches)
                     (number->string (object-address origin) 16)))))
 
 (set-record-type-printer! <origin> print-origin)
 
-(define-syntax base32
-  (lambda (s)
-    "Return the bytevector corresponding to the given Nix-base32
+(define-syntax-rule (define-compile-time-decoder name string->bytevector)
+  "Define NAME as a macro that runs STRING->BYTEVECTOR at macro expansion time
+if possible."
+  (define-syntax name
+    (lambda (s)
+      "Return the bytevector corresponding to the given textual
 representation."
-    (syntax-case s ()
-      ((_ str)
-       (string? (syntax->datum #'str))
-       ;; A literal string: do the conversion at expansion time.
-       (with-syntax ((bv (nix-base32-string->bytevector
-                          (syntax->datum #'str))))
-         #''bv))
-      ((_ str)
-       #'(nix-base32-string->bytevector str)))))
+      (syntax-case s ()
+        ((_ str)
+         (string? (syntax->datum #'str))
+         ;; A literal string: do the conversion at expansion time.
+         (with-syntax ((bv (string->bytevector (syntax->datum #'str))))
+           #''bv))
+        ((_ str)
+         #'(string->bytevector str))))))
+
+(define-compile-time-decoder base32 nix-base32-string->bytevector)
+(define-compile-time-decoder base64 base64-decode)
 
 (define (origin-actual-file-name origin)
   "Return the file name of ORIGIN, either its 'file-name' field or the file
@@ -231,6 +336,7 @@ name of its URI."
          ;; git, svn, cvs, etc. reference
          #f))))
 
+
 (define %supported-systems
   ;; This is the list of system types that are supported.  By default, we
   ;; expect all packages to build successfully here.
@@ -1088,39 +1194,39 @@ and return it."
   (make-weak-key-hash-table 200))
 
 (define (input-graft store system)
-  "Return a procedure that, given a package with a graft, returns a graft, and
-#f otherwise."
-  (match-lambda
-    ((? package? package)
+  "Return a procedure that, given a package with a replacement and an output name,
+returns a graft, and #f otherwise."
+  (match-lambda*
+    (((? package? package) output)
      (let ((replacement (package-replacement package)))
        (and replacement
-            (cached (=> %graft-cache) package system
+            (cached (=> %graft-cache) package (cons output system)
                     (let ((orig (package-derivation store package system
                                                     #:graft? #f))
                           (new  (package-derivation store replacement system
                                                     #:graft? #t)))
                       (graft
                         (origin orig)
-                        (replacement new)))))))
-    (x
-     #f)))
+                        (origin-output output)
+                        (replacement new)
+                        (replacement-output output)))))))))
 
 (define (input-cross-graft store target system)
   "Same as 'input-graft', but for cross-compilation inputs."
-  (match-lambda
-    ((? package? package)
-    (let ((replacement (package-replacement package)))
-      (and replacement
-           (let ((orig (package-cross-derivation store package target system
-                                                 #:graft? #f))
-                 (new  (package-cross-derivation store replacement
-                                                 target system
-                                                 #:graft? #t)))
-             (graft
-               (origin orig)
-               (replacement new))))))
-   (_
-    #f)))
+  (match-lambda*
+    (((? package? package) output)
+     (let ((replacement (package-replacement package)))
+       (and replacement
+            (let ((orig (package-cross-derivation store package target system
+                                                  #:graft? #f))
+                  (new  (package-cross-derivation store replacement
+                                                  target system
+                                                  #:graft? #t)))
+              (graft
+                (origin orig)
+                (origin-output output)
+                (replacement new)
+                (replacement-output output))))))))
 
 (define* (fold-bag-dependencies proc seed bag
                                 #:key (native? #t))
@@ -1137,26 +1243,21 @@ dependencies; otherwise, restrict to target dependencies."
                       (bag-host-inputs bag))))
         bag-host-inputs))
 
-  (define nodes
-    (match (bag-direct-inputs* bag)
-      (((labels things _ ...) ...)
-       things)))
-
-  (let loop ((nodes nodes)
+  (let loop ((inputs (bag-direct-inputs* bag))
              (result seed)
-             (visited (setq)))
-    (match nodes
+             (visited vlist-null))
+    (match inputs
       (()
        result)
-      (((? package? head) . tail)
-       (if (set-contains? visited head)
-           (loop tail result visited)
-           (let ((inputs (bag-direct-inputs* (package->bag head))))
-             (loop (match inputs
-                     (((labels things _ ...) ...)
-                      (append things tail)))
-                   (proc head result)
-                   (set-insert head visited)))))
+      (((label (? package? head) . rest) . tail)
+       (let ((output  (match rest (() "out") ((output) output)))
+             (outputs (vhash-foldq* cons '() head visited)))
+         (if (member output outputs)
+             (loop tail result visited)
+             (let ((inputs (bag-direct-inputs* (package->bag head))))
+               (loop (append inputs tail)
+                     (proc head output result)
+                     (vhash-consq head output visited))))))
       ((head . tail)
        (loop tail result visited)))))
 
@@ -1171,23 +1272,27 @@ to (see 'graft-derivation'.)"
 
   (define native-grafts
     (let ((->graft (input-graft store system)))
-      (fold-bag-dependencies (lambda (package grafts)
-                               (match (->graft package)
-                                 (#f    grafts)
-                                 (graft (cons graft grafts))))
-                             '()
-                             bag)))
+      (parameterize ((%current-system system)
+                     (%current-target-system #f))
+        (fold-bag-dependencies (lambda (package output grafts)
+                                 (match (->graft package output)
+                                   (#f    grafts)
+                                   (graft (cons graft grafts))))
+                               '()
+                               bag))))
 
   (define target-grafts
     (if target
         (let ((->graft (input-cross-graft store target system)))
-          (fold-bag-dependencies (lambda (package grafts)
-                                   (match (->graft package)
-                                     (#f    grafts)
-                                     (graft (cons graft grafts))))
-                                 '()
-                                 bag
-                                 #:native? #f))
+          (parameterize ((%current-system system)
+                         (%current-target-system target))
+            (fold-bag-dependencies (lambda (package output grafts)
+                                     (match (->graft package output)
+                                       (#f    grafts)
+                                       (graft (cons graft grafts))))
+                                   '()
+                                   bag
+                                   #:native? #f)))
         '()))
 
   ;; We can end up with several identical grafts if we stumble upon packages
@@ -1381,14 +1486,19 @@ unless you know what you are doing."
                              #:optional (system (%current-system)))
   "Return the derivation corresponding to ORIGIN."
   (match origin
-    (($ <origin> uri method sha256 name (= force ()) #f)
+    (($ <origin> uri method hash name (= force ()) #f)
      ;; No patches, no snippet: this is a fixed-output derivation.
-     (method uri 'sha256 sha256 name #:system system))
-    (($ <origin> uri method sha256 name (= force (patches ...)) snippet
+     (method uri
+             (content-hash-algorithm hash)
+             (content-hash-value hash)
+             name #:system system))
+    (($ <origin> uri method hash name (= force (patches ...)) snippet
         (flags ...) inputs (modules ...) guile-for-build)
      ;; Patches and/or a snippet.
-     (mlet %store-monad ((source (method uri 'sha256 sha256 name
-                                         #:system system))
+     (mlet %store-monad ((source (method uri
+                                         (content-hash-algorithm hash)
+                                         (content-hash-value hash)
+                                         name #:system system))
                          (guile  (package->derivation (or guile-for-build
                                                           (default-guile))
                                                       system

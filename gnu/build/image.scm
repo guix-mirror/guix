@@ -47,9 +47,10 @@
   "Take SEXP, a tuple as returned by 'partition->gexp', and turn it into a
 <partition> record."
   (match sexp
-    ((size file-system label uuid)
+    ((size file-system file-system-options label uuid)
      (partition (size size)
                 (file-system file-system)
+                (file-system-options file-system-options)
                 (label label)
                 (uuid uuid)))))
 
@@ -63,25 +64,30 @@
 take the partition metadata size into account, take a 25% margin."
   (* 1.25 (file-size root)))
 
-(define* (make-ext4-image partition target root
-                          #:key
-                          (owner-uid 0)
-                          (owner-gid 0))
-  "Handle the creation of EXT4 partition images. See 'make-partition-image'."
+(define* (make-ext-image partition target root
+                         #:key
+                         (owner-uid 0)
+                         (owner-gid 0))
+  "Handle the creation of EXT2/3/4 partition images. See
+'make-partition-image'."
   (let ((size (partition-size partition))
+        (fs (partition-file-system partition))
+        (fs-options (partition-file-system-options partition))
         (label (partition-label partition))
         (uuid (partition-uuid partition))
-        (options "lazy_itable_init=1,lazy_journal_init=1"))
-    (invoke "mke2fs" "-t" "ext4" "-d" root
-            "-L" label "-U" (uuid->string uuid)
-            "-E" (format #f "root_owner=~a:~a,~a"
-                         owner-uid owner-gid options)
-            target
-            (format #f "~ak"
-                    (size-in-kib
-                     (if (eq? size 'guess)
-                         (estimate-partition-size root)
-                         size))))))
+        (journal-options "lazy_itable_init=1,lazy_journal_init=1"))
+    (apply invoke
+           `("mke2fs" "-t" ,fs "-d" ,root
+             "-L" ,label "-U" ,(uuid->string uuid)
+             "-E" ,(format #f "root_owner=~a:~a,~a"
+                           owner-uid owner-gid journal-options)
+             ,@fs-options
+             ,target
+             ,(format #f "~ak"
+                      (size-in-kib
+                       (if (eq? size 'guess)
+                           (estimate-partition-size root)
+                           size)))))))
 
 (define* (make-vfat-image partition target root)
   "Handle the creation of VFAT partition images.  See 'make-partition-image'."
@@ -105,8 +111,8 @@ ROOT directory to populate the image."
   (let* ((partition (sexp->partition partition-sexp))
          (type (partition-file-system partition)))
     (cond
-     ((string=? type "ext4")
-      (make-ext4-image partition target root))
+     ((string-prefix? "ext" type)
+      (make-ext-image partition target root))
      ((string=? type "vfat")
       (make-vfat-image partition target root))
      (else
@@ -140,19 +146,22 @@ deduplicates files common to CLOSURE and the rest of PREFIX."
 
 (define* (initialize-efi-partition root
                                    #:key
-                                   bootloader-package
+                                   grub-efi
                                    #:allow-other-keys)
-  "Install in ROOT directory, an EFI loader using BOOTLOADER-PACKAGE."
-  (install-efi-loader bootloader-package root))
+  "Install in ROOT directory, an EFI loader using GRUB-EFI."
+  (install-efi-loader grub-efi root))
 
 (define* (initialize-root-partition root
                                     #:key
                                     bootcfg
                                     bootcfg-location
+                                    bootloader-package
+                                    bootloader-installer
                                     (deduplicate? #t)
                                     references-graphs
                                     (register-closures? #t)
                                     system-directory
+                                    make-device-nodes
                                     #:allow-other-keys)
   "Initialize the given ROOT directory. Use BOOTCFG and BOOTCFG-LOCATION to
 install the bootloader configuration.
@@ -164,6 +173,10 @@ of the directory of the 'system' derivation."
   (populate-root-file-system system-directory root)
   (populate-store references-graphs root)
 
+  ;; Populate /dev.
+  (when make-device-nodes
+    (make-device-nodes root))
+
   (when register-closures?
     (for-each (lambda (closure)
                 (register-closure root
@@ -172,6 +185,9 @@ of the directory of the 'system' derivation."
                                   #:deduplicate? deduplicate?))
               references-graphs))
 
+  (when bootloader-installer
+    (display "installing bootloader...\n")
+    (bootloader-installer bootloader-package #f root))
   (when bootcfg
     (install-boot-config bootcfg bootcfg-location root)))
 

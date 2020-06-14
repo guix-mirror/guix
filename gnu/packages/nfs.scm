@@ -3,6 +3,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
 (define-public nfs-utils
   (package
     (name "nfs-utils")
-    (version "2.4.2")
+    (version "2.4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -53,7 +54,7 @@
                    "/nfs-utils-" version ".tar.xz"))
              (sha256
               (base32
-               "0f0hm8jq1p5gra55v621qpbb3mryakaikzpy5znkvxym0dx76r24"))))
+               "16b5y82cjy1cvijg5zmdvivc6sfdlv2slyynxbwwyw43vpjzqrdg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,10 @@
   #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (guix records)
   #:use-module (gnu system uuid)
@@ -38,6 +42,9 @@
             file-system-needed-for-boot?
             file-system-flags
             file-system-options
+            file-system-options->alist
+            alist->file-system-options
+
             file-system-mount?
             file-system-check?
             file-system-create-mount-point?
@@ -45,6 +52,8 @@
             file-system-location
 
             file-system-type-predicate
+            btrfs-subvolume?
+            btrfs-store-subvolume-file-name
 
             file-system-label
             file-system-label?
@@ -250,6 +259,33 @@ UUID-TYPE, a symbol such as 'dce or 'iso9660."
          (uuid->string device)))
     ((? string?)
      device)))
+
+(define (file-system-options->alist string)
+  "Translate the option string format of a <file-system> record into an
+association list of options or option/value pairs."
+  (if string
+      (let ((options (string-split string #\,)))
+        (map (lambda (param)
+               (let ((=index (string-index param #\=)))
+                 (if =index
+                     (cons (string-take param =index)
+                           (string-drop param (1+ =index)))
+                     param)))
+             options))
+      '()))
+
+(define (alist->file-system-options options)
+  "Return the string representation of OPTIONS, an association list.  The
+string obtained can be used as the option field of a <file-system> record."
+  (if (null? options)
+      #f
+      (string-join (map (match-lambda
+                          ((key . value)
+                           (string-append key "=" value))
+                          (key
+                           key))
+                        options)
+                   ",")))
 
 (define (file-system-needed-for-boot? fs)
   "Return true if FS has the 'needed-for-boot?' flag set, or if it holds the
@@ -534,5 +570,55 @@ a bind mount."
 system has the given TYPE."
   (lambda (fs)
     (string=? (file-system-type fs) type)))
+
+
+;;;
+;;; Btrfs specific helpers.
+;;;
+
+(define (btrfs-subvolume? fs)
+  "Predicate to check if FS, a file-system object, is a Btrfs subvolume."
+  (and-let* ((btrfs-file-system? (string= "btrfs" (file-system-type fs)))
+             (option-keys (map (match-lambda
+                                 ((key . value) key)
+                                 (key key))
+                               (file-system-options->alist
+                                (file-system-options fs)))))
+    (find (cut string-prefix? "subvol" <>) option-keys)))
+
+(define (btrfs-store-subvolume-file-name file-systems)
+  "Return the subvolume file name within the Btrfs top level onto which the
+store is located, else #f."
+
+  (define (prepend-slash/maybe s)
+    (if (string=? "/" (string-take s 1))
+        s
+        (string-append "/" s)))
+
+  (define (file-name-depth file-name)
+    (length (string-tokenize file-name %not-slash)))
+
+  (and-let* ((btrfs-subvolume-fs (filter btrfs-subvolume? file-systems))
+             (btrfs-subvolume-fs*
+              (sort btrfs-subvolume-fs
+                    (lambda (fs1 fs2)
+                      (> (file-name-depth (file-system-mount-point fs1))
+                         (file-name-depth (file-system-mount-point fs2))))))
+             (store-subvolume-fs
+              (find (lambda (fs) (file-prefix? (file-system-mount-point fs)
+                                               (%store-prefix)))
+                    btrfs-subvolume-fs*))
+             (options (file-system-options->alist
+                       (file-system-options store-subvolume-fs))))
+    ;; XXX: Deriving the subvolume name based from a subvolume ID is not
+    ;; supported, as we'd need to query the actual file system.
+    (or (and=> (assoc-ref options "subvol") prepend-slash/maybe)
+        ;; FIXME: Use &fix-hint once it no longer pulls in (guix utils).
+        (raise (condition
+                (&message
+                 (message "The store is on a Btrfs subvolume, but the \
+subvolume name is unknown.
+Hint: Use the \"subvol\" Btrfs file system option.")))))))
+
 
 ;;; file-systems.scm ends here

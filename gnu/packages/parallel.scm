@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,14 +55,14 @@
 (define-public parallel
   (package
     (name "parallel")
-    (version "20200422")
+    (version "20200522")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/parallel/parallel-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0c2mr2rzsz0y24q4mbm2zmc2fz6bcda4gbc4qgg59sirrj8vzpjb"))))
+       (base32 "10is46v5dpccxibby0zikg1q68mdwpmgdpxk796zka93idd6id29"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -192,20 +193,22 @@ by managing a queue of pending work.")
 (define-public slurm-drmaa
   (package
     (name "slurm-drmaa")
-    (version "1.0.7")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
-              (uri "http://apps.man.poznan.pl/trac/slurm-drmaa/downloads/9")
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append
+                    "https://github.com/natefoo/slurm-drmaa/releases/download/"
+                    version "/slurm-drmaa-" version ".tar.gz"))
               (sha256
                (base32
-                "0grw55hmny2mc4nc0y1arnvxd2k0dcdfn476kzs180fibjxgfw14"))))
+                "19r4cm88pcpm3wli4cc61zq7354pg67cg866f3a430p15hm1knrn"))))
     (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ; The tests require "bats".
     (inputs
      `(("slurm" ,slurm)))
     (native-inputs
      `(("which" ,which)))
-    (home-page "http://apps.man.poznan.pl/trac/slurm-drmaa")
+    (home-page "https://github.com/natefoo/slurm-drmaa")
     (synopsis "Distributed resource management application API for SLURM")
     (description
      "PSNC DRMAA for Simple Linux Utility for Resource Management (SLURM) is

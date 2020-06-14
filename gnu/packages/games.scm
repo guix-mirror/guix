@@ -23,7 +23,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Steve Webber <webber.sl@gmail.com>
 ;;; Copyright © 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@hyperbola.info>
-;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2017, 2018, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2019 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -450,7 +450,7 @@ possible, while battling many vicious aliens.")
 (define-public cataclysm-dda
   (package
     (name "cataclysm-dda")
-    (version "0.E")
+    (version "0.E-2")
     (source
      (origin
        (method git-fetch)
@@ -458,7 +458,7 @@ possible, while battling many vicious aliens.")
              (url "https://github.com/CleverRaven/Cataclysm-DDA.git")
              (commit version)))
        (sha256
-        (base32 "0pbi0fw37zimzdklfj58s1ql0wlqq7dy6idkcsib3hn910ajaxan"))
+        (base32 "15l6w6lxays7qmsv0ci2ry53asb9an9dh7l7fc13256k085qcg68"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -626,8 +626,9 @@ tired of cows, a variety of other ASCII-art messengers are available.")
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f ;; no check target
-         #:make-flags (list "CC=gcc")
+       `(#:tests? #f                    ; no check target
+         #:make-flags
+         (list ,(string-append "CC=" (cc-for-target)))
          #:phases
          (modify-phases %standard-phases
            (delete 'bootstrap)
@@ -978,7 +979,7 @@ automata.  The following features are available:
 (define-public julius
   (package
     (name "julius")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -987,7 +988,7 @@ automata.  The following features are available:
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01rygr592ar530qv1flmaiq8icl0qdxgc8lhkcdyn1g09941z47v"))
+        (base32 "12hhnhdwgz7hd3hlndbnk15pxggm1375qs0764ija4nl1gbpb110"))
        ;; Remove unused bundled libraries.
        (modules '((guix build utils)))
        (snippet
@@ -1157,15 +1158,15 @@ destroying an ancient book using a special wand.")
 (define-public gnome-chess
   (package
     (name "gnome-chess")
-    (version "3.36.0")
+    (version "3.36.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gnome-chess/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "gnome-chess-" version ".tar.xz"))
               (sha256
                (base32
-                "1a9fgi749gy1f60vbcyrqqkab9vqs42hji70q73k1xx8rv0agmg0"))))
+                "165bk8s3nngyqbikggspj4rff5nxxfkfcmgzjb4grmsrgbqwk5di"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -1314,15 +1315,14 @@ Chess).  It is similar to standard chess but this variant is far more complicate
 (define-public ltris
   (package
     (name "ltris")
-    (version "1.0.19")
+    (version "1.0.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://prdownloads.sourceforge.net/lgames/"
                            "ltris-" version ".tar.gz"))
        (sha256
-        (base32
-         "1895wv1fqklrj4apkz47rnkcfhfav7zjknskw6p0886j35vrwslg"))))
+        (base32 "16zbqsc4amx9g3yjv6054nh4ia09dgfp8k6q4qxpjicl3dw3z0in"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The code in LTris uses traditional GNU semantics for inline functions
@@ -1733,6 +1733,83 @@ can be explored and changed freely.")
                    license:gpl3+
                    license:silofl1.1))))
 
+(define-public superstarfighter
+  (package
+    (name "superstarfighter")
+    (version "0.6.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/notapixelstudio/superstarfighter.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1fly63yf5ls1xwm15if4lxwy67wi84k4gvjllljpykrl18vw2y0y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (chdir "godot")
+             (setenv "HOME" (getcwd))
+             (with-output-to-file "export_presets.cfg"
+               (lambda ()
+                 (display
+                  "[preset.0]
+name=\"Guix\"
+platform=\"Linux/X11\"
+runnable=true
+[preset.0.options]")))
+             #t))
+         (replace 'build
+           (lambda _
+             (let ((godot (assoc-ref %build-inputs "godot-headless")))
+               (invoke (string-append godot "/bin/godot_server")
+                       "--export-pack" "Guix"
+                       "superstarfighter.pck" "project.godot"))
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share"))
+                    (data (string-append share "/superstarfighter"))
+                    (icons (string-append share "/icons/hicolor/256x256/apps")))
+               (install-file "superstarfighter.pck" data)
+               (mkdir-p bin)
+               (call-with-output-file (string-append bin "/superstarfighter")
+                 (lambda (port)
+                   (format port
+                           "#!/bin/sh~@
+                            exec ~a/bin/godot --main-pack ~a/superstarfighter.pck~%"
+                           (assoc-ref inputs "godot")
+                           data)
+                   (chmod port #o755)))
+               (mkdir-p icons)
+               (copy-file "icon.png" (string-append icons "/" ,name ".png"))
+               (make-desktop-entry-file
+                (string-append share "/applications/" ,name ".desktop")
+                #:name "SuperStarfighter"
+                #:comment "Fast-paced arcade combat game"
+                #:exec ,name
+                #:icon ,name
+                #:categories '("Game" "ArcadeGame")))
+             #t)))))
+    (native-inputs
+     `(("godot-headless" ,godot "headless")))
+    (inputs
+     `(("godot" ,godot)))
+    (home-page "https://notapixel.itch.io/superstarfighter")
+    (synopsis "Fast-paced local multiplayer arcade game")
+    (description "In SuperStarfighter, up to four local players compete in a
+2D arena with fast-moving ships and missiles.  Different game types are
+available, as well as a single-player mode with AI-controlled ships.")
+    (license (list license:expat         ; game
+                   license:silofl1.1)))) ; fonts
+
 (define-public xshogi
   (package
     (name "xshogi")
@@ -1814,16 +1891,15 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.2.0")
+    (version "4.2.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://rephial.org/downloads/"
+       (uri (string-append "https://rephial.org/downloads/"
                            (version-major+minor version)
                            "/angband-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vdm1ymm28wawp94nl1p5q3lhc0k7cnn2kkvvrkfx962gif4kqfk"))
+        (base32 "03qdavkj2ik02mqjxmlm5bn17ba3yxb1rirp8ghnxy3bsk4kbmxc"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -1856,7 +1932,7 @@ that beneath its ruins lay buried an ancient evil.")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
     (inputs `(("ncurses" ,ncurses)))
-    (home-page "http://rephial.org/")
+    (home-page "https://rephial.org/")
     (synopsis "Dungeon exploration roguelike")
     (description "Angband is a Classic dungeon exploration roguelike.  Explore
 the depths below Angband, seeking riches, fighting monsters, and preparing to
@@ -1976,7 +2052,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.2.6")
+    (version "6.2.7")
     (source
      (origin
        (method url-fetch)
@@ -1984,7 +2060,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "0kxhdv01ia91v2y0cmzbll391ns2vbmn65jjrv37h4s1srszh5yn"))))
+         "0ilq4bfl0lwyzf11q7n2skydjhalfn3bgxhrp5hjxs5bc5d6fdp5"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/chess/")
     (synopsis "Full chess implementation")
@@ -2894,7 +2970,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.11")
+    (version "1.14.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2903,7 +2979,7 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "1i8mz6gw3qar09bscczhki0g4scj8pl58v85rp0g55r4bcq41l5v"))))
+                "027bc1363hdgahw7dvd22fvvqd132byxnljfbq6lvlr5ci01q8mk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -3904,7 +3980,7 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.0.0.3")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -3913,7 +3989,7 @@ tactics.")
                     (version-major+minor version) "-src.tar.gz"))
               (sha256
                (base32
-                "13vi5kh9ahws4f52421cbyw0jn7pmbnld358lqfmr6flql7ilj3b"))))
+                "1ldd9cbvl694ps4sapr8213m3zjrci7gii5x3kjjfalkikmndpd2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -4742,24 +4818,27 @@ emerges from a sewer hole and pulls her below ground.")
 (define-public cdogs-sdl
   (package
     (name "cdogs-sdl")
-    (version "0.6.9")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/cxong/cdogs-sdl.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "13gyv2hzk43za1n3lsjnd5v64xlzfzq7n10scd1rcbsnk1n007zr"))))
+    (version "0.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cxong/cdogs-sdl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0vx37zb2iw7sfw5a2bs97ydlmb301nvy485ybdm8g46c5hn9s13c"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "-DCDOGS_DATA_DIR="
                             (assoc-ref %outputs "out")
                             "/share/cdogs-sdl/"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("mesa" ,mesa)
+     `(("gtk+" ,gtk+)
+       ("mesa" ,mesa)
        ("sdl2" ,sdl2)
        ("sdl2-image" ,sdl2-image)
        ("sdl2-mixer" ,sdl2-mixer)))
@@ -5730,6 +5809,14 @@ some graphical niceities, and numerous bug-fixes and other improvements.")
                (string-append "LDFLAGS=-Wl,-rpath=" vulkanlib)
                "-CQuake"))
        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-for-new-vulkan
+                    (lambda _
+                      ;; Mimic upstream commit a869a22d9b51c68e for
+                      ;; compatibility with newer vulkan-headers.
+                      (substitute* "Quake/gl_rmisc.c"
+                        (("VK_DYNAMIC_STATE_RANGE_SIZE")
+                         "3"))
+                      #t))
                   (delete 'configure)
                   (add-after 'unpack 'fix-makefile-paths
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -6299,7 +6386,7 @@ original.")
 (define-public fortune-mod
   (package
     (name "fortune-mod")
-    (version "2.12.0")
+    (version "2.28.0")
     (source
      (origin
        (method git-fetch)
@@ -6308,8 +6395,7 @@ original.")
              (commit (string-append "fortune-mod-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0laxgqsdg7kvpvvm1f54b94ga9r0cr9g3ffii8avg8fy65x6pzc9"))))
+        (base32 "1ppzgnffgdcmq6fq4gmdq2ig10ip2bnfgklkb3i8nc6bdxm7pb89"))))
     (build-system cmake-build-system)
     (arguments
      `(#:test-target "check"
@@ -6587,7 +6673,7 @@ quotation from a collection of quotes.")
        ("pkg-config" ,pkg-config)
        ("libtool" ,libtool)
        ("gmp" ,gmp)))
-    (home-page "http://xonotic.org")
+    (home-page "https://xonotic.org")
     (synopsis "Fast-paced first-person shooter game")
     (description
      "Xonotic is a free, fast-paced first-person shooter.
@@ -6759,7 +6845,7 @@ when packaged in Blorb container files or optionally from individual files.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.3")
+    (version "0.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libmanette/"
@@ -6767,7 +6853,7 @@ when packaged in Blorb container files or optionally from individual files.")
                                   "libmanette-" version ".tar.xz"))
               (sha256
                (base32
-                "1zxh7jn2zg7hivmal5zxam6fxvjsd1w6hlw0m2kysk76b8anbw60"))))
+                "1xrc6rh73v5w3kbkflzv1yg8sbxk4wf06hfk95raxhxlssza9q2g"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-compile-resources
@@ -7282,7 +7368,7 @@ where the player draws runes in real time to effect the desired spell.")
 (define-public edgar
   (package
     (name "edgar")
-    (version "1.32")
+    (version "1.33")
     (source
      (origin
        (method url-fetch)
@@ -7290,7 +7376,7 @@ where the player draws runes in real time to effect the desired spell.")
         (string-append "https://github.com/riksweeney/edgar/releases/download/"
                        version "/edgar-" version "-1.tar.gz"))
        (sha256
-        (base32 "12lam6qcscc5ima1w2ksd1cvsvxbd17h6mqkgsqpzx8ap43p2r5p"))))
+        (base32 "1mbx7dvizdca4g1blcv3bdh6yxd13k47rkya4rdzg0nvvz24m175"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f            ; there are no tests
                  #:make-flags

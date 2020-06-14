@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
@@ -222,32 +222,50 @@ comes with a SOCKS proxy client.")
 (define-public python-falcon
   (package
     (name "python-falcon")
-    (version "1.4.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "falcon" version))
        (sha256
         (base32
-         "1i0vmqsk24z4biirqhpvas9h28wy7nmpy3jvnb6rz2imq04zd09r"))))
+         "1z6mqfv574x6jiawf67ib52g4kk20c2x7xk7wrn1573b8v7r79gf"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "falcon/vendor")
+           (substitute* "setup.py"
+             ((".*falcon\\.vendor\\.mimeparse.*") ""))
+           (substitute* '("falcon/media/handlers.py"
+                          "falcon/request.py")
+             (("from falcon\\.vendor ") ""))
+           (substitute* "falcon.egg-info/SOURCES.txt"
+             (("falcon/vendor.*") ""))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
-           (lambda _
-             (invoke "pytest"))))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Skip orjson, which requires rust to build.
+             (substitute* "tests/test_media_handlers.py"
+               (("== 'CPython") "!= 'CPython"))
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "--ignore" "falcon"))))))
     (propagated-inputs
-     `(("python-mimeparse" ,python-mimeparse)
-       ("python-six" ,python-six)))
+     `(("python-mimeparse" ,python-mimeparse)))
     (native-inputs
      `(("python-cython" ,python-cython) ;for faster binaries
+       ("python-mujson" ,python-mujson)
+       ("python-msgpack" ,python-msgpack)
        ("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
        ("python-pyyaml" ,python-pyyaml)
+       ("python-rapidjson" ,python-rapidjson)
        ("python-requests" ,python-requests)
        ("python-testtools" ,python-testtools)
-       ("python-jsonschema" ,python-jsonschema)
-       ("python-msgpack" ,python-msgpack)))
+       ("python-ujson" ,python-ujson)))
     (home-page "https://falconframework.org")
     (synopsis
      "Web framework for building APIs and application backends")
@@ -267,10 +285,15 @@ classes
 @item Compatible with both CPython and PyPy
 @item Cython support for better performance when used with CPython
 @end itemize")
+    (properties `((python2-variant . ,(delay python2-falcon))))
     (license license:asl2.0)))
 
 (define-public python2-falcon
-  (package-with-python2 python-falcon))
+  (let ((falcon (package-with-python2 (strip-python2-variant python-falcon))))
+    (package
+      (inherit falcon)
+      (native-inputs
+       (alist-delete "python-rapidjson" (package-native-inputs falcon))))))
 
 (define-public python-falcon-cors
   (package
@@ -301,20 +324,20 @@ over a different origin than that of the web application.")
 (define-public python-furl
   (package
     (name "python-furl")
-    (version "0.5.6")
+    (version "2.0.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "furl" version))
         (sha256
           (base32
-            "0lzpfpm686hvz3sr1mcrnd1b3lgmnw8v59gb43wfi98r3b671pqc"))))
+            "1v2lakx03d5w8954a39ki44xv5mllnq0a0avhxykv9hrzg0yvjpx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-orderedmultidict" ,python-orderedmultidict)))
     (native-inputs
-     `(("python-pycodestyle" ,python-pycodestyle)))
+     `(("python-flake8" ,python-flake8)))
     (home-page "https://github.com/gruns/furl")
     (synopsis "URL manipulation in Python")
     (description "Furl provides an easy-to-use alternative to the
@@ -554,13 +577,13 @@ and written in Python.")
 (define-public python-html5-parser
   (package
     (name "python-html5-parser")
-    (version "0.4.5")
+    (version "0.4.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "html5-parser" version))
               (sha256
                (base32
-                "01mx33sx4dhl4kj6wc48nj6jz7ry60rkhjv0s6k8h5xmjf5yy0x9"))))
+                "13yl3vnf3sxl05m0nhpngnrz3g1jvyahd33lys3m3hfb91l8zzi5"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -773,25 +796,30 @@ ebooks, due to cssutils not receiving updates as of 1.0.2.")
 (define-public python-cssselect
   (package
     (name "python-cssselect")
-    (version "0.9.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "cssselect" version))
-        (sha256
-         (base32
-          "1xg6gbva1yswghiycmgincv6ab4bn7hpm720ndbj40h8xycmnfvi"))))
+    (version "1.1.0")
+    (source (origin
+              ;; The PyPI release does not contain tests.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/scrapy/cssselect")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xslrnhbrmgakp4xg6k26qffay3kqffp3a2z2sk27c65rwxa79kc"))))
     (build-system python-build-system)
     (arguments
-     ;; tests fail with message
-     ;; AttributeError: 'module' object has no attribute 'tests'
-     `(#:tests? #f))
-    (home-page
-      "https://pythonhosted.org/cssselect/")
-    (synopsis
-      "CSS3 selector parser and translator to XPath 1.0")
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
+    (native-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/scrapy/cssselect")
+    (synopsis "CSS3 selector parser and translator to XPath 1.0")
     (description
-      "Cssselect ia a Python module that parses CSS3 Selectors and translates
+     "Cssselect ia a Python module that parses CSS3 Selectors and translates
 them to XPath 1.0 expressions.  Such expressions can be used in lxml or
 another XPath engine to find the matching elements in an XML or HTML document.")
     (license license:bsd-3)))
@@ -1012,14 +1040,14 @@ your Web app.")
 (define-public python-webob
   (package
     (name "python-webob")
-    (version "1.8.3")
+    (version "1.8.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WebOb" version))
        (sha256
         (base32
-          "1cpqskanmvwia8wqlpcr3ykyxysynjdnbl5namvpg8vw6jnkv1dh"))))
+          "026i3z99nr3px75isa9mbnky5i7rffiv4d124h5kxfjjsxz92fma"))))
     (build-system python-build-system)
     (native-inputs
       `(("python-nose" ,python-nose)))
@@ -1435,13 +1463,13 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.22.0")
+    (version "2.23.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "1d5ybh11jr5sm7xp6mz8fyc7vrp4syifds91m7sj60xalal0gq0i"))))
+               "1rhpg0jb08v0gd7f19jjiwlcdnxpmqi1fhvw7r4s9avddi4kvx5k"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -1648,14 +1676,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.25.3")
+    (version "1.25.9")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "0cij8qcvvpj62g1q8n785qjkdymfh4b7vf45si4sw64l41rr3rfv"))))
+          "09rmjqm5syhhc8fx3v06h3yv6cqy0b1081jg8wm5grpwpr72j61h"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs
@@ -2348,13 +2376,13 @@ applications.")
 (define-public python-flask-sqlalchemy
   (package
     (name "python-flask-sqlalchemy")
-    (version "2.4.0")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Flask-SQLAlchemy" version))
               (sha256
                (base32
-                "0nnllf0ddbh9jlhngnyjj98lbxgxr1csaplllx0caw98syq0k5hc"))))
+                "19apnn2m9bl1d1h2nc52pnmiyx993mwzmfjrv04l3wn5hyznyr8b"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
@@ -3769,3 +3797,235 @@ Selenium specifically provides infrastructure for the W3C WebDriver specificatio
 — a platform and language-neutral coding interface compatible with all
 major web browsers.")
     (license license:asl2.0)))
+
+(define-public python-rapidjson
+  (package
+    (name "python-rapidjson")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-rapidjson" version))
+        (sha256
+         (base32
+          "18cl2dhx3gds5vg52jxmh9wjlbiy8dx06c3n482rfpdi9dzbv05d"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "rapidjson") #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--rj-include-dir="
+                            (assoc-ref %build-inputs "rapidjson")
+                            "/include/rapidjson"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "python" "setup.py" "build"
+                     (string-append "--rj-include-dir="
+                                    (assoc-ref %build-inputs "rapidjson")
+                                    "/include/rapidjson"))))
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             ;; Some tests are broken.
+             (delete-file "tests/test_base_types.py")
+             (delete-file "tests/test_validator.py")
+             (invoke "python" "-m" "pytest" "tests"))))))
+    (native-inputs
+     `(("rapidjson" ,rapidjson)
+       ("python-pytest" ,python-pytest)
+       ("python-pytz" ,python-pytz)))
+    (home-page "https://github.com/python-rapidjson/python-rapidjson")
+    (synopsis "Python wrapper around rapidjson")
+    (description "This package provides a python wrapper around rapidjson.")
+    (license license:expat)))
+
+(define-public python-venusian
+  (package
+    (name "python-venusian")
+    (version "3.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "venusian" version))
+       (sha256
+        (base32 "0f7f67dkgxxcjfhpdd5frb9pszkf04lyzzpn5069q0xi89r2p17n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-runner" ,python-pytest-runner)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (arguments '(#:test-target "pytest"))
+    (home-page "https://docs.pylonsproject.org/projects/venusian")
+    (synopsis "Library for defering decorator actions")
+    (description
+     "Venusian is a library which allows framework authors to defer decorator
+actions.  Instead of taking actions when a function (or class) decorator is
+executed at import time, you can defer the action usually taken by the
+decorator until a separate scan phase.")
+    (license license:repoze)))
+
+(define-public python-zope-deprecation
+  (package
+    (name "python-zope-deprecation")
+    (version "4.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "zope.deprecation" version))
+              (sha256
+               (base32
+                "1pz2cv7gv9y1r3m0bdv7ks1alagmrn5msm5spwdzkb2by0w36i8d"))))
+    (build-system python-build-system)
+    (native-inputs `())
+    (propagated-inputs `())
+    (home-page "https://zopedeprecation.readthedocs.io/")
+    (synopsis "Function for marking deprecations")
+    (description "The @code{zope.deprecation} module provides a function for
+marking modules, classes, functions, methods and properties as deprecated,
+displaying warnings when usaged in application code.")
+    (license license:zpl2.1)))
+
+(define-public python-translationstring
+  (package
+    (name "python-translationstring")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "translationstring" version))
+              (sha256
+               (base32
+                "0bdpcnd9pv0131dl08h4zbcwmgc45lyvq3pa224xwan5b3x4rr2f"))))
+    (build-system python-build-system)
+    (home-page "http://docs.pylonsproject.org/projects/translationstring")
+    (synopsis "Internationalization tooling for the Pylons project")
+    (description "This package provides a library used by various Pylons
+project packages for internationalization (i18n) duties related to
+translation.")
+    (license license:repoze)))
+
+(define-public python-plaster
+  (package
+    (name "python-plaster")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "plaster" version))
+              (sha256
+               (base32
+                "1hy8k0nv2mxq94y5aysk6hjk9ryb4bsd13g83m60hcyzxz3wflc3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://docs.pylonsproject.org/projects/plaster/en/latest/")
+    (synopsis "Configuration loader for multiple config file formats")
+    (description
+     "Plaster is a loader interface around multiple config file formats.  It
+exists to define a common API for applications to use when they wish to load
+configuration.  The library itself does not aim to handle anything except a
+basic API that applications may use to find and load configuration settings.
+Any specific constraints should be implemented in a pluggable loader which can
+be registered via an entrypoint.")
+    (license license:repoze)))
+
+(define-public python-plaster-pastedeploy
+  (package
+    (name "python-plaster-pastedeploy")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "plaster_pastedeploy" version))
+              (sha256
+               (base32
+                "1zg7gcsvc1kzay1ry5p699rg2qavfsxqwl17mqxzr0gzw6j9679r"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-plaster" ,python-plaster)
+       ("python-pastedeploy" ,python-pastedeploy)))
+    (home-page "https://github.com/Pylons/plaster_pastedeploy")
+    (synopsis "Plugin for python-plaster adding PasteDeploy syntax")
+    (description
+     "This plugin for @code{python-plaster} adds support for PasteDeploy
+syntax, it provides a plaster @code{Loader} object that can parse ini files
+according to the standard set by PasteDeploy ")
+    (license license:expat)))
+
+(define-public python-hupper
+  (package
+    (name "python-hupper")
+    (version "1.10.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hupper" version))
+              (sha256
+               (base32
+                "0am0p6g5cz6xmcaf04xq8q6dzdd9qz0phj6gcmpsckf2mcyza61q"))))
+    (build-system python-build-system)
+    (arguments '(#:test-target "pytest"))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-watchdog" ,python-watchdog)
+       ("python-mock" ,python-mock)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)))
+    (home-page "https://readthedocs.org/projects/hupper")
+    (synopsis "Integrated process monitor tracking changes to imported Python files")
+    (description
+     "Hupper is an integrated process monitor that will track changes to any
+imported Python files in sys.modules as well as custom paths.  When files are
+changed the process is restarted.")
+    (license license:expat)))
+
+(define-public python-pyramid
+  (package
+    (name "python-pyramid")
+    (version "1.10.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyramid" version))
+              (sha256
+               (base32
+                "0rkxs1ajycg2zh1c94xlmls56mx5m161sn8112skj0amza6cn36q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-hupper" ,python-hupper)
+       ("python-plaster-pastedeploy" ,python-plaster-pastedeploy)
+       ("python-translationstring" ,python-translationstring)
+       ("python-venusian" ,python-venusian)
+       ("python-webob" ,python-webob)
+       ("python-zope-deprecation" ,python-zope-deprecation)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-webtest" ,python-webtest)
+       ("python-zope-component" ,python-zope-component)
+       ("python-plaster" ,python-plaster)))
+    (home-page "https://trypyramid.com/")
+    (synopsis "Python web-framework suitable for small and large sites")
+    (description
+     "Pyramid makes it easy to write web applications.  From minimal
+request/response web apps to larger, grown applications.")
+    (license license:repoze)))
+
+(define-public python-random-user-agent
+  (package
+    (name "python-random-user-agent")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "random_user_agent" version))
+       (sha256
+        (base32
+         "04nhzdh2ki7ybhjrmghxci6hcm6i03vvin2q2ynj87fbr1pa534g"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Luqman-Ud-Din/random_user_agent")
+    (synopsis "List of user agents")
+    (description
+     "This package provides a list of user agents, from a collection of more
+than 326,000 known user-agents.  Users can pick a random one, or select one
+based on filters.")
+    (license license:expat)))

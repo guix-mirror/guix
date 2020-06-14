@@ -267,14 +267,14 @@ for building OCaml library and programs.")
 (define-public ocaml-extlib
   (package
     (name "ocaml-extlib")
-    (version "1.7.6")
+    (version "1.7.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://ygrek.org.ua/p/release/ocaml-extlib/"
+              (uri (string-append "https://ygrek.org/p/release/ocaml-extlib/"
                                   "extlib-" version ".tar.gz"))
               (sha256
                (base32
-                "0wfs20v1yj5apdbj7214wdsr17ayh0qqq7ihidndvc8nmmwfa1dz"))))
+                "1sxmzc1mx3kg62j8kbk0dxkx8mkf1rn70h542cjzrziflznap0s1"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -528,7 +528,7 @@ Git-friendly development workflow.")
 (define-public camlp5
   (package
     (name "camlp5")
-    (version "7.11")
+    (version "7.12")
     (source
      (origin
        (method git-fetch)
@@ -537,7 +537,7 @@ Git-friendly development workflow.")
              (commit (string-append "rel" (string-delete #\. version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1s1f9i0r0czxlbnsaz4kvs2ahknmqxcm5ypl75g7scjcbl0an2x4"))))
+        (base32 "12ix5g15bys932hyf9gs637iz76m0ji9075d83jfdmx85q30llgf"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -582,14 +582,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.33")
+    (version "2.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   "hevea-" version ".tar.gz"))
               (sha256
                (base32
-                "0115bn6n6hhb08rmj0m508wjcsn1mggiagqly6s941pq811wxymb"))))
+                "1pzyszxw90klpcmhjqrjfc8cw6c0gm4w2blim8ydyxb6rq6qml1s"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))

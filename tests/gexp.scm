@@ -78,7 +78,8 @@
                         (mkdir-p out)
                         (call-with-output-file (string-append out "/hg2g.scm")
                           (lambda (port)
-                            (write '(define-module (hg2g)
+                            (define defmod 'define-module) ;fool Geiser
+                            (write `(,defmod (hg2g)
                                       #:export (the-answer))
                                    port)
                             (write '(define the-answer 42) port)))))))))
@@ -283,6 +284,20 @@
          (match (gexp-inputs exp)
            (((thing "out"))
             (eq? thing file))))))
+
+(test-assert "file-append, raw store item"
+  (let* ((obj   (plain-file "example.txt" "Hello!"))
+         (a     (file-append obj "/a"))
+         (b     (file-append a "/b"))
+         (c     (file-append b "/c"))
+         (exp   #~(list #$c))
+         (item  (run-with-store %store (lower-object obj)))
+         (lexp  (run-with-store %store (lower-gexp exp))))
+    (and (equal? (lowered-gexp-sexp lexp)
+                 `(list ,(string-append item "/a/b/c")))
+         (equal? (lowered-gexp-sources lexp)
+                 (list item))
+         (null? (lowered-gexp-inputs lexp)))))
 
 (test-assertm "with-parameters for %current-system"
   (mlet* %store-monad ((system -> (match (%current-system)

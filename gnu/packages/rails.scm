@@ -555,12 +555,6 @@ application bootup, plugins, generators, and Rake tasks.")
                ;; tzinfo-data is propagated by ruby-activesupport, but it
                ;; needs to be in the Gemfile to become available.
                (("group :test do") "group :test do\n  gem 'tzinfo-data'"))
-             #t))
-         (add-after 'unpack 'fix-mocha-minitest-require
-           (lambda _
-             (substitute* "test/test_helper.rb"
-               ;; This chanegd in recent versions of Mocha
-               (("mocha/minitest") "mocha/mini_test"))
              #t)))))
     (propagated-inputs
      `(("ruby-actionview" ,ruby-actionview)

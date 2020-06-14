@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
@@ -24,7 +24,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2020 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 John D. Boy <jboy@bius.moe>
@@ -634,7 +634,7 @@ on @command{git}, and use any regular Git hosting service.")
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -642,7 +642,7 @@ on @command{git}, and use any regular Git hosting service.")
                                   "/libgit2-" version ".tar.gz"))
               (sha256
                (base32
-                "1d09ni0v3vammk8zqmmwks92fh3wwnsxpyrh4s5wwdb3gxma27va"))
+                "0nlg35pxhh548nn7aa3y1m81mf81nkbzz86i2psps4f474n497v8"))
               (patches (search-patches "libgit2-mtime-0.patch"))
               (snippet '(begin
                           (delete-file-recursively "deps") #t))
@@ -773,7 +773,7 @@ to lock down your entire repository.")
 (define-public git-remote-gcrypt
   (package
    (name "git-remote-gcrypt")
-   (version "1.0.3")
+   (version "1.3")
    (source (origin
              (method git-fetch)
              (uri (git-reference
@@ -782,7 +782,7 @@ to lock down your entire repository.")
              (file-name (string-append name "-" version "-checkout"))
              (sha256
               (base32
-               "1vay3204729c7wajgn3nxf0s0hzwpdrw14pl6kd8w2ss25gvw2k1"))))
+               "0n8fzvr6y0pxrbvkywlky2bd8jvi0ayp4n9hwi84l1ldmv4a40dh"))))
    (build-system trivial-build-system)
    (arguments
     `(#:modules ((guix build utils))
@@ -1307,7 +1307,7 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.7")
+    (version "3.6.11")
     (source
      (origin
        (method git-fetch)
@@ -1316,7 +1316,7 @@ also walk each side of a merge and test those changes individually.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rmyzr66lxh2ildf3h1nh3hh2ndwk21rjdin50r5vhwbdd7jg8vb"))))
+        (base32 "1rkj7gknwjlc5ij9w39zf5mr647bm45la57yjczydmvrb8c56yrh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -1569,18 +1569,14 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.10.6")
+    (version "1.14.0")
     (source (origin
              (method url-fetch)
-             (uri
-               (list
-                 (string-append "https://archive.apache.org/dist/subversion/"
-                                "subversion-" version ".tar.bz2")
-                 (string-append "https://www-eu.apache.org/dist/subversion/"
-                                "subversion-" version ".tar.bz2")))
+             (uri (string-append "mirror://apache/subversion/"
+                                 "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "19zc215mhpnm92mlyl5jbv57r5zqp6cavr3s2g9yglp6j4kfgj0q"))))
+               "00i1f88snlpcnsycpn6r315h6792l5nkr2p5k6kq6yprz4cf5a3b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:parallel-tests? #f             ; TODO Seems to cause test failures on
@@ -1718,14 +1714,14 @@ RCS, PRCS, and Aegis packages.")
 (define-public cvs-fast-export
   (package
     (name "cvs-fast-export")
-    (version "1.51")
+    (version "1.55")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.catb.org/~esr/cvs-fast-export/"
                                   "cvs-fast-export-" version ".tar.gz"))
               (sha256
                (base32
-                "0nn5cf8syb5nbjvkn8w561pk25clv187h4hs9pnc700g9w56chzf"))))
+                "06y2myhhv2ap08bq7d7shq0b7lq6wgznwrpz6622xq66cxkf2n5g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1885,7 +1881,10 @@ accessed and migrated on modern systems.")
        ("ed" ,ed)))
     (arguments
      `(#:configure-flags (list "--with-no-aegis-configured"
-                               "--sharedstatedir=/var/com/aegis")
+                               "--sharedstatedir=/var/com/aegis"
+                               ;; Uses the old 'throw()' specifier with 'new'
+                               ;; which changed in C++11.
+                               "CXXFLAGS=-std=c++03")
        #:parallel-build? #f ; There are some nasty racy rules in the Makefile.
        #:phases
        (modify-phases %standard-phases
@@ -1928,7 +1927,7 @@ accessed and migrated on modern systems.")
 
                ;; The author decided to call the check rule "sure".
                (invoke "make" "sure")))))))
-    (home-page "http://aegis.sourceforge.net")
+    (home-page "https://sourceforge.net/projects/aegis/")
     (synopsis "Project change supervisor")
     (description "Aegis is a project change supervisor, and performs some of
 the Software Configuration Management needed in a CASE environment.  Aegis
@@ -2168,7 +2167,7 @@ by rclone usable with git-annex.")
 (define-public fossil
   (package
     (name "fossil")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method url-fetch)
@@ -2176,8 +2175,7 @@ by rclone usable with git-annex.")
               "https://www.fossil-scm.org/index.html/uv/"
               "fossil-src-" version ".tar.gz"))
        (sha256
-        (base32
-         "041bs4fgk52fw58p7s084pxk9d9vs5v2f2pjbznqawz75inpg8yq"))
+        (base32 "0c9nzx42wxfmym9vf1pnbdb1c7gp7a7zqky60izxsph7w2xh8nix"))
        (modules '((guix build utils)))
        (snippet
         '(begin

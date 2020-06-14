@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2020 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,39 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check))
+
+(define-public perl-compress-bzip2
+  (package
+    (name "perl-compress-bzip2")
+    (version "2.26")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
+                           "Compress-Bzip2-" version ".tar.gz"))
+       (sha256
+        (base32 "032gbhpjch4yc7r32b0glhi5qn6f1sm35lrnxrvlv9bpyg2z0cji"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-bzip2
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bzip2 (assoc-ref inputs "bzip2")))
+               (setenv "BUILD_BZLIB" "0")
+               (setenv "BZLIB_BIN" (string-append bzip2 "/bin"))
+               (setenv "BZLIB_INCLUDE" (string-append bzip2 "/include"))
+               (setenv "BZLIB_LIB" (string-append bzip2 "/lib"))
+               #t))))))
+    (inputs
+     `(("bzip2" ,bzip2)))
+    (home-page "https://metacpan.org/release/Compress-Bzip2")
+    (synopsis "Interface to Bzip2 compression library")
+    (description
+     "The Compress::Bzip2 module provides a Perl interface to the Bzip2
+compression library.  A relevant subset of the functionality provided by Bzip2
+is available in this module.")
+    (license license:perl-license)))
 
 (define-public perl-compress-raw-bzip2
   (package

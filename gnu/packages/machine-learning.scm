@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Ben Woodcroft <donttrustben@gmail.com>
@@ -11,9 +11,10 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -714,14 +715,14 @@ than 8 bits, and at the end only some significant 8 bits are kept.")
 (define-public dlib
   (package
     (name "dlib")
-    (version "19.7")
+    (version "19.20")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://dlib.net/files/dlib-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mljz02kwkrbggyncxv5fpnyjdybw2qihaacb3js8yfkw12vwpc2"))
+                "139jyi19qz37wwmmy48gil9d1kkh2r3w3bwdzabha6ayxmba96nz"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1403,7 +1404,11 @@ Python.")
        (list "CC=gcc")
        #:modules ((ice-9 ftw)
                   (guix build utils)
-                  (guix build cmake-build-system))
+                  (guix build cmake-build-system)
+                  ((guix build python-build-system)
+                   #:select (python-version)))
+       #:imported-modules (,@%cmake-build-system-modules
+                            (guix build python-build-system))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-source-file-times-to-1980
@@ -1428,6 +1433,12 @@ Python.")
              ;; optional package.
              (substitute* "tensorflow/tools/pip_package/setup.py"
                ((".*'tensorboard >.*") ""))
+
+             ;; Fix the build with python-3.8, taken from rejected upstream patch:
+             ;; https://github.com/tensorflow/tensorflow/issues/34197
+             (substitute* (find-files "tensorflow/python" ".*\\.cc$")
+               (("(nullptr,)(\\ +/. tp_print)" _ _ tp_print)
+                (string-append "NULL,   " tp_print)))
              #t))
          (add-after 'python3.7-compatibility 'chdir
            (lambda _ (chdir "tensorflow/contrib/cmake") #t))
@@ -1617,16 +1628,19 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
              (invoke "make" "tf_python_build_pip_package")
              #t))
          (add-after 'build-pip-package 'install-python
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (wheel (car (find-files "../build/tf_python/dist/" "\\.whl$"))))
+                   (wheel (car (find-files "../build/tf_python/dist/" "\\.whl$")))
+                   (python-version (python-version
+                                     (assoc-ref inputs "python"))))
                (invoke "python" "-m" "pip" "install" wheel
                        (string-append "--prefix=" out))
 
                ;; XXX: broken RUNPATH, see fix-python-build phase.
                (delete-file
                 (string-append
-                 out "/lib/python3.7/site-packages/tensorflow/contrib/"
+                 out "/lib/python" python-version
+                 "/site-packages/tensorflow/contrib/"
                  "seq2seq/python/ops/lib_beam_search_ops.so"))
                #t))))))
     (native-inputs
@@ -1803,12 +1817,14 @@ advanced research.")
          "1k8szlpm19rcwcxdny9qdm3gmaqq8akb4xlvrzyz8c2d679aak6l"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("ipython" ,python-ipython)
-       ("nose" ,python-nose)
+     `(("ipython" ,(prompt-toolkit-2-instead-of-prompt-toolkit
+                    python-ipython))
        ("numpy" ,python-numpy)
        ("pandas" ,python-pandas)
        ("scipy" ,python-scipy)))
-    (home-page "http://github.com/interpretable-ml/iml")
+    (native-inputs
+     `(("nose" ,python-nose)))
+    (home-page "https://github.com/interpretable-ml/iml")
     (synopsis "Interpretable Machine Learning (iML) package")
     (description "Interpretable ML (iML) is a set of data type objects,
 visualizations, and interfaces that can be used by any method designed to
@@ -2051,18 +2067,7 @@ online linear classification written in Common Lisp.")
          ("cl-online-learning" ,sbcl-cl-online-learning)
          ("lparallel" ,sbcl-lparallel)))
       (arguments
-       `(;; The tests download data from the Internet
-         #:tests? #f
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'add-sb-cltl2-dependency
-             (lambda _
-               ;; sb-cltl2 is required by lparallel when using sbcl, but it is
-               ;; not loaded automatically.
-               (substitute* "cl-random-forest.asd"
-                 (("\\(in-package :cl-user\\)")
-                  "(in-package :cl-user) #+sbcl (require :sb-cltl2)"))
-               #t)))))
+       `(#:tests? #f)) ; The tests download data from the Internet
       (synopsis "Random Forest and Global Refinement for Common Lisp")
       (description
        "CL-random-forest is an implementation of Random Forest for multiclass
