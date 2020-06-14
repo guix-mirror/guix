@@ -4991,33 +4991,30 @@ as the original project seems to have been abandoned circa 2007.")
   (package-with-python2 python-socksipy-branch))
 
 (define-public python-socksipychain
-  (let ((commit "eb5ee8741ce006ac0c5c3e2e83204062c348c155")
-        (revision "1")
-        (version "2.1.1"))
-    (package
-      (name "python-socksipychain")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/pagekite/PySocksipyChain.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0fpphn6xnpm7qk8a914s4abycsbq9w6qkci07my632v0fylnm5n7"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:tests? #f))                  ; Tests try to access the network.
-      (home-page "http://pagekite.net/wiki/Floss/PySocksipyChain/")
-      (synopsis "Python SOCKS module with chained proxies support")
-      (description
-       "SocksiPyChain is a modified version of the SocksiPy SOCKS module, which
+  (package
+    (name "python-socksipychain")
+    (version "2.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/PySocksipyChain.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "02pp994qmiivkdx4y6az5q80l6rzy8g6d2ipvp7kns7lsxvmc2y7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))                  ; Tests try to access the network.
+    (home-page "http://pagekite.net/wiki/Floss/PySocksipyChain/")
+    (synopsis "Python SOCKS module with chained proxies support")
+    (description
+     "SocksiPyChain is a modified version of the SocksiPy SOCKS module, which
 adds support for arbitrary chaining of proxy servers and various modes of
 TLS/SSL encryption.  It was developed for use in PageKite, and also includes
 a simple netcat replacement with chaining support.")
-      (license license:bsd-3))))
+    (license license:bsd-3)))
 
 (define-public python-pycodestyle
   (package
