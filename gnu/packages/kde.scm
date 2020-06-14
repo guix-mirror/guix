@@ -567,20 +567,20 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "1.4")
+    (version "20.04.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kde/stable/kdeconnect/"
-                            version "/kdeconnect-kde-"
+        (uri (string-append "mirror://kde/stable/release-service/"
+                            version "/src/kdeconnect-kde-"
                             version ".tar.xz"))
         (sha256
          (base32
-          "06i6spspqpl79x6z2bfvbgd08b3h1pyx5j1xjhd8ifyrm52pkvna"))))
+          "1knhpjdbffw858dfd9kml91a02fkc0rcjydfavcyr79j9x8mv3bq"))))
     (build-system qt-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON"
-                           "-DLIBEXEC_INSTALL_DIR=libexec")
+                           "-DKDE_INSTALL_LIBEXECDIR=libexec")
        #:phases (modify-phases %standard-phases
                   (add-after 'set-paths 'extend-CPLUS_INCLUDE_PATH
                     (lambda* (#:key inputs #:allow-other-keys)
