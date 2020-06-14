@@ -1121,14 +1121,14 @@ instant messenger with audio and video chat capabilities.")
 (define-public qtox
   (package
     (name "qtox")
-    (version "1.16.3")
+    (version "1.17.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/qTox/qTox/archive/v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "10n3cgw9xaqin9la8wpd8v83bkjmimicgbyp5ninsdgsrgky4hmq"))
+                "1b3a6d0k4780fwimi8l7mdbk280nilhhdmls17klapnfsp30zdi3"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
@@ -1140,6 +1140,13 @@ instant messenger with audio and video chat capabilities.")
                (("__DATE__") "\"\"")
                (("__TIME__") "\"\"")
                (("TIMESTAMP") "\"\""))
+             #t))
+         (add-after 'unpack 'disable-network-tests
+           (lambda _
+             ;; These tests require network access.
+             (substitute* "cmake/Testing.cmake"
+               (("auto_test\\(core core\\)") "# auto_test(core core)")
+               (("auto_test\\(net bsu\\)") "# auto_test(net bsu)"))
              #t))
          ;; Ensure that icons are found at runtime.
          (add-after 'install 'wrap-executable
