@@ -1659,7 +1659,7 @@ bootstrapping purposes.")
               (base32
                "17bdv39n4lh8l5737c96f3xgamx4y305m067p01cywgp7zaddqws"))
              (patches (search-patches
-                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
+                       "icedtea-7-hotspot-aarch64-use-c++98.patch"))))
          ("ant" ,ant-bootstrap)
          ("attr" ,attr)
          ("coreutils" ,coreutils)
