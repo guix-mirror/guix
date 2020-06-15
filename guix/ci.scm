@@ -70,7 +70,7 @@
                (lambda (products)
                  (map json->build-product
                       ;; Before Cuirass 3db603c1, #f is always returned.
-                      (if products
+                      (if (vector? products)
                           (vector->list products)
                           '())))))
 
