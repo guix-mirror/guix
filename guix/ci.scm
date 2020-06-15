@@ -109,7 +109,10 @@
     (map json->build (vector->list queue))))
 
 (define* (latest-builds url #:optional (limit %query-limit)
-                        #:key evaluation system)
+                        #:key
+                        evaluation
+                        system
+                        job)
   "Return the latest builds performed by the CI server at URL.  If EVALUATION
 is an integer, restrict to builds of EVALUATION.  If SYSTEM is true (a system
 string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
@@ -122,7 +125,8 @@ string such as \"x86_64-linux\"), restrict to builds for SYSTEM."
                                            (number->string limit)
                                            (option "evaluation" evaluation
                                                    number->string)
-                                           (option "system" system)))))
+                                           (option "system" system)
+                                           (option "job" job)))))
     ;; Note: Hydra does not provide a "derivation" field for entries in
     ;; 'latestbuilds', but Cuirass does.
     (map json->build (vector->list latest))))
