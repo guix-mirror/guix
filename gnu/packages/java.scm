@@ -1229,6 +1229,8 @@ bootstrapping purposes.")
            "--enable-bootstrap"
            "--enable-nss"
            "--without-rhino"
+           ,(string-append "--with-parallel-jobs="
+                           (number->string (parallel-job-count)))
            "--disable-downloading"
            "--disable-tests"        ;they are run in the check phase instead
            "--with-openjdk-src-dir=./openjdk.src"
