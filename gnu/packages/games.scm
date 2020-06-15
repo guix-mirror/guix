@@ -10881,6 +10881,33 @@ soldiers, jeeps and tanks.  The gameplay is simple but it is not that easy to
 get high scores.")
     (license license:gpl2+)))
 
+(define-public burgerspace
+  (package
+    (name "burgerspace")
+    (version "1.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
+                           "burgerspace-" version ".tar.gz"))
+       (sha256
+        (base32 "1005a04rbn4lzjrpfg0m394k2mfaji63fm2qhdqdsxila8a6kjbv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("flatzebra" ,flatzebra)))
+    (home-page "http://perso.b2b2c.ca/~sarrazip/dev/burgerspace.html")
+    (synopsis "Avoid evil foodstuffs and make burgers")
+    (description
+     "This is a clone of the classic game BurgerTime.  In it, you play
+the part of a chef who must create burgers by stepping repeatedly on
+the ingredients until they fall into place.  And to make things more
+complicated, you also must avoid evil animate food items while
+performing this task, with nothing but your trusty pepper shaker to
+protect you.")
+    (license license:gpl2+)))
+
 (define-public 7kaa
   (package
     (name "7kaa")
