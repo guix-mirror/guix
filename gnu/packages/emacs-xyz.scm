@@ -14698,12 +14698,11 @@ scientific publication.  Org Ref is also useful for research documents and
 notes.")
       (license license:gpl3+))))
 
-;; This project is unmaintained.  Please use emacs-org-re-reveal instead.
 (define-public emacs-org-reveal
-  (let ((commit "9210413202a360a559a51e8275faa42be68cf44b"))
+  (let ((commit "84039bb499290926511b04749882ecb5eda45a0c"))
     (package
       (name "emacs-org-reveal")
-      (version (git-version "0.1" "3" commit))
+      (version (git-version "20200607" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -14712,7 +14711,7 @@ notes.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1wlfk823d3vrn480m38j7ncaqm193lvh6y22b92fx4b3yhdbndza"))))
+                  "1fx3xmnkpfljrdmy0dsyq79k93ky57gcqm1ad9qbzykk7qjvmmi8"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/yjwen/org-reveal")
       (synopsis "Org and Reveal.js powered HTML presentation tool")
