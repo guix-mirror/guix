@@ -1495,7 +1495,7 @@ of use.")
 (define-public openmw
   (package
     (name "openmw")
-    (version "0.45.0")
+    (version "0.46.0")
     (source
      (origin
        (method url-fetch)
@@ -1504,7 +1504,7 @@ of use.")
                        "openmw-" version ".tar.gz"))
        (sha256
         (base32
-         "0r0wgvv1faan8z8lbply8lks4hcnppifjrcz04l5zvq6yiqzjg5n"))))
+         "0n7x39kwhwmi6ly9hd7yc6dhlrmmdmx30ahc46kmlzzn2n7mm8q7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; No test target
