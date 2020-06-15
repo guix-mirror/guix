@@ -24637,7 +24637,8 @@ Return the name of @var{platform}---a string such as @code{"arm"}.
 
 Service @code{hurd-vm} provides support for running GNU/Hurd in a
 virtual machine (VM), a so-called ``Childhurd''.  The virtual machine is
-a Shepherd service that can be controlled with commands such as:
+a Shepherd service that can be referred to by the names @code{hurd-vm}
+and @code{childhurd} and be controlled with commands such as:
 
 @example
 herd start hurd-vm
