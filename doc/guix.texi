@@ -4153,6 +4153,28 @@ add a meta-data file @file{.guix-channel} that contains:
   (directory "guix"))
 @end lisp
 
+@cindex primary URL, channels
+@subsection Primary URL
+
+Channel authors can indicate the primary URL of their channel's Git
+repository in the @file{.guix-channel} file, like so:
+
+@lisp
+(channel
+  (version 0)
+  (url "https://example.org/guix.git"))
+@end lisp
+
+This allows @command{guix pull} to determine whether it is pulling code
+from a mirror of the channel; when that is the case, it warns the user
+that the mirror might be stale and displays the primary URL.  That way,
+users cannot be tricked into fetching code from a stale mirror that does
+not receive security updates.
+
+This feature only makes sense for authenticated repositories, such as
+the official @code{guix} channel, for which @command{guix pull} ensures
+the code it fetches is authentic.
+
 @cindex news, for channels
 @subsection Writing Channel News
 

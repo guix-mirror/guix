@@ -182,12 +182,13 @@ introduction, add it."
   (checkout  channel-instance-checkout))
 
 (define-record-type <channel-metadata>
-  (channel-metadata directory dependencies news-file keyring-reference)
+  (channel-metadata directory dependencies news-file keyring-reference url)
   channel-metadata?
   (directory     channel-metadata-directory)      ;string with leading slash
   (dependencies  channel-metadata-dependencies)   ;list of <channel>
   (news-file     channel-metadata-news-file)      ;string | #f
-  (keyring-reference channel-metadata-keyring-reference)) ;string
+  (keyring-reference channel-metadata-keyring-reference) ;string
+  (url           channel-metadata-url))           ;string | #f
 
 (define %default-keyring-reference
   ;; Default value of the 'keyring-reference' field.
@@ -209,6 +210,7 @@ if valid metadata could not be read from PORT."
      (let ((directory    (and=> (assoc-ref properties 'directory) first))
            (dependencies (or (assoc-ref properties 'dependencies) '()))
            (news-file    (and=> (assoc-ref properties 'news-file) first))
+           (url          (and=> (assoc-ref properties 'url) first))
            (keyring-reference
             (or (and=> (assoc-ref properties 'keyring-reference) first)
                 %default-keyring-reference)))
@@ -229,7 +231,8 @@ if valid metadata could not be read from PORT."
                     (commit (get 'commit))))))
              dependencies)
         news-file
-        keyring-reference)))
+        keyring-reference
+        url)))
     ((and ('channel ('version version) _ ...) sexp)
      (raise (condition
              (&message (message "unsupported '.guix-channel' version"))
@@ -253,7 +256,7 @@ doesn't exist."
         read-channel-metadata))
     (lambda args
       (if (= ENOENT (system-error-errno args))
-          (channel-metadata "/" '() #f %default-keyring-reference)
+          (channel-metadata "/" '() #f %default-keyring-reference #f)
           (apply throw args)))))
 
 (define (channel-instance-metadata instance)
@@ -463,6 +466,11 @@ been tampered with and is trying to force a roll-back, preventing you from
 getting the latest updates.  If you think this is not the case, explicitly
 allow non-forward updates."))))))))))
 
+(define (channel-instance-primary-url instance)
+  "Return the primary URL advertised for INSTANCE, or #f if there is no such
+information."
+  (channel-metadata-url (channel-instance-metadata instance)))
+
 (define* (latest-channel-instances store channels
                                    #:key
                                    (current-channels '())
@@ -518,6 +526,19 @@ depending on the policy it implements."
                                                       validate-pull
                                                       #:starting-commit
                                                       current)))
+                       (when authenticate?
+                         ;; CHANNEL is authenticated so we can trust the
+                         ;; primary URL advertised in its metadata and warn
+                         ;; about possibly stale mirrors.
+                         (let ((primary-url (channel-instance-primary-url
+                                             instance)))
+                           (unless (or (not primary-url)
+                                       (channel-commit channel)
+                                       (string=? primary-url (channel-url channel)))
+                             (warning (G_ "pulled channel '~a' from a mirror \
+of ~a, which might be stale~%")
+                                      (channel-name channel)
+                                      primary-url))))
 
                        (let-values (((new-instances new-channels)
                                      (loop (channel-instance-dependencies instance)
