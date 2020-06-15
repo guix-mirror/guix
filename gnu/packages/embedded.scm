@@ -1357,3 +1357,50 @@ simplifies configuration and is also pluggable: you can write your own west
 this feature to provide conveniences for building applications, flashing and
 debugging them, and more.")
     (license license:expat)))
+
+;; TODO: Support MQTT.
+(define-public ebusd
+  (package
+    (name "ebusd")
+    (version "3.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/john30/ebusd.git")
+                     (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0iva70bam7wdx60bpd3an9kxr28zxlvp3vprivgqshwwdhqa0hzp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-config
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((config-destination
+                    (string-append (assoc-ref outputs "out")
+                                   "/share/ebusd")))
+               (copy-recursively (string-append (assoc-ref inputs "config")
+                                                "/ebusd-2.1.x")
+                                 config-destination)
+               #t))))))
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("config"
+        ,(origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/john30/ebusd-configuration.git")
+                     (commit "666c0f6b9c4d7545eff7f43ab28a1c7baeab7913")))
+              (file-name "config-checkout")
+              (sha256
+               (base32
+                "0yxnx8p4lbk614l16854r9s9d8s9c7ixgczfs8mph94xz0wkda7x"))))))
+    (synopsis "Daemon for communicating with eBUS devices")
+    (description "This package provides @command{ebusd}, a daemon for
+handling communication with eBUS devices connected to a 2-wire bus system
+(\"energy bus\" used by numerous heating systems).")
+    (home-page "https://ebusd.eu/")
+    (license license:gpl3+)))
