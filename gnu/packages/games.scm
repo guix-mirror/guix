@@ -405,6 +405,66 @@ the more advanced player there are new game modes and a wide variety of
 physics settings to tweak as well.")
     (license license:gpl2+)))
 
+(define-public astromenace
+  (package
+    (name "astromenace")
+    (version "1.4.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/viewizard/astromenace.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ad6l887jxqv8xspwc2rvy8ym9sdlmkqdqhsh0pi076kjarxsyws"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:configure-flags '("-DDATADIR=share/astromenace")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           ;; Upstream provides no install phase.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (share (string-append out "/share"))
+                    (apps (string-append share "/applications"))
+                    (data (string-append share "/astromenace"))
+                    (icons (string-append share "/icons/hicolor/64x64/apps")))
+               (install-file "astromenace" bin)
+               (install-file "gamedata.vfs" data)
+               (let ((source (assoc-ref inputs "source")))
+                 (with-directory-excursion (string-append source "/share")
+                   (install-file "astromenace.desktop" apps)
+                   (mkdir-p icons)
+                   (copy-file "astromenace_64.png"
+                              (string-append icons "/astromenace.png")))))
+             #t)))))
+    (inputs
+     `(("freealut" ,freealut)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("openal" ,openal)
+       ("sdl2" ,sdl2)))
+    (home-page "https://www.viewizard.com/")
+    (synopsis "3D space shooter with spaceship upgrade possibilities")
+    (description
+     "Space is a vast area, an unbounded territory where it seems there is
+a room for everybody, but reversal of fortune put things differently.  The
+hordes of hostile creatures crawled out from the dark corners of the universe,
+craving to conquer your homeland.  Their force is compelling, their legions
+are interminable.  However, humans didn't give up without a final showdown and
+put their best pilot to fight back.  These malicious invaders chose the wrong
+galaxy to conquer and you are to prove it!  Go ahead and make alien aggressors
+regret their insolence.")
+    ;; Game is released under GPL3+ terms.  Artwork is subject to CC
+    ;; BY-SA 4.0, and fonts to OFL1.1.
+    (license (list license:gpl3+ license:cc-by-sa4.0 license:silofl1.1))))
+
 (define-public bastet
   (package
     (name "bastet")
