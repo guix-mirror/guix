@@ -77,6 +77,7 @@
         (sha256
          (base32
           "0mg8jydc70vlylppzich26q4s40kr78r3ysfyjwisfvlg2byxvs8"))
+        (patches (search-patches "quassel-qt-514-compat.patch"))
         (modules '((guix build utils)))
         ;; We don't want to install the bundled scripts.
         (snippet
