@@ -190,6 +190,75 @@
   #:use-module ((srfi srfi-1) #:hide (zip))
   #:use-module (srfi srfi-26))
 
+(define-public abe
+  (package
+    (name "abe")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/abe/abe/abe-" version
+                           "/abe-" version ".tar.gz"))
+       (sha256
+        (base32 "1xvpnq1y6y48fn3pvn2lk0h1ilmalv7nb7awpid1g4jcq1sfmi6z"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-data-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/abe"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           (lambda _ (invoke "sh" "autogen.sh")))
+         (add-before 'build 'set-SDL
+           ;; Set correct environment for SDL.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "sdl") "/include/SDL:"
+                      (or (getenv "CPATH") "")))
+             #t))
+         (add-after 'install 'finalize-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out") "/share")))
+               ;; Installation script does not copy game data files.
+               (let ((data (string-append share "/abe")))
+                 (for-each (lambda (dir)
+                             (let ((target (string-append data "/" dir)))
+                               (mkdir-p target)
+                               (copy-recursively dir target)))
+                           '("images" "maps" "sounds")))
+               ;; Create desktop file.
+               (let ((apps (string-append share "/applications")))
+                 (mkdir-p apps)
+                 (make-desktop-entry-file
+                  (string-append apps "/abe.desktop")
+                  #:name "Abe's Amazing Adventure"
+                  #:exec ,name
+                  #:categories '("AdventureGame" "Game")
+                  #:keywords
+                  '("side-scrolling" "adventure" "pyramid" "singleplayer")
+                  #:comment
+                  '(("de" "Ein sich seitwärts bewegendes Abenteuerspiel")
+                    (#f "Side-scrolling game")))))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("libxt" ,libxt)
+       ("sdl" ,(sdl-union (list sdl sdl-mixer)))))
+    (home-page "http://abe.sourceforge.net")
+    (synopsis "Scrolling, platform-jumping, ancient pyramid exploring game")
+    (description
+     "Abe's Amazing Adventure is a scrolling,
+platform-jumping, key-collecting, ancient pyramid exploring game, vaguely in
+the style of similar games for the Commodore+4.")
+    (license license:gpl2+)))
+
 ;; Data package for adanaxisgpl.
 (define adanaxis-mush
   (let ((version "1.1.0"))
