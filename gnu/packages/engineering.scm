@@ -1057,9 +1057,8 @@ the 'showing the effect of'-style of operation.")
                    (,(string-append python "/bin:")))))
              #t)))))
     (inputs
-     `(("boost" ,boost)))
-    (native-inputs
-     `(("python" ,python-wrapper)
+     `(("boost" ,boost)
+       ("python" ,python-wrapper)
        ("python-mako" ,python-mako)))
     (home-page "https://www.libvolk.org/")
     (synopsis "Vector-Optimized Library of Kernels")
