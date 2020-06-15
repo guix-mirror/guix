@@ -2002,6 +2002,43 @@ hardware from multiple vendors without requiring that applications have
 specific knowledge of the hardware they are targeting.")
     (license license:bsd-3)))
 
+(define-public flatzebra
+  (package
+    (name "flatzebra")
+    (version "0.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://perso.b2b2c.ca/~sarrazip/dev/"
+                           "flatzebra-" version ".tar.gz"))
+       (sha256
+        (base32 "1x2dy41c8vrq62bn03b82fpmk7x4rzd7qqiwvq0mgcl5rmasc2c8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-sdl-config
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; XXX: sdl-config in sdl-union is a link to sdl-config from
+             ;; plain sdl package.  As a consequence, the prefix is wrong.
+             ;; Force correct one with "--prefix" argument.
+             (let ((sdl-union (assoc-ref inputs "sdl")))
+               (setenv "SDL_CONFIG"
+                       (string-append sdl-union
+                                      "/bin/sdl-config --prefix="
+                                      sdl-union)))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
+    (home-page "http://perso.b2b2c.ca/~sarrazip/dev/burgerspace.html")
+    (synopsis "Generic game engine for 2D double-buffering animation")
+    (description
+     "Flatzebra is a simple, generic C++ game engine library supporting 2D
+double-buffering.")
+    (license license:gpl2+)))
+
 (define-public fna
   (package
     (name "fna")
