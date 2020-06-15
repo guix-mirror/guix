@@ -855,7 +855,8 @@ machine.")))
        `("--enable-bootstrap"
          "--enable-nss"
          "--without-rhino"
-         "--with-parallel-jobs"
+         ,(string-append "--with-parallel-jobs="
+                         (number->string (parallel-job-count)))
          "--disable-downloading"
          "--disable-tests"
          ,(string-append "--with-ecj="
