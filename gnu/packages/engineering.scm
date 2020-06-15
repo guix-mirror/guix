@@ -1063,9 +1063,10 @@ the 'showing the effect of'-style of operation.")
     (home-page "https://www.libvolk.org/")
     (synopsis "Vector-Optimized Library of Kernels")
     (description
-     "@code{volk} contains procedures with machine-specific optimizations
-for mathematical functions.  It also provides a machine-independent
-interface to select the best such procedures to use on a given system.")
+     "@acronym{VOLK, Vector-Optimized Library of Kernels} contains procedures
+with machine-specific optimizations for mathematical functions.  It also
+provides a machine-independent interface to select the best such procedures to
+use on a given system.")
     (license license:gpl3+)))
 
 (define-public minicom
