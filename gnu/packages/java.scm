@@ -1762,6 +1762,8 @@ IcedTea build harness.")
                  `( ;;"--disable-bootstrap"
                    "--enable-bootstrap"
                    "--enable-nss"
+                   ,(string-append "--with-parallel-jobs="
+                                   (number->string (parallel-job-count)))
                    "--disable-downloading"
                    "--disable-system-pcsc"
                    "--disable-system-sctp"
