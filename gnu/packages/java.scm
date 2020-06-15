@@ -827,6 +827,8 @@ machine.")))
               (sha256
                (base32
                 "0bg9sb4f7qbq77c0zf9m17p47ga0kf0r9622g9p12ysg26jd1ksg"))
+              (patches (search-patches
+                        "icedtea-6-extend-hotspot-aarch64-support.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
