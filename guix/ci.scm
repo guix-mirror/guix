@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Mathieu Othacehe <othacehe@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +23,19 @@
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
-  #:export (build?
+  #:export (build-product?
+            build-product-id
+            build-product-type
+            build-product-file-size
+            build-product-path
+
+            build?
             build-id
             build-derivation
             build-system
             build-status
             build-timestamp
+            build-products
 
             checkout?
             checkout-commit
@@ -55,9 +63,10 @@
 (define-json-mapping <build-product> make-build-product
   build-product?
   json->build-product
-  (type        build-product-type)
-  (file-size   build-product-file-size)
-  (path        build-product-path))
+  (id          build-product-id)                  ;integer
+  (type        build-product-type)                ;string
+  (file-size   build-product-file-size)           ;integer
+  (path        build-product-path))               ;string
 
 (define-json-mapping <build> make-build build?
   json->build
