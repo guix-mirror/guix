@@ -1027,15 +1027,14 @@ the 'showing the effect of'-style of operation.")
 (define-public volk
   (package
     (name "volk")
-    (version "2.2.1")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.libvolk.org/releases/volk-"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "1wz5nhmw6np8ka30pgy1qnima3rk2ksln4klfhrj7wah3fian0k9"))))
+        (base32 "1pjxz3piwy49njj5y2zk437prwkv9lfs5g48577jj3kcsg766vi3"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
