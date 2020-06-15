@@ -48,6 +48,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages lxqt)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks)
@@ -112,6 +113,7 @@
        ("qttools" ,qttools)))
     (inputs
      `(("inxi" ,inxi-minimal)
+       ("libdbusmenu-qt" ,libdbusmenu-qt)
        ("qca" ,qca)
        ("qtbase" ,qtbase)
        ("qtmultimedia" ,qtmultimedia)
