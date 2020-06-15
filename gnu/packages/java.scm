@@ -1855,16 +1855,8 @@ new Date();"))
           ,(drop "langtools"
                  "15wizy123vhk40chl1b4p552jf2pw2hdww0myf11qab425axz4nw"))
          ("hotspot-drop"
-          ,(origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://icedtea.classpath.org/download/drops"
-                   "/icedtea8/" version "/hotspot.tar.xz"))
-             (sha256
-              (base32
-               "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
-             (patches (search-patches
-                       "icedtea-7-hotspot-gcc-segfault-workaround.patch"))))
+          ,(drop "hotspot"
+                 "1ciz1w9j0kz7s1dxdhyqq71nla9icyz6qvn0b9z2zgkklqa98qmm"))
          ("nashorn-drop"
           ,(drop "nashorn"
                  "19pzl3ppaw8j6r5cnyp8qiw3hxijh3hdc46l39g5yfhdl4pr4hpa"))
