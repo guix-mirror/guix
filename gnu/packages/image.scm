@@ -11,7 +11,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2017, 2020 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Nikita <nikita@n0.is>
 ;;; Copyright © 2017,2019,2020 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -87,6 +87,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system copy)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system scons)
@@ -2120,3 +2121,55 @@ It can create and edit indexed palette or 24bit RGB images, offers basic
 painting and palette manipulation tools.  It also handles JPEG, JPEG2000,
 GIF, TIFF, WEBP, BMP, PNG, XPM formats.")
     (license license:gpl3+)))
+
+(define-public phockup
+  (package
+    (name "phockup")
+    (version "1.5.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ivandokov/phockup")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "13ajj0xch7yfqaaxbw0awxs0fz17n1rxir4gqh2wcgxjysqk1j2y"))))
+    (build-system copy-build-system)
+    (arguments
+     `(#:install-plan '(("src" "share/phockup/")
+                        ("phockup.py" "share/phockup/"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (list "src/dependency.py" "src/exif.py")
+               (("exiftool")
+                (string-append (assoc-ref inputs "perl-image-exiftool")
+                               "/bin/exiftool")))
+             #t))
+         (add-before 'install 'check
+           (lambda _
+             (invoke "pytest")))
+         (add-after 'install 'install-bin
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir (string-append out "/bin"))
+               (symlink (string-append out "/share/phockup/phockup.py")
+                        (string-append out "/bin/phockup")))
+             #t)))))
+    (inputs
+     `(("perl-image-exiftool" ,perl-image-exiftool)
+       ("python" ,python)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "https://github.com/ivandokov/phockup")
+    (synopsis "Organize photos and videos in folders")
+    (description "Phockup is a media sorting tool that uses creation date and
+time information in photos and videos to organize them into folders by year,
+month and day.  All files which are not images or videos or those which do not
+have creation date information will be placed in a folder called
+@file{unknown}.")
+    (license license:expat)))
