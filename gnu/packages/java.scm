@@ -889,11 +889,8 @@ machine.")))
                             (assoc-ref inputs
                                        (string-append part "-src"))
                             part))
-                         '("jdk" "corba"
+                         '("jdk" "hotspot" "corba"
                            "langtools" "jaxp" "jaxws")))
-             (with-directory-excursion "openjdk"
-               (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
-               (rename-file "hg-checkout" "hotspot"))
              (substitute* "patches/freetypeversion.patch"
                (("REQUIRED_FREETYPE_VERSION = 2.2.1")
                 "REQUIRED_FREETYPE_VERSION = 2.10.1"))
@@ -1119,9 +1116,7 @@ machine.")))
                  (changeset "jdk6-b41")))
            (sha256
             (base32
-             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))
-           (patches
-            (search-patches "icedtea-6-hotspot-gcc-segfault-workaround.patch"))))
+             "07lc1z4k5dj9nrc1wvwmpvxr3xgxrdkdh53xb95skk5ij49yagfd"))))
        ("corba-src"
         ,(origin
            (method hg-fetch)
