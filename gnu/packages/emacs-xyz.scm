@@ -3938,6 +3938,31 @@ provides an easy way to find synonyms and antonyms for a given word (to avoid
 repetitions for example).")
     (license license:gpl3+)))
 
+(define-public emacs-flycheck-guile
+  (package
+    (name "emacs-flycheck-guile")
+    (version "0.1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/flatwhatson/flycheck-guile")
+         (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "163pnsh6r6bral1jg0vqri54g6hygws21vis0zci4114yb3fhkm1"))))
+    (propagated-inputs
+     `(("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-geiser" ,emacs-geiser)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/flatwhatson/flycheck-guile")
+    (synopsis "GNU Guile support for Flycheck")
+    (description
+     "This package provides a Flycheck checker for GNU Guile using @code{guild
+compile}.")
+    (license license:gpl3+)))
+
 (define-public emacs-flycheck-rust
   (package
     (name "emacs-flycheck-rust")
