@@ -1064,7 +1064,7 @@ the 'showing the effect of'-style of operation.")
     (synopsis "Vector-Optimized Library of Kernels")
     (description
      "@code{volk} contains procedures with machine-specific optimizations
-for mathematical functions.  It also provides an machine-independent
+for mathematical functions.  It also provides a machine-independent
 interface to select the best such procedures to use on a given system.")
     (license license:gpl3+)))
 
