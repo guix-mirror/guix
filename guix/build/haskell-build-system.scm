@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -131,9 +131,20 @@ and parameters ~s~%"
                    `(,(string-append "--ghc-option=-j" (number->string (parallel-job-count))))
                    '())))
 
-(define* (install #:rest empty)
+(define* (install #:key outputs #:allow-other-keys)
   "Install a given Haskell package."
-  (run-setuphs "copy" '()))
+  (run-setuphs "copy" '())
+  (when (assoc-ref outputs "static")
+    (let ((static (assoc-ref outputs "static"))
+          (lib (or (assoc-ref outputs "lib")
+                   (assoc-ref outputs "out"))))
+      (for-each (lambda (static-lib)
+                  (let* ((subdir (string-drop static-lib (string-length lib)))
+                         (new    (string-append static subdir)))
+                    (mkdir-p (dirname new))
+                    (rename-file static-lib new)))
+                (find-files lib "\\.a$"))))
+  #t)
 
 (define (grep rx port)
   "Given a regular-expression RX including a group, read from PORT until the

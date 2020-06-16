@@ -67,7 +67,7 @@ version REVISION."
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:target #:haskell #:cabal-revision #:inputs #:native-inputs))
+    '(#:target #:haskell #:cabal-revision #:inputs #:native-inputs #:outputs))
 
   (define (cabal-revision->origin cabal-revision)
     (match cabal-revision
@@ -95,7 +95,10 @@ version REVISION."
                         ,@(standard-packages)))
          (build-inputs `(("haskell" ,haskell)
                          ,@native-inputs))
-         (outputs outputs)
+         ;; XXX: this is a hack to get around issue #41569.
+         (outputs (match outputs
+                    (("out") (cons "static" outputs))
+                    (_ outputs)))
          (build haskell-build)
          (arguments (strip-keyword-arguments private-keywords arguments)))))
 
@@ -109,7 +112,7 @@ version REVISION."
                         (configure-flags ''())
                         (phases '(@ (guix build haskell-build-system)
                                     %standard-phases))
-                        (outputs '("out"))
+                        (outputs '("out" "static"))
                         (search-paths '())
                         (system (%current-system))
                         (guile #f)
