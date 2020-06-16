@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Konrad Hinsen <konrad.hinsen@fastmail.net>
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +55,9 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
       --commit=COMMIT    use the specified COMMIT"))
   (display (G_ "
       --branch=BRANCH    use the tip of the specified BRANCH"))
+  (display (G_ "
+      --disable-authentication
+                         disable channel authentication"))
   (newline)
   (show-build-options-help)
   (newline)
@@ -80,6 +83,9 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'ref `(branch . ,arg) result)))
+         (option '("disable-authentication") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'authenticate-channels? #f result)))
          (option '(#\h "help") #f #f
                  (lambda args
                    (show-help)
@@ -98,6 +104,7 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
     (print-build-trace? . #t)
     (print-extended-build-trace? . #t)
     (multiplexed-build-output? . #t)
+    (authenticate-channels? . #t)
     (graft? . #t)
     (debug . 0)
     (verbosity . 1)))
@@ -124,12 +131,14 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
     (with-git-error-handling
      (let* ((opts         (parse-args args))
             (channels     (channel-list opts))
-            (command-line (assoc-ref opts 'exec)))
+            (command-line (assoc-ref opts 'exec))
+            (authenticate? (assoc-ref opts 'authenticate-channels?)))
        (when command-line
          (let* ((directory
                  (with-store store
                    (with-status-verbosity (assoc-ref opts 'verbosity)
                      (set-build-options-from-command-line store opts)
-                     (cached-channel-instance store channels))))
+                     (cached-channel-instance store channels
+                                              #:authenticate? authenticate?))))
                 (executable (string-append directory "/bin/guix")))
            (apply execl (cons* executable executable command-line))))))))
