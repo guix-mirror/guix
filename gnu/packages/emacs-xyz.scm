@@ -5160,31 +5160,28 @@ linting of manifests and integration with Puppet Debugger.")
       (license license:gpl3+))))
 
 (define-public emacs-god-mode
-  (let ((commit "6cf0807b6555eb6fcf8387a4e3b667071ef38964")
-        (revision "1"))
-    (package
-      (name "emacs-god-mode")
-      (version (string-append "20151005.925."
-                              revision "-" (string-take commit 9)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/chrisdone/god-mode.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1am415k4xxcva6y3vbvyvknzc6bma49pq3p85zmpjsdmsp18qdix"))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/chrisdone/god-mode")
-      (synopsis "Minor mode for entering commands without modifier keys")
-      (description
-       "This package provides a global minor mode for entering Emacs commands
+  (package
+    (name "emacs-god-mode")
+    (version "2.17.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/chrisdone/god-mode.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d2nrj35fzhnycchi0b7m5mbk5fyq7bgpbkkvc5xzqafclrsnapi"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/chrisdone/god-mode")
+    (synopsis "Minor mode for entering commands without modifier keys")
+    (description
+     "This package provides a global minor mode for entering Emacs commands
 without modifier keys.  It's similar to Vim's separation of commands and
 insertion mode.  When enabled all keys are implicitly prefixed with
 @samp{C-} (among other helpful shortcuts).")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-jinja2-mode
   (package
