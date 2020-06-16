@@ -105,6 +105,7 @@ version REVISION."
                         (haddock-flags ''())
                         (tests? #t)
                         (test-target "test")
+                        (parallel-build? #t)
                         (configure-flags ''())
                         (phases '(@ (guix build haskell-build-system)
                                     %standard-phases))
@@ -138,6 +139,7 @@ provides a 'Setup.hs' file as its build system."
                       #:system ,system
                       #:test-target ,test-target
                       #:tests? ,tests?
+                      #:parallel-build? ,parallel-build?
                       #:haddock? ,haddock?
                       #:phases ,phases
                       #:outputs %outputs

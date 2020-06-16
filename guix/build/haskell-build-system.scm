@@ -121,9 +121,12 @@ and parameters ~s~%"
     (setenv "GHC_PACKAGE_PATH" ghc-path)
     #t))
 
-(define* (build #:rest empty)
+(define* (build #:key parallel-build? #:allow-other-keys)
   "Build a given Haskell package."
-  (run-setuphs "build" '()))
+  (run-setuphs "build"
+               (if parallel-build?
+                   `(,(string-append "--ghc-option=-j" (number->string (parallel-job-count))))
+                   '())))
 
 (define* (install #:rest empty)
   "Install a given Haskell package."
