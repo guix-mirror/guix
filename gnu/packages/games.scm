@@ -5264,7 +5264,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.24.0")
+    (version "0.25.0")
     (source
      (origin
        (method url-fetch)
@@ -5277,8 +5277,18 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32 "0kdq6s12myxfdg75ma9x3ys2nd0xwb3xm2ynlmhg4628va0pnixr"))
-       (patches (search-patches "crawl-upgrade-saves.patch"))))
+        (base32 "0rn1wjxdqw33caiwisfypm1j8cid3c9pz01ahicl17144zs29z3d"))
+       (patches (search-patches "crawl-upgrade-saves.patch"))
+       ;; The 0.25.0 -nodeps.tar.xz was built from an OSX machine; normally
+       ;; apparently it's built from a Debian machine before the Debian
+       ;; packages are made.  These ._* files are binary and have the string
+       ;; "Mac OS X" in them... removing these seems to result in compilation
+       ;; again.
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file (find-files "." "^\\._"))
+           #t))))
     (build-system gnu-build-system)
     (inputs
      `(("lua51" ,lua-5.1)
