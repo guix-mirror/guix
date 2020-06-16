@@ -121,11 +121,13 @@
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages markup)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
@@ -4097,3 +4099,42 @@ can also directly record to WebM or MP4 if you prefer.")
 wlroots-based compositors.  More specifically, those that support
 @code{wlr-screencopy-v1} and @code{xdg-output}.")
     (license license:expat)))
+
+(define-public guvcview
+  (package
+    (name "guvcview")
+    (version "2.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/guvcview/source/guvcview-"
+                                  "src-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11byyfpkcik7wvf2qic77zjamfr2rhji97dpj1gy2fg1bvpiqf4m"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; There are no tests and "make check" would fail on an intltool error.
+     '(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("eudev" ,eudev)
+       ("libusb" ,libusb)
+       ("v4l-utils" ,v4l-utils)                   ;libv4l2
+       ("ffmpeg" ,ffmpeg)                         ;libavcodec, libavutil
+       ("sdl2" ,sdl2)
+       ("gsl" ,gsl)
+       ("portaudio" ,portaudio)
+       ("alsa-lib" ,alsa-lib)))
+    (home-page "http://guvcview.sourceforge.net/")
+    (synopsis "Control your webcam and capture videos and images")
+    (description
+     "GTK+ UVC Viewer (guvcview) is a graphical application to control a
+webcam accessible with Video4Linux (V4L2) and to capture videos and images.
+It provides control over precise settings of the webcam such as exposure,
+brightness, contrast, and frame rate.")
+
+    ;; 'COPYING' is GPLv3 but source headers say GPLv2+.
+    (license license:gpl2+)))
