@@ -246,7 +246,7 @@ given Haskell package."
   (let* ((out (assoc-ref outputs "out"))
          (haskell  (assoc-ref inputs "haskell"))
          (name-verion (strip-store-file-name haskell))
-         (lib (string-append out "/lib"))
+         (lib (string-append (or (assoc-ref outputs "lib") out) "/lib"))
          (config-dir (string-append lib
                                     "/" name-verion
                                     "/" name ".conf.d"))
