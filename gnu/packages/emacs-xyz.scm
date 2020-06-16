@@ -1404,44 +1404,21 @@ incrementally confined in Isearch manner.")
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.4")
+    (version "5.42")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnu/emms/emms-" version ".tar.gz"))
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "emms-" version ".tar"))
        (sha256
-        (base32 "1nd7sb6pva7qb1ki6w0zhd6zvqzd7742kaqi0f3v4as5jh09l6nr"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "Makefile"
-             (("/usr/bin/install-info")
-              ;; No need to use 'install-info' since it would create a
-              ;; useless 'dir' file.
-              "true")
-             (("^INFODIR=.*")
-              ;; Install Info files to $out/share/info, not $out/info.
-              "INFODIR := $(PREFIX)/share/info\n")
-             (("/site-lisp/emms")
-              ;; Install directly in share/emacs/site-lisp, not in a
-              ;; sub-directory.
-              "/site-lisp")
-             (("^all: (.*)\n" _ rest)
-              ;; Build 'emms-print-metadata'.
-              (string-append "all: " rest " emms-print-metadata\n")))
-           #t))))
-    (build-system gnu-build-system)
+        (base32 "1khx1fvllrs6w9kxk12mp1hj309c90mc7lkq1vvlqlr7vd6zmnpj"))))
+    (build-system emacs-build-system)
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build emacs-utils)
-                  (ice-9 ftw))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build emacs-utils))
-
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (replace 'configure
+         (add-after 'unpack 'set-external-programs
+           ;; Specify the absolute file names of the various programs
+           ;; so that everything works out-of-the-box.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out     (assoc-ref outputs "out"))
                    (flac    (assoc-ref inputs "flac"))
@@ -1451,94 +1428,56 @@ incrementally confined in Isearch manner.")
                    (mp3info (assoc-ref inputs "mp3info"))
                    (mutagen (assoc-ref inputs "mutagen"))
                    (opus    (assoc-ref inputs "opus-tools")))
-               ;; Specify the installation directory.
-               (substitute* "Makefile"
-                 (("PREFIX=.*$")
-                  (string-append "PREFIX := " out "\n")))
-
-               (setenv "SHELL" (which "sh"))
-               (setenv "CC" "gcc")
-
-               ;; Specify the absolute file names of the various
-               ;; programs so that everything works out-of-the-box.
-               (with-directory-excursion "lisp"
-                 (emacs-substitute-variables
-                     "emms-player-mpg321-remote.el"
-                   ("emms-player-mpg321-remote-command"
-                    (string-append mpg321 "/bin/mpg321")))
-                 (substitute* "emms-player-simple.el"
-                   (("\"ogg123\"")
-                    (string-append "\"" vorbis "/bin/ogg123\"")))
-                 (substitute* "emms-player-simple.el"
-                   (("\"mpg321\"")
-                    (string-append "\"" mpg321 "/bin/mpg321\"")))
-                 (emacs-substitute-variables "emms-info-ogginfo.el"
-                   ("emms-info-ogginfo-program-name"
-                    (string-append vorbis "/bin/ogginfo")))
-                 (emacs-substitute-variables "emms-info-opusinfo.el"
-                   ("emms-info-opusinfo-program-name"
-                    (string-append opus "/bin/opusinfo")))
-                 (emacs-substitute-variables "emms-info-libtag.el"
-                   ("emms-info-libtag-program-name"
-                    (string-append out "/bin/emms-print-metadata")))
-                 (emacs-substitute-variables "emms-info-mp3info.el"
-                   ("emms-info-mp3info-program-name"
-                    (string-append mp3info "/bin/mp3info")))
-                 (emacs-substitute-variables "emms-info-metaflac.el"
-                   ("emms-info-metaflac-program-name"
-                    (string-append flac "/bin/metaflac")))
-                 (emacs-substitute-variables "emms-source-file.el"
-                   ("emms-source-file-gnu-find" (which "find")))
-                 (substitute* "emms-volume-amixer.el"
-                   (("\"amixer\"")
-                    (string-append "\"" alsa "/bin/amixer\"")))
-                 (substitute* "emms-tag-editor.el"
-                   (("\"mid3v2\"")
-                    (string-append "\"" mutagen "/bin/mid3v2\"")))
-                 #t))))
-         (add-before 'install 'pre-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; The 'install' rule expects the target directories to exist.
-             (let* ((out  (assoc-ref outputs "out"))
-                    (bin  (string-append out "/bin"))
-                    (man1 (string-append out "/share/man/man1")))
-               (mkdir-p bin)
-               (mkdir-p man1)
-
-               ;; Ensure that files are not rejected by gzip
-               (let ((early-1980 315619200)) ; 1980-01-02 UTC
-                 (ftw "." (lambda (file stat flag)
-                            (unless (<= early-1980 (stat:mtime stat))
-                              (utime file early-1980 early-1980))
-                            #t)))
-               #t)))
-         (add-after 'install 'post-install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (symlink "emms-auto.el"
-                        (string-append out "/share/emacs/site-lisp/"
-                                       "emms-autoloads.el")))
-             #t)))
-       #:tests? #f))
-    (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
-                     ("texinfo" ,texinfo)))
-    (inputs `(("alsa-utils" ,alsa-utils)
-              ("flac" ,flac)            ;for metaflac
-              ("vorbis-tools" ,vorbis-tools)
-              ("mpg321" ,mpg321)
-              ("taglib" ,taglib)
-              ("mp3info" ,mp3info)
-              ("mutagen" ,python-mutagen)
-              ("opus-tools" ,opus-tools)))
-    (properties '((upstream-name . "emms")))
-    (synopsis "Emacs Multimedia System")
+               (emacs-substitute-variables "emms-player-mpg321-remote.el"
+                 ("emms-player-mpg321-remote-command"
+                  (string-append mpg321 "/bin/mpg321")))
+               (substitute* "emms-player-simple.el"
+                 (("\"ogg123\"")
+                  (string-append "\"" vorbis "/bin/ogg123\"")))
+               (substitute* "emms-player-simple.el"
+                 (("\"mpg321\"")
+                  (string-append "\"" mpg321 "/bin/mpg321\"")))
+               (emacs-substitute-variables "emms-info-ogginfo.el"
+                 ("emms-info-ogginfo-program-name"
+                  (string-append vorbis "/bin/ogginfo")))
+               (emacs-substitute-variables "emms-info-opusinfo.el"
+                 ("emms-info-opusinfo-program-name"
+                  (string-append opus "/bin/opusinfo")))
+               (emacs-substitute-variables "emms-info-libtag.el"
+                 ("emms-info-libtag-program-name"
+                  (string-append out "/bin/emms-print-metadata")))
+               (emacs-substitute-variables "emms-info-mp3info.el"
+                 ("emms-info-mp3info-program-name"
+                  (string-append mp3info "/bin/mp3info")))
+               (emacs-substitute-variables "emms-info-metaflac.el"
+                 ("emms-info-metaflac-program-name"
+                  (string-append flac "/bin/metaflac")))
+               (emacs-substitute-variables "emms-source-file.el"
+                 ("emms-source-file-gnu-find" (which "find")))
+               (substitute* "emms-volume-amixer.el"
+                 (("\"amixer\"")
+                  (string-append "\"" alsa "/bin/amixer\"")))
+               (substitute* "emms-tag-editor.el"
+                 (("\"mid3v2\"")
+                  (string-append "\"" mutagen "/bin/mid3v2\"")))
+               #t))))))
+    (inputs
+     `(("alsa-utils" ,alsa-utils)
+       ("flac" ,flac)                   ;for metaflac
+       ("vorbis-tools" ,vorbis-tools)
+       ("mpg321" ,mpg321)
+       ("taglib" ,taglib)
+       ("mp3info" ,mp3info)
+       ("mutagen" ,python-mutagen)
+       ("opus-tools" ,opus-tools)))
+    (home-page "https://www.gnu.org/software/emms/")
+    (synopsis "The Emacs Multimedia System")
     (description
      "EMMS is the Emacs Multimedia System.  It is a small front-end which
 can control one of the supported external players.  Thus, it supports
 whatever formats are supported by your music player.  It also
 supports tagging and playlist management, all behind a clean and
 light user interface.")
-    (home-page "https://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
 (define-public emacs-emms-mode-line-cycle
