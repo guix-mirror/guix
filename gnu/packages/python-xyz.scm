@@ -11779,7 +11779,8 @@ running in.")
        (uri (pypi-uri "python-memcached" version))
        (sha256
         (base32
-         "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))))
+         "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))
+       (patches (search-patches "python-memcached-syntax-warnings.patch"))))
     (build-system python-build-system)
     (propagated-inputs `(("python-six" ,python-six)))
     (home-page

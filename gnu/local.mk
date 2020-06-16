@@ -35,6 +35,7 @@
 # Copyright © 2020 Ryan Prior <rprior@protonmail.com>
 # Copyright © 2020 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 # Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+# Copyright © 2020 Tanguy Le Carrour <tanguy@bioneland.org>
 #
 # This file is part of GNU Guix.
 #
@@ -1426,6 +1427,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-jedi-sort-project-test.patch	\
   %D%/packages/patches/python-libxml2-utf8.patch		\
+  %D%/packages/patches/python-memcached-syntax-warnings.patch	\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
   %D%/packages/patches/python-packaging-test-arch.patch		\

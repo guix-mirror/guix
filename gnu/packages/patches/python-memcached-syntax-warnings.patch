@@ -1,0 +1,24 @@
+Problem reported upstream:
+https://github.com/linsomniac/python-memcached/issues/176
+
+---
+ memcache.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/memcache.py b/memcache.py
+index 05b6657..b935681 100644
+--- a/memcache.py
++++ b/memcache.py
+@@ -1300,8 +1300,8 @@ class Client(threading.local):
+             key = key[1]
+         if key is None:
+             raise Client.MemcachedKeyNoneError("Key is None")
+-        if key is '':
+-            if key_extra_len is 0:
++        if key == '':
++            if key_extra_len == 0:
+                 raise Client.MemcachedKeyNoneError("Key is empty")
+
+             #  key is empty but there is some other component to key
+--
+2.26.2
