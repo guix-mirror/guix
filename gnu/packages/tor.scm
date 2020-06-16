@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2020 André Batista <nandre@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
 (define-module (gnu packages tor)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -86,11 +88,37 @@ location.  Tor works with many of your existing applications, including
 web browsers, instant messaging clients, remote login, and other
 applications based on the TCP protocol.
 
+This package is the full featured @code{tor} which is needed for running
+relays, bridges or directory authorities. If you just want to access the Tor
+network or to setup an onion service you may install @code{tor-client}
+instead.")
+    (license license:bsd-3)))
+
+(define-public tor-client
+  (package
+    (inherit tor)
+    (name "tor-client")
+    (arguments
+     (substitute-keyword-arguments (package-arguments tor)
+       ((#:configure-flags flags)
+        (append flags
+                '("--disable-module-relay")))))
+    (synopsis "Client to the anonymous Tor network")
+    (description
+     "Tor protects you by bouncing your communications around a distributed
+network of relays run by volunteers all around the world: it prevents
+somebody watching your Internet connection from learning what sites you
+visit, and it prevents the sites you visit from learning your physical
+location.  Tor works with many of your existing applications, including
+web browsers, instant messaging clients, remote login, and other
+applications based on the TCP protocol.
+
 To @code{torify} applications (to take measures to ensure that an application,
 which has not been designed for use with Tor such as ssh, will use only Tor for
 internet connectivity, and also ensures that there are no leaks from DNS, UDP or
-the application layer) you need to install @code{torsocks}.")
-    (license license:bsd-3)))
+the application layer) you need to install @code{torsocks}.
+
+This package only provides a client to the Tor Network.")))
 
 (define-public torsocks
   (package
