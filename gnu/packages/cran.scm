@@ -6634,6 +6634,29 @@ be added or removed.  When working with Word documents, a cursor can be used
 to help insert or delete content at a specific location in the document.")
     (license license:gpl3)))
 
+(define-public r-profilemodel
+  (package
+    (name "r-profilemodel")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "profileModel" version))
+       (sha256
+        (base32
+         "0yq8hy43h62hlz8bbf9ila4a3xcwizi1if27b78xc5y857ncwad8"))))
+    (properties `((upstream-name . "profileModel")))
+    (build-system r-build-system)
+    (home-page "https://github.com/ikosmidis/profileModel")
+    (synopsis "Profiling inference functions for various model classes")
+    (description
+     "This package provides tools that can be used to calculate, evaluate,
+plot and use for inference the profiles of *arbitrary* inference functions for
+arbitrary @code{glm}-like fitted models with linear predictors.  More information
+on the methods that are implemented can be found in Kosmidis (2008)
+@url{https://www.r-project.org/doc/Rnews/Rnews_2008-2.pdf}.")
+    (license license:gpl2+)))
+
 (define-public r-abn
   (package
     (name "r-abn")
