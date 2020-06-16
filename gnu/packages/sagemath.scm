@@ -184,60 +184,6 @@ represented as strings.")
     (license license:public-domain)
     (home-page "https://github.com/miguelmarco/libhomfly")))
 
-;; The following three packages from the Linbox group are needed in
-;; an outdated version for Sage.
-
-(define-public givaro-4.0.4
-  (package (inherit givaro)
-    (name "givaro")
-    (version "4.0.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linbox-team/givaro")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "199p8wyj5i63jbnk7j8qbdbfp5rm2lpmcxyk3mdjy9bz7ygx3hhy"))))))
-
-(define-public fflas-ffpack-2.3.2
-  (package (inherit fflas-ffpack)
-    (name "fflas-ffpack")
-    (version "2.3.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linbox-team/fflas-ffpack")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1cqhassj2dny3gx0iywvmnpq8ca0d6m82xl5rz4mb8gaxr2kwddl"))))
-    (propagated-inputs
-     `(("givaro" ,givaro-4.0.4)))
-    ;; A test fails, but since all tests pass in the latest version,
-    ;; there is not much point in investigating.
-    (arguments
-     (substitute-keyword-arguments (package-arguments fflas-ffpack)
-       ((#:tests? _ #f) #f)))))
-
-(define-public linbox-1.5.2
-  (package (inherit linbox)
-    (version "1.5.2")
-    (name "linbox")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/linbox-team/linbox")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wfivlwp30mzdy1697w7rzb8caajim50mc8h27k82yipn2qc5n4i"))))
-    (inputs
-     `(("fflas-ffpack" ,fflas-ffpack-2.3.2)))))
-
 (define-public pynac
   (package
     (name "pynac")
