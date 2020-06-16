@@ -1236,6 +1236,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-newer-libconfig.patch		\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
+  %D%/packages/patches/linbox-fix-pkgconfig.patch		\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
   %D%/packages/patches/linphoneqt-tabbutton.patch		\
   %D%/packages/patches/linux-libre-fix-atheros-9271.patch	\

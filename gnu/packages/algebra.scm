@@ -1365,14 +1365,15 @@ algebra, such as the row echelon form.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "10j6dspbsq7d2l4q3y0c1l1xwmaqqba2fxg59q5bhgk9h5d7q571"))))
+                "10j6dspbsq7d2l4q3y0c1l1xwmaqqba2fxg59q5bhgk9h5d7q571"))
+              (patches (search-patches "linbox-fix-pkgconfig.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (inputs
+    (propagated-inputs
      `(("fflas-ffpack" ,fflas-ffpack)))
     (synopsis "C++ library for linear algebra over exact rings")
     (description
