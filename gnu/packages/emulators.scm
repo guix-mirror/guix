@@ -1622,3 +1622,46 @@ derived from Gens.  Project goals include clean source code, combined features
 from various forks of Gens, and improved platform portability.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (license license:gpl2+)))
+
+(define-public bsnes
+  (package
+    (name "bsnes")
+    (version "115")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bsnes-emu/bsnes")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0j054x38fwai61vj36sc04r3zkzay5acq2cgd9zqv5hs51s36g5b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "-C" "bsnes"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:tests? #f                      ; No tests.
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ao" ,ao)
+       ("cairo" ,cairo)
+       ("eudev" ,eudev)
+       ("gtk" ,gtk+-2)
+       ("gtksourceview-2" ,gtksourceview-2)
+       ("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("libxv" ,libxv)
+       ("openal" ,openal)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl2" ,sdl2)))
+    (home-page "https://bsnes.dev/")
+    (synopsis "Emulator for the Super Nintendo / Super Famicom systems")
+    (description
+     "bsnes is a Super Nintendo / Super Famicom emulator that focuses on
+performance, features, and ease of use.")
+    (license license:gpl3)))
