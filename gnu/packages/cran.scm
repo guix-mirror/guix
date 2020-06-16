@@ -6657,6 +6657,37 @@ on the methods that are implemented can be found in Kosmidis (2008)
 @url{https://www.r-project.org/doc/Rnews/Rnews_2008-2.pdf}.")
     (license license:gpl2+)))
 
+(define-public r-brglm
+  (package
+    (name "r-brglm")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "brglm" version))
+       (sha256
+        (base32
+         "0c9ngscc6zlfm90fqyggnj04qfkhp5qgf5q3wnfpxwyc8cm47by2"))))
+    (properties `((upstream-name . "brglm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-profilemodel" ,r-profilemodel)))
+    (home-page "https://github.com/ikosmidis/brglm")
+    (synopsis "Bias reduction in binomial-response generalized linear models")
+    (description
+     "Fit generalized linear models with binomial responses using either an
+adjusted-score approach to bias reduction or maximum penalized likelihood
+where penalization is by Jeffreys invariant prior.  These procedures return
+estimates with improved frequentist properties (bias, mean squared error) that
+are always finite even in cases where the maximum likelihood estimates are
+infinite (data separation).  Fitting takes place by fitting generalized linear
+models on iteratively updated pseudo-data.  The interface is essentially the
+same as @code{glm}.  More flexibility is provided by the fact that custom
+pseudo-data representations can be specified and used for model fitting.
+Functions are provided for the construction of confidence intervals for the
+reduced-bias estimates.")
+    (license license:gpl2+)))
+
 (define-public r-abn
   (package
     (name "r-abn")
