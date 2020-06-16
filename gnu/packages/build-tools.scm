@@ -284,14 +284,14 @@ other lower-level build files.")))
 (define-public tup
   (package
     (name "tup")
-    (version "0.7.8")
+    (version "0.7.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://gittup.org/tup/releases/tup-v"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1z8d5mmddiw3ckdvy88bi48aa5bm0hrid6g9c9hp2ynmpzywmp2h"))
+                "0gnd2598xqgwihdkfkx7qn0q6p4n7npam1fy83mp7s04zwj99syc"))
               (patches (search-patches "tup-unbundle-dependencies.patch"))
               (modules '((guix build utils)))
               (snippet
