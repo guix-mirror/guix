@@ -630,16 +630,7 @@ sound and device input (keyboards, joysticks, mice, etc.).")
                 "118x0cg7fzbsyrfhy5f9ab7dqp9czgia0ycgzp6sn3nlsdrcnr4m"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0")
-       #:configure-flags
-       (list (string-append "--with-libsdl2-prefix="
-                            (assoc-ref %build-inputs "sdl2"))
-             (string-append "--with-libsdl2-image-prefix="
-                            (assoc-ref %build-inputs "sdl2-image"))
-             (string-append "--with-libsdl2-ttf-prefix="
-                            (assoc-ref %build-inputs "sdl2-ttf"))
-             (string-append "--with-libsdl2-mixer-prefix="
-                            (assoc-ref %build-inputs "sdl2-mixer")))))
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0")))
     (native-inputs
      `(("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))
