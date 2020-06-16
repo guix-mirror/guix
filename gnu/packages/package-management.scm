@@ -551,6 +551,21 @@ out) and returning a package that uses that as its 'source'."
               (base32
                "1hbqsrp1ii2sfq8x2mahjrl2182qck76n8blrl1jfz3xq99m6i15"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           ;; Don't try & fail to create subdirectories in /etc, but keep them
+           ;; in the output as examples.
+           (lambda* (#:key (make-flags '()) outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (etc (string-append out "/etc")))
+               (apply invoke "make" "install"
+                      (string-append "sysconfdir=" etc)
+                      (string-append "profiledir=" etc "/profile.d")
+                      make-flags)))))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("boost" ,boost)
               ("brotli" ,brotli)
