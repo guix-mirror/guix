@@ -21861,8 +21861,29 @@ deeply recursive algorithms that may accidentally blow the stack.")
      "StackVec: vector-like facade for stack-allocated arrays.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-static-assertions-1
+  (package
+    (name "rust-static-assertions")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "static-assertions" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0gsl6xmw10gvn3zs1rv99laj5ig7ylffnh71f9l34js4nr4r7sx2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/nvzqz/static-assertions-rs")
+    (synopsis "Compile-time assertions for rust")
+    (description
+     "This package provides compile-time assertions to ensure that invariants
+are met.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-static-assertions-0.3
   (package
+    (inherit rust-static-assertions-1)
     (name "rust-static-assertions")
     (version "0.3.4")
     (source
@@ -21872,14 +21893,7 @@ deeply recursive algorithms that may accidentally blow the stack.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/nvzqz/static-assertions-rs")
-    (synopsis "Compile-time assertions for rust")
-    (description
-     "This package provides compile-time assertions to ensure that invariants
-are met.")
-    (license (list license:expat license:asl2.0))))
+          "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))))
 
 (define-public rust-stb-truetype-0.3
   (package
