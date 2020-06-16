@@ -244,6 +244,7 @@ given Haskell package."
              (loop seen tail))))))
 
   (let* ((out (assoc-ref outputs "out"))
+         (doc (assoc-ref outputs "doc"))
          (haskell  (assoc-ref inputs "haskell"))
          (name-verion (strip-store-file-name haskell))
          (lib (string-append (or (assoc-ref outputs "lib") out) "/lib"))
@@ -258,8 +259,25 @@ given Haskell package."
     ;; The conf file is created only when there is a library to register.
     (when (file-exists? config-file)
       (mkdir-p config-dir)
-      (let* ((config-file-name+id
-              (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+      (let ((config-file-name+id
+             (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+
+        ;; Remove reference to "doc" output from "lib" (or "out") by rewriting the
+        ;; "haddock-interfaces" field and removing the optional "haddock-html"
+        ;; field in the generated .conf file.
+        (when doc
+          (substitute* config-file
+            (("^haddock-html: .*") "\n")
+            (((format #f "^haddock-interfaces: ~a" doc))
+             (string-append "haddock-interfaces: " lib)))
+          ;; Move the referenced file to the "lib" (or "out") output.
+          (match (find-files doc "\\.haddock$")
+            ((haddock-file . rest)
+             (let* ((subdir (string-drop haddock-file (string-length doc)))
+                    (new    (string-append lib subdir)))
+               (mkdir-p (dirname new))
+               (rename-file haddock-file new)))
+            (_ #f)))
         (install-transitive-deps config-file %tmp-db-dir config-dir)
         (rename-file config-file
                      (string-append config-dir "/"
