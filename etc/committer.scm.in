@@ -1,0 +1,250 @@
+#!@GUILE@ \
+--no-auto-compile -s
+!#
+
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2020 Ricardo Wurmus <rekado@elephly.net>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This script stages and commits changes to package definitions.
+
+;;; Code:
+
+(import (sxml xpath)
+        (srfi srfi-1)
+        (srfi srfi-9)
+        (ice-9 format)
+        (ice-9 popen)
+        (ice-9 match)
+        (ice-9 rdelim)
+        (ice-9 textual-ports))
+
+(define (read-excursion port)
+  "Read an expression from PORT and reset the port position before returning
+the expression."
+  (let ((start (ftell port))
+        (result (read port)))
+    (seek port start SEEK_SET)
+    result))
+
+(define (surrounding-sexp port line-no)
+  "Return the top-level S-expression surrounding the change at line number
+LINE-NO in PORT."
+  (let loop ((i (1- line-no))
+             (last-top-level-sexp #f))
+    (if (zero? i)
+        last-top-level-sexp
+        (match (peek-char port)
+          (#\(
+           (let ((sexp (read-excursion port)))
+             (read-line port)
+             (loop (1- i) sexp)))
+          (_
+           (read-line port)
+           (loop (1- i) last-top-level-sexp))))))
+
+(define-record-type <hunk>
+  (make-hunk file-name
+             old-line-number
+             new-line-number
+             diff)
+  hunk?
+  (file-name       hunk-file-name)
+  ;; Line number before the change
+  (old-line-number hunk-old-line-number)
+  ;; Line number after the change
+  (new-line-number hunk-new-line-number)
+  ;; The full diff to be used with "git apply --cached"
+  (diff hunk-diff))
+
+(define* (hunk->patch hunk #:optional (port (current-output-port)))
+  (let ((file-name (hunk-file-name hunk)))
+    (format port
+            "diff --git a/~a b/~a~%--- a/~a~%+++ b/~a~%~a"
+            file-name file-name file-name file-name
+            (hunk-diff hunk))))
+
+(define (diff-info)
+  "Read the diff and return a list of <hunk> values."
+  (let ((port (open-pipe* OPEN_READ
+                          "git" "diff"
+                          "--no-prefix"
+                          ;; Do not include any context lines.  This makes it
+                          ;; easier to find the S-expression surrounding the
+                          ;; change.
+                          "--unified=0")))
+    (define (extract-line-number line-tag)
+      (abs (string->number
+            (car (string-split line-tag #\,)))))
+    (define (read-hunk)
+      (reverse
+       (let loop ((lines '()))
+         (let ((line (read-line port 'concat)))
+           (cond
+            ((eof-object? line) lines)
+            ((or (string-prefix? "@@ " line)
+                 (string-prefix? "diff --git" line))
+             (unget-string port line)
+             lines)
+            (else (loop (cons line lines))))))))
+    (define info
+      (let loop ((acc '())
+                 (file-name #f))
+        (let ((line (read-line port)))
+          (cond
+           ((eof-object? line) acc)
+           ((string-prefix? "--- " line)
+            (match (string-split line #\space)
+              ((_ file-name)
+               (loop acc file-name))))
+           ((string-prefix? "@@ " line)
+            (match (string-split line #\space)
+              ((_ old-start new-start . _)
+               (loop (cons (make-hunk file-name
+                                      (extract-line-number old-start)
+                                      (extract-line-number new-start)
+                                      (string-join (cons* line "\n"
+                                                          (read-hunk)) ""))
+                           acc)
+                     file-name))))
+           (else (loop acc file-name))))))
+    (close-pipe port)
+    info))
+
+(define (old-sexp hunk)
+  "Using the diff information in HUNK return the unmodified S-expression
+corresponding to the top-level definition containing the staged changes."
+  ;; TODO: We can't seek with a pipe port...
+  (let* ((port (open-pipe* OPEN_READ
+                           "git" "show" (string-append "HEAD:"
+                                                       (hunk-file-name hunk))))
+         (contents (get-string-all port)))
+    (close-pipe port)
+    (call-with-input-string contents
+      (lambda (port)
+        (surrounding-sexp port (hunk-old-line-number hunk))))))
+
+(define (new-sexp hunk)
+  "Using the diff information in HUNK return the modified S-expression
+corresponding to the top-level definition containing the staged changes."
+  (call-with-input-file (hunk-file-name hunk)
+    (lambda (port)
+      (surrounding-sexp port
+                        (hunk-new-line-number hunk)))))
+
+(define* (commit-message file-name old new #:optional (port (current-output-port)))
+  "Print ChangeLog commit message for changes between OLD and NEW."
+  (define (get-values expr field)
+    (match ((sxpath `(// ,field quasiquote *)) expr)
+      (() '())
+      ((first . rest)
+       (map cadadr first))))
+  (define (listify items)
+    (match items
+      ((one) one)
+      ((one two)
+       (string-append one " and " two))
+      ((one two . more)
+       (string-append (string-join (drop-right items 1) ", ")
+                      ", and " (first (take-right items 1))))))
+  (define variable-name
+    (second old))
+  (define version
+    (and=> ((sxpath '(// version *any*)) new)
+           first))
+  (format port
+          "gnu: ~a: Update to ~a.~%~%* ~a (~a): Update to ~a.~%"
+          variable-name version file-name variable-name version)
+  (for-each (lambda (field)
+              (let ((old-values (get-values old field))
+                    (new-values (get-values new field)))
+                (or (equal? old-values new-values)
+                    (let ((removed (lset-difference eq? old-values new-values))
+                          (added (lset-difference eq? new-values old-values)))
+                      (format port
+                              "[~a]: ~a~%" field
+                              (match (list (map symbol->string removed)
+                                           (map symbol->string added))
+                                ((() added)
+                                 (format #f "Add ~a."
+                                         (listify added)))
+                                ((removed ())
+                                 (format #f "Remove ~a."
+                                         (listify removed)))
+                                ((removed added)
+                                 (format #f "Remove ~a; add ~a."
+                                         (listify removed)
+                                         (listify added)))))))))
+            '(inputs propagated-inputs native-inputs)))
+
+(define (group-hunks-by-sexp hunks)
+  "Return a list of pairs associating all hunks with the S-expression they are
+modifying."
+  (fold (lambda (sexp hunk acc)
+          (match acc
+            (((previous-sexp . hunks) . rest)
+             (if (equal? sexp previous-sexp)
+                 (cons (cons previous-sexp
+                             (cons hunk hunks))
+                       rest)
+                 (cons (cons sexp (list hunk))
+                       acc)))
+            (_
+             (cons (cons sexp (list hunk))
+                   acc))))
+        '()
+        (map new-sexp hunks)
+        hunks))
+
+(define (new+old+hunks hunks)
+  (map (match-lambda
+         ((new . hunks)
+          (cons* new (old-sexp (first hunks)) hunks)))
+       (group-hunks-by-sexp hunks)))
+
+(define (main . args)
+  (match (diff-info)
+    (()
+     (display "Nothing to be done." (current-error-port)))
+    (hunks
+     (for-each (match-lambda
+                 ((new old . hunks)
+                  (for-each (lambda (hunk)
+                                (let ((port (open-pipe* OPEN_WRITE
+                                                        "git" "apply"
+                                                        "--cached"
+                                                        "--unidiff-zero")))
+                                  (hunk->patch hunk port)
+                                  (unless (eqv? 0 (status:exit-val (close-pipe port)))
+                                    (error "Cannot apply")))
+                                (sleep 1))
+                              hunks)
+                    (commit-message (hunk-file-name (first hunks))
+                                    old new
+                                    (current-output-port))
+                    (let ((port (open-pipe* OPEN_WRITE "git" "commit" "-F" "-")))
+                      (commit-message (hunk-file-name (first hunks))
+                                      old new
+                                      port)
+                      (sleep 1)
+                      (unless (eqv? 0 (status:exit-val (close-pipe port)))
+                        (error "Cannot commit")))))
+               (new+old+hunks hunks)))))
+
+(main)
