@@ -555,8 +555,8 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 
 (define-public papirus-icon-theme
   (let ((version "0.0.0") ;; The package does not use semver
-        (revision "1")
-        (tag "20200430"))
+        (revision "2")
+        (tag "20200602"))
     (package
       (name "papirus-icon-theme")
       (version (git-version version revision tag))
@@ -568,7 +568,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
                (commit tag)))
          (sha256
           (base32
-           "19dfiifc7cjwy0nb1hgzryzaijszsyix303xsgk5xbmhpwrv92hq"))
+           "0yv19kl8jr2jmh9018b1qmnq68alw84vrmb35jm462qd3qzzdgah"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
     (arguments
