@@ -1817,8 +1817,7 @@ advanced research.")
          "1k8szlpm19rcwcxdny9qdm3gmaqq8akb4xlvrzyz8c2d679aak6l"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("ipython" ,(prompt-toolkit-2-instead-of-prompt-toolkit
-                    python-ipython))
+     `(("ipython" ,python-ipython)
        ("numpy" ,python-numpy)
        ("pandas" ,python-pandas)
        ("scipy" ,python-scipy)))

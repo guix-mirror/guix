@@ -6450,7 +6450,7 @@ callback signature using a prototype function.")
     (propagated-inputs
      `(("python-backcall" ,python-backcall)
        ("python-pyzmq" ,python-pyzmq)
-       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
@@ -9004,8 +9004,7 @@ interactive computing.")
          "1ismyaxbv9d56yqqqb8xl58hg0iq0bbyy014a53y1g3hfbc8g7q7"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel"
-        ,(prompt-toolkit-2-instead-of-prompt-toolkit python-ipykernel))
+     `(("python-ipykernel" ,python-ipykernel)
        ("python-notebook" ,python-notebook)))
     (native-inputs
      `(("python-certifi" ,python-certifi)
@@ -9032,8 +9031,7 @@ notebooks.")
          "15sww2mvnkqlvx55gwa82v05062a8j1xpncnqna4k9sl53hgcig9"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipython" ,(prompt-toolkit-2-instead-of-prompt-toolkit
-                           python-ipython))
+     `(("python-ipython" ,python-ipython)
        ("python-traitlets" ,python-traitlets)
        ("python-widgetsnbextension" ,python-widgetsnbextension)))
     (native-inputs
@@ -9063,8 +9061,7 @@ in the data.")
          "06s3kr5vx0l1y1b7fxb04dmrppscl7q69sl9yyfr0d057d1ssvkg"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-ipykernel" ,(prompt-toolkit-2-instead-of-prompt-toolkit
-        python-ipykernel))
+     `(("python-ipykernel" ,python-ipykernel)
        ("python-jupyter-client" ,python-jupyter-client)
        ("python-prompt-toolkit" ,python-prompt-toolkit-2)
        ("python-pygments" ,python-pygments)))
@@ -12191,10 +12188,6 @@ characters, mouse support, and auto suggestions.")
      `(("python-wcwidth" ,python-wcwidth)
        ("python-six" ,python-six)
        ("python-pygments" ,python-pygments)))))
-
-(define-public prompt-toolkit-2-instead-of-prompt-toolkit
-  (package-input-rewriting/spec
-   `(("python-prompt-toolkit" . ,(const python-prompt-toolkit-2)))))
 
 (define-public python2-prompt-toolkit
   (package-with-python2 python-prompt-toolkit-2))
