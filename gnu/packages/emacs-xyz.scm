@@ -16900,11 +16900,11 @@ accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
 (define-public emacs-deadgrep
-  (let ((commit "3fc7ca1f58e190f0c80da455a0e40187e673020e")
-        (revision "2"))
+  (let ((commit "7e50e71c6ff4e17dded43e0836dae4e5ec020fcf")
+        (revision "1"))
     (package
       (name "emacs-deadgrep")
-      (version (git-version "0.8" revision commit))
+      (version (git-version "0.10" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16914,9 +16914,9 @@ accept and reject GitHub pull requests.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "016gwqxd9aqzjw3hqv3vdf8cs6la8r65g6azg5rlmjqwfx3vsaha"))))
+           "1vjhrq02l8gvdn2haygzq7277hnhjchs9xrfpcnh76gqip200gx4"))))
       (build-system emacs-build-system)
-      (inputs
+      (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
          ("emacs-s" ,emacs-s)
          ("emacs-spinner" ,emacs-spinner)))
