@@ -9507,48 +9507,26 @@ been adapted to work with mu4e.")
        (uri (git-reference
              (url "https://github.com/joaotavora/yasnippet.git")
              (commit version)))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           ;; YASnippet expects a "snippets" subdirectory in the same
-           ;; directory as yasnippet.el, but we don't install it because it's
-           ;; a git submodule pointing to an external repository.  Adjust
-           ;; `yas-snippet-dirs' to prevent warnings about a missing
-           ;; directory.
-           (substitute* "yasnippet.el"
-             (("^ +'yas-installed-snippets-dir\\)\\)\n")
-              "))\n"))
-           #t))))
+        (base32 "0via9dzw8m5lzymg1h78xkwjssh39zr3g6ccyamlf1rjzjsyxknv"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
        #:test-command '("emacs" "--batch"
                         "-l" "yasnippet-tests.el"
                         "-f" "ert-run-tests-batch-and-exit")
-       ;; FIXME: one failing test.
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'make-tests-writable
+         ;; Set HOME, otherwise test-rebindings fails.
+         (add-before 'check 'set-home
            (lambda _
-             (make-file-writable "yasnippet-tests.el")
-             #t))
-         (add-before 'check 'delete-rebinding-test
-           (lambda _
-             (emacs-batch-edit-file "yasnippet-tests.el"
-               `(progn (goto-char (point-min))
-                       (re-search-forward "ert-deftest test-rebindings")
-                       (beginning-of-line)
-                       (kill-sexp)
-                       (basic-save-buffer)))
+             (setenv "HOME" (getcwd))
              #t)))))
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
-    (description
-     "YASnippet is a template system for Emacs.  It allows you to type an
-abbreviation and automatically expand it into function templates.")
+    (description "YASnippet is a template system for Emacs.  It allows you to
+type an abbreviation and automatically expand it into function templates.")
     (license license:gpl3+)))
 
 (define-public emacs-yasnippet-snippets
