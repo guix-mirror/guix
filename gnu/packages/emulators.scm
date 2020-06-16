@@ -414,6 +414,67 @@ Pocket Color, WonderSwan, WonderSwan Color, SwanCrystal, Pocket Challenge
 V2.")
     (license license:gpl3+)))
 
+(define-public mednafen
+  (package
+    (name "mednafen")
+    (version "1.24.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://mednafen.github.io/releases/files/"
+                           "mednafen-" version ".tar.xz"))
+       (sha256
+        (base32 "03zplcfvmnnv7grhacmr1zy789pb2wda36wylmzmar23g0zqbsix"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        ;; "--with-external-mpcdec"
+        "--with-external-lzo")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa" ,alsa-lib)
+       ;; ("libmpcdec" ,libmpcdec) FIXME: not recognized.
+       ("libsndfile" ,libsndfile)
+       ("lzo" ,lzo)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://mednafen.github.io/")
+    (synopsis "Multi-system emulator utilizing OpenGL and SDL")
+    (description
+     "Mednafen is a portable, utilizing OpenGL and SDL, argument-driven
+multi-system emulator.  Mednafen has the ability to remap hotkey functions and
+virtual system inputs to a keyboard, a joystick, or both simultaneously.  Save
+states are supported, as is real-time game rewinding.  Screen snapshots may be
+taken, in the PNG file format, at the press of a button.  Mednafen can record
+audiovisual movies in the QuickTime file format, with several different
+lossless codecs supported.
+
+The following systems are supported:
+
+@itemize
+@item Apple II/II+
+@item Atari Lynx
+@item Neo Geo Pocket (Color)
+@item WonderSwan
+@item GameBoy (Color)
+@item GameBoy Advance
+@item Nintendo Entertainment System
+@item Super Nintendo Entertainment System/Super Famicom
+@item Virtual Boy
+@item PC Engine/TurboGrafx 16 (CD)
+@item SuperGrafx
+@item PC-FX
+@item Sega Game Gear
+@item Sega Genesis/Megadrive
+@item Sega Master System
+@item Sega Saturn (experimental, x86_64 only)
+@item Sony PlayStation
+@end itemize")
+    ;; Main license is GPL2+.  Some parts are BSD-3.
+    (license (list license:gpl2+ license:bsd-3))))
+
 (define-public mgba
   (package
     (name "mgba")
