@@ -6688,6 +6688,31 @@ Functions are provided for the construction of confidence intervals for the
 reduced-bias estimates.")
     (license license:gpl2+)))
 
+(define-public r-entropy
+  (package
+    (name "r-entropy")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "entropy" version))
+       (sha256
+        (base32
+         "10vg4818q5g54pv2nn9x5i7pvky5nsv96syy47pz2mgqp1273cpd"))))
+    (properties `((upstream-name . "entropy")))
+    (build-system r-build-system)
+    (home-page "https://www.strimmerlab.org/software/entropy/")
+    (synopsis "Estimation of entropy, mutual information and related quantities")
+    (description
+     "This package implements various estimators of entropy, such as the
+shrinkage estimator by Hausser and Strimmer, the maximum likelihood and the
+Millow-Madow estimator, various Bayesian estimators, and the Chao-Shen
+estimator.  It also offers an R interface to the NSB estimator.  Furthermore,
+it provides functions for estimating Kullback-Leibler divergence, chi-squared,
+mutual information, and chi-squared statistic of independence.  In addition
+there are functions for discretizing continuous random variables.")
+    (license license:gpl3+)))
+
 (define-public r-abn
   (package
     (name "r-abn")
