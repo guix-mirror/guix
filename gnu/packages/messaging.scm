@@ -571,7 +571,7 @@ compromised.")
     (version "1.8.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://znc.in/releases/archive/znc-"
+              (uri (string-append "https://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
