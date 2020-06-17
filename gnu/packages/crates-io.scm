@@ -6636,6 +6636,28 @@ Diesel.")
        #:cargo-development-inputs
        (("rust-term" ,rust-term-0.2))))))
 
+(define-public rust-diffs-0.3
+  (package
+    (name "rust-diffs")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "diffs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "036sqycmir4bbl4016jprsyjq4hicc31r68dyqadmc8ac9pk55d1"))))
+    (build-system cargo-build-system)
+    (home-page "https://nest.pijul.com/pijul_org/pijul")
+    (synopsis "Diff algorithms, also called longest common subsequence")
+    (description
+     "This package provides a number of diff algorithms, also called longest
+common subsequence.  The diff algorithms include Myer's diff and Patience
+diff.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-digest-0.9
   (package
     (name "rust-digest")
