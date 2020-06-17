@@ -937,16 +937,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2.3")
+    (version "4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
-             ;; See <https://issues.guix.gnu.org/issue/39719>
-             (patches (search-patches "ffmpeg-prefer-dav1d.patch"))
              (sha256
               (base32
-               "0cddkb5sma9dzy8i59sfls19rhjlq40zn9mh3x666dqkxl5ckxlx"))))
+               "0pbrsv5v96yd8qzb9bk4kw7qk4xqpi03rsd5xfbwnjzlhijd02hx"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -973,6 +971,7 @@ operate properly.")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
+       ("rav1e" ,rav1e)
        ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
@@ -1054,6 +1053,7 @@ operate properly.")
          "--enable-libmp3lame"
          "--enable-libopus"
          "--enable-libpulse"
+         "--enable-librav1e"
          "--enable-libsoxr"
          "--enable-libspeex"
          "--enable-libtheora"
@@ -1132,10 +1132,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-libdav1d" (delete "--enable-libaom"
-                 ,flags)))))
-    (inputs (alist-delete "dav1d" (alist-delete "libaom"
-                          (package-inputs ffmpeg))))))
+        `(delete "--enable-libdav1d" (delete "--enable-libaom" (delete "--enable-librav1e"
+                  ,flags))))))
+    (inputs (alist-delete "dav1d" (alist-delete "libaom" (alist-delete "rav1e"
+                           (package-inputs ffmpeg)))))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
