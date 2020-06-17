@@ -368,10 +368,7 @@ used as internal storage type for polynomial structures.")
              (let ((out (assoc-ref outputs "out")))
                (substitute* "Makefile"
                  (("^INSTALL_DIR= /usr/local")
-                  (string-append "INSTALL_DIR=" out))
-                 ;; Sage renames the include directory, so we do it also.
-                 (("include/Lfunction")
-                  "include/libLfunction")))
+                  (string-append "INSTALL_DIR=" out))))
              #t))
          (add-before 'install 'make-output-dirs
            (lambda* (#:key outputs #:allow-other-keys)
