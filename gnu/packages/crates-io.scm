@@ -20353,6 +20353,45 @@ It is automatically published using the compiler repository at
      "This package provides a speedy, non-cryptographic hash used in rustc.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rustc-rayon-0.3
+  (package
+    (name "rust-rustc-rayon")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-rayon" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fjvy8bf0hd1zq9d3fdxbdp4z4p1k8jfyx51k5qip3wk1pwnf9zk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
+        ("rust-either" ,rust-either-1.5)
+        ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment-0.3)
+        ("rust-docopt" ,rust-docopt-1.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
+        ("rust-serde" ,rust-serde-1.0)
+        ("rust-serde-derive" ,rust-serde-derive-1.0))))
+    (home-page "https://github.com/rust-lang/rustc-rayon")
+    (synopsis
+     "Simple work-stealing parallelism for Rust - fork for rustc")
+    (description
+     "Rustc-rayon is a fork of the Rayon crate.  It adds a few \"in progress\"
+features that rustc is using, mostly around deadlock detection.  These features
+are not stable and should not be used by others -- though they may find their
+way into rayon proper at some point.  In general, if you are not rustc, you
+should be using the real rayon crate, not rustc-rayon.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rustc-rayon-core-0.3
   (package
     (name "rust-rustc-rayon-core")
