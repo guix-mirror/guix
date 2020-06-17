@@ -20307,6 +20307,34 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-serialize-654
+  (package
+    (name "rust-rustc-ap-serialize")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-serialize" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vwfa3q4f9k0nfryr53jnwmf8vhaq7ijbgw8449nx467dr98yvkm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-indexmap" ,rust-indexmap-1)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published versions of the serialize crate used in rustc")
+    (description
+     "Use the serialize library used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-demangle-0.1
   (package
     (name "rust-rustc-demangle")
