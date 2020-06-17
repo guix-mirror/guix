@@ -5463,6 +5463,34 @@ Code (MAC) algorithms.")
 algorithms.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-cryptovec-0.4
+  (package
+    (name "rust-cryptovec")
+    (version "0.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cryptovec" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1n88dmhfb2dxs48zllq1g1dya76zx4fajw482qy8jj4hgg1da4p4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; CryptoVec::from_slice failed
+       #:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys-0.2)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-winapi" ,rust-winapi-0.2))))
+    (home-page "https://crates.io/crates/cryptovec")
+    (synopsis
+     "Vector which zeroes its memory on clears and reallocations")
+    (description
+     "This package provides a vector which zeroes its memory on clears and
+reallocations.")
+    (license license:asl2.0)))
+
 (define-public rust-cssparser-0.27
   (package
     (name "rust-cssparser")
