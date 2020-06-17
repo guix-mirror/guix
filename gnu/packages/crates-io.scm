@@ -1470,6 +1470,28 @@ trace (backtrace) at runtime in a Rust program.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-base58-0.1
+  (package
+    (name "rust-base58")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "base58" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10xfw6v7jzn9i682mkw9nqybzafrvl3i2wawwgp5a8gh2n0fw92h"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/debris/base58")
+    (synopsis "Tiny and fast base58 encoding")
+    (description
+     "Encode to base58 using only Rust.  This package is based on
+@url{https://github.com/trezor/trezor-crypto/blob/master/base58.c} at commit
+c6e7d37.  However, this package works only up to 128 bytes.")
+    (license license:expat)))
+
 (define-public rust-base64-0.12
   (package
     (name "rust-base64")
