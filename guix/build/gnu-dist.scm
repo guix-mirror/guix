@@ -30,9 +30,6 @@
 ;;;
 ;;; Code:
 
-(define* (copy-source #:key source #:allow-other-keys)
-  (copy-recursively source "."))
-
 (define* (build #:key build-before-dist? make-flags (dist-target "distcheck")
                 #:allow-other-keys
                 #:rest args)
@@ -57,7 +54,6 @@
   (modify-phases %standard-phases
     (delete 'strip)
     (replace 'install install-dist)
-    (replace 'build build)
-    (replace 'unpack copy-source)))
+    (replace 'build build)))
 
 ;;; gnu-dist.scm ends here
