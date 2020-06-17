@@ -18356,6 +18356,27 @@ and would-block I/O operations.")
 path.Clean.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-pathdiff-0.1
+  (package
+    (name "rust-pathdiff")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "pathdiff" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cfg3isnx6mf3wbi7rsg4nmvywby40sbcs589n20fgi09l4p1gx3"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Manishearth/pathdiff")
+    (synopsis "Library for diffing paths to obtain relative paths")
+    (description
+     "Use diff_paths to construct a relative path from a provided base
+directory path to the provided path.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-pbkdf2-0.4
   (package
     (name "rust-pbkdf2")
