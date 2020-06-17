@@ -605,7 +605,7 @@ compromised.")
        ("perl" ,perl)
        ("python" ,python)
        ("zlib" ,zlib)))
-    (home-page "https://znc.in")
+    (home-page "https://wiki.znc.in/ZNC")
     (synopsis "IRC network bouncer")
     (description "ZNC is an @dfn{IRC network bouncer} or @dfn{BNC}.  It can
 detach the client from the actual IRC server, and also from selected channels.
