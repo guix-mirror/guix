@@ -20201,6 +20201,35 @@ password hashing function.")
      "This package provides a sys crate for the rust_hawktracer library.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-arena-654
+  (package
+    (name "rust-rustc-ap-arena")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-arena" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18yc4i5m2vf6w8na29i5jv8l4l0yknsf6xn0z2mk7mfz1nxwzpw1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page  "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the arena package used in rustc")
+    (description
+     "Use the arena library used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-demangle-0.1
   (package
     (name "rust-rustc-demangle")
