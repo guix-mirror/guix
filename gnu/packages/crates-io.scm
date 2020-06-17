@@ -20253,6 +20253,50 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-rustc-data-structures-654
+  (package
+    (name "rust-rustc-ap-rustc-data-structures")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_data_structures" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fhppy18n1i2iykdihfs05d6s1ivwz882ipc9cpnjcvqcsbhj4yj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.7)
+        ("rust-ena" ,rust-ena-0.13)
+        ("rust-indexmap" ,rust-indexmap-1)
+        ("rust-jobserver" ,rust-jobserver-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-measureme" ,rust-measureme-0.7)
+        ("rust-parking-lot" ,rust-parking-lot-0.10)
+        ("rust-rustc-ap-graphviz" ,rust-rustc-ap-graphviz-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-rustc-hash" ,rust-rustc-hash-1.1)
+        ("rust-rustc-rayon" ,rust-rustc-rayon-0.3)
+        ("rust-rustc-rayon-core" ,rust-rustc-rayon-core-0.3)
+        ("rust-smallvec" ,rust-smallvec-1)
+        ("rust-stable-deref-trait" ,rust-stable-deref-trait-1.1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis "Automatically published versions of rustc data structures")
+    (description
+     "Use data structures used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-ap-rustc-index-654
   (package
     (name "rust-rustc-ap-rustc-index")
