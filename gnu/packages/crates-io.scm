@@ -5071,6 +5071,44 @@ for arbitrary structs.")
     (description "Internal helper library for the derive_builder crate.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-derive-more-0.99
+  (package
+    (name "rust-derive-more")
+    (version "0.99.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "derive-more" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xizcpj39rx0474mbbx8m0xww98qh92zsg82gf52qnvbryqri299"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; Some test files missing.
+       #:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2-1.0)
+        ("rust-quote" ,rust-quote-1.0)
+        ("rust-syn" ,rust-syn-1.0))
+       #:cargo-development-inputs
+       (("rust-peg" ,rust-peg-0.5)
+        ("rust-rustc-version" ,rust-rustc-version-0.2))))
+    (home-page "https://github.com/JelteF/derive_more")
+    (synopsis "Adds derive macros for more traits")
+    (description
+     "Rust has lots of builtin traits that are implemented for its basic
+types, such as @code{Add}, @code{Not}, @code{From} or @code{Display}.
+However, when wrapping these types inside your own structs or enums you lose
+the implementations of these traits and are required to recreate them.  This is
+especially annoying when your own structures are very simple, such as when
+using the commonly advised newtype pattern (e.g. @code{MyInt(i32)}).
+
+This library tries to remove these annoyances and the corresponding
+boilerplate code.  It does this by allowing you to derive lots of commonly used
+traits for both structs and enums.")
+    (license license:expat)))
+
 (define-public rust-derive-new-0.5
   (package
     (name "rust-derive-new")
