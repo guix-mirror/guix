@@ -61,7 +61,7 @@
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019, 2020 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019, 2020 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
@@ -17700,6 +17700,39 @@ on regular expressions.")
              (propagated-inputs
               `(("python2-enum34" ,python2-enum34)
                 ,@(package-propagated-inputs reparser))))))
+
+(define-public python-retrying
+  (package
+    (name "python-retrying")
+    (version "1.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/rholder/retrying.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1kqipkbdaw5s1xg0gi29awm03vp1x8dz24pjidgxagvkvrjpzhi7"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/rholder/retrying")
+    (synopsis "Library for adding retry behavior")
+    (description "Retrying is a general-purpose retrying library to simplify
+the task of adding retry behavior to just about anything.
+
+Features:
+
+@itemize
+@item Generic Decorator API.
+@item Specify stop condition (i.e. limit by number of attempts).
+@item Specify wait condition (i.e. exponential backoff sleeping between attempts).
+@item Customize retrying on Exceptions.
+@item Customize retrying on expected returned result.
+@end itemize")
+    (license license:asl2.0)))
 
 (define-public python-precis-i18n
   (package
