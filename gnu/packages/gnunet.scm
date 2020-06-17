@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
-;;; Copyright © 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2017, 2018, 2019, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2017, 2019, 2020 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
@@ -245,7 +245,7 @@ supports HTTP, HTTPS and GnuTLS.")
                                   "See COPYING in the distribution."))
    (properties '((ftp-server . "ftp.gnu.org")
                  (ftp-directory . "/gnunet")))
-   (home-page "https://gnunet.org/gnurl")))
+   (home-page "https://gnunet.org/en/gnurl.html")))
 
 (define-public gnunet
   (package
