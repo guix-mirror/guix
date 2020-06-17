@@ -96,6 +96,7 @@
   #:use-module (guix packages)
   #:use-module (guix cvs-download)
   #:use-module (guix download)
+  #:use-module (guix bzr-download)
   #:use-module (guix git-download)
   #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
@@ -3978,6 +3979,62 @@ respective @code{*Help*} buffers.")
      "This is a major mode for @file{docker-compose} files that provides
 completion of relevant keywords.")
     (license license:expat)))
+
+(define-public emacs-dvc
+  (let ((revision "591")                ;no tags or official releases
+        (guix-revision "1"))
+    (package
+      (name "emacs-dvc")
+      (version (string-append "0.0.0-" guix-revision "." revision))
+      (source
+       (origin
+         (method bzr-fetch)
+         (uri (bzr-reference
+               (url "lp:dvc")
+               (revision revision)))
+         (sha256
+          (base32
+           "03pqn493w70wcpgaxvqnfgynxghw114l9pyiv3r414d84vzhan6h"))
+         (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags
+         (list (string-append "--with-lispdir=" (assoc-ref %outputs "out")
+                              "/share/emacs/site-lisp/"))
+         #:tests? #f                    ;no test suite
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'set-home
+             ;; Something in dvc-bookmarks.el attempts to write config files in
+             ;; $HOME during the autoload generation.
+             (lambda _ (setenv "HOME" (getenv "TMPDIR")) #t))
+           (add-before 'build 'fix-texinfo
+             ;; See https://bugs.launchpad.net/dvc/+bug/1264383.
+             (lambda _
+               (substitute* "texinfo/dvc-intro.texinfo"
+                 (("@itemx update ``to''")
+                  "@item update ``to''")
+                 (("@itemx brief")
+                  "@item brief")
+                 (("@itemx full")
+                  "@item full")
+                 (("@itemx drop")
+                  "@item drop")
+                 (("@itemx left file")
+                  "@item left file"))
+               #t)))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)         ;for aclocal
+         ("emacs" ,emacs-minimal)
+         ("texinfo" ,texinfo)))
+      (home-page "http://xsteve.at/prg/emacs_dvc/index.html")
+      (synopsis "Emacs front-end for various distributed version control systems.")
+      (description "DVC is a legacy Emacs front-end for a number of
+distributed version control systems.  It currently supports GNU Arch, GNU
+Bazaar, git, Mercurial, and Monotone.  It also provides some integration with
+Gnus, e.g., for applying patches received by email.")
+      (license license:gpl2+))))
 
 (define-public emacs-sudo-edit
   (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
