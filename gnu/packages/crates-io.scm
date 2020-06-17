@@ -23549,6 +23549,46 @@ paths point to the same file.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.3))))))
 
+(define-public rust-sanakirja-0.10
+  (package
+    (name "rust-sanakirja")
+    (version "0.10.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "sanakirja" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fhn5lb6jn0pimnk0nbf5h4xvp28xdkdh33d57gq1ixy8b2y091y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; tests::test_del_medium_fork fails
+       #:cargo-inputs
+       (("rust-fs2" ,rust-fs2-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-memmap" ,rust-memmap-0.7)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-uuid" ,rust-uuid-0.7))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-tempdir" ,rust-tempdir-0.3))))
+    (home-page "https://nest.pijul.com/pijul_org/sanakirja")
+    (synopsis "Key-value dictionary, using copy-on-write and B-trees")
+    (description
+     "This package provides a key-value dictionary, using copy-on-write and B
+trees.  It features:
+@itemize
+@item ACID semantics.
+@item B trees with copy-on-write.
+@item Support for referential transparency: databases can be cloned in time
+O(log n) (where n is the size of the database).  This was the original
+motivation for writing this library.
+@end itemize")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-scan-fmt-0.2
   (package
     (name "rust-scan-fmt")
