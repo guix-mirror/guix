@@ -235,19 +235,15 @@ exact build phases are defined by PHASES."
       (source s)
       (arguments
        ;; Use the right phases and modules.
-       (let* ((args (default-keyword-arguments (package-arguments p)
-                      `(#:phases #f
-                        #:modules ,%default-modules
-                        #:imported-modules ,%gnu-build-system-modules))))
-         (substitute-keyword-arguments args
-           ((#:modules modules)
-            `((guix build gnu-dist)
-              ,@modules))
-           ((#:imported-modules modules)
-            `((guix build gnu-dist)
-              ,@modules))
-           ((#:phases _)
-            phases))))
+       (substitute-keyword-arguments (package-arguments p)
+         ((#:modules modules %default-modules)
+          `((guix build gnu-dist)
+            ,@modules))
+         ((#:imported-modules modules %gnu-build-system-modules)
+          `((guix build gnu-dist)
+            ,@modules))
+         ((#:phases _ #f)
+          phases)))
       (native-inputs
        ;; Add autotools & co. as inputs.
        (let ((ref (lambda (module var)
