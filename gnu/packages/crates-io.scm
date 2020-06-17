@@ -2669,6 +2669,37 @@ dependency on the rust stdlib.  This makes it suitable for embedded devices
 and kernels.")
     (license (list license:bsd-3 license:expat))))
 
+(define-public rust-bs58-0.2
+  (package
+    (name "rust-bs58")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "bs58" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "125i962x0m0ggdif6ds51wfif2lypiicy469dj5j2l6rm6xycpn9"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-sha2" ,rust-sha2-0.8))
+       #:cargo-development-inputs
+       (("rust-assert-matches" ,rust-assert-matches-1.3)
+        ("rust-base58" ,rust-base58-0.1)
+        ("rust-rust-base58" ,rust-rust-base58-0.0))))
+    (home-page "https://github.com/mycorrhiza/bs58-rs")
+    (synopsis "Another Base58 codec implementation")
+    (description
+     "Another Base58 codec implementation.  Compared to the base58 crate this
+is significantly faster at decoding (about 2.4x as fast when decoding 32
+bytes), almost the same speed for encoding (about 3% slower when encoding 32
+bytes), doesn't have the 128 byte limitation and supports a configurable
+alphabet.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-bstr-0.2
   (package
     (name "rust-bstr")
