@@ -4580,6 +4580,43 @@ semantics than those provided by @code{as} or @code{From}/@code{Into}.")
 It supports signed and private (encrypted + signed) jars.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-cookie-store-0.7
+  (package
+    (name "rust-cookie-store")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cookie-store" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "174i9k9g62pfx7y1nqynywdpjplkl3j4hi3ck6bz2r996qzhnxa6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cookie" ,rust-cookie-0.12)
+        ("rust-idna" ,rust-idna-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-publicsuffix" ,rust-publicsuffix-1)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-try-from" ,rust-try-from-0.3)
+        ("rust-url" ,rust-url-1))
+       #:cargo-development-inputs
+       (("rust-env-logger" ,rust-env-logger-0.6)
+        ("rust-pretty-assertions" ,rust-pretty-assertions-0.6))))
+    (home-page "https://github.com/pfernie/cookie_store")
+    (synopsis "Implementation of Cookie storage and retrieval per RFC6265")
+    (description
+     "This crate provides an implementation for storing and retrieving Cookies per
+the path and domain matching rules specified in RFC6265.
+
+Split from the user_agent crate.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cordic-0.1
   (package
     (name "rust-cordic")
