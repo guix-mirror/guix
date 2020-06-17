@@ -288,14 +288,14 @@ This package is part of the KDE multimedia module.")
 (define-public k3b
   (package
     (name "k3b")
-    (version "20.04.1")
+    (version "20.04.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://kde/stable/release-service/" version
                            "/src/k3b-" version ".tar.xz"))
        (sha256
-        (base32 "0r01ninrrmqk7pl5jg0g51fcky1ammw0yyq572wyhibw7q8y7ly7"))))
+        (base32 "15wm987hz6rfs9ds9l1gbs6gdsardj1ywvk6zmpvj2i2190y4b3q"))))
     (build-system qt-build-system)
     (arguments
      `(#:phases
