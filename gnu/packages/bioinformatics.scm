@@ -943,7 +943,9 @@ Python.")
        ("python-future" ,python-future)
        ("python-click" ,python-click)
        ("python-h5py" ,python-h5py)
-       ("python-pandas" ,python-pandas)))
+       ;; FIXME: Upgrade to pandas 1.0 when
+       ;; https://github.com/biocore/biom-format/issues/837 is resolved.
+       ("python-pandas" ,python-pandas-0.25)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)

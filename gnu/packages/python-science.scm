@@ -8,6 +8,7 @@
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,9 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages time)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -231,13 +234,13 @@ Cython.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.25.2")
+    (version "1.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "1gp2pvzdiakvgjmykdzdlzrsfbg4vjm49jjdl9s0ha0a3yfs34fa"))))
+        (base32 "1a2gv3g6jr6vb5ca43fkwjl5xf86wpfz8y3zcy787adjl0hdkib9"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -249,8 +252,15 @@ Cython.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (let ((which (assoc-ref inputs "which")))
                         (substitute* "pandas/io/clipboard/__init__.py"
-                          (("^CHECK_CMD = .*")
-                           (string-append "CHECK_CMD = \"" which "\"\n"))))
+                          (("^WHICH_CMD = .*")
+                           (string-append "WHICH_CMD = \"" which "\"\n"))))
+                      #t))
+                  (add-before 'check 'prepare-x
+                    (lambda _
+                      (system "Xvfb &")
+                      (setenv "DISPLAY" ":0")
+                      ;; xsel needs to write a log file.
+                      (setenv "HOME" "/tmp")
                       #t))
                   (replace 'check
                     (lambda _
@@ -265,25 +275,19 @@ Cython.")
                         (substitute* "setup.cfg"
                           (("addopts = --strict-data-files") "addopts = "))
                         (with-directory-excursion build-directory
-                          ;; Delete tests that require "moto" which is not yet
-                          ;; in Guix.
-                          (for-each delete-file
-                                    '("pandas/tests/io/conftest.py"
-                                      "pandas/tests/io/json/test_compression.py"
-                                      "pandas/tests/io/parser/test_network.py"
-                                      "pandas/tests/io/test_parquet.py"))
                           (invoke "pytest" "-vv" "pandas" "--skip-slow"
-                                  "--skip-network" "-k"
-                                  ;; XXX: Due to the deleted tests above.
-                                  "not test_read_s3_jsonl"))))))))
+                                  "--skip-network"))))))))
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
+     `(("python-jinja2" ,python-jinja2)
+       ("python-numpy" ,python-numpy)
        ("python-openpyxl" ,python-openpyxl)
        ("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil)
        ("python-xlrd" ,python-xlrd)))
     (inputs
-     `(("which" ,which)))
+     `(("which" ,which)
+       ("xclip" ,xclip)
+       ("xsel" ,xsel)))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
@@ -291,7 +295,9 @@ Cython.")
        ("python-html5lib" ,python-html5lib)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-mock" ,python-pytest-mock)))
+       ("python-pytest-mock" ,python-pytest-mock)
+       ;; Needed to test clipboard support.
+       ("xorg-server" ,xorg-server-for-tests)))
     (home-page "https://pandas.pydata.org")
     (synopsis "Data structures for data analysis, time series, and statistics")
     (description
@@ -303,10 +309,33 @@ doing practical, real world data analysis in Python.")
     (properties `((python2-variant . ,(delay python2-pandas))))
     (license license:bsd-3)))
 
+(define-public python-pandas-0.25
+  (package
+    (inherit python-pandas)
+    (version "0.25.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pandas" version))
+              (sha256
+               (base32
+                "191048m6kdc6yfvqs9w412lq60cfvigrsb57y0x116lwibgp9njj"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-pandas)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'patch-which
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((which (assoc-ref inputs "which")))
+                 (substitute* "pandas/io/clipboard/__init__.py"
+                   (("^CHECK_CMD = .*")
+                     (string-append "CHECK_CMD = \"" which "\"\n"))))
+               #t))
+           (delete 'prepare-x)))))))
+
 ;; Pandas 0.24.x are the last versions that support Python 2.
 (define-public python2-pandas
   (let ((pandas (package-with-python2
-                 (strip-python2-variant python-pandas))))
+                 (strip-python2-variant python-pandas-0.25))))
     (package
       (inherit pandas)
       (version "0.24.2")
