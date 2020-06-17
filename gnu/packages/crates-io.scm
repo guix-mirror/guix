@@ -20965,6 +20965,43 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-rustc-ast-654
+  (package
+    (name "rust-rustc-ap-rustc-ast")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_ast" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0n4yhkd7x0c3nqyqz99lwjiix7mf1j5xbkn9fj90h4fxp3did7qq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-rustc-lexer" ,rust-rustc-ap-rustc-lexer-654)
+        ("rust-rustc-ap-rustc-macros" ,rust-rustc-ap-rustc-macros-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-rustc-ap-rustc-span" ,rust-rustc-ap-rustc-span-654)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the Rust ast used in rustc")
+    (description
+     "Use the Rust ast used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-ap-rustc-data-structures-654
   (package
     (name "rust-rustc-ap-rustc-data-structures")
