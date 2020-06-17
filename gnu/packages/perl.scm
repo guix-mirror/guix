@@ -9739,14 +9739,14 @@ can combine fields into a CSV string and parse a CSV string into fields.")
 (define-public perl-text-csv-xs
   (package
     (name "perl-text-csv-xs")
-    (version "1.39")
+    (version "1.43")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HM/HMBRAND/"
                            "Text-CSV_XS-" version ".tgz"))
        (sha256
-        (base32 "1gcy1bxym6f7qsxivkl3c5p94r1bjhf9csy1x38a1gk8mx744kma"))))
+        (base32 "1frh8awr5ipry21x4403wdkbglpl707n69smksg8sf79ia75756d"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Text-CSV_XS")
     (synopsis "Routines for manipulating CSV files")
