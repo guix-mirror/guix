@@ -3948,9 +3948,6 @@ Make sure you understand its security implications before using
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
 the system type of the build host.
 
-@item --verbose
-Produce verbose output, writing build logs to the standard error output.
-
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
