@@ -18154,6 +18154,29 @@ integers, floats, tuples, booleans, lists, strings, options and results.")
          "0yhnnix4dzsv8y4wwz4csbnqjfh73al33j35msr10py6cl5r4vks"))))
     (arguments '())))
 
+(define-public rust-racer-interner-0.1
+  (package
+    (name "rust-racer-interner")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "racer-interner" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0k7ssjjcr4kr9r1jbz93rglisfsx1m6fkx3wz6yng5rizm528si0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-serde" ,rust-serde-1.0))))
+    (home-page "https://github.com/racer-rust/racer")
+    (synopsis "Thread-local string interner for Racer")
+    (description
+     "This package allows one to intern strings in Rust in a thread-local
+fashion.  It is mostly used in Racer.")
+    (license license:expat)))
+
 (define-public rust-rand-0.7
   (package
     (name "rust-rand")
