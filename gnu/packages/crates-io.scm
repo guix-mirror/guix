@@ -15906,6 +15906,27 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-peg-runtime-0.6
+  (package
+    (name "rust-peg-runtime")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "peg-runtime" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0r583cq923v0narrpq73qmp780yg4pablzklhrwnr64xwsbjh6hc"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/kevinmehall/rust-peg")
+    (synopsis "Runtime support for rust-peg grammars")
+    (description
+     "PEG provides a Parsing Expression Grammar.  This package provides
+runtime support for rust-peg grammars.  To use rust-peg, see the peg crate.")
+    (license license:expat)))
+
 (define-public rust-percent-encoding-2.1
   (package
     (name "rust-percent-encoding")
