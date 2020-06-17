@@ -342,10 +342,7 @@ used to apply commands with arbitrarily long arguments.")
               (list (string-append "XFAIL_TESTS=tests/misc/env-S.pl"
                                    " tests/misc/kill.sh"
                                    " tests/misc/nice.sh"
-                                   " tests/misc/shred-passes.sh"
                                    " tests/split/fail.sh"
-                                   " tests/split/l-chunk.sh"
-                                   " tests/dd/stats.sh"
                                    " test-fdutimensat"
                                    " test-futimens"
                                    " test-linkat"
@@ -365,7 +362,15 @@ used to apply commands with arbitrarily long arguments.")
                        (("/bin/sh") (which "sh")))
                      (substitute* (find-files "tests" "\\.sh$")
                        (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                     #t)))))
+                     #t))
+                 ,@(if (hurd-target?)
+                       `((add-after 'unpack 'remove-tests
+                           (lambda _
+                             (substitute* "Makefile.in"
+                               ;; this test hangs
+                               (("^ *tests/misc/timeout-group.sh.*") ""))
+                             #t)))
+                       '()))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils package includes all of the basic command-line tools that
