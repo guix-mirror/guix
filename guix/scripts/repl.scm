@@ -144,7 +144,7 @@ call THUNK."
                   (leave (G_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (append `((script . ,arg)
-                            (ignore-dot-guile . #t))
+                            (ignore-dot-guile? . #t))
                           result))
                 %default-options))
 
