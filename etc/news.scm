@@ -13,6 +13,19 @@
 (channel-news
  (version 0)
 
+ (entry (commit "43badf261f4688c8a7a7a9004a4bff8acb205835")
+        (title (en "@command{guix pull} authenticates channels"))
+        (body
+         (en "The @command{guix pull} and @command{guix time-machine} commands
+now authenticate the source code that they pull, unless the new
+@option{--disable-authentication} option is passed.  What this means is that
+Guix ensures that each commit received is cryptographically signed by an
+authorized developer.  This protects you from attempts to tamper with the Guix
+repository and from attempts to ship malicious code to users.
+
+This feature is currently limited to the @code{guix} channel but will soon be
+available to third-party channel authors.")))
+
  (entry (commit "c924e541390f9595d819edc33c19d979917c15ec")
         (title (en "@command{guix repl} adds support for running Guile scripts")
                (de "@command{guix repl} kann Guile-Skripte ausführen")
