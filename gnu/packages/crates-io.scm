@@ -11906,6 +11906,40 @@ SystemTime}}.")
         ("rust-tokio-mockstream" ,rust-tokio-mockstream-1)
         ("rust-url" ,rust-url-1))))))
 
+(define-public rust-hyper-old-types-0.11
+  (package
+    (name "rust-hyper-old-types")
+    (version "0.11.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "hyper-old-types" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i69sks0bwamzqdbx8ffgkssxffv6crdmwjgl47nr5pkxi8vx5k8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f ; Tests do not compile
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.9)
+        ("rust-bytes" ,rust-bytes-0.4)
+        ("rust-http" ,rust-http-0.1)
+        ("rust-httparse" ,rust-httparse-1)
+        ("rust-language-tags" ,rust-language-tags-0.2)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-mime" ,rust-mime-0.3)
+        ("rust-percent-encoding" ,rust-percent-encoding-1.0)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-unicase" ,rust-unicase-2))))
+    (home-page "https://hyper.rs")
+    (synopsis "HTTP types from hyper 0.11.x")
+    (description
+     "This package contains HTTP types from the newer hyper crate in versions
+0.11.x.")
+    (license license:expat)))
+
 (define-public rust-hyper-rustls-0.21
   (package
     (name "rust-hyper-rustls")
