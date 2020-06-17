@@ -517,7 +517,7 @@ want what you have.")
 (define-public corsix-th
   (package
     (name "corsix-th")
-    (version "0.63")
+    (version "0.64")
     (source
      (origin
        (method git-fetch)
@@ -526,7 +526,7 @@ want what you have.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rkyk8g55xny276s0hr5k8mq6f4nzz56d3k2mp09dzfymrqb8hgi"))))
+        (base32 "0chh9cv2kdc39sr0x8hclcyzd8dz2y6grgagqzkvr7j570wa5cqh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
