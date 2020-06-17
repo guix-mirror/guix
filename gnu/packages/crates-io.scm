@@ -20008,6 +20008,38 @@ macro use case.")
 @code{proc_macro_derive} pretend to be @code{proc_macro}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-progrs-0.1
+  (package
+    (name "rust-progrs")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "progrs" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "108jx8jrv2r1brhvbqfw6fwx298k5fnw3m46kn7lv0jx2wmf0ifz"))))
+    (build-system cargo-build-system)
+    (arguments '(#:tests? #f))
+    (home-page "https://nest.pijul.com/laumann/progrs")
+    (synopsis "Small library for displaying compact progress bars")
+    (description
+     "There are a number of libraries out there that can be used for progress
+display, but in the author's opinion these libraries do it almost right -
+either they eat up too much screen real estate (by not sticking to one line
+per thing that should use progress) or they try to align stuff left and right.
+
+In the author's humble opinion, the best example of just the right amount of
+information vs screen real-estate is in the Git progress output (when cloning,
+pulling, etc).  It uses one line per thing, and may display both percentage
+complete (in cases where it's known) and even throughput (for network
+transfer).
+
+This library mimics the Git way of showing progress.")
+    (license license:gpl2+)))
+
 (define-public rust-proptest-0.9
   (package
     (name "rust-proptest")
