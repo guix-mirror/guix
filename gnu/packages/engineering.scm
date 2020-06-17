@@ -2623,7 +2623,7 @@ export filters.")
 (define-public meshlab
   (package
     (name "meshlab")
-    (version "2020.05")
+    (version "2020.06")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2632,7 +2632,7 @@ export filters.")
                     (recursive? #t)))
               (file-name (git-file-name name version))
               (sha256
-               (base32 "00sim20ka9vjwljixdj4cqd285j21mpaq05ari7nqq2w8yyglp5m"))))
+               (base32 "1cgx24wxh2ah5pff51rcrk6x8qcdjpkxcdak7s4cfzmxvjlshydd"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
