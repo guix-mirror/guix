@@ -50,16 +50,6 @@
     (for-each (lambda (tarball)
                 (copy-file tarball (string-append out "/" tarball)))
               out)
-
-    (mkdir meta)
-    (call-with-output-file (string-append out "/hydra-build-products")
-      (lambda (port)
-        (for-each (lambda (tarball)
-                    ;; This tells Hydra's what kind of build products we have,
-                    ;; so it can represent them nicely.  See `product-list.tt'
-                    ;; in Hydra for details.
-                    (format port "file source-dist ~a/~a~%" out tarball))
-                  tarballs)))
     #t))
 
 (define %dist-phases
