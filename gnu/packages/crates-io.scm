@@ -13734,6 +13734,77 @@ allocator.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-libpijul-0.12
+  (package
+    (name "rust-libpijul")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libpijul" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18d9n8xaq5ncq3375f0xrr96l8si1frczgzdlrz3fl1jby8vbl6f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f  ; backend::file_header::test_fileheader_alignment fails
+       #:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-bincode" ,rust-bincode-1)
+        ("rust-bitflags" ,rust-bitflags-1)
+        ("rust-bs58" ,rust-bs58-0.2)
+        ("rust-byteorder" ,rust-byteorder-1)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-diffs" ,rust-diffs-0.3)
+        ("rust-failure" ,rust-failure-0.1)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-hex" ,rust-hex-0.3)
+        ("rust-ignore" ,rust-ignore-0.4)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-openssl" ,rust-openssl-0.10)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-sanakirja" ,rust-sanakirja-0.10)
+        ("rust-sequoia-openpgp" ,rust-sequoia-openpgp-0.9)
+        ("rust-serde" ,rust-serde-1)
+        ("rust-serde-derive" ,rust-serde-derive-1)
+        ("rust-serde-json" ,rust-serde-json-1)
+        ("rust-tempdir" ,rust-tempdir-0.3)
+        ("rust-toml" ,rust-toml-0.4))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-missing-env-vars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "OPENSSL_DIR" (assoc-ref inputs "openssl"))
+             (setenv "LIBCLANG_PATH"
+                     (string-append (assoc-ref inputs "clang") "/lib"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("clang" ,clang)
+       ("nettle" ,nettle)
+       ("openssl" ,openssl)))
+    (home-page "https://pijul.org/")
+    (synopsis "Library component of the pijul version control system")
+    (description
+     "This crate contains the core API to access Pijul repositories.
+
+The key object is a @code{Repository}, on which @code{Txn} (immutable
+transactions) and @code{MutTxn} (mutable transactions) can be started, to
+perform a variety of operations.
+
+Another important object is a @code{Patch}, which encodes two different pieces
+of information:
+
+@itemize
+@item Information about deleted and inserted lines between two versions of a
+file.
+@item Information about file moves, additions and deletions.
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public rust-libsqlite3-sys-0.15
   (package
     (name "rust-libsqlite3-sys")
