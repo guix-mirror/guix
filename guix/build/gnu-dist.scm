@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2020 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,23 +32,6 @@
 
 (define* (copy-source #:key source #:allow-other-keys)
   (copy-recursively source "."))
-
-(define* (autoreconf #:rest args)
-  (letrec-syntax ((try-files (syntax-rules (else)
-                               ((_ (else fallback ...))
-                                (begin fallback ...))
-                               ((_ file files ... (else fallback ...))
-                                (if (file-exists? file)
-                                    (begin
-                                      (format #t "bootstrapping with `~a'...~%"
-                                              file)
-                                      (invoke (string-append "./" file)))
-                                    (try-files files ...
-                                               (else fallback ...)))))))
-    (try-files "bootstrap" "bootstrap.sh" "autogen" "autogen.sh"
-               (else
-                (format #t "bootstrapping with `autoreconf'...~%")
-                (invoke "autoreconf" "-vfi")))))
 
 (define* (build #:key build-before-dist? make-flags (dist-target "distcheck")
                 #:allow-other-keys
@@ -85,7 +68,6 @@
     (delete 'strip)
     (replace 'install install-dist)
     (replace 'build build)
-    (add-before 'configure 'autoreconf autoreconf)
     (replace 'unpack copy-source)))
 
 ;;; gnu-dist.scm ends here
