@@ -2431,7 +2431,7 @@ interval trees with associated meta-data.  It is primarily used by the
        ("python-pysam" ,python-pysam)
        ("python-scipy" ,python-scipy)
        ("python-deeptoolsintervals" ,python-deeptoolsintervals)
-       ("python-plotly" ,python-plotly)))
+       ("python-plotly" ,python-plotly-2.4.1)))
     (home-page "https://pypi.org/project/deepTools/")
     (synopsis "Useful tools for exploring deep sequencing data")
     (description "This package addresses the challenge of handling large amounts
