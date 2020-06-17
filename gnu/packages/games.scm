@@ -4401,6 +4401,114 @@ tactics.")
                    license:gpl2+
                    license:lgpl2.1+))))
 
+(define-public widelands
+  (package
+    (name "widelands")
+    (version "20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://launchpad.net/widelands/"
+                           "build" version "/build" version "/+download/"
+                           "widelands-build" version ".tar.bz2"))
+       (sha256
+        (base32 "1cmwfwk7j6yi2pwmm4rm57s23sdzasqf53nx6567sdagqyc4sn9q"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/third_party/minizip")
+           #t))
+       (patches
+        ;; Use system Minizip.  Patch is provided by Debian, and discussed
+        ;; upstream at <https://github.com/widelands/widelands/issues/399>.
+        (search-patches "widelands-system-wide_minizip.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (let* ((out (assoc-ref %outputs "out"))
+              (share (string-append out "/share")))
+         (list (string-append "-DCMAKE_INSTALL_PREFIX=" out "/bin")
+               (string-append "-DWL_INSTALL_BASEDIR=" share "/widelands")
+               (string-append "-DWL_INSTALL_DATADIR=" share "/widelands")
+               "-DOPTION_BUILD_WEBSITE_TOOLS=OFF"
+               ;; CMakeLists.txt does not handle properly RelWithDebInfo build
+               ;; type.  When used, no game data is installed!
+               "-DCMAKE_BUILD_TYPE=Release"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'install-desktop-file-and-icons
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (applications (string-append share "/applications"))
+                    (icons (string-append share "/icons/hicolor")))
+               ;; Move desktop entry.
+               (mkdir-p applications)
+               (copy-file "debian/org.widelands.widelands.desktop"
+                          (string-append applications "/widelands.desktop"))
+               ;; Install icons.
+               (for-each (lambda (size)
+                           (let* ((dim (string-append size "x" size))
+                                  (apps (string-append icons "/" dim "/apps")))
+                             (mkdir-p apps)
+                             (copy-file (string-append "data/images/logos"
+                                                       "/wl-ico-" size ".png")
+                                        (string-append apps "/widelands.png"))))
+                         '("16" "32" "48" "64" "128"))
+               #t)))
+         (add-after 'unpack 'unbundle-fonts
+           ;; Unbundle fonts already packaged in Guix.  XXX: missing fonts are
+           ;; amiri, Culmus, mmrCensus, Nakula, and Sinhala.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "data/i18n/fonts"
+               (for-each (lambda (font)
+                           (delete-file-recursively font)
+                           (symlink (string-append (assoc-ref inputs font)
+                                                   "/share/fonts/truetype")
+                                    font))
+                         '("DejaVu" "MicroHei")))
+             #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("boost" ,boost)
+       ("glew" ,glew)
+       ("icu4c" ,icu4c)
+       ("libpng" ,libpng)
+       ("minizip" ,minizip)
+       ("sdl" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
+       ("zlib" ,zlib)
+       ;; Fonts for the ‘unbundle-fonts’ phase.  Case matters in name!
+       ("DejaVu" ,font-dejavu)
+       ("MicroHei" ,font-wqy-microhei)))
+    (home-page "https://www.widelands.org/")
+    (synopsis "Fantasy real-time strategy game")
+    (description
+     "In Widelands, you are the regent of a small clan.  You start out with
+nothing but your headquarters, where all your resources are stored.
+
+In the course of the game, you will build an ever growing settlement.  Every
+member of your clan will do his or her part to produce more resources---wood,
+food, iron, gold and more---to further this growth.  The economic network is
+complex and different in the four tribes (Barbarians, Empire, Atlanteans, and
+Frisians).
+
+As you are not alone in the world, you will meet other clans sooner or later.
+Some of them may be friendly and you may eventually trade with them.  However,
+if you want to rule the world, you will have to train soldiers and fight.
+
+Widelands offers single-player mode with different campaigns; the campaigns
+all tell stories of tribes and their struggle in the Widelands universe!
+However, settling really starts when you unite with friends over the Internet
+or LAN to build up new empires together---or to crush each other in the dusts
+of war.  Widelands also offers an Artificial Intelligence to challenge you.")
+    ;; Game is released as GPL2+.  Some parts, e.g., art, are released under
+    ;; different licenses.
+    (license (list license:gpl2+
+                   license:expat           ;src/third_party/eris
+                   license:silofl1.1       ;Widelands.ttf
+                   license:cc-by-sa3.0)))) ;some music files
+
 (define-public starfighter
   (package
     (name "starfighter")
