@@ -46,6 +46,7 @@
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages debian)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages docbook)
@@ -770,6 +771,100 @@ commodity hardware.")
      "This package provides a guest OS definition for Ganeti that uses
 Guix to build virtual machines.")
     (license license:gpl3+)))
+
+(define-public ganeti-instance-debootstrap
+  (package
+    (name "ganeti-instance-debootstrap")
+    ;; We need two commits on top of the latest release for compatibility
+    ;; with newer sfdisk, as well as gnt-network integration.
+    (version "0.16-2-ge145396")
+    (home-page "https://github.com/ganeti/instance-debootstrap")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (sha256
+               (base32
+                "0f2isw9d8lawzj21rrq1q9xhq8xfa65rqbhqmrn59z201x9q1336"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--sysconfdir=/etc" "--localstatedir=/var")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'add-absolute-references
+                    (lambda _
+                      (substitute* "common.sh.in"
+                        (("/sbin/blkid") (which "blkid"))
+                        (("kpartx -")
+                         (string-append (which "kpartx") " -")))
+                      (substitute* "import"
+                        (("restore -r")
+                         (string-append (which "restore") " -r")))
+                      (substitute* "export"
+                        (("dump -0")
+                         (string-append (which "dump") " -0")))
+                      (substitute* "create"
+                        (("debootstrap") (which "debootstrap"))
+                        (("`which run-parts`") (which "run-parts"))
+                        ;; Here we actually need to hard code /bin/passwd
+                        ;; because it's called via chroot, which fails if
+                        ;; "/bin" is not in PATH.
+                        (("passwd") "/bin/passwd"))
+                      #t))
+                  (add-after 'unpack 'set-dpkg-arch
+                    (lambda* (#:key system #:allow-other-keys)
+                      ;; The create script passes --arch to debootstrap,
+                      ;; and defaults to `dpkg --print-architecture` when
+                      ;; ARCH is not set in variant.conf.  Hard code the
+                      ;; build-time architecture to avoid the dpkg dependency.
+                      (let ((dpkg-arch
+                             (cond ((string-prefix? "x86_64" system)
+                                    "amd64")
+                                   ((string-prefix? "i686" system)
+                                    "i386")
+                                   ((string-prefix? "aarch64" system)
+                                    "arm64")
+                                   (else (car (string-split system #\-))))))
+                        (substitute* "create"
+                          (("`dpkg --print-architecture`")
+                           dpkg-arch))
+                        #t)))
+                  (add-after 'configure 'adjust-Makefile
+                    (lambda _
+                      ;; Do not attempt to create /etc/ganeti/instance-debootstrap
+                      ;; and /etc/default/ganeti-instance-debootstrap during install.
+                      ;; They are created by the Ganeti service.
+                      (substitute* "Makefile"
+                        (("\\$\\(variantsdir\\)")
+                         "$(prefix)/etc/ganeti/instance-debootstrap/variants")
+                        (("\\$\\(defaultsdir\\)")
+                         "$(prefix)/etc/default/ganeti-instance-debootstrap"))
+                      #t))
+                  (add-after 'install 'make-variants.list-symlink
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; The Ganeti OS API mandates a variants.list file that
+                      ;; describes all supported "variants" of this OS.
+                      ;; Guix generates this file, so make the original file
+                      ;; a symlink to it.
+                      (with-directory-excursion (string-append
+                                                 (assoc-ref outputs "out")
+                                                 "/share/ganeti/os/debootstrap")
+                        (delete-file "variants.list")
+                        (symlink "/etc/ganeti/instance-debootstrap/variants/variants.list"
+                                 "variants.list"))
+                      #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("debianutils" ,debianutils)
+       ("debootstrap" ,debootstrap)
+       ("dump" ,dump)
+       ("kpartx" ,multipath-tools)
+       ("util-linux" ,util-linux)))
+    (synopsis "Debian OS integration for Ganeti")
+    (description
+     "This package provides a guest OS definition for Ganeti.  It installs
+Debian or a derivative using @command{debootstrap}.")
+    (license license:gpl2+)))
 
 (define-public libosinfo
   (package
