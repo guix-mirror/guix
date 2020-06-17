@@ -2344,7 +2344,29 @@ background file post-processing.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))))
+                "02v911w2kdbg3kfl593lb2ig4sjbfxzv20a0vbcymhfzpvp1x6xp"))
+              (modules '((guix build utils)
+                         (ice-9 ftw)))
+              (snippet
+               ;; The build system doesn't allow us to unbundle the following
+               ;; libraries.  hidapi is also heavily patched and upstream not
+               ;; actively maintained.
+               '(let ((keep-dirs '("nova-simd" "nova-tt" "hidapi"
+                                   "TLSF-2.4.6" "oscpack_1_1_0" "." "..")))
+                  (with-directory-excursion "./external_libraries"
+                    (for-each
+                     delete-file-recursively
+                     (scandir "."
+                              (lambda (x)
+                                (and (eq? (stat:type (stat x)) 'directory)
+                                     (not (member (basename x) keep-dirs)))))))
+                  ;; To find the Guix provided ableton-link library.
+                  (substitute* "lang/CMakeLists.txt"
+                    (("include\\(\\.\\./external_libraries/link/\
+AbletonLinkConfig\\.cmake\\)")
+                     "find_package(AbletonLink NAMES AbletonLink ableton-link \
+link REQUIRED)"))
+                  #t))))
     (build-system cmake-build-system)
     (outputs
      '("out"   ;core language
@@ -2355,28 +2377,8 @@ background file post-processing.")
                            "-DFORTIFY=ON" "-DLIBSCSYNTH=ON"
                            "-DSC_EL=off") ;scel is packaged individually as
                                           ;emacs-scel
-       #:modules ((guix build utils)
-                  (guix build cmake-build-system)
-                  (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'rm-bundled-libs
-           (lambda _
-             ;; The build system doesn't allow us to unbundle the following
-             ;; libraries.  hidapi is also heavily patched.
-             (let ((keep-dirs '("nova-simd" "nova-tt" "hidapi" "TLSF-2.4.6"
-                                "oscpack_1_1_0" "." "..")))
-               (with-directory-excursion "./external_libraries"
-                 (for-each
-                  delete-file-recursively
-                  (scandir "."
-                           (lambda (x)
-                             (and (eq? (stat:type (stat x)) 'directory)
-                                  (not (member (basename x) keep-dirs))))))))
-             (substitute* "lang/CMakeLists.txt"
-               (("include\\(\\.\\./external_libraries/link/AbletonLinkConfig\\.cmake\\)")
-                "find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)"))
-             #t))
          ;; Some tests are broken (see:
          ;; https://github.com/supercollider/supercollider/issues/3555 and
          ;; https://github.com/supercollider/supercollider/issues/1736
