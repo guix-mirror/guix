@@ -9893,6 +9893,31 @@ API library @code{gdi32}.")
      "This package provides a package for generating 3D meshes/")
     (license license:asl2.0)))
 
+(define-public rust-getch-0.2
+  (package
+    (name "rust-getch")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "getch" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00in8q95qi8a5q3zn2zcaqp5avj79f5myd2a4zfdy2m24ycvbc5v"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-termios" ,rust-termios-0.2))))
+    (home-page "https://nest.pijul.com/pijul_org/getch")
+    (synopsis "Portable implementation of getch")
+    (description
+     "This package provides a portable implementation of getch, using
+@code{_getch} on Windows, and @code{termios} on Unix.")
+    (license license:asl2.0)))
+
 (define-public rust-getopts-0.2
   (package
     (name "rust-getopts")
