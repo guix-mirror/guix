@@ -20253,6 +20253,34 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-rustc-index-654
+  (package
+    (name "rust-rustc-ap-rustc-index")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_index" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qqnvdn3zbwrn884ziw0nrmi1wqmr9yp8js7whw6y8nzdhz0q8ij"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-smallvec" ,rust-smallvec-1))))
+    (home-page  "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the types of indexes in rustc")
+    (description
+     "Use the types of index used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-ap-rustc-lexer-654
   (package
     (name "rust-rustc-ap-rustc-lexer")
