@@ -21092,6 +21092,44 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-rustc-span-654
+  (package
+    (name "rust-rustc-ap-rustc-span")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-rustc_span" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hj23syxxqqmk1y4kdvb0cb0xxi8wy429hhyd27bbmpya1h18j56"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:skip-build? #t
+       #:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if-0.1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-md-5" ,rust-md-5-0.8)
+        ("rust-rustc-ap-arena" ,rust-rustc-ap-arena-654)
+        ("rust-rustc-ap-rustc-data-structures"
+         ,rust-rustc-ap-rustc-data-structures-654)
+        ("rust-rustc-ap-rustc-index" ,rust-rustc-ap-rustc-index-654)
+        ("rust-rustc-ap-rustc-macros" ,rust-rustc-ap-rustc-macros-654)
+        ("rust-rustc-ap-serialize" ,rust-rustc-ap-serialize-654)
+        ("rust-scoped-tls" ,rust-scoped-tls-1.0)
+        ("rust-sha-1" ,rust-sha-1-0.8)
+        ("rust-unicode-width" ,rust-unicode-width-0.1))))
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published version of the source code spans used in rustc")
+    (description
+     "Use the spans used in the Rust compiler to represent source code with
+this crate.  It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-ap-serialize-654
   (package
     (name "rust-rustc-ap-serialize")
