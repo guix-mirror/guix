@@ -269,7 +269,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
 (define-public kodi
   (package
     (name "kodi")
-    (version "18.7")
+    (version "18.7.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -278,7 +278,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "082cpih84j7v29w55qhj0rdia7hdjpwi81qywiwawd4vlyimpv2h"))
+                "1ypn29yhy49mz9x4xqh2zfdrsbfwm1b4canvh9zvy9c1irjwf419"))
               (patches (search-patches "kodi-skip-test-449.patch"
                                        "kodi-increase-test-timeout.patch"
                                        "kodi-set-libcurl-ssl-parameters.patch"))
