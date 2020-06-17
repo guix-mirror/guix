@@ -20230,6 +20230,29 @@ It is automatically published using the compiler repository at
 @url{https://www.github.com/rust-lang/rust}")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rustc-ap-graphviz-654
+  (package
+    (name "rust-rustc-ap-graphviz")
+    (version "654.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rustc-ap-graphviz" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z8rs3k9zcd1i2clrnzgvfaq1q05m02wjcyy3d9zk9qln03vp43l"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/rustc-auto-publish")
+    (synopsis
+     "Automatically published versions of the graphviz crate used in rustc")
+    (description
+     "Use the graphviz library used in the Rust compiler with this crate.
+It is automatically published using the compiler repository at
+@url{https://www.github.com/rust-lang/rust}")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-rustc-ap-rustc-lexer-654
   (package
     (name "rust-rustc-ap-rustc-lexer")
