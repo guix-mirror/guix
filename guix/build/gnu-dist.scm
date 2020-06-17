@@ -54,6 +54,7 @@
   (modify-phases %standard-phases
     (delete 'strip)
     (replace 'install install-dist)
-    (replace 'build build)))
+    (add-after 'build 'build-dist build)
+    (delete 'build)))
 
 ;;; gnu-dist.scm ends here
