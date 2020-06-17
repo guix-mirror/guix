@@ -300,6 +300,19 @@ This package is part of the KDE multimedia module.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'set-absolute-library-paths
+           (lambda _
+             ;; Set absolute paths for dlopened libraries. We can’t use k3b’s
+             ;; runpath as they are loaded by the Qt library.
+             (let ((libcdio-paranoia (assoc-ref %build-inputs "libcdio-paranoia"))
+                   (libdvdcss (assoc-ref %build-inputs "libdvdcss")))
+               (substitute* "libk3b/tools/k3bcdparanoialib.cpp"
+                 (("\"(cdio_cdda|cdio_paranoia)\"" _ library)
+                  (string-append "\"" libcdio-paranoia "/lib/" library "\"")))
+               (substitute* "libk3b/tools/k3blibdvdcss.cpp"
+                 (("\"(dvdcss)\"" _ library)
+                  (string-append "\"" libdvdcss "/lib/" library "\""))))
+             #t))
          (add-after 'qt-wrap 'wrap-path
            (lambda _
              ;; Set paths to backend programs.
@@ -335,6 +348,8 @@ This package is part of the KDE multimedia module.")
        ("kxmlgui" ,kxmlgui)
        ("lame" ,lame)
        ("libburn" ,libburn)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libdvdcss" ,libdvdcss)
        ("libdvdread" ,libdvdread)
        ;; TODO: LibFuzzer
        ("libiconv" ,libiconv)
