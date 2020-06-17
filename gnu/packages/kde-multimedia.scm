@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2020 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -296,12 +297,26 @@ This package is part of the KDE multimedia module.")
        (sha256
         (base32 "0r01ninrrmqk7pl5jg0g51fcky1ammw0yyq572wyhibw7q8y7ly7"))))
     (build-system qt-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'qt-wrap 'wrap-path
+           (lambda _
+             ;; Set paths to backend programs.
+             (wrap-program (string-append (assoc-ref %outputs "out") "/bin/k3b")
+               `("PATH" ":" prefix
+                 ,(map (lambda (input)
+                         (string-append (assoc-ref %build-inputs input) "/bin"))
+                       '("cdrdao" "dvd+rw-tools" "libburn" "sox"))))
+             #t)))))
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)
        ("kdoctools" ,kdoctools)))
     (inputs
-     `(("ffmpeg" ,ffmpeg)
+     `(("cdrdao" ,cdrdao)
+       ("dvd+rw-tools" ,dvd+rw-tools)
+       ("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
        ("karchive" ,karchive)
        ("kcmutils" ,kcmutils)
@@ -319,6 +334,7 @@ This package is part of the KDE multimedia module.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kxmlgui" ,kxmlgui)
        ("lame" ,lame)
+       ("libburn" ,libburn)
        ("libdvdread" ,libdvdread)
        ;; TODO: LibFuzzer
        ("libiconv" ,libiconv)
@@ -334,6 +350,7 @@ This package is part of the KDE multimedia module.")
        ("qtwebkit" ,qtwebkit)
        ("shared-mime-info" ,shared-mime-info)
        ("solid" ,solid)
+       ("sox" ,sox)
        ("taglib" ,taglib)))
     (home-page "https://kde.org/applications/multimedia/org.kde.k3b")
     (synopsis "Sophisticated CD/DVD burning application")
