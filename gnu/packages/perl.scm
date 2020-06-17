@@ -4871,15 +4871,14 @@ back to a full directory scan if none of these are available.")
 (define-public perl-getopt-long
   (package
     (name "perl-getopt-long")
-    (version "2.49.1")
+    (version "2.51")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/J/JV/JV/"
-                           "Getopt-Long-v" (substring version 1) ".tar.gz"))
+                           "Getopt-Long-" version ".tar.gz"))
        (sha256
-        (base32
-         "0bw8gbhj8s5gmkqvs3m7pk9arqhgqssrby4yimh29ah9alix9ylq"))))
+        (base32 "0r659i6rkz8zkfgdccbn29zmd4bk9lcdc4y20ng6w2glqaa3pd10"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Getopt-Long")
     (synopsis "Module to handle parsing command line options")
