@@ -42,7 +42,6 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -50,7 +49,6 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
-  #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages ncurses)
@@ -104,12 +102,9 @@
                 '("applications" "icons" "pixmaps")))
              #t)))))
     (inputs
-     `(("inotify-tools" ,inotify-tools)
-       ("libevent" ,libevent)
+     `(("libevent" ,libevent)
        ("curl" ,curl)
-       ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
-       ("file" ,file)
        ("zlib" ,zlib)
        ("gtk+" ,gtk+)))
     (native-inputs
@@ -131,7 +126,7 @@ DHT, µTP, PEX and Magnet Links.")
     ;; or any future license endorsed by Mnemosyne LLC.
     ;;
     ;; A few files files carry an MIT/X11 license header.
-    (license l:gpl3+)))
+    (license (list l:gpl2 l:gpl3))))
 
 (define-public libtorrent
   (package
