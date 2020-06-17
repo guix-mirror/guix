@@ -4552,6 +4552,34 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
 semantics than those provided by @code{as} or @code{From}/@code{Into}.")
     (license license:expat)))
 
+(define-public rust-cookie-0.12
+  (package
+    (name "rust-cookie")
+    (version "0.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "cookie" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mdvqixahcywvqp0y8k2skkgbpfhsp0w73l9mz93dcrx1gq091l8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-base64" ,rust-base64-0.10)
+        ("rust-ring" ,rust-ring-0.14)
+        ("rust-time" ,rust-time-0.1)
+        ("rust-url" ,rust-url-1))))
+    (home-page "https://github.com/SergioBenitez/cookie-rs")
+    (synopsis
+     "Crate for parsing HTTP cookie headers and managing a cookie jar")
+    (description
+     "Parse HTTP cookie headers and manage a cookie jar with this crate.
+It supports signed and private (encrypted + signed) jars.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-cordic-0.1
   (package
     (name "rust-cordic")
