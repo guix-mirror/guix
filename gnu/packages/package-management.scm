@@ -542,14 +542,14 @@ out) and returning a package that uses that as its 'source'."
 (define-public nix
   (package
     (name "nix")
-    (version "2.3.5")
+    (version "2.3.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://nixos.org/releases/nix/nix-"
                                  version "/nix-" version ".tar.xz"))
              (sha256
               (base32
-               "1hbqsrp1ii2sfq8x2mahjrl2182qck76n8blrl1jfz3xq99m6i15"))))
+               "128xf2as0y7hr28x575pbf9lkjpxr9hsxknbavv4p7ywr4lhbs85"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
