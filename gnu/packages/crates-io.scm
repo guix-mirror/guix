@@ -2748,6 +2748,35 @@ UTF-8.")
         (base32
          "0nzi9vqhl56ws8gq39f3aj4qjrr4l3g5lbkkcj8xq1x4cb74wq2r"))))))
 
+(define-public rust-buffered-reader-0.9
+  (package
+    (name "rust-buffered-reader")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "buffered-reader" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "05rklfiia1k4c4ifpim08l22i0q0l3j9xdg2yh3njrp6w58z6z13"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bzip2" ,rust-bzip2-0.3)
+        ("rust-flate2" ,rust-flate2-1)
+        ("rust-libc" ,rust-libc-0.2))))
+    (home-page "https://sequoia-pgp.org/")
+    (synopsis "Super-powered Reader")
+    (description
+     "Like the @code{BufRead} trait, the @code{BufferedReader} trait has an
+internal buffer that is directly exposed to the user.  This design enables two
+performance optimizations.  First, the use of an internal buffer amortizes
+system calls.  Second, exposing the internal buffer allows the user to work
+with data in place, which avoids another copy.")
+    (license license:gpl3)))
+
 (define-public rust-build-const-0.2
   (package
     (name "rust-build-const")
