@@ -22217,6 +22217,41 @@ hashing function.")
 password hashing function.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-rust-base58-0.0
+  (package
+    (name "rust-rust-base58")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "rust-base58" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fa4y2jjjmg1a0cr3gz4z8rkic0hx2vx5nm23za9lwf6rlgvj4xk"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Otherwise we get an error: no method named `gen_iter` found
+           ;; for type `rand::prelude::ThreadRng`
+           (substitute* "Cargo.toml"
+             (("rand.*") "rand = \"<0.6\"\n"))
+           #t))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num" ,rust-num-0.1))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.4))))
+    (home-page "https://github.com/nham/rust-base58")
+    (synopsis
+     "Simple library for converting to and from base-58 strings")
+    (description
+     "Convert to and from base-58 strings with a simple Rust api.
+ Currently the conversion uses the Bitcoin base58 alphabet.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-rust-hawktracer-0.7
   (package
     (name "rust-rust-hawktracer")
