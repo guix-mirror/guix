@@ -744,6 +744,33 @@ to provide fast and simple recovery after physical failures, using
 commodity hardware.")
     (license license:bsd-2)))
 
+(define-public ganeti-instance-guix
+  (package
+    (name "ganeti-instance-guix")
+    (version "0.6")
+    (home-page "https://github.com/mbakke/ganeti-instance-guix")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0aa08irpcpns6mhjgsplc5f0p8ab1qcr9ah1gj5z66kxgqyflzrp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--sysconfdir=/etc" "--localstatedir=/var")))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("util-linux" ,util-linux)
+       ("qemu-img" ,qemu-minimal)))
+    (synopsis "Guix OS integration for Ganeti")
+    (description
+     "This package provides a guest OS definition for Ganeti that uses
+Guix to build virtual machines.")
+    (license license:gpl3+)))
+
 (define-public libosinfo
   (package
     (name "libosinfo")
