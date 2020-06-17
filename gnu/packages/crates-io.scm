@@ -13868,6 +13868,38 @@ known as zlib).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-line-0.1
+  (package
+    (name "rust-line")
+    (version "0.1.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "line" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pissvrl5398701zlfd22w51ca32vhw83vbsl58a330hr4w5ra04"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-utf8parse" ,rust-utf8parse-0.1))))
+    (home-page "https://crates.io/crates/line")
+    (synopsis "Rust implementation of line editing in a terminal")
+    (description
+     "The main goals of this library are:
+
+@itemize
+@item Portability: should work on any system (Unix or Windows).
+@item Support: was written for a real-world project (Pijul), so support is
+unlikely to stop soon.
+@item Output quality: avoid usual blinking terminal lines that older C
+libraries have.
+@end itemize")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-line-wrap-0.1
   (package
     (name "rust-line-wrap")
