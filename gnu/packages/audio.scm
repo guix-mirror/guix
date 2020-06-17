@@ -2379,22 +2379,14 @@ link REQUIRED)"))
                                           ;emacs-scel
        #:phases
        (modify-phases %standard-phases
-         ;; Some tests are broken (see:
-         ;; https://github.com/supercollider/supercollider/issues/3555 and
-         ;; https://github.com/supercollider/supercollider/issues/1736
-         (add-after 'rm-bundled-libs 'disable-broken-tests
+         ;; HOME must be defined otherwise supercollider throws a "ERROR:
+         ;; Primitive '_FileMkDir' failed." error when generating the doc.
+         ;; The graphical tests also hang without it.
+         (add-after 'unpack 'set-home-directory
            (lambda _
-             (substitute* "testsuite/server/supernova/CMakeLists.txt"
-               (("server_test.cpp")
-                "")
-               (("perf_counter_test.cpp")
-                ""))
-             (substitute* "testsuite/CMakeLists.txt"
-               (("add_subdirectory\\(sclang\\)")
-                ""))
-             (delete-file "testsuite/sclang/CMakeLists.txt")
+             (setenv "HOME" (getcwd))
              #t))
-         (add-after 'disable-broken-tests 'patch-scclass-dir
+         (add-after 'unpack 'patch-scclass-dir
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (scclass-dir
@@ -2406,6 +2398,11 @@ link REQUIRED)"))
                     "\\(DirName::Resource\\) / CLASS_LIB_DIR_NAME"))
                   (string-append "Path(\"" scclass-dir "\")")))
                #t)))
+         (add-before 'build 'prepare-x
+           (lambda _
+             (system "Xvfb &")
+             (setenv "DISPLAY" ":0")
+             #t))
          (add-before 'install 'install-ide
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2418,7 +2415,8 @@ link REQUIRED)"))
     (native-inputs
      `(("ableton-link" ,ableton-link)
        ("pkg-config" ,pkg-config)
-       ("qttools" ,qttools)))
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server-for-tests)))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
