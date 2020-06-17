@@ -372,7 +372,10 @@ This package is part of the KDE multimedia module.")
     (description "K3b is CD-writing software which intends to be feature-rich
 and provide an easily usable interface.  Features include burning audio CDs
 from .WAV and .MP3 audio files, configuring external programs and configuring
-devices.")
+devices.
+
+The @code{udisks-service} should be enabled for @command{k3b} to discover the
+available CD drives.")
     (license ;; GPL for programs, FDL for documentation
      (list license:gpl2+ license:fdl1.2+))))
 
