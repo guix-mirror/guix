@@ -70,7 +70,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.24.2")
+    (version "1.24.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -78,7 +78,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0w3srvigg4kfi7xq76c7y4hnq5yr2gxrrsvlyj1g2wc1igz1vyg1"))))
+                "0ajwc8lmay5ai7nsrp778g393h0p4h98p4c22gic2w61fgkcd5fy"))))
     (build-system meson-build-system)
     (native-inputs
      `(("check" ,check)
@@ -152,11 +152,6 @@
                            ;               (assoc-ref %build-inputs "hyphen")
                            ;               "/share/hyphen")
                            "-Dnetwork-backend=connman"
-                           ,@(match (%current-system)
-                               ("armhf-linux"
-                                '("-opengl=es-egl"))
-                               (_
-                                '("-Dopengl=full")))
                            ;; for wayland
                            "-Dwl=true"
                            "-Ddrm=true")
