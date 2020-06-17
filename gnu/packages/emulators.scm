@@ -414,7 +414,7 @@ V2.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -423,7 +423,7 @@ V2.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1if82mfaak3696w5d5yshynpzywrxgvg3ifdfi2rwlpvq1gpd429"))
+        (base32 "0dlwhn3hrpaqnl5hjs53y8j2i16idxrg3gy688gcwrc9z1a6bkn2"))
        (modules '((guix build utils)))
        (snippet
         ;; Make sure we don't use the bundled software.
