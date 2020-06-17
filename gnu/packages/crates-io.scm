@@ -15906,6 +15906,34 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-peg-0.6
+  (package
+    (name "rust-peg")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "peg" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15rfp12dgsynplphp443zfw47m2d5snvdm6a25gz48dv2if8fxch"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f
+       #:cargo-inputs
+       (("rust-peg-macros" ,rust-peg-macros-0.6)
+        ("rust-peg-runtime" ,rust-peg-runtime-0.6))
+       #:cargo-development-inputs
+       (("rust-trybuild" ,rust-trybuild-1.0))))
+    (home-page "https://github.com/kevinmehall/rust-peg")
+    (synopsis "Simple Parsing Expression Grammar (PEG) parser generator")
+    (description
+     "PEG provides a simple Parsing Expression Grammar (PEG) parser generator
+in Rust.")
+    (license license:expat)))
+
 (define-public rust-peg-macros-0.6
   (package
     (name "rust-peg-macros")
