@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019, 2020 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -183,6 +185,27 @@ in particular it computes normal forms of group elements.")
 represented as strings.")
     (license license:public-domain)
     (home-page "https://github.com/miguelmarco/libhomfly")))
+
+;; Sage 9.1 doesn't build with ECL 20.  This won't be necessary once 9.2 is
+;; released.  See https://trac.sagemath.org/ticket/22191
+(define-public ecl-16
+  (package
+    (inherit ecl)
+    (version "16.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://common-lisp.net/project/ecl/static/files/release/ecl"
+             "-" version ".tgz"))
+       (sha256
+        (base32 "0m0j24w5d5a9dwwqyrg0d35c0nys16ijb4r0nyk87yp82v38b9bn"))
+       (patches (search-patches
+                  "ecl-16-libffi.patch"
+                  "ecl-16-ignore-stderr-write-error.patch"
+                  "ecl-16-format-directive-limit.patch"))))
+    ;; Current ECL uses LGPL 2.1+
+    (license license:lgpl2.0+)))
 
 (define-public pynac
   (package
