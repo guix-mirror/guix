@@ -154,7 +154,7 @@ Rust, using gimli.")
 (define-public rust-adler32-1
   (package
     (name "rust-adler32")
-    (version "1.0.4")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -163,12 +163,15 @@ Rust, using gimli.")
           (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1hnan4fgmnidgn2k84hh2i67c3wp2c5iwd5hs61yi7gwwx1p6bjx"))))
+          "0bgks405vz823bphgwhj4l9h6vpfh900s0phfk4qqijyh9xhfysn"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
+     `(#:cargo-inputs
+       (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
+        ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))
        #:cargo-development-inputs
-       (("rust-rand" ,rust-rand-0.4))))
+       (("rust-bencher" ,rust-bencher-0.1)
+        ("rust-rand" ,rust-rand-0.4))))
     (home-page "https://github.com/remram44/adler32-rs")
     (synopsis "Implementation of the Adler32 rolling hash algorithm")
     (description
