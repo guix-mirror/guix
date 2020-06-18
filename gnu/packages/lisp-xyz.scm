@@ -12063,3 +12063,13 @@ editor.  As such, it defines a set of CLOS protocols for client code to
 interact with the buffer contents in various ways, and it supplies different
 implementations of those protocols for different purposes.")
       (license license:bsd-2))))
+
+(define-public sbcl-cluffer-standard-line
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-standard-line")
+    (arguments
+     '(#:asd-file "Standard-line/cluffer-standard-line.asd"
+       #:asd-system-name "cluffer-standard-line"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)))))
