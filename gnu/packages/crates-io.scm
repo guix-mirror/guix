@@ -25606,7 +25606,7 @@ with the Unicode character database.")
 (define-public rust-unicode-normalization-0.1
   (package
     (name "rust-unicode-normalization")
-    (version "0.1.9")
+    (version "0.1.11")
     (source
      (origin
        (method url-fetch)
@@ -25614,12 +25614,12 @@ with the Unicode character database.")
        (file-name
         (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1kviyqg3bmds4p5hgwf9qgihw8xxvq7ljgyrrk7ygxa2k450gj09"))))
+        (base32 "1kxxb5ndb5dzyp1flajjdxnbwyjw6ml9xvy0pz7b8srjn9ky4qdm"))))
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-smallvec" ,rust-smallvec-0.6))))
+       (("rust-smallvec" ,rust-smallvec-1))))
     (home-page "https://github.com/unicode-rs/unicode-normalization")
     (synopsis
      "This crate provides functions for normalization of Unicode strings")
