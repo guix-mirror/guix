@@ -1248,6 +1248,48 @@ programming.  Iosevka is completely generated from its source code.")
              (for-each make-file-writable (find-files "." ".*"))
              #t)))))))
 
+(define-public font-iosevka-aile
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-aile")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/ttc-iosevka-aile-" version ".zip"))
+       (sha256
+        (base32 "15kz8ahlynnb79s2d367a1fallc4l3j3957yj43qrymayagkh8sv"))))))
+
+(define-public font-iosevka-etoile
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-etoile")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/ttc-iosevka-etoile-" version ".zip"))
+       (sha256
+        (base32 "0q9299mc595m251v9zj9b0zparl2qq8dwx090l0jkfpr2az9xr8q"))))))
+
+(define-public font-iosevka-sparkle
+  (package
+    (inherit font-iosevka)
+    (name "font-iosevka-sparkle")
+    (version (package-version font-iosevka))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append "https://github.com/be5invis/Iosevka"
+                           "/releases/download/v" version
+                           "/ttc-iosevka-sparkle-" version ".zip"))
+       (sha256
+        (base32 "0nhvcnvl11iqmsxsyrxlbnwy9z1vdhqv6p3g7fig9ra6n5j9k5kn"))))))
+
 (define-public font-sarasa-gothic
   (package
     (name "font-sarasa-gothic")
