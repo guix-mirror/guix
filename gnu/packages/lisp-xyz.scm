@@ -12010,3 +12010,12 @@ the concrete representation is exposed, but also high level interfaces
 where the trees can be used as search trees or as trees that represent
 sequences of objects.")
       (license license:bsd-2))))
+
+(define-public sbcl-clump-binary-tree
+  (package
+    (inherit sbcl-clump-2-3-tree)
+    (name "sbcl-clump-binary-tree")
+    (arguments
+     '(#:asd-file "Binary-tree/clump-binary-tree.asd"
+       #:asd-system-name "clump-binary-tree"))
+    (synopsis "Implementation of binary trees for Common Lisp")))
