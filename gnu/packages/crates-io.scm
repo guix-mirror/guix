@@ -49,6 +49,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
@@ -11465,18 +11466,25 @@ functions and static variables these libraries contain.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libnghttp2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))))
+          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "nghttp2") #t))))
     (build-system cargo-build-system)
-    ;(inputs
-    ; `(("nghttp2" ,nghttp2)))
+    (arguments
+     `(#:skip-build? #t     ; Uses unstable features
+       #:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-cc" ,rust-cc-1.0))))
+    (inputs
+     `(("nghttp2" ,nghttp2)))
     (home-page "https://github.com/alexcrichton/nghttp2-rs")
     (synopsis "FFI bindings for libnghttp2 (nghttp2)")
     (description
      "This package provides FFI bindings for libnghttp2 (nghttp2).")
-    (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
 
