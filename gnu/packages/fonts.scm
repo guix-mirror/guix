@@ -35,6 +35,7 @@
 ;;; Copyright © 2020 Raghav Gururajan <raghavgururajan@disroot.org>
 ;;; Copyright © 2020 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2020 Zhu Zihao <all_but_last@163.com>
+;;; Copyright © 2020 Simen Endsjø <simendsjo@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1170,7 +1171,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
   (package
     (name "font-iosevka")
     ;; When updating, also update the hash of the Iosevka variant(s) below.
-    (version "2.3.3")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -1178,7 +1179,7 @@ typeface, by mimicking Comic Sans while fixing its most obvious shortcomings.")
                            "/releases/download/v" version
                            "/ttc-iosevka-" version ".zip"))
        (sha256
-        (base32 "0jkv5rkg5hi0avhwyhcjiqzjslp6zjj77f09vxx2gj9l93byz731"))))
+        (base32 "1xnkfr11rdjnin2fvgkp9vxxigfbfdncr0wy6n78mlm3p1pqwfrm"))))
     (build-system font-build-system)
     (home-page "https://be5invis.github.io/Iosevka/")
     (synopsis "Coders' typeface, built from code")
@@ -1201,7 +1202,7 @@ programming.  Iosevka is completely generated from its source code.")
                            "/releases/download/v" version
                            "/ttc-iosevka-slab-" version ".zip"))
        (sha256
-        (base32 "1rkmgi08kknc1fg54zpa6w92m3b3v7pc8cpwygz22kgd2h0mdrr8"))))))
+        (base32 "1n3lh015mvsdbyygpg3p3yqjpqdn1fdvjh1bhi2ggjanhifjsgzh"))))))
 
 (define-public font-iosevka-term
   (package
@@ -1213,10 +1214,10 @@ programming.  Iosevka is completely generated from its source code.")
        (method url-fetch/zipbomb)
        (uri (string-append "https://github.com/be5invis/Iosevka"
                            "/releases/download/v" version
-                           "/02-iosevka-term-" version ".zip"))
+                           "/ttf-iosevka-term-" version ".zip"))
        (sha256
         (base32
-         "1mxlb3qf64nykjd0x4gjfvib3k5kyv9ssv9iyzxxgk2z80bydz00"))))
+         "1mwzwpdppmcf03fgb5q6ksj0kk93wwaz2isk24wj1cm66r8psxk0"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -1235,10 +1236,10 @@ programming.  Iosevka is completely generated from its source code.")
        (method url-fetch/zipbomb)
        (uri (string-append "https://github.com/be5invis/Iosevka"
                            "/releases/download/v" version
-                           "/06-iosevka-term-slab-" version ".zip"))
+                           "/ttf-iosevka-term-slab-" version ".zip"))
        (sha256
         (base32
-         "1gc16hih157qy6vpa8f88psq0fnksiigi3msqazc75zsm3z4kzqj"))))
+         "0fiwxkf2gv38ia695wh8cvnb58sqs3fixjd33q1pp9cps94wzjpg"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
