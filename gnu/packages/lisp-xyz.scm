@@ -12019,3 +12019,18 @@ sequences of objects.")
      '(#:asd-file "Binary-tree/clump-binary-tree.asd"
        #:asd-system-name "clump-binary-tree"))
     (synopsis "Implementation of binary trees for Common Lisp")))
+
+(define-public sbcl-clump
+  (package
+    (inherit sbcl-clump-2-3-tree)
+    (name "sbcl-clump")
+    (arguments
+     '(#:asd-file "clump.asd"
+       #:asd-system-name "clump"))
+    (inputs
+     `(("clump-2-3-tree" ,sbcl-clump-2-3-tree)
+       ("clump-binary-tree" ,sbcl-clump-binary-tree)))
+    (synopsis "Collection of tree implementations for Common Lisp")))
+
+(define-public cl-clump
+  (sbcl-package->cl-source-package sbcl-clump))
