@@ -30458,6 +30458,48 @@ automatically instrumenting functions.")
 @code{futures} with @code{tracing}.")
     (license license:expat)))
 
+(define-public rust-tracing-log-0.1
+  (package
+    (name "rust-tracing-log")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-log" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qsinlbk2knrqgx1k2zq8kjxs71x44vzpma2rin1sm462agcjav5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tracing-core" ,rust-tracing-core-0.1))
+       #:cargo-development-inputs
+       (("rust-tracing" ,rust-tracing-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis
+     "Provides compatibility between tracing the log crates")
+    (description
+     "Tracing is a framework for instrumenting Rust programs with
+context-aware, structured, event-based diagnostic information.  This crate
+provides compatibility layers for using tracing alongside the logging facade
+provided by the log crate.
+
+This crate provides:
+
+@itemize
+@item @code{AsTrace} and @code{AsLog} traits for converting between tracing
+and log types.
+@item @code{LogTracer}, a @code{log::Log} implementation that consumes
+@code{log::Records} and outputs them as @code{tracing::Events}.
+@item An @code{env_logger} module, with helpers for using the env_logger crate
+with tracing (optional, enabled by the env-logger feature).
+@end itemize")
+    (license license:expat)))
+
 (define-public rust-traitobject-0.1
   (package
     (name "rust-traitobject")
