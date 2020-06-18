@@ -77,6 +77,7 @@
   #:use-module (guix svn-download)
   #:use-module (guix gexp)
   #:use-module (gnu packages)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
@@ -578,6 +579,71 @@ possible, while battling many vicious aliens.")
                    license:cc-by-sa3.0
                    license:lgpl2.1+
                    license:bsd-2))))
+
+(define-public bzflag
+  (package
+    (name "bzflag")
+    (version "2.4.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.bzflag.org/bzflag/source/"
+                           version "/bzflag-" version ".tar.bz2"))
+       (sha256
+        (base32 "16brxqmfiyz4j4lb8ihzjcbwqmpsms6vm3ijbp34lnw0blbwdjb2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-desktop-file-and-icons
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+                    (data (string-append share "/bzflag"))
+                    (hicolor (string-append share "/icons/hicolor"))
+                    (applications (string-append share "/applications")))
+               ;; Move desktop file.
+               (install-file (string-append data "/bzflag.desktop")
+                             applications)
+               ;; Install icons.
+               (for-each (lambda (size)
+                           (let* ((dim (string-append size "x" size))
+                                  (dir (string-append hicolor "/" dim "/apps")))
+                             (mkdir-p dir)
+                             (copy-file
+                              (string-append data "/bzflag-" dim ".png")
+                              (string-append dir "/bzflag.png"))))
+                         '("48" "256")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("curl" ,curl)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://www.bzflag.org/")
+    (synopsis "3D first person tank battle game")
+    (description
+     "BZFlag is a 3D multi-player multiplatform tank battle game that
+allows users to play against each other in a network environment.
+There are five teams: red, green, blue, purple and rogue (rogue tanks
+are black).  Destroying a player on another team scores a win, while
+being destroyed or destroying a teammate scores a loss.  Rogues have
+no teammates (not even other rogues), so they cannot shoot teammates
+and they do not have a team score.
+
+There are two main styles of play: capture-the-flag and free-for-all.
+In capture-the-flag, each team (except rogues) has a team base and
+each team with at least one player has a team flag.  The object is to
+capture an enemy team's flag by bringing it to your team's base.  This
+destroys every player on the captured team, subtracts one from that
+team's score, and adds one to your team's score.  In free-for-all,
+there are no team flags or team bases.  The object is simply to get as
+high a score as possible.")
+    ;; The game is dual-licensed.
+    (license (list license:lgpl2.1 license:mpl2.0))))
 
 (define-public cataclysm-dda
   (package
