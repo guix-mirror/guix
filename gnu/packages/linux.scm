@@ -371,10 +371,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (sha256 hash)))
 
 
-(define-public linux-libre-5.7-version "5.7.3")
+(define-public linux-libre-5.7-version "5.7.4")
 (define-public linux-libre-5.7-pristine-source
   (let ((version linux-libre-5.7-version)
-        (hash (base32 "1sgwdcyn9105lfgg25q41yj30sy9cqfdm8m4dmka8gzllxxyq407")))
+        (hash (base32 "06mm0bmjw54aypfhhbm9aaz5bmgymvygfak587iwv901635gb95w")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.7)))
