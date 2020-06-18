@@ -151,7 +151,7 @@ Rust, using gimli.")
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-rustc-test" ,rust-rustc-test-0.3))))))
 
-(define-public rust-adler32-1.0
+(define-public rust-adler32-1
   (package
     (name "rust-adler32")
     (version "1.0.4")
@@ -4848,7 +4848,7 @@ and arithmetic.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-adler32" ,rust-adler32-1.0)
+       (("rust-adler32" ,rust-adler32-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-gzip-header" ,rust-gzip-header-0.3)
         ("rust-flate2" ,rust-flate2-1.0))))
@@ -10338,7 +10338,7 @@ renamed to indexmap.")
          "1zxjdn8iwa0ssxrnjmywm3r1v284wryvzrf8vkc7nyf5ijbjknqw"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-inputs (("rust-adler32" ,rust-adler32-1.0))))
+     `(#:cargo-inputs (("rust-adler32" ,rust-adler32-1))))
     (home-page "https://github.com/PistonDevelopers/inflate.git")
     (synopsis "DEFLATE decoding")
     (description "This package provides DEFLATE decoding.")
@@ -12696,7 +12696,7 @@ for Rust structs.")
     (build-system cargo-build-system)
     (arguments
      `(#:skip-build? #t
-       #:cargo-inputs (("rust-adler32" ,rust-adler32-1.0))))
+       #:cargo-inputs (("rust-adler32" ,rust-adler32-1))))
     (home-page  "https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide")
     (synopsis "Pure rust replacement for the miniz DEFLATE/zlib encoder/decoder")
     (description
