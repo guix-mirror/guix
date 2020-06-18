@@ -30483,6 +30483,32 @@ automatically instrumenting functions.")
 @code{futures} with @code{tracing}.")
     (license license:expat)))
 
+(define-public rust-tracing-fmt-0.1
+  (package
+    (name "rust-tracing-fmt")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-fmt" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wagcrd6w8d3k7zdvg6sy2bwfh8w87i6ndia69p54fc7p3z4f1c8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-tracing-subscriber" ,rust-tracing-subscriber-0.1))
+       #:cargo-development-inputs
+       (("rust-tracing" ,rust-tracing-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Tracing subscriber that formats and logs trace data")
+    (description
+     "This package provides a tracing subscriber that formats and logs trace
+data.  Moved to the tracing-subscriber crate.")
+    (license license:expat)))
+
 (define-public rust-tracing-log-0.1
   (package
     (name "rust-tracing-log")
