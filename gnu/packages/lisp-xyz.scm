@@ -11974,3 +11974,39 @@ weight, temperature, names of physical quantitites, etc.")
 
 (define-public cl-acclimation
   (sbcl-package->cl-source-package sbcl-acclimation))
+
+(define-public sbcl-clump-2-3-tree
+  (let ((commit "1ea4dbac1cb86713acff9ae58727dd187d21048a"))
+    (package
+      (name "sbcl-clump-2-3-tree")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/Clump")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1639msyagsswj85gc0wd90jgh8588j3qg5q70by9s2brf2q6w4lh"))))
+      (arguments
+       '(#:asd-file "2-3-tree/clump-2-3-tree.asd"
+         #:asd-system-name "clump-2-3-tree"))
+      (inputs
+       `(("acclimation" ,sbcl-acclimation)))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/Clump")
+      (synopsis "Implementation of 2-3 trees for Common Lisp")
+      (description "The purpose of this library is to provide a collection of
+implementations of trees.
+
+In contrast to existing libraries such as cl-containers, it does not impose a
+particular use for the trees.  Instead, it aims for a stratified design,
+allowing client code to choose between different levels of abstraction.
+
+As a consequence of this policy, low-level interfaces are provided where
+the concrete representation is exposed, but also high level interfaces
+where the trees can be used as search trees or as trees that represent
+sequences of objects.")
+      (license license:bsd-2))))
