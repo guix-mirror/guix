@@ -29,7 +29,7 @@
   #:use-module (guix store database)
   #:use-module ((guix build store-copy) #:select (store-info))
 
-  #:use-module (guix ui)                          ; for '_'
+  #:use-module (guix i18n)
   #:use-module (gcrypt hash)
   #:use-module (guix pki)
   #:use-module (gcrypt pk-crypto)
