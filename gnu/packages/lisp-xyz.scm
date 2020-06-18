@@ -5719,22 +5719,7 @@ offered, one SAX-like, the other similar to StAX.")
              (install-file "catalog.dtd"
                            (string-append
                             (assoc-ref outputs "out")
-                            "/lib/" (%lisp-type)))))
-         (add-after 'create-asd 'remove-component
-           ;; XXX: The original .asd has no components, but our build system
-           ;; creates an entry nonetheless.  We need to remove it for the
-           ;; generated .asd to load properly.  See trivia.trivial for a
-           ;; similar problem.
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (asd (string-append out "/lib/sbcl/cxml.asd")))
-               (substitute* asd
-                 (("  :components
-")
-                  ""))
-               (substitute* asd
-                 ((" *\\(\\(:compiled-file \"cxml--system\"\\)\\)")
-                  ""))))))))))
+                            "/lib/" (%lisp-type))))))))))
 
 (define-public cl-cxml
   (sbcl-package->cl-source-package sbcl-cxml))
