@@ -6121,7 +6121,6 @@ This package uses fare-quasiquote with named-readtable.")))
 (define-public cl-fare-quasiquote-readtable
   (sbcl-package->cl-source-package sbcl-fare-quasiquote-readtable))
 
-;; TODO: Add support for component-less system in asdf-build-system/sbcl.
 (define-public sbcl-fare-quasiquote-extras
   (package
     (inherit sbcl-fare-quasiquote)
@@ -6141,22 +6140,7 @@ This package uses fare-quasiquote with named-readtable.")))
                (install-file "fare-quasiquote-extras.asd" lib)
                (make-file-writable
                 (string-append lib "/fare-quasiquote-extras.asd"))
-               #t)))
-         (add-after 'create-asd-file 'fix-asd-file
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib/" (%lisp-type)))
-                    (asd (string-append lib "/fare-quasiquote-extras.asd")))
-               (substitute* asd
-                 ((":class")
-                  "")
-                 (("asdf/bundle:prebuilt-system")
-                  "")
-                 ((":components")
-                  "")
-                 (("\\(\\(:compiled-file \"fare-quasiquote-extras--system\"\\)\\)")
-                  "")))
-             #t)))))
+               #t))))))
     (description "This library combines @code{fare-quasiquote-readtable} and
 @code{fare-quasiquote-optima}.")))
 
