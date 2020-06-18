@@ -40,13 +40,10 @@
   (apply invoke "make" dist-target make-flags))
 
 (define* (install-dist #:key outputs #:allow-other-keys)
-  (let* ((out      (assoc-ref outputs "out"))
-         (meta     (string-append out "/nix-support")) ; Hydra meta-data
-         (tarballs (find-files "." "\\.tar\\.")))
-    (mkdir out)
+  (let ((out (assoc-ref outputs "out")))
     (for-each (lambda (tarball)
-                (copy-file tarball (string-append out "/" tarball)))
-              out)
+                (install-file tarball out))
+              (find-files "." "\\.tar\\."))
     #t))
 
 (define %dist-phases
