@@ -29573,6 +29573,50 @@ applications backed by buffers.")
 Tokio.")
     (license (list license:expat license:asl2.0))))
 
+(define-public rust-tokio-net-0.2
+  (package
+    (name "rust-tokio-net")
+    (version "0.2.0-alpha.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tokio-net" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15vm0bndn6zcpkp1yb6v736rbhqgim5skc76rz299xd3y0pr249a"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bytes" ,rust-bytes-0.4)
+        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
+        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
+        ("rust-futures-core-preview" ,rust-futures-core-preview-0.3)
+        ("rust-futures-sink-preview" ,rust-futures-sink-preview-0.3)
+        ("rust-futures-util-preview" ,rust-futures-util-preview-0.3)
+        ("rust-iovec" ,rust-iovec-0.1)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-mio" ,rust-mio-0.6)
+        ("rust-mio-named-pipes" ,rust-mio-named-pipes-0.1)
+        ("rust-mio-uds" ,rust-mio-uds-0.6)
+        ("rust-num-cpus" ,rust-num-cpus-1)
+        ("rust-parking-lot" ,rust-parking-lot-0.8)
+        ("rust-signal-hook-registry" ,rust-signal-hook-registry-1)
+        ("rust-slab" ,rust-slab-0.4)
+        ("rust-tokio-codec" ,rust-tokio-codec-0.1)
+        ("rust-tokio-executor" ,rust-tokio-executor-0.1)
+        ("rust-tokio-io" ,rust-tokio-io-0.1)
+        ("rust-tokio-sync" ,rust-tokio-sync-0.1)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-winapi" ,rust-winapi-0.3))))
+    (home-page "https://tokio.rs")
+    (synopsis "Event loop that drives Tokio I/O resources")
+    (description
+     "This package provides the event loop that drives Tokio I/O resources.")
+    (license license:expat)))
+
 (define-public rust-tokio-openssl-0.4
   (package
     (name "rust-tokio-openssl")
