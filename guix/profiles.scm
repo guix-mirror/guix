@@ -1221,9 +1221,10 @@ This is meant to be used as a profile hook."
                        inputs))
                  (directory-entries
                   (lambda (directory)
-                    (scandir directory
-                             (lambda (basename)
-                               (not (string-prefix? "." basename))))))
+                    (or (scandir directory
+                                 (lambda (basename)
+                                   (not (string-prefix? "." basename))))
+                        '())))
                  ;; Note: Should usually result in one entry.
                  (versions (delete-duplicates
                             (append-map directory-entries
@@ -1234,6 +1235,10 @@ This is meant to be used as a profile hook."
                  (setenv "PATH" #+(file-append kmod "/bin"))
                  (make-linux-module-directory inputs version #$output)
                  (setenv "PATH" old-path)))
+              (()
+               ;; Nothing here, maybe because this is a kernel with
+               ;; CONFIG_MODULES=n.
+               (mkdir #$output))
               (_ (error "Specified Linux kernel and Linux kernel modules
 are not all of the same version")))))))
   (gexp->derivation "linux-module-database" build
