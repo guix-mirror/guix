@@ -15900,6 +15900,20 @@ types as proposed in RFC 1158.")
 cryptographic library.")
   (license (list license:lgpl3 license:gpl2 license:gpl3))))
 
+(define-public rust-nettle-5
+  (package
+    (inherit rust-nettle-7)
+    (version "5.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "nettle" version))
+       (file-name
+        (string-append (package-name rust-nettle-7) "-" version ".tar.gz"))
+       (sha256
+        (base32 "0zfplqdf3mag8r7lc124hl24vri8yg711jmm8gl1mpwnlhass2n4"))
+       (patches (search-patches "rust-nettle-disable-vendor.patch"))))))
+
 (define-public rust-nettle-sys-2
   (package
     (name "rust-nettle-sys")
