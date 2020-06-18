@@ -25930,6 +25930,27 @@ picking compatible shaders.")
      "This package allows easy binding to, and loading of, shared libraries.")
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-shell-escape-0.1
+  (package
+    (name "rust-shell-escape")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "shell-escape" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fgs1iyx3b124b7njjmhfn9q5ipmhxrafavh8mxbfl9a9zk162hp"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sfackler/shell-escape")
+    (synopsis
+     "Escape characters that may have a special meaning in a shell")
+    (description
+     "Escape characters that may have a special meaning in a shell.")
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-shell-words-0.1
   (package
     (name "rust-shell-words")
