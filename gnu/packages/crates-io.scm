@@ -14781,6 +14781,31 @@ statement, the first matching branch is the item that gets emitted.")
 whether an expression matches a pattern.")
     (license license:expat)))
 
+(define-public rust-matchers-0.0
+  (package
+    (name "rust-matchers")
+    (version "0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "matchers" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1q8ckqmkjqkznvdi9x0z769yz2bmvlqcwx51ad2lpk4mfmgpi6gh"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-regex-automata" ,rust-regex-automata-0.1))))
+    (home-page "https://github.com/hawkw/matchers")
+    (synopsis "Regex matching on character and byte streams")
+    (description
+     "Use this crate to match on character and byte streams using regular
+grammars.  It provides the subset of the regex crate that only deals with
+matching, not parsing substrings.")
+    (license license:expat)))
+
 (define-public rust-matrixmultiply-0.2
   (package
     (name "rust-matrixmultiply")
