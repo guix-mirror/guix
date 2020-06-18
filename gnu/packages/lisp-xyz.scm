@@ -12018,3 +12018,33 @@ tables.")
 
 (define-public cl-rdkafka
   (sbcl-package->cl-source-package sbcl-cl-rdkafka))
+
+(define-public sbcl-acclimation
+  (let ((commit "4d51150902568fcd59335f4cc4cfa022df6116a5"))
+    (package
+      (name "sbcl-acclimation")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/Acclimation")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1aw7rarjl8ai57h0jxnp9hr3dka7qrs55mmbl1p6rhd6xj8mp9wq"))))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/Acclimation")
+      (synopsis "Internationalization library for Common Lisp")
+      (description "This project is meant to provide tools for
+internationalizing Common Lisp programs.
+
+One important aspect of internationalization is of course the language used in
+error messages, documentation strings, etc.  But with this project we provide
+tools for all other aspects of internationalization as well, including dates,
+weight, temperature, names of physical quantitites, etc.")
+      (license license:bsd-2))))
+
+(define-public cl-acclimation
+  (sbcl-package->cl-source-package sbcl-acclimation))
