@@ -146,13 +146,16 @@ dependencies are registered."
             (define (read-closure closure)
               (call-with-input-file closure read-reference-graph))
 
+            (define db-file
+              (store-database-file #:state-directory #$output))
+
+            (sql-schema #$schema)
             (let ((items (append-map read-closure '#$labels)))
-              (register-items items
-                              #:state-directory #$output
-                              #:deduplicate? #f
-                              #:reset-timestamps? #f
-                              #:registration-time %epoch
-                              #:schema #$schema))))))
+              (with-database db-file db
+                (register-items db items
+                                #:deduplicate? #f
+                                #:reset-timestamps? #f
+                                #:registration-time %epoch)))))))
 
   (computed-file "store-database" build
                  #:options `(#:references-graphs ,(zip labels items))))
