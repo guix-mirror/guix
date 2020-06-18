@@ -11374,12 +11374,22 @@ macros on libc without stdlib.")
       (origin
         (method url-fetch)
         (uri (crate-uri "libgit2-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))
-    (arguments '())
-    (properties '((hidden? . #t)))))
+          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "libgit2") #t))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-curl-sys" ,rust-curl-sys-0.4)
+        ("rust-libc" ,rust-libc-0.2)
+        ("rust-libssh2-sys" ,rust-libssh2-sys-0.2)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3))))))
 
 (define-public rust-libloading-0.5
   (package
