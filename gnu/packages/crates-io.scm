@@ -32,6 +32,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages glib)
@@ -4620,31 +4621,42 @@ Transparency logs for use with sct crate.")
       (origin
         (method url-fetch)
         (uri (crate-uri "curl-sys" version))
-        (file-name (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "02542zmvl3fpdqf7ai4cqnamm4albx9j645dkjx5qr1myq8ax42y"))))
+          "02542zmvl3fpdqf7ai4cqnamm4albx9j645dkjx5qr1myq8ax42y"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin (delete-file-recursively "curl") #t))))
     (build-system cargo-build-system)
-    ;(arguments
-    ; `(#:phases
-    ;   (modify-phases %standard-phases
-    ;    (add-after 'unpack 'find-openssl
-    ;      (lambda* (#:key inputs #:allow-other-keys)
-    ;        (let ((openssl (assoc-ref inputs "openssl")))
-    ;          (setenv "OPENSSL_DIR" openssl))
-    ;        #t)))))
-    ;(native-inputs
-    ; `(("pkg-config" ,pkg-config)))
-    ;(inputs
-    ; `(("curl" ,curl)
-    ;   ("nghttp2" ,nghttp2)
-    ;   ("openssl" ,openssl)
-    ;   ("zlib" ,zlib)))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc-0.2)
+        ("rust-libnghttp2-sys" ,rust-libnghttp2-sys-0.1)
+        ("rust-libz-sys" ,rust-libz-sys-1.0)
+        ("rust-openssl-sys" ,rust-openssl-sys-0.9)
+        ("rust-winapi" ,rust-winapi-0.3)
+        ("rust-cc" ,rust-cc-1.0)
+        ("rust-pkg-config" ,rust-pkg-config-0.3)
+        ("rust-vcpkg" ,rust-vcpkg-0.2))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'find-openssl
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((openssl (assoc-ref inputs "openssl")))
+              (setenv "OPENSSL_DIR" openssl))
+            #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("nghttp2" ,nghttp2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/alexcrichton/curl-rust")
     (synopsis "Native bindings to the libcurl library")
     (description
      "This package provides native bindings to the @code{libcurl} library.")
-    (properties '((hidden? . #t)))
     (license license:expat)))
 
 (define-public rust-custom-derive-0.1
