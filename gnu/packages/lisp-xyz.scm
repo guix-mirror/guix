@@ -12084,3 +12084,13 @@ implementations of those protocols for different purposes.")
     (inputs
      `(("cluffer-base" ,sbcl-cluffer-base)
        ("clump" ,sbcl-clump)))))
+
+(define-public sbcl-cluffer-simple-line
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-simple-line")
+    (arguments
+     '(#:asd-file "Simple-line/cluffer-simple-line.asd"
+       #:asd-system-name "cluffer-simple-line"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)))))
