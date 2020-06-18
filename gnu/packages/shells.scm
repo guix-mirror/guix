@@ -803,14 +803,14 @@ Shell (pdksh).")
   (package
     (name "oil")
     ;; https://www.oilshell.org/blog/2020/04/release-0.8.pre4.html#comment-on-version-numbering
-    (version "0.8.pre5")
+    (version "0.8.pre6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.oilshell.org/download/oil-"
                            version ".tar.gz"))
        (sha256
-        (base32 "02llxx10izxpv1y32qn8k6r0y7al01rzxjirc8h6x8nd9kiaqknl"))))
+        (base32 "11nfwn5b1w74hv78065jg2zm45mqzi59381b0f649j7n3g7yp3iq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:strip-binaries? #f             ; strip breaks the binary
@@ -827,7 +827,7 @@ Shell (pdksh).")
          (replace 'check
            ;; The tests are not distributed in the tarballs but upstream
            ;; recommends running this smoke test.
-           ;; https://github.com/oilshell/oil/blob/release/0.8.pre5/INSTALL.txt#L38-L48
+           ;; https://github.com/oilshell/oil/blob/release/0.8.pre6/INSTALL.txt#L38-L48
            (lambda _
              (let* ((oil "_bin/oil.ovm"))
                (invoke/quiet oil "osh" "-c" "echo hi")
