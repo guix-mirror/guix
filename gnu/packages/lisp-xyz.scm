@@ -12073,3 +12073,14 @@ implementations of those protocols for different purposes.")
        #:asd-system-name "cluffer-standard-line"))
     (inputs
      `(("cluffer-base" ,sbcl-cluffer-base)))))
+
+(define-public sbcl-cluffer-standard-buffer
+  (package
+    (inherit sbcl-cluffer-base)
+    (name "sbcl-cluffer-standard-buffer")
+    (arguments
+     '(#:asd-file "Standard-buffer/cluffer-standard-buffer.asd"
+       #:asd-system-name "cluffer-standard-buffer"))
+    (inputs
+     `(("cluffer-base" ,sbcl-cluffer-base)
+       ("clump" ,sbcl-clump)))))
