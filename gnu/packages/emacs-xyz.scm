@@ -10048,26 +10048,17 @@ performance-oriented and tidy.")
 (define-public emacs-leaf
   (package
     (name "emacs-leaf")
-    (version "3.5.0")
+    (version "4.2.5")
     (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/conao3/leaf.el.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "leaf-" version ".tar"))
        (sha256
-        (base32
-         "1rgd59146wad92yc64las0qgx67k2ifgsw1vwhp40xvkd7kb0r6d"))))
+        (base32 "0y78mp4c2gcwp7dc87wlx3r4hfmap14vvx8gkjc9nkf99qavpnkw"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/conao3/leaf.el")
-    (arguments
-     `(#:tests? #t
-       #:test-command '("emacs" "--batch"
-                        "-l" "leaf-tests.el"
-                        "-f" "cort-test-run")))
-    (synopsis
-     "Simplify your init.el configuration, extended use-package")
+    (synopsis "Simplify your init.el configuration, extended use-package")
     (description
      "This package provides macros that allows you to declaratively configure
 settings typical of an Elisp package with various keywords.  The syntax is
