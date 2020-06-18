@@ -30526,6 +30526,54 @@ with tracing (optional, enabled by the env-logger feature).
 @end itemize")
     (license license:expat)))
 
+(define-public rust-tracing-subscriber-0.1
+  (package
+    (name "rust-tracing-subscriber")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "tracing-subscriber" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i9fhlyz8mn2znpgmi5bv9y24pwpkkgfxs0rwcf6dl6djmjs2b0r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f      ; Some test files missing.
+       #:cargo-inputs
+       (("rust-ansi-term" ,rust-ansi-term-0.11)
+        ("rust-chrono" ,rust-chrono-0.4)
+        ("rust-lazy-static" ,rust-lazy-static-1)
+        ("rust-matchers" ,rust-matchers-0.0)
+        ("rust-owning-ref" ,rust-owning-ref-0.4)
+        ("rust-parking-lot" ,rust-parking-lot-0.9)
+        ("rust-regex" ,rust-regex-1)
+        ("rust-smallvec" ,rust-smallvec-0.6)
+        ("rust-tracing-core" ,rust-tracing-core-0.1)
+        ("rust-tracing-log" ,rust-tracing-log-0.1))
+       #:cargo-development-inputs
+       (("rust-criterion" ,rust-criterion-0.3)
+        ("rust-log" ,rust-log-0.4)
+        ("rust-tracing" ,rust-tracing-0.1)
+        ("rust-tracing-log" ,rust-tracing-log-0.1))))
+    (home-page "https://tokio.rs")
+    (synopsis "Implement and compose tracing subscribers")
+    (description
+     "Utilities for implementing and composing tracing subscribers.
+
+Tracing is a framework for instrumenting Rust programs to collect
+scoped, structured, and async-aware diagnostics.  The Subscriber trait
+represents the functionality necessary to collect this trace
+data.  This crate contains tools for composing subscribers out of
+smaller units of behaviour, and batteries-included implementations of
+common subscriber functionality.
+
+Tracing-subscriber is intended for use by both Subscriber authors and
+application authors using tracing to instrument their applications.")
+    (license license:expat)))
+
 (define-public rust-traitobject-0.1
   (package
     (name "rust-traitobject")
