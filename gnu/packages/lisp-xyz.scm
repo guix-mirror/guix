@@ -12034,3 +12034,32 @@ sequences of objects.")
 
 (define-public cl-clump
   (sbcl-package->cl-source-package sbcl-clump))
+
+(define-public sbcl-cluffer-base
+  (let ((commit "4aad29c276a58a593064e79972ee4d77cae0af4a"))
+    (package
+      (name "sbcl-cluffer-base")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/robert-strandh/cluffer")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1bcg13g7qb3dr8z50aihdjqa6miz5ivlc9wsj2csgv1km1mak2kj"))))
+      (arguments
+       '(#:asd-file "Base/cluffer-base.asd"
+         #:asd-system-name "cluffer-base"))
+      (inputs
+       `(("acclimation" ,sbcl-acclimation)))
+      (build-system asdf-build-system/sbcl)
+      (home-page "https://github.com/robert-strandh/cluffer")
+      (synopsis "Common Lisp library providing a protocol for text-editor buffers")
+      (description "Cluffer is a library for representing the buffer of a text
+editor.  As such, it defines a set of CLOS protocols for client code to
+interact with the buffer contents in various ways, and it supplies different
+implementations of those protocols for different purposes.")
+      (license license:bsd-2))))
