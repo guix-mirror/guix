@@ -15919,10 +15919,17 @@ cryptographic library.")
     (inputs
      `(("nettle", nettle)))
     (arguments
-     `(#:skip-build? #t
-       #:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-bindgen" ,rust-bindgen-0.51)
-        ("rust-pkg-config" ,rust-pkg-config-0.3))))
+        ("rust-pkg-config" ,rust-pkg-config-0.3))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "clang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
     (home-page "https://gitlab.com/sequoia-pgp/nettle-sys")
     (synopsis "Low-level Rust bindings for the Nettle cryptographic library")
     (description "This package provides low-level Rust bindings for the Nettle
