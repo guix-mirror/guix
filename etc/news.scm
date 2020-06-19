@@ -14,7 +14,8 @@
  (version 0)
 
  (entry (commit "43badf261f4688c8a7a7a9004a4bff8acb205835")
-        (title (en "@command{guix pull} authenticates channels"))
+        (title (en "@command{guix pull} authenticates channels")
+               (de "@command{guix pull} authentifiziert Kanäle"))
         (body
          (en "The @command{guix pull} and @command{guix time-machine} commands
 now authenticate the source code that they pull, unless the new
@@ -24,7 +25,17 @@ authorized developer.  This protects you from attempts to tamper with the Guix
 repository and from attempts to ship malicious code to users.
 
 This feature is currently limited to the @code{guix} channel but will soon be
-available to third-party channel authors.")))
+available to third-party channel authors.")
+         (de "Die Befehle @command{guix pull} und @command{guix time-machine}
+prüfen nun die Authentizität des heruntergeladenen Quellcodes, außer wenn die
+neue Befehlszeilenoption @option{--disable-authentication} angegeben
+wurde. Das bedeutet, Guix stellt sicher, dass jeder empfangene Commit durch
+einen autorisierten Entwickler kryptografisch signiert wurde. Das schützt Sie
+vor Versuchen, das Guix-Repository zu manipulieren oder bösartigen Code an die
+Nutzer auszuliefern.
+
+Diese Funktionalität ist auf den @code{guix}-Kanal beschränkt, sie wird jedoch
+bald auch Autoren dritter Kanäle zur Verfügung stehen.")))
 
  (entry (commit "c924e541390f9595d819edc33c19d979917c15ec")
         (title (en "@command{guix repl} adds support for running Guile scripts")
