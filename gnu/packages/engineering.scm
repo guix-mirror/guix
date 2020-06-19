@@ -18,6 +18,7 @@
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
+;;; Copyright © 2020 B. Wilson <elaexuotee@wilsonb.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -61,6 +63,7 @@
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages digest)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
@@ -85,8 +88,10 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
@@ -103,6 +108,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages openkinect)
@@ -2676,3 +2682,65 @@ proper, a versatile program with a graphical user interface, and meshlabserver,
 a program that can perform mesh processing tasks in batch mode, without a
 GUI.")
     (license license:gpl3+)))
+
+(define-public poke
+  ;; Upstream has yet to tag any releases.
+  (let ((commit "d33317a46e3b7c48130a471a48cbfea1abab70d8")
+        (revision "0"))
+    (package
+      (name "poke")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.savannah.gnu.org/poke.git")
+               (commit commit)
+               (recursive? #t)))
+         (sha256
+          (base32 "1dd0r1x123bqi78lrsk58rvg9c9wka0kywdyzn7g3i4hkh54xb7d"))
+         (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      ;; The GUI, which we elide, requires tcl and tk.
+      (native-inputs `(("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ;; Requires bison 3.6+ but we currently only have 3.5.
+                       ;; Bison 3.6 will be available in the next core update.
+                       ("bison-3.6" ,bison-3.6)
+                       ("clisp" ,clisp)
+                       ("dejagnu" ,dejagnu)
+                       ("flex" ,flex)
+                       ("gettext" ,gettext-minimal)
+                       ("help2man" ,help2man)
+                       ("libtool" ,libtool)
+                       ("perl" ,perl)
+                       ("pkg-config" ,pkg-config)
+                       ("python-2" ,python-2)
+                       ("python-3" ,python-3)
+                       ("texinfo" ,texinfo)))
+      ;; FIXME: Enable NBD support by adding `libnbd' (currently unpackaged).
+      ;; FIXME: A "hyperlinks-capable" `libtexststyle' needed for the hserver.
+      (inputs `(("json-c" ,json-c)
+                ("libgc" ,libgc)
+                ("readline" ,readline)))
+      (arguments
+       ;; To build the GUI, add the `--enable-gui' configure flag.
+       ;; To enable the "hyperlink server", add the `--enable-hserver' flag.
+       `(#:configure-flags '("--enable-mi")
+         #:phases (modify-phases %standard-phases
+                    ;; This is a non-trivial bootstrap that needs many of the
+                    ;; native-inputs and thus must run after `patch-shebangs'.
+                    (delete 'bootstrap)
+                    (add-after 'patch-source-shebangs 'bootstrap
+                      (lambda _
+                        (invoke "./bootstrap" "--no-git"
+                                "--no-bootstrap-sync"
+                                "--gnulib-srcdir=gnulib")
+                        #t)))))
+      (home-page "http://jemarch.net/poke.html")
+      (synopsis "Interactive, extensible editor for binary data")
+      (description "GNU poke is an interactive, extensible editor for binary
+  data.  Not limited to editing basic entities such as bits and bytes, it
+  provides a full-fledged procedural, interactive programming language designed
+  to describe data structures and to operate on them.")
+      (license license:gpl3+))))
