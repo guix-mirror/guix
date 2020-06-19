@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2020 Sebastian Schott <sschott@mailbox.org>
 ;;; Copyright © 2020 Vincent Legoll <vincent.legoll@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,9 +40,11 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -52,9 +55,11 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
@@ -457,7 +462,7 @@ photographic equipment.")
 (define-public darktable
   (package
     (name "darktable")
-    (version "2.6.3")
+    (version "3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -465,13 +470,16 @@ photographic equipment.")
              "https://github.com/darktable-org/darktable/releases/"
              "download/release-" version "/darktable-" version ".tar.xz"))
        (sha256
-        (base32 "1w3q3dhcxa0bs590zbsj61ap8z84wmn04xs5q3gjwisqhjf9j655"))))
+        (base32 "1yrnkw8c47kmy2x6m1xp69hwyk02xyc8pd9kvcmyj54lzrhzdfka"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
        #:configure-flags '("-DBINARY_PACKAGE_BUILD=On")
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'prepare-build-environment
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CC" "clang") (setenv "CXX" "clang++")))
          (add-before 'configure 'set-LDFLAGS-and-CPATH
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -483,35 +491,60 @@ photographic equipment.")
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "ilmbase")
                                     "/include/OpenEXR:" (or (getenv "CPATH") "")))
-             #t)))))
+             #t))
+          (add-after 'install 'wrap-program
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (wrap-program (string-append (assoc-ref outputs "out")
+                                           "/bin/darktable")
+                ;; For GtkFileChooserDialog.
+                `("GSETTINGS_SCHEMA_DIR" =
+                  (,(string-append (assoc-ref inputs "gtk+")
+                                   "/share/glib-2.0/schemas"))))
+              #t)))))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("clang" ,clang-9)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("llvm" ,llvm)
        ("perl" ,perl)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("po4a" ,po4a)))
     (inputs
-     `(("libxslt" ,libxslt)
-       ("libxml2" ,libxml2)
-       ("pugixml" ,pugixml)
-       ("gtk+" ,gtk+)
-       ("sqlite" ,sqlite)
-       ("libjpeg" ,libjpeg-turbo)
-       ("libpng" ,libpng)
-       ("cairo" ,cairo)
-       ("lcms" ,lcms)
-       ("exiv2" ,exiv2)
-       ("libtiff" ,libtiff)
+     `(("cairo" ,cairo)
+       ("colord-gtk" ,colord-gtk)
+       ("cups" ,cups)
        ("curl" ,curl)
-       ("libgphoto2" ,libgphoto2)
        ("dbus-glib" ,dbus-glib)
-       ("openexr" ,openexr)
+       ("exiv2" ,exiv2)
+       ("freeimage" ,freeimage)
+       ("graphicsmagick" ,graphicsmagick)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
        ("ilmbase" ,ilmbase)
-       ("libsoup" ,libsoup)
-       ("python-jsonschema" ,python-jsonschema)
-       ("libwebp" ,libwebp)
-       ("lensfun" ,lensfun)
-       ("librsvg" ,librsvg)
+       ("iso-codes" ,iso-codes)
        ("json-glib" ,json-glib)
-       ("freeimage" ,freeimage)))
+       ("lcms" ,lcms)
+       ("lensfun" ,lensfun)
+       ("libgphoto2" ,libgphoto2)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libomp" ,libomp)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("lua" ,lua)
+       ("openexr" ,openexr)
+       ("openjpeg" ,openjpeg)
+       ("osm-gps-map" ,osm-gps-map)
+       ("pugixml" ,pugixml)
+       ("python-jsonschema" ,python-jsonschema)
+       ("sqlite" ,sqlite)))
     (home-page "https://www.darktable.org")
     (synopsis "Virtual lighttable and darkroom for photographers")
     (description "Darktable is a photography workflow application and RAW
@@ -520,7 +553,8 @@ them through a zoomable lighttable and enables you to develop raw images
 and enhance them.")
     ;; See src/is_supported_platform.h for supported platforms.
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
-    (license license:gpl3+)))
+    (license (list license:gpl3+ ;; Darktable itself.
+                   license:lgpl2.1+)))) ;; Rawspeed library.
 
 (define-public hugin
   (package
