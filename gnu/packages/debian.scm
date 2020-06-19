@@ -181,7 +181,11 @@ contains the archive keys used for that.")
     (inputs
      `(("debian-keyring" ,debian-archive-keyring)
        ("ubuntu-keyring" ,ubuntu-keyring)
-       ("tzdata" ,tzdata)))
+       ("tzdata" ,tzdata)
+
+       ;; Called at run-time from various places, needs to be in PATH.
+       ("gnupg" ,gnupg)
+       ("wget" ,wget)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "https://tracker.debian.org/pkg/debootstrap")
