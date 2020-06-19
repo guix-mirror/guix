@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2020 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2020 Edouard Klein <edk@beaver-labs.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
 
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -1426,6 +1428,42 @@ to read and write XML data.  A shared library is provided for parsing,
 generating, manipulating, and validating XML documents using the DOM, SAX, and
 SAX2 APIs.")
     (license license:asl2.0)))
+
+(define-public xlsxio
+  (package
+    (name "xlsxio")
+    (version "0.2.26")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/brechtsanders/xlsxio")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0j8jral3yc2aib2ykp527lyb62a1d9p7qmfbszy7iy3s65pkma9b"))))
+    (native-inputs
+     `(("expat" ,expat)
+       ("make" ,gnu-make)
+       ("minizip" ,minizip)
+       ("which" ,which)))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "make" "install"
+                     (string-append
+                      "PREFIX=" (assoc-ref outputs "out"))))))))
+    (synopsis "C library for reading and writing .xlsx files")
+    (description "XLSX I/O aims to provide a C library for reading and writing
+.xlsx files.  The .xlsx file format is the native format used by Microsoft(R)
+Excel(TM) since version 2007.")
+    (home-page "https://github.com/brechtsanders/xlsxio")
+    (license license:expat)))
 
 (define-public java-simple-xml
   (package
