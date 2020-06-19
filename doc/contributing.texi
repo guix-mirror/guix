@@ -1128,18 +1128,20 @@ browse issues:
 
 @itemize
 @item
+@url{https://issues.guix.gnu.org} provides a pleasant
+interface@footnote{The web interface at
+@url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
+software written in Guile, and you can help!  See
+@url{https://git.elephly.net/gitweb.cgi?p=software/mumi.git}.} to browse
+bug reports and patches, and to participate in discussions;
+@item
 @url{https://bugs.gnu.org/guix} lists bug reports;
 @item
 @url{https://bugs.gnu.org/guix-patches} lists patch submissions.
 @end itemize
 
-You can also access both of these @i{via} the (nicer)
-@url{https://issues.guix.gnu.org} interface@footnote{The web interface
-at @url{https://issues.guix.gnu.org} is powered by Mumi, a nice piece of
-software written in Guile, and you can help!  See
-@url{https://git.elephly.net/gitweb.cgi?p=software/mumi.git}.}.  To view
-discussions related to issue number @var{n}, go to
-@indicateurl{https://issues.guix.gnu.org/issue/@var{n}} or
+To view discussions related to issue number @var{n}, go to
+@indicateurl{https://issues.guix.gnu.org/@var{n}} or
 @indicateurl{https://bugs.gnu.org/@var{n}}.
 
 If you use Emacs, you may find it more convenient to interact with
