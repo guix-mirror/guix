@@ -253,20 +253,16 @@ using geiser.")
 (define-public emacs-hyperbole
   (package
     (name "emacs-hyperbole")
-    (version "7.0.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://ftpmirror.gnu.org/hyperbole/"
-                    "hyperbole-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0znsjhm0lmzpmkgfni4qzx4l6dp604bmrzp3mwxxax2v96wpwmcx"))
-              (patches
-               (search-patches
-                "emacs-hyperbole-do-not-check-dir.patch"
-                "emacs-hyperbole-domainname.patch"
-                "emacs-hyperbole-toggle-messaging.patch"))))
+    (version "7.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "hyperbole-" version ".tar"))
+       (sha256
+        (base32 "08gi4v76s53nfmn3s0qcxc3zii0pspjfd6ry7jq1kgm3z34x8hab"))
+       (patches
+        (search-patches "emacs-hyperbole-toggle-messaging.patch"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include '("DEMO"
@@ -277,10 +273,17 @@ using geiser.")
                    "\\.kotl$")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'install 'make-info
+         ;; Fix build issues about missing "domainname" and "hpmap:dir-user"
+         ;; parent dir.
+         (add-after 'unpack 'fix-build
            (lambda _
-             (invoke "make" "info"))))))
-    (propagated-inputs `(("inetutils" ,inetutils)))
+             (substitute* "hypb.el"
+               (("(/usr)?/bin/domainname") "/bin/hostname"))
+             (substitute* "hyperbole.el"
+               (("\\(hyperb:check-dir-user\\)") ""))
+             #t)))))
+    (propagated-inputs
+     `(("inetutils" ,inetutils)))       ;for hostname
     (home-page "https://www.gnu.org/software/hyperbole/")
     (synopsis "The Everyday Hypertextual Information Manager")
     (description
