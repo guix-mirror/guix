@@ -33,6 +33,7 @@
 ;;; Copyright © 2020 Lars-Dominik Braun <ldb@leibniz-psychology.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Josh Marshall <joshua.r.marshall.1991@gmail.com>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -969,6 +970,33 @@ supports coverage of subprocesses.")
 
 (define-public python2-pytest-runner-2
   (package-with-python2 python-pytest-runner-2))
+
+(define-public python-pytest-lazy-fixture
+  (package
+    (name "python-pytest-lazy-fixture")
+    (version "0.6.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pytest-lazy-fixture" version))
+        (sha256
+         (base32 "1b0hmnsxw4s2wf9pks8dg6dfy5cx3zcbzs8517lfccxsfizhqz8f"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make the installed plugin discoverable by Pytest.
+             (add-installed-pythonpath inputs outputs)
+             (invoke "pytest" "-vv"))))))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/tvorog/pytest-lazy-fixture")
+    (synopsis "Use fixtures in @code{pytest.mark.parametrize}")
+    (description "This plugin helps to use fixtures in
+@code{pytest.mark.parametrize}.")
+    (license license:expat)))
 
 (define-public python-pytest-mock
   (package
