@@ -276,14 +276,16 @@ using geiser.")
          ;; Fix build issues about missing "domainname" and "hpmap:dir-user"
          ;; parent dir.
          (add-after 'unpack 'fix-build
-           (lambda _
+           (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "hypb.el"
-               (("(/usr)?/bin/domainname") "/bin/hostname"))
+               (("/bin/domainname")
+                (string-append (assoc-ref inputs "inetutils")
+                               "/bin/dnsdomainname")))
              (substitute* "hyperbole.el"
                (("\\(hyperb:check-dir-user\\)") ""))
              #t)))))
-    (propagated-inputs
-     `(("inetutils" ,inetutils)))       ;for hostname
+    (inputs
+     `(("inetutils" ,inetutils)))
     (home-page "https://www.gnu.org/software/hyperbole/")
     (synopsis "The Everyday Hypertextual Information Manager")
     (description
