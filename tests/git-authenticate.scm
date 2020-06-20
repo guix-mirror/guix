@@ -56,7 +56,7 @@
                                 #:keyring-reference "master")
           'failed)))))
 
-(unless (which (git-command)) (test-skip 1))
+(unless (which (gpg+git-available?)) (test-skip 1))
 (test-assert "signed commits, SHA1 signature"
   (with-fresh-gnupg-setup (list %ed25519-public-key-file
                                 %ed25519-secret-key-file)
