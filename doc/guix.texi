@@ -24728,12 +24728,31 @@ The size of the disk image.
 @item @code{memory-size} (default: @code{512})
 The memory size of the Virtual Machine in mebibytes.
 
-@item @code{options} (default: @code{'("--device"} @code{"rtl8139,netdev=net0"} @
-      @code{"--netdev"} @
-      @code{"user,id=net0,hostfwd=tcp:127.0.0.1:20022-:2222,hostfwd=tcp:127.0.0.1:25900-:5900"} @
-      @code{"--snapshot"} @
-      @code{"--hda")})
+@item @code{options} (default: @code{'("--snapshot")})
 The extra options for running QEMU.
+
+@item @code{id} (default: @code{#f})
+If set, a non-zero positive integer used to parameterize Childhurd
+instances.  It is appended to the service's name,
+e.g. @code{childhurd1}.
+
+@item @code{net-options} (default: @var{hurd-vm-net-options})
+The procedure used to produce the list of QEMU networking options.
+
+By default, it produces
+
+@lisp
+'("--device" "rtl8139,netdev=net0"
+  "--netdev" "user,id=net0\
+              ,hostfwd=tcp:127.0.0.1:<ssh-port>-:2222\
+              ,hostfwd=tcp:127.0.0.1:<vnc-port>-:5900")
+@end lisp
+with forwarded ports
+@example
+<ssh-port>: @code{(+ 10022 (* 1000 @var{ID}))}
+<vnc-port>: @code{(+ 15900 (* 1000 @var{ID}))}
+@end example
+
 @end table
 @end deftp
 
@@ -24745,10 +24764,8 @@ the @code{--snapshot} flag using something along these lines:
 @lisp
 (service hurd-vm-service-type
          (hurd-vm-configuration
-          (image    (const "/out/of/store/writable/hurd.img"))
-          (options '("--device" "rtl8139,netdev=net0"
-                     "--netdev"
-                     "user,id=net0,hostfwd=tcp:127.0.0.1:20022-:2222"))))
+          (image   (const "/out/of/store/writable/hurd.img"))
+          (options '("--hda"))))
 @end lisp
 
 @node Version Control Services

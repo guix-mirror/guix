@@ -51,6 +51,10 @@
 
   #:export (%hurd-vm-operating-system
             hurd-vm-configuration
+            hurd-vm-disk-image
+            hurd-vm-id
+            hurd-vm-net-options
+            hurd-vm-options
             hurd-vm-service-type
 
             libvirt-configuration
@@ -832,14 +836,12 @@ functionality of the kernel Linux.")))
   (memory-size hurd-vm-configuration-memory-size        ;number
                (default 512))
   (options     hurd-vm-configuration-options            ;list of string
-               (default
-                 `("--device" "rtl8139,netdev=net0"
-                   "--netdev" ,(string-append
-                                "user,id=net0"
-                                ",hostfwd=tcp:127.0.0.1:20022-:2222"
-                                ",hostfwd=tcp:127.0.0.1:25900-:5900")
-                   "--snapshot"
-                   "--hda"))))
+               (default `("--snapshot")))
+  (id          hurd-vm-configuration-id                 ;#f or integer [1..]
+               (default #f))
+  (net-options hurd-vm-configuration-net-options        ;list of string
+               (thunked)
+               (default (hurd-vm-net-options this-record))))
 
 (define (hurd-vm-disk-image config)
   "Return a disk-image for the Hurd according to CONFIG."
@@ -851,26 +853,45 @@ functionality of the kernel Linux.")))
       (size disk-size)
       (operating-system os)))))
 
+(define (hurd-vm-net-options config)
+  (let ((id (or (hurd-vm-configuration-id config) 0)))
+    (define (qemu-vm-port base)
+      (number->string (+ base (* 1000 id))))
+    `("--device" "rtl8139,netdev=net0"
+      "--netdev" ,(string-append
+                   "user,id=net0"
+                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 10022) "-:2222"
+                   ",hostfwd=tcp:127.0.0.1:" (qemu-vm-port 15900) "-:5900"))))
+
 (define (hurd-vm-shepherd-service config)
   "Return a <shepherd-service> for a Hurd in a Virtual Machine with CONFIG."
 
   (let ((image       (hurd-vm-configuration-image config))
         (qemu        (hurd-vm-configuration-qemu config))
         (memory-size (hurd-vm-configuration-memory-size config))
-        (options     (hurd-vm-configuration-options config)))
+        (options     (hurd-vm-configuration-options config))
+        (id          (hurd-vm-configuration-id config))
+        (net-options (hurd-vm-configuration-net-options config))
+        (provisions  '(hurd-vm childhurd)))
 
     (define vm-command
       #~(list
          (string-append #$qemu "/bin/qemu-system-i386")
          #$@(if (file-exists? "/dev/kvm") '("--enable-kvm") '())
          "-m" (number->string #$memory-size)
+         #$@net-options
          #$@options
-         #+image))
+         "--hda" #+image))
 
     (list
      (shepherd-service
       (documentation "Run the Hurd in a Virtual Machine: a Childhurd.")
-      (provision '(hurd-vm childhurd))
+      (provision (if id
+                     (map
+                      (cute symbol-append <>
+                            (string->symbol (number->string id)))
+                      provisions)
+                     provisions))
       (requirement '(networking))
       (start #~(make-forkexec-constructor #$vm-command))
       (stop  #~(make-kill-destructor))))))
