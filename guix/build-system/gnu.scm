@@ -513,9 +513,11 @@ platform."
   (define canonicalize-reference
     (match-lambda
      ((? package? p)
-      (derivation->output-path (package-cross-derivation store p system)))
+      (derivation->output-path (package-cross-derivation store p
+                                                         target system)))
      (((? package? p) output)
-      (derivation->output-path (package-cross-derivation store p system)
+      (derivation->output-path (package-cross-derivation store p
+                                                         target system)
                                output))
      ((? string? output)
       output)))
