@@ -184,7 +184,7 @@ living in the same process.")
     (arguments
      `(,@(if (hurd-target?) '(#:tests? #f) '())
        ; Ensure we don't keep a reference to this buggy software.
-       #:disallowed-references (,net-tools)
+       #:disallowed-references ,(if (hurd-target?) '() (list net-tools))
        #:configure-flags
        (list
              ;; GnuTLS doesn't consult any environment variables to specify
