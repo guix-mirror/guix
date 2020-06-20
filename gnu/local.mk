@@ -1609,9 +1609,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-voodoo-pcitag.patch		\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
-  %D%/packages/patches/xmoto-utf8.patch				\
-  %D%/packages/patches/xmoto-remove-glext.patch			\
-  %D%/packages/patches/xmoto-reproducible.patch			\
   %D%/packages/patches/xplanet-1.3.1-cxx11-eof.patch		\
   %D%/packages/patches/xplanet-1.3.1-libdisplay_DisplayOutput.cpp.patch	\
   %D%/packages/patches/xplanet-1.3.1-libimage_gif.c.patch	\
