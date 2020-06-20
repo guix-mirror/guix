@@ -2393,3 +2393,95 @@ sound effects on all operating systems and hardware (via OpenAL Softs EFX
 support), has much better support for widescreen resolutions and has 64bit
 support.")
     (license license:gpl3)))
+
+(define-public tesseract-engine
+  (let ((svn-revision 2411))
+    (package
+      (name "tesseract-engine")
+      (version (string-append "20200615-" (number->string svn-revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "svn://svn.tuxfamily.org/svnroot/tesseract/main")
+               (revision svn-revision)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1av9jhl2ivbl7wfszyhyna84llvh1z2d8khkmadm8d105addj10q"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (for-each delete-file-recursively
+                       '("bin" "bin64"
+                         ;; Remove "media" since some files such as
+                         ;; media/sound/game/soundsnap/info.txt refer to a
+                         ;; non-commercial license.
+                         "media"
+                         "server.bat"
+                         "tesseract.bat"
+                         "src/lib"
+                         "src/lib64"))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list "CC=gcc")
+         #:tests? #f                    ; No tests.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'cd-src
+             (lambda _ (chdir "src") #t))
+           (add-before 'build 'fix-env
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "sdl2-union")
+                                      "/include/SDL2:"
+                                      (or (getenv "CPATH") "")))
+               #t))
+           (add-after 'install 'really-install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (share (string-append out "/share/tesseract"))
+                      (bin (string-append out "/bin/tesseract"))
+                      (client (string-append out "/bin/tesseract-client")))
+                 (chdir "..")           ; Back to root.
+                 (for-each
+                  (lambda (dir)
+                    (mkdir-p (string-append share "/" dir))
+                    (copy-recursively dir (string-append share "/" dir)))
+                  '("config"))
+                 (mkdir-p (string-append out "/bin/"))
+                 (copy-file "bin_unix/native_client" client)
+                 (copy-file "bin_unix/native_server"
+                            (string-append out "/bin/tesseract-server"))
+                 (call-with-output-file bin
+                   (lambda (p)
+                     (format p "#!~a
+TESS_DATA=~a
+TESS_BIN=~a
+TESS_OPTIONS=\"-u$HOME/.tesseract\"
+cd \"$TESS_DATA\"
+exec \"$TESS_BIN\" \"$TESS_OPTIONS\" \"$@\""
+                             (which "bash")
+                             share
+                             client)))
+                 (chmod bin #o755)
+                 (install-file "src/readme_tesseract.txt"
+                               (string-append out "/share/licenses/tesseract/LICENSE")))
+               #t)))))
+      (inputs
+       `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-mixer sdl2-image)))
+         ("zlib" ,zlib)
+         ("libpng" ,libpng)
+         ("libgl" ,mesa)))
+      (home-page "http://tesseract.gg/")
+      (synopsis "First-person shooter engine with map editing, instagib, DM and CTF")
+      (description "This package contains the game engine of Tesseract, a
+first-person shooter focused on cooperative in-game map editing.
+
+The engine is derived from @emph{Cube 2: Sauerbraten} technology but with
+upgraded modern rendering techniques.  The new rendering features include
+fully dynamic omnidirectional shadows, global illumination, HDR lighting,
+deferred shading, morphological / temporal / multisample anti-aliasing, and
+much more.")
+      (license license:zlib))))
