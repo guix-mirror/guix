@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2020 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (guix build-system ruby)
   #:use-module (guix build-system scons)
   #:use-module (guix build-system trivial)
+  #:use-module (guix deprecation)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
@@ -2406,12 +2408,18 @@ interval trees with associated meta-data.  It is primarily used by the
     (name "python-deeptools")
     (version "3.4.3")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "deepTools" version))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/deeptools/deepTools.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1azgjniss5ff6a90nicdjkxyjwqmi3gzfn09gra42hwlz19hipxb"))))
+                "0l09vyynz6s6w7fnyd94rpys4a6aja6kp4gli64pngdxdz3md1nl"))))
     (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (propagated-inputs
      `(("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
@@ -2435,6 +2443,8 @@ annotations of the genome.")
     ;; The file deeptools/cm.py is licensed under the BSD license.  The
     ;; remainder of the code is licensed under the MIT license.
     (license (list license:bsd-3 license:expat))))
+
+(define-deprecated deeptools python-deeptools)
 
 (define-public cutadapt
   (package
@@ -2598,51 +2608,6 @@ trees (phylogenies) and characters.")
      "This package provides Python bindings for lib2bit to access 2bit files
 with Python.")
     (license license:expat)))
-
-(define-public deeptools
-  (package
-    (name "deeptools")
-    (version "3.1.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/deeptools/deepTools.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1vggnf52g6q2vifdl4cyi7s2fnfqq0ky2zrkj5zv2qfzsc3p3siw"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; This phase fails, but it's not needed.
-         (delete 'reset-gzip-timestamps))))
-    (inputs
-     `(("python-plotly" ,python-plotly)
-       ("python-scipy" ,python-scipy)
-       ("python-numpy" ,python-numpy)
-       ("python-numpydoc" ,python-numpydoc)
-       ("python-matplotlib" ,python-matplotlib)
-       ("python-pysam" ,python-pysam)
-       ("python-py2bit" ,python-py2bit)
-       ("python-pybigwig" ,python-pybigwig)))
-    (native-inputs
-     `(("python-mock" ,python-mock)   ;for tests
-       ("python-nose" ,python-nose)   ;for tests
-       ("python-pytz" ,python-pytz))) ;for tests
-    (home-page "https://github.com/deeptools/deepTools")
-    (synopsis "Tools for normalizing and visualizing deep-sequencing data")
-    (description
-     "DeepTools addresses the challenge of handling the large amounts of data
-that are now routinely generated from DNA sequencing centers.  To do so,
-deepTools contains useful modules to process the mapped reads data to create
-coverage files in standard bedGraph and bigWig file formats.  By doing so,
-deepTools allows the creation of normalized coverage files or the comparison
-between two files (for example, treatment and control).  Finally, using such
-normalized and standardized files, multiple visualizations can be created to
-identify enrichments with functional annotations of the genome.")
-    (license license:gpl3+)))
 
 (define-public delly
   (package
