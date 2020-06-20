@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -445,7 +446,7 @@ no man page, refer to the home page for usage details.")
                                  (error "program not found:" program)))
                            '("seq" "mkfs.ext4" "pinentry"
                              "gpg" "cryptsetup" "gettext" "lsof"
-                             "qrencode" "steghide" "findmnt")))))
+                             "qrencode" "steghide" "findmnt" "getent")))))
                #t)))
          (delete 'check)
          (add-after 'wrap 'check
