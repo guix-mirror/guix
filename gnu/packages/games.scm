@@ -10438,14 +10438,11 @@ This package is part of the KDE games module.")
          (modules '((guix build utils)
                     (ice-9 ftw)
                     (srfi srfi-1)))
-         ;; XXX: Remove some bundled libraries.  Guix provides
-         ;; Chipmunk, but it appears to be incompatible with the
-         ;; (older) one bundled. Likewise, Guix provides ODE, but
-         ;; using it induces rendering issues.  Eventually, libccd is
-         ;; required to compile built-in ODE.
+         ;; XXX: Remove some bundled libraries.  Guix provides Chipmunk, but
+         ;; it appears to be incompatible with the (older) one bundled.
          (snippet
           `(begin
-             (let ((keep '("chipmunk" "glad" "libccd" "md5sum" "ode")))
+             (let ((keep '("chipmunk" "glad" "md5sum")))
                (with-directory-excursion "vendor"
                  (for-each delete-file-recursively
                            (lset-difference string=?
@@ -10510,6 +10507,7 @@ This package is part of the KDE games module.")
          ("libxdg-basedir" ,libxdg-basedir)
          ("libxml2" ,libxml2)
          ("lua" ,lua-5.1)
+         ("ode" ,ode)
          ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net sdl-ttf)))
          ("sqlite" ,sqlite)
          ("zlib" ,zlib)))
