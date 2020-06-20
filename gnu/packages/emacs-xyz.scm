@@ -40,7 +40,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
-;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019, 2020 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019, 2020 Brett Gilio <brettg@gnu.org>
 ;;; Copyright © 2019, 2020 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019, 2020 Brian Leung <bkleung89@gmail.com>
@@ -470,10 +470,10 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
 
 (define-public emacs-magit
   ;; There hasn't been an official release since 2018-11-16.
-  (let ((commit "d05545ec2fd7edf915eaf1b9c15c785bb08975cc"))
+  (let ((commit "0746bf1bacfe896d3917ccc19c7fb9d95c18b1e9"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "4" commit))
+      (version (git-version "2.90.1" "5" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -482,7 +482,7 @@ libgit2 bindings for Emacs, intended to boost the performance of Magit.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "11aqyy4r9hrdi9nlypd70hn8384b6q89c7xavgv8c5q7f2g5z9qg"))))
+                  "1sgdygr81s2qxq2ahf998hl89qrb0r2wbgnsiz3hdda1431p0wzg"))))
       (build-system emacs-build-system)
       (arguments
        `(#:emacs ,emacs-no-x            ;module support is required
