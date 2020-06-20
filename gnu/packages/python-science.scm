@@ -354,3 +354,38 @@ doing practical, real world data analysis in Python.")
                       (("if 'NULL byte' in msg:")
                        "if 'NULL byte' in msg or 'line contains NUL' in msg:"))
                     #t)))))))
+
+(define-public python-xarray
+  (package
+    (name "python-xarray")
+    (version "0.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "xarray" version))
+              (sha256
+               (base32
+                "1yx8j66b7rn10m2l6gmn8yr9cn38pi5cj0x0wwpy4hdnhy6i7qv4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest"))))))
+    (home-page "https://github.com/pydata/xarray")
+    (synopsis "N-D labeled arrays and datasets")
+    (description "Xarray (formerly xray) makes working with labelled
+multi-dimensional arrays simple, efficient, and fun!
+
+Xarray introduces labels in the form of dimensions, coordinates and attributes
+on top of raw NumPy-like arrays, which allows for a more intuitive, more
+concise, and less error-prone developer experience.  The package includes a
+large and growing library of domain-agnostic functions for advanced analytics
+and visualization with these data structures.")
+    (license license:asl2.0)))
