@@ -182,8 +182,8 @@ living in the same process.")
                "0jvca1qahn9lrwv6f5kfs95icirc15b2a8x9fzczyj996ipg3b5z"))))
     (build-system gnu-build-system)
     (arguments
-     `(,@(if (hurd-target?) '(#:tests? #f) '())
-       ; Ensure we don't keep a reference to this buggy software.
+     `(#:tests? ,(not (hurd-target?))
+       ;; Ensure we don't keep a reference to net-tools.
        #:disallowed-references ,(if (hurd-target?) '() (list net-tools))
        #:configure-flags
        (list
