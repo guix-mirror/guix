@@ -599,6 +599,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/nix.scm				\
   %D%/services/nfs.scm			\
   %D%/services/pam-mount.scm			\
+  %D%/services/science.scm			\
   %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
   %D%/services/sound.scm			\
