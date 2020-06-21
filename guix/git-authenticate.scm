@@ -306,7 +306,14 @@ IDs (hex strings)."
   (catch 'system-error
     (lambda ()
       (call-with-input-file (authenticated-commit-cache-file key)
-        read))
+        (lambda (port)
+          ;; If PORT has the wrong permissions, it might have been tampered
+          ;; with by another user so ignore its contents.
+          (if (= #o600 (stat:perms (stat port)))
+              (read port)
+              (begin
+                (chmod port #o600)
+                '())))))
     (lambda args
       (if (= ENOENT (system-error-errno args))
           '()
