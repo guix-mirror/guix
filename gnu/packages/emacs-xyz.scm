@@ -1262,14 +1262,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.17")
+    (version "1.18")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/relint-" version ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/"
+                           "relint-" version ".tar"))
        (sha256
-        (base32 "1nv13dqdhf72c1jgk1ml4k6jqb8wsyphcx2vhsyhig5198lg4kd7"))))
+        (base32 "0zfislsksrkn6qs0w26yaff5xr7xqy2x235dcdpz8s2v35b6dhci"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
