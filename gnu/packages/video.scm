@@ -42,6 +42,7 @@
 ;;; Copyright © 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2020 Alex McGrath <amk@amk.ie>
 ;;; Copyright © 2020 Michael Rohleder <mike@rohleder.de>
+;;; Copyright © 2020 Vinicius Monego <monego@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2359,7 +2360,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.18.0")
+    (version "6.20.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2368,7 +2369,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0iiqym15n8kbnjzj0asmm86gs23yykz0va5b475cc4v2vv5admgx"))))
+                "14kayzas2wisyw0z27qkcm4qnxbdb7bqa0hg7gaj5kbm3nvsnafk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
