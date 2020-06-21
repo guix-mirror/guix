@@ -64,6 +64,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
@@ -1838,3 +1839,37 @@ characteristic so that they sit smoothly with the Tamil glyphs.")
 to write people's name, or for formal business situations where it is necessary
 to have a detailed and proper character style.")
     (license license:ipa)))
+
+(define-public font-fontna-yasashisa-antique
+  (package
+    (name "font-fontna-yasashisa-antique")
+    (version "0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://flop.sakura.ne.jp/font/fontna-op/"
+                                  "YasashisaAntiqueFont.zip"))
+              (sha256
+               (base32
+                "1hl2qk3lzmh9h2vv5647vhlslkn3vqbq9rqgp4wzybajafx8c6nj"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; encoding issues cause many phases to fail
+         (add-after 'unpack 'fix-encoding
+           (lambda _
+             ;; This directory, TrueType（サポート外）, is not properly encoded,
+             ;; which makes rename-file fail. Instead, use shell globbing to
+             ;; select and rename the directory.
+             (invoke "sh" "-c" "mv TrueType* TrueType")
+             #t)))))
+    (native-inputs
+     `(("bash" ,bash-minimal)
+       ("coreutils" ,coreutils)))
+    (home-page "http://www.fontna.com/blog/1122/")
+    (synopsis "Mix font of gothic kanji and minchou kana")
+    (description "Antique is a font that is popular to write manga bubbles,
+dictionary headwords and picture books.  This font reduces the thickness
+differences in characters compared to other antique fonts.")
+    (license (list license:ipa
+                   (license:non-copyleft "mplus-TESTFLIGHT-057/LICENSE_E")))))
