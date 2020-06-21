@@ -6685,6 +6685,13 @@ By default guix calls @code{setup.py} under control of
 @code{setuptools}, much like @command{pip} does.  Some packages are not
 compatible with setuptools (and pip), thus you can disable this by
 setting the @code{#:use-setuptools?} parameter to @code{#f}.
+
+If a @code{"python"} output is available, the package is installed into it
+instead of the default @code{"out"} output. This is useful for packages that
+include a Python package as only a part of the software, and thus want to
+combine the phases of @code{python-build-system} with another build system.
+Python bindings are a common usecase.
+
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system

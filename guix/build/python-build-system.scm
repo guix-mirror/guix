@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,9 +155,14 @@
          (major+minor (take components 2)))
     (string-join major+minor ".")))
 
+(define (python-output outputs)
+  "Return the path of the python output, if there is one, or fall-back to out."
+  (or (assoc-ref outputs "python")
+      (assoc-ref outputs "out")))
+
 (define (site-packages inputs outputs)
   "Return the path of the current output's Python site-package."
-  (let* ((out (assoc-ref outputs "out"))
+  (let* ((out (python-output outputs))
          (python (assoc-ref inputs "python")))
     (string-append out "/lib/python"
                    (python-version python)
@@ -175,7 +181,7 @@ when running checks after installing the package."
 (define* (install #:key outputs (configure-flags '()) use-setuptools?
                   #:allow-other-keys)
   "Install a given Python package."
-  (let* ((out (assoc-ref outputs "out"))
+  (let* ((out (python-output outputs))
          (params (append (list (string-append "--prefix=" out))
                          (if use-setuptools?
                              ;; distutils does not accept these flags
@@ -199,12 +205,8 @@ when running checks after installing the package."
                         (string-append dir "/sbin"))))
                 outputs))
 
-  (let* ((out  (assoc-ref outputs "out"))
-         (python (assoc-ref inputs "python"))
-         (var `("PYTHONPATH" prefix
-                ,(cons (string-append out "/lib/python"
-                                      (python-version python)
-                                      "/site-packages")
+  (let* ((var `("PYTHONPATH" prefix
+                ,(cons (site-packages inputs outputs)
                        (search-path-as-string->list
                         (or (getenv "PYTHONPATH") ""))))))
     (for-each (lambda (dir)
@@ -220,11 +222,7 @@ installed with setuptools."
   ;; Even if the "easy-install.pth" is not longer created, we kept this phase.
   ;; There still may be packages creating an "easy-install.pth" manually for
   ;; some good reason.
-  (let* ((out (assoc-ref outputs "out"))
-         (python (assoc-ref inputs "python"))
-         (site-packages (string-append out "/lib/python"
-                                       (python-version python)
-                                       "/site-packages"))
+  (let* ((site-packages (site-packages inputs outputs))
          (easy-install-pth (string-append site-packages "/easy-install.pth"))
          (new-pth (string-append site-packages "/" name ".pth")))
     (when (file-exists? easy-install-pth)
