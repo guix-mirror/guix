@@ -1700,17 +1700,6 @@ performance, features, and ease of use.")
                     (guix build utils))
          #:phases
          (modify-phases %standard-phases
-           (add-after 'unpack 'install-bindings-to-python-output
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; python-build-system will build the bindings and install them to
-               ;; the "out" output, so change the build-internal names of the
-               ;; outputs.
-               ;;
-               ;; TODO: remove this once #40469 lands, through the core-updates
-               ;; holding zone, on master.
-               (set-car! (assoc "out" outputs) "lib")
-               (set-car! (assoc "python" outputs) "out")
-               #t))
            (add-before 'build 'build-library
              (lambda* (#:key inputs #:allow-other-keys)
                (invoke "make"
@@ -1723,7 +1712,7 @@ performance, features, and ease of use.")
                        "UNICORN_STATIC=no"
                        (string-append
                         "PREFIX="
-                        (assoc-ref outputs "lib")))))
+                        (assoc-ref outputs "out")))))
            (add-before 'build 'prepare-bindings
              (lambda* (#:key outputs #:allow-other-keys)
                (chdir "bindings/python")
@@ -1736,7 +1725,7 @@ performance, features, and ease of use.")
                  (("_path_list = \\[.*")
                   (string-append
                    "_path_list = [\""
-                   (assoc-ref outputs "lib")
+                   (assoc-ref outputs "out")
                    ;; eat the rest of the list
                    "/lib\"] + 0*[")))
                #t))
@@ -1757,10 +1746,10 @@ performance, features, and ease of use.")
                (let* ((python-samples (find-files "." "sample_.*"))
                       (c-samples (find-files "../../samples" ".*\\.c"))
                       (python-docdir
-                        (string-append (assoc-ref outputs "out")
+                        (string-append (assoc-ref outputs "python")
                                        "/share/doc/unicorn/samples"))
                       (c-docdir
-                        (string-append (assoc-ref outputs "lib")
+                        (string-append (assoc-ref outputs "out")
                                        "/share/doc/unicorn/samples")))
                  (for-each (cut install-file <> c-docdir) c-samples)
                  (for-each (cut install-file <> python-docdir) python-samples)
