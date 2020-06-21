@@ -75,7 +75,7 @@
   #:use-module (guix build-system ruby)
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
-(define-public ruby
+(define-public ruby-2.6
   (package
     (name "ruby")
     (version "2.6.5")
@@ -133,7 +133,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.7
   (package
-    (inherit ruby)
+    (inherit ruby-2.6)
     (version "2.7.1")
     (source
      (origin
@@ -176,7 +176,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.5
   (package
-    (inherit ruby)
+    (inherit ruby-2.6)
     (version "2.5.8")
     (source
      (origin
@@ -195,7 +195,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.4
   (package
-    (inherit ruby)
+    (inherit ruby-2.6)
     (version "2.4.10")
     (source
      (origin
@@ -211,6 +211,8 @@ a focus on simplicity and productivity.")
                    ;; Remove bundled libffi
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
+
+(define-public ruby ruby-2.6)
 
 (define-public mruby
   (package
