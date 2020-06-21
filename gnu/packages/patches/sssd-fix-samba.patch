@@ -1,0 +1,50 @@
+From bc56b10aea999284458dcc293b54cf65288e325d Mon Sep 17 00:00:00 2001
+From: Stephen Gallagher <sgallagh@redhat.com>
+Date: Fri, 24 Jan 2020 15:17:39 +0100
+Subject: [PATCH] Fix build failure against samba 4.12.0rc1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The ndr_pull_get_switch() function was dropped, but it was just a wrapper
+around the ndr_token_peek() function, so we can use this approach on both
+old and new versions of libndr.
+
+Signed-off-by: Stephen Gallagher <sgallagh@redhat.com>
+
+Reviewed-by: Pavel Březina <pbrezina@redhat.com>
+---
+ src/providers/ad/ad_gpo_ndr.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/providers/ad/ad_gpo_ndr.c b/src/providers/ad/ad_gpo_ndr.c
+index d573033494..8f405aa62b 100644
+--- a/src/providers/ad/ad_gpo_ndr.c
++++ b/src/providers/ad/ad_gpo_ndr.c
+@@ -105,7 +105,7 @@ ndr_pull_security_ace_object_type(struct ndr_pull *ndr,
+                                   union security_ace_object_type *r)
+ {
+     uint32_t level;
+-    level = ndr_pull_get_switch_value(ndr, r);
++    level = ndr_token_peek(&ndr->switch_list, r);
+     NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+     if (ndr_flags & NDR_SCALARS) {
+         NDR_CHECK(ndr_pull_union_align(ndr, 4));
+@@ -135,7 +135,7 @@ ndr_pull_security_ace_object_inherited_type(struct ndr_pull *ndr,
+                                             union security_ace_object_inherited_type *r)
+ {
+     uint32_t level;
+-    level = ndr_pull_get_switch_value(ndr, r);
++    level = ndr_token_peek(&ndr->switch_list, r);
+     NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+     if (ndr_flags & NDR_SCALARS) {
+         NDR_CHECK(ndr_pull_union_align(ndr, 4));
+@@ -198,7 +198,7 @@ ndr_pull_security_ace_object_ctr(struct ndr_pull *ndr,
+                                  union security_ace_object_ctr *r)
+ {
+     uint32_t level;
+-    level = ndr_pull_get_switch_value(ndr, r);
++    level = ndr_token_peek(&ndr->switch_list, r);
+     NDR_PULL_CHECK_FLAGS(ndr, ndr_flags);
+     if (ndr_flags & NDR_SCALARS) {
+         NDR_CHECK(ndr_pull_union_align(ndr, 4));
