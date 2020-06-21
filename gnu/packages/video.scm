@@ -1614,7 +1614,7 @@ To load this plugin, specify the following option when starting mpv:
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2020.06.06")
+    (version "2020.06.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1622,7 +1622,7 @@ To load this plugin, specify the following option when starting mpv:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1qrrr14glv0jv377n61paq55b6k58jpnwbz2sp5xfl4wnxy5hqny"))))
+                "1fgqi8pvw13p79gl38lnpl7ifa7cwxhzk53c6lmjsk1yhz5455m9"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
