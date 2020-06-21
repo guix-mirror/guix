@@ -134,6 +134,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/compton.scm 			\
   %D%/packages/conky.scm			\
   %D%/packages/connman.scm			\
+  %D%/packages/convmv.scm			\
   %D%/packages/cook.scm				\
   %D%/packages/coq.scm				\
   %D%/packages/cpio.scm				\
