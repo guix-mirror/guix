@@ -212,7 +212,7 @@ a focus on simplicity and productivity.")
                    (delete-file-recursively "ext/fiddle/libffi-3.2.1")
                    #t))))))
 
-(define-public ruby ruby-2.6)
+(define-public ruby ruby-2.7)
 
 (define-public mruby
   (package
