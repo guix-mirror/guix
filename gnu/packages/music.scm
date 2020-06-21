@@ -2182,7 +2182,7 @@ backends, including ALSA, OSS, Network and FluidSynth.")
        ("docbook-xsl" ,docbook-xsl)
        ("qttools" ,qttools)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://vmpk.sourceforge.net")
+    (home-page "https://vmpk.sourceforge.io/")
     (synopsis "Virtual MIDI piano keyboard")
     (description
      "Virtual MIDI Piano Keyboard is a MIDI events generator and receiver.  It
