@@ -96,6 +96,7 @@ MODULES =					\
   guix/discovery.scm				\
   guix/android-repo-download.scm		\
   guix/bzr-download.scm            		\
+  guix/extracting-download.scm			\
   guix/git-download.scm				\
   guix/hg-download.scm				\
   guix/swh.scm					\
