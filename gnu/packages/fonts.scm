@@ -1873,3 +1873,27 @@ dictionary headwords and picture books.  This font reduces the thickness
 differences in characters compared to other antique fonts.")
     (license (list license:ipa
                    (license:non-copyleft "mplus-TESTFLIGHT-057/LICENSE_E")))))
+
+(define-public font-mplus-testflight
+  (package
+    (name "font-mplus-testflight")
+    (version "063a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://osdn.net/frs/redir.php?"
+                                  "m=gigenet&f=mplus-fonts%2F62344%2Fmplus-TESTFLIGHT-"
+                                  version ".tar.xz"))
+              (file-name (string-append name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0yfx9i77638yrgclnwwl4af79ri3vifi1nslwi6mgzva9cxrgss4"))))
+    (build-system font-build-system)
+    (home-page "https://mplus-fonts.osdn.jp/index.html")
+    (synopsis "Japanese font collection")
+    (description "M+ is a collection of Japanese fonts with all Latin glyph
+sets, with Basic Latin, Latin-1 Supplement, Latin Extended-A, and IPA
+Extensions.  In addition to European letters used in many Western European
+languages, it contains Japanese characters, including Kana glyphs and more
+than 5,300 Kanji glyphs, as well major international phonetic symbols,
+operators and special symbols.")
+    (license (license:non-copyleft "file:///LICENSE_E"))))
