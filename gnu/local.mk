@@ -1048,6 +1048,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/grocsvs-dont-use-admiral.patch		\
   %D%/packages/patches/gromacs-tinyxml2.patch			\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
+  %D%/packages/patches/grub-cross-system-i686.patch		\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/grub-setup-root.patch			\
   %D%/packages/patches/grub-verifiers-Blocklist-fallout-cleanup.patch \
