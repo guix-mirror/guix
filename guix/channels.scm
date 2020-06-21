@@ -350,45 +350,33 @@ fails."
     (define reporter
       (progress-reporter/bar (length commits)))
 
-    ;; When COMMITS is empty, it's either because AUTHENTICATED-COMMITS
-    ;; contains END-COMMIT or because END-COMMIT is not a descendant of
-    ;; START-COMMIT.  Check that.
-    (if (null? commits)
-        (match (commit-relation start-commit end-commit)
-          ((or 'self 'ancestor 'descendant) #t)   ;nothing to do!
-          ('unrelated
-           (raise
-            (condition
-             (&message
-              (message
-               (format #f (G_ "'~a' is not related to introductory \
-commit of channel '~a'~%")
-                       (oid->string (commit-id end-commit))
-                       (channel-name channel))))))))
-        (begin
-          (format (current-error-port)
-                  (G_ "Authenticating channel '~a', \
+    ;; When COMMITS is empty, it's because END-COMMIT is in the closure of
+    ;; START-COMMIT and/or AUTHENTICATED-COMMITS, in which case it's known to
+    ;; be authentic already.
+    (unless (null? commits)
+      (format (current-error-port)
+              (G_ "Authenticating channel '~a', \
 commits ~a to ~a (~h new commits)...~%")
-                  (channel-name channel)
-                  (commit-short-id start-commit)
-                  (commit-short-id end-commit)
-                  (length commits))
+              (channel-name channel)
+              (commit-short-id start-commit)
+              (commit-short-id end-commit)
+              (length commits))
 
-          ;; If it's our first time, verify CHANNEL's introductory commit.
-          (when (null? authenticated-commits)
-            (verify-introductory-commit repository
-                                        (channel-introduction channel)
-                                        keyring))
+      ;; If it's our first time, verify CHANNEL's introductory commit.
+      (when (null? authenticated-commits)
+        (verify-introductory-commit repository
+                                    (channel-introduction channel)
+                                    keyring))
 
-          (call-with-progress-reporter reporter
-            (lambda (report)
-              (authenticate-commits repository commits
-                                    #:keyring keyring
-                                    #:report-progress report)))
+      (call-with-progress-reporter reporter
+        (lambda (report)
+          (authenticate-commits repository commits
+                                #:keyring keyring
+                                #:report-progress report)))
 
-          (cache-authenticated-commit cache-key
-                                      (oid->string
-                                       (commit-id end-commit)))))))
+      (cache-authenticated-commit cache-key
+                                  (oid->string
+                                   (commit-id end-commit))))))
 
 (define* (latest-channel-instance store channel
                                   #:key (patches %patches)
