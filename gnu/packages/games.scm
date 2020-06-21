@@ -10532,108 +10532,96 @@ This package is part of the KDE games module.")
     (license (list license:gpl2+ license:fdl1.2+))))
 
 (define-public xmoto
-  ;; The commit below includes a fix to a build error.
-  (let ((commit "f7ca787d02bd876c6eb989a28b180a05220621ee")
-        (revision "0"))
-    (package
-      (name "xmoto")
-      (version (git-version "0.6.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/xmoto/xmoto.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "1kiwqni58vjdqfb289d1dqcb758hdl2k970dawxq5vdaqrbnsxv4"))
-         (modules '((guix build utils)
-                    (ice-9 ftw)
-                    (srfi srfi-1)))
-         ;; XXX: Remove some bundled libraries.  Guix provides Chipmunk, but
-         ;; it appears to be incompatible with the (older) one bundled.
-         (snippet
-          `(begin
-             (let ((keep '("chipmunk" "glad" "md5sum")))
-               (with-directory-excursion "vendor"
-                 (for-each delete-file-recursively
-                           (lset-difference string=?
-                                            (scandir ".")
-                                            (cons* "." ".." keep))))
-               (substitute* "src/CMakeLists.txt"
-                 (("add_subdirectory\\(.*?/vendor/(.+?)\".*" line library)
-                  (if (member library keep) line ""))))
-             #t))))
-      (build-system cmake-build-system)
-      (arguments
-       `(#:tests? #f                    ;no test
-         #:phases
-         (modify-phases %standard-phases
-           ;; Install phase ignores this man page.  Install it early,
-           ;; because the process moves to another directory shortly
-           ;; after.
-           (add-after 'unpack 'install-man-page
-             (lambda* (#:key outputs #:allow-other-keys)
-               (install-file "xmoto.6"
-                             (string-append (assoc-ref outputs "out")
-                                            "/share/man/man6"))
-               #t))
-           (add-after 'unpack 'fix-hard-coded-directory
-             (lambda* (#:key outputs #:allow-other-keys)
-               (substitute* "src/common/VFileIO.cpp"
-                 (("/usr/share")
-                  (string-append (assoc-ref outputs "out") "/share")))
-               #t))
-           (add-before 'build 'set-SDL
-             ;; Set correct environment for SDL.
-             (lambda* (#:key inputs #:allow-other-keys)
-               (setenv "CPATH"
-                       (string-append
-                        (assoc-ref inputs "sdl") "/include/SDL:"
-                        (or (getenv "CPATH") "")))
-               #t))
-           (add-after 'install 'unbundle-fonts
-             ;; Unbundle DejaVuSans TTF files.
-             (lambda* (#:key outputs inputs #:allow-other-keys)
-               (let ((font-dir (string-append (assoc-ref inputs "font-dejavu")
-                                              "/share/fonts/truetype/"))
-                     (target-dir (string-append (assoc-ref outputs "out")
-                                                "/share/xmoto/Textures/Fonts/")))
-                 (for-each (lambda (f)
-                             (let ((font (string-append font-dir f))
-                                   (target (string-append target-dir f)))
-                               (delete-file target)
-                               (symlink font target)))
-                           '("DejaVuSans.ttf" "DejaVuSansMono.ttf"))
-                 #t))))))
-      (native-inputs
-       `(("gettext" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)))
-      (inputs
-       `(("bzip2" ,bzip2)
-         ("curl" ,curl)
-         ("font-dejavu" ,font-dejavu)
-         ("glu" ,glu)
-         ("libjpeg" ,libjpeg-turbo)
-         ("libpng" ,libpng)
-         ("libxdg-basedir" ,libxdg-basedir)
-         ("libxml2" ,libxml2)
-         ("lua" ,lua-5.1)
-         ("ode" ,ode)
-         ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net sdl-ttf)))
-         ("sqlite" ,sqlite)
-         ("zlib" ,zlib)))
-      (home-page "https://xmoto.tuxfamily.org/")
-      (synopsis "2D motocross platform game")
-      (description
-       "X-Moto is a challenging 2D motocross platform game, where
+  (package
+    (name "xmoto")
+    (version "0.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xmoto/xmoto.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "00f5ha79lfa2iiaz66wl0hl5dapa1l15qdr7m7knzi0ll7j6z66n"))
+       (modules '((guix build utils)
+                  (ice-9 ftw)
+                  (srfi srfi-1)))
+       ;; XXX: Remove some bundled libraries.  Guix provides Chipmunk, but
+       ;; it appears to be incompatible with the (older) one bundled.
+       (snippet
+        `(begin
+           (let ((keep '("chipmunk" "glad" "md5sum")))
+             (with-directory-excursion "vendor"
+               (for-each delete-file-recursively
+                         (lset-difference string=?
+                                          (scandir ".")
+                                          (cons* "." ".." keep))))
+             (substitute* "src/CMakeLists.txt"
+               (("add_subdirectory\\(.*?/vendor/(.+?)\".*" line library)
+                (if (member library keep) line ""))))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hard-coded-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/common/VFileIO.cpp"
+               (("/usr/share")
+                (string-append (assoc-ref outputs "out") "/share")))
+             #t))
+         (add-before 'build 'set-SDL
+           ;; Set correct environment for SDL.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append
+                      (assoc-ref inputs "sdl") "/include/SDL:"
+                      (or (getenv "CPATH") "")))
+             #t))
+         (add-after 'install 'unbundle-fonts
+           ;; Unbundle DejaVuSans TTF files.
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((font-dir (string-append (assoc-ref inputs "font-dejavu")
+                                            "/share/fonts/truetype/"))
+                   (target-dir (string-append (assoc-ref outputs "out")
+                                              "/share/xmoto/Textures/Fonts/")))
+               (for-each (lambda (f)
+                           (let ((font (string-append font-dir f))
+                                 (target (string-append target-dir f)))
+                             (delete-file target)
+                             (symlink font target)))
+                         '("DejaVuSans.ttf" "DejaVuSansMono.ttf"))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("curl" ,curl)
+       ("font-dejavu" ,font-dejavu)
+       ("glu" ,glu)
+       ("libjpeg" ,libjpeg-turbo)
+       ("libpng" ,libpng)
+       ("libxdg-basedir" ,libxdg-basedir)
+       ("libxml2" ,libxml2)
+       ("lua" ,lua-5.1)
+       ("ode" ,ode)
+       ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-net sdl-ttf)))
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "https://xmoto.tuxfamily.org/")
+    (synopsis "2D motocross platform game")
+    (description
+     "X-Moto is a challenging 2D motocross platform game, where
 physics play an all important role in the gameplay.  You need to
 control your bike to its limit, if you want to have a chance finishing
 the more difficult challenges.")
-      (license (list license:gpl2+      ;whole project
-                     license:bsd-3      ;vendor/md5sum
-                     license:lgpl2.1+
-                     license:expat)))))
+    (license (list license:gpl2+        ;whole project
+                   license:bsd-3        ;vendor/md5sum
+                   license:lgpl2.1+
+                   license:expat))))
 
 (define-public eboard
   (package
