@@ -14621,7 +14621,7 @@ documentation.")
 (define-public emacs-hy-mode
   (package
     (name "emacs-hy-mode")
-    (version "1.0.3")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
@@ -14630,7 +14630,7 @@ documentation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jxximiznz7fw9ys5k6plw85zrbzvxidql7py1fdi425fdp4058z"))))
+        (base32 "0gihxlmfminadaqdr8d2zccd7wwygl3m0gfzxsk5izi7f8hl4w7f"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
