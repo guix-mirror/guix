@@ -17063,7 +17063,7 @@ macro use case.")
 (define-public rust-proptest-0.9
   (package
     (name "rust-proptest")
-    (version "0.9.4")
+    (version "0.9.6")
     (source
      (origin
        (method url-fetch)
@@ -17072,20 +17072,19 @@ macro use case.")
         (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "17sjg8isas4qk85807c4panih9k0lwa4k1mbajhciw5c5q17w56g"))))
+         "0nsslp46lvf3ll5rd83rin652qlz1kqyp0rmsciy0pw4kf0pgi01"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-bit-set" ,rust-bit-set-0.5)
         ("rust-bitflags" ,rust-bitflags-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-quick-error" ,rust-quick-error-1.2)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-rand-chacha" ,rust-rand-chacha-0.2)
-        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
+        ("rust-rand" ,rust-rand-0.6)
+        ("rust-rand-chacha" ,rust-rand-chacha-0.1)
+        ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-rusty-fork" ,rust-rusty-fork-0.2)
         ("rust-tempfile" ,rust-tempfile-3.0))
