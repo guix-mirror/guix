@@ -344,7 +344,7 @@ gitignore rules.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1.3)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-tempfile" ,rust-tempfile-3.0))
+        ("rust-tempfile" ,rust-tempfile-3.1))
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'unvendor-libraries-from-crates

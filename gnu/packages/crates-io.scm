@@ -3451,7 +3451,7 @@ need compiler-rt intrinsics.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-tempfile" ,rust-tempfile-3.1)
         ("rust-tester" ,rust-tester-0.5)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/laumann/compiletest-rs")
@@ -6530,7 +6530,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.0))))
+       (("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/alexcrichton/filetime")
     (synopsis "Platform-agnostic accessors of timestamps in File metadata")
     (description
@@ -9434,7 +9434,7 @@ IEEE 754-2008 binary16 type.")
          ("rust-env-logger" ,rust-env-logger-0.6)
          ("rust-maplit" ,rust-maplit-1.0)
          ("rust-serde-derive" ,rust-serde-derive-1.0)
-         ("rust-tempfile" ,rust-tempfile-3.0))))
+         ("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/sunng87/handlebars-rust")
     (synopsis "Handlebars templating implemented in Rust")
     (description
@@ -13371,7 +13371,7 @@ release (fork of debug_unreachable)")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.0))))
+        ("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/nix-rust/nix")
     (synopsis "Rust friendly bindings to *nix APIs")
     (description
@@ -13406,7 +13406,7 @@ release (fork of debug_unreachable)")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.0))))))
+        ("rust-tempfile" ,rust-tempfile-3.1))))))
 
 (define-public rust-no-panic-0.1
   (package
@@ -17087,7 +17087,7 @@ macro use case.")
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-rusty-fork" ,rust-rusty-fork-0.2)
-        ("rust-tempfile" ,rust-tempfile-3.0))
+        ("rust-tempfile" ,rust-tempfile-3.1))
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-1.1))))
     (home-page
@@ -17125,7 +17125,7 @@ macro use case.")
         ("rust-rand" ,rust-rand-0.5)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-rusty-fork" ,rust-rusty-fork-0.2)
-        ("rust-tempfile" ,rust-tempfile-3.0))
+        ("rust-tempfile" ,rust-tempfile-3.1))
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-1.1))))))
 
@@ -19606,7 +19606,7 @@ rustc compiler.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-log" ,rust-log-0.4)
-        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-tempfile" ,rust-tempfile-3.1)
         ("rust-webpki-roots" ,rust-webpki-roots-0.17))))
     (home-page "https://github.com/ctz/rustls")
   (synopsis "Modern TLS library written in Rust")
@@ -19777,7 +19777,7 @@ rustc compiler version.")
        #:cargo-inputs
        (("rust-fnv" ,rust-fnv-1.0)
         ("rust-quick-error" ,rust-quick-error-1.2)
-        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-tempfile" ,rust-tempfile-3.1)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
     (home-page "https://github.com/altsysrq/rusty-fork")
     (synopsis "Library for running Rust tests in sub-processes")
@@ -23182,29 +23182,6 @@ directories.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-tempfile-3.0
-  (package
-    (inherit rust-tempfile-3.1)
-    (name "rust-tempfile")
-    (version "3.0.8")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "tempfile" version))
-        (file-name (string-append name "-" version ".crate"))
-        (sha256
-         (base32
-          "1vqk7aq2l04my2r3jiyyxirnf8f90nzcvjasvrajivb85s7p7i3x"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-cfg-if" ,rust-cfg-if-0.1)
-        ("rust-libc" ,rust-libc-0.2)
-        ("rust-rand" ,rust-rand-0.6)
-        ("rust-redox-syscall" ,rust-redox-syscall-0.1)
-        ("rust-remove-dir-all" ,rust-remove-dir-all-0.5)
-        ("rust-winapi" ,rust-winapi-0.3))))))
-
 (define-public rust-tendril-0.4
   (package
     (name "rust-tendril")
@@ -23764,7 +23741,7 @@ fixed set of worker threads.")
         ("rust-num-derive" ,rust-num-derive-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.0))))
+       (("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/image-rs/image-tiff")
     (synopsis
      "TIFF decoding and encoding library in pure Rust")
@@ -24128,7 +24105,7 @@ the current thread.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4)
         ("rust-tempdir" ,rust-tempdir-0.3)
-        ("rust-tempfile" ,rust-tempfile-3.0)
+        ("rust-tempfile" ,rust-tempfile-3.1)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-codec" ,rust-tokio-codec-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1))))
@@ -24675,7 +24652,7 @@ pool.")
         ("rust-tokio-io" ,rust-tokio-io-0.1)
         ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.0)
+       (("rust-tempfile" ,rust-tempfile-3.1)
         ("rust-tokio" ,rust-tokio-0.1))))
     (home-page "https://github.com/tokio-rs/tokio")
     (synopsis "Unix Domain sockets for Tokio")
@@ -27475,7 +27452,7 @@ color in a Windows console.")
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.0))))
+       (("rust-tempfile" ,rust-tempfile-3.1))))
     (home-page "https://github.com/Stebalien/xattr")
     (synopsis "Unix extended filesystem attributes")
     (description
