@@ -20210,6 +20210,26 @@ Pwrite traits from the scroll crate.")
 proven statistical guarantees.")
     (license license:expat)))
 
+(define-public rust-section-testing-0.0
+  (package
+    (name "rust-section-testing")
+    (version "0.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "section-testing" version))
+        (file-name
+         (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0a1zwpcs2dqhky2wd8y82cm25l3s9i5dbyn4ypgmvdysizcxgr7c"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/evanw/section_testing")
+    (synopsis "Library for section-style testing")
+    (description
+     "This package provides a library for section-style testing.")
+    (license license:expat)))
+
 (define-public rust-security-framework-0.3
   (package
     (name "rust-security-framework")
