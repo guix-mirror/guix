@@ -31,6 +31,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -555,6 +556,50 @@ and enhance them.")
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))
     (license (list license:gpl3+ ;; Darktable itself.
                    license:lgpl2.1+)))) ;; Rawspeed library.
+
+(define-public photoflare
+  (package
+    (name "photoflare")
+    (version "1.6.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/photoflare/photoflare")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0a394324h7ds567z3i3pw6kkii78n4qwdn129kgkkm996yh03q89"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((magickpp (assoc-ref inputs "graphicsmagick"))
+                   (out (assoc-ref outputs "out")))
+               (invoke "qmake"
+                       (string-append "INCLUDEPATH += " magickpp
+                                      "/include/GraphicsMagick")
+                       (string-append "PREFIX=" out)
+                       "Photoflare.pro")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("graphicsmagick" ,graphicsmagick)
+       ("libomp" ,libomp)
+       ("qtbase" ,qtbase)))
+    (home-page "https://photoflare.io")
+    (synopsis "Quick, simple but powerful image editor")
+    (description "Photoflare is a cross-platform image editor with an aim
+to balance between powerful features and a very friendly graphical user
+interface.  It suits a wide variety of different tasks and users who value a
+more nimble workflow.  Features include basic image editing capabilities,
+paint brushes, image filters, colour adjustments and more advanced features
+such as Batch image processing.")
+    (license license:gpl3+)))
 
 (define-public hugin
   (package
