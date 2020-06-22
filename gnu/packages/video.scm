@@ -971,7 +971,12 @@ operate properly.")
        ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
-       ("rav1e" ,rav1e)
+       ;; XXX: rav1e depends on rust, which currently only works on x86_64.
+       ;; See also the related configure flag when changing this.
+       ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                          (%current-system)))
+             `(("rav1e" ,rav1e))
+             '())
        ("sdl" ,sdl2)
        ("soxr" ,soxr)
        ("speex" ,speex)
@@ -1053,7 +1058,10 @@ operate properly.")
          "--enable-libmp3lame"
          "--enable-libopus"
          "--enable-libpulse"
-         "--enable-librav1e"
+         ,@(if (string-prefix? "x86_64" (or (%current-target-system)
+                                            (%current-system)))
+               '("--enable-librav1e")
+               '())
          "--enable-libsoxr"
          "--enable-libspeex"
          "--enable-libtheora"
