@@ -21298,6 +21298,38 @@ Yue-Pilon's (Yue, 2002) pre-whitening approaches to determining trends in
 climate data.")
     (license license:lgpl2.1)))
 
+(define-public r-rlinsolve
+  (package
+    (name "r-rlinsolve")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Rlinsolve" version))
+       (sha256
+        (base32
+         "1x02xxbkchcwwfa2123n9yqfzinfi0zba8zxhp977czzwysy75cc"))))
+    (properties `((upstream-name . "Rlinsolve")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-rdpack" ,r-rdpack)))
+    (home-page "https://cran.r-project.org/web/packages/Rlinsolve/")
+    (synopsis "Iterative solvers for (sparse) linear system of equations")
+    (description
+     "Solving a system of linear equations is one of the most fundamental
+computational problems for many fields of mathematical studies, such as
+regression problems from statistics or numerical partial differential
+equations.  This package provides basic stationary iterative solvers such as
+Jacobi, Gauss-Seidel, Successive Over-Relaxation and SSOR methods.
+Nonstationary, also known as Krylov subspace methods are also provided.
+Sparse matrix computation is also supported in that solving large and sparse
+linear systems can be manageable using the @code{Matrix} package along with
+@code{RcppArmadillo}.")
+    (license license:gpl3+)))
+
 (define-public r-zvcv
   (package
     (name "r-zvcv")
