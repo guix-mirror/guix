@@ -3233,13 +3233,13 @@ analysis of large sparse or dense matrices.")
 (define-public r-glmnet
   (package
    (name "r-glmnet")
-   (version "4.0")
+   (version "4.0-2")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "glmnet" version))
      (sha256
-      (base32 "1vy8v6filhw9sflk8wwnbgz2mryg70ml4iq4y1c34dlwxczcbzv8"))))
+      (base32 "0qdswxvdwjcnw0by15p9yfzw8laq4f2j0ivpma6q8c5zywldpxxc"))))
    (build-system r-build-system)
    (native-inputs
     `(("gfortran" ,gfortran)
@@ -3247,7 +3247,8 @@ analysis of large sparse or dense matrices.")
    (propagated-inputs
     `(("r-foreach" ,r-foreach)
       ("r-matrix" ,r-matrix)
-      ("r-shape" ,r-shape)))
+      ("r-shape" ,r-shape)
+      ("r-survival" ,r-survival)))
    (home-page "https://www.jstatsoft.org/article/view/v033i01")
    (synopsis "Lasso and elastic-net regularized generalized linear models")
    (description
