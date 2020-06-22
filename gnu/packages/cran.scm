@@ -6231,14 +6231,14 @@ and adds the annotation to the plot.")
 (define-public r-rstatix
   (package
     (name "r-rstatix")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rstatix" version))
        (sha256
         (base32
-         "0ikbjmr58ah39rlwyiix50kl3yk9j7jngsvl6hh973392qdvmch6"))))
+         "0nwwvxwr4z3j4n9z8cnvwghppc836g47n0ia98chk272qwh8xcpb"))))
     (properties `((upstream-name . "rstatix")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6246,6 +6246,7 @@ and adds the annotation to the plot.")
        ("r-car" ,r-car)
        ("r-corrplot" ,r-corrplot)
        ("r-dplyr" ,r-dplyr)
+       ("r-generics" ,r-generics)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
