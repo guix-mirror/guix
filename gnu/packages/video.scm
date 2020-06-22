@@ -2390,7 +2390,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
-       ("ffmpeg" ,ffmpeg-3.4)
+       ("ffmpeg" ,ffmpeg)
        ("fftw" ,fftw)
        ("frei0r-plugins" ,frei0r-plugins)
        ("gdk-pixbuf" ,gdk-pixbuf)
