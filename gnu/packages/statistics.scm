@@ -1097,13 +1097,13 @@ using just two functions: melt and dcast (or acast).")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "04wvswadlry2n9gnfqlpdqsav1wllnlzb5c9w9ydynllv4vkwfm0"))))
+        (base32 "0wsib5qpzn4d0w1ss3x158xmrawkms8vvsfvr3mh40pvd8g2ibad"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
