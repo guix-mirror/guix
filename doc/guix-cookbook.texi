@@ -843,12 +843,14 @@ tags, so if the @code{version} is tagged, then it can be used directly.  Sometim
 the tag is prefixed with a @code{v}, in which case you'd use @code{(commit (string-append
 "v" version))}.
 
-To ensure that the source code from the Git repository is stored in a unique
-directory with a readable name we use @code{(file-name (git-file-name name
+To ensure that the source code from the Git repository is stored in a
+directory with a descriptive name, we use @code{(file-name (git-file-name name
 version))}.
 
-Note that there is also a @code{git-version} procedure that can be used to derive the
-version when packaging programs for a specific commit.
+The @code{git-version} procedure that can be used to derive the
+version when packaging programs for a specific commit, following the
+Guix contributor guidelines (@pxref{Version Numbers,,, guix, GNU Guix
+Reference Manual}).
 
 @subsubsection Snippets
 
