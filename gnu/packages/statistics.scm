@@ -5638,30 +5638,6 @@ tools.")
 parameters.")
       (license license:gpl3))))
 
-(define-public r-directlabels
-  (package
-    (name "r-directlabels")
-    (version "2020.1.31")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (cran-uri "directlabels" version))
-       (sha256
-        (base32
-         "08s1gnwp4bn8xahwjaq0f1qzhwh2dvybzhq3z7xyzn8cnyzmis6c"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-quadprog" ,r-quadprog)))
-    (home-page "http://directlabels.r-forge.r-project.org/")
-    (synopsis "Direct labels for multicolor plots")
-    (description
-     "This package provides an extensible framework for automatically placing
-direct labels onto multicolor plots.  Label positions are described using
-positioning methods that can be re-used across several different plots.  There
-are heuristics for examining @code{trellis} and @code{ggplot} objects and
-inferring an appropriate positioning method.")
-    (license license:gpl3)))
-
 (define-public r-catterplots
   (let ((commit "ae17cd5e49ddda4ecfe0eba8a4c21df8c88e72c4")
         (revision "3"))
