@@ -68,7 +68,6 @@ simple tools through complex programming languages.")
 (define-public bison-3.6
   (package
     (inherit bison)
-    (name "bison-3.6")
     (version "3.6.3")
     (source
      (origin
