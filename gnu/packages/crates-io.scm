@@ -3971,7 +3971,7 @@ intrinsics.")
         ("rust-rand-core" ,rust-rand-core-0.3)
         ("rust-rand-os" ,rust-rand-os-0.1)
         ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1)
-        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-rayon" ,rust-rayon-1.3)
         ("rust-rayon-core" ,rust-rayon-core-1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
@@ -8349,7 +8349,7 @@ retrieving random data from system source.")
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-num-cpus" ,rust-num-cpus-1.10)
         ("rust-object" ,rust-object-0.12)
-        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-rayon" ,rust-rayon-1.3)
         ("rust-regex" ,rust-regex-1)
         ("rust-test-assembler" ,rust-test-assembler-0.1)
         ("rust-typed-arena" ,rust-typed-arena-1.4))))
@@ -9527,14 +9527,14 @@ the template engine that renders the official Rust website")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-rayon" ,rust-rayon-1.3)
         ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1.0)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.5)
-        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-rayon" ,rust-rayon-1.3)
         ("rust-rustc-hash" ,rust-rustc-hash-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/rust-lang/hashbrown")
@@ -10963,7 +10963,7 @@ primitives to an @code{io::Write}.")
      `(#:tests? #f      ; Some test files missing.
        #:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-rayon" ,rust-rayon-1.1))
+        ("rust-rayon" ,rust-rayon-1.3))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-png" ,rust-png-0.14)
@@ -18442,35 +18442,6 @@ accessors.")
      "Simple work-stealing parallelism for Rust.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-rayon-1.1
-  (package
-    (inherit rust-rayon-1.3)
-    (name "rust-rayon")
-    (version "1.1.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "rayon" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "190hkbcdfvcphyyzkdg52zdia2y9d9yanpm072bmnzbn49p1ic54"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.6)
-        ("rust-either" ,rust-either-1.5)
-        ("rust-rayon-core" ,rust-rayon-core-1))
-       #:cargo-development-inputs
-       (("rust-doc-comment" ,rust-doc-comment-0.3)
-        ("rust-docopt" ,rust-docopt-1.1)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
-        ("rust-serde" ,rust-serde-1.0)
-        ("rust-serde-derive" ,rust-serde-derive-1.0))))))
-
 (define-public rust-rayon-0.8
   (package/inherit rust-rayon-1.3
     (name "rust-rayon")
@@ -20180,7 +20151,7 @@ endian-aware Read/Write traits for byte buffers.")
         ("rust-rustc-version" ,rust-rustc-version-0.2))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-rayon" ,rust-rayon-1.1))))
+        ("rust-rayon" ,rust-rayon-1.3))))
     (home-page "https://github.com/m4b/scroll")
     (synopsis "Read/Write traits for byte buffers")
     (description
@@ -22729,7 +22700,7 @@ cryptographic implementations.")
         ("rust-unicode-xid" ,rust-unicode-xid-0.1))
        #:cargo-development-inputs
        (("rust-insta" ,rust-insta-0.8)
-        ("rust-rayon" ,rust-rayon-1.1)
+        ("rust-rayon" ,rust-rayon-1.3)
         ("rust-ref-cast" ,rust-ref-cast-0.2)
         ("rust-regex" ,rust-regex-1)
         ("rust-termcolor" ,rust-termcolor-1.0)
