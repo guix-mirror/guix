@@ -3050,16 +3050,16 @@ dynamic programming or a variety of heuristics.")
 (define-public express
   (package
     (name "express")
-    (version "1.5.1")
+    (version "1.5.3")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append
-                "http://bio.math.berkeley.edu/eXpress/downloads/express-"
-                version "/express-" version "-src.tgz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/adarob/eXpress.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03rczxd0gjp2l1jxcmjfmf5j94j77zqyxa6x063zsc585nj40n0c"))))
+                "18nb22n7x820fzjngf4qgyb3mspqkw7xyk7v7s5ps6wfrd8qwscb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -3076,6 +3076,12 @@ dynamic programming or a variety of heuristics.")
                (("\\$\\{CMAKE_CURRENT_SOURCE_DIR\\}/\\.\\./bamtools/lib")
                 (string-append (assoc-ref inputs "bamtools") "/lib"))
                (("libprotobuf.a") "libprotobuf.so"))
+             #t))
+         (add-after 'unpack 'remove-update-check
+           (lambda _
+             (substitute* "src/main.cpp"
+               (("#include \"update_check.h\"") "")
+               (("check_version\\(PACKAGE_VERSION\\);") ""))
              #t)))))
     (inputs
      `(("boost" ,boost)
