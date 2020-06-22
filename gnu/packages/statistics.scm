@@ -184,7 +184,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
 (define r-with-tests
   (package
     (name "r-with-tests")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -192,7 +192,7 @@ This package also provides @command{xls2csv} to export Excel files to CSV.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ckgpihkih4b44rx48hpg9p6bv0w67j5z3qc8s4giy6qv2j29zlm"))))
+                "0xdy3dy2bzdiba8z94hjykyra8si8a5q15s0bri7c26scjrymg6k"))))
     (build-system gnu-build-system)
     (arguments
      `(#:disallowed-references (,tzdata-for-tests)
