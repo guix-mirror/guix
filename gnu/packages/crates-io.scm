@@ -11337,8 +11337,7 @@ requires non-const function calls to be computed.")
          "0jbgi25rhglhvpxv62alyzyral6601kldmlhbxim4w6j15jv0mwl"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
+     `(#:cargo-inputs
        (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0))))
     (home-page "https://github.com/rust-lang/libc")
     (synopsis "Raw FFI bindings to platform libraries like libc")
