@@ -290,7 +290,7 @@ DOMAIN, a gettext domain."
       #~(begin
           (use-modules (guix build utils) (guix build po)
                        (ice-9 match) (ice-9 regex) (ice-9 textual-ports)
-                       (ice-9 vlist)
+                       (ice-9 vlist) (ice-9 threads)
                        (srfi srfi-1))
 
           (define (translate-tmp-texi po source output)
@@ -413,16 +413,18 @@ a list of extra files, such as '(\"contributing\")."
           (setenv "LC_ALL" "en_US.UTF-8")
           (setlocale LC_ALL "en_US.UTF-8")
 
-          (for-each (match-lambda
-                      ((language . po)
-                       (translate-texi "guix" po language
-                                       #:extras '("contributing"))))
-                    (available-translations "." "guix-manual"))
+          (n-par-for-each (parallel-job-count)
+                          (match-lambda
+                            ((language . po)
+                             (translate-texi "guix" po language
+                                             #:extras '("contributing"))))
+                          (available-translations "." "guix-manual"))
 
-          (for-each (match-lambda
-                      ((language . po)
-                       (translate-texi "guix-cookbook" po language)))
-                    (available-translations "." "guix-cookbook"))
+          (n-par-for-each (parallel-job-count)
+                          (match-lambda
+                            ((language . po)
+                             (translate-texi "guix-cookbook" po language)))
+                          (available-translations "." "guix-cookbook"))
 
           (for-each (lambda (file)
                       (install-file file #$output))
