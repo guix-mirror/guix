@@ -4281,26 +4281,6 @@ plot can be quickly adjusted using a flexible parameter dispatching
 mechanism.")
     (license license:gpl2+)))
 
-(define-public r-zoo
-  (package
-    (name "r-zoo")
-    (version "1.8-8")
-    (source (origin
-              (method url-fetch)
-              (uri (cran-uri "zoo" version))
-              (sha256
-               (base32
-                "1rrw431jwaxd9xljp73f15rhcxvwc0xlyrmr0ghi5fj7a03c932f"))))
-    (build-system r-build-system)
-    (propagated-inputs
-     `(("r-lattice" ,r-lattice)))
-    (home-page "http://zoo.R-Forge.R-project.org/")
-    (synopsis "S3 infrastructure for regular and irregular time series")
-    (description "This package contains an S3 class with methods for totally
-ordered indexed observations.  It is particularly aimed at irregular time
-series of numeric vectors/matrices and factors.")
-    (license license:gpl2+)))
-
 (define-public r-ztable
   (package
     (name "r-ztable")
