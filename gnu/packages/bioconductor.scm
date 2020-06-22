@@ -8089,3 +8089,31 @@ metrics, such as the elbow method and Horn's parallel analysis, which has
 relevance for data reduction in single-cell RNA-seq (scRNA-seq) and high
 dimensional mass cytometry data.")
     (license license:gpl3)))
+
+(define-public r-rgreat
+  (package
+    (name "r-rgreat")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "rGREAT" version))
+       (sha256
+        (base32
+         "0n8dw9ibb2klsczcxvvinpi9l53w8cs436i0c8w2jmramayl593v"))))
+    (properties `((upstream-name . "rGREAT")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicranges" ,r-genomicranges)
+       ("r-getoptlong" ,r-getoptlong)
+       ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rjson" ,r-rjson)))
+    (native-inputs `(("r-knitr" ,r-knitr)))
+    (home-page "https://github.com/jokergoo/rGREAT")
+    (synopsis "Client for GREAT analysis")
+    (description
+     "This package makes GREAT (Genomic Regions Enrichment of Annotations
+Tool) analysis automatic by constructing a HTTP POST request according to
+user's input and automatically retrieving results from GREAT web server.")
+    (license license:expat)))
