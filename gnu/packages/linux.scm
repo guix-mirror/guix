@@ -6840,12 +6840,18 @@ the superuser to make device nodes.")
             (substitute* "Makefile"
              (("/bin/sh") (which "sh")))
             #t))
-        (add-after 'unpack 'patch-getopt
+        (add-after 'unpack 'patch-script
           (lambda*  (#:key inputs #:allow-other-keys)
             (substitute* "scripts/fakeroot.in"
              (("getopt")
               (string-append (assoc-ref inputs "util-linux")
-                             "/bin/getopt")))
+                             "/bin/getopt"))
+             (("sed")
+              (string-append (assoc-ref inputs "sed")
+                             "/bin/sed"))
+             (("cut")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/cut")) )
             #t))
         (add-before 'configure 'setenv
           (lambda _
@@ -6882,7 +6888,9 @@ the superuser to make device nodes.")
        ("xz" ,xz))) ; for the tests
     (inputs
      `(("libcap" ,libcap/next)
-       ("util-linux" ,util-linux)))
+       ("util-linux" ,util-linux)
+       ("sed" ,sed)
+       ("coreutils" ,coreutils)))
     (synopsis "Provides a fake root environment")
     (description "@command{fakeroot} runs a command in an environment where
 it appears to have root privileges for file manipulation. This is useful
