@@ -330,7 +330,7 @@ without requiring the source code to be rewritten.")
   ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=40525
   (hidden-package
    (package
-     (inherit guile-3.0)
+     (inherit guile-3.0.3)
      (propagated-inputs
       `(("bdw-gc" ,libgc-7)
         ,@(srfi-1:alist-delete "bdw-gc" (package-propagated-inputs guile-3.0)))))))
