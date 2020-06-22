@@ -2314,7 +2314,7 @@ exposed as Reader/Writer streams.")
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
        (("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("cairo" ,cairo)))
     (home-page "https://gtk-rs.org/")
@@ -2347,7 +2347,7 @@ exposed as Reader/Writer streams.")
         ("rust-libc" ,rust-libc-0.2)
         ("rust-gtk-rs-lgpl-docs" ,rust-gtk-rs-lgpl-docs-0.1))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))))
+       (("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-cairo-sys-rs-0.9
   (package
@@ -2681,7 +2681,7 @@ used in argon2rs' bench suite.")
        #:cargo-inputs
        (("rust-jobserver" ,rust-jobserver-0.1))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/alexcrichton/cc-rs")
     (synopsis "Invoke the native C compiler")
     (description
@@ -3451,7 +3451,7 @@ need compiler-rt intrinsics.")
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-tester" ,rust-tester-0.5)
         ("rust-winapi" ,rust-winapi-0.3))))
     (home-page "https://github.com/laumann/compiletest-rs")
@@ -6530,7 +6530,7 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
         ("rust-redox-syscall" ,rust-redox-syscall-0.1)
         ("rust-winapi" ,rust-winapi-0.3))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/alexcrichton/filetime")
     (synopsis "Platform-agnostic accessors of timestamps in File metadata")
     (description
@@ -7931,7 +7931,7 @@ API library @code{gdi32}.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)))
     (home-page "https://gtk-rs.org/")
@@ -8351,7 +8351,7 @@ DWARF debugging format.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("glib" ,glib)))
     (home-page "http://gtk-rs.org/")
@@ -8405,7 +8405,7 @@ DWARF debugging format.")
        (("rust-docopt" ,rust-docopt-1.1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-thread-id" ,rust-thread-id-3.3)
         ("rust-time" ,rust-time-0.1))))
     (native-inputs
@@ -8609,7 +8609,7 @@ reading and writing git repositories.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("glib" ,glib)))
     (home-page "https://gtk-rs.org/")
@@ -8641,7 +8641,7 @@ reading and writing git repositories.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))))
+       (("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-glib-sys-0.9
   (package
@@ -8664,7 +8664,7 @@ reading and writing git repositories.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("glib" ,glib)))
     (home-page "http://gtk-rs.org/")
@@ -8992,7 +8992,7 @@ path simultaneously, and returning all of the globs that matched.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("glib" ,glib)))
     (home-page "http://gtk-rs.org/")
@@ -9434,7 +9434,7 @@ IEEE 754-2008 binary16 type.")
          ("rust-env-logger" ,rust-env-logger-0.6)
          ("rust-maplit" ,rust-maplit-1.0)
          ("rust-serde-derive" ,rust-serde-derive-1.0)
-         ("rust-tempfile" ,rust-tempfile-3.1))))
+         ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/sunng87/handlebars-rust")
     (synopsis "Handlebars templating implemented in Rust")
     (description
@@ -12006,7 +12006,7 @@ key-value pairs.")
      `(#:cargo-inputs
        (("rust-ansi-term" ,rust-ansi-term-0.12))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/sharkdp/lscolors")
     (synopsis "Colorize paths using the LS_COLORS environment variable")
     (description
@@ -13155,7 +13155,7 @@ IO of Windows's named pipes.")
         ("rust-schannel" ,rust-schannel-0.1)
         ("rust-security-framework" ,rust-security-framework-0.3)
         ("rust-security-framework-sys" ,rust-security-framework-sys-0.3)
-        ("rust-tempfile" ,rust-tempfile-3.1))
+        ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
        (("rust-hex" ,rust-hex-0.3))
        #:phases
@@ -13371,7 +13371,7 @@ release (fork of debug_unreachable)")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/nix-rust/nix")
     (synopsis "Rust friendly bindings to *nix APIs")
     (description
@@ -13406,7 +13406,7 @@ release (fork of debug_unreachable)")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.6)
         ("rust-sysctl" ,rust-sysctl-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-no-panic-0.1
   (package
@@ -13428,7 +13428,7 @@ release (fork of debug_unreachable)")
         ("rust-quote" ,rust-quote-1.0)
         ("rust-syn" ,rust-syn-1.0))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/dtolnay/no-panic")
     (synopsis "Prove a function can't ever panic")
     (description
@@ -14995,7 +14995,7 @@ normally prevent moving a type that has been borrowed from.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("pango" ,pango)))
     (home-page "https://gtk-rs.org/")
@@ -15063,7 +15063,7 @@ normally prevent moving a type that has been borrowed from.")
         ("rust-pkg-config" ,rust-pkg-config-0.3))
        #:cargo-development-inputs
        (("rust-shell-words" ,rust-shell-words-0.1)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (inputs
      `(("gtk+" ,gtk+)))
     (home-page "https://gtk-rs.org/")
@@ -17087,7 +17087,7 @@ macro use case.")
         ("rust-rand-xorshift" ,rust-rand-xorshift-0.1)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-rusty-fork" ,rust-rusty-fork-0.2)
-        ("rust-tempfile" ,rust-tempfile-3.1))
+        ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-1.1))))
     (home-page
@@ -17125,7 +17125,7 @@ macro use case.")
         ("rust-rand" ,rust-rand-0.5)
         ("rust-regex-syntax" ,rust-regex-syntax-0.6)
         ("rust-rusty-fork" ,rust-rusty-fork-0.2)
-        ("rust-tempfile" ,rust-tempfile-3.1))
+        ("rust-tempfile" ,rust-tempfile-3))
        #:cargo-development-inputs
        (("rust-regex" ,rust-regex-1.1))))))
 
@@ -19541,7 +19541,7 @@ rustc compiler.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/GuillaumeGomez/rustdoc-stripper")
     (synopsis "Nanipulate rustdoc comments")
     (description
@@ -19606,7 +19606,7 @@ rustc compiler.")
        (("rust-criterion" ,rust-criterion-0.2)
         ("rust-env-logger" ,rust-env-logger-0.6)
         ("rust-log" ,rust-log-0.4)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-webpki-roots" ,rust-webpki-roots-0.17))))
     (home-page "https://github.com/ctz/rustls")
   (synopsis "Modern TLS library written in Rust")
@@ -19777,7 +19777,7 @@ rustc compiler version.")
        #:cargo-inputs
        (("rust-fnv" ,rust-fnv-1.0)
         ("rust-quick-error" ,rust-quick-error-1.2)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-wait-timeout" ,rust-wait-timeout-0.2))))
     (home-page "https://github.com/altsysrq/rusty-fork")
     (synopsis "Library for running Rust tests in sub-processes")
@@ -21762,7 +21762,7 @@ maximal amount of configuration possible intended.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/derekdreery/sourcefile-rs")
     (synopsis "Concatenate source from multiple files")
     (description
@@ -23152,7 +23152,7 @@ deleting all contents when it's dropped.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-tempfile-3.1
+(define-public rust-tempfile-3
   (package
     (name "rust-tempfile")
     (version "3.1.0")
@@ -23741,7 +23741,7 @@ fixed set of worker threads.")
         ("rust-num-derive" ,rust-num-derive-0.2)
         ("rust-num-traits" ,rust-num-traits-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/image-rs/image-tiff")
     (synopsis
      "TIFF decoding and encoding library in pure Rust")
@@ -23865,7 +23865,7 @@ in Rust.")
       (("rust-futures" ,rust-futures-0.3)
        ("rust-loom" ,rust-loom-0.3)
        ("rust-proptest" ,rust-proptest-0.9)
-       ("rust-tempfile" ,rust-tempfile-3.1)
+       ("rust-tempfile" ,rust-tempfile-3)
        ("rust-tokio-test" ,rust-tokio-test-0.2))))
     (home-page "https://tokio.rs")
     (synopsis "Event-driven, non-blocking I/O platform")
@@ -24105,7 +24105,7 @@ the current thread.")
        #:cargo-development-inputs
        (("rust-rand" ,rust-rand-0.4)
         ("rust-tempdir" ,rust-tempdir-0.3)
-        ("rust-tempfile" ,rust-tempfile-3.1)
+        ("rust-tempfile" ,rust-tempfile-3)
         ("rust-tokio" ,rust-tokio-0.1)
         ("rust-tokio-codec" ,rust-tokio-codec-0.1)
         ("rust-tokio-io" ,rust-tokio-io-0.1))))
@@ -24652,7 +24652,7 @@ pool.")
         ("rust-tokio-io" ,rust-tokio-io-0.1)
         ("rust-tokio-reactor" ,rust-tokio-reactor-0.1))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1)
+       (("rust-tempfile" ,rust-tempfile-3)
         ("rust-tokio" ,rust-tokio-0.1))))
     (home-page "https://github.com/tokio-rs/tokio")
     (synopsis "Unix Domain sockets for Tokio")
@@ -26496,7 +26496,7 @@ attribute that is not in the shared backend crate.")
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.23))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-tempfile" ,rust-tempfile-3.1))))
+        ("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/smithay/wayland-rs")
     (synopsis
      "Rust bindings to the standard C implementation of the wayland protocol")
@@ -26532,7 +26532,7 @@ the wayland protocol, client side.")
         ("rust-wayland-scanner" ,rust-wayland-scanner-0.21))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-tempfile" ,rust-tempfile-3.1))))))
+        ("rust-tempfile" ,rust-tempfile-3))))))
 
 (define-public rust-wayland-commons-0.23
   (package
@@ -27452,7 +27452,7 @@ color in a Windows console.")
        #:cargo-inputs
        (("rust-libc" ,rust-libc-0.2))
        #:cargo-development-inputs
-       (("rust-tempfile" ,rust-tempfile-3.1))))
+       (("rust-tempfile" ,rust-tempfile-3))))
     (home-page "https://github.com/Stebalien/xattr")
     (synopsis "Unix extended filesystem attributes")
     (description

@@ -281,7 +281,7 @@ gitignore rules.")
         ("serde" ,rust-serde-1.0)
         ("serde-json" ,rust-serde-json-1.0)
         ("syn" ,rust-syn-1.0)
-        ("tempfile" ,rust-tempfile-3.1)
+        ("tempfile" ,rust-tempfile-3)
         ("toml" ,rust-toml-0.5))))
     (home-page "https://github.com/eqrion/cbindgen/")
     (synopsis "Tool for generating C bindings to Rust code")
@@ -344,7 +344,7 @@ gitignore rules.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-regex" ,rust-regex-1.3)
         ("rust-serde-json" ,rust-serde-json-1.0)
-        ("rust-tempfile" ,rust-tempfile-3.1))
+        ("rust-tempfile" ,rust-tempfile-3))
        #:phases
        (modify-phases %standard-phases
          (add-after 'configure 'unvendor-libraries-from-crates
