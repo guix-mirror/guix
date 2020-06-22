@@ -388,33 +388,31 @@ used in the image. "
          (graph (match inputs
                   (((names . _) ...)
                    names)))
-         (root-builder
-          (with-imported-modules*
-           (sql-schema #$schema)
-
-           ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
-           (setenv "GUIX_LOCPATH"
-                   #+(file-append glibc-utf8-locales "/lib/locale"))
-           (setlocale LC_ALL "en_US.utf8")
-
-           (initialize-root-partition #$output
-                                      #:references-graphs '#$graph
-                                      #:deduplicate? #f
-                                      #:system-directory #$os)))
-         (image-root
-          (computed-file "image-root" root-builder
-                         #:options `(#:references-graphs ,inputs)))
          (builder
           (with-imported-modules*
            (let* ((inputs '#$(list parted e2fsprogs dosfstools xorriso
-                                   sed grep coreutils findutils gawk)))
+                                   sed grep coreutils findutils gawk))
+                  (image-root "tmp-root"))
+             (sql-schema #$schema)
+
+             ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+             (setenv "GUIX_LOCPATH"
+                     #+(file-append glibc-utf8-locales "/lib/locale"))
+
+             (setlocale LC_ALL "en_US.utf8")
+
              (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+
+             (initialize-root-partition image-root
+                                        #:references-graphs '#$graph
+                                        #:deduplicate? #f
+                                        #:system-directory #$os)
              (make-iso9660-image #$xorriso
                                  '#$grub-mkrescue-environment
                                  #$bootloader
                                  #$bootcfg
                                  #$os
-                                 #$image-root
+                                 image-root
                                  #$output
                                  #:references-graphs '#$graph
                                  #:register-closures? #$register-closures?
