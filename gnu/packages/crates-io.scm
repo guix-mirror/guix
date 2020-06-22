@@ -3972,7 +3972,7 @@ intrinsics.")
         ("rust-rand-os" ,rust-rand-os-0.1)
         ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1)
         ("rust-rayon" ,rust-rayon-1.1)
-        ("rust-rayon-core" ,rust-rayon-core-1.5)
+        ("rust-rayon-core" ,rust-rayon-core-1.7)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
@@ -18461,7 +18461,7 @@ accessors.")
        #:cargo-inputs
        (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.6)
         ("rust-either" ,rust-either-1.5)
-        ("rust-rayon-core" ,rust-rayon-core-1.5))
+        ("rust-rayon-core" ,rust-rayon-core-1.7))
        #:cargo-development-inputs
        (("rust-doc-comment" ,rust-doc-comment-0.3)
         ("rust-docopt" ,rust-docopt-1.1)
@@ -18524,34 +18524,6 @@ accessors.")
     (synopsis "Core APIs for Rayon")
     (description "Core APIs for Rayon.")
     (license (list license:expat license:asl2.0))))
-
-(define-public rust-rayon-core-1.5
-  (package
-    (inherit rust-rayon-core-1.7)
-    (name "rust-rayon-core")
-    (version "1.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (crate-uri "rayon-core" version))
-       (file-name
-        (string-append name "-" version ".tar.gz"))
-       (sha256
-        (base32
-         "1ljva6blaf1wmzvg77h1i9pd0hsmsbbcmdk7sjbw7h2s8gw0vgpb"))))
-    (arguments
-     `(#:skip-build? #t
-       #:cargo-inputs
-       (("rust-crossbeam-deque" ,rust-crossbeam-deque-0.7)
-        ("rust-crossbeam-queue" ,rust-crossbeam-queue-0.1)
-        ("rust-crossbeam-utils" ,rust-crossbeam-utils-0.6)
-        ("rust-lazy-static" ,rust-lazy-static-1)
-        ("rust-num-cpus" ,rust-num-cpus-1.10))
-       #:cargo-development-inputs
-       (("rust-libc" ,rust-libc-0.2)
-        ("rust-rand" ,rust-rand-0.4)
-        ("rust-rand-xorshift" ,rust-rand-xorshift-0.2)
-        ("rust-scoped-tls" ,rust-scoped-tls-1.0))))))
 
 (define-public rust-rctree-0.3
   (package
