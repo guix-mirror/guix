@@ -3926,7 +3926,7 @@ intrinsics.")
         ("rust-num-traits" ,rust-num-traits-0.2)
         ("rust-oorandom" ,rust-oorandom-11.1)
         ("rust-plotters" ,rust-plotters-0.2)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
         ("rust-serde-json" ,rust-serde-json-1.0)
@@ -3971,7 +3971,7 @@ intrinsics.")
         ("rust-rand-core" ,rust-rand-core-0.3)
         ("rust-rand-os" ,rust-rand-os-0.1)
         ("rust-rand-xoshiro" ,rust-rand-xoshiro-0.1)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-rayon-core" ,rust-rayon-core-1)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-serde-derive" ,rust-serde-derive-1.0)
@@ -8349,7 +8349,7 @@ retrieving random data from system source.")
         ("rust-memmap" ,rust-memmap-0.7)
         ("rust-num-cpus" ,rust-num-cpus-1.10)
         ("rust-object" ,rust-object-0.12)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-regex" ,rust-regex-1)
         ("rust-test-assembler" ,rust-test-assembler-0.1)
         ("rust-typed-arena" ,rust-typed-arena-1.4))))
@@ -9527,14 +9527,14 @@ the template engine that renders the official Rust website")
      `(#:skip-build? #t
        #:cargo-inputs
        (("rust-compiler-builtins" ,rust-compiler-builtins-0.1)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-rustc-std-workspace-alloc" ,rust-rustc-std-workspace-alloc-1.0)
         ("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core-1.0)
         ("rust-serde" ,rust-serde-1.0))
        #:cargo-development-inputs
        (("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-rand" ,rust-rand-0.5)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-rustc-hash" ,rust-rustc-hash-1.0)
         ("rust-serde-test" ,rust-serde-test-1.0))))
     (home-page "https://github.com/rust-lang/hashbrown")
@@ -10338,7 +10338,7 @@ for the most common image formats.")
        #:cargo-inputs
        (("rust-autocfg" ,rust-autocfg-1.0)
         ("rust-serde" ,rust-serde-1.0)
-        ("rust-rayon" ,rust-rayon-1.3))))
+        ("rust-rayon" ,rust-rayon-1))))
     (home-page "https://github.com/bluss/indexmap")
     (synopsis "Hash table with consistent order and fast iteration.")
     (description
@@ -10963,7 +10963,7 @@ primitives to an @code{io::Write}.")
      `(#:tests? #f      ; Some test files missing.
        #:cargo-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-rayon" ,rust-rayon-1.3))
+        ("rust-rayon" ,rust-rayon-1))
        #:cargo-development-inputs
        (("rust-criterion" ,rust-criterion-0.3)
         ("rust-png" ,rust-png-0.14)
@@ -13145,7 +13145,7 @@ checking.")
     (arguments
      `(#:skip-build? #t
        #:cargo-inputs
-       (("rust-rayon" ,rust-rayon-1.3))))
+       (("rust-rayon" ,rust-rayon-1))))
     (home-page "https://github.com/medek/nasm-rs")
     (synopsis "Run NASM during your Cargo build")
     (description "Run NASM during your Cargo build.")
@@ -18409,7 +18409,7 @@ For example creation from raw pointers and start, end pointer
 accessors.")
     (license (list license:asl2.0 license:expat))))
 
-(define-public rust-rayon-1.3
+(define-public rust-rayon-1
   (package
     (name "rust-rayon")
     (version "1.3.0")
@@ -18443,7 +18443,8 @@ accessors.")
     (license (list license:asl2.0 license:expat))))
 
 (define-public rust-rayon-0.8
-  (package/inherit rust-rayon-1.3
+  (package
+    (inherit rust-rayon-1)
     (name "rust-rayon")
     (version "0.8.2")
     (source
@@ -20151,7 +20152,7 @@ endian-aware Read/Write traits for byte buffers.")
         ("rust-rustc-version" ,rust-rustc-version-0.2))
        #:cargo-development-inputs
        (("rust-byteorder" ,rust-byteorder-1.3)
-        ("rust-rayon" ,rust-rayon-1.3))))
+        ("rust-rayon" ,rust-rayon-1))))
     (home-page "https://github.com/m4b/scroll")
     (synopsis "Read/Write traits for byte buffers")
     (description
@@ -22666,7 +22667,7 @@ cryptographic implementations.")
        (("rust-anyhow" ,rust-anyhow-1.0)
         ("rust-flate2" ,rust-flate2-1.0)
         ;("rust-insta" ,rust-insta-0.12)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-ref-cast" ,rust-ref-cast-1.0)
         ("rust-regex" ,rust-regex-1)
         ;("rust-reqwest" ,rust-reqwest-0.10)
@@ -22700,7 +22701,7 @@ cryptographic implementations.")
         ("rust-unicode-xid" ,rust-unicode-xid-0.1))
        #:cargo-development-inputs
        (("rust-insta" ,rust-insta-0.8)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-ref-cast" ,rust-ref-cast-0.2)
         ("rust-regex" ,rust-regex-1)
         ("rust-termcolor" ,rust-termcolor-1.0)

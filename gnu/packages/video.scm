@@ -4001,7 +4001,7 @@ result in several formats:
         ("rust-console" ,rust-console-0.9)
         ("rust-serde" ,rust-serde-1.0)
         ("rust-cc" ,rust-cc-1.0)
-        ("rust-rayon" ,rust-rayon-1.3)
+        ("rust-rayon" ,rust-rayon-1)
         ("rust-byteorder" ,rust-byteorder-1.3)
         ("rust-clap" ,rust-clap-2)
         ("rust-vergen" ,rust-vergen-3.1))
