@@ -894,14 +894,14 @@ applications.")
 (define-public r-htmltable
   (package
     (name "r-htmltable")
-    (version "1.13.3")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "htmlTable" version))
        (sha256
         (base32
-         "0g9r156k9yl1f092hfw3b9wjx11akf0shbi3x0d0mvpnflvc8nfl"))))
+         "1a1al4kld7lrapc2i086crr78kbgrskahs221iy9v77x0nhin2q3"))))
     (properties `((upstream-name . "htmlTable")))
     (build-system r-build-system)
     (propagated-inputs
@@ -912,6 +912,8 @@ applications.")
        ("r-magrittr" ,r-magrittr)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-stringr" ,r-stringr)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
     (home-page "http://gforge.se/packages/")
     (synopsis "Advanced tables for Markdown/HTML")
     (description
