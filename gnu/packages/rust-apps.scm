@@ -225,7 +225,7 @@ provides defaults for 80% of the use cases.")
         ("rust-lazy-static" ,rust-lazy-static-1)
         ("rust-log" ,rust-log-0.4)
         ("rust-num-cpus" ,rust-num-cpus-1.10)
-        ("rust-regex" ,rust-regex-1.1)
+        ("rust-regex" ,rust-regex-1.3)
         ("rust-serde-json" ,rust-serde-json-1.0)
         ("rust-termcolor" ,rust-termcolor-1.0))
        #:cargo-development-inputs
