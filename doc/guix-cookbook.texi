@@ -109,8 +109,8 @@ Let's get started!
 
 Guix uses the Guile implementation of Scheme.  To start playing with the
 language, install it with @code{guix install guile} and start a
-@uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
-REPL} by running @code{guile} from the command line.
+@dfn{REPL}---short for @uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
+@dfn{read-eval-print loop}}---by running @code{guile} from the command line.
 
 Alternatively you can also run @code{guix environment --ad-hoc guile -- guile}
 if you'd rather not have Guile installed in your user profile.
@@ -118,7 +118,7 @@ if you'd rather not have Guile installed in your user profile.
 In the following examples, lines show what you would type at the REPL;
 lines starting with ``@result{}'' show evaluation results, while lines
 starting with ``@print{}'' show things that get printed.  @xref{Using Guile
-Interactively,,, guile, GNU Guile Reference Manual}), for more details on the
+Interactively,,, guile, GNU Guile Reference Manual}, for more details on the
 REPL.
 
 @itemize
