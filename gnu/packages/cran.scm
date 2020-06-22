@@ -2073,13 +2073,13 @@ is provided.")
 (define-public r-calibrate
   (package
     (name "r-calibrate")
-    (version "1.7.6")
+    (version "1.7.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "calibrate" version))
        (sha256
-        (base32 "0h91mxf4fy3xk4mavf6cdllglyq5fra8zpz7yvc63n5jigpy2lhd"))))
+        (base32 "19kgrnsyq67iqv1biyssqi30a6v2836ql20nabpy2m692ns0jfvi"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
